@@ -144,13 +144,13 @@
         
         // Decide what our action should be
         if (anAction == "escalate") {
-        	document.alarm_action_form.action.value = "<%=AlarmSeverityChangeServlet.ESCALATE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeServlet.ESCALATE_ACTION%>";
         } else if (anAction == "clear") {
-        	document.alarm_action_form.action.value = "<%=AlarmSeverityChangeServlet.CLEAR_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeServlet.CLEAR_ACTION%>";
         } else if (anAction == "acknowledge") {
-        	document.alarm_action_form.action.value = "<%=AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION%>";
         } else if (anAction == "unacknowledge") {
-        	document.alarm_action_form.action.value = "<%=AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION%>";
         }
  
         if (document.alarm_action_form.alarm.length)
@@ -227,7 +227,7 @@
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form method="POST" name="acknowledge_by_filter_form">    
             <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-            <input type="hidden" name="action" value="" />
+            <input type="hidden" name="actionCode" value="" />
             <%=org.opennms.web.Util.makeHiddenTags(request)%>
           </form>      
       <% } %>
@@ -266,7 +266,7 @@
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form action="alarm/acknowledge" method="POST" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-          <input type="hidden" name="action" value="<%=action%>" />
+          <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>
       <% } %>
 			<jsp:include page="/includes/key.jsp" flush="false" />

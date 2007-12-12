@@ -87,14 +87,14 @@ public class AcknowledgeAlarmByFilterServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // required parameter
         String[] filterStrings = request.getParameterValues("filter");
-        String action = request.getParameter("action");
+        String action = request.getParameter("actionCode");
 
         if (filterStrings == null) {
             filterStrings = new String[0];
         }
 
         if (action == null) {
-            throw new MissingParameterException("action", new String[] { "filter", "action" });
+            throw new MissingParameterException("actionCode", new String[] { "filter", "actionCode" });
         }
 
         // handle the filter parameters
