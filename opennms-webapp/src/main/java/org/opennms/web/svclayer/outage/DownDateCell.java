@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Dec 12: Format code. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,11 +40,11 @@ import org.extremecomponents.table.cell.DateCell;
 import org.extremecomponents.table.core.TableModel;
 
 public class DownDateCell extends DateCell {
-	protected String getCellValue(TableModel model, Column column) {
+    protected String getCellValue(TableModel model, Column column) {
         if (column.getValue() == null) {
             return "Down";
         } else {
             return super.getCellValue(model, column);
         }
-	}
+    }
 }
