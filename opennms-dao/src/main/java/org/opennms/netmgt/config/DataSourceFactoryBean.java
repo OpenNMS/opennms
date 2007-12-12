@@ -33,6 +33,8 @@ package org.opennms.netmgt.config;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,8 +58,12 @@ public class DataSourceFactoryBean implements FactoryBean, InitializingBean, Dis
     }
 
     public void destroy() throws Exception {
-        System.err.println("Closing DataSourceFactory!!!");
+        log().info("Closing DataSourceFactory!!!");
         DataSourceFactory.close();
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }
