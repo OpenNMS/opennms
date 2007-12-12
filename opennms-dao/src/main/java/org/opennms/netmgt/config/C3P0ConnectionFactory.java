@@ -93,7 +93,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     private ComboPooledDataSource m_pool;
 
     protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-        log().info("C3P2ConnectionFactory: setting up data sources from reader argument.");
+        log().info("C3P0ConnectionFactory: setting up data sources from reader argument.");
         try {
             JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
             initializePool(ds);
@@ -109,7 +109,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
          */
         FileInputStream fileInputStream = new FileInputStream(configFile);
         final Reader rdr = new InputStreamReader(fileInputStream);
-        log().info("C3P2ConnectionFactory: setting up data sources from:"+configFile);
+        log().info("C3P0ConnectionFactory: setting up data sources from:"+configFile);
         try {
             JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
             initializePool(ds);
@@ -220,7 +220,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
     }
 
     public void close() throws SQLException {
-        System.err.println("Closing c3p0 pool");
+        log().info("Closing c3p0 pool");
         m_pool.close(true);
     }
 
