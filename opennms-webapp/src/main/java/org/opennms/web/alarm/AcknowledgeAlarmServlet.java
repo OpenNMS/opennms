@@ -89,14 +89,14 @@ public class AcknowledgeAlarmServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // required parameter
         String[] alarmIdStrings = request.getParameterValues("alarm");
-        String action = request.getParameter("action");
+        String action = request.getParameter("actionCode");
 
         if (alarmIdStrings == null) {
-            throw new MissingParameterException("alarm", new String[] { "alarm", "action" });
+            throw new MissingParameterException("alarm", new String[] { "alarm", "actionCode" });
         }
 
         if (action == null) {
-            throw new MissingParameterException("action", new String[] { "alarm", "action" });
+            throw new MissingParameterException("actionCode", new String[] { "alarm", "actionCode" });
         }
 
         // convert the alarm id strings to ints

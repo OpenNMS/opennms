@@ -254,7 +254,7 @@
       <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
       <td>
       <form method="post" action="alarm/acknowledge">
-        <input type="hidden" name="action" value="<%=action%>" />
+        <input type="hidden" name="actionCode" value="<%=action%>" />
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=ackButtonName%>" />
@@ -269,7 +269,7 @@
       <form method="post" action="alarm/changeSeverity">
 	  <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
       <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />	  
-      <select name="action">
+      <select name="actionCode">
       	  <%if (showEscalate) { %>
           <option value="<%=escalateAction%>">Escalate</option>
           <% } %>
