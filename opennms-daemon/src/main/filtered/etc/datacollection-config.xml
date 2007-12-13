@@ -450,8 +450,10 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.25" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsDS" type="gauge" />
       </group>
 
-      <group name="ipunity-as-call-summary-stats" ifType="ignore">
+      <group name="ipunity-as-call-scalars" ifType="ignore" >
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.2.1" instance="0" alias="ipuCallsWithNoApp" type="counter" />
+      </group>
+      <group name="ipunity-as-call-summary-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.2" instance="asAppIndex" alias="asAppName" type="string" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.5" instance="asAppIndex" alias="asInCallsInPgr" type="gauge" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.19" instance="asAppIndex" alias="asOutCallsInPgr" type="gauge" />
@@ -459,7 +461,7 @@
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.20" instance="asAppIndex" alias="asOutCallsCompleted" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.33" instance="asAppIndex" alias="asHungCallsDropped" type="counter" />
       </group>
-      <group name="ipunity-as-incall-stats" ifType="ignore">
+      <group name="ipunity-as-incall-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.7" instance="asAppIndex" alias="asInCallsFwRejected" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.8" instance="asAppIndex" alias="asInCallsAppReject" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.9" instance="asAppIndex" alias="asInCallSetupAttmpt" type="counter" />
@@ -476,7 +478,7 @@
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.40" instance="asAppIndex" alias="asInCallsNotResp" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.41" instance="asAppIndex" alias="asInCallsTrdnSsTmr" type="counter" />
       </group>
-      <group name="ipunity-as-outcall-stats" ifType="ignore">
+      <group name="ipunity-as-outcall-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.21" instance="asAppIndex" alias="asOutCallsFwCancld" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.22" instance="asAppIndex" alias="asOutCallsAppCancld" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.23" instance="asAppIndex" alias="asOutCallSetupAtmpt" type="counter" />
@@ -491,20 +493,20 @@
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.32" instance="asAppIndex" alias="asOutCallTrdnCaFail" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.42" instance="asAppIndex" alias="asOutCallsTrdnSsTmr" type="counter" />
       </group>
-      <group name="ipunity-as-call-transfer-stats" ifType="ignore">
+      <group name="ipunity-as-call-transfer-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.35" instance="asAppIndex" alias="asCallXfersAtmp" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.36" instance="asAppIndex" alias="asCallXfersSucc" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.37" instance="asAppIndex" alias="asCallXfersFailApp" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.38" instance="asAppIndex" alias="asCallXfersFailCa" type="counter" />
       </group>
-      <group name="ipunity-as-cluster-call-summary-stats" ifType="ignore">
+      <group name="ipunity-as-cluster-call-summary-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.1" instance="asAppIndex" alias="asClsInCallsInPgr" type="gauge" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.15" instance="asAppIndex" alias="asClsOutCallsInPgr" type="gauge" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.2" instance="asAppIndex" alias="asClsInCallsCmpltd" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.16" instance="asAppIndex" alias="asClsOutCallsCmpltd" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.29" instance="asAppIndex" alias="asClsHungCallsDrop" type="counter" />
       </group>
-      <group name="ipunity-as-cluster-incall-stats" ifType="ignore">
+      <group name="ipunity-as-cluster-incall-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.3" instance="asAppIndex" alias="asClsInCallsRejFw" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.4" instance="asAppIndex" alias="asClsInCallsRejApp" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.5" instance="asAppIndex" alias="asClsInCallStupAtmp" type="counter" />
@@ -518,7 +520,7 @@
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.13" instance="asAppIndex" alias="asClsInCallTdMsFail" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.14" instance="asAppIndex" alias="asClsInCallTdCaFail" type="counter" />
       </group>
-      <group name="ipunity-as-cluster-outcall-stats" ifType="ignore">
+      <group name="ipunity-as-cluster-outcall-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.17" instance="asAppIndex" alias="asClsOutCallsFwCncl" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.18" instance="asAppIndex" alias="asClsOutCallsApCncl" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.19" instance="asAppIndex" alias="asClsOutCallSuAtmp" type="counter" />
@@ -532,20 +534,20 @@
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.27" instance="asAppIndex" alias="asClsOutCallTdMsFl" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.28" instance="asAppIndex" alias="asClsOutCallTdCaFl" type="counter" />
       </group>
-      <group name="ipunity-as-cluster-call-transfer-stats" ifType="ignore">
+      <group name="ipunity-as-cluster-call-transfer-stats" ifType="all">
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.31" instance="asAppIndex" alias="asClsCallXferAtmp" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.32" instance="asAppIndex" alias="asClsCallXferSucc" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.33" instance="asAppIndex" alias="asClsCallXferFailAp" type="counter" />
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.34" instance="asAppIndex" alias="asClsCallXferFailCa" type="counter" />
       </group>
-      <group name="ipunity-sip-summary-stats" ifType="ignore">
+      <group name="ipunity-sip-summary-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.1" instance="applIndex" alias="ipuSIPSumInReqs" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.2" instance="applIndex" alias="ipuSIPSumOutReqs" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.3" instance="applIndex" alias="ipuSIPSumInResps" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.4" instance="applIndex" alias="ipuSIPSumOutResps" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.5" instance="applIndex" alias="ipuSIPSumTotXaction" type="counter" />
       </group>
-      <group name="ipunity-sip-method-stats" ifType="ignore">
+      <group name="ipunity-sip-method-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.1" instance="applIndex" alias="ipuSIPInviteIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.2" instance="applIndex" alias="ipuSIPInviteOut" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.3" instance="applIndex" alias="ipuSIPAckIn" type="counter" />
@@ -561,7 +563,7 @@
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.13" instance="applIndex" alias="ipuSIPInfoIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.14" instance="applIndex" alias="ipuSIPInfoOut" type="counter" />
       </group>
-      <group name="ipunity-sip-status-code-stats" ifType="ignore">
+      <group name="ipunity-sip-status-code-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.1" instance="applIndex" alias="ipuSIPInfoClsIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.2" instance="applIndex" alias="ipuSIPInfoClsOut" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.3" instance="applIndex" alias="ipuSIPSuccClsIn" type="counter" />
@@ -575,7 +577,7 @@
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.11" instance="applIndex" alias="ipuSIPGblFailClsIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.12" instance="applIndex" alias="ipuSIPGblFailClsOut" type="counter" />
       </group>
-      <group name="ipunity-sip-method-dup-stats" ifType="ignore">
+      <group name="ipunity-sip-method-dup-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.1" instance="applIndex" alias="ipuSIPDupInviteIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.2" instance="applIndex" alias="ipuSIPDupInviteOut" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.3" instance="applIndex" alias="ipuSIPDupAckIn" type="counter" />
@@ -591,7 +593,7 @@
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.13" instance="applIndex" alias="ipuSIPDupInfoIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.14" instance="applIndex" alias="ipuSIPDupInfoOut" type="counter" />
       </group>
-      <group name="ipunity-sip-status-code-dup-stats" ifType="ignore">
+      <group name="ipunity-sip-status-code-dup-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.1" instance="applIndex" alias="ipuSIPDupInfoClsIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.2" instance="applIndex" alias="ipuSIPDupInfoClsOut" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.3" instance="applIndex" alias="ipuSIPDupSuccClsIn" type="counter" />
@@ -609,7 +611,7 @@
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.5.1" instance="0" alias="ipuMGCPInBadVer" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.5.2" instance="0" alias="ipuMGCPUnrecogPkts" type="counter" />
       </group>
-      <group name="ipunity-mgcp-msg-stats" ifType="ignore">
+      <group name="ipunity-mgcp-msg-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.1" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPMGCAddr" type="string" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.2" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPMsgType" type="string" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.3" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPSuccCmdsTx" type="counter" />
@@ -763,7 +765,7 @@
         <mibObj oid=".1.3.6.1.4.1.546.13.9" instance="0" alias="nhCpuTotalSysPct" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.546.13.10" instance="0" alias="nhCpuTotalWaitPct" type="gauge" />
       </group>
-      <group name="netHealth-pgmon" ifType="ignore">
+      <group name="netHealth-pgmon" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.546.15.10.1.2" instance="pgmonIndex" alias="pgmonDescr" type="string" />
         <mibObj oid=".1.3.6.1.4.1.546.15.10.1.6" instance="pgmonIndex" alias="pgmonNumProcs" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.546.15.10.1.14" instance="pgmonIndex" alias="pgmonRSS" type="gauge" />
@@ -890,7 +892,7 @@
       </group>
 
       <!-- Net-SNMP MIBs -->
-      <group name="net-snmp-disk" ifType="ignore">
+      <group name="net-snmp-disk" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="dskIndex" alias="ns-dskPath" type="string" />
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="dskIndex" alias="ns-dskTotal" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="dskIndex" alias="ns-dskAvail" type="gauge" />
@@ -931,7 +933,7 @@
         <mibObj oid=".1.3.6.1.4.1.2021.11.57" instance="0" alias="IORawSent" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.11.58" instance="0" alias="IORawReceived" type="counter" />
       </group>
-      <group name="ucd-diskio" ifType="ignore">
+      <group name="ucd-diskio" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.2" instance="diskIOIndex" alias="diskIODevice" type="string" />
         <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.3" instance="diskIOIndex" alias="diskIONRead" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.4" instance="diskIOIndex" alias="diskIONWritten" type="counter" />
@@ -1010,7 +1012,7 @@
       </group>
 
       <!-- SNMP Informant MIBs -->
-      <group name="snmpinformant-cpu" ifType="ignore">
+      <group name="snmpinformant-cpu" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.1" instance="sinfCpuInstance" alias="sinfCpuInstance" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2" instance="sinfCpuInstance" alias="sinfCpuPctDPCTime" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3" instance="sinfCpuInstance" alias="sinfCpuPctIntrTime" type="Gauge32" />
@@ -1023,7 +1025,7 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10" instance="sinfCpuInstance" alias="sinfCpuDPCsQdPerSec" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11" instance="sinfCpuInstance" alias="sinfCpuIntrsPerSec" type="Gauge32" />
       </group>
-      <group name="snmpinformant-disk" ifType="ignore">
+      <group name="snmpinformant-disk" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.1" instance="sinfLDskInstance"  alias="sinfLDskInstance" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2" instance="sinfLDskInstance"  alias="sinfLDskPctDskRdTm" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.3" instance="sinfLDskInstance"  alias="sinfLDskPctDskTm" type="Gauge32" />
@@ -1319,7 +1321,7 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.14" instance="0" alias="ascTotalRequests" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.15" instance="0" alias="ascTotalSuccesses" type="Gauge32" />
       </group>
-      <group name="snmpinformant-network" ifType="ignore">
+      <group name="snmpinformant-network" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.1" instance="sinfNetInstance" alias="sinfNetInstance" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.2" instance="sinfNetInstance" alias="netBytesRcvdPerSec" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.3" instance="sinfNetInstance" alias="netBytesSentPerSec" type="Gauge32" />
