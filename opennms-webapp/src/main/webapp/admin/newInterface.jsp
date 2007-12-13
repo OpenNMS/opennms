@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 12: Fix HTML to work with current CSS. - dj@opennms.org
 // 2003 Oct 27: created
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -42,6 +43,7 @@
 	contentType="text/html"
 	session="true"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Add Interface" />
@@ -100,23 +102,28 @@
 </script>
 
 <form method="post" name="newIpForm">
-
-    <%if ("redo".equals(request.getParameter("action"))) { %>
-      <h3>Please enter a different IP address</h3>
-      
-      The IP address <%=request.getParameter("ipAddress")%> already exists.
-      Please enter a different IP address.
-    <% } else { %>
-      <h3>Please enter a new IP address below</h3>
-    <% } %>
-      IP address:
-      <input size=15 name="ipAddress">
-
-	<br/>
-	<br/>
+  <h3>Enter IP address</h3>
+  <div class="boxWrapper">
+    <c:if test="${param.action == 'redo'}">
+      <ul class="error">
+        <li>
+          The IP address ${param.ipAddress} already exists.
+          Please enter a different IP address.
+        </li>
+      </ul>
+    </c:if>
   
+    <p>
+      IP address:
+      <input size="15" name="ipAddress">
+    </p>
+  
+    <p>
       <input type="submit" value="Add" onClick="verifyIpAddress()">
       <input type="button" value="Cancel" onClick="cancel()">
+    </p>
+  
+  </div>
 </form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
