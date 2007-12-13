@@ -68,6 +68,7 @@ import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageDispatcher;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.SNMP4JSettings;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
@@ -108,6 +109,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
         MPv3.setEnterpriseID(5813);
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
+        
+        // Enable extensibility in SNMP4J so that we can subclass some SMI classes to work around
+        // agent bugs
+        if (System.getProperty("org.snmp4j.smisyntaxes", null) != null) {
+        	SNMP4JSettings.setExtensibilityEnabled(true);
+        }
         
         s_initialized = true;
     }
