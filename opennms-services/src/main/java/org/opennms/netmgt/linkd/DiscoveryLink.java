@@ -97,6 +97,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 	// this is the list of mac address just parsed by discovery process
 	private List<String> macsParsed = new ArrayList<String>();
 	
+	// this is the list of mac address excluded by discovery process
+	private List<String> macsExcluded = new ArrayList<String>();
+
 	// this is tha list of atinterfaces for which to be discovery link
 	// here there aren't the bridge identifier becouse they should be discovered
 	// by main processes. This is used by addlinks method.
@@ -216,22 +219,33 @@ public final class DiscoveryLink implements ReadyRunnable {
 				Iterator<AtInterface> at_ite = ite.next().getAtInterfaces().iterator();
 				while (at_ite.hasNext()) {
 					AtInterface at = at_ite.next();
+					int nodeid = at.getNodeId();
+					String ipaddr = at.getIpAddress();
 					String macAddress = at.getMacAddress();
+					if (log().isDebugEnabled()) {
+						log().debug("Parsing at Interface nodeid/ipaddr/macaddr: " + nodeid + "/" + ipaddr +"/" + macAddress);
+					}
+					if (!Linkd.getInstance().isInterfaceInPackage(at.getIpAddress(), getPackageName())) {
+						if (log().isInfoEnabled()) 
+							log()
+							.info("run: at interface: " + ipaddr+ " does not belong to package: " + getPackageName()+ "! Not adding to discoverable atinterface.");
+						macsExcluded.add(macAddress);
+						continue;
+					}
 					if (isMacIdentifierOfBridgeNode(macAddress)) {
 						if (log().isInfoEnabled()) 
 						log()
 						.info("run: at interface "
-								+ at.toString()
+								+ macAddress
 								+ " belongs to bridge node! Not adding to discoverable atinterface.");
+						macsExcluded.add(macAddress);
 						continue;
-					} 
+					}
 					List<AtInterface> ats = macToAtinterface.get(macAddress);
 					if (ats == null) ats = new ArrayList<AtInterface>();
 					if (log().isInfoEnabled()) 
 						log()
-						.info("parseAtNodes: at interface "
-								+ at.toString()
-								+ " not belongs to bridge node! Adding to discoverable atinterface.");
+						.info("parseAtNodes: Adding to discoverable atinterface.");
 					ats.add(at);
 					macToAtinterface.put(macAddress, ats);
 					if (log().isDebugEnabled())
@@ -289,6 +303,15 @@ public final class DiscoveryLink implements ReadyRunnable {
 					if (log().isDebugEnabled()) log().debug("run: found CDP ifindex " + cdpIfIndex);
 
 					InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
+					
+					if (!Linkd.getInstance().isInterfaceInPackage(targetIpAddr.getHostAddress(), getPackageName())) 
+					{
+						log().warn("run: ip address "
+								+ targetIpAddr.getHostAddress()
+								+ " Not in package: " +getPackageName()+". Skipping");
+					continue;
+				}
+
 					int targetCdpNodeId = cdpIface.getCdpTargetNodeId();
 
 					if (targetCdpNodeId == -1) {
@@ -316,7 +339,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 										+ cdpDestIfindex + " . Skipping");
 						continue;
 					}
-
+					
 					if (log().isDebugEnabled()) log().debug("run: found CDP target ifindex " + cdpDestIfindex);
 
 					if (log().isDebugEnabled())
@@ -824,6 +847,16 @@ public final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
+					if (!Linkd.getInstance().isInterfaceInPackage(nexthop.getHostAddress(), getPackageName())) {
+						if (log().isInfoEnabled())
+							log()
+									.info("run: nexthop address is not in package "
+											+ nexthop.getHostAddress() + "/"+getPackageName() 
+											+ " . Skipping ");
+						continue;
+					}
+
+					
 					int nextHopNodeid = routeIface.getNextHopNodeid();
 
 					if (nextHopNodeid == -1) {
@@ -884,6 +917,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			routerNodes.clear();
 			cdpNodes.clear();
 			macsParsed.clear();
+			macsExcluded.clear();
 			macToAtinterface.clear();
 			atNodes.clear();
 
@@ -1412,11 +1446,11 @@ public final class DiscoveryLink implements ReadyRunnable {
 					continue;
 				}
 				
-				if (isMacIdentifierOfBridgeNode(curMacAddress)) {
+				if (macsExcluded.contains(curMacAddress)) {
 					log()
 							.warn("addLinks: mac address "
 									+ curMacAddress
-									+ " is bridge identifier! Skipping...");
+									+ " is excluded from discovery package! Skipping...");
 					continue;
 				}
 				

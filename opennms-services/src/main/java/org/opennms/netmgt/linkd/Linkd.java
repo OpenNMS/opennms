@@ -296,7 +296,11 @@ public class Linkd extends AbstractServiceDaemon {
 			return nodesOnPkg;
 		}
 	}
-
+	
+	public boolean isInterfaceInPackage(String ipaddr, String pkg) {
+		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
+		return false;
+	}
 	void scheduleNodeCollection(int nodeid) {
 
 		LinkableNode node = null;

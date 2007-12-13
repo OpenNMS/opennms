@@ -133,7 +133,8 @@ public class DbEventWriter implements QueryManager {
 	private static final String SQL_UPDATE_DATALINKINTERFACE_STATUS = "UPDATE datalinkinterface set status = ? WHERE nodeid = ? OR nodeparentid = ? ";
 	
 
-	private static final String SQL_GET_NODEID_IFINDEX = "SELECT atinterface.nodeid, snmpinterface.snmpifindex from atinterface left JOIN snmpinterface ON atinterface.nodeid = snmpinterface.nodeid AND atinterface.ipaddr = snmpinterface.ipaddr WHERE atphysaddr = ? AND status = 'A'";
+//	private static final String SQL_GET_NODEID_IFINDEX = "SELECT atinterface.nodeid, atinterface.ipaddr, snmpinterface.snmpifindex from atinterface left JOIN snmpinterface ON atinterface.nodeid = snmpinterface.nodeid AND atinterface.ipaddr = snmpinterface.ipaddr WHERE atphysaddr = ? AND status = 'A'";
+	private static final String SQL_GET_NODEID_IFINDEX = "SELECT atinterface.nodeid, atinterface.ipaddr, ipinterface.ifindex from atinterface left JOIN ipinterface ON atinterface.nodeid = ipinterface.nodeid AND atinterface.ipaddr = ipinterface.ipaddr WHERE atphysaddr = ? AND atinterface.status <> 'D'";
 
 	private static final String SQL_GET_SNMPIFTYPE = "SELECT snmpiftype FROM snmpinterface WHERE nodeid = ? AND snmpifindex = ?";
 
@@ -240,10 +241,15 @@ public class DbEventWriter implements QueryManager {
 							+ " MacToNodeLink information into database");
 		}
 		for (int i = 0; i < linkmacs.length; i++) {
+
 			MacToNodeLink lkm = linkmacs[i];
 			String macaddr = lkm.getMacAddress();
-			int nodeparentid = lkm.getNodeparentid();
-			int parentifindex = lkm.getParentifindex();
+			
+			if (log().isDebugEnabled())
+				log().debug(
+						"storelink: finding nodeid,ifindex on DB using mac address: "
+								+ macaddr);
+
 
 			stmt = dbConn.prepareStatement(SQL_GET_NODEID_IFINDEX);
 
@@ -282,6 +288,25 @@ public class DbEventWriter implements QueryManager {
 				continue;
 			}
 
+			String ipaddr = rs.getString(ndx++);
+			if (rs.wasNull()) {
+				rs.close();
+				stmt.close();
+				if (log().isDebugEnabled())
+					log().debug(
+							"storelink: no ipaddr found on DB for mac address "
+									+ macaddr + " on link. .... Skipping");
+				continue;
+			}
+			
+			if (!Linkd.getInstance().isInterfaceInPackage(ipaddr, discovery.getPackageName())) {
+				if (log().isDebugEnabled())
+					log().debug(
+							"storelink: not in package ipaddr found: "
+									+ ipaddr + " on link. .... Skipping");
+				continue;
+				
+			}
 			int ifindex = rs.getInt(ndx++);
 			if (rs.wasNull()) {
 				if (log().isDebugEnabled())
@@ -294,6 +319,8 @@ public class DbEventWriter implements QueryManager {
 			rs.close();
 			stmt.close();
 
+			int nodeparentid = lkm.getNodeparentid();
+			int parentifindex = lkm.getParentifindex();
 			DbDataLinkInterfaceEntry dbentry = DbDataLinkInterfaceEntry.get(
 					dbConn, nodeid, ifindex);
 			if (dbentry == null) {
