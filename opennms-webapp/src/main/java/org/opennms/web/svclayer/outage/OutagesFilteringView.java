@@ -9,6 +9,8 @@
  *
  * Modifications:
  * 
+ * 2007 Dec 12: Convert strings to appropriate objects for detached
+ *              criteria restrictions. - dj@opennms.org
  * 2007 Dec 09: Add abililty to filter on one or two sets of
  *              categories, like in the node list. - dj@opennms.org
  * 2007 Feb 01: Indent and add buildCriteria method. - dj@opennms.org
@@ -97,16 +99,6 @@ public class OutagesFilteringView {
                     + parameterValue + "'";
                 }
 
-                if (parameterName.startsWith("serviceid")) {
-                    queryResult = queryResult + " AND outages.serviceid ='"
-                    + parameterValue + "'";
-                }
-
-                if (parameterName.startsWith("not_serviceid")) {
-                    queryResult = queryResult + " AND outages.serviceid <> '"
-                    + parameterValue + "'";
-                }
-
                 if (parameterName.startsWith("smaller_iflostservice")) {
                     Date date = new Date(Long.parseLong(parameterValue));
                     queryResult = queryResult + " AND outages.iflostservice < "
@@ -142,60 +134,68 @@ public class OutagesFilteringView {
     public OnmsCriteria buildCriteria(HttpServletRequest request) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
 
-        if (request.getParameter("nodeid") != null) {
-            criteria.add(Restrictions.eq("node.id", request.getParameter("nodeid")));
+        if (request.getParameter("nodeid") != null && request.getParameter("nodeid").length() > 0) {
+            criteria.add(Restrictions.eq("node.id", Integer.parseInt(request.getParameter("nodeid"))));
         }
 
-        if (request.getParameter("not_nodeid") != null) {
-            criteria.add(Restrictions.ne("node.id", request.getParameter("not_nodeid")));
+        if (request.getParameter("not_nodeid") != null && request.getParameter("not_nodeid").length() > 0) {
+            criteria.add(Restrictions.ne("node.id", Integer.parseInt(request.getParameter("not_nodeid"))));
         }
 
-        if (request.getParameter("ipaddr") != null) {
-            criteria.add(Restrictions.eq("ipInterface.ipAddress", request.getParameter("ipaddr")));
+        if (request.getParameter("ipinterfaceid") != null  && request.getParameter("ipinterfaceid").length() > 0) {
+            criteria.add(Restrictions.eq("ipInterface.id", Integer.parseInt(request.getParameter("ipinterfaceid"))));
         }
 
-        if (request.getParameter("not_ipaddr") != null) {
-            criteria.add(Restrictions.ne("ipInterface.ipAddress", request.getParameter("not_ipaddr")));
+        if (request.getParameter("not_ipinterfaceid") != null && request.getParameter("not_ipinterfaceid").length() > 0) {
+            criteria.add(Restrictions.ne("ipInterface.id", Integer.parseInt(request.getParameter("not_ipinterfaceid"))));
         }
 
-        if (request.getParameter("serviceid") != null) {
-            criteria.add(Restrictions.eq("monitoredService.id", request.getParameter("serviceid")));
+        if (request.getParameter("serviceid") != null && request.getParameter("serviceid").length() > 0) {
+            criteria.add(Restrictions.eq("monitoredService.serviceType.id", Integer.parseInt(request.getParameter("serviceid"))));
         }
 
-        if (request.getParameter("not_serviceid") != null) {
-            criteria.add(Restrictions.ne("monitoredService.id", request.getParameter("not_serviceid")));
+        if (request.getParameter("not_serviceid") != null && request.getParameter("not_serviceid").length() > 0) {
+            criteria.add(Restrictions.ne("monitoredService.serviceType.id", Integer.parseInt(request.getParameter("not_serviceid"))));
+        }
+        
+        if (request.getParameter("ifserviceid") != null && request.getParameter("ifserviceid").length() > 0) {
+            criteria.add(Restrictions.eq("monitoredService.id", Integer.parseInt(request.getParameter("ifserviceid"))));
         }
 
-        if (request.getParameter("smaller_iflostservice") != null) {
+        if (request.getParameter("not_ifserviceid") != null && request.getParameter("not_ifserviceid").length() > 0) {
+            criteria.add(Restrictions.ne("monitoredService.id", Integer.parseInt(request.getParameter("not_ifserviceid"))));
+        }
+
+        if (request.getParameter("smaller_iflostservice") != null && request.getParameter("smaller_iflostservice").length() > 0) {
             Date date = new Date(Long.parseLong(request.getParameter("smaller_iflostservice")));
             criteria.add(Restrictions.lt("ifLostService", date));
         }
 
-        if (request.getParameter("bigger_iflostservice") != null) {
+        if (request.getParameter("bigger_iflostservice") != null && request.getParameter("bigger_iflostservice").length() > 0) {
             Date date = new Date(Long.parseLong(request.getParameter("bigger_iflostservice")));
             criteria.add(Restrictions.gt("ifLostService", date));
         }
 
-        if (request.getParameter("smaller_ifregainedservice") != null) {
+        if (request.getParameter("smaller_ifregainedservice") != null && request.getParameter("smaller_ifregainedservice").length() > 0) {
             Date date = new Date(Long.parseLong(request.getParameter("smaller_ifregainedservice")));
             criteria.add(Restrictions.lt("ifRegainedService", date));
         }
 
-        if (request.getParameter("bigger_ifregainedservice") != null) {
+        if (request.getParameter("bigger_ifregainedservice") != null && request.getParameter("bigger_ifregainedservice").length() > 0) {
             Date date = new Date(Long.parseLong(request.getParameter("bigger_ifregainedservice")));
             criteria.add(Restrictions.gt("ifRegainedService", date));
         }
 
-        if (request.getParameter("building") != null) {
+        if (request.getParameter("building") != null && request.getParameter("building").length() > 0) {
             criteria.createAlias("node.assetRecord", "assetRecord");
             criteria.add(Restrictions.eq("assetRecord.building", request.getParameter("building")));
         }
         
-        if (request.getParameter("category1") != null && request.getParameter("category2") != null) {
+        if (request.getParameter("category1") != null && request.getParameter("category1").length() > 0 && request.getParameter("category2") != null && request.getParameter("category2").length() > 0) {
             for (Criterion criterion : m_categoryDao.getCriterionForCategorySetsUnion(request.getParameterValues("category1"), request.getParameterValues("category2"))) {
                 criteria.add(criterion);
             }
-        } else if (request.getParameter("category1") != null) {
+        } else if (request.getParameter("category1") != null && request.getParameter("category1").length() > 0) {
             for (Criterion criterion : m_categoryDao.getCriterionForCategorySetsUnion(request.getParameterValues("category1"))) {
                 criteria.add(criterion);
             }

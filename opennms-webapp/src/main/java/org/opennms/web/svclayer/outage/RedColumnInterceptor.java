@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2007 Dec 12: Merge DownDateCell functionality into this class. - dj@opennms.org
  * 2007 Feb 19: Rename to show that this is a column interceptor. - dj@opennms.org
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -47,8 +48,9 @@ public class RedColumnInterceptor implements ColumnInterceptor {
     public void modifyColumnAttributes(TableModel tableModel, Column column) {
         if (column.getPropertyValue() == null) {
             column.setStyle("background: red;");
+            column.setValue("Down");
         } else {
             column.setStyle("");
         }
-    }   
+    }
 } 

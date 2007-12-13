@@ -10,6 +10,8 @@
  * 
  * Modifications:
  * 
+ * 2007 Dec 12: More dependency injection and remove (seemingly) unneeded
+ *              objects from the model. - dj@opennms.org
  * 2007 Dec 09: Pass CategoryDao to OutagesFilteringView. - dj@opennms.org
  * 2007 Feb 01: Standardize on successView for the view name, cleanup unused code, deduplicate code, and use OnmsCriteria for filtering. - dj@opennms.org
  * 
@@ -49,10 +51,8 @@ import org.extremecomponents.table.limit.Limit;
 import org.extremecomponents.table.limit.LimitFactory;
 import org.extremecomponents.table.limit.TableLimit;
 import org.extremecomponents.table.limit.TableLimitFactory;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.svclayer.outage.CurrentOutageParseResponse;
 import org.opennms.web.svclayer.outage.OutageListBuilder;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.opennms.web.svclayer.outage.OutagesFilteringView;
@@ -66,16 +66,20 @@ public class OutageListController extends AbstractController implements Initiali
 
     private OutageService m_outageService;
 
-    private OutageListBuilder m_cview = new OutageListBuilder();
+    private OutageListBuilder m_outageListBuilder;
 
     private String m_successView;
 
     private int m_defaultRowsDisplayed = ROW_LIMIT;
 
-    private CategoryDao m_categoryDao;
+    private OutagesFilteringView m_filterView;
 
     public void setOutageService(OutageService service) {
         m_outageService = service;
+    }
+    
+    public void setFilterView(OutagesFilteringView filterView) {
+        m_filterView = filterView;
     }
 
     @Override
@@ -84,13 +88,11 @@ public class OutageListController extends AbstractController implements Initiali
         LimitFactory limitFactory = new TableLimitFactory(context, "tabledata");
         Limit limit = new TableLimit(limitFactory);
 
-        CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService);
-
         Map<String, Object> myModel = new HashMap<String, Object>();
 
-        myModel.put("request", limit.toString());
+//        myModel.put("request", limit.toString());
 
-        myModel.put("all_params", request.getParameterNames().toString());
+//        myModel.put("all_params", request.getParameterNames().toString());
         
         Integer rowstart;
         Integer rowend;
@@ -98,47 +100,41 @@ public class OutageListController extends AbstractController implements Initiali
             // no offset set
             rowstart = 0;
             rowend = getDefaultRowsDisplayed();
-
-            context.setRequestAttribute("rowStart", rowstart);
-            context.setRequestAttribute("rowEnd", rowend);
+//
+//            context.setRequestAttribute("rowStart", rowstart);
+//            context.setRequestAttribute("rowEnd", rowend);
         } else {
             //quirky situation... - as we started on 0 (zero)
-            rowstart = ((limit.getPage() * getDefaultRowsDisplayed() +1 ) - getDefaultRowsDisplayed());
+            rowstart = ((limit.getPage() * getDefaultRowsDisplayed() + 1) - getDefaultRowsDisplayed());
             rowend = getDefaultRowsDisplayed();
         }
         
-        myModel.put("rowStart", rowstart);
-        myModel.put("rowEnd", rowend);
-        myModel.put("begin", rowstart);
-        myModel.put("end", rowend);
+//        myModel.put("rowStart", rowstart);
+//        myModel.put("rowEnd", rowend);
+//        myModel.put("begin", rowstart);
+//        myModel.put("end", rowend);
 
+        OnmsCriteria criteria = m_filterView.buildCriteria(request);
+        OnmsCriteria countCriteria = m_filterView.buildCriteria(request);
+        
         String orderProperty;
         String sortOrder;
         
         if (limit.getSort().getProperty() == null) {
-            orderProperty = null;
-            sortOrder = "asc";
+            orderProperty = "outageid";
+            sortOrder = "desc";
         } else {
             orderProperty = limit.getSort().getProperty();
             sortOrder = limit.getSort().getSortOrder();
         }
         
-        OutagesFilteringView filterView = new OutagesFilteringView();
-        filterView.setCategoryDao(m_categoryDao);
-        
-        OnmsCriteria criteria = filterView.buildCriteria(request);
-        OnmsCriteria countCriteria = filterView.buildCriteria(request);
-        
-        Integer totalRows = m_outageService.getOutageCount(countCriteria);
         Collection<OnmsOutage> foundOutages = m_outageService.getOutagesByRange(rowstart, rowend, orderProperty, sortOrder, criteria);
 
-        // Pretty smart to build the collection after any suppressions..... 
-        Collection theTable = m_cview.theTable(foundOutages);
+        myModel.put("tabledata", m_outageListBuilder.theTable(foundOutages));
+        myModel.put("totalRows", m_outageService.getOutageCount(countCriteria)); // used by org.extremecomponents.table.callback.LimitCallback.retrieveRows
 
-        myModel.put("tabledata", theTable);
-        myModel.put("totalRows", totalRows);
-
-        myModel.put("selected_outages", CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService));
+        //myModel.put("selected_outages", CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService));
+        
         return new ModelAndView(getSuccessView(), myModel);
     }
 
@@ -158,16 +154,13 @@ public class OutageListController extends AbstractController implements Initiali
         return m_defaultRowsDisplayed;
     }
 
-    public CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
-
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_categoryDao, "categoryDao property must be set");
+        Assert.notNull(m_filterView, "filterView property must be set");
+        Assert.notNull(m_outageListBuilder, "outageListBuilder property must be set");
+    }
+
+    public void setOutageListBuilder(OutageListBuilder outageListBuilder) {
+        m_outageListBuilder = outageListBuilder;
     }
 
 }
