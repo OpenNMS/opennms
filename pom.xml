@@ -773,7 +773,7 @@ opennms.home = ${opennms.home}
     </profile>
 
     <profile>
-      <id>toplevel-tagging</id>
+      <id>build-tools</id>
       <activation>
         <property>
           <name>tagging</name>
