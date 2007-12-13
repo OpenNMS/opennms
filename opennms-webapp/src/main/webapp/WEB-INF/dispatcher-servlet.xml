@@ -93,12 +93,21 @@
 	<property name="successView" value="daemonstatus" />
   </bean>-->
   
+  <bean name="outageFilterView"
+  	class="org.opennms.web.svclayer.outage.OutagesFilteringView">
+    <property name="categoryDao" ref="categoryDao"/>
+  </bean>
+  
+  <bean name="outageListBuilder"
+        class="org.opennms.web.svclayer.outage.OutageListBuilder"/>
+  
   <bean name="/outage/list.htm"
 		class="org.opennms.web.controller.OutageListController">
-	<property name="outageService" ref="outageService" />
-	<property name="successView" value="outage/list"/>
+    <property name="outageService" ref="outageService" />
+    <property name="successView" value="outage/list"/>
     <property name="defaultRowsDisplayed" value="25"/>
-    <property name="categoryDao" ref="categoryDao"/>
+    <property name="filterView" ref="outageFilterView"/>
+    <property name="outageListBuilder" ref="outageListBuilder"/>
   </bean>
 	
   <bean name="/outage/displayAllOutages.htm"
