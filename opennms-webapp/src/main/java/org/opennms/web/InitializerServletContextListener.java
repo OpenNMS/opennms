@@ -14,6 +14,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 12: Format comments. - dj@opennms.org
 // 2007 Jun 24: Organize imports. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -74,8 +75,10 @@ public class InitializerServletContextListener implements ServletContextListener
         ServletContext context = event.getServletContext();
 
         try {
-            // Initialize the scarce resource policies (db connections) and
-            // common configuration.
+            /*
+             * Initialize the scarce resource policies (db connections) and
+             * common configuration.
+             */
             ServletInitializer.init(context);
 
             context.log("[InitializerServletContextListener] Initialized " + "servlet systems successfully");
@@ -97,8 +100,10 @@ public class InitializerServletContextListener implements ServletContextListener
         ServletContext context = event.getServletContext();
 
         try {
-            // Let the scarce resource policies release any shared
-            // resouces (db connections).
+            /*
+             * Let the scarce resource policies release any shared
+             * resouces (db connections).
+             */
             ServletInitializer.destroy(event.getServletContext());
 
             // Report success.
