@@ -35,21 +35,18 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.*;
 
-import javax.sql.DataSource;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.*;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
-import org.opennms.netmgt.eventd.EventIpcManager;
-
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.QueryManager;
 
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.util.Assert;
 
 public class Linkd extends AbstractServiceDaemon {
 
@@ -61,7 +58,7 @@ public class Linkd extends AbstractServiceDaemon {
 	/**
 	 * Singleton instance of the Linkd class
 	 */
-	private static final Linkd m_singleton = new Linkd();
+	private static Linkd m_singleton;
 
 	/**
 	 * Rescan scheduler thread
@@ -69,32 +66,9 @@ public class Linkd extends AbstractServiceDaemon {
 	private Scheduler m_scheduler;
 
 	/**
-	 * Event receiver.
+	 * Event manager.
 	 */
-	private LinkdEventProcessor m_receiver;
-
-	/**
-	 * List that contains Linkable Nodes.
-	 */
-
-	private List<LinkableNode> nodes;
-
-	/**
-	 * HashMap that contains SnmpCollections by package.
-	 */
-
-	private List<String> activepackages;
-	
-
-	/**
-	 * Event Manager To Send Events
-	 */
-	private EventIpcManager m_eventMgr;
-
-	/**
-	 * Tha data source to use
-	 */
-    private DataSource m_dbConnectionFactory;
+	private LinkdEventProcessor m_eventListener;
 
     /**
      * The Db connection read and write handler
@@ -106,6 +80,18 @@ public class Linkd extends AbstractServiceDaemon {
     */
     
     private LinkdConfig m_linkdConfig;
+	
+	/**
+	 * List that contains Linkable Nodes.
+	 */
+
+	private List<LinkableNode> nodes;
+
+	/**
+	 * HashMap that contains SnmpCollections by package.
+	 */
+
+	private List<String> activepackages;
 	
 	/**
 	 * the list of ipaddress for which new suspect event is sent
@@ -126,9 +112,13 @@ public class Linkd extends AbstractServiceDaemon {
 		return ThreadCategory.getInstance();
 	}
 	
-	public synchronized void onInit() {
+	protected void onInit() {
 
-
+        Assert.state(m_queryMgr != null, "must set the queryManager property");
+        Assert.state(m_linkdConfig != null, "must set the linkdConfig property");
+        Assert.state(m_scheduler != null, "must set the scheduler property");
+        Assert.state(m_eventListener != null,"must be set the event receiver");
+	       
 		if (log().isInfoEnabled())
 			log()
 					.info("init: Category Level Set to "
@@ -138,6 +128,11 @@ public class Linkd extends AbstractServiceDaemon {
 
 		activepackages = new ArrayList<String>();
 		
+		// initialize the ipaddrsentevents
+		newSuspenctEventsIpAddr = new ArrayList<String>();
+		newSuspenctEventsIpAddr.add("127.0.0.1");
+		newSuspenctEventsIpAddr.add("0.0.0.0");
+
 		try {
 			nodes = m_queryMgr.getSnmpNodeList();
 			m_queryMgr.updateDeletedNodes();
@@ -146,61 +141,23 @@ public class Linkd extends AbstractServiceDaemon {
 	        throw new UndeclaredThrowableException(e);
 		}
 		
-		// Create a scheduler
-		//
-		try {
-			if (log().isDebugEnabled())
-				log().debug("init: Creating link scheduler");
-
-			m_scheduler = new Scheduler("Linkd", m_linkdConfig.getThreads());
-		} catch (RuntimeException e) {
-			log().fatal("init: Failed to create linkd scheduler", e);
-			throw e;
-		} catch (Throwable t) {
-			log()
-					.error("init: Failed to load threads from linkd configuration file "
-							+ t);
-		}
-
-		// Load and schedule snmpcollection
-		// Schedule the snmp data collection on nodes
-		// and construct package2snmpcollection that contains nodes with snmpcollections
+		scheduleCollection();
 		
-		Iterator<LinkableNode> ite = nodes.iterator();
-
-		while (ite.hasNext()) {
-			//Schedule snmp collection for node and also 
-			//schedule discovery link on package where is not active 
-			scheduleCollectionForNode(ite.next());
-		}
-
-		if (log().isDebugEnabled())
-			log().debug("init: Scheduled Ready Runnable for active packages: " + activepackages.toString());
-
-		// initialize the ipaddrsentevents
-		newSuspenctEventsIpAddr = new ArrayList<String>();
-		newSuspenctEventsIpAddr.add("127.0.0.1");
-
-		// Create an event receiver.
-		//
-		try {
-			if (log().isDebugEnabled()) {
-				log().debug("init: Creating event broadcast event receiver");
-			}
-
-			m_receiver = new LinkdEventProcessor(this);
-		} catch (Throwable t) {
-			log().error(
-					"init: Failed to initialized the broadcast event receiver",
-					t);
-			throw new UndeclaredThrowableException(t);
-		}
-		
+		m_singleton = this;
 		if (log().isInfoEnabled())
 			log().info("init: LINKD CONFIGURATION INITIALIZED");
 
 	}
 	
+	private void scheduleCollection() {
+		Iterator<LinkableNode> ite = nodes.iterator();
+		while (ite.hasNext()) {
+			//Schedule snmp collection for node and also 
+			//schedule discovery link on package where is not active 
+			scheduleCollectionForNode(ite.next());
+		}
+	}
+
 	/**
 	 * This method schedule snmpcollection for node
 	 * for each package
@@ -243,15 +200,9 @@ public class Linkd extends AbstractServiceDaemon {
 
 		// start the scheduler
 		//
-		try {
-			if (log().isDebugEnabled())
-				log().debug("start: Starting linkd scheduler");
-
-			m_scheduler.start();
-		} catch (RuntimeException e) {
-				log().fatal("start: Failed to start scheduler", e);
-			throw e;
-		}
+		if (log().isDebugEnabled())
+			log().debug("start: Starting linkd scheduler");
+		m_scheduler.start();
 
 		// Set the status of the service as running.
 		//
@@ -262,9 +213,8 @@ public class Linkd extends AbstractServiceDaemon {
 
 		// Stop the scheduler
 		m_scheduler.stop();
-		// Stop the broadcast event receiver
-		//
-		m_receiver.close();
+		
+		m_eventListener.close();
 
 		m_scheduler = null;
 
@@ -301,6 +251,7 @@ public class Linkd extends AbstractServiceDaemon {
 		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
+	
 	void scheduleNodeCollection(int nodeid) {
 
 		LinkableNode node = null;
@@ -438,6 +389,16 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
+	private ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
+		if (log().isDebugEnabled()) {
+			log().debug("getReadyRunnable: get ReadyRunnable from scheduler: " + runnable.getInfo());
+		}
+		
+		return m_scheduler.getReadyRunnable(runnable);
+		
+	}
+
+
 	/**
 	 * Method that updates info in List nodes and also save info
 	 * into database. This method is called by SnmpCollection after all stuff is
@@ -464,6 +425,7 @@ public class Linkd extends AbstractServiceDaemon {
 		nodes.add(node);
 
 	}
+	
 	/**
 	 * Method that uses info in hash snmpprimaryip2nodes and also save info
 	 * into database. This method is called by DiscoveryLink after all stuff is
@@ -493,15 +455,23 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @pkgName
 	 * 		      The package Name of the ready runnable involved
 	 */
-	void sendNewSuspectEvent(String ipInterface,String ipowner, String pkgName) {
-		if (newSuspenctEventsIpAddr.contains(ipInterface)) {
+	
+	void sendNewSuspectEvent(String ipaddress,String ipowner, String pkgName) {
+
+		if (newSuspenctEventsIpAddr.contains(ipaddress) ) {
+			log().info("sendNewSuspectEvent: nothing to send suspect event previously sent for ip address: "
+							+ ipaddress);
+			return;
+		} else if (!isInterfaceInPackage(ipaddress, pkgName)) {
+			log().info("sendNewSuspectEvent: nothing to send for ip address: "
+					+ ipaddress + " not in package: " + pkgName);
 			return;
 		}
 
 		org.opennms.netmgt.config.linkd.Package pkg = m_linkdConfig.getPackage(pkgName);
 
 		boolean autodiscovery = false;
-		if (pkg.hasAutoDiscovery() && m_linkdConfig.interfaceInPackage(ipInterface, pkg)) autodiscovery = pkg.getAutoDiscovery(); 
+		if (pkg.hasAutoDiscovery()) autodiscovery = pkg.getAutoDiscovery(); 
 		else autodiscovery = m_linkdConfig.autoDiscovery();
 		
 		if ( autodiscovery ) {
@@ -510,42 +480,16 @@ public class Linkd extends AbstractServiceDaemon {
 			event.setSource("linkd");
 			event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
 			event.setHost(ipowner);
-			event.setInterface(ipInterface);
+			event.setInterface(ipaddress);
 			event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
-			// send the event to eventd
-			m_eventMgr.sendNow(event);
+			m_eventListener.getEventMgr().sendNow(event);
 			
-			newSuspenctEventsIpAddr.add(ipInterface);
+			newSuspenctEventsIpAddr.add(ipaddress);
 			
 		}
 	}
 
-
-	public DataSource getDbConnectionFactory() {
-		return m_dbConnectionFactory;
-	}
-
-	public void setDbConnectionFactory(DataSource connectionFactory) {
-		m_dbConnectionFactory = connectionFactory;
-	}
-
-	public EventIpcManager getEventMgr() {
-		return m_eventMgr;
-	}
-
-	public void setEventMgr(EventIpcManager mgr) {
-		m_eventMgr = mgr;
-	}
-
-	public LinkdConfig getLinkdConfig() {
-		return m_linkdConfig;
-	}
-
-	public void setLinkdConfig(LinkdConfig config) {
-		m_linkdConfig = config;
-	}
-	
 	LinkableNode getNode(int nodeid) {
 		synchronized (nodes) {
 			Iterator<LinkableNode> ite = nodes.iterator();
@@ -588,6 +532,10 @@ public class Linkd extends AbstractServiceDaemon {
 	private LinkableNode removeNode(String ipaddr) {
 		List<LinkableNode> nodeses = new ArrayList<LinkableNode>();
 		LinkableNode node = null;
+		if (nodes == null) {
+			log().debug("removeNode: nodes is null");
+			return null;
+		}
 		synchronized (nodes) {
 			Iterator<LinkableNode> ite = nodes.iterator();
 			while (ite.hasNext()) {
@@ -600,17 +548,34 @@ public class Linkd extends AbstractServiceDaemon {
 		return node;
 	}
 	
-	private ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
-		if (log().isDebugEnabled()) {
-			log().debug("getReadyRunnable: get ReadyRunnable from scheduler: " + runnable.getInfo());
-		}
-		
-		return m_scheduler.getReadyRunnable(runnable);
-		
-	}
-
     public void setQueryManager(QueryManager queryMgr) {
         m_queryMgr = queryMgr;
     }
+
+	public Scheduler getScheduler() {
+		return m_scheduler;
+	}
+
+	public void setScheduler(Scheduler scheduler) {
+		m_scheduler = scheduler;
+	}
+	
+	public LinkdConfig getLinkdConfig() {
+		return m_linkdConfig;
+	}
+
+	public void setLinkdConfig(LinkdConfig config) {
+		m_linkdConfig = config;
+	}
+
+	public LinkdEventProcessor getEventListener() {
+		return m_eventListener;
+	}
+
+	public void setEventListener(LinkdEventProcessor eventListener) {
+		m_eventListener = eventListener;
+	}
+	
+
 
 }

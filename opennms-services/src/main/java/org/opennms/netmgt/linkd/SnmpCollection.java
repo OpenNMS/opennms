@@ -43,7 +43,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;

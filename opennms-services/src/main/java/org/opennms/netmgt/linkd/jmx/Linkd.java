@@ -24,7 +24,7 @@
 //
 
 package org.opennms.netmgt.linkd.jmx;
-
+/*
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -113,4 +113,21 @@ public class Linkd implements LinkdMBean {
 
 	        return org.opennms.netmgt.linkd.Linkd.getInstance();
 	}
+}
+
+*/
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+
+public class Linkd extends AbstractSpringContextJmxServiceDaemon implements LinkdMBean {
+
+    @Override
+    protected String getLoggingPrefix() {
+        return "OpenNMS.Linkd";
+    }
+
+    @Override
+    protected String getSpringContext() {
+        return "linkdContext";
+    }
+
 }

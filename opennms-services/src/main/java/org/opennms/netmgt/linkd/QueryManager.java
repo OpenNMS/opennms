@@ -40,14 +40,13 @@ package org.opennms.netmgt.linkd;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * @author brozow
+ * @author antonio
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
+
 public interface QueryManager {
 
 	/**
@@ -100,10 +99,7 @@ public interface QueryManager {
 	static final char ACTION_UPTODATE = 'N';
 
 	static final char ACTION_DELETE = 'D';
-    /**
-     * @return
-     * @throws SQLException
-     */
+
     public List<LinkableNode> getSnmpNodeList() throws SQLException;
 
     public LinkableNode getSnmpNode(int nodeid) throws SQLException;
@@ -120,7 +116,7 @@ public interface QueryManager {
     
     /**
      * @param connectionFactory
-     */
-    public void setDbConnectionFactory(DataSource connectionFactory);
+     */    
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate);
 
 }

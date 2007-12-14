@@ -48,28 +48,30 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class LinkdEventProcessor implements EventListener {
+final class LinkdEventProcessor implements EventListener, InitializingBean {
+
+	/**
+	 * Event Manager To Send Events
+	 */
+	private EventIpcManager m_eventMgr;
 
     /**
      * local openNMS server name
      */
-    private String m_localServer = null;
-
-    /**
-     * The Linkd rescan scheduler
-     */
-    private Linkd m_linkd;
+    //private String m_localServer = null;
 
     /**
      * Constructor
@@ -77,22 +79,20 @@ final class LinkdEventProcessor implements EventListener {
      * @param linkd.
      */
     
-    LinkdEventProcessor(Linkd linkd) {
-        m_linkd = linkd;
+    LinkdEventProcessor() {
 
         // the local servername
-        m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+        //m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
         // Subscribe to eventd
         //
-        createMessageSelectorAndSubscribe();
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        getLinkd().getEventMgr().removeEventListener(this);
+        getEventMgr().removeEventListener(this);
     }
 
     /**
@@ -115,15 +115,15 @@ final class LinkdEventProcessor implements EventListener {
         // node regained service
         ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
-        getLinkd().getEventMgr().addEventListener(this, ueiList);
+        getEventMgr().addEventListener(this, ueiList);
     }
 
     /**
      * Get the local server name
      */
-    public String getLocalServer() {
-        return m_localServer;
-    }
+//    public String getLocalServer() {
+//        return m_localServer;
+//    }
 
     /**
      * Return an id for this event listener
@@ -137,7 +137,7 @@ final class LinkdEventProcessor implements EventListener {
      */
 
     private Linkd getLinkd() {
-        return m_linkd;
+        return Linkd.getInstance();
     }
 
 
@@ -247,7 +247,21 @@ final class LinkdEventProcessor implements EventListener {
             log.error("onEvent: operation failed for event: " + event.getUei() + ", exception: " + t.getMessage(),t);
         }
     } // end onEvent()
+
+	public void afterPropertiesSet() throws Exception {
+        Assert.state(m_eventMgr != null, "must set the eventMgr property");
+        createMessageSelectorAndSubscribe();
+	}
     
+	public EventIpcManager getEventMgr() {
+		return m_eventMgr;
+	}
+
+	public void setEventMgr(EventIpcManager mgr) {
+		m_eventMgr = mgr;
+	}
+
+
 
 } // end class
 
