@@ -183,6 +183,15 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
                         request.setAttribute("timeIndex", request.getParameter("timeIndex"));
                         return EDIT_SPECIFIC;
                     }
+                    if (startDate.after(endDate)) {
+                    	request.setAttribute("error", "The start time must not be later than the end time!");
+                        request.setAttribute("scheduledUser", request.getParameter("roleUser"));
+                        request.setAttribute("start", startDate);
+                        request.setAttribute("end", endDate);
+                        request.setAttribute("schedIndex", request.getParameter("schedIndex"));
+                        request.setAttribute("timeIndex", request.getParameter("timeIndex"));
+                        return EDIT_SPECIFIC;
+                    }
                     
                     String user = request.getParameter("roleUser");
                     
