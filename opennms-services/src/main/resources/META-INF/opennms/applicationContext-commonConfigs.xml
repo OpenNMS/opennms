@@ -46,6 +46,16 @@
 		<property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.getInstance</value></property>
 	</bean>
 	
+	<bean id="linkdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.LinkdConfigFactory.init</value></property>
+    </bean>
+  
+    <bean id="linkdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="linkdConfig-init">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.LinkdConfigFactory.getInstance</value></property>
+     </bean>
+     
+	
+	
 	<bean name="syncer" class="org.opennms.netmgt.capsd.JdbcCapsdDbSyncer">
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 		<property name="opennmsServerConfig" ref="onmsServerConfig" />

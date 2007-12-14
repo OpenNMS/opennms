@@ -95,8 +95,8 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    public LinkdConfigFactory(long currentVersion, Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-        super(reader, localServer, verifyServer);
+    public LinkdConfigFactory(long currentVersion, Reader reader) throws MarshalException, ValidationException, IOException {
+        super(reader);
         m_currentVersion = currentVersion;
     }
 
@@ -118,15 +118,12 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
             return;
         }
 
-        OpennmsServerConfigFactory.init();
-        OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
-
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
         FileReader reader = new FileReader(cfgFile);
-        LinkdConfigFactory config = new LinkdConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        LinkdConfigFactory config = new LinkdConfigFactory(cfgFile.lastModified(), reader);
         reader.close();
 
         setInstance(config);
