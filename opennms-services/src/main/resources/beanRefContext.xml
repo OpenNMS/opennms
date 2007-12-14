@@ -94,4 +94,12 @@
      <constructor-arg ref="daemonContext" />
    </bean>
         
+    <bean id="linkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-linkd.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="commonContext" />
+   </bean>
 </beans>

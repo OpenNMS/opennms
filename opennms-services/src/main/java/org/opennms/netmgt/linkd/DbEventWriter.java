@@ -68,6 +68,7 @@ import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * <P>
@@ -86,7 +87,7 @@ import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 
 public class DbEventWriter implements QueryManager {
 
-	DataSource dbConnectionFactory;
+	JdbcTemplate jdbcTemplate;
 
 	/**
 	 * Query to select info for specific node
@@ -166,16 +167,12 @@ public class DbEventWriter implements QueryManager {
 
 	}
 
-        public DbEventWriter(DataSource dataSource) {
-	    dbConnectionFactory = dataSource;
-	}
-
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
 	private Connection getConnection() throws SQLException {
-		return dbConnectionFactory.getConnection();
+		return jdbcTemplate.getDataSource().getConnection();
 	}
 
 	/**
@@ -1676,30 +1673,9 @@ public class DbEventWriter implements QueryManager {
 	}
 
 	private void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner, String name) {
-		if (log().isDebugEnabled())
-			log().debug(
-					"sendNewSuspectEvent:  found ip address to send :"
-							+ ipaddress);
-
-		if (ipaddress.isLoopbackAddress() || ipaddress.isMulticastAddress()
-				|| ipaddress.getHostAddress().equals("0.0.0.0")) {
-			if (log().isDebugEnabled())
-				log()
-						.debug(
-								"sendNewSuspectEvent: not sending event for invalid ip address");
-		} else {
-			if (log().isDebugEnabled())
-				log()
-						.debug(
-								"sendNewSuspectEvent: sending event for valid ip address");
 			Linkd.getInstance().sendNewSuspectEvent(
 					ipaddress.getHostAddress(),
 					ipowner.getHostAddress(),name);
-		}
-	}
-
-	public void setDbConnectionFactory(DataSource dbConnectionFactory) {
-		this.dbConnectionFactory = dbConnectionFactory;
 	}
 
 	public LinkableNode getSnmpNode(int nodeid) throws SQLException {
@@ -1864,6 +1840,10 @@ public class DbEventWriter implements QueryManager {
 		
 		return 	ipaddr;
 	
+	}
+
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 	}
 	
 

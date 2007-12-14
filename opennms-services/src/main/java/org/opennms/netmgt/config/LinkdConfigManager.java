@@ -86,7 +86,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @throws ValidationException
      * @throws IOException
      */
-    public LinkdConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public LinkdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
     }
 
