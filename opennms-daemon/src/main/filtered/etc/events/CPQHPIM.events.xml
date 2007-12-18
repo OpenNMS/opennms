@@ -6677,7 +6677,8 @@ restart process.  &lt;/p&gt;&lt;table&gt;
 			sysName=%parm[#1]% 
 			cpqHoTrapFlags=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%nodeid%:%dpname%:%uei%:%interface%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
@@ -6886,7 +6887,8 @@ the specified chassis.&lt;/p&gt;&lt;table&gt;
 			cpqHoTrapFlags=%parm[#2]% 
 			cpqHeFltTolPowerSupplyChassis=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
@@ -7722,7 +7724,8 @@ to the OK state for the specified chassis and bay location.&lt;/p&gt;&lt;table&g
 			cpqHeFltTolPowerSupplySparePartNum=%parm[#10]% 
 			cpqSiServerSystemId=%parm[#11]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqHe4FltTolPowerSupplyChange:%nodeid%:%dpname%:%interface%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/traps/compaqhp/cpqHe4FltTolPowerSupplyChange:%nodeid%:%dpname%:%interface%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -7820,7 +7823,8 @@ to degraded for the specified chassis and bay location.&lt;/p&gt;&lt;table&gt;
 			cpqHeFltTolPowerSupplySparePartNum=%parm[#10]% 
 			cpqSiServerSystemId=%parm[#11]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqHe4FltTolPowerSupplyChange:%nodeid%:%dpname%:%interface%:%parm[#4]%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
@@ -7918,7 +7922,8 @@ to failed for the specified chassis and bay location.&lt;/p&gt;&lt;table&gt;
 			cpqHeFltTolPowerSupplySparePartNum=%parm[#10]% 
 			cpqSiServerSystemId=%parm[#11]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqHe4FltTolPowerSupplyChange:%nodeid%:%dpname%:%interface%:%parm[#4]%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
@@ -8079,7 +8084,8 @@ state for the specified chassis.&lt;/p&gt;&lt;table&gt;
 			cpqHoTrapFlags=%parm[#2]% 
 			cpqHeFltTolPowerSupplyChassis=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqHe3FltTolPowerRedundancyLost:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/compaqhp/cpqHe3FltTolPowerRedundancyLost:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11146,6 +11152,1112 @@ controller and the storage system.&lt;/p&gt;&lt;table&gt;
 			<mename>specific</mename>
 			<mevalue>3034</mevalue>
 		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeOk</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeOther</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>14</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeQueuedForExpansion</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeUnconfigured</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeRecovering</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeReadyForRebuild</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>7</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeRebuilding</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>8</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeWrongDrive</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>9</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeBadConnect</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>10</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeOverheating</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>11</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeShutdown</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>12</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeExpanding</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>13</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeNotAvailable</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>6</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChangeFailed</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Logical Drive Status Change.
+
+This trap signifies that the agent has detected a change in the
+status of a drive array logical drive.  The variable
+cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaLogDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(3)
+		unconfigured(4)
+		recovering(5)
+		readyForRebuild(6)
+		rebuilding(7)
+		wrongDrive(8)
+		badConnect(9)
+		overheating(10)
+		shutdown(11)
+		expanding(12)
+		notAvailable(13)
+		queuedForExpansion(14)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6LogDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaLogDrvCntlrIndex=%parm[#4]% 
+			cpqDaLogDrvIndex=%parm[#5]% 
+			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3034</mevalue>
+		</maskelement>
 	</mask>
 	<uei>uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange</uei>
 	<event-label>CPQIDA-MIB defined trap event: cpqDa6LogDrvStatusChange</event-label>
@@ -11205,6 +12317,7 @@ cpqDaLogDrvStatus indicates the current logical drive status.&lt;/p&gt;&lt;table
 			cpqDaLogDrvStatus=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6LogDrvStatusChange:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
@@ -11462,6 +12575,681 @@ User Action: Replace the physical drive.&lt;/p&gt;&lt;table&gt;
 			cpqDaPhyDrvSerialNum=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3038</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>8</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChangeEnabled</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6AccelStatusChange</event-label>
+	<descr>
+&lt;p&gt;Accelerator Board Status Change.
+
+This trap signifies that the agent has detected a change in
+the status of an array accelerator cache board.  The current
+status is represented by the variable cpqDaAccelStatus.
+
+User Action: If the accelerator board status is permDisabled(5),
+you may need to replace the accelerator board.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrModel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ida(2)
+		idaExpansion(3)
+		ida-2(4)
+		smart(5)
+		smart-2e(6)
+		smart-2p(7)
+		smart-2sl(8)
+		smart-3100es(9)
+		smart-3200(10)
+		smart-2dh(11)
+		smart-221(12)
+		sa-4250es(13)
+		sa-4200(14)
+		sa-integrated(15)
+		sa-431(16)
+		sa-5300(17)
+		raidLc2(18)
+		sa-5i(19)
+		sa-532(20)
+		sa-5312(21)
+		sa-641(22)
+		sa-642(23)
+		sa-6400(24)
+		sa-6400em(25)
+		sa-6i(26)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelTotalMemory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		enabled(3)
+		tmpDisabled(4)
+		permDisabled(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelErrCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		badConfig(3)
+		lowBattery(4)
+		disableCmd(5)
+		noResources(6)
+		notConnected(7)
+		badMirrorData(8)
+		readErr(9)
+		writeErr(10)
+		configCmd(11)
+		expandInProgress(12)
+		snapshotInProgress(13)
+		redundantLowBattery(14)
+		redundantSizeMismatch(15)
+		redundantCacheFailure(16)
+		excessiveEccErrors(17)
+		adgEnablerMissing(18)
+		postEccErrors(19)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6AccelStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaCntlrModel=%parm[#4]% 
+			cpqDaAccelCntlrIndex=%parm[#5]% 
+			cpqDaAccelSerialNumber=%parm[#6]% 
+			cpqDaAccelTotalMemory=%parm[#7]% 
+			cpqDaAccelStatus=%parm[#8]% 
+			cpqDaAccelErrCode=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#5]%:%parm[#8]%"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3038</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>8</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChangeOther</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6AccelStatusChange</event-label>
+	<descr>
+&lt;p&gt;Accelerator Board Status Change.
+
+This trap signifies that the agent has detected a change in
+the status of an array accelerator cache board.  The current
+status is represented by the variable cpqDaAccelStatus.
+
+User Action: If the accelerator board status is permDisabled(5),
+you may need to replace the accelerator board.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrModel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ida(2)
+		idaExpansion(3)
+		ida-2(4)
+		smart(5)
+		smart-2e(6)
+		smart-2p(7)
+		smart-2sl(8)
+		smart-3100es(9)
+		smart-3200(10)
+		smart-2dh(11)
+		smart-221(12)
+		sa-4250es(13)
+		sa-4200(14)
+		sa-integrated(15)
+		sa-431(16)
+		sa-5300(17)
+		raidLc2(18)
+		sa-5i(19)
+		sa-532(20)
+		sa-5312(21)
+		sa-641(22)
+		sa-642(23)
+		sa-6400(24)
+		sa-6400em(25)
+		sa-6i(26)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelTotalMemory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		enabled(3)
+		tmpDisabled(4)
+		permDisabled(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelErrCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		badConfig(3)
+		lowBattery(4)
+		disableCmd(5)
+		noResources(6)
+		notConnected(7)
+		badMirrorData(8)
+		readErr(9)
+		writeErr(10)
+		configCmd(11)
+		expandInProgress(12)
+		snapshotInProgress(13)
+		redundantLowBattery(14)
+		redundantSizeMismatch(15)
+		redundantCacheFailure(16)
+		excessiveEccErrors(17)
+		adgEnablerMissing(18)
+		postEccErrors(19)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6AccelStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaCntlrModel=%parm[#4]% 
+			cpqDaAccelCntlrIndex=%parm[#5]% 
+			cpqDaAccelSerialNumber=%parm[#6]% 
+			cpqDaAccelTotalMemory=%parm[#7]% 
+			cpqDaAccelStatus=%parm[#8]% 
+			cpqDaAccelErrCode=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3038</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>8</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChangeInvalid</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6AccelStatusChange</event-label>
+	<descr>
+&lt;p&gt;Accelerator Board Status Change.
+
+This trap signifies that the agent has detected a change in
+the status of an array accelerator cache board.  The current
+status is represented by the variable cpqDaAccelStatus.
+
+User Action: If the accelerator board status is permDisabled(5),
+you may need to replace the accelerator board.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrModel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ida(2)
+		idaExpansion(3)
+		ida-2(4)
+		smart(5)
+		smart-2e(6)
+		smart-2p(7)
+		smart-2sl(8)
+		smart-3100es(9)
+		smart-3200(10)
+		smart-2dh(11)
+		smart-221(12)
+		sa-4250es(13)
+		sa-4200(14)
+		sa-integrated(15)
+		sa-431(16)
+		sa-5300(17)
+		raidLc2(18)
+		sa-5i(19)
+		sa-532(20)
+		sa-5312(21)
+		sa-641(22)
+		sa-642(23)
+		sa-6400(24)
+		sa-6400em(25)
+		sa-6i(26)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelTotalMemory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		enabled(3)
+		tmpDisabled(4)
+		permDisabled(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelErrCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		badConfig(3)
+		lowBattery(4)
+		disableCmd(5)
+		noResources(6)
+		notConnected(7)
+		badMirrorData(8)
+		readErr(9)
+		writeErr(10)
+		configCmd(11)
+		expandInProgress(12)
+		snapshotInProgress(13)
+		redundantLowBattery(14)
+		redundantSizeMismatch(15)
+		redundantCacheFailure(16)
+		excessiveEccErrors(17)
+		adgEnablerMissing(18)
+		postEccErrors(19)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6AccelStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaCntlrModel=%parm[#4]% 
+			cpqDaAccelCntlrIndex=%parm[#5]% 
+			cpqDaAccelSerialNumber=%parm[#6]% 
+			cpqDaAccelTotalMemory=%parm[#7]% 
+			cpqDaAccelStatus=%parm[#8]% 
+			cpqDaAccelErrCode=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3038</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>8</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChangeTmpDisabled</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6AccelStatusChange</event-label>
+	<descr>
+&lt;p&gt;Accelerator Board Status Change.
+
+This trap signifies that the agent has detected a change in
+the status of an array accelerator cache board.  The current
+status is represented by the variable cpqDaAccelStatus.
+
+User Action: If the accelerator board status is permDisabled(5),
+you may need to replace the accelerator board.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrModel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ida(2)
+		idaExpansion(3)
+		ida-2(4)
+		smart(5)
+		smart-2e(6)
+		smart-2p(7)
+		smart-2sl(8)
+		smart-3100es(9)
+		smart-3200(10)
+		smart-2dh(11)
+		smart-221(12)
+		sa-4250es(13)
+		sa-4200(14)
+		sa-integrated(15)
+		sa-431(16)
+		sa-5300(17)
+		raidLc2(18)
+		sa-5i(19)
+		sa-532(20)
+		sa-5312(21)
+		sa-641(22)
+		sa-642(23)
+		sa-6400(24)
+		sa-6400em(25)
+		sa-6i(26)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelTotalMemory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		enabled(3)
+		tmpDisabled(4)
+		permDisabled(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelErrCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		badConfig(3)
+		lowBattery(4)
+		disableCmd(5)
+		noResources(6)
+		notConnected(7)
+		badMirrorData(8)
+		readErr(9)
+		writeErr(10)
+		configCmd(11)
+		expandInProgress(12)
+		snapshotInProgress(13)
+		redundantLowBattery(14)
+		redundantSizeMismatch(15)
+		redundantCacheFailure(16)
+		excessiveEccErrors(17)
+		adgEnablerMissing(18)
+		postEccErrors(19)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6AccelStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaCntlrModel=%parm[#4]% 
+			cpqDaAccelCntlrIndex=%parm[#5]% 
+			cpqDaAccelSerialNumber=%parm[#6]% 
+			cpqDaAccelTotalMemory=%parm[#7]% 
+			cpqDaAccelStatus=%parm[#8]% 
+			cpqDaAccelErrCode=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#5]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3038</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>8</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChangePermDisabled</uei>
+	<event-label>CPQIDA-MIB defined trap event: cpqDa6AccelStatusChange</event-label>
+	<descr>
+&lt;p&gt;Accelerator Board Status Change.
+
+This trap signifies that the agent has detected a change in
+the status of an array accelerator cache board.  The current
+status is represented by the variable cpqDaAccelStatus.
+
+User Action: If the accelerator board status is permDisabled(5),
+you may need to replace the accelerator board.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrHwLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaCntlrModel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ida(2)
+		idaExpansion(3)
+		ida-2(4)
+		smart(5)
+		smart-2e(6)
+		smart-2p(7)
+		smart-2sl(8)
+		smart-3100es(9)
+		smart-3200(10)
+		smart-2dh(11)
+		smart-221(12)
+		sa-4250es(13)
+		sa-4200(14)
+		sa-integrated(15)
+		sa-431(16)
+		sa-5300(17)
+		raidLc2(18)
+		sa-5i(19)
+		sa-532(20)
+		sa-5312(21)
+		sa-641(22)
+		sa-642(23)
+		sa-6400(24)
+		sa-6400em(25)
+		sa-6i(26)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelTotalMemory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		enabled(3)
+		tmpDisabled(4)
+		permDisabled(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqDaAccelErrCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		invalid(2)
+		badConfig(3)
+		lowBattery(4)
+		disableCmd(5)
+		noResources(6)
+		notConnected(7)
+		badMirrorData(8)
+		readErr(9)
+		writeErr(10)
+		configCmd(11)
+		expandInProgress(12)
+		snapshotInProgress(13)
+		redundantLowBattery(14)
+		redundantSizeMismatch(15)
+		redundantCacheFailure(16)
+		excessiveEccErrors(17)
+		adgEnablerMissing(18)
+		postEccErrors(19)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqDa6AccelStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqDaCntlrHwLocation=%parm[#3]% 
+			cpqDaCntlrModel=%parm[#4]% 
+			cpqDaAccelCntlrIndex=%parm[#5]% 
+			cpqDaAccelSerialNumber=%parm[#6]% 
+			cpqDaAccelTotalMemory=%parm[#7]% 
+			cpqDaAccelStatus=%parm[#8]% 
+			cpqDaAccelErrCode=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqDa6AccelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#5]%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
@@ -13330,7 +15118,8 @@ User Action:  None required.&lt;/p&gt;&lt;table&gt;
 			ipAdEntAddr=%parm[#9]% 
 			cpqNicIfLogMapAdapterOKCount=%parm[#10]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqNic2RedundancyChange:%nodeid%:%dpname%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#8]%" alarm-type="2" clear-key="uei.opennms.org/traps/compaqhp/cpqNic2RedundancyChange:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13421,7 +15210,8 @@ or Switch may need replacement.&lt;/p&gt;&lt;table&gt;
 			ipAdEntAddr=%parm[#9]% 
 			cpqNicIfLogMapAdapterOKCount=%parm[#10]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqNic2RedundancyChange:%nodeid%:%dpname%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#8]%" alarm-type="1"/>
 </event>
 <!-- End of CPQ-HP MIB: CPQNIC-MIB -->
 <!-- Start of CPQ-HP MIB: CPQRACK-MIB -->
@@ -23674,8 +25464,104 @@ indicated in the cpqTapeLibraryState variable.&lt;/p&gt;&lt;table&gt;
 			<mename>specific</mename>
 			<mevalue>5019</mevalue>
 		</maskelement>
+		<varbind>
+			<vbnumber>10</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
 	</mask>
-	<uei>uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange</uei>
+	<uei>uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChangeOk</uei>
+	<event-label>CPQSCSI-MIB defined trap event: cpqTape5PhyDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Tape Drive Status Change.
+
+The Storage Agent has detected a change in the status of a
+tape drive.  The current physical drive status is
+indicated in the cpqTapePhyDrvStatus variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvBusIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvScsiIdIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvLunIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvFwRev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(4)
+		offline(5)
+		missingWasOk(6)
+		missingWasFailed(7)
+		missingWasOffline(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqTape5PhyDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqTapePhyDrvCntlrIndex=%parm[#3]% 
+			cpqTapePhyDrvBusIndex=%parm[#4]% 
+			cpqTapePhyDrvScsiIdIndex=%parm[#5]% 
+			cpqTapePhyDrvLunIndex=%parm[#6]% 
+			cpqTapePhyDrvName=%parm[#7]% 
+			cpqTapePhyDrvFwRev=%parm[#8]% 
+			cpqTapePhyDrvSerialNumber=%parm[#9]% 
+			cpqTapePhyDrvStatus=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" clear-key="uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5019</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>10</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChangeOther</uei>
 	<event-label>CPQSCSI-MIB defined trap event: cpqTape5PhyDrvStatusChange</event-label>
 	<descr>
 &lt;p&gt;Tape Drive Status Change.
@@ -23746,6 +25632,285 @@ indicated in the cpqTapePhyDrvStatus variable.&lt;/p&gt;&lt;table&gt;
 			cpqTapePhyDrvStatus=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5019</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>10</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChangeFailed</uei>
+	<event-label>CPQSCSI-MIB defined trap event: cpqTape5PhyDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Tape Drive Status Change.
+
+The Storage Agent has detected a change in the status of a
+tape drive.  The current physical drive status is
+indicated in the cpqTapePhyDrvStatus variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvBusIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvScsiIdIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvLunIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvFwRev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(4)
+		offline(5)
+		missingWasOk(6)
+		missingWasFailed(7)
+		missingWasOffline(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqTape5PhyDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqTapePhyDrvCntlrIndex=%parm[#3]% 
+			cpqTapePhyDrvBusIndex=%parm[#4]% 
+			cpqTapePhyDrvScsiIdIndex=%parm[#5]% 
+			cpqTapePhyDrvLunIndex=%parm[#6]% 
+			cpqTapePhyDrvName=%parm[#7]% 
+			cpqTapePhyDrvFwRev=%parm[#8]% 
+			cpqTapePhyDrvSerialNumber=%parm[#9]% 
+			cpqTapePhyDrvStatus=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5019</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>10</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChangeOffline</uei>
+	<event-label>CPQSCSI-MIB defined trap event: cpqTape5PhyDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Tape Drive Status Change.
+
+The Storage Agent has detected a change in the status of a
+tape drive.  The current physical drive status is
+indicated in the cpqTapePhyDrvStatus variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvBusIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvScsiIdIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvLunIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvFwRev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(4)
+		offline(5)
+		missingWasOk(6)
+		missingWasFailed(7)
+		missingWasOffline(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqTape5PhyDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqTapePhyDrvCntlrIndex=%parm[#3]% 
+			cpqTapePhyDrvBusIndex=%parm[#4]% 
+			cpqTapePhyDrvScsiIdIndex=%parm[#5]% 
+			cpqTapePhyDrvLunIndex=%parm[#6]% 
+			cpqTapePhyDrvName=%parm[#7]% 
+			cpqTapePhyDrvFwRev=%parm[#8]% 
+			cpqTapePhyDrvSerialNumber=%parm[#9]% 
+			cpqTapePhyDrvStatus=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.232</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5019</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>10</vbnumber>
+			<vbvalue>6</vbvalue>
+			<vbvalue>7</vbvalue>
+			<vbvalue>8</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChangeMissing</uei>
+	<event-label>CPQSCSI-MIB defined trap event: cpqTape5PhyDrvStatusChange</event-label>
+	<descr>
+&lt;p&gt;Tape Drive Status Change.
+
+The Storage Agent has detected a change in the status of a
+tape drive.  The current physical drive status is
+indicated in the cpqTapePhyDrvStatus variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqHoTrapFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvCntlrIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvBusIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvScsiIdIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvLunIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvFwRev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpqTapePhyDrvStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		ok(2)
+		failed(4)
+		offline(5)
+		missingWasOk(6)
+		missingWasFailed(7)
+		missingWasOffline(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			CIM Event: cpqTape5PhyDrvStatusChange trap received 
+			sysName=%parm[#1]% 
+			cpqHoTrapFlags=%parm[#2]% 
+			cpqTapePhyDrvCntlrIndex=%parm[#3]% 
+			cpqTapePhyDrvBusIndex=%parm[#4]% 
+			cpqTapePhyDrvScsiIdIndex=%parm[#5]% 
+			cpqTapePhyDrvLunIndex=%parm[#6]% 
+			cpqTapePhyDrvName=%parm[#7]% 
+			cpqTapePhyDrvFwRev=%parm[#8]% 
+			cpqTapePhyDrvSerialNumber=%parm[#9]% 
+			cpqTapePhyDrvStatus=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/traps/compaqhp/cpqTape5PhyDrvStatusChange:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1"/>
 </event>
 <event>
 	<mask>
