@@ -4,6 +4,8 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.3.10 is another smallish bug fix / feature release.</para>
+
   <para>Release 1.3.9 is a small bug fix/feature release. A bug was fixed that
   could cause database connections to hang, and some small webUI enhancements
   were made.</para>

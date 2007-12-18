@@ -10,6 +10,24 @@
   development that will happen this week.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.10</title>
+    
+    <section>
+      <title>New Features</title>
+      
+      <para>TODO</para>
+    
+    <section>
+      <title>Bug Fixes</title>
+      
+      <para>If a notification destination path contained a bare e-mail
+      address, OpenNMS is now configurable via notifd-configuration.xml to
+      use the "email" or "javaEmail" command.</para>
+
+    </section>
+  </section>
+  
+  <section>
     <title>Changes in OpenNMS 1.3.9</title>
 
     <section>
