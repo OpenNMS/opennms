@@ -45,6 +45,8 @@
       <attribute name="acknowledge-update-sql" type="string" use="required"/>
 
       <attribute name="match-all" type="boolean" use="required"/>
+      
+      <attribute name="email-address-command" type="string" use="required"/>
     </complexType>
   </element>
 

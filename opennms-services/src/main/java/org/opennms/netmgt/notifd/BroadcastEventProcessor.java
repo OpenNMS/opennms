@@ -779,7 +779,9 @@ public final class BroadcastEventProcessor implements EventListener {
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
                 tasks = userTasks;
             } else if (targetName.indexOf("@") > -1) {
-                NotificationTask[] emailTasks = { makeEmailTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
+            	// Bug 2027 -- get the command name from the Notifd config instead of using default of "email"
+            	String[] emailCommands = { getNotifdConfigManager().getConfiguration().getEmailAddressCommand() };
+                NotificationTask[] emailTasks = { makeEmailTask(startTime, params, noticeId, targetName, emailCommands, targetSiblings, autoNotify) };
                 tasks = emailTasks;
             }
              
@@ -918,9 +920,8 @@ public final class BroadcastEventProcessor implements EventListener {
             user.setUserId(address);
             Contact contact = new Contact();
             contact.setType("email");
-            // contact.setType("javaEmail");
             if (log().isDebugEnabled()) {
-                log().debug("email address = " + address);
+                log().debug("email address = " + address + ", using contact type " + contact.getType());
             }
             contact.setInfo(address);
             user.addContact(contact);
