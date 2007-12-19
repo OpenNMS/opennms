@@ -8,6 +8,7 @@
     outstanding-notices-sql="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"
     acknowledge-id-sql="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"
     acknowledge-update-sql="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"
+    email-address-command="javaEmail"
     match-all='true'>
   <queue>
     <queue-id>default</queue-id>
