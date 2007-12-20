@@ -380,6 +380,7 @@ class JniRrdStrategy implements RrdStrategy {
         InputStream tempIn;
         String[] commandArray = Util.createCommandArray(command, '@');
         Process process = Runtime.getRuntime().exec(commandArray, null, workDir);
+        Category log = ThreadCategory.getInstance(getClass());
 
         ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
         BufferedInputStream in = new BufferedInputStream(process.getInputStream());
@@ -393,12 +394,19 @@ class JniRrdStrategy implements RrdStrategy {
         String line = err.readLine();
         StringBuffer buffer = new StringBuffer();
 
+        boolean throwRrdException = false;
         while (line != null) {
             buffer.append(line);
             line = err.readLine();
+            if ((line != null) && line.equals("*** attempt to put segment in horiz list twice")) {
+                if (log.isEnabledFor(Priority.INFO))
+                    log.info("Ignoring warning message on stderr from libart: '" + line + "'");
+            } else if (line != null) {
+                throwRrdException = true;
+            }
         }
 
-        if (buffer.length() > 0) {
+        if (throwRrdException) {
             throw new RrdException(buffer.toString());
         }
 
