@@ -116,6 +116,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
         	SNMP4JSettings.setExtensibilityEnabled(true);
         }
         
+        if (Boolean.getBoolean("org.opennms.snmp.snmp4j.forwardRuntimeExceptions")) {
+        	SNMP4JSettings.setForwardRuntimeExceptions(true);
+        }
+        
         s_initialized = true;
     }
     
