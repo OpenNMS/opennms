@@ -46,7 +46,7 @@
 
       <attribute name="match-all" type="boolean" use="required"/>
       
-      <attribute name="email-address-command" type="string" use="required"/>
+      <attribute name="email-address-command" type="string" use="optional" default="javaEmail"/>
     </complexType>
   </element>
 
