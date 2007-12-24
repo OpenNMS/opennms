@@ -1,10 +1,9 @@
 package org.opennms.netmgt.eventd;
 
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.test.ConfigurationTestUtils;
-
 import junit.framework.TestCase;
+
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class EventConfigurationManagerTest extends TestCase {
     public void testLoadConfigurationSingleConfig() throws Exception {
