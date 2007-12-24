@@ -108,7 +108,7 @@
                         </documentation>
                     </annotation>
                     <complexType>
-                        <attribute name="type" type="string" use="required">
+                        <attribute name="type" use="required">
                             <annotation>
                                 <documentation>Whether to interpret this match string as a simple
                                                substring or as a regular expression
@@ -160,7 +160,7 @@
                         <documentation>The match expression</documentation>
                     </annotation>
                     <complexType>
-                        <attribute name="type" type="string" use="required">
+                        <attribute name="type" use="required">
                             <annotation>
                                 <documentation>Whether to interpret this match string as a simple
                                                substring or as a regular expression
