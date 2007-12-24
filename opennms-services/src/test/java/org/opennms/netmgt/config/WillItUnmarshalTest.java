@@ -46,8 +46,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
@@ -107,6 +109,7 @@ import org.springframework.util.StringUtils;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class WillItUnmarshalTest extends TestCase {
+    private static final String CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY = "org.exolab.castor.xml.lenient.sequence.order";
     private static Set<String> m_filesTested = new HashSet<String>();
     private static Set<String> m_exampleFilesTested = new HashSet<String>();
     
@@ -115,6 +118,10 @@ public class WillItUnmarshalTest extends TestCase {
         super.setUp();
         
         MockLogAppender.setupLogging(true, "INFO");
+        
+        // Reload castor properties every time since some tests fiddle with them
+        LocalConfiguration.getInstance().getProperties().clear();
+        LocalConfiguration.getInstance().getProperties().load(ConfigurationTestUtils.getInputStreamForResource(this, "/castor.properties"));
     }
     
     @Override
@@ -123,7 +130,62 @@ public class WillItUnmarshalTest extends TestCase {
         
         MockLogAppender.assertNoWarningsOrGreater();
     }
+
+    /**
+     * Ensure we can load a good configuration file without enabling
+     * lenient sequence ordering.
+     */
+    public void testGoodOrdering() throws Exception {
+        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-good-ordering.xml"));
+    }
+
+    /**
+     * Ensure we can load a bad configuration file with
+     * lenient sequence ordering enabled explicitly.
+     */
+    public void testLenientOrdering() throws Exception {
+        LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
+
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
+    }
+
+    /**
+     * Ensure we can load a bad configuration file with
+     * lenient sequence ordering enabled in castor.properties.
+     */
+    public void testLenientOrderingAsDefault() throws Exception {
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
+    }
     
+    /**
+     * Ensure we fail to load a bad configuration file with
+     * lenient sequence ordering disabled explicitly.
+     */
+    public void testLenientOrderingDisabled() throws Exception {
+        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+
+        String exceptionText = "Element with name event passed to type events in incorrect order";
+        boolean gotException = false;
+
+        try {
+            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
+        } catch (MarshalException e) {
+            if (e.getMessage().contains(exceptionText)) {
+                gotException = true;
+            } else {
+                AssertionFailedError newE = new AssertionFailedError("unmarshal threw MarshalException but did not contain expected text: " + exceptionText);
+                newE.initCause(e);
+                throw newE;
+            }
+        }
+
+        if (!gotException) {
+            fail("unmarshal did not throw MarshalException containing expected text: " + exceptionText);
+        }
+    }
+
     public void testActiondConfiguration() throws Exception {
         unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
     }
@@ -368,13 +430,15 @@ public class WillItUnmarshalTest extends TestCase {
         
         for (File includedEventFile : includedEventFiles) {
             try {
+                // Be conservative about what we ship, so don't be lenient
+                LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
                 CastorUtils.unmarshal(Events.class, new FileReader(includedEventFile));
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedEventFile + ": " + t, t);
             }
         }
     }
-
+    
     private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
         return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested);
     }
@@ -384,6 +448,9 @@ public class WillItUnmarshalTest extends TestCase {
     }
 
     private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet) throws MarshalException, ValidationException, FileNotFoundException {
+        // Be conservative about what we ship, so don't be lenient
+        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+
         T config = CastorUtils.unmarshal(clazz, new FileReader(file));
         
         assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
