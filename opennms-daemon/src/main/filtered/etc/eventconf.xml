@@ -1592,7 +1592,6 @@
         <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
-<!--        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file> -->
         <event-file>@install.etc.dir@/events/Syslogd.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
         <event-file>@install.etc.dir@/events/TrippLite.events.xml</event-file>
