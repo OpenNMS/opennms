@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 25: Add getUrlForResource and getFileForResource. - dj@opennms.org
 // 2007 Aug 02: Add getFileForConfigFile. - dj@opennms.org
 // 2007 Jul 03: Check for something passing in a Class as an object (as I tend to do,
 //              which breaks tests under Maven 2, but not under Eclipse) and suggest
@@ -53,12 +54,31 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 
 import junit.framework.Assert;
 
 public class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
     private static final String DAEMON_DIRECTORY = "opennms-daemon";
+
+    public static URL getUrlForResource(Object obj, String resource) {
+        URL url = obj.getClass().getResource(resource);
+        assertNotNull("could not get resource '" + resource + "' as a URL", url);
+        return url;
+    }
+    
+    public static File getFileForResource(Object obj, String resource) {
+        URL url = getUrlForResource(obj, resource);
+        
+        String path = url.getFile();
+        assertNotNull("could not get resource '" + resource + "' as a file", path);
+        
+        File file = new  File(path);
+        assertTrue("could not get resource '" + resource + "' as a file--the file at path '" + path + "' does not exist", file.exists());
+        
+        return file;
+    }
 
     public static Reader getReaderForResource(Object obj, String resource) {
         return new InputStreamReader(getInputStreamForResource(obj, resource));
