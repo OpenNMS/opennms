@@ -36,7 +36,6 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -48,20 +47,20 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class TrapdTest extends OpenNMSTestCase {
     private static int m_port = 1162;
     private static Trapd m_trapd = new Trapd();
-    private static String TRAPD_CONFIG = "<?xml version=\"1.0\"?>\n" + 
-    "<trapd-configuration snmp-trap-port=\""+m_port+"\" new-suspect-on-trap=\"true\"/>\n" + 
-    "\n";
 
     protected void setUp() throws Exception {
         super.setUp();
 
         assertNotNull(DataSourceFactory.getInstance());
-        Reader rdr = new StringReader(TRAPD_CONFIG);
+        
+        Reader rdr = ConfigurationTestUtils.getReaderForResourceWithReplacements(this, "trapd-configuration.xml", new String[] { "@snmp-trap-port@", Integer.toString(m_port) });
         TrapdConfigFactory.setInstance(new TrapdConfigFactory(rdr));
+        
         m_trapd = new Trapd();
         m_trapd.init();
         m_trapd.start();
