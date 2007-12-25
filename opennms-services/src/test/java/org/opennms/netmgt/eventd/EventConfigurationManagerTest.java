@@ -68,6 +68,11 @@ public class EventConfigurationManagerTest extends TestCase {
         EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), new File(url.getFile()));
     }
 
+    public void testLoadStandardConfiguration() throws Exception {
+        File file = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
+        EventConfigurationManager.loadConfiguration(file.getAbsolutePath());
+    }
+
     /**
      * This is disabled because the last check fails.
      */
