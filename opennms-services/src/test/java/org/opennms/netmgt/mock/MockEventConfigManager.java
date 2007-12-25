@@ -1,6 +1,10 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
+// Modifications:
+//
+// 2007 Dec 24: Add a constructor that can be passed a Reader. - dj@opennms.org
+//
 // OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
@@ -30,6 +34,7 @@
 package org.opennms.netmgt.mock;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -44,5 +49,8 @@ public class MockEventConfigManager extends EventdConfigManager {
 
     public MockEventConfigManager(String config) throws MarshalException, ValidationException, IOException {
         super( new StringReader(config));
+    }
+    public MockEventConfigManager(Reader rdr) throws MarshalException, ValidationException, IOException {
+        super(rdr);
     }
 }
