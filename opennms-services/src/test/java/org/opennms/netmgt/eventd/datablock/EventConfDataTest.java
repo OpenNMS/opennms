@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 // 2007 Dec 24: Pull config file into an external file. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -38,7 +39,7 @@
 //
 package org.opennms.netmgt.eventd.datablock;
 
-import java.io.Reader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,8 +63,7 @@ public class EventConfDataTest extends TestCase {
     protected void setUp() throws Exception {
         MockLogAppender.setupLogging(false);
 
-        Reader reader = ConfigurationTestUtils.getReaderForResource(this, "eventconf.xml");
-        EventConfigurationManager.loadConfiguration(reader);
+        EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
     }
 
 

@@ -10,6 +10,12 @@
 //
 // Modifications:
 //
+// 2007 Dec 24: Make loadConfiguration(Reader, File) protected so that
+//              it can only be used internally and by tests.  Change
+//              loadConfiguration(String) to loadConfiguration(File),
+//              don't leak Readers (close them when done), and change
+//              all callers to use the new method.  Remove unused
+//              methods. - dj@opennms.org
 // 2007 Dec 24: Allow relative paths in event-file entries within
 //              eventconf.xml.  Add loadConfiguration(Reader rdr,
 //              File file) method and have loadConfiguration(String)
@@ -49,6 +55,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -113,7 +120,7 @@ public final class EventConfigurationManager {
     }
     
     public static void init() throws MarshalException, ValidationException, IOException {
-    	loadConfiguration(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME).getPath());
+    	loadConfiguration(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME));
     }
 
     /**
@@ -130,12 +137,13 @@ public final class EventConfigurationManager {
          */
         init();
     }
+    
     /**
      * This method is used to load the passed configuration into the currently
      * managed configuration instance. Any events that previously existed are
      * cleared.
      * 
-     * @param path
+     * @param file
      *            The file to load.
      * 
      * @exception org.exolab.castor.xml.MarshalException
@@ -145,14 +153,17 @@ public final class EventConfigurationManager {
      * @exception java.lang.IOException
      *                Thrown if the file cannot be opened for reading.
      */
-    public static void loadConfiguration(String path) throws IOException, MarshalException, ValidationException {
-        File file = new File(path);
+    public static void loadConfiguration(File file) throws IOException, MarshalException, ValidationException {
         Reader rdr = new FileReader(file);
         if (rdr == null) {
             throw new IOException("Failed to open events conf file: " + file);
         }
 
-        loadConfiguration(rdr, file);
+        try {
+            loadConfiguration(rdr, file);
+        } finally {
+            IOUtils.closeQuietly(rdr);
+        }
     }
 
     /**
@@ -173,7 +184,7 @@ public final class EventConfigurationManager {
         loadConfiguration(rdr, null);
     }
     
-    public static void loadConfiguration(Reader rdr, File file) throws IOException, MarshalException, ValidationException {
+    protected static void loadConfiguration(Reader rdr, File file) throws IOException, MarshalException, ValidationException {
         synchronized (m_eventConf) {
             Events toplevel = CastorUtils.unmarshal(Events.class, rdr);
 
@@ -229,63 +240,6 @@ public final class EventConfigurationManager {
 
     private static Category log() {
         return ThreadCategory.getInstance(EventConfigurationManager.class);
-    }
-
-    /**
-     * This method is used to load the passed configuration into the currently
-     * managed configuration instance. Any events that previously existed are
-     * overwritten by the new events in this configuration. This call will
-     * replace the current override settings.
-     * 
-     * @param file
-     *            The configuration file name.
-     * 
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @exception java.lang.IOException
-     *                Thrown if the file cannot be opened for reading.
-     *                
-     * @deprecated this is currently unused and will be deleted. brozow - 23-Jan-07
-     */
-    public static void mergeConfiguration(String file) throws IOException, MarshalException, ValidationException {
-        mergeConfiguration(new FileReader(file));
-    }
-
-    /**
-     * This method is used to load the passed configuration into the currently
-     * managed configuration instance. Any events that previously existed are
-     * overwritten by the new events in this configuration. This call will
-     * replace the current override settings. After the contents of the reader
-     * stream is loaded, the reader is closed.
-     * 
-     * @param rdr
-     *            The reader used to load the configuration.
-     * 
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * 
-     * @deprecated this is currently unused and will be deleted. brozow - 23-Jan-07
-     */
-    public static void mergeConfiguration(Reader rdr) throws MarshalException, ValidationException {
-        synchronized (m_eventConf) {
-            Events toplevel = CastorUtils.unmarshal(Events.class, rdr);
-
-            for (Event event : toplevel.getEventCollection()) {
-                m_eventConf.put(event);
-            }
-
-            m_secureTags = toplevel.getGlobal().getSecurity().getDoNotOverride();
-
-            try {
-                rdr.close();
-            } catch (Throwable t) {
-            }
-        }
-        m_loaded = true;
     }
 
     /**
