@@ -11,6 +11,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -18,19 +19,33 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.util.StringUtils;
 
 public class EventConfigurationManagerTest extends TestCase {
+    /**
+     * Test an eventconf.xml with only &lt;event&gt; elements and no
+     * &lt;event-file&gt; elements.
+     */
     public void testLoadConfigurationSingleConfig() throws Exception {
-        EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig("singleConfig/eventconf.xml"));
+        loadConfiguration("singleConfig/eventconf.xml");
     }
 
-    public void testLoadConfigurationTwoDeepConfig() throws Exception {
-        EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig("twoDeepConfig/eventconf.xml"));
+    /**
+     * Test an eventconf.xml with &lt;event&gt; elements and &lt;event-file&gt;
+     * elements that contain absolute paths.  The included &lt;event-file&gt;
+     * has no errors.
+     */
+    public void testLoadConfigurationTwoDeepConfigAbsolutePaths() throws Exception {
+        loadConfiguration("twoDeepConfig/eventconf.xml");
     }
 
+    /**
+     * Test an eventconf.xml with &lt;event&gt; elements and &lt;event-file&gt;
+     * elements that contain absolute paths.  The included &lt;event-file&gt;
+     * references additional &lt;event-file&gt;s which is an error.
+     */
     public void testLoadConfigurationThreeDeepConfig() throws Exception {
         boolean caughtExceptionThatWeWanted = false;
         
         try {
-            EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig("threeDeepConfig/eventconf.xml"));
+            loadConfiguration("threeDeepConfig/eventconf.xml");
         } catch (ValidationException e) {
             if (e.getMessage().contains("cannot include other configuration files")) {
                 caughtExceptionThatWeWanted = true;
@@ -44,11 +59,16 @@ public class EventConfigurationManagerTest extends TestCase {
         }
     }
     
+    /**
+     * Test an eventconf.xml with &lt;event&gt; elements and &lt;event-file&gt;
+     * elements that contain absolute paths.  The included &lt;event-file&gt;
+     * has a &lt;global&gt; element which is an error.
+     */
     public void testLoadConfigurationTwoDeepConfigWithGlobal() throws Exception {
         boolean caughtExceptionThatWeWanted = false;
         
         try {
-            EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig("twoDeepConfigWithGlobal/eventconf.xml"));
+            loadConfiguration("twoDeepConfigWithGlobal/eventconf.xml");
         } catch (ValidationException e) {
             if (e.getMessage().contains("cannot have a 'global' element")) {
                 caughtExceptionThatWeWanted = true;
@@ -62,12 +82,18 @@ public class EventConfigurationManagerTest extends TestCase {
         }
     }
 
+    /**
+     * Test an eventconf.xml with &lt;event&gt; elements and &lt;event-file&gt;
+     * elements that contain relative paths.  The included &lt;event-file&gt;
+     * has no errors.
+     */
     public void testLoadConfigurationRelativeTwoDeepConfig() throws Exception {
-        String relativeResourcePath = "relativeTwoDeepConfig/eventconf.xml";
-        URL url = getUrlForRelativeResourcePath(relativeResourcePath);
-        EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), new File(url.getFile()));
+        loadConfiguration("relativeTwoDeepConfig/eventconf.xml");
     }
 
+    /**
+     * Test the standard eventconf.xml configuration file and its include files.
+     */
     public void testLoadStandardConfiguration() throws Exception {
         File file = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
         EventConfigurationManager.loadConfiguration(file.getAbsolutePath());
@@ -107,6 +133,11 @@ public class EventConfigurationManagerTest extends TestCase {
             fail("Events directory " + eventsDirFile.getAbsolutePath() + " contains event files that are not referenced in event configuration file " + eventConfFile.getAbsolutePath() + ":\n\t"
                     + StringUtils.collectionToDelimitedString(onDiskNotIncluded, "\n\t"));
         }
+    }
+
+    private void loadConfiguration(String relativeResourcePath) throws IOException, MarshalException, ValidationException {
+        URL url = getUrlForRelativeResourcePath(relativeResourcePath);
+        EventConfigurationManager.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), new File(url.getFile()));
     }
 
     private Reader getFilteredReaderForConfig(String resourceSuffix) throws IOException {
