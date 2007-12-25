@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -95,7 +99,7 @@ public class TrapHandlerTest extends TestCase {
 
         m_localhost = InetAddress.getByName(m_ip);
 
-        EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getReaderForResource(this, "eventconf.xml"));
+        EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
 
         TrapdIPMgr.clearKnownIpsMap();
         TrapdIPMgr.setNodeId(m_ip, m_nodeId);

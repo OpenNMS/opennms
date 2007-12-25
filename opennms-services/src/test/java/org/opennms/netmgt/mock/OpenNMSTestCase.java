@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 // 2007 Dec 24: Move configuration files to external files. - dj@opennms.org
 // 2007 Aug 02: Organize imports. - dj@opennms.org
 // 2007 Jun 10: Fix sequence for alarms and add getJdbcTemplate(). - dj@opennms.org
@@ -37,6 +38,7 @@
 //   http://www.opennms.com/
 package org.opennms.netmgt.mock;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -153,8 +155,8 @@ public class OpenNMSTestCase extends TestCase {
                  * Make sure we specify a full resource path since "this" is
                  * the unit test class, which is most likely in another package. 
                  */
-                Reader configRdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/mock/eventconf.xml");
-                EventConfigurationManager.loadConfiguration(configRdr);
+                File configFile = ConfigurationTestUtils.getFileForResource(this, "/org/opennms/netmgt/mock/eventconf.xml");
+                EventConfigurationManager.loadConfiguration(configFile);
                 
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
                 m_eventProxy = new EventProxy() {
