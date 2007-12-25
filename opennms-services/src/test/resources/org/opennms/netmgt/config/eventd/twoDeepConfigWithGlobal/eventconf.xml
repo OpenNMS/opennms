@@ -23,5 +23,5 @@
     <severity>Normal</severity>
   </event>
   
-  <event-file>src/test/resources/org/opennms/netmgt/config/eventd/twoDeepConfigWithGlobal/BGP4.events.xml</event-file>
+  <event-file>@install.etc.dir@/BGP4.events.xml</event-file>
  </events>

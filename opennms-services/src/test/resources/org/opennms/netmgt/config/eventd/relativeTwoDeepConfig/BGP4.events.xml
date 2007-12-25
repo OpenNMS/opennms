@@ -46,6 +46,4 @@ state to a lower numbered state.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b
  <severity>Warning</severity>
 </event>
 <!-- End of auto generated data from MIB: BGP4-MIB -->
-
-  <event-file>@install.etc.dir@/BGP4.events-again.xml</event-file>
 </events>
