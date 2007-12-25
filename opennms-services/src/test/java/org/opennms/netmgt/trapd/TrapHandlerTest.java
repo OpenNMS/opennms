@@ -35,7 +35,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -58,6 +57,7 @@ import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.PropertySettingTestSuite;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -95,193 +95,7 @@ public class TrapHandlerTest extends TestCase {
 
 		m_localhost = InetAddress.getByName(m_ip);
 
-		String eventconf =
-			"<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">\n" +
-			" <global>\n" +
-			"  <security>\n" +
-			"   <doNotOverride>logmsg</doNotOverride>\n" +
-			"   <doNotOverride>operaction</doNotOverride>\n" +
-			"   <doNotOverride>autoaction</doNotOverride>\n" +
-			"   <doNotOverride>tticket</doNotOverride>\n" +
-			"   <doNotOverride>script</doNotOverride>\n" +
-			"  </security>\n" +
-			" </global>\n" +
-			"\n" +
-			" <event>\n" +
-			"  <mask>\n" +
-			"   <maskelement>\n" +
-			"    <mename>id</mename>\n" +
-			"    <mevalue>.1.3.6.1.2.1.15.7</mevalue>\n" +
-			"   </maskelement>\n" +
-			"   <maskelement>\n" +
-			"    <mename>generic</mename>\n" +
-			"    <mevalue>6</mevalue>\n" +
-			"   </maskelement>\n" +
-			"   <maskelement>\n" +
-			"    <mename>specific</mename>\n" +
-			"    <mevalue>1</mevalue>\n" +
-			"   </maskelement>\n" +
-			"  </mask>\n" +
-			"  <uei>uei.opennms.org/IETF/BGP/traps/bgpEstablished</uei>\n" +
-			"  <event-label>BGP4-MIB defined trap event: bgpEstablished</event-label>\n" +
-			"  <descr>&lt;p&gt;The BGP Established event is generated when\n" +
-			"   the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;\n" +
-			"   &lt;tr&gt;&lt;td&gt;&lt;b&gt;\n" +
-			"   bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%\n" +
-			"   &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;\n" +
-			"   bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%\n" +
-			"   &lt;/td&gt;&lt;td&gt;&lt;p;&gt;\n" +
-			"   idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p&gt;\n" +
-			"   &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;\n" +
-			"  </descr>\n" +
-			"  <logmsg dest='logndisplay'>&lt;p&gt;BGP Event: FSM entered connected state.&lt;/p&gt;</logmsg>\n" +
-			"  <severity>Normal</severity>\n" +
-			" </event>\n" +
-			"\n" +
-			" <event>\n" +
-			"  <mask>\n" +
-			"   <maskelement>\n" +
-			"    <mename>id</mename>\n" +
-			"    <mevalue>.1.3.6.1.2.1.15.7</mevalue>\n" +
-			"   </maskelement>\n" +
-			"   <maskelement>\n" +
-			"    <mename>generic</mename>\n" +
-			"    <mevalue>6</mevalue>\n" +
-			"   </maskelement>\n" +
-			"   <maskelement>\n" +
-			"    <mename>specific</mename>\n" +
-			"    <mevalue>2</mevalue>\n" +
-			"   </maskelement>\n" +
-			"  </mask>\n" +
-			"  <uei>uei.opennms.org/IETF/BGP/traps/bgpBackwardTransition</uei>\n" +
-			"  <event-label>BGP4-MIB defined trap event: bgpBackwardTransition</event-label>\n" +
-			"  <descr>&lt;p&gt;The BGPBackwardTransition Event is generated\n" +
-			"   when the BGP FSM moves from a higher numbered\n" +
-			"   state to a lower numbered state.&lt;/p&gt;&lt;table&gt;\n" +
-			"   &lt;tr&gt;&lt;td&gt;&lt;b&gt;\n" +
-			"   bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%\n" + 
-			"   &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;\n" +
-			"   bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%\n" + 
-			"   &lt;/td&gt;&lt;td&gt;&lt;p;&gt;\n" + 
-			"   idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p&gt;\n" +
-			"   &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;\n" +
-			"  </descr>\n" + 
-			"  <logmsg dest='discardtraps'>&lt;p&gt;BGP Event: FSM Backward Transistion.&lt;/p&gt;</logmsg>\n" + 
-			"  <severity>Warning</severity>\n" +
-			" </event>\n" +
-			"\n" +
-			" <event>\n" +
-			"  <mask>\n" +
-			"   <maskelement>\n" +
-			"    <mename>generic</mename>\n" +
-			"    <mevalue>0</mevalue>\n" +
-			"   </maskelement>\n" +
-			"  </mask>\n" +
-			"  <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>\n" +
-			"  <event-label>OpenNMS-defined trap event: SNMP_Cold_Start</event-label>\n" +
-			"  <descr>\n" +
-			"    &lt;p&gt;A coldStart trap signifies that the sending\n" +
-			"    protocol entity is reinitializing itself such that the\n" +
-			"    agent's configuration or the protocol entity implementation\n" +
-			"    may be altered.&lt;/p&gt;\n" +
-			"  </descr>\n" +
-			"  <logmsg dest='logndisplay'>\n" +
-			"    Agent Up with Possible Changes (coldStart Trap)\n" +
-			"    enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%\n" +
-			"  </logmsg>\n" +
-			"  <severity>Normal</severity>\n" +
-			" </event>\n" +
-            " <event>\n" +
-            "  <mask>\n" +
-            "   <maskelement>\n" +
-            "    <mename>id</mename>\n" +
-            "    <mevalue>.1.3.6.1.4.1.11.2.14.12.1</mevalue>\n" +
-            "   </maskelement> <maskelement>\n"+
-            "    <mename>generic</mename>\n" +
-            "    <mevalue>6</mevalue>\n" + 
-            "   </maskelement>\n" +
-            "   <maskelement>\n" +
-            "    <mename>specific</mename>\n" +
-            "    <mevalue>5</mevalue> \n" +
-            "   </maskelement>\n" +
-            "   <varbind textual-convention=\"MacAddress\"> \n" +
-            "    <vbnumber>3</vbnumber>\n" +
-            "    <vbvalue>5</vbvalue> \n" +
-            "   </varbind> \n" +
-            "  </mask>\n" +
-            "  <uei>uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap</uei>\n" +
-            "  <event-label>HP-ICF-FAULT-FINDER-MIB defined trap event: hpicfFaultFinderTrap</event-label>\n" +
-            "  <descr>\n" +
-            "    This notification is sent whenever the Fault\n" +
-            "       Finder creates an entry in the\n" +
-            "       hpicfFfLogTable.\n" +
-            "       hpicfFfLogFaultType\n" +
-            "       %parm[#1]%\n" +
-            "          badDriver(1) badXcvr(2)\n" +
-            "            badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7)\n" +
-            "            misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11)\n" +
-            "            portSecurityViolation(12) backupLinkTransition(13) meshingFault(14)\n" +
-            "            fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18)\n" +
-            "            hotSwapReboot(19)\n" +
-            "         hpicfFfLogAction\n" +
-            "         %parm[#2]%\n" +
-            "          none(1) warn(2) warnAndDisable(3)\n" +
-            "            warnAndSpeedReduce(4) warnAndSpeedReduceAndDisable(5)\n" +
-            "         hpicfFfLogSeverity\n" +
-            "         %parm[#3]%\n" +
-            "          informational(1) medium(2)\n" +
-            "            critical(3)\n" +
-            "         hpicfFfFaultInfoURL\n" +
-            "         %parm[#4]%\n" +
-            "  </descr> \n" +
-            "  <logmsg dest='logndisplay'>HP Event: ICF Hub Fault Found.</logmsg>\n" +
-            "  <severity>Major</severity> \n" +
-    		    " </event>\n" +
-			" <event>\n" +
-			"  <mask>\n" +
-			"   <maskelement>\n" +
-			"    <mename>id</mename>\n" +
-			"    <mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>\n" +
-			"   </maskelement>\n" +
-			"   <maskelement>\n" +
-			"    <mename>generic</mename>\n" +
-			"    <mevalue>6</mevalue>\n" +
-			"   </maskelement>\n" +
-			"   <maskelement>\n" +
-			"    <mename>specific</mename>\n" +
-			"    <mevalue>38</mevalue>\n" +
-			"   </maskelement>\n" +
-            "   <varbind textual-convention=\"MacAddress\"> \n" +
-            "    <vbnumber>1</vbnumber>\n" +
-            "    <vbvalue>00:14:f1:ad:a7:50</vbvalue> \n" +
-            "   </varbind> \n" +
-			"  </mask>\n" +
-			"  <uei>uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass</uei>\n" +
-			"  <event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPNoiseProfileUpdatedToPass</event-label>\n" +
-			"  <descr>\n" +
-			"   &lt;p&gt;When Noise Profile state changes from FAIL to PASS, notification\n" +
-			"   will be sent with Dot3 MAC address of Airespace AP and slot ID\n" +
-			"   of Airespace AP IF. This trap sending can be enable/disable using\n" +
-			"   bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;\n" +
-			"   &lt;tr&gt;&lt;td&gt;&lt;b&gt;\n\n" +
-			"   bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;\n" +
-			"   %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;\n" +
-			"   &lt;tr&gt;&lt;td&gt;&lt;b&gt;\n\n" +
-			"   bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;\n" +
-			"   %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;" +
-			"  </descr>\n" +
-			"  <logmsg dest='logndisplay'>&lt;p&gt;\n" +
-			"   bsnAPNoiseProfileUpdatedToPass trap received\n" +
-			"   bsnAPDot3MacAddress=%parm[#1]%\n" +
-			"   bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;\n" +
-			"  </logmsg>\n" +
-			"  <severity>Cleared</severity>\n" +
-			" </event>" +
-			"</events>";
-
-		StringReader reader = new StringReader(eventconf);
-
-		EventConfigurationManager.loadConfiguration(reader);
+                EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getReaderForResource(this, "eventconf.xml"));
 
 		TrapdIPMgr.clearKnownIpsMap();
 		TrapdIPMgr.setNodeId(m_ip, m_nodeId);
