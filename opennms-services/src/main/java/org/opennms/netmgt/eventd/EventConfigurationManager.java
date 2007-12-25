@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 24: Use Java 5 generics and for loops. - dj@opennms.org
 // 2007 Mar 02: Remove some unneeded casts and format the code a bit. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 23: Added include files to eventconf.xml.
@@ -35,9 +36,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.eventd;
 
 import java.io.File;
@@ -47,14 +45,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -94,10 +91,10 @@ public final class EventConfigurationManager {
      */
     private static volatile String[] m_secureTags;
 
-    //
-    // Attempts to load the configuration by default if
-    // it's named eventconf.xml and in the classpath.
-    //
+    /*
+     * Attempts to load the configuration by default if
+     * it is named eventconf.xml and in the classpath.
+     */
     static {
         m_loaded = false;
         m_eventConf = new EventConfData();
@@ -113,8 +110,7 @@ public final class EventConfigurationManager {
     }
     
     public static void init() throws MarshalException, ValidationException, IOException {
-    	File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-    	loadConfiguration(configFile.getPath());
+    	loadConfiguration(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME).getPath());
     }
 
     /**
@@ -124,8 +120,11 @@ public final class EventConfigurationManager {
      * @throws IOException
      */
     public static void reload() throws MarshalException, ValidationException, IOException {
-        //just calls init at the moment because it's safe to do so in this case
-        //is a separate method to match the signature of other config managers in other packages
+        /*
+         * Just calls init at the moment because it's safe to do so in this case
+         * is a separate method to match the signature of other config managers
+         * in other packages.
+         */
         init();
     }
     /**
@@ -149,8 +148,7 @@ public final class EventConfigurationManager {
             throw new IOException("Failed to load/locate events conf file: " + file);
         }
 
-        Reader rdr = new InputStreamReader(cfgIn);
-        loadConfiguration(rdr);
+        loadConfiguration(new InputStreamReader(cfgIn));
     }
 
     /**
@@ -168,45 +166,39 @@ public final class EventConfigurationManager {
      *                Thrown if the contents do not match the required schema.
      */
     public static void loadConfiguration(Reader rdr) throws IOException, MarshalException, ValidationException {
-        Category log = ThreadCategory.getInstance();
         synchronized (m_eventConf) {
-            Events toplevel = null;
-            toplevel = (Events) Unmarshaller.unmarshal(Events.class, rdr);
+            Events toplevel = CastorUtils.unmarshal(Events.class, rdr);
 
             m_eventConf.clear();
 
-            Enumeration e = toplevel.enumerateEvent();
-            while (e.hasMoreElements()) {
-                Event event = (Event) e.nextElement();
+            for (Event event : toplevel.getEventCollection()) {
                 m_eventConf.put(event);
             }
 
             m_secureTags = toplevel.getGlobal().getSecurity().getDoNotOverride();
 
-            Enumeration e2 = toplevel.enumerateEventFile();
-            while (e2.hasMoreElements()) {
-                String eventfile = (String) e2.nextElement();
-                InputStream fileIn = new FileInputStream(eventfile);
+            for (String eventFilePath : toplevel.getEventFileCollection()) {
+                File eventFile = new File(eventFilePath);
+                InputStream fileIn = new FileInputStream(eventFile);
                 if (fileIn == null) {
-                    throw new IOException("Eventconf: Failed to load/locate events file: " + eventfile);
+                    throw new IOException("Eventconf: Failed to load/locate events file: " + eventFile);
                 }
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Eventconf: Loading event file: " + eventfile);
+                if (log().isDebugEnabled()) {
+                    log().debug("Eventconf: Loading event file: " + eventFile);
                 }
 
                 Reader filerdr = new InputStreamReader(fileIn);
-                Events filelevel = null;
-                filelevel = (Events) Unmarshaller.unmarshal(Events.class, filerdr);
+                Events filelevel = CastorUtils.unmarshal(Events.class, filerdr);
+                
                 if (filelevel.getGlobal() != null) {
-                    throw new ValidationException("The event file " + eventfile + " included from the top-level event configuration file cannot have a 'global' element");
+                    throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot have a 'global' element");
                 }
                 if (filelevel.getEventFileCollection().size() > 0) {
-                    throw new ValidationException("The event file " + eventfile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()));
+                    throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()));
                 }
-                Enumeration efile = filelevel.enumerateEvent();
-                while (efile.hasMoreElements()) {
-                    Event event = (Event) efile.nextElement();
+                
+                for (Event event : filelevel.getEventCollection()) {
                     m_eventConf.put(event);
                 }
             }
@@ -217,6 +209,10 @@ public final class EventConfigurationManager {
             }
         }
         m_loaded = true;
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(EventConfigurationManager.class);
     }
 
     /**
@@ -238,8 +234,7 @@ public final class EventConfigurationManager {
      * @deprecated this is currently unused and will be deleted. brozow - 23-Jan-07
      */
     public static void mergeConfiguration(String file) throws IOException, MarshalException, ValidationException {
-        Reader rdr = new FileReader(file);
-        mergeConfiguration(rdr);
+        mergeConfiguration(new FileReader(file));
     }
 
     /**
@@ -261,12 +256,9 @@ public final class EventConfigurationManager {
      */
     public static void mergeConfiguration(Reader rdr) throws MarshalException, ValidationException {
         synchronized (m_eventConf) {
-            Events toplevel = null;
-            toplevel = (Events) Unmarshaller.unmarshal(Events.class, rdr);
+            Events toplevel = CastorUtils.unmarshal(Events.class, rdr);
 
-            Enumeration e = toplevel.enumerateEvent();
-            while (e.hasMoreElements()) {
-                Event event = (Event) e.nextElement();
+            for (Event event : toplevel.getEventCollection()) {
                 m_eventConf.put(event);
             }
 
@@ -306,8 +298,8 @@ public final class EventConfigurationManager {
      * Returns true if the tag is marked as secure.
      */
     public static boolean isSecureTag(String name) {
-        for (int i = 0; i < m_secureTags.length; i++) {
-            if (m_secureTags[i].equals(name)) {
+        for (String secureTag : m_secureTags) {
+            if (secureTag.equals(name)) {
                 return true;
             }
         }
