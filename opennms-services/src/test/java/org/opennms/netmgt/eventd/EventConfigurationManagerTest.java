@@ -95,8 +95,7 @@ public class EventConfigurationManagerTest extends TestCase {
      * Test the standard eventconf.xml configuration file and its include files.
      */
     public void testLoadStandardConfiguration() throws Exception {
-        File file = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
-        EventConfigurationManager.loadConfiguration(file.getAbsolutePath());
+        EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml"));
     }
 
     /**

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -97,7 +101,7 @@ public class Eventd implements EventdMBean {
         //
         try {
             File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            EventConfigurationManager.loadConfiguration(configFile.getPath());
+            EventConfigurationManager.loadConfiguration(configFile);
         } catch (MarshalException ex) {
             log.error("Failed to load eventd configuration", ex);
             throw new UndeclaredThrowableException(ex);
