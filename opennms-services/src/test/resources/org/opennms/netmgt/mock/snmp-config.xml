@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<snmp-config retry="3" timeout="3000" read-community="public"
+  write-community="private" port="161" version="v1">
+
+  <definition port="9161" version="@myVersion@" security-name="opennmsUser"
+    auth-passphrase="0p3nNMSv3" privacy-passphrase="0p3nNMSv3">
+    <specific>@myLocalHost@</specific>
+  </definition>
+
+  <definition version="v1" read-community="specificv1">
+    <specific>10.0.0.1</specific>
+  </definition>
+
+  <definition version="v1" read-community="specificv1"
+    max-request-size="434">
+    <specific>10.0.0.2</specific>
+  </definition>
+
+  <definition version="v1" read-community="specificv1"
+    proxy-host="@myLocalHost@">
+    <specific>10.0.0.3</specific>
+  </definition>
+
+  <definition version="v3" security-name="opennmsUser"
+    auth-passphrase="0p3nNMSv3">
+    <specific>20.20.20.20</specific>
+  </definition>
+  <definition version="v3" security-name="opennmsRangeUser"
+    auth-passphrase="0p3nNMSv3">
+    <range begin="1.1.1.1" end="1.1.1.100" />
+  </definition>
+
+  <definition version="v1" read-community="rangev1"
+    max-vars-per-pdu="55">
+    <range begin="10.0.0.101" end="10.0.0.200" />
+  </definition>
+
+  <definition version="v2c" read-community="rangev2c">
+    <range begin="10.0.1.100" end="10.0.5.100" />
+    <range begin="10.7.20.100" end="10.7.25.100" />
+  </definition>
+
+  <definition version="v2c" read-community="specificv2c">
+    <specific>192.168.0.50</specific>
+  </definition>
+
+  <definition version="v2c" read-community="ipmatch"
+    max-vars-per-pdu="128">
+    <ip-match>77.5-12,15.1-255.255</ip-match>
+  </definition>
+
+</snmp-config>
