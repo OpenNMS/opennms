@@ -1,0 +1,210 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <global>
+    <security>
+      <doNotOverride>logmsg</doNotOverride>
+      <doNotOverride>operaction</doNotOverride>
+      <doNotOverride>autoaction</doNotOverride>
+      <doNotOverride>tticket</doNotOverride>
+      <doNotOverride>script</doNotOverride>
+    </security>
+  </global>
+
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.2.1.15.7</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>snmphost</mename>
+        <mevalue>192.168.1.%</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/IETF/BGP/traps/bgpEstablished</uei>
+    <event-label>
+      BGP4-MIB defined trap event: bgpEstablished
+    </event-label>
+    <descr>
+      &lt;p&gt;The BGP Established event is generated when the BGP FSM
+      enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+      &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+      &lt;/td&gt;&lt;td&gt;&lt;p;&gt; idle(1) connect(2) active(3)
+      opensent(4) openconfirm(5) established(6)&lt;/p&gt;
+      &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+    </descr>
+    <logmsg dest='discardtraps'>
+      &lt;p&gt;BGP Event: FSM entered connected state.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.2.1.15.7</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/IETF/BGP/traps/bgpEstablished</uei>
+    <event-label>
+      BGP4-MIB defined trap event: bgpEstablished
+    </event-label>
+    <descr>
+      &lt;p&gt;The BGP Established event is generated when the BGP FSM
+      enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+      &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+      &lt;/td&gt;&lt;td&gt;&lt;p;&gt; idle(1) connect(2) active(3)
+      opensent(4) openconfirm(5) established(6)&lt;/p&gt;
+      &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;BGP Event: FSM entered connected state.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.2.1.15.7</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/IETF/BGP/traps/bgpBackwardTransition</uei>
+    <event-label>
+      BGP4-MIB defined trap event: bgpBackwardTransition
+    </event-label>
+    <descr>
+      &lt;p&gt;The BGPBackwardTransition Event is generated when the BGP
+      FSM moves from a higher numbered state to a lower numbered
+      state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+      &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+      &lt;/td&gt;&lt;td&gt;&lt;p;&gt; idle(1) connect(2) active(3)
+      opensent(4) openconfirm(5) established(6)&lt;/p&gt;
+      &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+    </descr>
+    <logmsg dest='discardtraps'>
+      &lt;p&gt;BGP Event: FSM Backward Transistion.&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+
+  <event>
+    <mask>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>0</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>snmphost</mename>
+        <mevalue>192.168.1.1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
+    <event-label>
+      OpenNMS-defined trap event: SNMP_Cold_Start
+    </event-label>
+    <descr>
+      &lt;p&gt;A coldStart trap signifies that the sending protocol
+      entity is reinitializing itself such that the agent's
+      configuration or the protocol entity implementation may be
+      altered.&lt;/p&gt;
+    </descr>
+    <logmsg dest='discardtraps'>
+      Agent Up with Possible Changes (coldStart Trap) enterprise:%id%
+      (%id%) args(%parm[##]%):%parm[all]%
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+
+  <event>
+    <mask>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>0</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
+    <event-label>
+      OpenNMS-defined trap event: SNMP_Cold_Start
+    </event-label>
+    <descr>
+      &lt;p&gt;A coldStart trap signifies that the sending protocol
+      entity is reinitializing itself such that the agent's
+      configuration or the protocol entity implementation may be
+      altered.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      Agent Up with Possible Changes (coldStart Trap) enterprise:%id%
+      (%id%) args(%parm[##]%):%parm[all]%
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/cisco/bsnAPDisassociated</uei>
+    <event-label>
+      AIRESPACE-WIRELESS-MIB defined trap event: bsnAPDisassociated
+    </event-label>
+    <descr>
+      &lt;p&gt;When Airespace AP disassociates from Airespace Switch, AP
+      disassociated notification will be sent with dot3 MAC address of
+      Airespace AP management system to remove Airespace AP from this
+      Airespace Switch&lt;/p&gt;&lt;table&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+      bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+      %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt; bsnAPDisassociated trap received
+      bsnAPMacAddrTrapVariable=%parm[#1]%&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+</events>
