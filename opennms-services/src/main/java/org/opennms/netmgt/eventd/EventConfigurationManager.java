@@ -10,6 +10,12 @@
 //
 // Modifications:
 //
+// 2007 Dec 24: Allow relative paths in event-file entries within
+//              eventconf.xml.  Add loadConfiguration(Reader rdr,
+//              File file) method and have loadConfiguration(String)
+//              call it to pass the configuration file location to use
+//              for relative paths.  Use Readers soleyly instead of
+//              InputStreams. - dj@opennms.org
 // 2007 Dec 24: Use Java 5 generics and for loops. - dj@opennms.org
 // 2007 Mar 02: Remove some unneeded casts and format the code a bit. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -39,11 +45,8 @@
 package org.opennms.netmgt.eventd;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.apache.log4j.Category;
@@ -132,7 +135,7 @@ public final class EventConfigurationManager {
      * managed configuration instance. Any events that previously existed are
      * cleared.
      * 
-     * @param file
+     * @param path
      *            The file to load.
      * 
      * @exception org.exolab.castor.xml.MarshalException
@@ -142,13 +145,14 @@ public final class EventConfigurationManager {
      * @exception java.lang.IOException
      *                Thrown if the file cannot be opened for reading.
      */
-    public static void loadConfiguration(String file) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(file);
-        if (cfgIn == null) {
-            throw new IOException("Failed to load/locate events conf file: " + file);
+    public static void loadConfiguration(String path) throws IOException, MarshalException, ValidationException {
+        File file = new File(path);
+        Reader rdr = new FileReader(file);
+        if (rdr == null) {
+            throw new IOException("Failed to open events conf file: " + file);
         }
 
-        loadConfiguration(new InputStreamReader(cfgIn));
+        loadConfiguration(rdr, file);
     }
 
     /**
@@ -159,13 +163,17 @@ public final class EventConfigurationManager {
      * 
      * @param rdr
      *            The reader used to load the configuration.
-     * 
+     *
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
     public static void loadConfiguration(Reader rdr) throws IOException, MarshalException, ValidationException {
+        loadConfiguration(rdr, null);
+    }
+    
+    public static void loadConfiguration(Reader rdr, File file) throws IOException, MarshalException, ValidationException {
         synchronized (m_eventConf) {
             Events toplevel = CastorUtils.unmarshal(Events.class, rdr);
 
@@ -179,8 +187,17 @@ public final class EventConfigurationManager {
 
             for (String eventFilePath : toplevel.getEventFileCollection()) {
                 File eventFile = new File(eventFilePath);
-                InputStream fileIn = new FileInputStream(eventFile);
-                if (fileIn == null) {
+                
+                if (!eventFile.isAbsolute()) {
+                    if (file == null) {
+                        throw new IOException("Event configuration file contains an eventFile element with a relative path, however EventConfigurationManager.loadConfiguration was called without a file parameter, so the relative path cannot be resolved.  The event-file entry is: " + eventFilePath);
+                    }
+                    
+                    eventFile = new File(file.getParentFile(), eventFilePath);
+                }
+                
+                Reader filerdr = new FileReader(eventFile);
+                if (filerdr == null) {
                     throw new IOException("Eventconf: Failed to load/locate events file: " + eventFile);
                 }
 
@@ -188,7 +205,6 @@ public final class EventConfigurationManager {
                     log().debug("Eventconf: Loading event file: " + eventFile);
                 }
 
-                Reader filerdr = new InputStreamReader(fileIn);
                 Events filelevel = CastorUtils.unmarshal(Events.class, filerdr);
                 
                 if (filelevel.getGlobal() != null) {
