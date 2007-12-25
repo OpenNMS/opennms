@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Dec 24: Move configuration files to external files. - dj@opennms.org
 // 2007 Aug 02: Organize imports. - dj@opennms.org
 // 2007 Jun 10: Fix sequence for alarms and add getJdbcTemplate(). - dj@opennms.org
 // 2006 Aug 22: Move anticipator verify code into runTest(). - dj@opennms.org
@@ -34,9 +35,6 @@
 //   OpenNMS Licensing       <license@opennms.org>
 //   http://www.opennms.org/
 //   http://www.opennms.com/
-//
-// Tab Size = 8
-
 package org.opennms.netmgt.mock;
 
 import java.io.IOException;
