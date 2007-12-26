@@ -1528,6 +1528,7 @@
         <event-file>events/ADIC-v2.events.xml</event-file>
         <event-file>events/Adtran.events.xml</event-file>
         <event-file>events/Adtran.Atlas.events.xml</event-file>
+        <event-file>events/AirDefense.Atlas.events.xml</event-file>
         <event-file>events/Alteon.events.xml</event-file>
         <event-file>events/Altiga.events.xml</event-file>
         <event-file>events/APC.events.xml</event-file>
@@ -1542,7 +1543,6 @@
         <event-file>events/Cisco.5300dchan.events.xml</event-file>
         <event-file>events/Cisco.events.xml</event-file>
         <event-file>events/Cisco.airespace.xml</event-file>
-        <!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
         <event-file>events/Colubris.events.xml</event-file>
         <event-file>events/Covergence.events.xml</event-file>
         <event-file>events/CPQHPIM.events.xml</event-file>
@@ -1551,6 +1551,7 @@
         <event-file>events/Cricket.events.xml</event-file>
         <event-file>events/Dell-DRAC2.events.xml</event-file>
         <event-file>events/DellOpenManage.events.xml</event-file>
+        <event-file>events/DPS.events.xml</event-file>
         <event-file>events/F5.events.xml</event-file>
         <event-file>events/Fore.events.xml</event-file>
         <event-file>events/FoundryNetworks.events.xml</event-file>
@@ -1564,6 +1565,7 @@
         <event-file>events/Intel.events.xml</event-file>
         <event-file>events/ISS.events.xml</event-file>
         <event-file>events/IPUnity-SES-MIB.events.xml</event-file>
+        <event-file>events/K5Systems.events.xml</event-file>
         <event-file>events/Liebert.events.xml</event-file>
         <event-file>events/Liebert.600SM.events.xml</event-file>
         <event-file>events/Linksys.events.xml</event-file>
