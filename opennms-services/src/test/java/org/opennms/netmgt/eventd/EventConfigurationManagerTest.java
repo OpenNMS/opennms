@@ -101,7 +101,7 @@ public class EventConfigurationManagerTest extends TestCase {
     /**
      * This is disabled because the last check fails.
      */
-    public void DISABLEDtestIncludedEventFilesExistAndNoExtras() throws Exception {
+    public void testIncludedEventFilesExistAndNoExtras() throws Exception {
         File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
