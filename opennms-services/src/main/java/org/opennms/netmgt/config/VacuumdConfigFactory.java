@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -268,13 +269,17 @@ public final class VacuumdConfigFactory {
         return null;
     }
 
-    public synchronized String[] getStatements() {
+    public synchronized String[] getSqlStatements() {
         Statement[] stmts = m_config.getStatement();
         String[] sql = new String[stmts.length];
         for (int i = 0; i < stmts.length; i++) {
             sql[i] = stmts[i].getContent();
         }
         return sql;
+    }
+    
+    public synchronized List<Statement> getStatements() {
+    	return m_config.getStatementCollection();
     }
 
     public ActionEvent getActionEvent(String name) {
