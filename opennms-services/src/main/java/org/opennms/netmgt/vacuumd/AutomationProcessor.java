@@ -379,7 +379,7 @@ public class AutomationProcessor implements ReadyRunnable {
          * @param processor TODO
          * @return
          */
-        public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection actionColumns) {
+        public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection<String> actionColumns) {
             
             log().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
             
@@ -394,7 +394,7 @@ public class AutomationProcessor implements ReadyRunnable {
             boolean verified = true;
             String actionColumnName = null;
             
-            Iterator it = actionColumns.iterator();
+            Iterator<String> it = actionColumns.iterator();
             
             while (it.hasNext()) {
                 actionColumnName = (String)it.next();

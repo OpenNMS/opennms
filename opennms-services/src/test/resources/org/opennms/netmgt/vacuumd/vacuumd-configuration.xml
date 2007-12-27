@@ -1,4 +1,7 @@
 <VacuumdConfiguration period="86400000" >
+  <statement transactional="false">
+    VACUUM FULL;
+  </statement>
    <statement>
        <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
        DELETE FROM node WHERE node.nodeType = 'D';

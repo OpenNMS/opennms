@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2002-2007 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -9,7 +9,7 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- *
+ * 2007 Dec 27: Add non-transactional support for statements so that the PostgreSQL vacuum command can be called
  * 2007 May 21: Java 5 generics and loops, format code. - dj@opennms.org
  * 2007 Mar 13: Call VacuumdConfigFactory.init(), not reload(). - dj@opennms.org
  * 2004 Aug 28: Created this file.
@@ -43,6 +43,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -53,6 +54,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
+import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -65,6 +67,10 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * Implements a daemon whose job it is to run periodic updates against the
  * database for database maintenance work.
+ * 
+ * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
  */
 public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
 
@@ -188,12 +194,12 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /**
      * 
      */
-    private void executeStatements() {
+    protected void executeStatements() {
         if (!m_stopped) {
-            String[] stmts = getVacuumdConfig().getStatements();
-            for (String stmt : stmts) {
-                runUpdate(stmt);
-            }
+            List<Statement> statements = getVacuumdConfig().getStatements();
+            for (Statement statement : statements) {
+				runUpdate(statement.getContent(), statement.getTransactional());
+			}
         }
     }
 
@@ -220,14 +226,18 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         return now;
     }
 
-    private void runUpdate(String sql) {
+    private void runUpdate(String sql, boolean transactional) {
         log().info("Vacuumd executing statement: " + sql);
         // update the database
         Connection dbConn = null;
-        boolean commit = false;
+        
+        //initially set doCommit to avoid doing a commit in the finally
+        //if an exception is thrown.        
+        boolean commitRequired = false;
+        boolean autoCommitFlag = !transactional;
         try {
             dbConn = getDataSourceFactory().getConnection();
-            dbConn.setAutoCommit(false);
+            dbConn.setAutoCommit(autoCommitFlag);
 
             PreparedStatement stmt = dbConn.prepareStatement(sql);
             int count = stmt.executeUpdate();
@@ -237,15 +247,15 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                 log().debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
             }
 
-            commit = true;
+            commitRequired = transactional;
         } catch (SQLException ex) {
             log().error("Vacuumd:  Database error execuating statement  " + sql, ex);
         } finally {
             if (dbConn != null) {
                 try {
-                    if (commit) {
+                    if (commitRequired) {
                         dbConn.commit();
-                    } else {
+                    } else if (transactional) {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {

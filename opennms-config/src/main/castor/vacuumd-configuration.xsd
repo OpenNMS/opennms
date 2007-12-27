@@ -252,7 +252,9 @@
 
     <complexType>
       <simpleContent>
-        <extension base="string"/>
+        <extension base="string">
+          <attribute name="transactional" type="boolean" use="optional" default="true" />
+        </extension>
       </simpleContent>
     </complexType>
   </element>

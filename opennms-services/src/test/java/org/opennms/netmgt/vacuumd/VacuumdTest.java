@@ -59,6 +59,12 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockUtil;
 
+/**
+ * Tests Vacuumd's execution of statements and automations
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
+ *
+ */
 public class VacuumdTest extends OpenNMSTestCase {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
     
@@ -85,6 +91,13 @@ public class VacuumdTest extends OpenNMSTestCase {
         super.tearDown();
         MockUtil.println("Sleeping for "+TEAR_DOWN_WAIT_MILLIS+" millis in tearDown...");
         Thread.sleep(TEAR_DOWN_WAIT_MILLIS);
+    }
+    
+    /**
+     * Test for running statments
+     */
+    public final void testRunStatements() {
+    	m_vacuumd.executeStatements();
     }
     
     /**
@@ -164,7 +177,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         Connection conn = DataSourceFactory.getInstance().getConnection();
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("select * from events");
-        Collection columns = new ArrayList();
+        Collection<String> columns = new ArrayList<String>();
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         assertTrue(ap.getAction().resultSetHasRequiredActionColumns(rs, columns));
     }
@@ -329,7 +342,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     public void testGetTokenizedColumns() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
-        Collection tokens = ap.getAction().getActionColumns();
+        Collection<String> tokens = ap.getAction().getActionColumns();
 
         //just this for now
         assertFalse(tokens.isEmpty());
