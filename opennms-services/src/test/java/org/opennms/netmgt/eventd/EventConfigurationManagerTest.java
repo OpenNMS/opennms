@@ -99,7 +99,8 @@ public class EventConfigurationManagerTest extends TestCase {
     }
 
     /**
-     * This is disabled because the last check fails.
+     * Test that every file included in eventconf.xml actually exists on disk
+     * and that there are no files on disk that aren't included. 
      */
     public void testIncludedEventFilesExistAndNoExtras() throws Exception {
         File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
