@@ -74,9 +74,9 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
      * the map.
      */
     private Collection m_attrList;
-    private CollectionSet m_collectionSet;
+    private SnmpCollectionSet m_collectionSet;
 
-    public SNMPCollectorEntry(Collection attrList, CollectionSet collectionSet) {
+    public SNMPCollectorEntry(Collection attrList, SnmpCollectionSet collectionSet) {
         if (attrList == null) throw new NullPointerException("attrList is null!");
         m_attrList = attrList;
         m_collectionSet = collectionSet;
@@ -90,7 +90,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     private List findAttributeTypeForOid(SnmpObjId base, SnmpInstId inst) {
         List matching = new LinkedList();
         for (Iterator it = m_attrList.iterator(); it.hasNext();) {
-            AttributeType attrType = (AttributeType)it.next();
+            SnmpAttributeType attrType = (SnmpAttributeType)it.next();
             if (attrType.matches(base, inst)) {
                 matching.add(attrType);
             }
@@ -109,7 +109,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         
 
         for (Iterator iter = attrTypes.iterator(); iter.hasNext();) {
-            AttributeType attrType = (AttributeType) iter.next();
+            SnmpAttributeType attrType = (SnmpAttributeType) iter.next();
 
             if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX)) {
                 putIfIndex(inst.toInt());

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thresholding-config
+    xmlns="http://xmlns.opennms.org/xsd/config/thresholding-config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="thresholding-config">
+    <group name="default-snmp" rrdRepository="/usr/local/opennms/share/rrd/snmp/">
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed1"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed2"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed3"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed4"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed5"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed6"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed7"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed8"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed9"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed10"/>
+        <threshold type="high" ds-type="node" value="95.0" rearm="90.0"
+            trigger="1" ds-name="cimPctHddUsed11"/>
+        <expression type="high" ds-type="node" value="8.0" rearm="7.0"
+            trigger="1"
+            triggeredUEI="uei.opennms.org/testOrg/loadAvgOver8" expression="loadavg5/100"/>
+        <expression type="low" ds-type="node" value="8.0" rearm="14.0"
+            trigger="1"
+            triggeredUEI="uei.opennms.org/testOrg/swapLessThan8GB" expression="memAvailSwap/1024/1024"/>
+    </group>
+</thresholding-config>

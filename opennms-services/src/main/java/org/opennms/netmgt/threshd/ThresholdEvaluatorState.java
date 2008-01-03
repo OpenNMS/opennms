@@ -60,4 +60,9 @@ public interface ThresholdEvaluatorState {
     
     public BaseThresholdDefConfigWrapper getThresholdConfig();
 
+    /**
+     * Returns a "clean" (armed, non-triggered) clone of this object
+     * @return
+     */
+    public ThresholdEvaluatorState getCleanClone();
 }

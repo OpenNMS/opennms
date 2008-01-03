@@ -35,7 +35,6 @@ package org.opennms.netmgt.collectd;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class NodeResourceType extends ResourceType {
@@ -51,11 +50,11 @@ public class NodeResourceType extends ResourceType {
         return m_nodeInfo;
     }
 
-    public CollectionResource findResource(SnmpInstId inst) {
+    public SnmpCollectionResource findResource(SnmpInstId inst) {
         return m_nodeInfo;
     }
 
-    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+    public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
     // This is here for completeness but it should not get called from here.
     // findResource should be called instead
         log().debug("findAliasedResource: Should not get called from NodeResourceType");
@@ -67,7 +66,7 @@ public class NodeResourceType extends ResourceType {
     }
 
     @Override
-    protected Collection<AttributeType> loadAttributeTypes() {
+    protected Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getNodeAttributeTypes(getAgent());
     }
 

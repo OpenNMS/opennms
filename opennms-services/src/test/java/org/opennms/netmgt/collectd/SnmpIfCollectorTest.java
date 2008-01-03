@@ -33,10 +33,6 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;

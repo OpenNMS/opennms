@@ -41,6 +41,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -101,8 +103,10 @@ public class CollectdTest extends TestCase {
 
     private MockScheduler m_scheduler;
     private CollectionSpecification m_spec;
-
+    private CollectdPackage m_wpkg; 
+    
     private PlatformTransactionManager m_transactionManager;
+    
 
     private CollectdPackage m_collectdPackage;
 
@@ -197,9 +201,9 @@ public class CollectdTest extends TestCase {
         parm.setKey("parm1");
         parm.setValue("value1");
         svc.addParameter(parm);
+        svc.setStatus("on");
 
         m_collectdPackage = new CollectdPackage(pkg, "localhost", false);
-
     }
 
     @Override
@@ -258,7 +262,8 @@ public class CollectdTest extends TestCase {
         
         String svcName = "SNMP";
         setupCollector(svcName);
-
+        setupTransactionManager();
+        
         Scheduler m_scheduler = m_easyMockUtils.createMock(Scheduler.class);
         m_collectd.setScheduler(m_scheduler);
         
@@ -329,12 +334,24 @@ public class CollectdTest extends TestCase {
         setupCollector(svcName);
         
         m_collector.initialize(isA(CollectionAgent.class), isA(Map.class));
-        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, String.class))).andReturn(ServiceCollector.COLLECTION_SUCCEEDED);
-        
+        CollectionSet collectionSetResult=new CollectionSet() {
+
+            public int getStatus() {
+                return ServiceCollector.COLLECTION_SUCCEEDED;
+            }
+
+            public void visit(CollectionSetVisitor visitor) {
+                visitor.visitCollectionSet(this);   
+                visitor.completeCollectionSet(this);
+            }
+         
+        };      
+        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class))).andReturn(collectionSetResult);
         setupInterface(iface);
         
         setupTransactionManager();
-        
+  
+        expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_wpkg));
         expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_collectdPackage));
         
         m_easyMockUtils.replayAll();
@@ -393,9 +410,12 @@ public class CollectdTest extends TestCase {
         
         MockServiceCollector.setDelegate(getCollector());
         
+        EasyMockUtils m_mockUtils = new EasyMockUtils();
+        m_collectd.setNodeDao(m_mockUtils.createMock(NodeDao.class));
         // Setup expectation
         m_collector.initialize(Collections.EMPTY_MAP);
 
+        
         expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector));
     }
 
@@ -411,7 +431,7 @@ public class CollectdTest extends TestCase {
             s_delegate = delegate;
         }
         
-        public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
             return s_delegate.collect(agent, eproxy, parameters);
         }
 
@@ -429,6 +449,17 @@ public class CollectdTest extends TestCase {
 
         public void release(CollectionAgent agent) {
             s_delegate.release(agent);
+        }
+
+        public RrdRepository getRrdRepository(String collectionName) {
+            RrdRepository repo = new RrdRepository();
+            ArrayList<String> rras=new ArrayList<String>();
+            rras.add("RRA:AVERAGE:0.5:1:8928");
+            repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
+            repo.setRraList(rras);
+            repo.setStep(300);
+            repo.setHeartBeat(2 * 300);
+            return repo;
         }
     }
 

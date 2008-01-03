@@ -39,9 +39,9 @@ import java.util.Iterator;
 import org.opennms.netmgt.model.RrdRepository;
 
 
-public class AliasedResource extends CollectionResource {
+public class AliasedResource extends SnmpCollectionResource {
     
-	private IfInfo m_ifInfo;
+    private IfInfo m_ifInfo;
     private String m_ifAliasComment;
     private String m_domain;
     private String m_ifAlias;
@@ -95,25 +95,32 @@ public class AliasedResource extends CollectionResource {
         return shdPrsist;
     }
 
-    protected int getType() {
+    public int getType() {
         return getIfInfo().getType();
     }
 
     @Override
-	public void visit(CollectionSetVisitor visitor) {
-		visitor.visitResource(this);
-		
-		for (Iterator it = getGroups().iterator(); it.hasNext();) {
-		    AttributeGroup group = (AttributeGroup) it.next();
-		    AttributeGroup aliased = new AliasedGroup(this, group);
-		    aliased.visit(visitor);
-		}
-		
-		visitor.completeResource(this);
+    public void visit(CollectionSetVisitor visitor) {
+        visitor.visitResource(this);
+	
+	for (Iterator it = getGroups().iterator(); it.hasNext();) {
+	    AttributeGroup group = (AttributeGroup) it.next();
+	    AttributeGroup aliased = new AliasedGroup(this, group);
+	    aliased.visit(visitor);
 	}
+	
+	visitor.completeResource(this);
+    }
 
-	public Collection getGroups() {
-		return getIfInfo().getGroups();
-	}
+    public Collection getGroups() {
+    	return getIfInfo().getGroups();
+    }
 
+    public String getResourceTypeName() {
+        return "if"; //AliasedResources are implicitly interface type data, at least as far as I (Craig Miskell) understand.  If anyone is sure, please adjust this comment
+    }
+
+    public String getInstance() {
+        return null; //For node and interface type resources, use the default instance
+    }
 }

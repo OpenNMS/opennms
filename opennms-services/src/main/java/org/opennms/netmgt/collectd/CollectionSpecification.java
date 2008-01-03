@@ -33,6 +33,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -121,6 +123,15 @@ public class CollectionSpecification {
 		return m_parameters;
 	}
 
+        /**
+         * Return a read only instance of the parameters, which consists of the overall service parameters,
+         * plus various other Collection specific parameters (e.g. storeByNodeID etc)
+         * @return A read only Map instance
+         */
+	public Map getReadOnlyPropertyMap() {
+	    return Collections.unmodifiableMap(m_parameters);
+	}
+        
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
@@ -140,14 +151,16 @@ public class CollectionSpecification {
         StringBuffer sb;
         Collection<Parameter> params = getService().getParameterCollection();
         for (Parameter p : params) {
-            sb = new StringBuffer();
-            sb.append("initializeParameters: adding service: ");
-            sb.append(getServiceName());
-            sb.append(" parameter: ");
-            sb.append(p.getKey());
-            sb.append(" of value ");
-            sb.append(p.getValue());
-            log().debug(sb.toString());
+            if(log().isDebugEnabled()) {
+                sb = new StringBuffer();
+                sb.append("initializeParameters: adding service: ");
+                sb.append(getServiceName());
+                sb.append(" parameter: ");
+                sb.append(p.getKey());
+                sb.append(" of value ");
+                sb.append(p.getValue());
+                log().debug(sb.toString());
+            }
             m.put(p.getKey(), p.getValue());
         }
 
@@ -207,7 +220,7 @@ public class CollectionSpecification {
 	    }
 	}
 
-	public int collect(CollectionAgent agent) {
+	public CollectionSet collect(CollectionAgent agent) {
         Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
 	    try {
 	        return getCollector().collect(agent, eventProxy(), getPropertyMap());
@@ -268,6 +281,9 @@ public class CollectionSpecification {
 		}
 	}
 
-	
+
+    public RrdRepository getRrdRepository(String collectionName) {
+        return m_collector.getRrdRepository(collectionName);
+    }
 	
 }

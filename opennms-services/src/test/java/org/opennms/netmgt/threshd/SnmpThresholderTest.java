@@ -246,6 +246,7 @@ public class SnmpThresholderTest extends TestCase {
     
     public void testInterfaces() throws Exception {
         System.err.println("--------------------------------------------------------");
+        setUpRrdStrategy();
         // Set storeByGroup, because JRBs will be created with this feature
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
 
@@ -307,6 +308,7 @@ public class SnmpThresholderTest extends TestCase {
   
     public void testThresholdWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
+        setUpRrdStrategy();
         // Set storeByGroup, because JRBs will be created with this feature
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
 

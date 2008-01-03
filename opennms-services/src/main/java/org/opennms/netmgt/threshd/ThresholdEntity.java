@@ -42,6 +42,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,9 @@ import org.opennms.netmgt.xml.event.Event;
 public final class ThresholdEntity implements Cloneable {
     private static List<ThresholdEvaluator> s_thresholdEvaluators;
 
-    private List<ThresholdEvaluatorState> m_thresholdEvaluatorStates = new LinkedList<ThresholdEvaluatorState>();
+    //Contains a list of evaluators for each used "instance".  Is populated with the list for the "default" instance (the "null" key)
+    // in the Constructor.  Note that this means we must use a null-key capable map like HashMap
+    private Map<String,List<ThresholdEvaluatorState>> m_thresholdEvaluatorStates = new HashMap<String,List<ThresholdEvaluatorState>>();
 
     static {
         s_thresholdEvaluators = new LinkedList<ThresholdEvaluator>();
@@ -72,14 +75,23 @@ public final class ThresholdEntity implements Cloneable {
      * Constructor.
      */
     public ThresholdEntity() {
+        //Put in a default list for the "null" key (the default evaluators)
+        m_thresholdEvaluatorStates.put(null, new LinkedList<ThresholdEvaluatorState>());
     }
 
+    public BaseThresholdDefConfigWrapper getThresholdConfig() {
+        return m_thresholdEvaluatorStates.get(null).get(0).getThresholdConfig();
+    }
+    
+    private boolean hasThresholds() {
+        return m_thresholdEvaluatorStates.get(null).size()!=0;
+    }
     /**
      * Get datasource name
      */
     public String getDataSourceExpression() {
-        if (getThresholdEvaluatorStates().size() > 0) {
-            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDatasourceExpression();
+        if (hasThresholds()) {
+            return getThresholdConfig().getDatasourceExpression();
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }
@@ -89,8 +101,8 @@ public final class ThresholdEntity implements Cloneable {
      * Get datasource type
      */
     public String getDatasourceType() {
-        if (getThresholdEvaluatorStates().size() > 0) {
-            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDsType();
+        if (hasThresholds()) {
+            return getThresholdConfig().getDsType();
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }
@@ -100,8 +112,8 @@ public final class ThresholdEntity implements Cloneable {
      * Get datasource Label
      */
     public String getDatasourceLabel() {
-        if (getThresholdEvaluatorStates().size() > 0) {
-            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getDsLabel();
+        if (hasThresholds()) {
+            return getThresholdConfig().getDsLabel();
         } else {
             return null;
         }
@@ -113,8 +125,8 @@ public final class ThresholdEntity implements Cloneable {
      * @return Collection of the names of datasources 
      */
     public Collection<String> getRequiredDatasources() {
-        if (getThresholdEvaluatorStates().size() > 0) {
-            return getThresholdEvaluatorStates().get(0).getThresholdConfig().getRequiredDatasources();
+        if (hasThresholds()) {
+            return getThresholdConfig().getRequiredDatasources();
         } else {
             throw new IllegalStateException("No thresholds have been added.");
         }
@@ -126,10 +138,12 @@ public final class ThresholdEntity implements Cloneable {
      * actually cloned...the returned ThresholdEntity object will simply contain
      * references to the same castor Threshold objects as the original
      * ThresholdEntity object.
+     * 
+     * All state will be lost, particularly instances, so it's not a true clone by any stretch of the imagination
      */
     public ThresholdEntity clone() {
         ThresholdEntity clone = new ThresholdEntity();
-        for (ThresholdEvaluatorState thresholdItem : getThresholdEvaluatorStates()) {
+        for (ThresholdEvaluatorState thresholdItem : getThresholdEvaluatorStates(null)) {
             clone.addThreshold(thresholdItem.getThresholdConfig());
         }
 
@@ -144,7 +158,7 @@ public final class ThresholdEntity implements Cloneable {
      * @return String which represents the content of this ThresholdEntity
      */
     public String toString() {
-        if (getThresholdEvaluatorStates().size() == 0) {
+        if (!hasThresholds()) {
             return "";
         }
 
@@ -153,7 +167,7 @@ public final class ThresholdEntity implements Cloneable {
         buffer.append("dsName=").append(this.getDataSourceExpression());
         buffer.append(", dsType=").append(this.getDatasourceType());
 
-        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
+        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(null)) {
             buffer.append(", ds=").append(item.getThresholdConfig().getDatasourceExpression());
             buffer.append(", value=").append(item.getThresholdConfig().getValue());
             buffer.append(", rearm=").append(item.getThresholdConfig().getRearm());
@@ -163,22 +177,44 @@ public final class ThresholdEntity implements Cloneable {
         return buffer.toString();
     }
 
+    
     /**
      * Evaluates the threshold in light of the provided datasource value and
      * create any events for thresholds.
      * 
-     * @param dsValue
-     *            Current value of datasource
-
+     * Semi-deprecated method; only used for old Thresholding code (threshd and friends)
+     * Implemented in terms of the other method with the same name and the extra param
+     *
+     * @param values
+     *          map of values (by datasource name) to evaluate against the threshold (might be an expression)
+     * @param date
+     *          Date to use in created events
      * @return List of events
      */
-    public List<Event> evaluateAndCreateEvents(Map<String, Double> values, Date date) {
+    public  List<Event> evaluateAndCreateEvents(Map<String, Double> values, Date date) {
+           return evaluateAndCreateEvents(null, values, date);
+    }
+
+    /**
+     * Evaluates the threshold in light of the provided datasource value, for
+     * the named instance (or the generic instance if instance is null) and
+     * create any events for thresholds.
+     * 
+     * @param instance
+     *          The name of the instance of this threshold to check (e.g. the index of the GenericIndexResource
+     * @param values
+     *          map of values (by datasource name) to evaluate against the threshold (might be an expression)
+     * @param date
+     *          Date to use in created events
+     * @return List of events
+     */
+    public List<Event> evaluateAndCreateEvents(String instance, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
         double dsValue=0.0;
         
         try {
-            if (getThresholdEvaluatorStates().size() > 0) {
-                dsValue=getThresholdEvaluatorStates().get(0).getThresholdConfig().evaluate(values);
+            if (getThresholdEvaluatorStates(instance).size() > 0) {
+                dsValue=getThresholdConfig().evaluate(values);
             } else {
                 throw new IllegalStateException("No thresholds have been added.");
             }
@@ -191,7 +227,7 @@ public final class ThresholdEntity implements Cloneable {
             log().debug("evaluate: value= " + dsValue + " against threshold: " + this);
         }        
 
-        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
+        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
             Event event = item.getEventForState(status, date, dsValue);
             if (event != null) {
@@ -255,14 +291,16 @@ public final class ThresholdEntity implements Cloneable {
 
     public void addThreshold(BaseThresholdDefConfigWrapper threshold) {
         ThresholdEvaluator evaluator = getEvaluatorForThreshold(threshold);
+        //Get the default list of evaluators (the null key)
+        List<ThresholdEvaluatorState> defaultList=m_thresholdEvaluatorStates.get(null);
 
-        for (ThresholdEvaluatorState item : getThresholdEvaluatorStates()) {
+        for (ThresholdEvaluatorState item : defaultList) {
             if (item.getThresholdConfig().getType() == threshold.getType()) {
                 throw new IllegalStateException(threshold.getType().toString() + " threshold already set.");
             }
         }
 
-        m_thresholdEvaluatorStates.add(evaluator.getThresholdEvaluatorState(threshold));
+        defaultList.add(evaluator.getThresholdEvaluatorState(threshold));
     }
 
     private ThresholdEvaluator getEvaluatorForThreshold(BaseThresholdDefConfigWrapper threshold) {
@@ -278,8 +316,27 @@ public final class ThresholdEntity implements Cloneable {
         throw new IllegalArgumentException(message);
     }
 
-    public List<ThresholdEvaluatorState> getThresholdEvaluatorStates() {
-        return m_thresholdEvaluatorStates;
+    /**
+     * Returns the evaluator states *for the given instance. 
+     * @param instance The key to use to identify the instnace to get states for.   Can be null to get the default instance
+     * @return
+     */
+    public List<ThresholdEvaluatorState> getThresholdEvaluatorStates(String instance) {
+        List<ThresholdEvaluatorState> result= m_thresholdEvaluatorStates.get(instance);
+        if(result==null) {
+            //There is no set of evaluators for this instance; create a list by copying the base ones
+            List<ThresholdEvaluatorState> defaultList=m_thresholdEvaluatorStates.get(null);
+          
+            //Create the new list
+            result=new LinkedList<ThresholdEvaluatorState>();
+            for(ThresholdEvaluatorState state: defaultList) {
+                result.add(state.getCleanClone());
+            }
+            
+            //Store the new list with the instance as the key
+            m_thresholdEvaluatorStates.put(instance,result);
+        }
+        return result;
     }
 
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {

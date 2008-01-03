@@ -32,8 +32,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.opennms.netmgt.config.threshd.Basethresholddef;
-import org.opennms.netmgt.config.threshd.Threshold;
 
 /**
  * Class used to provide information to ThresholdEntity about the

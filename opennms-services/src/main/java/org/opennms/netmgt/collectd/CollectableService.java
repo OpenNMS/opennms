@@ -40,6 +40,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -50,8 +51,10 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.threshd.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -91,6 +94,10 @@ final class CollectableService implements ReadyRunnable {
     private CollectorUpdates m_updates;
 
     /**
+     * The thresholdvisitor for this collectable service; called 
+     */
+    private ThresholdingVisitor m_thresholdVisitor;
+    /**
      * 
      */
     private static final boolean ABORT_COLLECTION = true;
@@ -105,18 +112,16 @@ final class CollectableService implements ReadyRunnable {
 
     private IpInterfaceDao m_ifaceDao;
 
+    private ServiceParameters m_params;
+    
+    private RrdRepository m_repository;
     /**
      * Constructs a new instance of a CollectableService object.
-     * @param iface TODO
+     * @param iface The interface on which to collect data
      * @param spec
      *            The package containing parms for this collectable service.
-     * @param monSvc TODO
-     * @param dbNodeId
-     *            The database identifier key for the interfaces' node
      * @param address
      *            InetAddress of the interface to collect from
-     * @param svcName
-     *            Service name
      * 
      */
     protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) {
@@ -135,7 +140,12 @@ final class CollectableService implements ReadyRunnable {
         m_lastScheduledCollectionTime = 0L;
         
         m_spec.initialize(m_agent);
-
+        
+        Map roProps=m_spec.getReadOnlyPropertyMap();
+        m_params=new ServiceParameters(roProps);
+        m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
+        
+        m_thresholdVisitor =  ThresholdingVisitor.createThresholdingVisitor(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
 
     }
     
@@ -319,18 +329,43 @@ final class CollectableService implements ReadyRunnable {
 		m_status = status;
 	}
 
+        private BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
+            if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
+                return new GroupPersister(params, repository);
+            } else {
+                return new OneToOnePersister(params, repository);
+            }
+        }
+        
 	private int doCollection() {
 		// Perform SNMP data collection
 		//
-		log().info("run: starting new collection for " + getHostAddress());
-
-		int status = ServiceCollector.COLLECTION_FAILED;
+		log().info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName());
+		CollectionSet result=null;
 		try {
-	        status = m_spec.collect(m_agent);
+		    result = m_spec.collect(m_agent);
+		    if(result!=null) {
+
+                        Collectd.instrumentation().beginPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
+                        try {
+                            BasePersister persister = createPersister(m_params, m_repository);
+                            result.visit(persister);
+                        } finally {
+                            Collectd.instrumentation().endPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
+                        }
+                        //Do the thresholding; this could be made more generic (listeners begin passed the collectionset ), but frankly, why bother?
+                        //The first person who actually needs to configure that sort of thing on the fly can code it up
+                        if(m_thresholdVisitor!=null) {
+                            result.visit(m_thresholdVisitor);
+                        }
+                       
+		        return result.getStatus();
+		    }
 		} catch (Throwable t) {
-			log().error("run: An undeclared throwable was caught during SNMP collection for interface " + getHostAddress(), t);
+		    log().error("run: An undeclared throwable was caught during data collection for interface " + getHostAddress(), t);
 		}
-		return status;
+		//Fall-through case - something went wrong, we failed
+		return ServiceCollector.COLLECTION_FAILED;
 	}
 
 	/**
@@ -499,14 +534,22 @@ final class CollectableService implements ReadyRunnable {
     	return ThreadCategory.getInstance(getClass());
     }
 
-	private void reinitialize(OnmsIpInterface newIface) {
-		m_spec.release(m_agent);
-		m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao, m_transMgr);
-		m_spec.initialize(m_agent);
-	}
+    private void reinitialize(OnmsIpInterface newIface) {
+        m_spec.release(m_agent);
+        m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
+                                                m_transMgr);
+        m_spec.initialize(m_agent);
+    }
 
-	public ReadyRunnable getReadyRunnable() {
-		return this;
-	}
+    public void reinitializeThresholding() {
+        if(m_thresholdVisitor!=null) {
+            log().debug("reinitializeThresholding on "+this);
+            m_thresholdVisitor.initThresholdState();
+        }
+    }
+    
+    public ReadyRunnable getReadyRunnable() {
+	return this;
+    }
 
 }

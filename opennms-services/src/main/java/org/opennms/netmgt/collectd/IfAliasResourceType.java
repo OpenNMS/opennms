@@ -54,13 +54,13 @@ public class IfAliasResourceType extends ResourceType {
         m_params = params;
     }
 
-    public CollectionResource findResource(SnmpInstId inst) {
+    public SnmpCollectionResource findResource(SnmpInstId inst) {
         // This is here for completeness but it should not get called here.
         // findAliasedResource should be called instead
         log().debug("findResource: Should not get called from IfAliasResourceType");
         return null;
     }
-    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+    public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         Integer key = new Integer(inst.toInt());
         AliasedResource resource = (AliasedResource) m_aliasedIfs.get(key);
         if (resource == null) {
@@ -79,7 +79,7 @@ public class IfAliasResourceType extends ResourceType {
         return resource;
     }
 
-    public Collection<AttributeType> loadAttributeTypes() {
+    public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getAliasAttributeTypes(getAgent());
    }
 

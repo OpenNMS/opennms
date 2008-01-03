@@ -44,7 +44,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
@@ -57,8 +56,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
@@ -233,11 +231,11 @@ public class SnmpCollector implements ServiceCollector {
         initDatabaseConnectionFactory();
 
         // Get path to RRD repository
-        initializeRrdRepository();
+        //initializeRrdRepository();
 
     }
 
-    private void initializeRrdRepository() {
+    /*private void initializeRrdRepository() {
 
         initializeRrdDirs();
 
@@ -245,10 +243,6 @@ public class SnmpCollector implements ServiceCollector {
     }
 
     private void initializeRrdDirs() {
-        /*
-         * If the RRD file repository directory does NOT already exist, create
-         * it.
-         */
         File f = new File(DataCollectionConfigFactory.getInstance().getRrdPath());
         if (!f.isDirectory()) {
             if (!f.mkdirs()) {
@@ -265,7 +259,7 @@ public class SnmpCollector implements ServiceCollector {
             log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
             throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
-    }
+    }*/
 
     private void initDatabaseConnectionFactory() {
         try {
@@ -370,7 +364,7 @@ public class SnmpCollector implements ServiceCollector {
      *            Key/value pairs from the package to which the interface
      *            belongs.
      */
-    public int collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) {
         try {
             
 
@@ -385,48 +379,50 @@ public class SnmpCollector implements ServiceCollector {
 
             final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
 
-            CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
+            SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
             if (!collectionSet.hasDataToCollect()) {
                 logNoDataToCollect(agent);
             }
             
-            collectData(collectionSet);
-
-            if (collectionSet.rescanNeeded()) {
-                forceRescanState.rescanIndicated();
+            Collectd.instrumentation().beginCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
+            try {
+                collectionSet.collect();
+                if (collectionSet.rescanNeeded()) {
+                    forceRescanState.rescanIndicated();
+                }
+//              Not done here anymore - see CollectableService
+                //persistData(params, collectionSet);
+                return collectionSet;
+            } catch (CollectionWarning e) {
+                Collectd.instrumentation().reportCollectionError(agent.getNodeId(), agent.getHostAddress(), serviceName(), e);
+                e.reportError();
+            } finally {
+                Collectd.instrumentation().endCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
             }
-
-            persistData(params, collectionSet);
-
-            // return the status of the collection
-            return ServiceCollector.COLLECTION_SUCCEEDED;
-        } catch (CollectionError e) {
-            Collectd.instrumentation().reportCollectionError(agent.getNodeId(), agent.getHostAddress(), serviceName(), e);
-            return e.reportError();
         } catch (Throwable t) {
             t.printStackTrace();
-            log().error("received Throwable: " + t, t);
-            return this.unexpected(agent, t);
+            log().error("Unexpected error during node SNMP collection for : " + agent.getHostAddress(), t);
         }
+        return null;
     }
 
-    private void persistData(ServiceParameters params, CollectionSet collectionSet) {
+    /*private void persistData(ServiceParameters params, SnmpCollectionSet collectionSet) {
         Collectd.instrumentation().beginPersistingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
         try {
             collectionSet.saveAttributes(params);
         } finally {
             Collectd.instrumentation().endPersistingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
         }
-    }
+    }*/
 
-    private void collectData(CollectionSet collectionSet) throws CollectionWarning {
+    /*private void collectData(SnmpCollectionSet collectionSet) throws CollectionWarning {
         Collectd.instrumentation().beginCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
         try {
             collectionSet.collect();
         } finally {
             Collectd.instrumentation().endCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
         }
-    }
+    }*/
 
     private void logNoDataToCollect(CollectionAgent agent) {
         log().info("agent "+agent+" defines no data to collect.  Skipping.");
@@ -441,5 +437,9 @@ public class SnmpCollector implements ServiceCollector {
                     "Unexpected error during node SNMP collection for "
                     + agent.getHostAddress(), t);
         return ServiceCollector.COLLECTION_FAILED;
+    }
+
+    public RrdRepository getRrdRepository(String collectionName) {
+        return DataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }
 }

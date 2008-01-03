@@ -45,7 +45,7 @@ public abstract class ResourceType {
     
     private CollectionAgent m_agent;
     private OnmsSnmpCollection m_snmpCollection;
-    private Collection<AttributeType> m_attributeTypes;
+    private Collection<SnmpAttributeType> m_attributeTypes;
 
     public ResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         m_agent = agent;
@@ -64,24 +64,24 @@ public abstract class ResourceType {
         return m_snmpCollection;
     }
 
-    final public Collection<AttributeType> getAttributeTypes() {
+    final public Collection<SnmpAttributeType> getAttributeTypes() {
         if (m_attributeTypes == null) {
             m_attributeTypes = loadAttributeTypes();
         }
         return m_attributeTypes;
     }
     
-    protected abstract Collection<AttributeType> loadAttributeTypes();
+    protected abstract Collection<SnmpAttributeType> loadAttributeTypes();
 
     protected boolean hasDataToCollect() {
         return !getAttributeTypes().isEmpty();
     }
 
-    public abstract CollectionResource findResource(SnmpInstId inst);
+    public abstract SnmpCollectionResource findResource(SnmpInstId inst);
 
-    public abstract CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias);
+    public abstract SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias);
     
-    public abstract Collection<? extends CollectionResource> getResources();
+    public abstract Collection<? extends SnmpCollectionResource> getResources();
     
     public Category log() { return ThreadCategory.getInstance(getClass()); }
 }

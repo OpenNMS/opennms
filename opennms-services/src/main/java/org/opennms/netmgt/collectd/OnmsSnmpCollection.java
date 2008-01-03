@@ -66,9 +66,9 @@ public class OnmsSnmpCollection {
     private Map<String, ResourceType> m_genericIndexResourceTypes;
     private int m_maxVarsPerPdu;
     private DataCollectionConfig m_dataCollectionConfig;
-    private List<AttributeType> m_nodeAttributeTypes;
-    private List<AttributeType> m_indexedAttributeTypes;
-    private List<AttributeType> m_aliasAttributeTypes;
+    private List<SnmpAttributeType> m_nodeAttributeTypes;
+    private List<SnmpAttributeType> m_indexedAttributeTypes;
+    private List<SnmpAttributeType> m_aliasAttributeTypes;
 
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
         this(agent, params, null);
@@ -161,20 +161,20 @@ public class OnmsSnmpCollection {
         return getName();
     }
 
-    public CollectionSet createCollectionSet(CollectionAgent agent) {
-        return new CollectionSet(agent, this);
+    public SnmpCollectionSet createCollectionSet(CollectionAgent agent) {
+        return new SnmpCollectionSet(agent, this);
     }
     
-    private List<AttributeType> getIndexedAttributeTypes(CollectionAgent agent) {
+    private List<SnmpAttributeType> getIndexedAttributeTypes(CollectionAgent agent) {
         if (m_indexedAttributeTypes == null) {
             m_indexedAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.ALL_IF_ATTRIBUTES);
         }
         return m_indexedAttributeTypes;
     }
     
-    public List<AttributeType> getIndexedAttributeTypesForResourceType(CollectionAgent agent, ResourceType resourceType) {
-        LinkedList<AttributeType> resAttrTypes = new LinkedList<AttributeType>();
-        for(AttributeType attrType : getIndexedAttributeTypes(agent)) {
+    public List<SnmpAttributeType> getIndexedAttributeTypesForResourceType(CollectionAgent agent, ResourceType resourceType) {
+        LinkedList<SnmpAttributeType> resAttrTypes = new LinkedList<SnmpAttributeType>();
+        for(SnmpAttributeType attrType : getIndexedAttributeTypes(agent)) {
             if (attrType.getResourceType().equals(resourceType)) {
                 resAttrTypes.add(attrType);
             }
@@ -182,25 +182,25 @@ public class OnmsSnmpCollection {
         return resAttrTypes;
     }
 
-    public List<AttributeType> getNodeAttributeTypes(CollectionAgent agent) {
+    public List<SnmpAttributeType> getNodeAttributeTypes(CollectionAgent agent) {
         if (m_nodeAttributeTypes == null) {
             m_nodeAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.NODE_ATTRIBUTES);
         }
         return m_nodeAttributeTypes;
     }
 
-    public List<AttributeType> loadAttributeTypes(CollectionAgent agent, int ifType) {
+    public List<SnmpAttributeType> loadAttributeTypes(CollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
         List<MibObject> oidList = getDataCollectionConfig().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
 
         Map<String, AttributeGroupType> groupTypes = new HashMap<String, AttributeGroupType>();
 
-        List<AttributeType> typeList = new LinkedList<AttributeType>();
+        List<SnmpAttributeType> typeList = new LinkedList<SnmpAttributeType>();
         for (MibObject mibObject : oidList) {
             String instanceName = mibObject.getInstance();
             AttributeGroupType groupType = findGroup(groupTypes, mibObject);
-            AttributeType attrType = AttributeType.create(getResourceType(agent, instanceName), getName(), mibObject, groupType);
+            SnmpAttributeType attrType = SnmpAttributeType.create(getResourceType(agent, instanceName), getName(), mibObject, groupType);
             groupType.addAttributeType(attrType);
             typeList.add(attrType);
         }
@@ -278,8 +278,8 @@ public class OnmsSnmpCollection {
         return set;
     }
 
-    public Collection<AttributeType> getAttributeTypes(CollectionAgent agent) {
-        HashSet<AttributeType> set = new HashSet<AttributeType>();
+    public Collection<SnmpAttributeType> getAttributeTypes(CollectionAgent agent) {
+        HashSet<SnmpAttributeType> set = new HashSet<SnmpAttributeType>();
         for (ResourceType resourceType : getResourceTypes(agent)) {
             set.addAll(resourceType.getAttributeTypes());
         }
@@ -306,7 +306,7 @@ public class OnmsSnmpCollection {
         return CollectionType.NO_COLLECT;
     }
 
-    public List<AttributeType> loadAliasAttributeTypes(CollectionAgent agent) {
+    public List<SnmpAttributeType> loadAliasAttributeTypes(CollectionAgent agent) {
         IfAliasResourceType resType = getIfAliasResourceType(agent);
         MibObject ifAliasMibObject = new MibObject();
         ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
@@ -319,11 +319,11 @@ public class OnmsSnmpCollection {
     
         AttributeGroupType groupType = new AttributeGroupType(ifAliasMibObject.getGroupName(), ifAliasMibObject.getGroupIfType());
     
-        AttributeType type = AttributeType.create(resType, resType.getCollectionName(), ifAliasMibObject, groupType);
+        SnmpAttributeType type = SnmpAttributeType.create(resType, resType.getCollectionName(), ifAliasMibObject, groupType);
         return Collections.singletonList(type);
     }
 
-    public List<AttributeType> getAliasAttributeTypes(CollectionAgent agent) {
+    public List<SnmpAttributeType> getAliasAttributeTypes(CollectionAgent agent) {
         if (m_aliasAttributeTypes == null) {
             m_aliasAttributeTypes = loadAliasAttributeTypes(agent);
         }

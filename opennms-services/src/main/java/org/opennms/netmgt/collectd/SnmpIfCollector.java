@@ -82,7 +82,7 @@ public class SnmpIfCollector extends AggregateTracker {
 
     private List m_objList;
 
-    private CollectionSet m_collectionSet;
+    private SnmpCollectionSet m_collectionSet;
     
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
@@ -116,8 +116,8 @@ public class SnmpIfCollector extends AggregateTracker {
 	 * @param ifMap
      *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
      */
-    public SnmpIfCollector(InetAddress address, List objList, CollectionSet collectionSet) {
-        super(AttributeType.getCollectionTrackers(objList));
+    public SnmpIfCollector(InetAddress address, List objList, SnmpCollectionSet collectionSet) {
+        super(SnmpAttributeType.getCollectionTrackers(objList));
         
         log().debug("COLLECTING on list of "+objList.size()+" items");
         log().debug("List is "+objList);

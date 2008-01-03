@@ -86,5 +86,9 @@ public abstract class BaseThresholdDefConfigWrapper {
     public String getRearmedUEI() {
         return m_baseDef.getRearmedUEI();
     }
+    
+    public Basethresholddef getBasethresholddef() {
+        return m_baseDef;
+    }
 }
 

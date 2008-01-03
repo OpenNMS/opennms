@@ -40,7 +40,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -89,14 +88,14 @@ public class GenericIndexResourceType extends ResourceType {
     }
 
     @Override
-    public CollectionResource findResource(SnmpInstId inst) {
+    public SnmpCollectionResource findResource(SnmpInstId inst) {
         if (!m_resourceMap.containsKey(inst)) {
             m_resourceMap.put(inst, new GenericIndexResource(this, getName(), inst));
         }
         return m_resourceMap.get(inst);
     }
 
-    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+    public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
         log().debug("findAliasedResource: Should not get called from GenericIndexResourceType");
@@ -104,7 +103,7 @@ public class GenericIndexResourceType extends ResourceType {
     }
 
     @Override
-    public Collection<AttributeType> loadAttributeTypes() {
+    public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);
     }
 

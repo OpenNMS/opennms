@@ -34,20 +34,20 @@ package org.opennms.netmgt.collectd;
 import org.apache.log4j.Category;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-public class AliasedAttribute extends Attribute {
+public class AliasedAttribute extends SnmpAttribute {
 	
-	public AliasedAttribute(CollectionResource resource, Attribute attr) {
+	public AliasedAttribute(CollectionResource resource, SnmpAttribute attr) {
 		super(resource, attr.getAttributeType(), attr.getValue());
 		m_attr = attr;
 	}
 
-	private Attribute m_attr;
+	private SnmpAttribute m_attr;
 
 	public boolean equals(Object obj) {
 		return m_attr.equals(obj);
 	}
 
-	public AttributeType getAttributeType() {
+	public SnmpAttributeType getAttributeType() {
 		return m_attr.getAttributeType();
 	}
 

@@ -101,6 +101,10 @@ public class HttpCollector implements ServiceCollector {
     //copy and the key won't require the service name as  part of the key.
     private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
     
+    //  Group name is arbitrary (there is no such thing as a "group" in the http collection config),
+    //Similarly, collection is always at the node level
+    private AttributeGroupType m_groupType=new AttributeGroupType("httpcollection","all");
+    
     private NumberFormat parser = null;
     
     private NumberFormat rrdFormatter =  null;
@@ -121,20 +125,22 @@ public class HttpCollector implements ServiceCollector {
     }
 
     @SuppressWarnings("unchecked")
-    public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
-        return collectionSet.collect();
+        collectionSet.collect();
+        return collectionSet;
     }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
     
-    protected class HttpCollectionSet {
+    protected class HttpCollectionSet implements CollectionSet {
         private CollectionAgent m_agent;
         private Map<String, String> m_parameters;
         private Uri m_uriDef;
-        
+        private int m_status;
+        private HttpCollectionResource m_collectionResource;
         public Uri getUriDef() {
             return m_uriDef;
         }
@@ -146,10 +152,12 @@ public class HttpCollector implements ServiceCollector {
         HttpCollectionSet(CollectionAgent agent, Map<String, String> parameters) {
             m_agent = agent;
             m_parameters = parameters;
+            m_collectionResource=new HttpCollectionResource(agent);
+            m_status=ServiceCollector.COLLECTION_FAILED;
         }
         
         @SuppressWarnings("unchecked")
-        public int collect() {
+        public void collect() {
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(m_parameters.get("http-collection"));
             List<Uri> uriDefs = collection.getUris().getUriCollection();
             for (Uri uriDef : uriDefs) {
@@ -164,10 +172,10 @@ public class HttpCollector implements ServiceCollector {
                      * collection-centric.  Should probably let the exception
                      * pass through.
                      */
-                    return ServiceCollector.COLLECTION_FAILED;
+                    m_status=ServiceCollector.COLLECTION_FAILED;
                 }
             }
-            return ServiceCollector.COLLECTION_SUCCEEDED;
+            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
 
         }
 
@@ -186,6 +194,24 @@ public class HttpCollector implements ServiceCollector {
         public void setParameters(Map<String, String> parameters) {
             m_parameters = parameters;
         }
+
+        public int getStatus() {
+            return m_status;
+        }
+        
+        public void storeResults(List<HttpCollectionAttribute> results) {
+            m_collectionResource.storeResults(results);
+        }
+
+        public void visit(CollectionSetVisitor visitor) {
+            visitor.visitCollectionSet(this);
+            m_collectionResource.visit(visitor);
+            visitor.completeCollectionSet(this);
+        }
+        
+        public HttpCollectionResource getResource() {
+            return m_collectionResource;
+        }       
     }
 
 
@@ -214,7 +240,7 @@ public class HttpCollector implements ServiceCollector {
             
             log().info("doCollection: collecting for client: "+client+" using method: "+method);
             client.executeMethod(method);
-            
+            //Not really a persist as such; it just stores data in collectionSet for later retrieval
             persistResponse(collectionSet, client, method);
         } catch (URIException e) {
             throw new HttpCollectorException("Error building HttpClient URI", client);
@@ -222,19 +248,21 @@ public class HttpCollector implements ServiceCollector {
             throw new HttpCollectorException("Error building HttpMethod", client);
         } catch (IOException e) {
             throw new HttpCollectorException("IO Error retrieving page", client);
-        } catch (RrdException e) {
-            throw new HttpCollectorException("Error writing RRD", client);
         } finally {
             if (method != null) method.releaseConnection();
         }
     }
 
-    class HttpCollectionAttribute implements AttributeDefinition {
+    class HttpCollectionAttribute extends AbstractCollectionAttribute implements AttributeDefinition {
         String m_alias;
         String m_type;
         Number m_value;
+        HttpCollectionResource m_resource;
+        HttpCollectionAttributeType m_attribType;
         
-        HttpCollectionAttribute(String alias, String type, Number value) {
+        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) { 
+            m_resource=resource;
+            m_attribType=attribType;
             m_alias = alias;
             m_type= type;
             m_value = value;
@@ -252,6 +280,14 @@ public class HttpCollector implements ServiceCollector {
             return m_value;
         }
         
+        public String getNumericValue() {
+                return getValue().toString();
+        }
+             
+        public String getStringValue() {
+            return getValue().toString();
+        }
+        
         public String getValueAsString() {
             return rrdFormatter.format(m_value);
         }
@@ -264,7 +300,18 @@ public class HttpCollector implements ServiceCollector {
             }
             return false;
         }
-
+        public CollectionAttributeType getAttributeType() {
+            return m_attribType;
+        }
+        
+        public CollectionResource getResource() {
+            return m_resource;
+        }
+        
+        public boolean shouldPersist(ServiceParameters params) {
+            return true;
+            }
+        
         @Override
         public int hashCode() {
             return getName().hashCode();
@@ -299,7 +346,13 @@ public class HttpCollector implements ServiceCollector {
             for (Attrib attribDef : attribDefs) {
                 try {
                     Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
-                    HttpCollectionAttribute bute = new HttpCollectionAttribute(attribDef.getAlias(), attribDef.getType(), num);
+                    HttpCollectionAttribute bute = 
+                        new HttpCollectionAttribute(
+                                                    collectionSet.getResource(),
+                                                    new HttpCollectionAttributeType(attribDef, m_groupType), 
+                                                    attribDef.getAlias(),
+                                                    attribDef.getType(), 
+                                                    num);
                     log().debug("processResponse: adding found attribute: "+bute);
                     butes.add(bute);
                 } catch (ParseException e) {
@@ -331,16 +384,19 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) throws IOException, RrdException {
+    private void persistResponse(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) throws IOException {
         List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
         if (butes.isEmpty()) {
             log().warn("doCollection: no attributes defined for collection were found in response text matching regular expression '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
             throw new HttpCollectorException("No attributes specified were found: ", client);
         }
         
-        String collectionName = collectionSet.getParameters().get("http-collection");
-        RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
-        ResourceIdentifier resource = new ResourceIdentifier() {
+        //put the results into the collectionset for later
+        collectionSet.storeResults(butes);
+        //String collectionName = collectionSet.getParameters().get("http-collection");
+        //RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
+
+        /*ResourceIdentifier resource = new ResourceIdentifier() {
 
             public String getOwnerName() {
                 return collectionSet.getAgent().getHostAddress();
@@ -350,17 +406,17 @@ public class HttpCollector implements ServiceCollector {
                 return new File(repository.getRrdBaseDir(), Integer.toString(collectionSet.getAgent().getNodeId()));
             }
             
-        };
-        
+        }; */
         log().info("doCollection: persisting "+butes.size()+" attributes");
         
-        for (HttpCollectionAttribute attribute : butes) {
+        // We don't persist here anymore - see CollectableService
+        /*for (HttpCollectionAttribute attribute : butes) {
             PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
             builder.declareAttribute(attribute);
             log().debug("doCollection: setting attribute: "+attribute);
             builder.setAttributeValue(attribute, attribute.getValueAsString());
             builder.commit();
-        }
+        }*/
     }
 
     private void buildCredentials(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) {
@@ -560,6 +616,94 @@ public class HttpCollector implements ServiceCollector {
 
     public void release(CollectionAgent agent) {
         // TODO Auto-generated method stub
+    }
+
+    
+    class HttpCollectionResource implements CollectionResource {
+
+        CollectionAgent m_agent;
+        AttributeGroup m_attribGroup;
+        
+        HttpCollectionResource(CollectionAgent agent) {
+            m_agent=agent;
+            m_attribGroup=new AttributeGroup(this, m_groupType);
+        }
+        
+        public void storeResults(List<HttpCollectionAttribute> results) {
+            for(HttpCollectionAttribute attrib: results) {
+                m_attribGroup.addAttribute(attrib);
+            }
+        }
+        
+        //A rescan is never needed for the HttpCollector
+        public boolean rescanNeeded() {
+            return false;
+        }
+
+        public boolean shouldPersist(ServiceParameters params) {
+            return true;
+        }
+
+        public String getOwnerName() {
+            return m_agent.getHostAddress();
+        }
+
+        public File getResourceDir(RrdRepository repository) {
+            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId()));
+        }
+        
+        public void visit(CollectionSetVisitor visitor) {
+            visitor.visitResource(this);
+            m_attribGroup.visit(visitor);
+            visitor.completeResource(this);
+        }
+        
+        public int getType() {
+            return -1; //Is this right?
+        }
+        
+        public String getResourceTypeName() {
+            return "node"; //All node resources for HTTP; nothing of interface or "indexed resource" type
+        }
+
+        public String getInstance() {
+            return null;
+        }
+    }
+    
+    class HttpCollectionAttributeType implements CollectionAttributeType {
+        Attrib m_attribute;
+        AttributeGroupType m_groupType;
+
+        protected HttpCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
+            m_groupType=groupType;
+            m_attribute=attribute;
+        }
+
+        public AttributeGroupType getGroupType() {
+            return m_groupType;
+        }
+
+        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+            if(m_attribute.getType().equals("string")) {
+                persister.persistStringAttribute(attribute);
+            } else {
+                persister.persistNumericAttribute(attribute);
+            }
+        }
+
+        public String getName() {
+            return m_attribute.getAlias();
+        }
+
+        public String getType() {
+            return m_attribute.getType();
+        }
+        
+    }
+    
+    public RrdRepository getRrdRepository(String collectionName) {
+        return HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }
 
 }

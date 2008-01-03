@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -36,21 +36,21 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-public class Attribute {
+public class SnmpAttribute extends AbstractCollectionAttribute {
 
     private CollectionResource m_resource;
-    private AttributeType m_type;
+    private SnmpAttributeType m_type;
     private SnmpValue m_val;
 
-    public Attribute(CollectionResource resource, AttributeType type, SnmpValue val) {
+    public SnmpAttribute(CollectionResource resource, SnmpAttributeType type, SnmpValue val) {
         m_resource = resource;
         m_type = type;
         m_val = val;
     }
 
     public boolean equals(Object obj) {
-        if (obj instanceof Attribute) {
-            Attribute attr = (Attribute) obj;
+        if (obj instanceof SnmpAttribute) {
+            SnmpAttribute attr = (SnmpAttribute) obj;
             return (m_resource.equals(attr.m_resource) && m_type.equals(m_type));
         }
         return false;
@@ -66,7 +66,7 @@ public class Attribute {
         visitor.completeAttribute(this);
     }
 
-    public AttributeType getAttributeType() {
+    public SnmpAttributeType getAttributeType() {
         return m_type;
     }
 
@@ -86,7 +86,7 @@ public class Attribute {
         getAttributeType().storeAttribute(this, persister);
     }
 
-    void storeAttribute(Persister persister) {
+    public void storeAttribute(Persister persister) {
         getAttributeType().storeAttribute(this, persister);
     }
 
@@ -106,7 +106,7 @@ public class Attribute {
         return getAttributeType().getName();
     }
 
-    String getNumericValue() {
+    public String getNumericValue() {
     		String val = null;
     		if (getValue() == null) {
     			val = null;
@@ -122,6 +122,8 @@ public class Attribute {
     		}
     		return val;
     }
-
-
+    public String getStringValue() {
+        SnmpValue value=getValue();
+        return (value == null ? null : value.toString());
+    }
 }

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.nfunk.jep.JEP;
-import org.nfunk.jep.Variable;
 import org.opennms.netmgt.config.threshd.Expression;
 
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {

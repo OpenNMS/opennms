@@ -34,7 +34,7 @@ package org.opennms.netmgt.collectd;
 
 public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
 
-    public void visitAttribute(Attribute attribute) {
+    public void visitAttribute(CollectionAttribute attribute) {
     }
 
     public void visitCollectionSet(CollectionSet set) {
@@ -46,7 +46,7 @@ public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
     public void visitResource(CollectionResource resource) {
     }
 
-    public void completeAttribute(Attribute attribute) {
+    public void completeAttribute(CollectionAttribute attribute) {
     }
 
     public void completeCollectionSet(CollectionSet set) {

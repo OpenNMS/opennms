@@ -44,7 +44,7 @@ public class AttributeGroup {
     
     private CollectionResource m_resource;
     private AttributeGroupType m_groupType;
-    private Set<Attribute> m_attributes = new HashSet<Attribute>();
+    private Set<CollectionAttribute> m_attributes = new HashSet<CollectionAttribute>();
     
     public AttributeGroup(CollectionResource resource, AttributeGroupType groupType) {
         m_resource = resource;
@@ -59,11 +59,11 @@ public class AttributeGroup {
         return m_resource;
     }
     
-    public Collection<Attribute> getAttributes() {
+    public Collection<CollectionAttribute> getAttributes() {
         return m_attributes;
     }
     
-    public void addAttribute(Attribute attr) {
+    public void addAttribute(CollectionAttribute attr) {
         m_attributes.add(attr);
     }
 
@@ -71,7 +71,7 @@ public class AttributeGroup {
         log().debug("Visiting Group "+this);
         visitor.visitGroup(this);
         
-        for(Attribute attr : getAttributes()) {
+        for(CollectionAttribute attr : getAttributes()) {
             attr.visit(visitor);
         }
         

@@ -64,9 +64,7 @@ import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.Attrib;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -140,11 +138,6 @@ public abstract class JMXCollector implements ServiceCollector {
      * RRD data source name max length.
      */
     private static final int MAX_DS_NAME_LENGTH = 19;
-
-    /**
-     * Path to JMX RRD file repository.
-     */
-    private String m_rrdPath = null;
 
     /**
      * In some circumstances there may be many instances of a given service
@@ -265,51 +258,8 @@ public abstract class JMXCollector implements ServiceCollector {
 
         // Save local reference to singleton instance
 
-        // m_rrdInterface = org.opennms.netmgt.rrd.Interface.getInstance();
-
         log.debug("initialize: successfully instantiated JNI interface to RRD.");
         return;
-    }
-
-    private void initRRD() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // Get path to RRD repository
-        m_rrdPath =
-            JMXDataCollectionConfigFactory.getInstance().getRrdRepository();
-
-        if (m_rrdPath == null) {
-            throw new RuntimeException("Configuration error, failed to retrieve "
-                                       + "path to RRD repository.");
-        }
-
-        // Strip the File.separator char off of the end of the path
-        if (m_rrdPath.endsWith(File.separator)) {
-            m_rrdPath = m_rrdPath.substring(0,
-                                            (m_rrdPath.length()
-                                                    - File.separator.length()));
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("initialize: " + serviceName
-                      + " RRD file repository path: " + m_rrdPath);
-        }
-
-        // If the RRD file repository directory does NOT already exist, create it.
-        File f = new File(m_rrdPath);
-        if (!f.isDirectory()) {
-            if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file "
-                                           + "repository, path: " + m_rrdPath);
-            }
-        }
-
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            log.error("initialize: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
-        }
     }
 
     /**
@@ -334,11 +284,6 @@ public abstract class JMXCollector implements ServiceCollector {
     public void initialize(CollectionAgent agent, Map parameters) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) agent.getAddress();
-
-        log.debug("initialize: " + m_rrdPath);
-        if (m_rrdPath == null) {
-            initRRD();
-        }
 
         if (log.isDebugEnabled()) {
             log.debug("initialize: InetAddress=" + ipAddr.getHostAddress());
@@ -425,11 +370,6 @@ public abstract class JMXCollector implements ServiceCollector {
         agent.setAttribute(NODE_INFO_KEY, nodeInfo);
         agent.setAttribute("collectionName", collectionName);
 
-        File repos = new File(m_rrdPath + File.separator + nodeID + File.separator + collectionName);
-        if (!repos.exists()) {
-            repos.mkdir();
-        }
-
     }
 
     /**
@@ -459,40 +399,40 @@ public abstract class JMXCollector implements ServiceCollector {
      *            belongs.
      */
 
-    public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
-        String collectionName = (String) agent.getAttribute("collectionName");
         JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
         HashMap mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
+        
 
+        String port = ParameterMap.getKeyedString(map, "port", null);
+        String friendlyName = ParameterMap.getKeyedString(map,
+                                                          "friendly-name",
+                                                          port);
+        if (useFriendlyName) {
+            collDir = friendlyName;
+        }
+        
+        JMXCollectionSet collectionSet=new JMXCollectionSet(agent,collDir);
+        JMXCollectionResource collectionResource=collectionSet.getResource();
+        
         ConnectionWrapper connection = null;
 
         log.debug("collect " + ipaddr.getHostAddress() + " "
-                + nodeInfo.getNodeId() + " " + m_rrdPath);
+                + nodeInfo.getNodeId());
 
         try {
-            int retry = ParameterMap.getKeyedInteger(map, "retry", 3);
-            String port = ParameterMap.getKeyedString(map, "port", null);
-            String friendlyName = ParameterMap.getKeyedString(map,
-                                                              "friendly-name",
-                                                              port);
-
             connection = getMBeanServerConnection(map, ipaddr);
 
             if (connection == null) {
-                return COLLECTION_FAILED;
+                return collectionSet;
             }
 
             MBeanServerConnection mbeanServer = connection.getMBeanServer();
 
-            // int serviceStatus = COLLECTION_FAILED;
-
-            if (useFriendlyName) {
-                collDir = friendlyName;
-            }
-
+            int retry = ParameterMap.getKeyedInteger(map, "retry", 3);
             for (int attempts = 0; attempts <= retry; attempts++) {
                 try {
                     /*
@@ -504,6 +444,8 @@ public abstract class JMXCollector implements ServiceCollector {
                         BeanInfo beanInfo = (BeanInfo) iter.next();
                         String objectName = beanInfo.getObjectName();
                         String excludeList = beanInfo.getExcludes();
+                        //All JMX collected values are per node
+                        AttributeGroupType attribGroupType=new AttributeGroupType(objectName,"all");
 
                         String[] attrNames = beanInfo.getAttributeNames();
 
@@ -516,12 +458,15 @@ public abstract class JMXCollector implements ServiceCollector {
                             try {
                                 ObjectName oName = new ObjectName(objectName);
                                 if (mbeanServer.isRegistered(oName)) {
-                                    AttributeList attrList = (AttributeList)
-                                        mbeanServer.getAttributes(oName,
-                                                                  attrNames);
-                                    updateRRDs(objectName, collectionName,
-                                               agent, attrList, collDir,
-                                               null, null);
+                                    AttributeList attrList = mbeanServer.getAttributes(oName, attrNames);
+                                    HashMap dsMap = nodeInfo.getDsMap();
+                                    for(Object attribute : attrList) {
+                                        Attribute attrib=(Attribute)attribute;
+                                        JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
+                                                     + attrib.getName());
+                                        JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
+                                        collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
+                                    }  
                                 }
                             } catch (InstanceNotFoundException e) {
                                 log.error("Unable to retrieve attributes from "
@@ -551,17 +496,23 @@ public abstract class JMXCollector implements ServiceCollector {
                                     if (excludeList == null) {
                                         // the exclude list doesn't apply
                                         if (mbeanServer.isRegistered(oName)) {
-                                            AttributeList attrList =
-                                                (AttributeList)
-                                                mbeanServer.getAttributes(oName,
+                                            AttributeList attrList = mbeanServer.getAttributes(oName,
                                                                           attrNames);
-                                            updateRRDs(objectName,
-                                                       collectionName,
-                                                       agent,
-                                                       attrList,
-                                                       collDir,
-                                                       oName.getKeyProperty(beanInfo.getKeyField()),
-                                                       beanInfo.getKeyAlias());
+                                            HashMap dsMap = nodeInfo.getDsMap();
+
+                                            for(Object attribute : attrList) {
+                                                Attribute attrib=(Attribute)attribute;
+                                                JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
+                                                             + attrib.getName());
+                                                JMXCollectionAttributeType attribType=
+                                                    new JMXCollectionAttributeType(ds, 
+                                                                                   oName.getKeyProperty(beanInfo.getKeyField()),  
+                                                                                   beanInfo.getKeyAlias(), 
+                                                                                   attribGroupType);
+                                                
+                                                collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
+                                            }
+
                                         }
                                     } else {
                                         /*
@@ -586,13 +537,20 @@ public abstract class JMXCollector implements ServiceCollector {
                                                     (AttributeList)
                                                     mbeanServer.getAttributes(oName,
                                                                               attrNames);
-                                                updateRRDs(objectName,
-                                                           collectionName,
-                                                           agent,
-                                                           attrList,
-                                                           collDir,
-                                                           oName.getKeyProperty(beanInfo.getKeyField()),
-                                                           beanInfo.getKeyAlias());
+                                                HashMap dsMap = nodeInfo.getDsMap();
+
+                                                for(Object attribute : attrList) {
+                                                    Attribute attrib=(Attribute)attribute;
+                                                    JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
+                                                                 + attrib.getName());
+                                                    JMXCollectionAttributeType attribType=
+                                                        new JMXCollectionAttributeType(ds, 
+                                                                                       oName.getKeyProperty(beanInfo.getKeyField()),  
+                                                                                       beanInfo.getKeyAlias(), 
+                                                                                       attribGroupType);
+                                                    
+                                                    collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
+                                                }
                                             }
                                         }
                                     }
@@ -620,149 +578,8 @@ public abstract class JMXCollector implements ServiceCollector {
             }
         }
         
-        // return the status of the collection
-        return COLLECTION_SUCCEEDED;
-    }
-
-    public boolean createRRD(String collectionName, InetAddress ipaddr,
-            String directory, JMXDataSource ds, String collectionDir,
-            String keyField) throws RrdException {
-        String creator = "primary " + serviceName + " interface "
-                + ipaddr.getHostAddress();
-        int step =
-            JMXDataCollectionConfigFactory.getInstance().getStep(collectionName);
-        List rraList =
-            JMXDataCollectionConfigFactory.getInstance().getRRAList(collectionName);
-
-        File repos = new File(directory + File.separator + collectionDir);
-        if (!repos.exists()) {
-            repos.mkdir();
-        }
-
-        if (keyField == null) {
-            return RrdUtils.createRRD(creator, directory + File.separator
-                    + collectionDir, ds.getName(), step, ds.getType(),
-                                      ds.getHeartbeat(), ds.getMin(),
-                                      ds.getMax(), rraList);
-        } else {
-            if (keyField.equals("")) {
-                return RrdUtils.createRRD(creator, directory + File.separator
-                        + collectionDir, ds.getName(), step, ds.getType(),
-                                          ds.getHeartbeat(), ds.getMin(),
-                                          ds.getMax(), rraList);
-            } else {
-                return RrdUtils.createRRD(creator, directory + File.separator
-                        + collectionDir, keyField + "_" + ds.getName(), step,
-                                          ds.getType(), ds.getHeartbeat(),
-                                          ds.getMin(), ds.getMax(), rraList);
-            }
-        }
-    }
-
-    /**
-     * This method is responsible for building an RRDTool style 'update'
-     * command which is issued via the RRD JNI interface in order to push the
-     * latest JMX-collected values into the interface's RRD database.
-     * 
-     * @param collectionName
-     *            JMX data Collection name from
-     *            'jmx-datacollection-config.xml'
-     * @param iface
-     *            NetworkInterface object of the interface currently being
-     *            polled
-     * @param nodeCollector
-     *            Node level MBean data collected via JMX for the polled
-     *            interface
-     * @param ifCollector
-     *            Interface level MBean data collected via JMX for the polled
-     *            interface
-     * @exception RuntimeException
-     *                Thrown if the data source list for the interface is
-     *                null.
-     */
-
-    private boolean updateRRDs(String objectName, String collectionName,
-            NetworkInterface iface, AttributeList attributeList,
-            String collectionDir, String keyField, String substitutions) {
-
-        Category log = ThreadCategory.getInstance(getClass());
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
-
-        JMXNodeInfo nodeInfo = (JMXNodeInfo) iface.getAttribute(NODE_INFO_KEY);
-
-        boolean rrdError = false;
-
-        /*
-         * -----------------------------------------------------------
-         * Node data
-         * -----------------------------------------------------------
-         */
-        log.debug("updateRRDs: processing node-level collection...");
-
-        /*
-         * Build path to node RRD repository. createRRD() will make the
-         * appropriate directories if they do not already exist.
-         */
-        String nodeRepository = m_rrdPath + File.separator
-                + String.valueOf(nodeInfo.getNodeId());
-
-        /*
-         * Iterate over the node datasource list and issue RRD update
-         * commands to update each datasource which has a corresponding
-         * value in the collected JMX data
-         */
-        HashMap dsMap = nodeInfo.getDsMap();
-
-        try {
-            for (int i = 0; i < attributeList.size(); i++) {
-                Attribute attribute = (Attribute) attributeList.get(i);
-                JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
-                        + attribute.getName());
-
-                if (keyField == null) {
-                    try {
-                        createRRD(collectionName, ipaddr, nodeRepository, ds,
-                                  collectionDir, null);
-                        RrdUtils.updateRRD(ipaddr.getHostAddress(),
-                                           nodeRepository + File.separator + collectionDir,
-                                           ds.getName(),
-                                           attribute.getValue().toString());
-                    } catch (Throwable e1) {
-                    }
-                } else {
-                    try {
-                        String key = fixKey(keyField, ds.getName(),
-                                            substitutions);
-                        createRRD(collectionName, ipaddr, nodeRepository, ds,
-                                  collectionDir, key);
-                        if (key.equals("")) {
-                            RrdUtils.updateRRD(ipaddr.getHostAddress(),
-                                               nodeRepository + File.separator
-                                                       + collectionDir,
-                                               ds.getName(), ""
-                                                       + attribute.getValue());
-                        } else {
-                            RrdUtils.updateRRD(ipaddr.getHostAddress(),
-                                               nodeRepository + File.separator
-                                                       + collectionDir, key
-                                                       + "_" + ds.getName(),
-                                               "" + attribute.getValue());
-                        }
-                    } catch (Throwable e1) {
-                        // log.debug("Error updating: " ds.getName());
-                    }
-                }
-                try {
-                    Thread.sleep(1100);
-                } catch (Exception te) {
-
-                }
-            }
-        } catch (Throwable e) {
-            // log.error("RRD Error", e);
-            rrdError = true;
-        }
-        return rrdError;
+        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        return collectionSet;
     }
 
     /*
@@ -811,11 +628,10 @@ public abstract class JMXCollector implements ServiceCollector {
 
         return (String) collectorEntry.get(collectorEntry + "|" + ds.getOid());
     }
-
     /**
      * This method is responsible for building a list of RRDDataSource objects
      * from the provided list of MBeanObject objects.
-     * 
+     *
      * @param collectionName
      *            Collection name
      * @param oidList
@@ -934,14 +750,14 @@ public abstract class JMXCollector implements ServiceCollector {
                             + "' not supported.  Only integer-type data may be "
                             + "stored in RRD.");
                     log.warn("buildDataSourceList: MBean object '"
-                            + attr.getAlias()
-                            + "' will not be mapped to RRD data source.");
-                }
-            }
-        }
+                             + attr.getAlias()
+                             + "' will not be mapped to RRD data source.");
+                 }
+             }
+         }
 
-        return dsList;
-    }
+         return dsList;
+     }
 
     /**
      * @param useFriedlyName The useFriedlyName to set.
@@ -949,4 +765,159 @@ public abstract class JMXCollector implements ServiceCollector {
     public void setUseFriendlyName(boolean useFriendlyName) {
         this.useFriendlyName = useFriendlyName;
     }
+    
+    class JMXCollectionAttributeType implements CollectionAttributeType {
+        JMXDataSource m_dataSource;
+        AttributeGroupType m_groupType;
+        String m_name;
+
+        protected JMXCollectionAttributeType(JMXDataSource dataSource, String key, String substitutions,  AttributeGroupType groupType) {
+            m_groupType=groupType;
+            m_dataSource=dataSource;
+            m_name=createName(key,substitutions);
+        }
+
+        private String createName(String key, String substitutions) {
+            String name=m_dataSource.getName();
+            if(key!=null && !key.equals("")) {
+                name=fixKey(key, m_dataSource.getName(),substitutions)+"_"+name;
+            }
+            return name;
+        }
+
+        public AttributeGroupType getGroupType() {
+            return m_groupType;
+        }
+
+        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+            //Only numeric data comes back from JMX in data collection
+            persister.persistNumericAttribute(attribute);
+        }
+
+        public String getName() {
+            return m_name;
+        }
+
+        public String getType() {
+            return m_dataSource.getType();
+        }
+    }
+    
+    class JMXCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+
+        String m_alias;
+        String m_value;
+        JMXCollectionResource m_resource;
+        CollectionAttributeType m_attribType;
+        
+        JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
+            m_resource=resource;
+            m_attribType=attribType;
+            m_alias = alias;
+            m_value = value;
+        }
+
+        public CollectionAttributeType getAttributeType() {
+            return m_attribType;
+        }
+
+        public String getName() {
+            return m_alias;
+        }
+
+        public String getNumericValue() {
+            return m_value;
+        }
+
+        public CollectionResource getResource() {
+            return m_resource;
+        }
+
+        public String getStringValue() {
+            return m_value;
+        }
+
+        public boolean shouldPersist(ServiceParameters params) {
+            return true;
+        }
+
+        public String getType() {
+            return m_attribType.getType();
+        }
+        
+    }
+ 
+    
+    class JMXCollectionResource extends AbstractCollectionResource {
+        String m_resourceName;
+        
+        JMXCollectionResource(CollectionAgent agent, String resourceName) { 
+            super(agent);
+            m_resourceName=resourceName;
+        }
+        
+        public int getType() {
+            return -1; //Is this correct?
+        }
+
+        public boolean rescanNeeded() {
+            return false;
+        }
+
+        public boolean shouldPersist(ServiceParameters params) {
+            return true;
+        }
+
+        public void setAttributeValue(CollectionAttributeType type, String value) {
+            JMXCollectionAttribute attr = new JMXCollectionAttribute(this, type, type.getName(), value);
+            addAttribute(attr);
+        }
+
+        @Override
+        public File getResourceDir(RrdRepository repository) {
+            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId())+ m_resourceName);
+        }
+        
+        public String getResourceTypeName() {
+            return "node"; //All node resources for JMX; nothing of interface or "indexed resource" type
+        }
+        
+        public String getInstance() {
+            return null; //For node type resources, use the default instance
+        }
+    }
+    
+    class JMXCollectionSet implements CollectionSet {
+        private int m_status;
+        private JMXCollectionResource m_collectionResource;
+        
+        JMXCollectionSet(CollectionAgent agent, String resourceName) {
+            m_status=ServiceCollector.COLLECTION_FAILED;
+            m_collectionResource=new JMXCollectionResource(agent, resourceName);
+        }
+        
+        public JMXCollectionResource getResource() {
+            return m_collectionResource;
+        }
+
+        public void setStatus(int status) {
+            m_status=status;
+        }
+        
+        public int getStatus() {
+            return m_status;
+        }
+
+        public void visit(CollectionSetVisitor visitor) {
+            visitor.visitCollectionSet(this);
+            m_collectionResource.visit(visitor);
+            visitor.completeCollectionSet(this);
+        }        
+    
+    }
+    
+    public RrdRepository getRrdRepository(String collectionName) {
+        return JMXDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
+    }
+
 }

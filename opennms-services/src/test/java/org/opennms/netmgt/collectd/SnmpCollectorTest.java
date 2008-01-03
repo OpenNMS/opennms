@@ -62,6 +62,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -163,6 +164,18 @@ public class SnmpCollectorTest extends TestCase {
         super.tearDown();
     }
 
+    private void persistCollectionSet(CollectionSpecification spec, CollectionSet collectionSet) {
+        RrdRepository repository=spec.getRrdRepository("default");
+        ServiceParameters params=new ServiceParameters(spec.getReadOnlyPropertyMap());
+        BasePersister persister;
+        if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
+            persister= new GroupPersister(params, repository);
+        } else {
+            persister= new OneToOnePersister(params, repository);
+        }
+        collectionSet.visit(persister);
+    }
+    
     public void testCollect() throws Exception {
 //        initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
         initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
@@ -193,11 +206,12 @@ public class SnmpCollectorTest extends TestCase {
         spec.initialize(agent);
 
         // now do the actual collection
+        CollectionSet collectionSet=spec.collect(agent);
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
-                     spec.collect(agent));
-        
-        
+                     collectionSet.getStatus());
+        persistCollectionSet(spec, collectionSet);
+
         System.err.println("FIRST COLLECTION FINISHED");
         
         //need a one second time elapse to update the RRD
@@ -206,7 +220,7 @@ public class SnmpCollectorTest extends TestCase {
         // try collecting again
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
-                spec.collect(agent));
+                spec.collect(agent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 
@@ -284,10 +298,12 @@ public class SnmpCollectorTest extends TestCase {
         for(int i = 0; i < numUpdates; i++) {
 
             // now do the actual collection
+            CollectionSet collectionSet=spec.collect(agent);
             assertEquals("collection status",
                     ServiceCollector.COLLECTION_SUCCEEDED,
-                    spec.collect(agent));
-        
+                    collectionSet.getStatus());
+            
+            persistCollectionSet(spec, collectionSet);
         
             System.err.println("COLLECTION "+i+" FINISHED");
         
@@ -351,9 +367,12 @@ public class SnmpCollectorTest extends TestCase {
         spec.initialize(agent);
 
         // now do the actual collection
+        CollectionSet collectionSet=spec.collect(agent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
-                     spec.collect(agent));
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
+        
+        persistCollectionSet(spec, collectionSet);
         
         
         System.err.println("FIRST COLLECTION FINISHED");
@@ -364,7 +383,7 @@ public class SnmpCollectorTest extends TestCase {
         // try collecting again
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
-                spec.collect(agent));
+                spec.collect(agent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 

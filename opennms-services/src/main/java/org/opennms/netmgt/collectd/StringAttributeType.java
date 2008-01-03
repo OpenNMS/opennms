@@ -33,7 +33,7 @@ package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.config.MibObject;
 
-public class StringAttributeType extends AttributeType {
+public class StringAttributeType extends SnmpAttributeType {
     
     public static boolean supportsType(String rawType) {
         return rawType.toLowerCase().startsWith("string");
@@ -43,7 +43,7 @@ public class StringAttributeType extends AttributeType {
         super(resourceType, collectionName, mibObj, groupType);
     }
 
-    protected void storeAttribute(Attribute attribute, Persister persister) {
+    public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistStringAttribute(attribute);
     }
 

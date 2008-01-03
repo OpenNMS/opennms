@@ -42,7 +42,6 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockPlatformTransactionManager;
-import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
@@ -53,7 +52,6 @@ import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import junit.framework.TestCase;
 
@@ -164,7 +162,7 @@ public class PersistOperationBuilderTest extends TestCase {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         
-        AttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
           
         PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
@@ -196,7 +194,7 @@ public class PersistOperationBuilderTest extends TestCase {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         
-        AttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
           
         PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
         builder.declareAttribute(attributeType);

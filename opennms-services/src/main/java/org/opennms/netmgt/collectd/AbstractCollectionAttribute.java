@@ -35,13 +35,34 @@
 
 package org.opennms.netmgt.collectd;
 
-public interface CollectionSet {
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
+public abstract class AbstractCollectionAttribute implements  CollectionAttribute {
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
     
-    public int getStatus();
-    
-    /**
-     * Provide a way to visit all the values in the CollectionSet, for any appropriate purposes (persisting, thresholding, or others)
-     * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
-     */
-    public void visit(CollectionSetVisitor visitor);
+    public abstract CollectionAttributeType getAttributeType();
+
+    public abstract String getName();
+
+    public abstract String getNumericValue() ;
+
+    public abstract CollectionResource getResource();
+
+    public abstract String getStringValue() ;
+
+    public abstract boolean shouldPersist(ServiceParameters params);
+
+    public void storeAttribute(Persister persister) {
+        getAttributeType().storeAttribute(this, persister);
+    }
+
+    public void visit(CollectionSetVisitor visitor) {
+        log().debug("Visiting attribute "+this);
+        visitor.visitAttribute(this);
+        visitor.completeAttribute(this);
+    }   
+
 }
