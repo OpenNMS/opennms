@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -57,14 +57,14 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * to be stored such as numeric data ({@link (NumericAttributeType)}) or string data
  * ({@link (StringAttributeType)}).
  */
-public abstract class AttributeType implements AttributeDefinition {
+public abstract class SnmpAttributeType implements AttributeDefinition,CollectionAttributeType {
     
     private MibObject m_mibObj;
     private String m_collectionName;
     private ResourceType m_resourceType;
     private AttributeGroupType m_groupType;
 
-    protected AttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
+    protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         m_resourceType = resourceType;
         m_collectionName = collectionName;
         m_mibObj = mibObj;
@@ -80,17 +80,17 @@ public abstract class AttributeType implements AttributeDefinition {
     // FIXME: CollectionAttribute should be a tracker of its own
     // Also these should be created directly by the DAO rather 
     // than MibObject.
-    public static List<Collectable> getCollectionTrackers(Collection<AttributeType> objList) {
+    public static List<Collectable> getCollectionTrackers(Collection<SnmpAttributeType> objList) {
         ArrayList<Collectable> trackers = new ArrayList<Collectable>(objList.size());
         for (Iterator iter = objList.iterator(); iter.hasNext();) {
-            AttributeType attrType = (AttributeType) iter.next();
+            SnmpAttributeType attrType = (SnmpAttributeType) iter.next();
             trackers.add(attrType.getMibObj().getCollectionTracker());
         }
         
         return trackers;
     }
 
-    public static AttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
+    public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         if (NumericAttributeType.supportsType(mibObj.getType()))
             return new NumericAttributeType(resourceType, collectionName, mibObj, groupType);
         if (StringAttributeType.supportsType(mibObj.getType()))
@@ -141,11 +141,11 @@ public abstract class AttributeType implements AttributeDefinition {
         return getAlias();
     }
 
-    protected abstract void storeAttribute(Attribute attribute, Persister persister);
+    public abstract void storeAttribute(CollectionAttribute attribute, Persister persister);
     
-    public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+    public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         log().info("Setting attribute: "+this+".["+inst+"] = '"+val+"'");
-        CollectionResource resource = null;
+        SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
             resource = m_resourceType.findAliasedResource(inst, val.toString());
         } else {
@@ -163,8 +163,8 @@ public abstract class AttributeType implements AttributeDefinition {
     }
 
     public boolean equals(Object obj) {
-        if (obj instanceof AttributeType) {
-            AttributeType attrType = (AttributeType) obj;
+        if (obj instanceof SnmpAttributeType) {
+            SnmpAttributeType attrType = (SnmpAttributeType) obj;
             return attrType.m_resourceType.equals(m_resourceType) && attrType.getAlias().equals(getAlias());
         }
         return false;

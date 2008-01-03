@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class IfInfo extends CollectionResource {
+final class IfInfo extends SnmpCollectionResource {
 
     private CollectionType m_collType;
     private SNMPCollectorEntry m_entry;
@@ -204,5 +204,12 @@ final class IfInfo extends CollectionResource {
         log().debug("shouldPersist = " + shdprsist);
         return shdprsist;
     }
-
+    
+    public String getResourceTypeName() {
+        return "if"; //This is IfInfo, must be an interface
+    }
+    
+    public String getInstance() {
+        return null; //For interfaces, use the default instance
+    }
 } // end class

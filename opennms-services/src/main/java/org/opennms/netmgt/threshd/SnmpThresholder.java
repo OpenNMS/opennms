@@ -82,6 +82,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
+ * @deprecated No longer used - see ThresholdingVisitor
  */
 public final class SnmpThresholder implements ServiceThresholder {
 

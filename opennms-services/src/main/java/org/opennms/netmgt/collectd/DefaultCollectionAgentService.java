@@ -83,8 +83,10 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     // the interface of the Agent
     private Integer m_ifaceId;
     private IpInterfaceDao m_ifaceDao;
-    private int m_maxVarsPerPdu;
-    private int m_ifCount;
+    
+    //Unused; delete
+    //private int m_maxVarsPerPdu;
+    //private int m_ifCount;
     
     private DefaultCollectionAgentService(Integer ifaceId, IpInterfaceDao ifaceDao) {
         // we pass in null since we override calls to getAddress and getInetAddress

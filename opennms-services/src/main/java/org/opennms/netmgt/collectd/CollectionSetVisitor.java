@@ -40,9 +40,9 @@ public interface CollectionSetVisitor {
 
     void visitGroup(AttributeGroup group);
 
-    void visitAttribute(Attribute attribute);
+    void visitAttribute(CollectionAttribute attribute);
 
-    void completeAttribute(Attribute attribute);
+    void completeAttribute(CollectionAttribute attribute);
 
     void completeGroup(AttributeGroup group);
 

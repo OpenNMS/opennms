@@ -77,7 +77,7 @@ public class SnmpNodeCollector extends AggregateTracker {
      */
     private String m_primaryIf;
 
-    private CollectionSet m_collectionSet;
+    private SnmpCollectionSet m_collectionSet;
 
     /**
      * The class constructor is used to initialize the collector and send out
@@ -89,8 +89,8 @@ public class SnmpNodeCollector extends AggregateTracker {
      *            The list of object id's to be collected.
      * @param collectionSet TODO
      */
-    public SnmpNodeCollector(InetAddress address, Collection objList, CollectionSet collectionSet) {
-        super(AttributeType.getCollectionTrackers(objList));
+    public SnmpNodeCollector(InetAddress address, Collection objList, SnmpCollectionSet collectionSet) {
+        super(SnmpAttributeType.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();
         m_collectionSet = collectionSet;
@@ -126,7 +126,7 @@ public class SnmpNodeCollector extends AggregateTracker {
     }
 
 
-    public CollectionSet getCollectionSet() {
+    public SnmpCollectionSet getCollectionSet() {
         return m_collectionSet;
     }
 }

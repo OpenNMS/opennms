@@ -42,11 +42,11 @@ import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
@@ -54,9 +54,8 @@ import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.rrd.RrdConfig;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.test.ConfigurationTestUtils;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -78,6 +77,10 @@ public class HttpCollectorTest extends OpenNMSTestCase {
     private void initializeFactory() throws MarshalException, ValidationException, IOException {
         m_factory = new HttpCollectionConfigFactory(getConfigRdr());
         HttpCollectionConfigFactory.setInstance(m_factory);
+        Reader dataCollectionReader=ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/datacollection-config.xml");
+        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(dataCollectionReader));
+        DataCollectionConfigFactory.init();
+
     }
 
     private Reader getConfigRdr() {

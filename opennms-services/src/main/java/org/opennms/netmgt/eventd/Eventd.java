@@ -170,9 +170,16 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
             log().debug("calling shutdown on tcp/udp listener threads");
         }
 
-        m_tcpReceiver.stop();
-        m_udpReceiver.stop();
-        m_receiver.close();
+        if(m_tcpReceiver!=null) {
+            m_tcpReceiver.stop();
+        }
+        if(m_udpReceiver!=null) {
+            m_udpReceiver.stop();
+        }
+        
+        if(m_receiver!=null) {
+            m_receiver.close();
+        }
         
         if (log().isDebugEnabled()) {
             log().debug("shutdown on tcp/udp listener threads returned");

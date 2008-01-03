@@ -45,7 +45,7 @@ public class AliasedGroup extends AttributeGroup {
 		m_group = group;
 	}
 
-	public void addAttribute(Attribute attr) {
+	public void addAttribute(SnmpAttribute attr) {
 		m_group.addAttribute(attr);
 	}
 
@@ -53,7 +53,7 @@ public class AliasedGroup extends AttributeGroup {
 		return m_group.equals(obj);
 	}
 
-	public Collection<Attribute> getAttributes() {
+	public Collection<CollectionAttribute> getAttributes() {
 		return m_group.getAttributes();
 	}
 
@@ -84,8 +84,8 @@ public class AliasedGroup extends AttributeGroup {
 	public void visit(CollectionSetVisitor visitor) {
 		visitor.visitGroup(this);
 		
-		for(Attribute attr : getAttributes()) {
-		    AliasedAttribute aliased = new AliasedAttribute(getResource(), attr);
+		for(CollectionAttribute attr : getAttributes()) {
+		    AliasedAttribute aliased = new AliasedAttribute(getResource(), (SnmpAttribute)attr);
 		    log().debug("visiting at aliased  = " + aliased);
 		    aliased.visit(visitor);
 		}

@@ -32,24 +32,23 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.util.Collection;
 
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
-public class GenericIndexResource extends CollectionResource {
+public class GenericIndexResource extends SnmpCollectionResource {
 
-	private SnmpInstId m_inst;
-	private String m_name;
+    private SnmpInstId m_inst;
+    private String m_name;
 
-	public GenericIndexResource(ResourceType def, String name, SnmpInstId inst) {
-		super(def);
-		m_name = name;
-		m_inst = inst;
-	}
+    public GenericIndexResource(ResourceType def, String name, SnmpInstId inst) {
+        super(def);
+        m_name = name;
+        m_inst = inst;
+    }
 
-	// XXX should be based on the storageStrategy
-	@Override
+    // XXX should be based on the storageStrategy
+    @Override
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File nodeDir = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
@@ -64,14 +63,21 @@ public class GenericIndexResource extends CollectionResource {
     }
 
 
-	@Override
-	protected int getType() {
-		return -1;	// XXX is this right?
-	}
+    @Override
+    public int getType() {
+        return -1;	// XXX is this right?
+    }
 
-	@Override
-	public boolean shouldPersist(ServiceParameters params) {
-		return true;// XXX should be based on the persistanceSelectorStrategy
-	}
+    @Override
+    public boolean shouldPersist(ServiceParameters params) {
+        return true;// XXX should be based on the persistanceSelectorStrategy
+    }
 
+    public String getResourceTypeName() {
+        return m_name;
+    }
+    
+    public String getInstance() {
+        return m_inst.toString();
+    }
 }

@@ -36,11 +36,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.model.RrdRepository;
 
 public class GroupPersister extends BasePersister {
 
-    public GroupPersister(ServiceParameters params) {
-        super(params);
+    public GroupPersister(ServiceParameters params, RrdRepository repository) {
+        super(params, repository);
 
     }
 
@@ -49,7 +50,7 @@ public class GroupPersister extends BasePersister {
         if (shouldPersist()) {
             
             Map<String, String> dsNamesToRrdNames = new LinkedHashMap<String , String>();
-            for (Attribute a : group.getAttributes()) {
+            for (CollectionAttribute a : group.getAttributes()) {
                 if (NumericAttributeType.supportsType(a.getType())) {
                     dsNamesToRrdNames.put(a.getName(), group.getName());
                 }

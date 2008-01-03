@@ -686,7 +686,14 @@ class Persist {
             m_insStmt.setNull(10, Types.VARCHAR);
 
         // eventParms
-        set(m_insStmt, 11, (event.getParms() != null) ? Parameter.format(event.getParms()) : null);
+
+        //Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
+        String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
+        if(parametersString!=null) {
+            parametersString=parametersString.replace((char)0, ' ');
+        }
+        
+        set(m_insStmt, 11, parametersString);
 
         // grab the ifIndex out of the parms if it is defined   
         if (event.getIfIndex() != null) {

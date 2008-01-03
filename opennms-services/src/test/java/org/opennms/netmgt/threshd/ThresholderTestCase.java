@@ -274,4 +274,8 @@ public class ThresholderTestCase extends TestCase {
         }
 
     }
+    
+    //Avoid unnecessary warnings from Junit
+    public void testDoNothing() {}
 }
+

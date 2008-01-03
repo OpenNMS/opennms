@@ -52,17 +52,157 @@ public class NSClientCollector implements ServiceCollector {
         return ThreadCategory.getInstance(getClass());
     }
 
+    class NSClientCollectionAttributeType implements CollectionAttributeType {
+        Attrib m_attribute;
+        AttributeGroupType m_groupType;
+
+        protected NSClientCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
+            m_groupType=groupType;
+            m_attribute=attribute;
+        }
+
+        public AttributeGroupType getGroupType() {
+            return m_groupType;
+        }
+
+        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+            //Only numeric data comes back from NSClient in data collection
+            persister.persistNumericAttribute(attribute);
+        }
+
+        public String getName() {
+            return m_attribute.getAlias();
+        }
+
+        public String getType() {
+            return m_attribute.getType();
+        }
+    }
+    
+    class NSClientCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+
+        String m_alias;
+        String m_value;
+        NSClientCollectionResource m_resource;
+        CollectionAttributeType m_attribType;
+        
+        NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
+            m_resource=resource;
+            m_attribType=attribType;
+            m_alias = alias;
+            m_value = value;
+        }
+
+        public CollectionAttributeType getAttributeType() {
+            return m_attribType;
+        }
+
+        public String getName() {
+            return m_alias;
+        }
+
+        public String getNumericValue() {
+            return m_value;
+        }
+
+        public CollectionResource getResource() {
+            return m_resource;
+        }
+
+        public String getStringValue() {
+            return m_value; //Should this be null instead?
+        }
+
+        public boolean shouldPersist(ServiceParameters params) {
+            return true;
+        }
+
+        public String getType() {
+            return m_attribType.getType();
+        }
+        
+        public String toString() {
+            return "NSClientCollectionAttribute " + m_alias+"=" + m_value;
+        }
+        
+    }
+    
+    class NSClientCollectionResource extends AbstractCollectionResource {
+         
+        NSClientCollectionResource(CollectionAgent agent) { 
+            super(agent);
+        }
+        
+        public int getType() {
+            return -1; //Is this right?
+        }
+
+        //A rescan is never needed for the NSClientCollector, at least on resources
+        public boolean rescanNeeded() {
+            return false;
+        }
+
+        public boolean shouldPersist(ServiceParameters params) {
+            return true;
+        }
+
+        public void setAttributeValue(CollectionAttributeType type, String value) {
+            NSClientCollectionAttribute attr = new NSClientCollectionAttribute(this, type, type.getName(), value);
+            addAttribute(attr);
+        }
+        
+        public String getResourceTypeName() {
+            return "node"; //All node resources for NSClient; nothing of interface or "indexed resource" type
+        }
+        
+        public String getInstance() {
+            return null; //For node type resources, use the default instance
+        }
+    }
+    
+    class NSClientCollectionSet implements CollectionSet {
+        private int m_status;
+        private NSClientCollectionResource m_collectionResource;
+        
+        NSClientCollectionSet(CollectionAgent agent) {
+            m_status=ServiceCollector.COLLECTION_FAILED;
+            m_collectionResource=new NSClientCollectionResource(agent);
+        }
+        
+        public int getStatus() {
+            return m_status;
+        }
+        
+        void setStatus(int status) {
+            m_status=status;
+        }
+
+        public void visit(CollectionSetVisitor visitor) {
+            visitor.visitCollectionSet(this);
+            m_collectionResource.visit(visitor);
+            visitor.completeCollectionSet(this);
+        }
+
+        public NSClientCollectionResource getResource() {
+            return m_collectionResource;
+        }        
+    }
+    
     @SuppressWarnings("unchecked")
-    public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         String collectionName = parameters.get("nsclient-collection");
-        final CollectionAgent theAgent = agent; // For ResourceIdentifier
 
         // Find attributes to collect - check groups in configuration. For each,
         // check scheduled nodes to see if that group should be collected
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
-
+        
+        NSClientCollectionSet collectionSet=new NSClientCollectionSet(agent);
+        NSClientCollectionResource collectionResource=collectionSet.getResource();
+        
         for (Wpm wpm : collection.getWpms().getWpm()) {
+            //All NSClient Perfmon counters are per node
+            AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(),"all");
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 log().debug("Checking availability of group " + wpm.getName());
@@ -75,6 +215,7 @@ public class NSClientCollector implements ServiceCollector {
                     manager.close();
                     boolean isAvailable = (result.getResultCode() == NsclientPacket.RES_STATE_OK);
                     agentState.setGroupIsAvailable(wpm.getName(), isAvailable);
+                    log().debug("Group "+wpm.getName()+" is "+(isAvailable?"":"not")+"available ");
                 } catch (NsclientException e) {
                     throw new NSClientCollectorException("Error checking group (" + wpm.getName() + ") availability", e);
                 } finally {
@@ -86,16 +227,6 @@ public class NSClientCollector implements ServiceCollector {
 
             if (agentState.groupIsAvailable(wpm.getName())) {
                 // Collect the data
-                RrdRepository rrdRepository = NSClientDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
-                ResourceIdentifier resource = new ResourceIdentifier() {
-                    public String getOwnerName() {
-                        return theAgent.getHostAddress();
-                    }
-
-                    public File getResourceDir(RrdRepository repository) {
-                        return new File(repository.getRrdBaseDir(), Integer.toString(theAgent.getNodeId()));
-                    }
-                };
                 try {
                     NsclientManager manager = agentState.getManager();
                     manager.init(); // Open the connection, then do each
@@ -103,9 +234,7 @@ public class NSClientCollector implements ServiceCollector {
 
                     for (Attrib attrib : wpm.getAttrib()) {
                         NsclientPacket result = null;
-                        NSClientCollectionAttribute attribute;
-                        PersistOperationBuilder builder;
-                        
+
                         try {
                             NsclientCheckParams params = new NsclientCheckParams(attrib.getName());
                             result = manager.processCheckCommand(NsclientManager.CHECK_COUNTER, params);
@@ -117,17 +246,8 @@ public class NSClientCollector implements ServiceCollector {
                             if (result.getResultCode() != NsclientPacket.RES_STATE_OK) {
                                 log().info("not writing parameters for attribute '" + attrib.getName() + "', state is not 'OK'");
                             } else {
-                                attribute = new NSClientCollectionAttribute(attrib.getAlias(), attrib.getType(), result.getResponse());
-                                builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
-                                builder.declareAttribute(attribute);
-                                log().debug("doCollection: setting attribute: " + attribute);
-                                builder.setAttributeValue(attribute, attribute.getValue());
-
-                                try {
-                                    builder.commit();
-                                } catch (RrdException e) {
-                                    throw new NSClientCollectorException("Error writing RRD", e);
-                                }
+                                NSClientCollectionAttributeType attribType=new NSClientCollectionAttributeType(attrib, attribGroupType);
+                                collectionResource.setAttributeValue(attribType, result.getResponse());
                             }
                         }
                     }
@@ -139,59 +259,8 @@ public class NSClientCollector implements ServiceCollector {
                 }
             }
         }
-
-        return ServiceCollector.COLLECTION_SUCCEEDED;
-    }
-
-    class NSClientCollectionAttribute implements AttributeDefinition {
-        String m_alias;
-        String m_type;
-        String m_value;
-
-        NSClientCollectionAttribute(String alias, String type, String value) {
-            m_alias = alias;
-            m_type = type;
-            m_value = value;
-        }
-
-        public String getName() {
-            return m_alias;
-        }
-
-        public String getType() {
-            return m_type;
-        }
-
-        public String getValue() {
-            return m_value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof NSClientCollectionAttribute) {
-                NSClientCollectionAttribute other = (NSClientCollectionAttribute) obj;
-                return getName().equals(other.getName());
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return getName().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("NSClientCollectionAttribute: ");
-            buffer.append(getName());
-            buffer.append(":");
-            buffer.append(getType());
-            buffer.append(":");
-            buffer.append(getValue());
-            return buffer.toString();
-        }
-
+        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        return collectionSet;
     }
 
     public class NSClientCollectorException extends RuntimeException {
@@ -428,4 +497,9 @@ public class NSClientCollector implements ServiceCollector {
             this.lastChecked = lastChecked;
         }
     }
+    
+    public RrdRepository getRrdRepository(String collectionName) {
+        return NSClientDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
+    }
+
 }

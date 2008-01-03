@@ -45,11 +45,9 @@ import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 public class BasePersister extends AbstractCollectionSetVisitor implements Persister {
 
@@ -62,9 +60,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         super();
     }
 
-    public BasePersister(ServiceParameters params) {
+    public BasePersister(ServiceParameters params, RrdRepository repository) {
         m_params = params;
-        m_repository = DataCollectionConfigFactory.getInstance().getRrdRepository(params.getCollectionName());
+        m_repository = repository;
     }
     
     protected void commitBuilder() {
@@ -78,7 +76,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         }
     }
 
-    public void completeAttribute(Attribute attribute) {
+    public void completeAttribute(CollectionAttribute attribute) {
         popShouldPersist();
     }
 
@@ -90,14 +88,14 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         popShouldPersist();
     }
     
-    protected void createBuilder(CollectionResource resource, String name, AttributeType attributeType) {
+    protected void createBuilder(CollectionResource resource, String name, CollectionAttributeType attributeType) {
         createBuilder(resource, name, Collections.singleton(attributeType));
     }
 
     protected void createBuilder(CollectionResource resource, String name, Set attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
         for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
-            AttributeType attrType = (AttributeType) iter.next();
+            CollectionAttributeType attrType = (CollectionAttributeType) iter.next();
             // Only numeric values can be included on RRDs
             if (attrType instanceof NumericAttributeType) {
                 m_builder.declareAttribute(attrType);
@@ -117,26 +115,27 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         return ThreadCategory.getInstance(getClass());
     }
 
-    public void persistNumericAttribute(Attribute attribute) {
+    public void persistNumericAttribute(CollectionAttribute attribute) {
     	log().debug("Persisting "+attribute);
         m_builder.setAttributeValue(attribute.getAttributeType(), attribute.getNumericValue());
     }
 
-    public void persistStringAttribute(Attribute attribute) {
+    public void persistStringAttribute(CollectionAttribute attribute) {
             log().debug("Persisting "+attribute);
             CollectionResource resource = attribute.getResource();
-            SnmpValue value = attribute.getValue();
+            String value = attribute.getStringValue();
     
             File resourceDir = resource.getResourceDir(getRepository());
     
-            String attrVal = (value == null ? null : value.toString());
-            if (attrVal == null) {
+            //String attrVal = (value == null ? null : value.toString());
+            //if (attrVal == null) {
+            if (value == null) {
                 log().info("No data collected for attribute "+attribute+".  Skipping.");
                 return;
             }
             String attrName = attribute.getName();
             try {
-                ResourceTypeUtils.updateStringProperty(resourceDir, attrVal, attrName);
+                ResourceTypeUtils.updateStringProperty(resourceDir, value, attrName);
             } catch(IOException e) {
                 log().error("Unable to save string attribute " + attribute + ": " + e, e);
             }
@@ -156,7 +155,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         m_stack.addLast(Boolean.valueOf(b));
     }
 
-    protected void pushShouldPersist(Attribute attribute) {
+    protected void pushShouldPersist(CollectionAttribute attribute) {
         pushShouldPersist(attribute.shouldPersist(m_params));
     }
 
@@ -174,9 +173,12 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 
     protected boolean shouldPersist() { return top(); }
 
-    protected void storeAttribute(Attribute attribute) {
+    protected void storeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {
             attribute.storeAttribute(this);
+            log().debug("Storing attribute "+attribute);
+        } else {
+            log().debug("Not persisting attribute "+attribute + "because shouldPersist is false");
         }
     }
     
@@ -184,7 +186,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         return m_stack.getLast();
     }
 
-    public void visitAttribute(Attribute attribute) {
+    public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         storeAttribute(attribute);
     }
