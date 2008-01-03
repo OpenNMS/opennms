@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.collectd.Attrib;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.Mbean;
 import org.opennms.netmgt.config.collectd.Mbeans;
+import org.opennms.netmgt.model.RrdRepository;
 
 /**
  * This class is the main respository for JMX data collection configuration
@@ -434,8 +435,32 @@ public final class JMXDataCollectionConfigFactory {
      * 
      * @return RRD repository path.
      */
-    public String getRrdRepository() {
-        return m_config.getRrdRepository();
+    public RrdRepository getRrdRepository(String collectionName) {
+        RrdRepository repo = new RrdRepository();
+        repo.setRrdBaseDir(new File(getRrdPath()));
+        repo.setRraList(getRRAList(collectionName));
+        repo.setStep(getStep(collectionName));
+        repo.setHeartBeat((2 * getStep(collectionName)));
+        return repo;
+        //return m_config.getRrdRepository();
     }
 
+    public String getRrdPath() {
+        String rrdPath = m_config.getRrdRepository();
+        if (rrdPath == null) {
+            throw new RuntimeException("Configuration error, failed to "
+                    + "retrieve path to RRD repository.");
+        }
+    
+        /*
+         * TODO: make a path utils class that has the below in it strip the
+         * File.separator char off of the end of the path.
+         */
+        if (rrdPath.endsWith(File.separator)) {
+            rrdPath = rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
+        }
+        
+        return rrdPath;
+    }
+    
 }

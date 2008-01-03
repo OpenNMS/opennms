@@ -233,8 +233,12 @@ public class Poller extends AbstractServiceDaemon {
 	}
 
     protected void onStop() {
-		m_scheduler.stop();
-        m_receiver.close();
+        if(m_scheduler!=null) {
+            m_scheduler.stop();
+        }
+        if(m_receiver!=null) {
+            m_receiver.close();
+        }
 
         releaseServiceMonitors();
         m_scheduler = null;

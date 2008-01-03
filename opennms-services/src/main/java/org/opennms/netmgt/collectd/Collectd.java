@@ -73,6 +73,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.CollectorConfigDao;
@@ -86,6 +87,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.threshd.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -226,6 +228,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
         // configureSNMP
         ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
+        
+        //thresholds configuration change
+        ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
         getEventIpcManager().addEventListener(this, ueiList);
     }
@@ -504,7 +509,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 sb.append(t);
                 log().error(sb.toString(), t);
             }
-        } // end while more packages exist
+        } // end while more specifications  exist
         
         } finally {
             instrumentation().endScheduleInterface(iface.getNode().getId(), iface.getIpAddress(), svcName);
@@ -687,6 +692,8 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleInterfaceDeleted(event);
             } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
                 handleServiceDeleted(event);
+            } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
+                handleThresholdConfigurationChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -1003,6 +1010,28 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleForCollection(event);
     }
 
+    /**
+     * Process a threshold configuration change event.  Need to update thresholding visitors to use the new configuration
+     * @param event
+     */
+    private void handleThresholdConfigurationChanged(Event event) {
+        log().debug("handleThresholdConfigurationChanged: Reloading thresholding configuration in collectd");
+        try {
+            ThresholdingConfigFactory.reload();
+        } catch (Exception e) {
+            log().error("handleThresholdConfigurationChanged: Failed to reload threshold configuration because "+e.getMessage(), e);
+            return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
+        }
+        
+        ThresholdingVisitor.handleThresholdConfigChanged();
+        
+        synchronized (m_collectableServices) {
+	        for(CollectableService service: m_collectableServices) {
+	            service.reinitializeThresholding();
+	        }
+        }
+    }
+    
     private void scheduleForCollection(Event event) {
         // This moved to here from the scheduleInterface() for better behavior
         // during initialization

@@ -300,6 +300,10 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         private final Category log() {
             return ThreadCategory.getInstance(getClass());
         }
+
+        public ThresholdEvaluatorState getCleanClone() {
+            return new ThresholdEvaluatorStateHighLow(m_thresholdConfig);
+        }
     }
 
 }

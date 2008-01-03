@@ -34,6 +34,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Map;
 
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
@@ -70,5 +71,7 @@ public interface ServiceCollector {
     /**
      * Invokes a collection on the object.
      */
-    public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters);
+    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters);
+
+    public RrdRepository getRrdRepository(String collectionName);
 }

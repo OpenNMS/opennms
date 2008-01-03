@@ -33,15 +33,10 @@
  *
  */
 
+
 package org.opennms.netmgt.collectd;
 
-public interface CollectionSet {
-    
-    public int getStatus();
-    
-    /**
-     * Provide a way to visit all the values in the CollectionSet, for any appropriate purposes (persisting, thresholding, or others)
-     * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
-     */
-    public void visit(CollectionSetVisitor visitor);
+public interface CollectionAttributeType extends AttributeDefinition {
+    public AttributeGroupType getGroupType();
+    public void storeAttribute(CollectionAttribute attribute, Persister persister);
 }

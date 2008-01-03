@@ -77,11 +77,11 @@ public class IfResourceType extends ResourceType {
         return getIfMap().values();
     }
 
-    public CollectionResource findResource(SnmpInstId inst) {
+    public SnmpCollectionResource findResource(SnmpInstId inst) {
         return getIfInfo(inst.toInt());
     }
 
-    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+    public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
         log().debug("findAliasedResource: Should not get called from IfResourceType");
@@ -93,7 +93,7 @@ public class IfResourceType extends ResourceType {
     }
 
     @Override
-    protected Collection<AttributeType> loadAttributeTypes() {
+    protected Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);
     }
     

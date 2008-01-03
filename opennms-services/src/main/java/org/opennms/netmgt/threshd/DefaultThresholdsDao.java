@@ -47,81 +47,81 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
-	private ThresholdingConfigFactory m_thresholdingConfigFactory;
+    private ThresholdingConfigFactory m_thresholdingConfigFactory;
     
-	public DefaultThresholdsDao() {
-		
-	}
+    public DefaultThresholdsDao() {
+        
+    }
 
-	public ThresholdGroup get(String name) {
-		ThresholdGroup group = new ThresholdGroup(name);
+    public ThresholdGroup get(String name) {
+	ThresholdGroup group = new ThresholdGroup(name);
 
         File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
-		group.setRrdRepository(rrdRepository);
-		
-		ThresholdResourceType nodeType = createType(name, "node");
-        group.setNodeResourceType(nodeType);
-        
-        ThresholdResourceType ifType = createType(name, "if");
-        group.setIfResourceType(ifType);
+	group.setRrdRepository(rrdRepository);
+	
+	ThresholdResourceType nodeType = createType(name, "node");
+	group.setNodeResourceType(nodeType);
+    
+	ThresholdResourceType ifType = createType(name, "if");
+	group.setIfResourceType(ifType);
 
-        for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
-            String id = thresh.getDsType();
-            if (!(id.equals("if") || id.equals("node") || group.getGenericResourceTypeMap().containsKey(id))) {
-                ThresholdResourceType genericType = createType(name, id);
-                if (genericType.getThresholdMap().size() > 0) {
-                    log().info("Adding " + name + "::" + id + " with " + genericType.getThresholdMap().size() + " elements");
-                    group.getGenericResourceTypeMap().put(id, genericType);
+	for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
+	    String id = thresh.getDsType();
+	    if (!(id.equals("if") || id.equals("node") || group.getGenericResourceTypeMap().containsKey(id))) {
+	        ThresholdResourceType genericType = createType(name, id);
+	        if (genericType.getThresholdMap().size() > 0) {
+	            log().info("Adding " + name + "::" + id + " with " + genericType.getThresholdMap().size() + " elements");
+	            group.getGenericResourceTypeMap().put(id, genericType);
+	        }
+	    }
+	}
+            
+	return group;
+    }
+
+    private Map<String, ThresholdEntity> createThresholdStateMap(String type, String groupName) {
+        Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
+        
+        for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
+            // See if map entry already exists for this datasource
+            // If not, create a new one.
+            if (thresh.getDsType().equals(type)) {
+                try {
+                    BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
+                    ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
+            
+                    // Found entry?
+                    if (thresholdEntity == null) {
+                        // Nope, create a new one
+                        thresholdEntity = new ThresholdEntity();
+                        thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
+                    }
+            
+                    try {
+                        thresholdEntity.addThreshold(wrapper);
+                    } catch (IllegalStateException e) {
+                        log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                    } 
                 }
+                catch (ThresholdExpressionException e) {
+                    log().warn("Could not parse threshold expression: "+e.getMessage(), e);
+                }
+
             }
         }
-
-        return group;
-	}
-
-	private Map<String, ThresholdEntity> createThresholdStateMap(String type, String groupName) {
-	    Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
         
-            for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
-                // See if map entry already exists for this datasource
-                // If not, create a new one.
-                if (thresh.getDsType().equals(type)) {
-                    try {
-                        BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
-                        ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
-                
-                        // Found entry?
-                        if (thresholdEntity == null) {
-                            // Nope, create a new one
-                            thresholdEntity = new ThresholdEntity();
-                            thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
-                        }
-                
-                        try {
-                            thresholdEntity.addThreshold(wrapper);
-                        } catch (IllegalStateException e) {
-                            log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
-                        } 
-                    }
-                    catch (ThresholdExpressionException e) {
-                        log().warn("Could not parse threshold expression: "+e.getMessage(), e);
-                    }
-
-                }
-            }
-            
-	    return thresholdMap;
-	}
+        return thresholdMap;
+    }
     
-    private ThresholdResourceType createType(String groupName, String type) {
+    ThresholdResourceType createType(String groupName, String type) {
         ThresholdResourceType resourceType = new ThresholdResourceType(type);
         resourceType.setThresholdMap(createThresholdStateMap(type, groupName));
         return resourceType;
     }
 
-	private Category log() {
-		return ThreadCategory.getInstance(getClass());
-	}
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
     public ThresholdingConfigFactory getThresholdingConfigFactory() {
         return m_thresholdingConfigFactory;

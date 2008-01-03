@@ -42,7 +42,6 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;

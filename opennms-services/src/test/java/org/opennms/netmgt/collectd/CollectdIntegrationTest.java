@@ -31,7 +31,9 @@
  */
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -63,6 +66,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
 import org.opennms.netmgt.utils.EventBuilder;
@@ -109,6 +113,10 @@ public class CollectdIntegrationTest extends TestCase {
         Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
         InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
+
+        resource = new ClassPathResource("/test-thresholds.xml"); 
+        InputStreamReader thresholdsRdr = new InputStreamReader(resource.getInputStream());
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(thresholdsRdr));
 
         // set up test using a string key
         m_key = getName()+System.nanoTime();
@@ -253,9 +261,21 @@ public class CollectdIntegrationTest extends TestCase {
         
         int m_collectCount = 0;
 
-        public int collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
             m_collectCount++;
-            return COLLECTION_SUCCEEDED;
+            CollectionSet collectionSetResult=new CollectionSet() {
+
+                public int getStatus() {
+                    return ServiceCollector.COLLECTION_SUCCEEDED;
+                }
+
+                public void visit(CollectionSetVisitor visitor) {
+                    visitor.visitCollectionSet(this);   
+                    visitor.completeCollectionSet(this);
+                }
+             
+            }; 
+            return collectionSetResult;
         }
 
         public Object getCollectCount() {
@@ -282,6 +302,17 @@ public class CollectdIntegrationTest extends TestCase {
 
         public void release(CollectionAgent agent) {
             throw new UnsupportedOperationException("MockServiceCollector.release is not yet implemented");
+        }
+        
+        public RrdRepository getRrdRepository(String collectionName) {
+            RrdRepository repo = new RrdRepository();
+            ArrayList<String> rras=new ArrayList<String>();
+            rras.add("RRA:AVERAGE:0.5:1:8928");
+            repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
+            repo.setRraList(rras);
+            repo.setStep(300);
+            repo.setHeartBeat(2 * 300);
+            return repo;
         }
         
     }

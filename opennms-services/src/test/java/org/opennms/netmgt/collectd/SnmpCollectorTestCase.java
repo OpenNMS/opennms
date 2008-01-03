@@ -38,11 +38,9 @@ import java.util.List;
 import org.easymock.EasyMock;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.collectd.Attribute;
 import org.opennms.netmgt.collectd.AttributeVisitor;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.collectd.CollectionSet;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -50,7 +48,6 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockPlatformTransactionManager;
-import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -73,10 +70,18 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
 			this.list = list;
 		}
 
-		public void visitAttribute(Attribute attribute) {
+                @Override
+                public void visitAttribute(CollectionAttribute attribute) {
+                    visitAttribute((SnmpAttribute)attribute);
+                }
+                
+		public void visitAttribute(SnmpAttribute attribute) {
 			attributeCount++;
 		    assertMibObjectPresent(attribute, list);
 		}
+
+
+
 	}
 
 	protected BarrierSignaler m_signaler;
@@ -92,7 +97,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     
     protected CollectionAgent m_agent;
     private SnmpWalker m_walker;
-    protected CollectionSet m_collectionSet;
+    protected SnmpCollectionSet m_collectionSet;
     
     protected MockSnmpAgent m_mockAgent;
     protected IpInterfaceDao m_ifaceDao;
@@ -141,7 +146,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
 		assertEquals("Unexpected number of attributes", attrList.size(), attributeVerifier.attributeCount);
     }
 
-    protected void assertMibObjectPresent(Attribute attribute, List attrList) {
+    protected void assertMibObjectPresent(SnmpAttribute attribute, List attrList) {
         for (Iterator it = attrList.iterator(); it.hasNext();) {
             MibObject mibObj = (MibObject) it.next();
             if (mibObj.getOid().equals(attribute.getAttributeType().getOid()))
@@ -296,7 +301,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_agent.validateAgent();
     }
     
-    protected CollectionSet getCollectionSet() {
+    protected SnmpCollectionSet getCollectionSet() {
         return m_collectionSet;
     }
 

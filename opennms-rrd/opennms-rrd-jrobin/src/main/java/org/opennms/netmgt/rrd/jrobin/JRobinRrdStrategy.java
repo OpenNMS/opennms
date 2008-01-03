@@ -69,7 +69,9 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * open)
  */
 public class JRobinRrdStrategy implements RrdStrategy {
-
+    //Ensure that we only initialize certain things *once* per Java VM, not once per instantiation of this class  
+    private static boolean s_initialized = false;
+    
     private boolean m_initialized = false;
 
     /**
@@ -147,9 +149,12 @@ public class JRobinRrdStrategy implements RrdStrategy {
      */
     public synchronized void initialize() throws Exception {
         if (!m_initialized) {
-            RrdDb.setDefaultFactory("FILE");
-            String factory = RrdConfig.getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
-			RrdDb.setDefaultFactory(factory );
+            if(!s_initialized) {
+                RrdDb.setDefaultFactory("FILE");
+                String factory = RrdConfig.getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
+                RrdDb.setDefaultFactory(factory );
+                s_initialized=true;
+            }
             String home = System.getProperty("opennms.home");
             System.setProperty("jrobin.fontdir", home + File.separator + "etc");
             m_initialized = true;

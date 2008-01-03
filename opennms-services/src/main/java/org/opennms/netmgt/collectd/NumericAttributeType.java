@@ -39,7 +39,7 @@ package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.config.MibObject;
 
-public class NumericAttributeType extends AttributeType {
+public class NumericAttributeType extends SnmpAttributeType {
     
     private static String[] s_supportedTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
     
@@ -75,7 +75,7 @@ public class NumericAttributeType extends AttributeType {
 
     }
     
-    protected void storeAttribute(Attribute attribute, Persister persister) {
+    public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistNumericAttribute(attribute);
     }
 

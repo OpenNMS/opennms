@@ -35,36 +35,57 @@
 
 package org.opennms.netmgt.collectd;
 
-public interface CollectionResource extends ResourceIdentifier {
+public interface CollectionAttribute {
+    public CollectionResource getResource();
+    
+    /**
+     * Get the value of the attribute as a String.  
+     * @return a String representing the attribute value
+     */
+    public String getStringValue();
+    
+    /**
+     * Get the numeric value of the attribute, as a String.  Assumes the underlying value is actually numeric, and will
+     * return null if it is not parseable.
+     * @return a string representation of the numeric value of this attribute 
+     */
+    public String getNumericValue();
+    
+    /**
+     * Gets the name of the attribute
+     * @return a name
+     */
+    public String getName();
+
+    
+    /**
+     * Stores the attribute using the persister.  Not sure this should be here...
+     * @param persister
+     */
+    void storeAttribute(Persister persister);
+    
+    /**
+     * Determines whether the attribute should be persisted.  
+     * @param params
+     * @return
+     */
     public boolean shouldPersist(ServiceParameters params);
     
-    public boolean rescanNeeded();
+    /**
+     * Return the attribute type for this attribute.  Not sure what an CollectionAttributeType is yet... please fill in if you do know
+     * @return
+     */
+    public CollectionAttributeType getAttributeType();
     
+    /**
+     * Visit this attribute
+     * @param visitor
+     */
     public void visit(CollectionSetVisitor visitor);
     
     /**
-     * Returns something like an ifType; is (but not sure if it should be) -1 for non interface type collections, otherwise
-     * the SNMP type of the interface. Relates to ifType in datacollection-config.xml
-     * @return
+     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see NumericAttributeType) 
+     * @return type of value stored in this attribute (SNMP semantics)
      */
-    public int getType();
-    
-    /**
-     * Returns a string which indicates what type of resource.  
-     * Will be one of 
-     *          "node" for the node level resource
-     *          "if" for network interface resources
-     *          "*" for all other resource types defined in the relevant config files, e.g. hrStorage
-     * @return
-     */
-    public String getResourceTypeName();
-    
-    
-    /**
-     * Returns the name of the instance this CollectionResource represents.  For node/if level resources, this will be null
-     * to indicate the default instance.  For Generic resources (e.g. the SNMP GenericIndexResource), this will be
-     * some identifying label, probably the index in the table
-     * @return
-     */
-    public String getInstance();
+    public String getType();
 }
