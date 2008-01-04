@@ -193,6 +193,9 @@
         /org.opennms.dashboard.dashboard.nocache.html=ROLE_USER,ROLE_DASHBOARD
         /*.cache.html=ROLE_USER,ROLE_DASHBOARD
         /*.cache.html?*=ROLE_USER,ROLE_DASHBOARD
+        /*.cache.xml=ROLE_USER,ROLE_DASHBOARD
+        /*.cache.js=ROLE_USER,ROLE_DASHBOARD
+        /org.opennms.dashboard.*.nocache.js=ROLE_USER,ROLE_DASHBOARD
         /css/dashboard.css=ROLE_USER,ROLE_DASHBOARD
         /images/bg*.png=ROLE_USER,ROLE_DASHBOARD
         /images/error.png=ROLE_USER,ROLE_DASHBOARD
