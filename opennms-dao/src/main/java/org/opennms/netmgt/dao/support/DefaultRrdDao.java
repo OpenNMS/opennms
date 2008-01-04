@@ -113,7 +113,11 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         double[] values = new double[printLines.length];
         
         for(int i = 0; i < printLines.length; i++) {
-        	values[i] = Double.parseDouble(printLines[i]);
+        	try {
+				values[i] = Double.parseDouble(printLines[i]);
+			} catch (NumberFormatException e) {
+				values[i] = Double.NaN;
+			}
         }
         
         return values;
