@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Jan 05: Organize imports, format code a bit, make tests run with latest
+//              EventconfFactory changes (lining up functionality with
+//              EventConfigurationManager). - dj@opennms.org
 // 2007 Aug 24: Eliminate warnings, use Java 5 generics and loops, and use
 //              DaoTestConfigBean instead of calling
 //              System.setProperty("opennms.home", ...). - dj@opennms.org
@@ -60,8 +63,6 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
-    private static final String knownSubSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/topologyChange";
-    private static final String knownSubSubfileLabel1="BRIDGE-MIB defined trap event: topologyChange";
     
     public EventconfFactoryTest() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
@@ -72,6 +73,7 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     /*
      * @see TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -81,6 +83,7 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     /*
      * @see TestCase#tearDown()
      */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }
@@ -104,7 +107,6 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
 
     }
     
-    @SuppressWarnings("unchecked")
     private List<Event> getEventsByLabel() {
         return EventconfFactory.getInstance().getEventsByLabel();
     }
@@ -124,41 +126,30 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
         assertEquals("Should only be one result", 1, result.size());
         firstEvent=(Event)result.get(0);
         assertEquals("UEI should be "+knownSubfileUEI1,knownSubfileUEI1, firstEvent.getUei());
- 
-        //Find an event that's in a nested-sub-file
-        result=factory.getEvents(knownSubSubfileUEI1);
-        assertNotNull(result);
-        assertEquals("Should only be one result", 1, result.size());
-        firstEvent=(Event)result.get(0);
-        assertEquals("UEI should be "+knownSubSubfileUEI1,knownSubSubfileUEI1, firstEvent.getUei());
-
     }
     
     public void testGetEventUEIS() {
         List ueis=EventconfFactory.getInstance().getEventUEIs();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 5, ueis.size());
+        assertEquals("Count must be correct", 4, ueis.size());
         assertTrue("Must contain known UEI", ueis.contains(knownUEI1));
         assertTrue("Must contain known UEI", ueis.contains(knownSubfileUEI1));
-        assertTrue("Must contain known UEI", ueis.contains(knownSubSubfileUEI1));
     }
     
     public void testGetLabels() {
         Map labels=EventconfFactory.getInstance().getEventLabels();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 5, labels.size());
+        assertEquals("Count must be correct", 4, labels.size());
         assertTrue("Must contain known UEI", labels.containsKey(knownUEI1));
         assertEquals("Must have known Label", labels.get(knownUEI1), knownLabel1);
         assertTrue("Must contain known UEI", labels.containsKey(knownSubfileUEI1));
         assertEquals("Must have known Label", labels.get(knownSubfileUEI1), knownSubfileLabel1);
-        assertTrue("Must contain known UEI", labels.containsKey(knownSubSubfileUEI1));
-        assertEquals("Must have known Label", labels.get(knownSubSubfileUEI1), knownSubSubfileLabel1);
-     }
+    }
+    
     public void testGetLabel() {
         EventconfFactory factory = EventconfFactory.getInstance();
         assertEquals("Must have correct label"+knownLabel1, knownLabel1, factory.getEventLabel(knownUEI1));
         assertEquals("Must have correct label"+knownSubfileLabel1, knownSubfileLabel1, factory.getEventLabel(knownSubfileUEI1));
-        assertEquals("Must have correct label"+knownSubSubfileLabel1, knownSubSubfileLabel1, factory.getEventLabel(knownSubSubfileUEI1));
     }
     
     public void testGetAlarmType() {
