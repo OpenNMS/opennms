@@ -99,7 +99,7 @@ public class EventconfFactorySaveTest extends TestCase {
         
         factory.saveCurrent();
         
-        EventconfFactory.reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
+        EventconfFactory.getInstance().reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
         { 
             List<Event> events=factory.getEvents(knownUEI1);
             assertNull("Shouldn't be any events by that uei", events);
@@ -120,7 +120,7 @@ public class EventconfFactorySaveTest extends TestCase {
         
         factory.saveCurrent();
         
-        EventconfFactory.reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
+        EventconfFactory.getInstance().reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
         { 
             List<Event> events=factory.getEvents(knownSubfileUEI1);
             assertNull("Shouldn't be any events by that uei", events);
@@ -173,7 +173,7 @@ public class EventconfFactorySaveTest extends TestCase {
         
         try {
             factory.saveCurrent();
-            EventconfFactory.reload();
+            EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
             fail("Shouldn't throw exception while saving  and reloading factory: "+e.getMessage());
@@ -211,7 +211,7 @@ public class EventconfFactorySaveTest extends TestCase {
         
         try {
             factory.saveCurrent();
-            EventconfFactory.reload();
+            EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
             fail("Saving/reloading should not have caused an execption ");
@@ -254,7 +254,7 @@ public class EventconfFactorySaveTest extends TestCase {
 
         try {
             factory.saveCurrent();
-            EventconfFactory.reload();
+            EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
             fail("Saving/reloading should not have caused an execption ");
