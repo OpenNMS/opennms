@@ -45,7 +45,7 @@
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*,
+		org.opennms.netmgt.config.notifications.*
 	"
 %>
 
