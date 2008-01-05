@@ -30,5 +30,4 @@
         <logmsg dest="logndisplay">&lt;p&gt;Bridge MIB: New Spanning Tree Root.&lt;/p&gt;</logmsg>
         <severity xmlns="">Warning</severity>
     </event>
-    <event-file xmlns="">./events/nested.events.xml</event-file>
 </events>
