@@ -185,7 +185,7 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
 
         //Now reload without saving - should not find the new one, but should find the old one
         try {
-            EventconfFactory.reload();
+            EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
             fail("Should not have had exception while reloading factory "+e.getMessage());
