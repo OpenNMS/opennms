@@ -46,16 +46,13 @@
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.notifications.*,
-		org.opennms.core.utils.BundleLists,
-		org.opennms.netmgt.ConfigFileConstants,
-		java.io.*
 	"
 %>
 
 <%!
     public void init() throws ServletException {
         try {
-            EventconfFactory.init();
+            NotificationFactory.init();
         }
         catch( Exception e ) {
             throw new ServletException( "Cannot load configuration file", e );
