@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 05: Simplify init()/reload()/getInstance(). - dj@opennms.org
 // 2008 Jan 05: Organize imports, format code, refactor some, and line up some
 //              functionality with EventConfigurationManager. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -66,7 +67,8 @@ public class EventconfFactory {
     private static final String PROGRAMMATIC_STORE_RELATIVE_PATH = "events" + File.separator + "programmatic.events.xml";
 
     /**
-     * The static singleton instance of the EventconfFactory
+     * The static singleton instance of the EventconfFactory.
+     * Is null if the init() method has not been called.
      */
     private static EventconfFactory s_instance;
 
@@ -81,11 +83,6 @@ public class EventconfFactory {
      * List of configured events
      */
     private static Map<File, Events> m_eventFiles;
-
-    /**
-     * Boolean indicating if the init() method has been called
-     */
-    private static boolean m_initialized = false;
 
     private static class EventLabelComparator implements Comparator<Event> {
         public int compare(Event e1, Event e2) {
@@ -103,13 +100,17 @@ public class EventconfFactory {
      * 
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
-        if (m_initialized) {
+        if (isInitialized()) {
             return;
         }
         
         m_rootConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
         m_programmaticStoreFile = new File(m_rootConfigFile.getParent() + File.separator + PROGRAMMATIC_STORE_RELATIVE_PATH);
-        reload();
+        
+        EventconfFactory newInstance = new EventconfFactory(); 
+        newInstance.reload();
+
+        setInstance(newInstance);
     }
 
     /**
@@ -121,10 +122,10 @@ public class EventconfFactory {
      *
      */
     public static synchronized void reinit() throws MarshalException, ValidationException, IOException {
-        m_initialized = false;
+        setInstance(null);
         EventconfFactory.init();
     }
-    
+
     /**
      * Singleton static call to get the only instance that should exist for the
      * EventconfFactory
@@ -132,21 +133,25 @@ public class EventconfFactory {
      * @return the single eventconf factory instance
      */
     public static synchronized EventconfFactory getInstance() {
-        if (!m_initialized) {
-            return null;
-        }
-
-        if (s_instance == null) {
-            s_instance = new EventconfFactory();
+        if (!isInitialized()) {
+            throw new IllegalStateException("init() not called.");
         }
 
         return s_instance;
     }
 
+    private static void setInstance(EventconfFactory instance) {
+        s_instance = instance;
+    }
+
+    private static boolean isInitialized() {
+        return s_instance != null;
+    }
+
     /**
      * 
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, MarshalException, ValidationException {
         Events events = CastorUtils.unmarshal(Events.class, new FileReader(m_rootConfigFile));
        
         m_eventFiles = new HashMap<File, Events>();
@@ -184,8 +189,6 @@ public class EventconfFactory {
                 throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()));
             }
         }
-
-        m_initialized = true;
     }
 
     /**
@@ -267,7 +270,6 @@ public class EventconfFactory {
         if (m_programmaticStoreFile.exists() && (!m_eventFiles.containsKey(m_programmaticStoreFile))) {
             m_programmaticStoreFile.delete(); 
         }
-        reload();
     }
 
     public List<Event> getEventsByLabel() {
