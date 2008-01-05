@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 05: Organize imports, format code, refactor some, and line up some
+//              functionality with EventConfigurationManager. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 29: Added include files for eventconf.xml
 //
@@ -34,16 +36,12 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,20 +53,22 @@ import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Mask;
+import org.springframework.util.StringUtils;
 
 /**
  */
 public class EventconfFactory {
+    private static final String PROGRAMMATIC_STORE_RELATIVE_PATH = "events" + File.separator + "programmatic.events.xml";
+
     /**
      * The static singleton instance of the EventconfFactory
      */
-    private static EventconfFactory instance;
+    private static EventconfFactory s_instance;
 
     /**
      * The root configuration file 
@@ -83,19 +83,13 @@ public class EventconfFactory {
     private static Map<File, Events> m_eventFiles;
 
     /**
-     * List of global properties
-     */
-    //private static Global m_global;
-
-    /**
      * Boolean indicating if the init() method has been called
      */
-    private static boolean initialized = false;
+    private static boolean m_initialized = false;
 
-    private static class EventLabelComparator implements Comparator {
-
-        public int compare(Object o1, Object o2) {
-            return ((Event) o1).getEventLabel().compareToIgnoreCase(((Event) o2).getEventLabel());
+    private static class EventLabelComparator implements Comparator<Event> {
+        public int compare(Event e1, Event e2) {
+            return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
         }
     }
 
@@ -109,12 +103,13 @@ public class EventconfFactory {
      * 
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
-        if (!initialized) {
-            m_rootConfigFile=ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            m_programmaticStoreFile=new File(m_rootConfigFile.getParent() + File.separator + "events/programmatic.events.xml");
-            reload();
-            initialized = true;
+        if (m_initialized) {
+            return;
         }
+        
+        m_rootConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+        m_programmaticStoreFile = new File(m_rootConfigFile.getParent() + File.separator + PROGRAMMATIC_STORE_RELATIVE_PATH);
+        reload();
     }
 
     /**
@@ -126,80 +121,72 @@ public class EventconfFactory {
      *
      */
     public static synchronized void reinit() throws MarshalException, ValidationException, IOException {
-        initialized=false;
+        m_initialized = false;
         EventconfFactory.init();
     }
+    
     /**
      * Singleton static call to get the only instance that should exist for the
      * EventconfFactory
      * 
      * @return the single eventconf factory instance
      */
-    static synchronized public EventconfFactory getInstance() {
-        if (!initialized)
+    public static synchronized EventconfFactory getInstance() {
+        if (!m_initialized) {
             return null;
-
-        if (instance == null) {
-            instance = new EventconfFactory();
         }
 
-        return instance;
+        if (s_instance == null) {
+            s_instance = new EventconfFactory();
+        }
+
+        return s_instance;
     }
 
     /**
      * 
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        InputStream configIn = new FileInputStream(m_rootConfigFile);
-        Events events = ((Events) Unmarshaller.unmarshal(Events.class, new InputStreamReader(configIn)));
+        Events events = CastorUtils.unmarshal(Events.class, new FileReader(m_rootConfigFile));
        
-        m_eventFiles=new HashMap<File, Events>();
+        m_eventFiles = new HashMap<File, Events>();
         m_eventFiles.put(m_rootConfigFile, events);
 
-        //Create an array, and add any nested eventfiles defs found, to the end of the array.  
-        //Using the "size" field (rather than an enumeration) means we don't need any funky nesting logic
-        List<String> eventFiles=new ArrayList(events.getEventFileCollection());
+        /*
+         * Create an array, and add any nested eventfiles defs found, to the end of the array.  
+         * Using the "size" field (rather than an enumeration) means we don't need any funky nesting logic
+         */
+        List<String> eventFiles = new ArrayList<String>(events.getEventFileCollection());
         
-        for(int i=0; i<eventFiles.size(); i++) {
-            String eventFilePath = (String) eventFiles.get(i);
-            File eventFile=new File(eventFilePath);
-            if(!eventFile.isAbsolute()) {
-                //This event file is specified with a relative path.  Get the absolute path relative to the root config file, and use 
-                // that for all later file references
-                File tempFile=new File(m_rootConfigFile.getParent() + File.separator + eventFile.getPath());
-                eventFile=tempFile.getCanonicalFile();
+        for (String eventFilePath : eventFiles) {
+            File eventFile = new File(eventFilePath);
+            if (!eventFile.isAbsolute()) {
+                /*
+                 * This event file is specified with a relative path.  Get the absolute path relative to the root config file, and use 
+                 * that for all later file references
+                 */
+                File tempFile = new File(m_rootConfigFile.getParent() + File.separator + eventFile.getPath());
+                eventFile = tempFile.getCanonicalFile();
             }
-            InputStream fileIn = new FileInputStream(eventFile);
+            
+            FileReader fileIn = new FileReader(eventFile);
             if (fileIn == null) {
                 throw new IOException("Eventconf: Failed to load/locate events file: " + eventFile);
             }
 
-            Reader filerdr = new InputStreamReader(fileIn);
-            Events filelevel = null;
-            filelevel = (Events) Unmarshaller.unmarshal(Events.class, filerdr);
+            Events filelevel = CastorUtils.unmarshal(Events.class, fileIn);
             m_eventFiles.put(eventFile, filelevel);
             
-            //There are nested event-file definitions - load them as well
-            if(filelevel.getEventFileCount()>0) {
-                eventFiles.addAll(filelevel.getEventFileCollection());
+            if (filelevel.getGlobal() != null) {
+                throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot have a 'global' element");
+            }
+            if (filelevel.getEventFileCollection().size() > 0) {
+                throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()));
             }
         }
 
-        //m_global = events.getGlobal();
-
-        initialized = true;
+        m_initialized = true;
     }
-
-    /**
-     */
-    /*
-     * private Map makeMap(List eventsList) { HashMap newMap = new HashMap();
-     * 
-     * for (int i = 0; i < eventsList.size(); i++) { Event curEvent =
-     * (Event)eventsList.get(i); newMap.put(curEvent.getUei(), new Integer(i)); }
-     * 
-     * return newMap; }
-     */
 
     /**
      * 
@@ -207,43 +194,27 @@ public class EventconfFactory {
     public List<Event> getEvents(String uei) {
         List<Event> events = new ArrayList<Event>();
 
-        for(Events fileEvents : m_eventFiles.values()) {
-            for(int i=0; i<fileEvents.getEventCount(); i++) {
-                Event event=fileEvents.getEvent(i);
+        for (Events fileEvents : m_eventFiles.values()) {
+            for (Event event : fileEvents.getEventCollection()) {
                 if (event.getUei().equals(uei)) {
                     events.add(event);
                 }
             }
         }
-        if (events.size() > 0)
+        
+        if (events.size() > 0) {
             return events;
-        else
+        } else {
             return null;
-    }
-
-    /**
-     * @deprecated This function is not implemented completely. It will not
-     *             perform as expected. When it is implemented, remove this
-     *             deprecation tag.
-     */
-    public Event getEvent(String uei, Mask mask) {
-        List ueiMatches = getEvents(uei);
-
-        Event curEvent = null;
-        for (int i = 0; i < ueiMatches.size(); i++) {
-            // Compare the masks for a match
         }
-
-        return curEvent;
     }
 
     /**
      */
     public List<String> getEventUEIs() {
         List<String> eventUEIs = new ArrayList<String>();
-        for(Events fileEvents : m_eventFiles.values()) {
-            for(int i=0; i<fileEvents.getEventCount(); i++) {
-                Event event=fileEvents.getEvent(i);
+        for (Events fileEvents : m_eventFiles.values()) {
+            for (Event event : fileEvents.getEventCollection()) {
                 eventUEIs.add(event.getUei());
             }
         }
@@ -252,11 +223,10 @@ public class EventconfFactory {
 
     /**
      */
-    public Map getEventLabels() {
-        TreeMap eventLabels = new TreeMap();
-        for(Events fileEvents : m_eventFiles.values()) {
-            for(int i=0; i<fileEvents.getEventCount(); i++) {
-                Event event=fileEvents.getEvent(i);
+    public Map<String, String> getEventLabels() {
+        Map<String, String> eventLabels = new TreeMap<String, String>();
+        for (Events fileEvents : m_eventFiles.values()) {
+            for (Event event : fileEvents.getEventCollection()) {
                 eventLabels.put(event.getUei(), event.getEventLabel());
             }
         }
@@ -267,9 +237,8 @@ public class EventconfFactory {
     /**
      */
     public String getEventLabel(String uei) {
-        for(Events fileEvents : m_eventFiles.values()) {
-            for(int i=0; i<fileEvents.getEventCount(); i++) {
-                Event event=fileEvents.getEvent(i);
+        for (Events fileEvents : m_eventFiles.values()) {
+            for (Event event : fileEvents.getEventCollection()) {
                 if (event.getUei().equals(uei)) {
                     return event.getEventLabel();
                 }   
@@ -282,8 +251,8 @@ public class EventconfFactory {
      * 
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {        
-        for(File file : m_eventFiles.keySet()) {
-            Events fileEvents=m_eventFiles.get(file);
+        for (File file : m_eventFiles.keySet()) {
+            Events fileEvents = m_eventFiles.get(file);
             StringWriter stringWriter = new StringWriter();
             Marshaller.marshal(fileEvents, stringWriter);
             if (stringWriter.toString() != null) {
@@ -293,16 +262,17 @@ public class EventconfFactory {
                 fileWriter.close();
             }
         }
-        //Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
-        if(m_programmaticStoreFile.exists() && (!m_eventFiles.containsKey(m_programmaticStoreFile))) {
+        
+        // Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
+        if (m_programmaticStoreFile.exists() && (!m_eventFiles.containsKey(m_programmaticStoreFile))) {
             m_programmaticStoreFile.delete(); 
         }
         reload();
     }
 
-    public List getEventsByLabel() {
-        ArrayList list = new ArrayList();
-        for(Events fileEvents : m_eventFiles.values()) {
+    public List<Event> getEventsByLabel() {
+        List<Event> list = new ArrayList<Event>();
+        for (Events fileEvents : m_eventFiles.values()) {
             list.addAll(fileEvents.getEventCollection());
         }
         Collections.sort(list, new EventLabelComparator());
@@ -310,11 +280,13 @@ public class EventconfFactory {
     }
 
     /**
-     * Adds the event to the root level event config storage (file).  Does not save (you must save independently with saveCurrent)
+     * Adds the event to the root level event config storage (file).
+     * Does not save (you must save independently with saveCurrent)
+     * 
      * @param event The fully configured Event object to add.  
      */
     public void addEvent(Event event) {
-        Events events=m_eventFiles.get(m_rootConfigFile);
+        Events events = m_eventFiles.get(m_rootConfigFile);
         events.addEvent(event);
     }
 
@@ -326,20 +298,20 @@ public class EventconfFactory {
      * @param event The fully configured Event object to add.
      */
     public void addEventToProgrammaticStore(Event event) {
-
-        //Check for, and possibly add the programmatic store to the in-memory structure
-        if(!m_eventFiles.containsKey(m_programmaticStoreFile)) {
-            //programmatic store did not already exist.  Add an empty Events object for that file
+        // Check for, and possibly add the programmatic store to the in-memory structure
+        if (!m_eventFiles.containsKey(m_programmaticStoreFile)) {
+            // Programmatic store did not already exist.  Add an empty Events object for that file
             m_eventFiles.put(m_programmaticStoreFile, new Events());
         }
-        //Check for, and possibly add, the programmatic store event-file entry to the in-memory structure of the root config file
-        Events root=m_eventFiles.get(m_rootConfigFile);
-        String programmaticStorePath=m_programmaticStoreFile.getAbsolutePath();
-        if(!root.getEventFileCollection().contains(programmaticStorePath)) {
+        
+        // Check for, and possibly add, the programmatic store event-file entry to the in-memory structure of the root config file
+        Events root = m_eventFiles.get(m_rootConfigFile);
+        String programmaticStorePath = m_programmaticStoreFile.getAbsolutePath();
+        if (!root.getEventFileCollection().contains(programmaticStorePath)) {
             root.addEventFile(programmaticStorePath);
         }
         
-        Events events=m_eventFiles.get(m_programmaticStoreFile);
+        Events events = m_eventFiles.get(m_programmaticStoreFile);
         events.addEvent(event);
     }
 
@@ -352,17 +324,18 @@ public class EventconfFactory {
      * @returns true if the event was removed, false if it wasn't found (either not in the programmatic store, or the store didn't exist)
      */   
     public boolean removeEventFromProgrammaticStore(Event event) {
-        if(!m_eventFiles.containsKey(m_programmaticStoreFile)) {
-            return false; //Oops, doesn't exist
+        if (!m_eventFiles.containsKey(m_programmaticStoreFile)) {
+            return false; // Oops, doesn't exist
         }
-        Events events=m_eventFiles.get(m_programmaticStoreFile);
-        boolean result=events.removeEvent(event);
-        if(events.getEventCount()==0) {
-            //No more events in the programmatic store.  We must remove that file entry 
+        
+        Events events = m_eventFiles.get(m_programmaticStoreFile);
+        boolean result = events.removeEvent(event);
+        if (events.getEventCount() == 0) {
+            // No more events in the programmatic store.  We must remove that file entry.
             m_eventFiles.remove(m_programmaticStoreFile);
-            Events root=m_eventFiles.get(m_rootConfigFile);
+            Events root = m_eventFiles.get(m_rootConfigFile);
             root.removeEventFile(m_programmaticStoreFile.getAbsolutePath());
-            //The file will be deleted by saveCurrent, not here
+            // The file will be deleted by saveCurrent, not here
         }
         return result;
     }
