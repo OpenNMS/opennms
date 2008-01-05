@@ -11,7 +11,7 @@ import org.opennms.test.FileAnticipator;
 
 import junit.framework.TestCase;
 
-public class EventconfFactorySaveTests extends TestCase {
+public class EventconfFactorySaveTest extends TestCase {
     private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     
@@ -23,6 +23,8 @@ public class EventconfFactorySaveTests extends TestCase {
     private static final String newSeverity="Warning";
     
     private FileAnticipator m_fa;
+    
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         m_fa = new FileAnticipator();
@@ -35,7 +37,7 @@ public class EventconfFactorySaveTests extends TestCase {
         m_fa.expecting(new File(tempHome), "etc/events");
         createTempCopy(m_fa, origHome, tempHome, "etc/eventconf.xml");
         createTempCopy(m_fa, origHome, tempHome, "etc/events/Standard.events.xml");
-        createTempCopy(m_fa, origHome, tempHome, "etc/events/nested.events.xml");
+        createTempCopy(m_fa, origHome, tempHome, "etc/events/Syslog.test.events.xml");
 
         //Change the opennms.home and load the EventconfFactory from the new temporary copy
         System.setProperty("opennms.home", tempHome);
@@ -43,6 +45,7 @@ public class EventconfFactorySaveTests extends TestCase {
 
     }
 
+    @Override
     protected void tearDown() throws Exception {
         m_fa.deleteExpected();
         m_fa.tearDown();
