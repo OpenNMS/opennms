@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 05: Add a few new constructors and make them all public,
+//              eliminate static fields except for s_instance. - dj@opennms.org
 // 2008 Jan 05: Simplify init()/reload()/getInstance(). - dj@opennms.org
 // 2008 Jan 05: Organize imports, format code, refactor some, and line up some
 //              functionality with EventConfigurationManager. - dj@opennms.org
@@ -51,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -75,14 +78,17 @@ public class EventconfFactory {
     /**
      * The root configuration file 
      */
-    private static File m_rootConfigFile;
+    private File m_rootConfigFile;
     
-    private static File m_programmaticStoreFile;
+    /**
+     * The programmatic store configuration file 
+     */
+    private File m_programmaticStoreFile;
     
     /**
      * List of configured events
      */
-    private static Map<File, Events> m_eventFiles;
+    private Map<File, Events> m_eventFiles;
 
     private static class EventLabelComparator implements Comparator<Event> {
         public int compare(Event e1, Event e2) {
@@ -93,7 +99,23 @@ public class EventconfFactory {
     /**
      * 
      */
-    private EventconfFactory() {
+    public EventconfFactory() throws IOException {
+        this(getDefaultRootConfigFile());
+    }
+    
+    /**
+     * 
+     */
+    public EventconfFactory(File rootConfigFile) {
+        this(rootConfigFile, getDefaultProgrammaticStoreConfigFile(rootConfigFile));
+    }
+    
+    /**
+     * 
+     */
+    public EventconfFactory(File rootConfigFile, File programmaticStoreFile) {
+        m_rootConfigFile = rootConfigFile;
+        m_programmaticStoreFile = programmaticStoreFile;
     }
 
     /**
@@ -103,14 +125,19 @@ public class EventconfFactory {
         if (isInitialized()) {
             return;
         }
-        
-        m_rootConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-        m_programmaticStoreFile = new File(m_rootConfigFile.getParent() + File.separator + PROGRAMMATIC_STORE_RELATIVE_PATH);
-        
-        EventconfFactory newInstance = new EventconfFactory(); 
+
+        EventconfFactory newInstance = new EventconfFactory();
         newInstance.reload();
 
         setInstance(newInstance);
+    }
+
+    private static File getDefaultRootConfigFile() throws IOException {
+        return ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+    }
+
+    private static File getDefaultProgrammaticStoreConfigFile(File rootConfigFile) {
+        return new File(rootConfigFile.getParent() + File.separator + PROGRAMMATIC_STORE_RELATIVE_PATH);
     }
 
     /**
@@ -254,10 +281,13 @@ public class EventconfFactory {
      * 
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {        
-        for (File file : m_eventFiles.keySet()) {
-            Events fileEvents = m_eventFiles.get(file);
+        for (Entry<File, Events> entry : m_eventFiles.entrySet()) {
+            File file = entry.getKey();
+            Events fileEvents = entry.getValue();
+            
             StringWriter stringWriter = new StringWriter();
             Marshaller.marshal(fileEvents, stringWriter);
+            
             if (stringWriter.toString() != null) {
                 FileWriter fileWriter = new FileWriter(file);
                 fileWriter.write(stringWriter.toString());
