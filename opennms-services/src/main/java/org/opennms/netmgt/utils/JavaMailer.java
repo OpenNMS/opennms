@@ -10,6 +10,9 @@
  *
  * Modifications:
  * 
+ * 05 January 2008: Moved initialization of the mailer session to constructor so that
+ * properties can be overridden by the implementer.
+ * 
  * 13 June 2007: Added support for SSL, proper auth, ports, content-type, and charsets
  *
  * This program is free software; you can redistribute it and/or modify
@@ -91,6 +94,8 @@ public class JavaMailer {
 	private static final boolean DEFAULT_QUIT_WAIT = true;
 	private static final int DEFAULT_SMTP_PORT = 25;
 	private static final boolean DEFAULT_SMTP_SSL_ENABLE = false;
+	
+	private Session m_session = null;
 
     private boolean m_debug = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", DEFAULT_MAILER_DEBUG);
     private String m_mailHost = JavaMailerConfig.getProperty("org.opennms.core.utils.mailHost", DEFAULT_MAIL_HOST);
@@ -114,16 +119,11 @@ public class JavaMailer {
     private String m_messageText;
     private String m_fileName;
 
-    public JavaMailer() {
-
-    }
-
     /**
-     * Sends a message based on properties set on this bean.
+     * Default constructor.  Default properties from javamailer-properties are set into session.  To change these
+     * properties, retrieve the current properties from the session and override as needed.
      */
-    public void mailSend() throws JavaMailerException {
-        checkEnvelopeAndContents();
-        
+    public JavaMailer() {
         Properties props = System.getProperties();
         
         props.put("mail.smtp.auth", String.valueOf(isAuthenticate()));
@@ -137,13 +137,21 @@ public class JavaMailer {
         	props.put("mail.smtp.socketFactory.fallback", "false");
         }
 
-        Session session = Session.getInstance(props, createAuthenticator());
+        m_session = Session.getInstance(props, createAuthenticator());
         //Session session = Session.getInstance(props, null);
-        session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
-        session.setDebug(isDebug());
+        m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
+        m_session.setDebug(isDebug());
         
-        log().debug(createLogMsg());        
-        sendMessage(session, buildMessage(session));
+    }
+
+    /**
+     * Sends a message based on properties set on this bean.
+     */
+    public void mailSend() throws JavaMailerException {
+        checkEnvelopeAndContents();
+        
+        log().debug(createSendLogMsg());        
+        sendMessage(m_session, buildMessage(m_session));
     }
 
 	/**
@@ -227,7 +235,7 @@ public class JavaMailer {
 	/**
 	 * @return
 	 */
-	private String createLogMsg() {
+	private String createSendLogMsg() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n\tTo: ");
 		sb.append(getTo());
@@ -417,19 +425,6 @@ public class JavaMailer {
         return m_authenticate;
     }
     
-    public boolean isStartTlsEnabled() {
-    	return m_startTlsEnabled;
-    }
-    public boolean isQuitWait() {
-    	return m_quitWait;
-    }
-    public int getSmtpPort() {
-    	return m_smtpPort;
-    }
-    public boolean isSmtpSsl() {
-    	return m_smtpSsl;
-    }
-
     /**
      * @param authenticate
      *            The authenticate boolean to set.
@@ -659,5 +654,117 @@ public class JavaMailer {
         }
 
     }
+
+	/**
+	 * @return the session
+	 */
+	public Session getSession() {
+		return m_session;
+	}
+
+	/**
+	 * @param session the session to set
+	 */
+	public void setSession(Session session) {
+		m_session = session;
+	}
+
+	/**
+	 * @return the contentType
+	 */
+	public String getContentType() {
+		return m_contentType;
+	}
+
+	/**
+	 * @param contentType the contentType to set
+	 */
+	public void setContentType(String contentType) {
+		m_contentType = contentType;
+	}
+
+	/**
+	 * @return the charSet
+	 */
+	public String getCharSet() {
+		return m_charSet;
+	}
+
+	/**
+	 * @param charSet the charSet to set
+	 */
+	public void setCharSet(String charSet) {
+		m_charSet = charSet;
+	}
+
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return m_encoding;
+	}
+
+	/**
+	 * @param encoding the encoding to set
+	 */
+	public void setEncoding(String encoding) {
+		m_encoding = encoding;
+	}
+
+	/**
+	 * @return the startTlsEnabled
+	 */
+    public boolean isStartTlsEnabled() {
+    	return m_startTlsEnabled;
+    }
+    
+	/**
+	 * @param startTlsEnabled the startTlsEnabled to set
+	 */
+	public void setStartTlsEnabled(boolean startTlsEnabled) {
+		m_startTlsEnabled = startTlsEnabled;
+	}
+	
+	/**
+	 * @return the quitWait
+	 */
+    public boolean isQuitWait() {
+    	return m_quitWait;
+    }
+
+	/**
+	 * @param quitWait the quitWait to set
+	 */
+	public void setQuitWait(boolean quitWait) {
+		m_quitWait = quitWait;
+	}
+
+	/**
+	 * @return the smtpPort
+	 */
+    public int getSmtpPort() {
+    	return m_smtpPort;
+    }
+
+	/**
+	 * @param smtpPort the smtpPort to set
+	 */
+	public void setSmtpPort(int smtpPort) {
+		m_smtpPort = smtpPort;
+	}
+	
+	/**
+	 * @return the smtpSsl
+	 */
+    public boolean isSmtpSsl() {
+    	return m_smtpSsl;
+    }
+
+	/**
+	 * @param smtpSsl the smtpSsl to set
+	 */
+	public void setSmtpSsl(boolean smtpSsl) {
+		m_smtpSsl = smtpSsl;
+	}
 
 }

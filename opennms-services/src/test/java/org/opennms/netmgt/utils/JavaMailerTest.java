@@ -51,7 +51,9 @@ import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 /**
- * @author david hustace
+ * Test the JavaMailer class.
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class JavaMailerTest extends TestCase {
     private static final String TEST_ADDRESS = "root@localhost";
@@ -62,6 +64,7 @@ public class JavaMailerTest extends TestCase {
     	Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
     	
     	File homeDir = resource.getFile().getParentFile().getParentFile();
+    	System.out.println("homeDir: "+homeDir.getAbsolutePath());
 
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
     }
