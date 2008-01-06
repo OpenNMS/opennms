@@ -10,10 +10,12 @@
  *
  * Modifications:
  * 
- * 05 January 2008: Moved initialization of the mailer session to constructor so that
- * properties can be overridden by the implementer.
- * 
- * 13 June 2007: Added support for SSL, proper auth, ports, content-type, and charsets
+ * 2008 Jan 06: Indent. - dj@opennms.org
+ * 2008 Jan 06: Moved initialization of the mailer session to constructor so
+ *              that properties can be overridden by the implementer.
+ *              - david@opennms.org
+ * 2007 Jun 13: Added support for SSL, proper auth, ports, content-type, and
+ *              charsets.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +80,7 @@ import org.springframework.util.StringUtils;
  */
 public class JavaMailer {
     private static final String DEFAULT_FROM_ADDRESS = "root@[127.0.0.1]";
-//    private static final String DEFAULT_TO_ADDRESS = "root@[127.0.0.1]";
+//  private static final String DEFAULT_TO_ADDRESS = "root@[127.0.0.1]";
     private static final String DEFAULT_MAIL_HOST = "127.0.0.1";
     private static final boolean DEFAULT_AUTHENTICATE = false;
     private static final String DEFAULT_AUTHENTICATE_USER = "opennms";
@@ -87,15 +89,15 @@ public class JavaMailer {
     private static final String DEFAULT_TRANSPORT = "smtp";
     private static final boolean DEFAULT_MAILER_DEBUG = true;
     private static final boolean DEFAULT_USE_JMTA = true;
-	private static final String DEFAULT_CONTENT_TYPE = "text/plain";
-	private static final String DEFAULT_CHARSET = "us-ascii";
-	private static final String DEFAULT_ENCODING = "7-bit";
-	private static final boolean DEFAULT_STARTTLS_ENABLE = false;
-	private static final boolean DEFAULT_QUIT_WAIT = true;
-	private static final int DEFAULT_SMTP_PORT = 25;
-	private static final boolean DEFAULT_SMTP_SSL_ENABLE = false;
-	
-	private Session m_session = null;
+    private static final String DEFAULT_CONTENT_TYPE = "text/plain";
+    private static final String DEFAULT_CHARSET = "us-ascii";
+    private static final String DEFAULT_ENCODING = "7-bit";
+    private static final boolean DEFAULT_STARTTLS_ENABLE = false;
+    private static final boolean DEFAULT_QUIT_WAIT = true;
+    private static final int DEFAULT_SMTP_PORT = 25;
+    private static final boolean DEFAULT_SMTP_SSL_ENABLE = false;
+
+    private Session m_session = null;
 
     private boolean m_debug = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", DEFAULT_MAILER_DEBUG);
     private String m_mailHost = JavaMailerConfig.getProperty("org.opennms.core.utils.mailHost", DEFAULT_MAIL_HOST);
@@ -109,10 +111,10 @@ public class JavaMailer {
     private String m_contentType = JavaMailerConfig.getProperty("org.opennms.core.utils.messageContentType", DEFAULT_CONTENT_TYPE);
     private String m_charSet = JavaMailerConfig.getProperty("org.opennms.core.utils.charset", DEFAULT_CHARSET);
     private String m_encoding = JavaMailerConfig.getProperty("org.opennms.core.utils.encoding", DEFAULT_ENCODING);
-	private boolean m_startTlsEnabled = JavaMailerConfig.getProperty("org.opennms.core.utils.starttls.enable", DEFAULT_STARTTLS_ENABLE);
-	private boolean m_quitWait = JavaMailerConfig.getProperty("org.opennms.core.utils.quitwait", DEFAULT_QUIT_WAIT);
-	private int m_smtpPort = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpport", DEFAULT_SMTP_PORT);
-	private boolean m_smtpSsl = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpssl.enable", DEFAULT_SMTP_SSL_ENABLE);
+    private boolean m_startTlsEnabled = JavaMailerConfig.getProperty("org.opennms.core.utils.starttls.enable", DEFAULT_STARTTLS_ENABLE);
+    private boolean m_quitWait = JavaMailerConfig.getProperty("org.opennms.core.utils.quitwait", DEFAULT_QUIT_WAIT);
+    private int m_smtpPort = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpport", DEFAULT_SMTP_PORT);
+    private boolean m_smtpSsl = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpssl.enable", DEFAULT_SMTP_SSL_ENABLE);
 
     private String m_to;
     private String m_subject;
@@ -125,23 +127,23 @@ public class JavaMailer {
      */
     public JavaMailer() {
         Properties props = System.getProperties();
-        
+
         props.put("mail.smtp.auth", String.valueOf(isAuthenticate()));
         props.put("mail.smtp.starttls.enable", String.valueOf(isStartTlsEnabled()));
         props.put("mail.smtp.quitwait", String.valueOf(isQuitWait()));
         props.put("mail.smtp.port", String.valueOf(getSmtpPort()));
         if (isSmtpSsl()) {
             props.put("mail.smtps.auth", String.valueOf(isAuthenticate()));
-        	props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        	props.put("mail.smtp.socketFactory.port", String.valueOf(getSmtpPort()));
-        	props.put("mail.smtp.socketFactory.fallback", "false");
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.put("mail.smtp.socketFactory.port", String.valueOf(getSmtpPort()));
+            props.put("mail.smtp.socketFactory.fallback", "false");
         }
 
         m_session = Session.getInstance(props, createAuthenticator());
         //Session session = Session.getInstance(props, null);
         m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
         m_session.setDebug(isDebug());
-        
+
     }
 
     /**
@@ -149,28 +151,28 @@ public class JavaMailer {
      */
     public void mailSend() throws JavaMailerException {
         checkEnvelopeAndContents();
-        
+
         log().debug(createSendLogMsg());        
         sendMessage(m_session, buildMessage(m_session));
     }
 
-	/**
-	 * Helper method to create an Authenticator based on Password Authentication
-	 * @return
-	 */
-	private Authenticator createAuthenticator() {
-		Authenticator auth;
-		if (isAuthenticate()) {
+    /**
+     * Helper method to create an Authenticator based on Password Authentication
+     * @return
+     */
+    private Authenticator createAuthenticator() {
+        Authenticator auth;
+        if (isAuthenticate()) {
             auth = new Authenticator() {
-            	protected PasswordAuthentication getPasswordAuthentication() {
-            		return new PasswordAuthentication(getUser(), getPassword());
-            	}
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(getUser(), getPassword());
+                }
             };
         } else {
-        	auth = null;
+            auth = null;
         }
-		return auth;
-	}
+        return auth;
+    }
 
     /**
      * Build a complete message ready for sending.
@@ -182,26 +184,26 @@ public class JavaMailer {
     private Message buildMessage(final Session session) throws JavaMailerException {
         try {
             Message message = createMessage(session);
-            
+
             String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
-			if (getFileName() == null) {
-            	message.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+            if (getFileName() == null) {
+                message.setContent(encodedText, m_contentType+"; charset="+m_charSet);
             } else {
                 BodyPart bp = new MimeBodyPart();
                 bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
-                
+
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(bp);
                 mp = new MimeMultipart();
                 mp.addBodyPart(createFileAttachment(new File(getFileName())));
                 message.setContent(mp);
             }
-            
+
             message.setHeader("X-Mailer", getMailer());
             message.setSentDate(new Date());
-            
+
             message.saveChanges();
-            
+
             return message;
         } catch (AddressException e) {
             log().error("Java Mailer Addressing exception: ", e);
@@ -212,44 +214,44 @@ public class JavaMailer {
         } catch (UnsupportedEncodingException e) {
             log().error("Java Mailer messaging exception: ", e);
             throw new JavaMailerException("Java Mailer encoding exception: ", e);
-		}
+        }
     }
 
-	/**
-	 * Helper method to that creates a MIME message.
-	 * @param session
-	 * @return
-	 * @throws MessagingException
-	 * @throws AddressException
-	 */
-	private Message createMessage(final Session session)
-			throws MessagingException, AddressException {
-		Message message;
-		message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(getFrom()));
-		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
-		message.setSubject(getSubject());
-		return message;
-	}
+    /**
+     * Helper method to that creates a MIME message.
+     * @param session
+     * @return
+     * @throws MessagingException
+     * @throws AddressException
+     */
+    private Message createMessage(final Session session)
+    throws MessagingException, AddressException {
+        Message message;
+        message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(getFrom()));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
+        message.setSubject(getSubject());
+        return message;
+    }
 
-	/**
-	 * @return
-	 */
-	private String createSendLogMsg() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("\n\tTo: ");
-		sb.append(getTo());
-		sb.append("\n\tFrom: ");
-		sb.append(getFrom());
-		sb.append("\n\tSubject is: ");
-		sb.append(getSubject());
-		sb.append("\n\tFile: ");
-		sb.append(getFileName()!=null ? getFileName() : "no file attached");
-		sb.append("\n\n");
-		sb.append(getMessageText());
-		sb.append("\n");
-		return sb.toString();
-	}
+    /**
+     * @return
+     */
+    private String createSendLogMsg() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("\n\tTo: ");
+        sb.append(getTo());
+        sb.append("\n\tFrom: ");
+        sb.append(getFrom());
+        sb.append("\n\tSubject is: ");
+        sb.append(getSubject());
+        sb.append("\n\tFile: ");
+        sb.append(getFileName()!=null ? getFileName() : "no file attached");
+        sb.append("\n\n");
+        sb.append(getMessageText());
+        sb.append("\n");
+        return sb.toString();
+    }
 
     /**
      * Create a file attachment as a MimeBodyPart, checking to see if the file
@@ -271,14 +273,14 @@ public class JavaMailer {
             log().error("File attachment '" + file.getAbsolutePath() + "' is not readable.");
             throw new JavaMailerException("File attachment '" + file.getAbsolutePath() + "' is not readable.");
         }
-        
+
         MimeBodyPart bodyPart = new MimeBodyPart();
         FileDataSource fds = new FileDataSource(file);
         bodyPart.setDataHandler(new DataHandler(fds));
         bodyPart.setFileName(fds.getName());
         return bodyPart;
     }
-    
+
     /**
      * Check that required envelope and message contents properties have been
      * set. 
@@ -325,10 +327,10 @@ public class JavaMailer {
         try {
             t = session.getTransport(getTransport());
             log().debug("for transport name '" + getTransport() + "' got: " + t.getClass().getName() + "@" + Integer.toHexString(t.hashCode()));
-            
+
             LoggingTransportListener listener = new LoggingTransportListener(log());
             t.addTransportListener(listener);
-            
+
             if (t.getURLName().getProtocol().equals("mta")) {
                 // JMTA throws an AuthenticationFailedException if we call connect()
                 log().debug("transport is 'mta', not trying to connect()");
@@ -339,7 +341,7 @@ public class JavaMailer {
                 log().debug("not authenticating to " + getMailHost());
                 t.connect(getMailHost(), null, null);
             }
-            
+
             t.sendMessage(message, message.getAllRecipients());
             listener.assertAllMessagesDelivered();
         } catch (NoSuchProviderException e) {
@@ -388,20 +390,20 @@ public class JavaMailer {
     public void setUser(String user) {
         m_user = user;
     }
-    
-	/**
-	 * @return Returns the _useMailHost.
-	 */
-	public boolean isUseJMTA() {
-		return m_useJMTA;
-	}
-    
-	/**
-	 * @param mailHost The _useMailHost to set.
-	 */
-	public void setUseJMTA(boolean useMTA) {
-		m_useJMTA = useMTA;
-	}
+
+    /**
+     * @return Returns the _useMailHost.
+     */
+    public boolean isUseJMTA() {
+        return m_useJMTA;
+    }
+
+    /**
+     * @param mailHost The _useMailHost to set.
+     */
+    public void setUseJMTA(boolean useMTA) {
+        m_useJMTA = useMTA;
+    }
 
     /**
      * @return Returns the from address.
@@ -424,7 +426,7 @@ public class JavaMailer {
     public boolean isAuthenticate() {
         return m_authenticate;
     }
-    
+
     /**
      * @param authenticate
      *            The authenticate boolean to set.
@@ -549,10 +551,10 @@ public class JavaMailer {
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-    
+
     public static class LoggingByteArrayOutputStream extends ByteArrayOutputStream {
         private Category m_category;
-        
+
         public LoggingByteArrayOutputStream(Category category) {
             m_category = category;
         }
@@ -560,22 +562,22 @@ public class JavaMailer {
         @Override
         public void flush() throws IOException {
             super.flush();
-            
+
             String buffer = toString().replaceAll("\n", "");
             if (buffer.length() > 0) {
                 m_category.debug(buffer);   
             }
-            
+
             reset();
         }
     }
-    
+
     public static class LoggingTransportListener implements TransportListener {
         private Category m_category;
         private List<Address> m_invalidAddresses = new ArrayList<Address>();
         private List<Address> m_validSentAddresses = new ArrayList<Address>();
         private List<Address> m_validUnsentAddresses = new ArrayList<Address>();
-        
+
         public LoggingTransportListener(Category category) {
             m_category = category;
         }
@@ -606,11 +608,11 @@ public class JavaMailer {
                 m_category.error(message + ": valid unsent addresses: " + StringUtils.arrayToDelimitedString(event.getValidUnsentAddresses(), ", "));
             }
         }
-        
+
         public boolean hasAnythingBeenReceived() {
             return m_invalidAddresses.size() != 0 || m_validSentAddresses.size() != 0 || m_validUnsentAddresses.size() != 0;
         }
-        
+
         /**
          * We sleep up to ten times for 10ms, checking to see if anything has
          * been received because the notifications are done by a separate
@@ -628,14 +630,14 @@ public class JavaMailer {
                 if (hasAnythingBeenReceived()) {
                     break;
                 }
-                
+
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
                     // Do nothing
                 }
             }
-            
+
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -646,7 +648,7 @@ public class JavaMailer {
                 // Nothing failed, so just return
                 return;
             }
-            
+
             throw new JavaMailerException("Not all messages delivered:\n"
                     + "\t" + m_validSentAddresses.size() + " messages were sent to valid addresses: " + StringUtils.collectionToDelimitedString(m_validSentAddresses, ", ") + "\n"
                     + "\t" + m_validUnsentAddresses.size() + " messages were not sent to valid addresses: " + StringUtils.collectionToDelimitedString(m_validUnsentAddresses, ", ") + "\n"
@@ -655,116 +657,116 @@ public class JavaMailer {
 
     }
 
-	/**
-	 * @return the session
-	 */
-	public Session getSession() {
-		return m_session;
-	}
+    /**
+     * @return the session
+     */
+    public Session getSession() {
+        return m_session;
+    }
 
-	/**
-	 * @param session the session to set
-	 */
-	public void setSession(Session session) {
-		m_session = session;
-	}
+    /**
+     * @param session the session to set
+     */
+    public void setSession(Session session) {
+        m_session = session;
+    }
 
-	/**
-	 * @return the contentType
-	 */
-	public String getContentType() {
-		return m_contentType;
-	}
+    /**
+     * @return the contentType
+     */
+    public String getContentType() {
+        return m_contentType;
+    }
 
-	/**
-	 * @param contentType the contentType to set
-	 */
-	public void setContentType(String contentType) {
-		m_contentType = contentType;
-	}
+    /**
+     * @param contentType the contentType to set
+     */
+    public void setContentType(String contentType) {
+        m_contentType = contentType;
+    }
 
-	/**
-	 * @return the charSet
-	 */
-	public String getCharSet() {
-		return m_charSet;
-	}
+    /**
+     * @return the charSet
+     */
+    public String getCharSet() {
+        return m_charSet;
+    }
 
-	/**
-	 * @param charSet the charSet to set
-	 */
-	public void setCharSet(String charSet) {
-		m_charSet = charSet;
-	}
+    /**
+     * @param charSet the charSet to set
+     */
+    public void setCharSet(String charSet) {
+        m_charSet = charSet;
+    }
 
-	/**
-	 * @return the encoding
-	 */
-	public String getEncoding() {
-		return m_encoding;
-	}
+    /**
+     * @return the encoding
+     */
+    public String getEncoding() {
+        return m_encoding;
+    }
 
-	/**
-	 * @param encoding the encoding to set
-	 */
-	public void setEncoding(String encoding) {
-		m_encoding = encoding;
-	}
+    /**
+     * @param encoding the encoding to set
+     */
+    public void setEncoding(String encoding) {
+        m_encoding = encoding;
+    }
 
-	/**
-	 * @return the startTlsEnabled
-	 */
+    /**
+     * @return the startTlsEnabled
+     */
     public boolean isStartTlsEnabled() {
-    	return m_startTlsEnabled;
+        return m_startTlsEnabled;
     }
-    
-	/**
-	 * @param startTlsEnabled the startTlsEnabled to set
-	 */
-	public void setStartTlsEnabled(boolean startTlsEnabled) {
-		m_startTlsEnabled = startTlsEnabled;
-	}
-	
-	/**
-	 * @return the quitWait
-	 */
+
+    /**
+     * @param startTlsEnabled the startTlsEnabled to set
+     */
+    public void setStartTlsEnabled(boolean startTlsEnabled) {
+        m_startTlsEnabled = startTlsEnabled;
+    }
+
+    /**
+     * @return the quitWait
+     */
     public boolean isQuitWait() {
-    	return m_quitWait;
+        return m_quitWait;
     }
 
-	/**
-	 * @param quitWait the quitWait to set
-	 */
-	public void setQuitWait(boolean quitWait) {
-		m_quitWait = quitWait;
-	}
+    /**
+     * @param quitWait the quitWait to set
+     */
+    public void setQuitWait(boolean quitWait) {
+        m_quitWait = quitWait;
+    }
 
-	/**
-	 * @return the smtpPort
-	 */
+    /**
+     * @return the smtpPort
+     */
     public int getSmtpPort() {
-    	return m_smtpPort;
+        return m_smtpPort;
     }
 
-	/**
-	 * @param smtpPort the smtpPort to set
-	 */
-	public void setSmtpPort(int smtpPort) {
-		m_smtpPort = smtpPort;
-	}
-	
-	/**
-	 * @return the smtpSsl
-	 */
+    /**
+     * @param smtpPort the smtpPort to set
+     */
+    public void setSmtpPort(int smtpPort) {
+        m_smtpPort = smtpPort;
+    }
+
+    /**
+     * @return the smtpSsl
+     */
     public boolean isSmtpSsl() {
-    	return m_smtpSsl;
+        return m_smtpSsl;
     }
 
-	/**
-	 * @param smtpSsl the smtpSsl to set
-	 */
-	public void setSmtpSsl(boolean smtpSsl) {
-		m_smtpSsl = smtpSsl;
-	}
+    /**
+     * @param smtpSsl the smtpSsl to set
+     */
+    public void setSmtpSsl(boolean smtpSsl) {
+        m_smtpSsl = smtpSsl;
+    }
 
 }

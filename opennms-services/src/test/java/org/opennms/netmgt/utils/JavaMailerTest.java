@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 06: Indent. - dj@opennms.org
 // 2007 Apr 13: Add a few more test cases and deduplicate. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -38,7 +39,6 @@
  */
 package org.opennms.netmgt.utils;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -50,6 +50,7 @@ import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
 /**
  * Test the JavaMailer class.
  * 
@@ -60,15 +61,15 @@ public class JavaMailerTest extends TestCase {
 
     protected void setUp() throws IOException {
         MockLogAppender.setupLogging();
-        
-    	Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
-    	
-    	File homeDir = resource.getFile().getParentFile().getParentFile();
-    	System.out.println("homeDir: "+homeDir.getAbsolutePath());
+
+        Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
+
+        File homeDir = resource.getFile().getParentFile().getParentFile();
+        System.out.println("homeDir: "+homeDir.getAbsolutePath());
 
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
     }
-    
+
     @Override
     protected void runTest() throws Throwable {
         super.runTest();
@@ -76,20 +77,20 @@ public class JavaMailerTest extends TestCase {
     }
 
     public void testNothing() throws Exception {
-        
+
     }
 
     public final void testJavaMailerWithDefaults() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using details");
-        
+
         jm.mailSend();
     }
-    
+
     public final void testJavaMailerWithNullTo() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setTo(null);
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have a null to address."));
         try {
@@ -99,12 +100,12 @@ public class JavaMailerTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
     public final void testJavaMailerWithEmptyTo() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setTo("");
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have an empty to address."));
         try {
@@ -117,9 +118,9 @@ public class JavaMailerTest extends TestCase {
 
     public final void testJavaMailerWithNullFrom() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setFrom(null);
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have a null from address."));
         try {
@@ -129,12 +130,12 @@ public class JavaMailerTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
     public final void testJavaMailerWithEmptyFrom() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setFrom("");
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have an empty from address."));
         try {
@@ -147,9 +148,9 @@ public class JavaMailerTest extends TestCase {
 
     public final void testJavaMailerWithNullSubject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setSubject(null);
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have a null subject."));
         try {
@@ -159,12 +160,12 @@ public class JavaMailerTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
     public final void testJavaMailerWithEmptySbuject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setSubject("");
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have an empty subject."));
         try {
@@ -177,9 +178,9 @@ public class JavaMailerTest extends TestCase {
 
     public final void testJavaMailerWithNullMessageText() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setMessageText(null);
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have a null messageText."));
         try {
@@ -189,12 +190,12 @@ public class JavaMailerTest extends TestCase {
         }
         ta.verifyAnticipated();
     }
-    
+
     public final void testJavaMailerWithEmptyMessageText() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
-        
+
         jm.setMessageText("");
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new JavaMailerException("Cannot have an empty messageText."));
         try {
@@ -208,34 +209,34 @@ public class JavaMailerTest extends TestCase {
     // FIXME: took this out a david's suggestion
     public final void FIXMEtestJavaMailerUsingMTAExplicitly() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA explicitly");
-        
+
         if (jm.isSmtpSsl()) {
-        	return;
+            return;
         }
         jm.setUseJMTA(true);
-        
+
         jm.mailSend();
     }
 
     // FIXME: took this out a david's suggestion
     public final void FIXMEtestJavaMailerUsingMTAByTransport() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA by transport");
-        
+
         if (jm.isSmtpSsl()) {
-        	return;
+            return;
         }
-        
+
         jm.setUseJMTA(false);
         jm.setTransport("mta");
-        
+
         jm.mailSend();
     }
-    
+
     public final void testJavaMailerWithFileAttachment() throws Exception {
         JavaMailer jm = createMailer("Test message with file attachment from testJavaMailer");
-        
+
         jm.setFileName("/etc/motd");
-        
+
         jm.mailSend();
     }
 
@@ -246,7 +247,7 @@ public class JavaMailerTest extends TestCase {
         jm.setMessageText(subject + ": " + getLocalHost());
         jm.setSubject("Testing JavaMailer");
         jm.setTo(TEST_ADDRESS);
-        
+
         return jm;
     }
 
