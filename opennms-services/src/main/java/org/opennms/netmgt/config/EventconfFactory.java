@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 06: Duplicate all EventConfigurationManager functionality in
+//              EventconfFactory. - dj@opennms.org
 // 2008 Jan 05: Add a few new constructors and make them all public,
 //              eliminate static fields except for s_instance. - dj@opennms.org
 // 2008 Jan 05: Simplify init()/reload()/getInstance(). - dj@opennms.org
@@ -42,24 +44,30 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.util.StringUtils;
@@ -86,9 +94,19 @@ public class EventconfFactory {
     private File m_programmaticStoreFile;
     
     /**
-     * List of configured events
+     * Map of configured event files and their events
      */
     private Map<File, Events> m_eventFiles;
+    
+    /**
+     * The mapping of all the event configuration objects for searching
+     */
+    private EventConfData m_eventConfData;
+    
+    /**
+     * The list of secure tags.
+     */
+    private Set<String> m_secureTags;
 
     private static class EventLabelComparator implements Comparator<Event> {
         public int compare(Event e1, Event e2) {
@@ -161,13 +179,13 @@ public class EventconfFactory {
      */
     public static synchronized EventconfFactory getInstance() {
         if (!isInitialized()) {
-            throw new IllegalStateException("init() not called.");
+            throw new IllegalStateException("init() or setInstance() not called.");
         }
 
         return s_instance;
     }
 
-    private static void setInstance(EventconfFactory instance) {
+    public static void setInstance(EventconfFactory instance) {
         s_instance = instance;
     }
 
@@ -179,27 +197,61 @@ public class EventconfFactory {
      * 
      */
     public synchronized void reload() throws IOException, MarshalException, ValidationException {
-        Events events = CastorUtils.unmarshal(Events.class, new FileReader(m_rootConfigFile));
-       
-        m_eventFiles = new HashMap<File, Events>();
-        m_eventFiles.put(m_rootConfigFile, events);
+        loadConfiguration(m_rootConfigFile);
+    }
+    
+    /**
+     * This method is used to load the passed configuration into the currently
+     * managed configuration instance. Any events that previously existed are
+     * cleared.
+     * 
+     * @param file
+     *            The file to load.
+     * 
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     * @exception java.lang.IOException
+     *                Thrown if the file cannot be opened for reading.
+     */
+    public void loadConfiguration(File file) throws IOException, MarshalException, ValidationException {
+        Reader rdr = new FileReader(file);
+        if (rdr == null) {
+            throw new IOException("Failed to open events conf file: " + file);
+        }
 
-        /*
-         * Create an array, and add any nested eventfiles defs found, to the end of the array.  
-         * Using the "size" field (rather than an enumeration) means we don't need any funky nesting logic
-         */
-        List<String> eventFiles = new ArrayList<String>(events.getEventFileCollection());
+        try {
+            loadConfiguration(rdr, file);
+        } finally {
+            IOUtils.closeQuietly(rdr);
+        }
+    }
+
+    protected void loadConfiguration(Reader rdr, File rootConfigFile) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        Map<File, Events> eventFiles = new HashMap<File, Events>();
+        EventConfData eventConfData = new EventConfData();
+        Set<String> secureTags = new HashSet<String>();
+
+        Events events = CastorUtils.unmarshal(Events.class, rdr);
+        IOUtils.closeQuietly(rdr);
         
-        for (String eventFilePath : eventFiles) {
+        secureTags.addAll(events.getGlobal().getSecurity().getDoNotOverrideCollection());
+        processEvents(eventFiles, eventConfData, rootConfigFile, events);
+
+        for (String eventFilePath : events.getEventFileCollection()) {
             File eventFile = new File(eventFilePath);
+            
             if (!eventFile.isAbsolute()) {
-                /*
-                 * This event file is specified with a relative path.  Get the absolute path relative to the root config file, and use 
-                 * that for all later file references
-                 */
-                File tempFile = new File(m_rootConfigFile.getParent() + File.separator + eventFile.getPath());
-                eventFile = tempFile.getCanonicalFile();
+                if (rootConfigFile == null) {
+                    throw new IOException("Event configuration file contains an eventFile element with a relative path, however loadConfiguration was called without a rootConfigFile parameter, so the relative path cannot be resolved.  The event-file entry is: " + eventFilePath);
+                }
+                
+                eventFile = new File(rootConfigFile.getParentFile(), eventFilePath);
+                // Should we do this, too?
+                // eventFile = tempFile.getCanonicalFile();
             }
+
             
             FileReader fileIn = new FileReader(eventFile);
             if (fileIn == null) {
@@ -207,7 +259,7 @@ public class EventconfFactory {
             }
 
             Events filelevel = CastorUtils.unmarshal(Events.class, fileIn);
-            m_eventFiles.put(eventFile, filelevel);
+            IOUtils.closeQuietly(fileIn);
             
             if (filelevel.getGlobal() != null) {
                 throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot have a 'global' element");
@@ -215,6 +267,19 @@ public class EventconfFactory {
             if (filelevel.getEventFileCollection().size() > 0) {
                 throw new ValidationException("The event file " + eventFile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()));
             }
+            
+            processEvents(eventFiles, eventConfData, eventFile, filelevel);
+        }
+        
+        m_eventFiles = eventFiles;
+        m_eventConfData = eventConfData;
+        m_secureTags = secureTags;
+    }
+
+    private static void processEvents(Map<File, Events> eventFileMap, EventConfData eventConfData, File file, Events events) {
+        eventFileMap.put(file, events);
+        for (Event event : events.getEventCollection()) {
+            eventConfData.put(event);
         }
     }
 
@@ -370,6 +435,18 @@ public class EventconfFactory {
             // The file will be deleted by saveCurrent, not here
         }
         return result;
+    }
+
+    public boolean isSecureTag(String tag) {
+        return m_secureTags.contains(tag);
+    }
+
+    public Event findByUei(String uei) {
+        return m_eventConfData.getEventByUEI(uei);
+    }
+
+    public Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
+        return m_eventConfData.getEvent(matchingEvent);
     }
 }
 
