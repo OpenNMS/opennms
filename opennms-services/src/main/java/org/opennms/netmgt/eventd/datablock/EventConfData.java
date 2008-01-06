@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 05: Format code, create log(), use Java 5 generics. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,8 +34,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
 
 package org.opennms.netmgt.eventd.datablock;
 
@@ -42,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -72,7 +71,7 @@ public class EventConfData extends Object {
     /**
      * The map keyed with 'EventKey's
      */
-    private LinkedHashMap m_eventMap;
+    private LinkedHashMap<EventKey, org.opennms.netmgt.xml.eventconf.Event> m_eventMap;
 
     /**
      * The map of UEI to 'EventKey's list - used mainly to find matches for the
@@ -80,7 +79,7 @@ public class EventConfData extends Object {
      * for the same UEI)
      */
     // private Hashtable m_ueiToKeyListMap;
-    private LinkedHashMap m_ueiToKeyListMap;
+    private LinkedHashMap<String, List<EventKey>> m_ueiToKeyListMap;
 
     /**
      * Check whether the event matches the passed key
@@ -88,8 +87,7 @@ public class EventConfData extends Object {
      * @return true if the event matches the passed key
      */
     private boolean eventMatchesKey(EventKey eventKey, org.opennms.netmgt.xml.event.Event event) {
-        // go through the key elements and see if this event
-        // will match
+        // go through the key elements and see if this event will match
         boolean maskMatch = true;
 
         Iterator keysetIter = eventKey.keySet().iterator();
@@ -129,11 +127,13 @@ public class EventConfData extends Object {
                 if (keyvalue.equals(eventvalue)) {
                     maskMatch = true;
                 } else if (keyvalue.charAt(0) == '~'){
-                    if (eventvalue.matches(keyvalue.substring(1)))
+                    if (eventvalue.matches(keyvalue.substring(1))) {
                         maskMatch = true;
+                    }
                 } else if (keyvalue.charAt(len - 1) == '%') {
-                    if (eventvalue.startsWith(keyvalue.substring(0, len - 1)))
+                    if (eventvalue.startsWith(keyvalue.substring(0, len - 1))) {
                         maskMatch = true;
+                    }
                 }
             }
         }
@@ -146,15 +146,16 @@ public class EventConfData extends Object {
      */
     private void updateUeiToKeyListMap(EventKey eventKey, org.opennms.netmgt.xml.eventconf.Event event) {
         String eventUei = event.getUei();
-        List keylist = (List) m_ueiToKeyListMap.get(eventUei);
+        List<EventKey> keylist = m_ueiToKeyListMap.get(eventUei);
         if (keylist == null) {
-            keylist = new ArrayList();
+            keylist = new ArrayList<EventKey>();
             keylist.add(eventKey);
 
             m_ueiToKeyListMap.put(eventUei, keylist);
         } else {
-            if (!keylist.contains(eventKey))
+            if (!keylist.contains(eventKey)) {
                 keylist.add(eventKey);
+            }
         }
     }
 
@@ -162,9 +163,9 @@ public class EventConfData extends Object {
      * Default constructor - allocate the maps
      */
     public EventConfData() {
-        m_eventMap = new LinkedHashMap();
+        m_eventMap = new LinkedHashMap<EventKey, org.opennms.netmgt.xml.eventconf.Event>();
 
-        m_ueiToKeyListMap = new LinkedHashMap();
+        m_ueiToKeyListMap = new LinkedHashMap<String, List<EventKey>>();
     }
 
     /**
@@ -240,13 +241,13 @@ public class EventConfData extends Object {
         //
         // use the eventkey and see if there is a match
         //
-		/*
+	/*
         EventKey key = new EventKey(event);
-        matchedEvent = (org.opennms.netmgt.xml.eventconf.Event) m_eventMap.get(key);
+        matchedEvent = m_eventMap.get(key);
         if (matchedEvent != null) {
-            Category log = ThreadCategory.getInstance(EventConfData.class);
-            if (log.isDebugEnabled())
-                log.debug("Match found using key: " + key.toString());
+            if (log().isDebugEnabled()) {
+                log().debug("Match found using key: " + key.toString());
+            }
 
             return matchedEvent;
         }
@@ -259,11 +260,11 @@ public class EventConfData extends Object {
         // through
         // the entire eventconf for each event
         //
-		/*
+	/*
         String uei = event.getUei();
         if (uei != null) {
             // Go through the uei to keylist map
-            List keylist = (List) m_ueiToKeyListMap.get(uei);
+            List<EventKey> keylist = m_ueiToKeyListMap.get(uei);
             if (keylist != null) {
                 // check the event keys known for this uei
                 matchedEvent = getMatchInKeyList(keylist, event);
@@ -275,20 +276,20 @@ public class EventConfData extends Object {
         // if still no match, no option but to go through all known keys
         //
         if (matchedEvent == null) {
-            Iterator entryIterator = m_eventMap.entrySet().iterator();
+            Iterator<Entry<EventKey, org.opennms.netmgt.xml.eventconf.Event>> entryIterator = m_eventMap.entrySet().iterator();
             while (entryIterator.hasNext() && (matchedEvent == null)) {
-                Map.Entry entry = (Map.Entry) entryIterator.next();
-                EventKey iterKey = (EventKey) entry.getKey();
+                Entry<EventKey, org.opennms.netmgt.xml.eventconf.Event> entry = entryIterator.next();
+                EventKey iterKey = entry.getKey();
 
                 boolean keyMatchFound = eventMatchesKey(iterKey, event);
 
                 // if a match was found, return the config
                 if (keyMatchFound) {
-                    Category log = ThreadCategory.getInstance(EventConfData.class);
-                    if (log.isDebugEnabled())
-                        log.debug("Match found using key: " + iterKey.toString());
+                    if (log().isDebugEnabled()) {
+                        log().debug("Match found using key: " + iterKey.toString());
+                    }
 
-                    matchedEvent = (org.opennms.netmgt.xml.eventconf.Event) entry.getValue();
+                    matchedEvent = entry.getValue();
                 }
             }
         }
@@ -306,7 +307,7 @@ public class EventConfData extends Object {
         EventKey key = new EventKey();
         key.put(EventKey.TAG_UEI, new EventMaskValueList(uei));
 
-        return (org.opennms.netmgt.xml.eventconf.Event) m_eventMap.get(key);
+        return m_eventMap.get(key);
     }
 
     /**
@@ -317,4 +318,7 @@ public class EventConfData extends Object {
         m_ueiToKeyListMap.clear();
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }
