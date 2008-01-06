@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jan 06: Pass getClass() to ThreadInstance.getInstance(). - dj@opennms.org
  * 2007 Apr 09: This file was created. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -73,7 +74,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     public abstract V translateConfig(K castorConfig);
 
     protected Category log() {
-        return ThreadCategory.getInstance();
+        return ThreadCategory.getInstance(getClass());
     }
 
     protected V loadConfig(Resource resource) {
