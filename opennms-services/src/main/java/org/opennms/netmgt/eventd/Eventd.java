@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 06: Indent, format code, Java 5 generics, eliminate warnings,
+//              use log() from superclass. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Nov 14: Used non-blocking socket class to speed up capsd and pollerd.
 //
@@ -43,6 +45,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,9 +55,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
@@ -99,6 +99,7 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  */
 public final class Eventd extends AbstractServiceDaemon implements org.opennms.netmgt.eventd.adaptors.EventHandler {
     private static EventIpcManager m_eventIpcManager;
+    
     /**
      * The log4j category used to log debug messsages and statements.
      */
@@ -112,7 +113,7 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     /**
      * The service table map
      */
-    private static Map m_serviceTableMap;
+    private static Map<String, Integer> m_serviceTableMap;
 
     /**
      * The handler for events coming in through TCP
@@ -128,6 +129,7 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
      * Reference to the event processor
      */
     private BroadcastEventProcessor m_receiver;
+
     /**
      * Contains dotted-decimal representation of the IP address where Eventd is
      * running. Used when eventd broadcasts events.
@@ -136,14 +138,12 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     private EventdConfigManager m_eFactory;
     private EventDao m_eventDao;
-    
-    private DataSource m_dataSource;
 
-//    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dataSource;
 
     static {
         // map of service names to service identifer
-        m_serviceTableMap = Collections.synchronizedMap(new HashMap());
+        m_serviceTableMap = Collections.synchronizedMap(new HashMap<String, Integer>());
     }
 
     /**
@@ -151,49 +151,48 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
      * eventd originates events during correlation) and the broadcast queue
      */
     public Eventd() {
-    	super("OpenNMS.Eventd");
+        super("OpenNMS.Eventd");
         try {
             m_address = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException uhE) {
-            Category log = ThreadCategory.getInstance(getClass());
-
             m_address = "localhost";
-            log.warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
+            log().warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
         }
 
 
     }
 
     protected void onStop() {
-		// Stop listener threads
+        // Stop listener threads
         if (log().isDebugEnabled()) {
             log().debug("calling shutdown on tcp/udp listener threads");
         }
 
-        if(m_tcpReceiver!=null) {
+        if (m_tcpReceiver != null) {
             m_tcpReceiver.stop();
         }
-        if(m_udpReceiver!=null) {
+
+        if (m_udpReceiver != null) {
             m_udpReceiver.stop();
         }
-        
-        if(m_receiver!=null) {
+
+        if (m_receiver != null) {
             m_receiver.close();
         }
-        
+
         if (log().isDebugEnabled()) {
             log().debug("shutdown on tcp/udp listener threads returned");
         }
-	}
+    }
 
     protected void onInit() {
 
-    	if (m_dataSource == null) {
+        if (m_dataSource == null) {
             throw new IllegalStateException("dataSource not initialized");
         }
 
         // Get a database connection and create the service table map
-        java.sql.Connection tempConn = null;
+        Connection tempConn = null;
         try {
             tempConn = m_dataSource.getConnection();
 
@@ -226,7 +225,8 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         m_tcpReceiver = null;
         m_udpReceiver = null;
         try {
-            String timeoutReq = m_eFactory.getSocketSoTimeoutRequired();
+            // XXX this is unused, but should it be used?
+            // String timeoutReq = m_eFactory.getSocketSoTimeoutRequired();
             m_tcpReceiver = new TcpEventReceiver(m_eFactory.getTCPPort());
             m_udpReceiver = new UdpEventReceiver(m_eFactory.getUDPPort());
 
@@ -242,7 +242,7 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     }
 
     protected void onStart() {
-		m_tcpReceiver.start();
+        m_tcpReceiver.start();
         m_udpReceiver.start();
 
         if (log().isDebugEnabled()) {
@@ -252,17 +252,17 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         if (log().isDebugEnabled()) {
             log().debug("Eventd running");
         }
-	}
+    }
 
     private void createBroadcastEventProcessor(EventIpcManager manager) {
         try {
-            if (log().isDebugEnabled())
+            if (log().isDebugEnabled()) {
                 log().debug("start: Creating event broadcast event processor");
+            }
 
             m_receiver = new BroadcastEventProcessor(manager);
         } catch (Throwable t) {
-            if (log().isEnabledFor(Level.FATAL))
-                log().fatal("start: Failed to initialized the broadcast event receiver", t);
+            log().fatal("start: Failed to initialized the broadcast event receiver", t);
 
             throw new UndeclaredThrowableException(t);
         }
@@ -286,9 +286,8 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
      * @return the service id for the name passed, -1 if not found
      */
     public static synchronized int getServiceID(String svcname) {
-        Integer i = (Integer) m_serviceTableMap.get(svcname);
-        if (i != null) {
-            return i.intValue();
+        if (m_serviceTableMap.containsKey(svcname)) {
+            return m_serviceTableMap.get(svcname).intValue();
         } else {
             return -1;
         }
@@ -313,26 +312,24 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     public void receiptSent(EventReceipt event) {
         // do nothing
     }
-    
+
     public void setDataSource(DataSource dataSource) {
-    	m_dataSource = dataSource;
+        m_dataSource = dataSource;
     }
 
     public void setConfigManager(EventdConfigManager configManager) {
-        
         m_eFactory = configManager;
-        
     }
-    
+
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
     }
-    
+
     public void setEventIpcManager(EventIpcManager manager) {
         m_eventIpcManager = manager;
         this.createBroadcastEventProcessor(manager);
     }
-    
+
     public void setEventDao(EventDao dao) {
         m_eventDao = dao;
     }
