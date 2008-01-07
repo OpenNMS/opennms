@@ -126,7 +126,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     }
 
     protected Category log() {
-        return ThreadCategory.getInstance();
+        return ThreadCategory.getInstance(getClass());
     }
     
     protected void fatalf(String format, Object... args) {
