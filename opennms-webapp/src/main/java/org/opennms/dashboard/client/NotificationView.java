@@ -4,6 +4,7 @@
 package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
 
 
 class NotificationView extends PageableTableView {
@@ -23,7 +24,9 @@ class NotificationView extends PageableTableView {
 	protected void setRow(FlexTable table, int row, int elementIndex) {
 		Notification notif = m_notifications[elementIndex];
         table.setText(row, 0, notif.getNodeLabel());
-        table.setText(row, 1, notif.getServiceName());
+        Label label = new Label(notif.getServiceName());
+        label.setTitle(notif.getTextMessage());
+        table.setWidget(row, 1, label);
         table.setText(row, 2, ""+notif.getSentTime());
         table.setText(row, 3, notif.getResponder());
         table.setText(row, 4, (notif.getRespondTime() != null) ? notif.getRespondTime().toString() : "");

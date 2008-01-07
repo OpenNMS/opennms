@@ -12,6 +12,7 @@ public class Notification implements IsSerializable {
 	private Date m_sentTime;
 	private String m_responder;
 	private Date m_respondTime;
+	private String m_textMessage;
     
     public String getNodeLabel() {
         return m_nodeLabel;
@@ -49,6 +50,12 @@ public class Notification implements IsSerializable {
     public void setSeverity(String severity) {
         m_severity = severity;
     }
+	public String getTextMessage() {
+		return m_textMessage;
+	}
+	public void setTextMessage(String message) {
+		m_textMessage = message;
+	}
     
     
 
