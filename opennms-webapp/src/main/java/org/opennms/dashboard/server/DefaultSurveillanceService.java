@@ -390,6 +390,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
         notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
         notif.setServiceName(onmsNotif.getServiceType() == null ? "" : onmsNotif.getServiceType().getName());
+        notif.setTextMessage(onmsNotif.getTextMsg() == null ? "" : onmsNotif.getTextMsg());
         notif.setSeverity(severity);
         
         return notif;
