@@ -62,7 +62,7 @@ public class EventdTest extends OpenNMSTestCase {
         MockLogAppender.assertNoWarningsOrGreater();
     }
         
-    public void FIXMEtestPersistEvent() throws Exception {
+    public void testPersistEvent() throws Exception {
         
         assertEquals(0, m_db.countRows("select * from events"));
         
@@ -73,7 +73,7 @@ public class EventdTest extends OpenNMSTestCase {
         
     }
     
-    public void FIXMEtestPersistAlarm() throws Exception {
+    public void testPersistAlarm() throws Exception {
         
         //there should be no alarms in the alarms table
         assertEquals(0, m_db.countRows("select * from alarms"));
@@ -119,7 +119,7 @@ public class EventdTest extends OpenNMSTestCase {
         }
     }
     
-    public void FIXMEtestPersistManyAlarmsAtOnce() throws InterruptedException {
+    public void testPersistManyAlarmsAtOnce() throws InterruptedException {
         
         int numberOfAlarmsToReduce = 10;
         //there should be no alarms in the alarms table
