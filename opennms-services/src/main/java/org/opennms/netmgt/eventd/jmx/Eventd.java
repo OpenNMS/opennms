@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 06: Implement log(). - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -46,7 +47,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -67,33 +67,31 @@ public class Eventd implements EventdMBean {
 
     public void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
         org.opennms.netmgt.eventd.Eventd e = org.opennms.netmgt.eventd.Eventd.getInstance();
 
         try {
             EventdConfigFactory.reload();
             DataSourceFactory.init();
         } catch (FileNotFoundException ex) {
-            log.error("Failed to load eventd configuration. File Not Found:", ex);
+            log().error("Failed to load eventd configuration. File Not Found:", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (MarshalException ex) {
-            log.error("Failed to load eventd configuration", ex);
+            log().error("Failed to load eventd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load eventd configuration", ex);
+            log().error("Failed to load eventd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load eventd configuration", ex);
+            log().error("Failed to load eventd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ClassNotFoundException ex) {
-            log.error("Failed to init database connection factory", ex);
+            log().error("Failed to init database connection factory", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (SQLException ex) {
-            log.error("Failed to init database connection factory", ex);
+            log().error("Failed to init database connection factory", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (PropertyVetoException ex) {
-            log.error("Failed to init database connection factory", ex);
+            log().error("Failed to init database connection factory", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -103,13 +101,13 @@ public class Eventd implements EventdMBean {
             File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
             EventConfigurationManager.loadConfiguration(configFile);
         } catch (MarshalException ex) {
-            log.error("Failed to load eventd configuration", ex);
+            log().error("Failed to load eventd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load eventd configuration", ex);
+            log().error("Failed to load eventd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load events configuration", ex);
+            log().error("Failed to load events configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
         
@@ -123,6 +121,10 @@ public class Eventd implements EventdMBean {
         e.setEventIpcManager(ipcMgr);
         e.init();
         
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     public void start() {
