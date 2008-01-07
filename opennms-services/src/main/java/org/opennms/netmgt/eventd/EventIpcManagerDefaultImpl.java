@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 07: Indent and format code a bit, implement log(). - dj@opennms.org
 // 2007 Aug 25: Save and restore the log4j logging prefix when we
 //              call onEvent(Event). - dj@opennms.org
 // 2006 May 29: Throw IllegalStateException in init() if m_eventdConfigMgr is null - dj@gregor.com
@@ -147,16 +148,17 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
          * 
          */
         public void run() {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            if (log.isDebugEnabled())
-                log.debug("In ListenerThread " + m_listener.getName() + " run");
+            if (log().isDebugEnabled()) {
+                log().debug("In ListenerThread " + m_listener.getName() + " run");
+            }
 
             while (!m_shutdown) {
                 Event event = null;
                 try {
                     event = m_queue.remove(500);
-                    if (event == null)
+                    if (event == null) {
                         continue;
+                    }
                 } catch (InterruptedException ie) {
                     m_shutdown = true;
                     break;
@@ -168,8 +170,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                 try {
                     if (event != null) {
 
-                        if (log.isInfoEnabled()) {
-                            log.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
+                        if (log().isInfoEnabled()) {
+                            log().info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
                         }
                         
                         // Make sure we restore our log4j logging prefix after onEvent is called
@@ -181,7 +183,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
                         }
                     }
                 } catch (Throwable t) {
-                    log.warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run", t);
+                    log().warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run", t);
 
                 }
             }
@@ -262,13 +264,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         try {
             m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
         } catch (InterruptedException iE) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.warn("Unable to queue event log to the event handler pool queue", iE);
+            log().warn("Unable to queue event log to the event handler pool queue", iE);
 
             throw new UndeclaredEventException(iE);
         } catch (FifoQueueException qE) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.warn("Unable to queue event log to the event handler pool queue", qE);
+            log().warn("Unable to queue event log to the event handler pool queue", qE);
 
             throw new UndeclaredEventException(qE);
         }
@@ -278,28 +278,29 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
      * Called by eventd to send an event to all interested listeners
      */
     public synchronized void broadcastNow(Event event) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-        if (log.isDebugEnabled())
-            log.debug("Event to be broadcasted: " + event.getUei());
+        if (log().isDebugEnabled()) {
+            log().debug("Event to be broadcasted: " + event.getUei());
+        }
 
         if (m_listeners.size() <= 0) {
-            if (log.isDebugEnabled())
-                log.debug("No listeners interested in all events");
+            if (log().isDebugEnabled()) {
+                log().debug("No listeners interested in all events");
+            }
 
         }
 
         // send to listeners interested in receiving all events
-        for(EventListener listener : m_listeners) {
-
+        for (EventListener listener : m_listeners) {
             ListenerThread listenerThr = m_listenerThreads.get(listener.getName());
             try {
                 listenerThr.getQueue().add(event);
-                if (log.isDebugEnabled())
-                    log.debug("Queued event to listener: " + listener.getName());
+                if (log().isDebugEnabled()) {
+                    log().debug("Queued event to listener: " + listener.getName());
+                }
             } catch (FifoQueueException fe) {
-                log.error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
+                log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
             } catch (InterruptedException ie) {
-                log.error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), ie);
+                log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), ie);
             }
         }
 
@@ -311,35 +312,38 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
         // send to listeners who are interested in this event uei
         //Loop to get partial wild card "directory" matches
-        while (uei.length() > 0){
-        List<EventListener> listenerList = m_ueiListeners.get(uei);
-        if (listenerList != null) {
-            for(EventListener listener : listenerList) {
-                ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
-                try {
-                    listenerThread.getQueue().add(event);
-                    if (log.isDebugEnabled())
-                        log.debug("Queued event "+uei+" to listener: " + listener.getName());
-                } catch (FifoQueueException fe) {
-                    log.error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
-                } catch (InterruptedException ie) {
-                    log.error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), ie);
+        while (uei.length() > 0) {
+            List<EventListener> listenerList = m_ueiListeners.get(uei);
+            if (listenerList != null) {
+                for (EventListener listener : listenerList) {
+                    ListenerThread listenerThread = m_listenerThreads.get(listener.getName());
+                    try {
+                        listenerThread.getQueue().add(event);
+                        if (log().isDebugEnabled()) {
+                            log().debug("Queued event "+uei+" to listener: " + listener.getName());
+                        }
+                    } catch (FifoQueueException fe) {
+                        log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
+                    } catch (InterruptedException ie) {
+                        log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), ie);
+                    }
+                }
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("No listener interested in event: " + uei);
                 }
             }
-        } else {
-            if (log.isDebugEnabled())
-                log.debug("No listener interested in event: " + uei);
-        }
-        //Try wild cards: Find / before last character
-        int i = uei.lastIndexOf("/",uei.length()-2);
-        if (i > 0){
-           //Split at "/", including the /
-           uei = uei.substring (0, i+1);
-        } else {
-           //No more wild cards to match
-           uei="";
-           break;
-        }
+            
+            //Try wild cards: Find / before last character
+            int i = uei.lastIndexOf("/",uei.length()-2);
+            if (i > 0) {
+                //Split at "/", including the /
+                uei = uei.substring (0, i+1);
+            } else {
+                //No more wild cards to match
+                uei="";
+                break;
+            }
         }
     }
 
@@ -361,7 +365,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         m_listeners.add(listener);
 
         // remove listener from uei specific listeners
-        for(String key : m_ueiListeners.keySet()) {
+        for (String key : m_ueiListeners.keySet()) {
             List<EventListener> listenersList = m_ueiListeners.get(key);
             if (listenersList != null) {
                 listenersList.remove(listener);
@@ -373,9 +377,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
      * Register an event listener interested in the UEIs in the passed list
      */
     public synchronized void addEventListener(EventListener listener, List<String> ueilist) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-        if (log.isDebugEnabled())
-            log.debug("Adding event listener " + listener.getName() + " for " + ueilist);
+        if (log().isDebugEnabled()) {
+            log().debug("Adding event listener " + listener.getName() + " for " + ueilist);
+        }
 
         if (ueilist == null || ueilist.size() == 0) {
             // nothing to do
@@ -393,10 +397,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // add to uei listeners
-        for(String uei : ueilist) {
-
-            // check if there are other listeners already, else create
-            // an entry
+        for (String uei : ueilist) {
+            // check if there are other listeners already, else create an entry
             List<EventListener> listenersList = m_ueiListeners.get(uei);
             if (listenersList == null) {
                 listenersList = new ArrayList<EventListener>();
@@ -404,8 +406,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
                 m_ueiListeners.put(uei, listenersList);
             } else {
-                if (!listenersList.contains(listener))
+                if (!listenersList.contains(listener)) {
                     listenersList.add(listener);
+                }
             }
         }
 
@@ -433,8 +436,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
             m_listenerThreads.put(listener.getName(), listenerThread);
         }
 
-        // check if there are other listeners already, else create
-        // an entry
+        // check if there are other listeners already, else create an entry
         List<EventListener> listenersList = m_ueiListeners.get(uei);
         if (listenersList == null) {
             listenersList = new ArrayList<EventListener>();
@@ -465,7 +467,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
         // Iterate through the ueis and remove the listener
-        for(String uei : ueilist) {
+        for (String uei : ueilist) {
             List<EventListener> listenersList = m_ueiListeners.get(uei);
             if (listenersList != null) {
                 listenersList.remove(listener);
@@ -505,7 +507,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         m_listeners.remove(listener);
 
         // remove listener from uei specific listeners
-        for(String key : m_ueiListeners.keySet()) {
+        for (String key : m_ueiListeners.keySet()) {
             List<EventListener> listenersList = m_ueiListeners.get(key);
             if (listenersList != null) {
                 listenersList.remove(listener);
@@ -535,5 +537,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
         m_eventdConfigMgr = eventdConfigMgr;
     }
-    
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }
