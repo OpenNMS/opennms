@@ -234,6 +234,12 @@
         <property key="ip-match" value="169.254.*.*" />
         <property key="is-supported" value="true" />
     </protocol-plugin>
+    <!--  Quick and dirty to set up the MAIL service on an interface -->
+    <protocol-plugin protocol="MAIL" class-name="org.opennms.netmgt.capsd.plugins.SmtpPlugin" scan="on" user-defined="false">
+        <property key="port" value="25" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
     <smb-config>
         <smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
     </smb-config>
