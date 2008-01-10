@@ -61,11 +61,10 @@ import org.opennms.netmgt.utils.JavaMailerException;
  * 
  * Use cases:
  * 
- * a) Class will test that it can successfully send an email. b) Class will test
- * that it can successfully connect to a mail server and get mailbox contents.
- * c) Class will test that it can successfully read a new email message from a
- * mail server. d) Class will test that it can send an email and read that same
- * email from a mail server.
+ * a) Class will test that it can successfully send an email. 
+ * b) Class will test that it can successfully connect to a mail server and get mailbox contents.
+ * c) Class will test that it can successfully read a new email message from a mail server.
+ * d) Class will test that it can send an email and read that same email from a mail server.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * 
