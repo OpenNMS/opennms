@@ -122,6 +122,9 @@
         intfs = new Interface[0]; 
     }
 
+    //See if node has any ifAliases
+    boolean hasIfAliases = NetworkElementFactory.nodeHasIfAliases(nodeId);
+
     //find the telnet interfaces, if any
     String telnetIp = null;
     Service[] telnetServices = NetworkElementFactory.getServicesOnNode(nodeId, this.telnetServiceId);
@@ -341,6 +344,11 @@
 		<thead>
 			<tr>
 			<th>Interface</th> 
+                        <th>Index</th>
+                        <th>Description</th>
+                        <% if (hasIfAliases) { %>
+                            <th>IfAlias</th>
+                        <% } %>
 			<th width="10%">If Status (Adm/Op)</th> 
 			<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
 			<th width="10%">Set Admin Status</th> 
@@ -364,17 +372,44 @@
 		
 		<td class="standard">
 		<% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+                    <% if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("")) { %>
+		        <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>"><%=intfs[i].getSnmpIfName()%></a>
+                    <% } else if (intfs[i].getSnmpIfDescription() != null && !intfs[i].getSnmpIfDescription().equals("")) { %>
+		        <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>"><%=intfs[i].getSnmpIfDescription()%></a>
+                    <% } else { %>
+		        <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+		    <% } %>
 		<% } else { %>  
 		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
 		<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
 		<% } %>
-       	<% if( intfs[i].getIfIndex() != 0 ) { %>
-		<%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-        <% } %>
 
 		</td>
-		
+                <td>
+                    <% if (intfs[i].getIfIndex() > 0) { %>
+                        <%=intfs[i].getIfIndex()%>
+                    <% } else { %>
+                        &nbsp
+                    <% } %>
+                </td>
+                <td>
+                    <% if (intfs[i].getSnmpIfDescription() != null && !intfs[i].getSnmpIfDescription().equals("")) { %>
+                        <%=intfs[i].getSnmpIfDescription()%>
+                    <% } else if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("") && !"0.0.0.0".equals(intfs[i].getIpAddress())) { %>
+                        <%=intfs[i].getSnmpIfName()%>
+                    <% } else { %>
+                        &nbsp
+                    <% } %>
+                </td>
+                <% if (hasIfAliases) { %>
+                    <td>
+                        <% if (intfs[i].getSnmpIfAlias() != null && !intfs[i].getSnmpIfAlias().equals("")) { %>
+                            <%=intfs[i].getSnmpIfAlias()%>
+		        <% } else {%>
+                            &nbsp
+		        <% } %>
+                    </td>
+		<% } %>
 		<td class="standard">
 			<% if( intfs[i].getSnmpIfAdminStatus() < 1 && intfs[i].getSnmpIfOperStatus() < 1 ) { %>
 			&nbsp; 
