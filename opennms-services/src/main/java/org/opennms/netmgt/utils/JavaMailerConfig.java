@@ -49,9 +49,9 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
- * Provides access to the rrd configuration data.
+ * Provides access to the default javamail configuration data.
  */
-class JavaMailerConfig {
+public class JavaMailerConfig {
     
     /**
      * This loads the configuration file.
@@ -59,8 +59,9 @@ class JavaMailerConfig {
      * @return a Properties object representing the configuration properties
      * @throws IOException
      */
-    private static synchronized Properties getProperties() throws IOException {
-        Properties properties = new Properties(System.getProperties());
+    public static synchronized Properties getProperties() throws IOException {
+        log().debug("Loading javamail properties.");
+        Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
         InputStream in = new FileInputStream(configFile);
         properties.load(in);
@@ -68,83 +69,8 @@ class JavaMailerConfig {
         return properties;
     }
     
-    /**
-     * Get a string valued property, returning default value if it is not set.
-     * 
-     * @param name
-     *            the property name
-     * @param defaultVal
-     *            the default value to use if the property is not set
-     * @return the value of the property
-     */
-    public static String getProperty(String name, String defaultVal) {
-        try {
-            return getProperties().getProperty(name, defaultVal);
-        } catch (IOException e) {
-            log().error("Unable to read property " + name + " returning defaultValue: " + defaultVal, e);
-            return defaultVal;
-        }
-
-    }
-
     private static Category log() {
         return ThreadCategory.getInstance(JavaMailerConfig.class);
-    }
-
-    /**
-     * Get a boolean valued property, returning default value if it is not set
-     * or is set to an invalid value.
-     * 
-     * @param name
-     *            the property name
-     * @param defaultVal
-     *            the default value to use if the property is not set
-     * @return the value of the property
-     */
-    public static boolean getProperty(String name, boolean defaultVal) {
-        return "true".equalsIgnoreCase(getProperty(name, (defaultVal ? "true" : "false")));
-    }
-
-    /**
-     * Get a int valued property, returning default value if it is not set or is
-     * set to an invalid value.
-     * 
-     * @param name
-     *            the property name
-     * @param defaultVal
-     *            the default value to use if the property is not set
-     * @return the value of the property
-     */
-    public static int getProperty(String name, int defaultVal) {
-        String val = getProperty(name, (String) null);
-        if (val != null) {
-            try {
-                return Integer.decode(val).intValue();
-            } catch (NumberFormatException e) {
-            }
-        }
-        return defaultVal;
-    }
-
-    /**
-     * Get a long valued property, returning default value if it is not set or
-     * is set to an invalid value
-     * 
-     * @param name
-     *            the property name
-     * @param defaultVal
-     *            the default value to use if the property is not set
-     * @return the value of the property
-     */
-    public static long getProperty(String name, long defaultVal) {
-        String val = getProperty(name, (String) null);
-        if (val != null) {
-            try {
-                return Long.decode(val).longValue();
-            } catch (NumberFormatException e) {
-            }
-        }
-        return defaultVal;
     }
 
 }

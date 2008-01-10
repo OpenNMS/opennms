@@ -70,6 +70,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.StringUtils;
 
@@ -99,68 +100,152 @@ public class JavaMailer {
 
     private Session m_session = null;
 
-    private boolean m_debug = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", DEFAULT_MAILER_DEBUG);
-    private String m_mailHost = JavaMailerConfig.getProperty("org.opennms.core.utils.mailHost", DEFAULT_MAIL_HOST);
-    private boolean m_useJMTA = JavaMailerConfig.getProperty("org.opennms.core.utils.useJMTA", DEFAULT_USE_JMTA);
-    private String m_mailer = JavaMailerConfig.getProperty("org.opennms.core.utils.mailer", DEFAULT_MAILER);
-    private String m_transport = JavaMailerConfig.getProperty("org.opennms.core.utils.transport", DEFAULT_TRANSPORT);
-    private String m_from = JavaMailerConfig.getProperty("org.opennms.core.utils.fromAddress", DEFAULT_FROM_ADDRESS);
-    private boolean m_authenticate = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticate", DEFAULT_AUTHENTICATE);
-    private String m_user = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticateUser", DEFAULT_AUTHENTICATE_USER);
-    private String m_password = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticatePassword", DEFAULT_AUTHENTICATE_PASSWORD);
-    private String m_contentType = JavaMailerConfig.getProperty("org.opennms.core.utils.messageContentType", DEFAULT_CONTENT_TYPE);
-    private String m_charSet = JavaMailerConfig.getProperty("org.opennms.core.utils.charset", DEFAULT_CHARSET);
-    private String m_encoding = JavaMailerConfig.getProperty("org.opennms.core.utils.encoding", DEFAULT_ENCODING);
-    private boolean m_startTlsEnabled = JavaMailerConfig.getProperty("org.opennms.core.utils.starttls.enable", DEFAULT_STARTTLS_ENABLE);
-    private boolean m_quitWait = JavaMailerConfig.getProperty("org.opennms.core.utils.quitwait", DEFAULT_QUIT_WAIT);
-    private int m_smtpPort = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpport", DEFAULT_SMTP_PORT);
-    private boolean m_smtpSsl = JavaMailerConfig.getProperty("org.opennms.core.utils.smtpssl.enable", DEFAULT_SMTP_SSL_ENABLE);
+    /*
+     * properties from configuration
+     */
+    private Properties m_mailProps;
+    
+    /*
+     * fields from properties used for deterministic behavior of the mailer
+     */
+    private boolean m_debug;
+    private String m_mailHost;
+    private boolean m_useJMTA;
+    private String m_mailer;
+    private String m_transport;
+    private String m_from;
+    private boolean m_authenticate;
+    private String m_user;
+    private String m_password;
+    private String m_contentType;
+    private String m_charSet;
+    private String m_encoding;
+    private boolean m_startTlsEnabled;
+    private boolean m_quitWait;
+    private int m_smtpPort;
+    private boolean m_smtpSsl;
 
+    /*
+     * Basic messaging fields
+     */
     private String m_to;
     private String m_subject;
     private String m_messageText;
     private String m_fileName;
 
+    
+    public JavaMailer(Properties javamailProps) throws JavaMailerException {
+        
+        try {
+            configureProperties(javamailProps);
+        } catch (IOException e) {
+            throw new JavaMailerException("Failed to construct mailer", e);
+        }
+        
+        //Now set the properties into the session
+        m_session = Session.getInstance(getMailProps(), createAuthenticator());
+        
+        m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
+        m_session.setDebug(isDebug());
+        
+    }
+
     /**
      * Default constructor.  Default properties from javamailer-properties are set into session.  To change these
      * properties, retrieve the current properties from the session and override as needed.
+     * @throws IOException 
      */
-    public JavaMailer() {
-        Properties props = System.getProperties();
+    public JavaMailer() throws JavaMailerException {
+        this(new Properties());
+    }
 
-        props.put("mail.smtp.auth", String.valueOf(isAuthenticate()));
-        props.put("mail.smtp.starttls.enable", String.valueOf(isStartTlsEnabled()));
-        props.put("mail.smtp.quitwait", String.valueOf(isQuitWait()));
-        props.put("mail.smtp.port", String.valueOf(getSmtpPort()));
-        if (isSmtpSsl()) {
-            props.put("mail.smtps.auth", String.valueOf(isAuthenticate()));
-            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.socketFactory.port", String.valueOf(getSmtpPort()));
-            props.put("mail.smtp.socketFactory.fallback", "false");
+    /**
+     * This method uses a properties file reader to pull in opennms styled javamail properties and sets
+     * the actual javamail properties.  This is here to preserve the backwards compatibility but configuration
+     * will probably change soon.
+     * 
+     * @throws IOException
+     */
+    
+    private void configureProperties(Properties javamailProps) throws IOException {
+        
+        //this loads the opennms defined properties
+        m_mailProps = JavaMailerConfig.getProperties();
+        
+        //this sets any javamail defined properties sent in to the constructor
+        m_mailProps.putAll(javamailProps);
+        
+        /*
+         * fields from properties used for deterministic behavior of the mailer
+         */
+        m_debug = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.debug", DEFAULT_MAILER_DEBUG);
+        m_mailHost = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.mailHost", DEFAULT_MAIL_HOST);
+        m_useJMTA = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.useJMTA", DEFAULT_USE_JMTA);
+        m_mailer = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.mailer", DEFAULT_MAILER);
+        m_transport = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.transport", DEFAULT_TRANSPORT);
+        m_from = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.fromAddress", DEFAULT_FROM_ADDRESS);
+        m_authenticate = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticate", DEFAULT_AUTHENTICATE);
+        m_user = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticateUser", DEFAULT_AUTHENTICATE_USER);
+        m_password = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticatePassword", DEFAULT_AUTHENTICATE_PASSWORD);
+        m_contentType = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.messageContentType", DEFAULT_CONTENT_TYPE);
+        m_charSet = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.charset", DEFAULT_CHARSET);
+        m_encoding = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.encoding", DEFAULT_ENCODING);
+        m_startTlsEnabled = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.starttls.enable", DEFAULT_STARTTLS_ENABLE);
+        m_quitWait = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.quitwait", DEFAULT_QUIT_WAIT);
+        m_smtpPort = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.smtpport", DEFAULT_SMTP_PORT);
+        m_smtpSsl = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.smtpssl.enable", DEFAULT_SMTP_SSL_ENABLE);
+
+        //Set the actual JavaMailProperties... any that are defined in the file will not be overridden
+        //Eventually, all configuration will be defined in properties and this strange parsing will not happen
+        //TODO: fix this craziness!
+        
+        if (!m_mailProps.containsKey("mail.smtp.auth")) {
+            m_mailProps.setProperty("mail.smtp.auth", String.valueOf(isAuthenticate()));
         }
-
-        m_session = Session.getInstance(props, createAuthenticator());
-        //Session session = Session.getInstance(props, null);
-        m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
-        m_session.setDebug(isDebug());
-
+        if (!m_mailProps.containsKey("mail.smtp.starttls.enable")) {
+            m_mailProps.setProperty("mail.smtp.starttls.enable", String.valueOf(isStartTlsEnabled()));
+        }
+        if (!m_mailProps.containsKey("mail.smtp.quitwait")) {
+            m_mailProps.setProperty("mail.smtp.quitwait", String.valueOf(isQuitWait()));
+        }
+        if (!m_mailProps.containsKey("mail.smtp.port")) {
+            m_mailProps.setProperty("mail.smtp.port", String.valueOf(getSmtpPort()));
+        }
+        if (isSmtpSsl()) {
+            if (!m_mailProps.containsKey("mail.smtps.auth")) {
+                m_mailProps.setProperty("mail.smtps.auth", String.valueOf(isAuthenticate()));
+            }
+            if (!m_mailProps.containsKey("mail.smtps.socketFactory.class")) {
+                m_mailProps.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            }
+            if (!m_mailProps.containsKey("mail.smtps.socketFactory.port")) {
+                m_mailProps.setProperty("mail.smtps.socketFactory.port", String.valueOf(getSmtpPort()));
+            }
+//            if (!getMailProps().containsKey("mail.smtp.socketFactory.fallback")) {
+//                getMailProps().setProperty("mail.smtp.socketFactory.fallback", "false");
+//            }
+        }
+        
+        if (!m_mailProps.containsKey("mail.smtp.quitwait")) {
+            m_mailProps.setProperty("mail.smtp.quitwait", "true");
+        }
+        //getMailProps().setProperty("mail.store.protocol", "pop3");
+        
     }
 
     /**
      * Sends a message based on properties set on this bean.
      */
     public void mailSend() throws JavaMailerException {
-        checkEnvelopeAndContents();
-
         log().debug(createSendLogMsg());        
-        sendMessage(m_session, buildMessage(m_session));
+        sendMessage(buildMessage());
     }
 
     /**
      * Helper method to create an Authenticator based on Password Authentication
      * @return
      */
-    private Authenticator createAuthenticator() {
+    public Authenticator createAuthenticator() {
         Authenticator auth;
         if (isAuthenticate()) {
             auth = new Authenticator() {
@@ -181,9 +266,10 @@ public class JavaMailer {
      * @return completed message, ready to be passed to Transport.sendMessage
      * @throws JavaMailerException if any of the underlying operations fail
      */
-    private Message buildMessage(final Session session) throws JavaMailerException {
+    public Message buildMessage() throws JavaMailerException {
         try {
-            Message message = createMessage(session);
+            checkEnvelopeAndContents();
+            Message message = initializeMessage();
 
             String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
             if (getFileName() == null) {
@@ -224,10 +310,9 @@ public class JavaMailer {
      * @throws MessagingException
      * @throws AddressException
      */
-    private Message createMessage(final Session session)
-    throws MessagingException, AddressException {
+    private Message initializeMessage() throws MessagingException, AddressException {
         Message message;
-        message = new MimeMessage(session);
+        message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(getFrom()));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
         message.setSubject(getSubject());
@@ -264,7 +349,7 @@ public class JavaMailer {
      * @throws JavaMailerException if the file does not exist or is not
      *      readable
      */
-    private MimeBodyPart createFileAttachment(final File file) throws MessagingException, JavaMailerException {
+    public MimeBodyPart createFileAttachment(final File file) throws MessagingException, JavaMailerException {
         if (!file.exists()) {
             log().error("File attachment '" + file.getAbsolutePath() + "' does not exist.");
             throw new JavaMailerException("File attachment '" + file.getAbsolutePath() + "' does not exist.");
@@ -322,10 +407,10 @@ public class JavaMailer {
      * @param message
      * @throws JavaMailerException
      */
-    private void sendMessage(Session session, Message message) throws JavaMailerException {
+    public void sendMessage(Message message) throws JavaMailerException {
         Transport t = null;
         try {
-            t = session.getTransport(getTransport());
+            t = getSession().getTransport(getTransport());
             log().debug("for transport name '" + getTransport() + "' got: " + t.getClass().getName() + "@" + Integer.toHexString(t.hashCode()));
 
             LoggingTransportListener listener = new LoggingTransportListener(log());
@@ -336,10 +421,10 @@ public class JavaMailer {
                 log().debug("transport is 'mta', not trying to connect()");
             } else if (isAuthenticate()) {
                 log().debug("authenticating to " + getMailHost());
-                t.connect(getMailHost(), getUser(), getPassword());
+                t.connect(getMailHost(), getSmtpPort(), getUser(), getPassword());
             } else {
                 log().debug("not authenticating to " + getMailHost());
-                t.connect(getMailHost(), null, null);
+                t.connect(getMailHost(), getSmtpPort(), null, null);
             }
 
             t.sendMessage(message, message.getAllRecipients());
@@ -767,6 +852,14 @@ public class JavaMailer {
      */
     public void setSmtpSsl(boolean smtpSsl) {
         m_smtpSsl = smtpSsl;
+    }
+
+    /**
+     * This returns the properties configured in the javamail-configuration.properties file.
+     * @return
+     */
+    public Properties getMailProps() {
+        return m_mailProps;
     }
 
 }
