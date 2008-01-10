@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2008 Jan 10: Improve error checking on print lines in getPrintValues.
+ *              - dj@opennms.org
  * 2007 May 16: Added fetch methods. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
@@ -47,7 +49,6 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -103,20 +104,24 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         try {
             printLines = graphDetails.getPrintLines();
         } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Failure to get print lines from grpah after graphing with command '" + commandString + "'", e);
+            throw new DataAccessResourceFailureException("Failure to get print lines from graph after graphing with command '" + commandString + "'", e);
         }
       
         if (printLines.length != printFunctions.length) {
-            throw new ObjectRetrievalFailureException("Returned number of print lines should be "+printFunctions.length+", but was " + printLines.length, commandString);
+            throw new DataAccessResourceFailureException("Returned number of print lines should be "+printFunctions.length+", but was " + printLines.length + " from command: " + commandString);
         }
 
         double[] values = new double[printLines.length];
         
         for (int i = 0; i < printLines.length; i++) {
-            try {
-                values[i] = Double.parseDouble(printLines[i]);
-            } catch (NumberFormatException e) {
+            if ("nan".equals(printLines[i])) {
                 values[i] = Double.NaN;
+            } else {
+                try {
+                    values[i] = Double.parseDouble(printLines[i]);
+                } catch (NumberFormatException e) {
+                    throw new DataAccessResourceFailureException("Value of line " + (i + 1) + " of output from RRD is not a valid floating point number: '" + printLines[i] + "'");
+                }
             }
         }
         
