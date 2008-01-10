@@ -112,6 +112,76 @@ public class PropertiesUtils {
         }
         return result.toString();
     }
+
+    /**
+     * Get a String valued property, returning default value if it is not set
+     * or is set to an invalid value.
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
+     * @return the value of the property
+     */
+    public static String getProperty(Properties props, String name, String defaultVal) {
+        return props.getProperty(name) == null ? defaultVal : props.getProperty(name);
+    }
+    
+    /**
+     * Get a boolean valued property, returning default value if it is not set
+     * or is set to an invalid value.
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
+     * @return the value of the property
+     */
+    public static boolean getProperty(Properties props, String name, boolean defaultVal) {
+        return "true".equalsIgnoreCase(props.getProperty(name, (defaultVal ? "true" : "false")));
+    }
+
+    /**
+     * Get a int valued property, returning default value if it is not set or is
+     * set to an invalid value.
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
+     * @return the value of the property
+     */
+    public static int getProperty(Properties props, String name, int defaultVal) {
+        String val = props.getProperty(name, (String) null);
+        if (val != null) {
+            try {
+                return Integer.decode(val).intValue();
+            } catch (NumberFormatException e) {
+            }
+        }
+        return defaultVal;
+    }
+
+    /**
+     * Get a long valued property, returning default value if it is not set or
+     * is set to an invalid value
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
+     * @return the value of the property
+     */
+    public static long getProperty(Properties props, String name, long defaultVal) {
+        String val = props.getProperty(name, (String) null);
+        if (val != null) {
+            try {
+                return Long.decode(val).longValue();
+            } catch (NumberFormatException e) {
+            }
+        }
+        return defaultVal;
+    }
     
 
 }
