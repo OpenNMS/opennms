@@ -240,7 +240,7 @@ public class JavaMailerTest extends TestCase {
         jm.mailSend();
     }
 
-    private JavaMailer createMailer(String subject) {
+    private JavaMailer createMailer(String subject) throws JavaMailerException {
         JavaMailer jm = new JavaMailer();
 
         jm.setFrom(TEST_ADDRESS);
