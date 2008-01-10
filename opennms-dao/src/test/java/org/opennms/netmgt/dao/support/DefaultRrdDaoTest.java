@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jan 10: Added additional tests for getPrintValue. - dj@opennms.org
  * 2007 May 16: Added fetch methods. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
@@ -39,6 +40,7 @@ package org.opennms.netmgt.dao.support;
 import static org.easymock.EasyMock.expect;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 
 import junit.framework.TestCase;
@@ -47,8 +49,11 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.DefaultRrdGraphDetails;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
 
 /**
@@ -78,11 +83,70 @@ public class DefaultRrdDaoTest extends TestCase {
     }
 
     public void testPrintValue() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        OnmsResource childResource = preparePrintValueTest(start, end, "1");
+
+        m_mocks.replayAll();
+        Double value = m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
+        m_mocks.verifyAll();
+        
+        assertNotNull("value should not be null", value);
+        assertEquals("value", 1.0, value);
+    }
+    
+    public void testPrintValueWithNaN() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        OnmsResource childResource = preparePrintValueTest(start, end, "NaN");
+
+        m_mocks.replayAll();
+        Double value = m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
+        m_mocks.verifyAll();
+        
+        assertNotNull("value should not be null", value);
+        assertEquals("value", Double.NaN, value);
+    }
+    
+    public void testPrintValueWithnan() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        OnmsResource childResource = preparePrintValueTest(start, end, "nan");   
+
+        m_mocks.replayAll();
+        Double value = m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
+        m_mocks.verifyAll();
+        
+        assertNotNull("value should not be null", value);
+        assertEquals("value", Double.NaN, value);
+    }
+    
+    public void testPrintValueWithBogusLine() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        String printLine = "blah blah blah this should be a floating point number blah blah blah";
+        
+        OnmsResource childResource = preparePrintValueTest(start, end, printLine);
+
+        m_mocks.replayAll();
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new DataAccessResourceFailureException("Value of line 1 of output from RRD is not a valid floating point number: '" + printLine + "'"));
+        try {
+            m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+
+        m_mocks.verifyAll();
+
+        ta.verifyAnticipated();
+    }
+
+    private OnmsResource preparePrintValueTest(long start, long end, String printLine) throws IOException, RrdException {
         String rrdDir = "snmp/1/eth0";
         String rrdFile = "ifInOctets.jrb";
         
-        long end = System.currentTimeMillis();
-        long start = end - (24 * 60 * 60 * 1000);
         String[] command = new String[] {
                 m_dao.getRrdBinaryPath(),
                 "graph",
@@ -105,15 +169,10 @@ public class DefaultRrdDaoTest extends TestCase {
         childResource.setParent(topResource);
         
         DefaultRrdGraphDetails details = new DefaultRrdGraphDetails();
-        details.setPrintLines(new String[] { "1" });
+        details.setPrintLines(new String[] { printLine });
         expect(m_rrdStrategy.createGraphReturnDetails(commandString, m_dao.getRrdBaseDirectory())).andReturn(details);
 
-        m_mocks.replayAll();
-        Double value = m_dao.getPrintValue(childResource.getAttributes().iterator().next(), "AVERAGE", start, end);
-        m_mocks.verifyAll();
-        
-        assertNotNull("value should not be null", value);
-        assertEquals("value", 1.0, value);
+        return childResource;
     }
     
     public void testFetchLastValue() throws Exception {
