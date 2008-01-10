@@ -38,12 +38,10 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
     public int send(List<Argument> arguments) {
-
         log().debug("In the JavaMailNotification class.");
 
-        JavaMailer jm = buildMessage(arguments);
-
         try {
+            JavaMailer jm = buildMessage(arguments);
             jm.mailSend();
         } catch (JavaMailerException e) {
             log().error("send: Error sending notification.", e);
@@ -61,8 +59,9 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
      * parameters passed in the notification.
      * 
      * @param arguments
+     * @throws JavaMailerException 
      */
-    private JavaMailer buildMessage(List<Argument> arguments) {
+    private JavaMailer buildMessage(List<Argument> arguments) throws JavaMailerException {
 
         JavaMailer jm = new JavaMailer();
 
