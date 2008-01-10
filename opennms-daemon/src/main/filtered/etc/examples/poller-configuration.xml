@@ -353,7 +353,7 @@
                   <readmail-host host="pop.gmail.com" port="995">
                     <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
                   </readmail-host>
-                  <user-auth password="foo" user-name="bar" />
+                  <user-auth user-name="bar" password="foo" />
                 </readmail-test>
               </mail-test>
             </mail-transport-test>
@@ -409,7 +409,7 @@
                   <readmail-host host="${ipaddr}" port="995">
                     <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
                   </readmail-host>
-                  <user-auth password="foo" user-name="bar" />
+                  <user-auth user-name="bar" password="foo" />
                 </readmail-test>
               </mail-test>
             </mail-transport-test>
