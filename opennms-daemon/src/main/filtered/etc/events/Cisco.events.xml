@@ -14647,6 +14647,6 @@
         </descr>
         <logmsg dest='logndisplay'>Cisco Link Up Trap: %parm[#2]%, ifIndex: %parm[#1]%.</logmsg>
         <severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-uei="uei.opennms.org/vendors/cisco/traps/SNMP_Link_Down"  clear-key="uei.opennms.org/vendors/cisco/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down"  clear-key="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
     </event>
 </events>
