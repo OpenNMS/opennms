@@ -172,32 +172,32 @@ public class MailTransportMonitor extends IPv4Monitor {
             Store mailStore = null;
             Folder mailFolder = null;
             TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
-                for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
-                    tracker.startAttempt();
-                    log().debug("readTestMessage: reading mail attempt: "+tracker.getAttempt()+", elapsed time:"+tracker.elapsedTimeInMillis()+"ms.");
-                    try {
-                        mailStore = readMailer.getSession().getStore();
-                        mailFolder = retrieveMailFolder(mailParms, mailStore);
-                        mailFolder.open(Folder.READ_WRITE);
-                    } catch (MessagingException e) {
-                        if (tracker.shouldRetry()) {
-                                closeStore(mailStore, mailFolder);
-                            continue;  //try again to get mail Folder from Store
-                        } else {
-                            return PollStatus.down(e.getLocalizedMessage());
-                        }
+            for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
+                tracker.startAttempt();
+                log().debug("readTestMessage: reading mail attempt: "+tracker.getAttempt()+", elapsed time:"+tracker.elapsedTimeInMillis()+"ms.");
+                try {
+                    mailStore = readMailer.getSession().getStore();
+                    mailFolder = retrieveMailFolder(mailParms, mailStore);
+                    mailFolder.open(Folder.READ_WRITE);
+                } catch (MessagingException e) {
+                    if (tracker.shouldRetry()) {
+                        closeStore(mailStore, mailFolder);
+                        continue;  //try again to get mail Folder from Store
+                    } else {
+                        return PollStatus.down(e.getLocalizedMessage());
                     }
-                    if (mailFolder.isOpen() && (mailParms.getReadTest().getSubjectMatch() != null || mailParms.isEnd2EndTestInProgress())) {
-                        status = searchMailSubject(mailParms, mailFolder);
-                    } 
-                    break;
                 }
-                
-                if (tracker.shouldRetry()) {
-                    status = delayTest(status, interval);
-                }
+                if (mailFolder.isOpen() && (mailParms.getReadTest().getSubjectMatch() != null || mailParms.isEnd2EndTestInProgress())) {
+                    status = searchMailSubject(mailParms, mailFolder);
+                } 
+                break;
+            }
 
-                closeStore(mailStore, mailFolder);
+            if (tracker.shouldRetry()) {
+                status = delayTest(status, interval);
+            }
+
+            closeStore(mailStore, mailFolder);
         } catch (JavaMailerException e) {
             status = PollStatus.down(e.getLocalizedMessage());
         }
