@@ -389,7 +389,7 @@
 
                   <!-- Connect to local MTA and send... no auth required but the configuration
                     requires auth be configured.  Disable with use-authentication attribute above. -->
-                  <sendmail-host host="${127.0.0.1}" port="25" />
+                  <sendmail-host host="${ipaddr}" port="25" />
                   <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
                     quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
                   <sendmail-message to="root" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
