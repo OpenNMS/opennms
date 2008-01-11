@@ -61,9 +61,9 @@ public interface CollectionResource extends ResourceIdentifier {
     
     
     /**
-     * Returns the name of the instance this CollectionResource represents.  For node/if level resources, this will be null
-     * to indicate the default instance.  For Generic resources (e.g. the SNMP GenericIndexResource), this will be
-     * some identifying label, probably the index in the table
+     * Returns the name of the instance this CollectionResource represents.  For node level resources, this will be null
+     * to indicate the default instance.   For interface level resources, some label unique to the node (ifIndex probably)
+     * For Generic resources (e.g. the SNMP GenericIndexResource), this will be some identifying label, probably the index in the table
      * @return
      */
     public String getInstance();
