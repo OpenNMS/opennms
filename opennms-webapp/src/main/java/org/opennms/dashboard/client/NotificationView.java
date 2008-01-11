@@ -12,7 +12,7 @@ class NotificationView extends PageableTableView {
     private Notification[] m_notifications;
     
     NotificationView(Dashlet dashlet) {
-        super(dashlet, 8, new String[] { "Node", "Service", "Sent Time", "Responder", "Response Time" });
+        super(dashlet, 8, new String[] { "Node", "Service", "Message", "Sent Time", "Responder", "Response Time" });
     }
 
     public void setNotifications(Notification[] notifications) {
@@ -24,12 +24,11 @@ class NotificationView extends PageableTableView {
 	protected void setRow(FlexTable table, int row, int elementIndex) {
 		Notification notif = m_notifications[elementIndex];
         table.setText(row, 0, notif.getNodeLabel());
-        Label label = new Label(notif.getServiceName());
-        label.setTitle(notif.getTextMessage());
-        table.setWidget(row, 1, label);
-        table.setText(row, 2, ""+notif.getSentTime());
-        table.setText(row, 3, notif.getResponder());
-        table.setText(row, 4, (notif.getRespondTime() != null) ? notif.getRespondTime().toString() : "");
+        table.setText(row, 1, notif.getServiceName());
+        table.setText(row, 2, notif.getTextMessage());
+        table.setText(row, 3, ""+notif.getSentTime());
+        table.setText(row, 4, notif.getResponder());
+        table.setText(row, 5, (notif.getRespondTime() != null) ? notif.getRespondTime().toString() : "");
         table.getRowFormatter().setStyleName(row, notif.getSeverity());
     }
     
