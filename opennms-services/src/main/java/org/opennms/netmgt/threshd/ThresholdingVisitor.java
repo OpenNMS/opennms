@@ -167,6 +167,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * When called, we're starting a new resource.  Clears out any stored attribute values from previous resource visits
      */
     public void visitResource(CollectionResource resource) {
+        log().debug(this+" visiting resource "+resource);
         //Should only refresh our thresholds when we start checking a new collection; do the check now
         if(m_needsRefresh) {
             log().debug(this+" needs refresh of state; refreshing now");
@@ -206,12 +207,16 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     public void visitAttribute(CollectionAttribute attribute) {
         //Store the value away until we hit completeResource
         String numValue=attribute.getNumericValue();
+        String attribName=attribute.getName();
         if(numValue!=null) {
-            m_numericAttributeValues.put(attribute.getName(), Double.parseDouble(numValue));
+            double doubleValue=Double.parseDouble(numValue);
+            m_numericAttributeValues.put(attribName, doubleValue);
+            log().debug("visitAttribute storing value "+doubleValue +" for attribute named "+attribName);
         } else {
           //No numeric value available; storing as a string
           String stringValue=attribute.getStringValue();  
-          m_stringAttributeValues.put(attribute.getName(), stringValue);
+          m_stringAttributeValues.put(attribName, stringValue);
+          log().debug("visitAttribute storing value "+stringValue +" for attribute named "+attribName);
         }
     }
     
@@ -224,7 +229,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         List<Event> eventsList=new ArrayList<Event>();
         if(log().isDebugEnabled()) {
             log().debug("Completing Resource "+resource.getResourceTypeName() + "/" + resource.getOwnerName() +"/"+(resource.getInstance()==null?"default":resource.getInstance())
-                        +": "+resource.getType());
+                        +": "+resource.getType()+" ("+resource+")");
         }
         
         File resourceDir= resource.getResourceDir(m_repository); //used repeatedly; only obtain once
