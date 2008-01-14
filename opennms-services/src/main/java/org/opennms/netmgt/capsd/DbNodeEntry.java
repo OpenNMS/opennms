@@ -2044,10 +2044,10 @@ final class DbNodeEntry {
         stmt.setString(2, "Unspecified");
         stmt.setString(3, "");
         stmt.setTimestamp(4, new Timestamp((new Date()).getTime()));
-        stmt.setString(5, " ");
-        stmt.setString(6, " ");
-        stmt.setString(7, " ");
-        stmt.setString(8, " ");
+        stmt.setString(5, "");
+        stmt.setString(6, "");
+        stmt.setString(7, "");
+        stmt.setString(8, "");
 
         stmt.execute();
         stmt.close();
