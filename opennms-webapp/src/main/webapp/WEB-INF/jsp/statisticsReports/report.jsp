@@ -46,12 +46,12 @@
 <%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Statistics Reports List" />
-  <jsp:param name="headTitle" value="Statistics Reports List" />
+  <jsp:param name="title" value="Statistics Report" />
+  <jsp:param name="headTitle" value="Statistics Report" />
   <jsp:param name="location" value="reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Report</a>"/>
   <jsp:param name="breadcrumb" value="<a href='statisticsReports/index.htm'>Statistics Reports</a>"/>
-  <jsp:param name="breadcrumb" value="List"/>
+  <jsp:param name="breadcrumb" value="Report"/>
 </jsp:include>
 
 <c:choose>
