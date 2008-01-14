@@ -461,20 +461,6 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>uei.opennms.org/internal/reloadEventConfig</uei>
-		<event-label>OpenNMS-defined internal event: reloadEventConfig</event-label>
-		<descr>
-			&lt;p&gt;The event configuration files have changed. The
-			event services will now restart to detect the
-			changes.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logonly'>
-			&lt;p&gt;The event configuration files have
-			changed.&lt;/p&gt;
-		</logmsg>
-		<severity>Warning</severity>
-	</event>
-	<event>
 		<uei>uei.opennms.org/internal/reloadPollerConfig</uei>
 		<event-label>OpenNMS-defined internal event: reloadPollerConfig</event-label>
 		<descr>
