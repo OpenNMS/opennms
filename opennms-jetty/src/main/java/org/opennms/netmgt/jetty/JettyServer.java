@@ -43,6 +43,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.ajp.Ajp13SocketConnector;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -58,7 +59,7 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
  */
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
-    int m_port = 8080; 
+    int m_port = 8080;
 
     private Server m_server;
     private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
@@ -91,6 +92,20 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
             connector = new Ajp13SocketConnector();
             connector.setPort(ajp_port);
             m_server.addConnector(connector);
+        }
+        
+        Integer https_port = Integer.getInteger("org.opennms.netmgt.jetty.https-port");
+        if (https_port != null) {
+        	SslSocketConnector sslConnector = new SslSocketConnector();
+        	sslConnector.setPort(https_port);
+    		sslConnector.setKeystore(System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore"));
+    		sslConnector.setPassword(System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit"));
+    		sslConnector.setKeyPassword(System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit"));
+    		String httpsHost = System.getProperty("org.opennms.netmgt.jetty.https-host");
+    		if (httpsHost != null) {
+    			sslConnector.setHost(httpsHost);
+    		}
+    		m_server.addConnector(sslConnector);
         }
 
         HandlerCollection handlers = new HandlerCollection();
