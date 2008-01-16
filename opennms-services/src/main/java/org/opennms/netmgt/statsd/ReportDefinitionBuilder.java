@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.StatisticsDaemonConfigDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
 import org.opennms.netmgt.dao.castor.statsd.Report;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,12 +66,14 @@ public class ReportDefinitionBuilder implements InitializingBean {
                     log().debug("skipping report '" + report.getName() + "' in package '" + pkg.getName() + "' because the report is not enabled");
                 }
                 
-                Class clazz;
+                Class<? extends AttributeStatisticVisitorWithResults> clazz;
                 try {
-                    clazz = Class.forName(report.getClassName());
+                    clazz = createClassForReport(report);
                 } catch (ClassNotFoundException e) {
                     throw new DataAccessResourceFailureException("Could not find class '" + report.getClassName() + "'; nested exception: " + e, e);
                 }
+                
+                Assert.isAssignable(AttributeStatisticVisitorWithResults.class, clazz, "the class specified by class-name in the '" + report.getName() + "' report does not implement the interface " + AttributeStatisticVisitorWithResults.class.getName() + "; ");
                 
                 ReportDefinition reportDef = new ReportDefinition();
                 reportDef.setReport(packageReport);
@@ -88,8 +91,13 @@ public class ReportDefinitionBuilder implements InitializingBean {
         return reportDefinitions;
     }
 
+    @SuppressWarnings("unchecked")
+    private Class<? extends AttributeStatisticVisitorWithResults> createClassForReport(Report report) throws ClassNotFoundException {
+        return (Class<? extends AttributeStatisticVisitorWithResults>) Class.forName(report.getClassName());
+    }
+
     private Category log() {
-        return ThreadCategory.getInstance();
+        return ThreadCategory.getInstance(getClass());
     }
 
     public void afterPropertiesSet() {

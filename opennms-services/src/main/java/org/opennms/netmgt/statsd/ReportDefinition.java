@@ -49,13 +49,15 @@ import org.springframework.util.Assert;
  */
 public class ReportDefinition implements InitializingBean {
     private PackageReport m_report;
-    private Class m_reportClass;
+    private Class<? extends AttributeStatisticVisitorWithResults> m_reportClass;
 
     private Integer m_count;
     private String m_consolidationFunction;
     private RelativeTime m_relativeTime;
     private String m_resourceTypeMatch;
     private String m_attributeMatch;
+    private String m_resourceAttributeKey;
+    private String m_resourceAttributeValueMatch;
     
     public String getAttributeMatch() {
         return m_attributeMatch;
@@ -81,10 +83,16 @@ public class ReportDefinition implements InitializingBean {
     public void setResourceTypeMatch(String resourceTypeMatch) {
         this.m_resourceTypeMatch = resourceTypeMatch;
     }
-    public Class getReportClass() {
+    public Class<? extends AttributeStatisticVisitorWithResults> getReportClass() {
         return m_reportClass;
     }
-    public void setReportClass(Class reportClass) {
+    public void setReportClass(Class<? extends AttributeStatisticVisitorWithResults> reportClass) {
+        /*
+         * Even though we are using generics, it's just a compile-time check,
+         * so let's do a runtime check, too.
+         */
+        Assert.isAssignable(AttributeStatisticVisitorWithResults.class, reportClass, "the value of property reportClass does not implement the interface " + AttributeStatisticVisitorWithResults.class.getName() + "; ");
+
         m_reportClass = reportClass;
     }
     public RelativeTime getRelativeTime() {
@@ -99,6 +107,19 @@ public class ReportDefinition implements InitializingBean {
     public void setReport(PackageReport report) {
         m_report = report;
     }
+    public void setResourceAttributeKey(String resourceAttributeKey) {
+        m_resourceAttributeKey = resourceAttributeKey;
+    }
+    public void setResourceAttributeValueMatch(String resourceAttributeValueMatch) {
+        m_resourceAttributeValueMatch = resourceAttributeValueMatch;
+    }
+    public String getResourceAttributeKey() {
+        return m_resourceAttributeValueMatch;
+    }
+    public String getResourceAttributeValueMatch() {
+        return m_resourceAttributeKey;
+    }
+    
     
     public String getCronExpression() {
         return getReport().getSchedule();
@@ -115,9 +136,13 @@ public class ReportDefinition implements InitializingBean {
 
     
     public ReportInstance createReport(ResourceDao resourceDao, RrdDao rrdDao, FilterDao filterDao) throws Exception {
+        Assert.notNull(resourceDao, "resourceDao argument must not be null");
+        Assert.notNull(rrdDao, "rrdDao argument must not be null");
+        Assert.notNull(filterDao, "filterDao argument must not be null");
+        
         AttributeStatisticVisitorWithResults visitor;
         try {
-            visitor = (AttributeStatisticVisitorWithResults) getReportClass().newInstance();
+            visitor = getReportClass().newInstance();
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Could not instantiate visitor object; nested exception: " + e, e);
         }
@@ -148,6 +173,9 @@ public class ReportDefinition implements InitializingBean {
         report.setConsolidationFunction(getConsolidationFunction());
         report.setResourceTypeMatch(getResourceTypeMatch());
         report.setAttributeMatch(getAttributeMatch());
+
+        report.setResourceAttributeKey(m_resourceAttributeKey);
+        report.setResourceAttributeValueMatch(m_resourceAttributeValueMatch);
         
         if (report instanceof InitializingBean) {
             ((InitializingBean) report).afterPropertiesSet();
@@ -168,5 +196,4 @@ public class ReportDefinition implements InitializingBean {
         Assert.state(m_attributeMatch != null, "property attributeMatch must be set to a non-null value");
         Assert.state(m_reportClass != null, "property reportClass must be set to a non-null value");
     }
-    
 }
