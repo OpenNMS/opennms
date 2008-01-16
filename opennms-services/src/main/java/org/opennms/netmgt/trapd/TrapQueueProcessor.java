@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Format code, Java 5 generics, use dependency injection
+//              for EventConfDao and use it instead of EventConfigurationManager. - dj@opennms.org
 // 2008 Jan 05: Indent. - dj@opennms.org
 // 2005 Jan 11: Added a check to insure V2 traps had TIMTICKS varbind.
 // 2003 Aug 21: Modifications to support ScriptD.
@@ -53,7 +55,7 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.eventd.EventConfigurationManager;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
@@ -75,7 +77,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
     /**
      * The input queue
      */
-    private FifoQueue m_backlogQ;
+    private FifoQueue<TrapNotification> m_backlogQ;
 
     /**
      * The name of the local host.
@@ -100,6 +102,8 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
     private boolean m_newSuspect;
 
     private EventIpcManager m_eventMgr;
+
+    private EventConfDao m_eventConfDao;
 
     /**
      * Process a V2 trap and convert it to an event for transmission.
@@ -172,7 +176,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      *            V2 trap
      */
     private void process(TrapNotification info) {
-
         try {
             processTrapEvent(((EventCreator)info.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {
@@ -180,16 +183,10 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
         }
     }
 
-
-
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     public void processTrapEvent(Event event) {
         String trapInterface = event.getInterface();
 
-        org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(event);
+        org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
         if (econf == null || econf.getUei() == null) {
             event.setUei("uei.opennms.org/default/trap");
         } else {
@@ -247,25 +244,17 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      *  
      */
     private synchronized boolean statusOK() {
-        Category log = log();
-
-        //
         // Loop until there is a new client or we are shutdown
-        //
         boolean exitThread = false;
         boolean exitCheck = false;
         while (!exitCheck) {
-            //
             // check the child thread!
-            //
             if (m_worker.isAlive() == false && m_status != STOP_PENDING) {
-                log.warn(getName() + " terminated abnormally");
+                log().warn(getName() + " terminated abnormally");
                 m_status = STOP_PENDING;
             }
 
-            //
             // do normal status checks now
-            //
             if (m_status == STOP_PENDING) {
                 exitCheck = true;
                 exitThread = true;
@@ -292,17 +281,18 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
     /**
      * The constructor
+     * @param eventConfDao TODO
      */
-    TrapQueueProcessor(FifoQueue backlog, boolean newSuspect, EventIpcManager eventMgr) {
+    TrapQueueProcessor(FifoQueue<TrapNotification> backlog, boolean newSuspect, EventIpcManager eventMgr, EventConfDao eventConfDao) {
         m_backlogQ = backlog;
         m_newSuspect = newSuspect;
         m_eventMgr = eventMgr;
+        m_eventConfDao = eventConfDao;
         try {
             m_localAddr = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException uhE) {
-            Category log = log();
             m_localAddr = "localhost";
-            log.error("<ctor>: Error looking up local hostname", uhE);
+            log().error("<ctor>: Error looking up local hostname", uhE);
         }
 
     }
@@ -319,19 +309,17 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      *  
      */
     public synchronized void start() {
-        Category log = log();
-
-        if (m_worker != null)
-            throw new IllegalStateException(
-            "The fiber is running or has already run");
+        if (m_worker != null) {
+            throw new IllegalStateException("The fiber is running or has already run");
+        }
 
         m_status = STARTING;
 
         m_worker = new Thread(this, getName());
         m_worker.start();
 
-        if (log.isDebugEnabled()) {
-            log.debug(getName() + " started");
+        if (log().isDebugEnabled()) {
+            log().debug(getName() + " started");
         }
     }
 
@@ -402,8 +390,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      * out
      */
     public void run() {
-        Category log = log();
-
         synchronized (this) {
             m_status = RUNNING;
         }
@@ -411,16 +397,16 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
         while (statusOK()) {
             TrapNotification o = null;
             try {
-                o = (TrapNotification)m_backlogQ.remove(1000);
+                o = m_backlogQ.remove(1000);
             } catch (InterruptedException iE) {
-                log.debug("Trapd.QueueProcessor: caught interrupted exception");
+                log().debug("Trapd.QueueProcessor: caught interrupted exception");
 
                 o = null;
 
                 m_status = STOP_PENDING;
             } catch (FifoQueueException qE) {
-                log.debug("Trapd.QueueProcessor: caught fifo queue exception");
-                log.debug(qE.getLocalizedMessage(), qE);
+                log().debug("Trapd.QueueProcessor: caught fifo queue exception");
+                log().debug(qE.getLocalizedMessage(), qE);
 
                 o = null;
 
@@ -431,9 +417,13 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
                 try {
                     process(o);
                 } catch (Throwable t) {
-                    log.error("Unexpected error processing trap", t);
+                    log().error("Unexpected error processing trap", t);
                 }
             }
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

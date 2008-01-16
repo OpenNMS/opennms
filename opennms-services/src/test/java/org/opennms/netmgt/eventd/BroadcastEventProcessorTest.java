@@ -8,6 +8,11 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ * 
+ * 2008 Jan 08: Add a few more tests and make existing tests work with
+ *              EventConfigurationManager -> EventConfDao rework. - dj@opennms.org
+ *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -31,10 +36,14 @@
  */
 package org.opennms.netmgt.eventd;
 
-import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.test.ThrowableAnticipator;
-
 import junit.framework.TestCase;
+
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.test.ThrowableAnticipator;
+import org.opennms.test.mock.EasyMockUtils;
 
 /**
  * Test case for BroadcastEventProcessor.
@@ -42,12 +51,28 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class BroadcastEventProcessorTest extends TestCase {
+    private EasyMockUtils m_mocks = new EasyMockUtils();
+    private EventConfDao m_eventConfDao = m_mocks.createMock(EventConfDao.class);
+    
     public void testInstantiateWithNullEventIpcManager() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("argument eventIpcManager must not be null"));
         
         try {
-            new BroadcastEventProcessor(null);
+            new BroadcastEventProcessor(null, m_eventConfDao);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        ta.verifyAnticipated();
+    }
+    
+    public void testInstantiateWithNullEventConfDao() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("argument eventConfDao must not be null"));
+        
+        try {
+            new BroadcastEventProcessor(new MockEventIpcManager(), null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -57,7 +82,23 @@ public class BroadcastEventProcessorTest extends TestCase {
     
     public void testInstantiateAndClose() {
         MockEventIpcManager eventIpcManager = new MockEventIpcManager();
-        BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager);
+        BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager, m_eventConfDao);
         processor.close();
+    }
+    
+    public void testReload() {
+        MockEventIpcManager eventIpcManager = new MockEventIpcManager();
+        BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager, m_eventConfDao);
+        
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "dunno");
+        
+        // Expect a call to reload the EventConfDao
+        m_eventConfDao.reload();
+        
+        m_mocks.replayAll();
+        
+        processor.onEvent(eventBuilder.getEvent());
+        
+        m_mocks.verifyAll();
     }
 }

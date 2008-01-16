@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Dependency inject EventConfDao. - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -49,7 +50,7 @@ import junit.framework.TestSuite;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventConfigurationManager;
+import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockTrapdConfig;
@@ -84,7 +85,7 @@ public class TrapHandlerTest extends TestCase {
 
     private InetAddress m_localhost = null;
 
-    private int m_port = 10000; 
+    private int m_port = 10000;
 
     private static final String m_ip = "127.0.0.1";
     private static final long m_nodeId = 1;
@@ -99,8 +100,6 @@ public class TrapHandlerTest extends TestCase {
 
         m_localhost = InetAddress.getByName(m_ip);
 
-        EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
-
         TrapdIPMgr.clearKnownIpsMap();
         TrapdIPMgr.setNodeId(m_ip, m_nodeId);
     }
@@ -110,9 +109,14 @@ public class TrapHandlerTest extends TestCase {
         mockTrapdConfig.setSnmpTrapPort(m_port);
         mockTrapdConfig.setNewSuspectOnTrap(newSuspectOnTrap);
 
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
+        eventConfDao.reload();
+
         m_trapHandler = new TrapHandler();
         m_trapHandler.setTrapdConfig(mockTrapdConfig);
         m_trapHandler.setEventManager(m_eventMgr);
+        m_trapHandler.setEventConfDao(eventConfDao);
+        m_trapHandler.afterPropertiesSet();
         m_trapHandler.init();
         m_trapHandler.start();
     }

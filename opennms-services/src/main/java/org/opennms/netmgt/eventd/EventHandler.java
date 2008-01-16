@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 06: Format code a bit, dependency inject EventExpander,
+//              and create log() method. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -68,19 +73,22 @@ final class EventHandler implements Runnable {
 
     private String m_getNextAlarmIdStr;
 
+    private EventExpander m_eventExpander;
+
     /**
      * Constructor for the eventhandler
-     * @param connectionFactory 
-     * 
      * @param eventLog
      *            events to be processed
      * @param getNextEventId
      *            the sql statement to get next event id from sequence
+     * @param eventExpander TODO
+     * @param connectionFactory 
      */
-    public EventHandler(Log eventLog, String getNextEventId, String getNextAlarmIdStr) {
+    public EventHandler(Log eventLog, String getNextEventId, String getNextAlarmIdStr, EventExpander eventExpander) {
         m_eventLog = eventLog;
         m_getNextEventIdStr = getNextEventId;
         m_getNextAlarmIdStr = getNextAlarmIdStr;
+        m_eventExpander = eventExpander;
     }
 
     /**
@@ -91,13 +99,9 @@ final class EventHandler implements Runnable {
      */
     public void run() {
         // check to see if the event log is hooked up
-        //
-        if (m_eventLog == null)
+        if (m_eventLog == null) {
             return;
-
-        // open up a logger
-        //
-        Category log = ThreadCategory.getInstance(getClass());
+        }
 
         Events events = m_eventLog.getEvents();
         if (events == null || events.getEventCount() <= 0) {
@@ -114,8 +118,8 @@ final class EventHandler implements Runnable {
                     eventWriter = new EventWriter(m_getNextEventIdStr);
                     alarmWriter = new AlarmWriter(m_getNextAlarmIdStr);
                 } catch (Throwable t) {
-                    log.warn("Exception creating EventWriter", t);
-                    log.warn("Event(s) CANNOT be inserted into the database");
+                    log().warn("Exception creating EventWriter", t);
+                    log().warn("Event(s) CANNOT be inserted into the database");
 
                     return;
                 }
@@ -124,32 +128,32 @@ final class EventHandler implements Runnable {
                 while (en.hasMoreElements()) {
                     Event event = en.nextElement();
 
-                    if (log.isDebugEnabled()) {
+                    if (log().isDebugEnabled()) {
                         // print out the eui, source, and other
                         // important aspects
                         //
                         String uuid = event.getUuid();
-                        log.debug("Event {");
-                        log.debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
-                        log.debug("  uei   = " + event.getUei());
-                        log.debug("  src   = " + event.getSource());
-                        log.debug("  iface = " + event.getInterface());
-                        log.debug("  time  = " + event.getTime());
+                        log().debug("Event {");
+                        log().debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
+                        log().debug("  uei   = " + event.getUei());
+                        log().debug("  src   = " + event.getSource());
+                        log().debug("  iface = " + event.getInterface());
+                        log().debug("  time  = " + event.getTime());
                         Parm[] parms = (event.getParms() == null ? null : event.getParms().getParm());
                         if (parms != null) {
-                            log.debug("  parms {");
+                            log().debug("  parms {");
                             for (int x = 0; x < parms.length; x++) {
                                 if ((parms[x].getParmName() != null) && (parms[x].getValue().getContent() != null)) {
-                                    log.debug("    (" + parms[x].getParmName().trim() + ", " + parms[x].getValue().getContent().trim() + ")");
+                                    log().debug("    (" + parms[x].getParmName().trim() + ", " + parms[x].getValue().getContent().trim() + ")");
                                 }
                             }
-                            log.debug("  }");
+                            log().debug("  }");
                         }
-                        log.debug("}");
+                        log().debug("}");
                     }
 
                     // look up eventconf match and expand event
-                    EventExpander.expandEvent(event);
+                    m_eventExpander.expandEvent(event);
                     try {
                         // add to database
                         eventWriter.persistEvent(m_eventLog.getHeader(), event);
@@ -158,9 +162,9 @@ final class EventHandler implements Runnable {
 
                         alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
                     } catch (SQLException sqle) {
-                        log.warn("Unable to add event to database", sqle);
+                        log().warn("Unable to add event to database", sqle);
                     } catch (Throwable t) {
-                        log.warn("Unknown exception processing event", t);
+                        log().warn("Unknown exception processing event", t);
                     }
                 }
             } finally {
@@ -171,6 +175,10 @@ final class EventHandler implements Runnable {
             // close database related stuff in the eventwriter
             if (eventWriter != null) eventWriter.close();
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

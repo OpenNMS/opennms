@@ -90,21 +90,21 @@ public class EventconfFactorySaveTest extends TestCase {
         String newUEI2="uei.opennms.org/custom/newTestUEI2";
         
         //Now do the test
-        EventconfFactory factory=EventconfFactory.getInstance();
         { 
-            List<Event> events=factory.getEvents(knownUEI1);
+            EventconfFactory.getInstance().reload();
+            List<Event> events=EventconfFactory.getInstance().getEvents(knownUEI1);
             Event event=events.get(0);
             event.setUei(newUEI1);
         }
         
-        factory.saveCurrent();
+        EventconfFactory.getInstance().saveCurrent();
         
         EventconfFactory.getInstance().reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
         { 
-            List<Event> events=factory.getEvents(knownUEI1);
+            List<Event> events=EventconfFactory.getInstance().getEvents(knownUEI1);
             assertNull("Shouldn't be any events by that uei", events);
             
-            events=factory.getEvents(newUEI1);
+            events=EventconfFactory.getInstance().getEvents(newUEI1);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event event=events.get(0);
@@ -113,19 +113,19 @@ public class EventconfFactorySaveTest extends TestCase {
        
         //Check that we can change and save a UEI in a sub file
         { 
-            List<Event> events=factory.getEvents(knownSubfileUEI1);
+            List<Event> events=EventconfFactory.getInstance().getEvents(knownSubfileUEI1);
             Event event=events.get(0);
             event.setUei(newUEI2);
         }
         
-        factory.saveCurrent();
+        EventconfFactory.getInstance().saveCurrent();
         
         EventconfFactory.getInstance().reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
         { 
-            List<Event> events=factory.getEvents(knownSubfileUEI1);
+            List<Event> events=EventconfFactory.getInstance().getEvents(knownSubfileUEI1);
             assertNull("Shouldn't be any events by that uei", events);
             
-            events=factory.getEvents(newUEI2);
+            events=EventconfFactory.getInstance().getEvents(newUEI2);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event event=events.get(0);
@@ -157,14 +157,13 @@ public class EventconfFactorySaveTest extends TestCase {
     }
     
     public void testAddEvent() {
-        EventconfFactory factory=EventconfFactory.getInstance();
         Event event=getAddableEvent();
         
         //The tested event
-        factory.addEvent(event);
+        EventconfFactory.getInstance().addEvent(event);
         
         {
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
@@ -172,7 +171,7 @@ public class EventconfFactorySaveTest extends TestCase {
         }
         
         try {
-            factory.saveCurrent();
+            EventconfFactory.getInstance().saveCurrent();
             EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,7 +180,7 @@ public class EventconfFactorySaveTest extends TestCase {
         
         {
             //Check that the new Event is still there
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
@@ -194,14 +193,13 @@ public class EventconfFactorySaveTest extends TestCase {
      *
      */
     public void testAddEventToProgrammaticStore() {
-        EventconfFactory factory=EventconfFactory.getInstance();
         Event event=getAddableEvent();
         
-        factory.addEventToProgrammaticStore(event);
+        EventconfFactory.getInstance().addEventToProgrammaticStore(event);
         
         //Check that the new Event is still there
         {
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
   
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
@@ -210,7 +208,7 @@ public class EventconfFactorySaveTest extends TestCase {
         }
         
         try {
-            factory.saveCurrent();
+            EventconfFactory.getInstance().saveCurrent();
             EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,7 +219,7 @@ public class EventconfFactorySaveTest extends TestCase {
         m_fa.expecting(new File(m_fa.getTempDir().getAbsolutePath()+File.separator+"etc"+File.separator+"events"),"programmatic.events.xml");
         //Check again after the reload
         {
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
   
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
@@ -232,13 +230,12 @@ public class EventconfFactorySaveTest extends TestCase {
     }
     
     public void testRemoveEventToProgrammaticStore() {
-        EventconfFactory factory=EventconfFactory.getInstance();
         Event event=getAddableEvent();
         
-        factory.addEventToProgrammaticStore(event);
+        EventconfFactory.getInstance().addEventToProgrammaticStore(event);
         {
             //Check that the new Event is still there
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
@@ -246,14 +243,14 @@ public class EventconfFactorySaveTest extends TestCase {
         }
         
         //Check before the save/reload
-        assertTrue("remove should have returned true", factory.removeEventFromProgrammaticStore(event));
+        assertTrue("remove should have returned true", EventconfFactory.getInstance().removeEventFromProgrammaticStore(event));
         {
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
             assertNull(events);
         }
 
         try {
-            factory.saveCurrent();
+            EventconfFactory.getInstance().saveCurrent();
             EventconfFactory.getInstance().reload();
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,11 +258,11 @@ public class EventconfFactorySaveTest extends TestCase {
         }
 
         //Should get a "false" when the event is already missing
-        assertFalse("remove should have returned false",factory.removeEventFromProgrammaticStore(event));
+        assertFalse("remove should have returned false",EventconfFactory.getInstance().removeEventFromProgrammaticStore(event));
         //Check again after save/reload
 
         {
-            List<Event> events=factory.getEvents(newUEI);
+            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
             assertNull(events);
         }
 

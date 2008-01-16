@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Dependency inject EventExpander, pass EventExpander to 
+//              EventHandler, and create log() method. - dj@opennms.org
 // 2008 Jan 07: Indent and format code a bit, implement log(). - dj@opennms.org
 // 2007 Aug 25: Save and restore the log4j logging prefix when we
 //              call onEvent(Event). - dj@opennms.org
@@ -58,6 +60,8 @@ import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * An implementation of the EventIpcManager interface that can be used to
@@ -66,7 +70,7 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventIpcManagerDefaultImpl implements EventIpcManager {
+public class EventIpcManagerDefaultImpl implements EventIpcManager, InitializingBean {
     
     private static EventdConfigManager m_eventdConfigMgr;
     
@@ -96,6 +100,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     private String m_getNextEventIdStr;
 
     private String m_getNextAlarmIdStr;
+
+    private EventExpander m_eventExpander;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -207,22 +213,12 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
     }
 
-    /**
-     * Constructor
-     */
     public EventIpcManagerDefaultImpl() {
-        init();
     }
-
-    public EventIpcManagerDefaultImpl(EventdConfigManager configMgr) {
-        setEventdConfigMgr(configMgr);
-        init();
-    }
-
-    public synchronized void init() {
-        if (m_eventdConfigMgr == null) {
-            throw new IllegalStateException("eventd configuration manager not set");
-        }
+    
+    public synchronized void afterPropertiesSet() {
+        Assert.state(m_eventdConfigMgr != null, "eventdConfigMgr not set");
+        Assert.state(m_eventExpander != null, "eventExpander not set");
         
         m_ueiListeners = new HashMap<String, List<EventListener>>();
         m_listeners = new ArrayList<EventListener>();
@@ -262,7 +258,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         // create a new event handler for the events and queue it to the
         // event handler thread pool
         try {
-            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
+            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr, m_eventExpander));
         } catch (InterruptedException iE) {
             log().warn("Unable to queue event log to the event handler pool queue", iE);
 
@@ -524,6 +520,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
     /**
      * @return Returns the eventdConfigMgr.
      */
@@ -538,7 +538,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         m_eventdConfigMgr = eventdConfigMgr;
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    public EventExpander getEventExpander() {
+        return m_eventExpander;
+    }
+    
+    public void setEventExpander(EventExpander eventExpander) {
+        m_eventExpander = eventExpander;
     }
 }

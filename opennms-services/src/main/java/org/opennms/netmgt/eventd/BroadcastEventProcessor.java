@@ -9,6 +9,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 06: Convert to use EventConfDao instead of
+//              EventConfigurationManager. - dj@opennms.org
 // 2007 Mar 21: Format code, remove outdated references to JMS, create log()
 //      method, and keep around the EventIpcManager when we are instantiated
 //      so we can use it when we close up shop. - dj@opennms.org
@@ -34,24 +36,25 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.eventd;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
 public class BroadcastEventProcessor implements EventListener {
     private EventIpcManager m_eventIpcManager;
+    private EventConfDao m_eventConfDao;
     
-    public BroadcastEventProcessor(EventIpcManager eventIpcManager) {
+    public BroadcastEventProcessor(EventIpcManager eventIpcManager, EventConfDao eventConfDao) {
         Assert.notNull(eventIpcManager, "argument eventIpcManager must not be null");
+        Assert.notNull(eventConfDao, "argument eventConfDao must not be null");
         
         m_eventIpcManager = eventIpcManager;
+        m_eventConfDao = eventConfDao;
         
         addEventListener();
     }
@@ -105,7 +108,7 @@ public class BroadcastEventProcessor implements EventListener {
         
         if (event.getUei().equals(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI)) {
             try {
-                EventConfigurationManager.reload();
+                m_eventConfDao.reload();
             } catch (Exception e) {
                 log().error("Could not reload events config: " + e, e);
             }

@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Don't keep references to EventconfFactory around (since it
+//              returns EventConfDao, now)--use call EventconfFactory.getInstance()
+//              every time we need it. - dj@opennms.org
 // 2008 Jan 06: Duplicate all EventConfigurationManager tests. - dj@opennms.org
 // 2008 Jan 05: Organize imports, format code a bit, make tests run with latest
 //              EventconfFactory changes (lining up functionality with
@@ -59,14 +62,13 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.util.StringUtils;
 
 /**
@@ -166,17 +168,16 @@ public class EventconfFactoryTest extends TestCase {
     }
     
     public void testGetEventByUEI() {
-        EventconfFactory factory=EventconfFactory.getInstance();
-        List result=factory.getEvents(knownUEI1);
+        List result=EventconfFactory.getInstance().getEvents(knownUEI1);
         assertEquals("Should only be one result", 1, result.size());
         Event firstEvent=(Event)result.get(0);
         assertEquals("UEI should be "+knownUEI1, knownUEI1, firstEvent.getUei());
         
-        result=factory.getEvents("uei.opennms.org/internal/capsd/nonexistent");
+        result=EventconfFactory.getInstance().getEvents("uei.opennms.org/internal/capsd/nonexistent");
         assertNull("Should be null list for non-existent URI", result);
         
         //Find an event that's in a sub-file
-        result=factory.getEvents(knownSubfileUEI1);
+        result=EventconfFactory.getInstance().getEvents(knownSubfileUEI1);
         assertEquals("Should only be one result", 1, result.size());
         firstEvent=(Event)result.get(0);
         assertEquals("UEI should be "+knownSubfileUEI1,knownSubfileUEI1, firstEvent.getUei());
@@ -201,9 +202,8 @@ public class EventconfFactoryTest extends TestCase {
     }
     
     public void testGetLabel() {
-        EventconfFactory factory = EventconfFactory.getInstance();
-        assertEquals("Must have correct label"+knownLabel1, knownLabel1, factory.getEventLabel(knownUEI1));
-        assertEquals("Must have correct label"+knownSubfileLabel1, knownSubfileLabel1, factory.getEventLabel(knownSubfileUEI1));
+        assertEquals("Must have correct label"+knownLabel1, knownLabel1, EventconfFactory.getInstance().getEventLabel(knownUEI1));
+        assertEquals("Must have correct label"+knownSubfileLabel1, knownSubfileLabel1, EventconfFactory.getInstance().getEventLabel(knownSubfileUEI1));
     }
     
     public void testGetAlarmType() {
@@ -223,14 +223,12 @@ public class EventconfFactoryTest extends TestCase {
     //Ensure reload does indeed reload fresh data
     public void testReload() {
         String newUEI="uei.opennms.org/custom/newTestUEI";
-        EventconfFactory factory=EventconfFactory.getInstance();
-        
-        List events=factory.getEvents(knownUEI1);
+        List events=EventconfFactory.getInstance().getEvents(knownUEI1);
         Event event=(Event)events.get(0);
         event.setUei(newUEI);
         
         //Check that the new UEI is there
-        List events2=factory.getEvents(newUEI);
+        List events2=EventconfFactory.getInstance().getEvents(newUEI);
         Event event2=((Event)events2.get(0));
         assertNotNull("Must have some events", event2);
         assertEquals("Must be exactly 1 event", 1, events2.size());
@@ -244,14 +242,14 @@ public class EventconfFactoryTest extends TestCase {
             e.printStackTrace();
             fail("Should not have had exception while reloading factory "+e.getMessage());
         }
-        List events3=factory.getEvents(knownUEI1);
+        List events3=EventconfFactory.getInstance().getEvents(knownUEI1);
         assertNotNull("Must have some events", events3);
         assertEquals("Must be exactly 1 event", 1, events3.size());
         Event event3=(Event)events3.get(0);
         assertEquals("uei must be the new one", knownUEI1, event3.getUei());       
         
         //Check that the new UEI is *not* there this time
-        List events4=factory.getEvents(newUEI);
+        List events4=EventconfFactory.getInstance().getEvents(newUEI);
         assertNull("Must be no events by that name", events4);
     }
     
@@ -282,7 +280,7 @@ public class EventconfFactoryTest extends TestCase {
         
         try {
             loadConfiguration("threeDeepConfig/eventconf.xml");
-        } catch (ValidationException e) {
+        } catch (DataAccessException e) {
             if (e.getMessage().contains("cannot include other configuration files")) {
                 caughtExceptionThatWeWanted = true;
             } else {
@@ -305,7 +303,7 @@ public class EventconfFactoryTest extends TestCase {
         
         try {
             loadConfiguration("twoDeepConfigWithGlobal/eventconf.xml");
-        } catch (ValidationException e) {
+        } catch (DataAccessException e) {
             if (e.getMessage().contains("cannot have a 'global' element")) {
                 caughtExceptionThatWeWanted = true;
             } else {
@@ -339,7 +337,7 @@ public class EventconfFactoryTest extends TestCase {
        
         try {
             loadConfiguration("relativeTwoDeepConfig/eventconf.xml", false);
-        } catch (IOException e) {
+        } catch (DataAccessException e) {
             if (e.getMessage().contains("so the relative path cannot be resolved")) {
                 caughtExceptionThatWeWanted = true;
             } else {
@@ -393,23 +391,23 @@ public class EventconfFactoryTest extends TestCase {
      * Test the standard eventconf.xml configuration file and its include files.
      */
     public void testLoadStandardConfiguration() throws Exception {
-        EventconfFactory eventConf = new EventconfFactory();
-        eventConf.loadConfiguration(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml"));
+        DefaultEventConfDao dao = new DefaultEventConfDao();
+        dao.loadConfiguration(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml"));
     }
 
-    private void loadConfiguration(String relativeResourcePath) throws IOException, MarshalException, ValidationException {
+    private void loadConfiguration(String relativeResourcePath) throws DataAccessException, IOException {
         loadConfiguration(relativeResourcePath, true);
     }
     
-    private void loadConfiguration(String relativeResourcePath, boolean passFile) throws IOException, MarshalException, ValidationException {
+    private void loadConfiguration(String relativeResourcePath, boolean passFile) throws DataAccessException, IOException {
         URL url = getUrlForRelativeResourcePath(relativeResourcePath);
-        EventconfFactory eventConf = new EventconfFactory();
+        DefaultEventConfDao dao = new DefaultEventConfDao();
         if (passFile) {
-            eventConf.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), new File(url.getFile()));
+            dao.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), new File(url.getFile()));
         } else {
-            eventConf.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), null);
+            dao.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), null);
         }
-        EventconfFactory.setInstance(eventConf);
+        EventconfFactory.setInstance(dao);
     }
 
     private Reader getFilteredReaderForConfig(String resourceSuffix) throws IOException {

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Dependency inject EventConfDao. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2003 Jan 08: Added code to associate the IP address in traps with nodes
 //              and added the option to discover nodes based on traps.
@@ -47,10 +48,10 @@ import java.sql.SQLException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 /**
@@ -130,12 +131,14 @@ public class Trapd extends AbstractServiceDaemon {
 			throw new UndeclaredThrowableException(e);
 		}
 
+                EventIpcManagerFactory.init();
+                EventconfFactory.init();
+
 		TrapHandler trapHandler = getTrapHandler();
 		trapHandler.setTrapdConfig(TrapdConfigFactory.getInstance());
-
-		EventIpcManagerFactory.init();
-		EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
-		trapHandler.setEventManager(mgr);
+		trapHandler.setEventManager(EventIpcManagerFactory.getIpcManager());
+                trapHandler.setEventConfDao(EventconfFactory.getInstance());
+                trapHandler.afterPropertiesSet();
 
 		trapHandler.init();
 	}

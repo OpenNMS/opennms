@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Jan 06: Dependency injection of EventConfDao, delay creation of
+//              BroadcastEventProcessor until onInit instead of in
+//              setEventIpcManager, and pass in EventConfDao. - dj@opennms.org
 // 2008 Jan 06: Indent, format code, Java 5 generics, eliminate warnings,
 //              use log() from superclass. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -55,6 +58,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
@@ -63,6 +67,7 @@ import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -141,6 +146,8 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     private DataSource m_dataSource;
 
+    private EventConfDao m_eventConfDao;
+
     static {
         // map of service names to service identifer
         m_serviceTableMap = Collections.synchronizedMap(new HashMap<String, Integer>());
@@ -186,10 +193,10 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     }
 
     protected void onInit() {
-
-        if (m_dataSource == null) {
-            throw new IllegalStateException("dataSource not initialized");
-        }
+        Assert.state(m_dataSource != null, "dataSource not initialized");
+        Assert.state(m_eventConfDao != null, "eventConfDao not initialized");
+        
+        createBroadcastEventProcessor(m_eventIpcManager);
 
         // Get a database connection and create the service table map
         Connection tempConn = null;
@@ -260,7 +267,7 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
                 log().debug("start: Creating event broadcast event processor");
             }
 
-            m_receiver = new BroadcastEventProcessor(manager);
+            m_receiver = new BroadcastEventProcessor(manager, m_eventConfDao);
         } catch (Throwable t) {
             log().fatal("start: Failed to initialized the broadcast event receiver", t);
 
@@ -327,7 +334,6 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     public void setEventIpcManager(EventIpcManager manager) {
         m_eventIpcManager = manager;
-        this.createBroadcastEventProcessor(manager);
     }
 
     public void setEventDao(EventDao dao) {
@@ -336,5 +342,13 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     public EventDao getEventDao() {
         return m_eventDao;
+    }
+
+    public EventConfDao getEventConfDao() {
+        return m_eventConfDao;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
     }
 }
