@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
 import org.opennms.netmgt.dao.support.FilterWalker;
+import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.RrdStatisticAttributeVisitor;
 import org.opennms.netmgt.model.AttributeStatistic;
@@ -59,14 +60,12 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     private final AttributeMatchingResourceVisitor m_attributeVisitor = new AttributeMatchingResourceVisitor();
     private final ResourceTypeFilteringResourceVisitor m_resourceTypeVisitor = new ResourceTypeFilteringResourceVisitor();
     private final FilterWalker m_walker = new FilterWalker();
+    private String m_resourceAttributeKey;
+    private String m_resourceAttributeValueMatch;
+    private ResourceAttributeFilteringResourceVisitor m_resourceAttributeVisitor;
     
     public FilteredReportInstance(AttributeStatisticVisitorWithResults visitor) {
         m_attributeStatisticVisitor = visitor;
-        
-        m_rrdVisitor.setStatisticVisitor(m_attributeStatisticVisitor);
-        m_attributeVisitor.setAttributeVisitor(m_rrdVisitor);
-        m_resourceTypeVisitor.setDelegatedVisitor(m_attributeVisitor);
-        m_walker.setVisitor(m_resourceTypeVisitor);
     }
     
     public void setFilterDao(FilterDao filterDao) {
@@ -185,10 +184,42 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
         
+        m_rrdVisitor.setStatisticVisitor(m_attributeStatisticVisitor);
+        m_attributeVisitor.setAttributeVisitor(m_rrdVisitor);
+        if (m_resourceAttributeKey != null && m_resourceAttributeValueMatch != null) {
+            m_resourceAttributeVisitor = new ResourceAttributeFilteringResourceVisitor();
+            m_resourceAttributeVisitor.setDelegatedVisitor(m_attributeVisitor);
+            m_resourceAttributeVisitor.setResourceAttributeKey(m_resourceAttributeKey);
+            m_resourceAttributeVisitor.setResourceAttributeValueMatch(m_resourceAttributeValueMatch);
+            m_resourceAttributeVisitor.afterPropertiesSet();
+            
+            m_resourceTypeVisitor.setDelegatedVisitor(m_resourceAttributeVisitor);
+        } else {
+            m_resourceTypeVisitor.setDelegatedVisitor(m_attributeVisitor);
+        }
+        m_walker.setVisitor(m_resourceTypeVisitor);
+
         m_attributeStatisticVisitor.afterPropertiesSet();
         m_rrdVisitor.afterPropertiesSet();
         m_attributeVisitor.afterPropertiesSet();
         m_resourceTypeVisitor.afterPropertiesSet();
         m_walker.afterPropertiesSet();
+    }
+    
+
+    public void setResourceAttributeKey(String resourceAttributeKey) {
+        m_resourceAttributeKey = resourceAttributeKey;
+    }
+
+    public void setResourceAttributeValueMatch(String resourceAttributeValueMatch) {
+        m_resourceAttributeValueMatch = resourceAttributeValueMatch;
+    }
+
+    public String getResourceAttributeKey() {
+        return m_resourceAttributeKey;
+    }
+
+    public String getResourceAttributeValueMatch() {
+        return m_resourceAttributeValueMatch;
     }
 }
