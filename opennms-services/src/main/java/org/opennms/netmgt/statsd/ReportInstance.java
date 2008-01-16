@@ -86,4 +86,12 @@ public interface ReportInstance {
     public ReportDefinition getReportDefinition();
     
     public void setReportDefinition(ReportDefinition definition);
+
+    public void setResourceAttributeKey(String resourceAttributeKey);
+    
+    public String getResourceAttributeKey();
+
+    public void setResourceAttributeValueMatch(String resourceAttributeValueMatch);
+
+    public String getResourceAttributeValueMatch();
 }
