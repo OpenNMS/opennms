@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Use EventConfDao/EventconfFactory instead of EventConfigurationManager. - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 // 2007 Dec 24: Pull config file into an external file. - dj@opennms.org
 //
@@ -39,7 +40,6 @@
 //
 package org.opennms.netmgt.eventd.datablock;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,7 +48,8 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.Base64;
-import org.opennms.netmgt.eventd.EventConfigurationManager;
+import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.mock.EventConfWrapper;
 import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.utils.EventBuilder;
@@ -63,7 +64,10 @@ public class EventConfDataTest extends TestCase {
     protected void setUp() throws Exception {
         MockLogAppender.setupLogging(false);
 
-        EventConfigurationManager.loadConfiguration(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
+        eventConfDao.reload();
+        
+        EventconfFactory.setInstance(eventConfDao);
     }
 
 
@@ -283,7 +287,7 @@ public class EventConfDataTest extends TestCase {
 		}
          */
 
-        org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(snmp);
+        org.opennms.netmgt.xml.eventconf.Event econf = EventconfFactory.getInstance().findByEvent(snmp);
 
         System.out.println("Eventconf: " + (econf == null ? null : new EventConfWrapper(econf) ));
 
