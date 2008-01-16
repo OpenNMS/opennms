@@ -444,8 +444,7 @@ public class ThresholdController extends AbstractController implements Initializ
     }
     
     private void ensureUEIInEventConf(String uei, String typeDesc) {
-        EventconfFactory factory = EventconfFactory.getInstance();
-        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI=factory.getEvents(uei);
+        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI=EventconfFactory.getInstance().getEvents(uei);
         if(eventsForUEI==null || eventsForUEI.size()==0) {
             //UEI doesn't exist.  Add it
             org.opennms.netmgt.xml.eventconf.Event event=new org.opennms.netmgt.xml.eventconf.Event();
@@ -458,7 +457,7 @@ public class ThresholdController extends AbstractController implements Initializ
             logmsg.setContent("Threshold "+typeDesc+" for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
             event.setLogmsg(logmsg);
             event.setSeverity("Warning");
-            factory.addEventToProgrammaticStore(event);
+            EventconfFactory.getInstance().addEventToProgrammaticStore(event);
             eventConfChanged=true;
         }
     }
