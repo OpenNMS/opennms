@@ -63,6 +63,15 @@
                 throw new ServletException (e);
         }
 %>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Availability" />
+  <jsp:param name="headTitle" value="Availability" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="Availability" />
+</jsp:include>
+
+
 <script type="text/javascript">
 	function openwindow()
 	{
@@ -75,30 +84,23 @@
 	}
 </script>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Availability" />
-  <jsp:param name="headTitle" value="Availability" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="Availability" />
-</jsp:include>
-
-<h3>Network Availability Reporting</h3>
-
-  <div style="width: 40%; float: left;">
-
+  <div class="TwoColLeft">
+  <h3>Network Availability Reporting</h3>
+    <div class="boxWrapper">
       <form name="avail" method="GET" action="availability/availability" >
         <% boolean checked = true; %>
           <input type="hidden" name="view" value="Availability" />
-	<p><B>Choose the format of report.</B><br>
-          <input type="radio" name="format" value="<%="SVG"%>" checked onClick="avail.formatvalue.value='SVG'"/> Graphical Reports in PDF Format <br>
-          <input type="radio" name="format" value="<%="PDF"%>" onClick="avail.formatvalue.value='PDF'" /> Numeric Reports in PDF Format<br>
-          <input type="radio" name="format" value="<%="HTML"%>" onClick="avail.formatvalue.value='HTML'"/> Numeric Reports in HTML Format<br>
-          <input type="hidden" name="formatvalue" value="SVG"/> <br>
-    <br><B>Choose the format of the monthly report sections.</B><br>
-          <input type="radio" name="monthformat" value="<%="classic"%>" checked onClick="avail.monthformatvalue.value='classic'"/> Classic Format <br>
-          <input type="radio" name="monthformat" value="<%="calendar"%>" onClick="avail.monthformatvalue.value='calendar'" /> Calendar Format<br>
-          <input type="hidden" name="monthformatvalue" value="classic"/> <br>
-	<br><B>Choose the category.</B><br>
+	<p><B>Choose the format of report.</B><br/>
+          <input type="radio" name="format" value="<%="SVG"%>" checked="checked" onClick="avail.formatvalue.value='SVG'"/> Graphical Reports in PDF Format <br/>
+          <input type="radio" name="format" value="<%="PDF"%>" onClick="avail.formatvalue.value='PDF'" /> Numeric Reports in PDF Format<br/>
+          <input type="radio" name="format" value="<%="HTML"%>" onClick="avail.formatvalue.value='HTML'"/> Numeric Reports in HTML Format<br/>
+          <input type="hidden" name="formatvalue" value="SVG"/> </p>
+    <p><B>Choose the format of the monthly report sections.</B><br/>
+          <input type="radio" name="monthformat" value="<%="classic"%>" checked="checked" onClick="avail.monthformatvalue.value='classic'"/> Classic Format <br/>
+          <input type="radio" name="monthformat" value="<%="calendar"%>" onClick="avail.monthformatvalue.value='calendar'" /> Calendar Format<br/>
+          <input type="hidden" name="monthformatvalue" value="classic"/> </p>
+	<p><B>Choose the category.</B></p>
+	<p>
 	  <% 
                 boolean checkCategory = true;
                 String catval = null;
@@ -118,7 +120,7 @@
                                 {
                                         org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category)enumCat.nextElement();
 %>
-                                        <input type="radio" name="category" value="<%=cat.getLabel() %>" <% if(checkCategory) {  %> checked <% } %> onClick="avail.categoryvalue.value = '<%= cat.getLabel()%>'" /> <%= cat.getLabel() %><br />
+                                        <input type="radio" name="category" value="<%=cat.getLabel() %>" <% if(checkCategory) {  %> checked="checked" <% } %> onClick="avail.categoryvalue.value = '<%= cat.getLabel()%>'" /> <%= cat.getLabel() %><br />
 
 <%
                                           if(checkCategory)
@@ -128,26 +130,28 @@
                         }
                 }
 	  %>
+	  </p>
 	<input type="hidden" name="categoryvalue" value="<%= catval %>" /> <br />
-        <input type="submit" value="Generate"  class="button" />
-         <br/>
-        <br/>
-        <b>Choose the date to use for this report.</b><br/>
-        <br/>
+        <p><input type="submit" value="Generate"  class="button" /></p>
+        <p><b>Choose the date to use for this report.</b></p>
 
+        <p>
         <select name="startMonth" size="1">
               <% for( int i = 0; i < 12; i++ ) { %>
-         <option value="<%=i%>" <% if( now.get( Calendar.MONTH ) == i ) out.print("selected ");%>><%=months[i]%></option>
+         <option value="<%=i%>" <% if( now.get( Calendar.MONTH ) == i ) out.print("selected=\"selected\" ");%>><%=months[i]%></option>
               <% } %>
             </select>
 
             <input type="text" name="startDate" size="4" maxlength="2" value="<%=now.get( Calendar.DATE )%>" />
             <input type="text" name="startYear" size="6" maxlength="4" value="<%=now.get( Calendar.YEAR )%>" />
-
+         </p>
       </form>
+    </div>
   </div>
 
-  <div style="width: 60%; float: left;">
+  <div class="TwoColRight">
+  <h3>Notes</h3>
+    <div class="boxWrapper">
         <p>Generating the availability reports may take a few minutes, especially 
         for large networks, so please do not press the stop or reload buttons 
         until it has finished.  Thank you for your patience.         
@@ -155,7 +159,8 @@
 	<p>The SVG and PDF report formats can be viewed using Adobe Acrobat Reader. 
 	If you do not have Adobe Acrobat Reader and wish to download it, please click on the following link:</p>
 	<p><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="_new"><img src="images/getacro.gif" border="0" hspace="0" vspace="0" alt="Get Acrobat Reader"/></a></p>
-	<p><font size="-1">Acrobat is a registered trademark of Adobe Systems Incorporated.</font>
+	<p>Acrobat is a registered trademark of Adobe Systems Incorporated.</p>
+	</div>
   </div>
   
   <%!
@@ -176,5 +181,5 @@
     };
 %>
 
-
+<hr />
 <jsp:include page="/includes/footer.jsp" flush="false" />
