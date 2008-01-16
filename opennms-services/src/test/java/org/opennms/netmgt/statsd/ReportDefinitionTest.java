@@ -40,16 +40,18 @@ public class ReportDefinitionTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testBogusReportClass() {
+    public void testBogusReportClass() throws Exception {
         // Not replaying anything, but need to do it before verifyAll() happens
         m_mocks.replayAll();
         
         ReportDefinition def = new ReportDefinition();
         
+        Class<? extends AttributeStatisticVisitorWithResults> clazz = (Class<? extends AttributeStatisticVisitorWithResults>) Class.forName("java.lang.String");
+        
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException(ThrowableAnticipator.IGNORE_MESSAGE));
         try {
-            def.setReportClass((Class<? extends AttributeStatisticVisitorWithResults>) String.class); 
+            def.setReportClass(clazz);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
