@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Initialize EventconfFactory (for EventConfDao) instead of
+//              EventConfigurationManager, dependency inject EventConfDao into
+//              Eventd and EventExpander, create and dependency inject EventExpander
+//              into EventIpcManagerDefaultImpl. - dj@opennms.org
 // 2008 Jan 06: Implement log(). - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 //
@@ -40,7 +44,6 @@
 package org.opennms.netmgt.eventd.jmx;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -50,13 +53,13 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.EventdConfigFactory;
-import org.opennms.netmgt.eventd.EventConfigurationManager;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.springframework.dao.DataAccessException;
 
 
 public class Eventd implements EventdMBean {
@@ -96,24 +99,25 @@ public class Eventd implements EventdMBean {
         }
 
         // load configuration(eventconf)
-        //
         try {
-            File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            EventConfigurationManager.loadConfiguration(configFile);
-        } catch (MarshalException ex) {
-            log().error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load events configuration", ex);
+            EventconfFactory.init();
+        } catch (DataAccessException ex) {
+            log().error("Failed to load event configuration: " + ex, ex);
             throw new UndeclaredThrowableException(ex);
         }
+        e.setEventConfDao(EventconfFactory.getInstance());
         
         e.setConfigManager(EventdConfigFactory.getInstance());
         
-        EventIpcManager ipcMgr = new EventIpcManagerDefaultImpl(EventdConfigFactory.getInstance());
+        EventExpander eventExpander = new EventExpander();
+        eventExpander.setEventConfDao(EventconfFactory.getInstance());
+        eventExpander.afterPropertiesSet();
+
+        EventIpcManagerDefaultImpl ipcMgr = new EventIpcManagerDefaultImpl();
+        ipcMgr.setEventdConfigMgr(EventdConfigFactory.getInstance());
+        ipcMgr.setEventExpander(eventExpander);
+        ipcMgr.afterPropertiesSet();
+        
         EventIpcManagerFactory.setIpcManager(ipcMgr);
         EventIpcManagerFactory.init();
         

@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Initialize EventconfFactory instead of EventConfigurationManager
+//              and dependency inject newly appropriate Eventd bits. - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 // 2007 Dec 24: Move configuration files to external files. - dj@opennms.org
 // 2007 Aug 02: Organize imports. - dj@opennms.org
@@ -46,10 +48,11 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.eventd.EventConfigurationManager;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
@@ -69,7 +72,7 @@ public class OpenNMSTestCase extends TestCase {
     protected static MockDatabase m_db;
     protected static MockNetwork m_network;
     protected static Eventd m_eventd;
-    protected static EventIpcManager m_eventdIpcMgr;
+    protected static EventIpcManagerDefaultImpl m_eventdIpcMgr;
 
     protected static EventdConfigManager m_eventdConfigMgr;
     
@@ -156,9 +159,19 @@ public class OpenNMSTestCase extends TestCase {
                  * the unit test class, which is most likely in another package. 
                  */
                 File configFile = ConfigurationTestUtils.getFileForResource(this, "/org/opennms/netmgt/mock/eventconf.xml");
-                EventConfigurationManager.loadConfiguration(configFile);
+                DefaultEventConfDao eventConfDao = new DefaultEventConfDao(configFile);
+                eventConfDao.reload();
+                EventconfFactory.setInstance(eventConfDao);
                 
-                m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
+                EventExpander eventExpander = new EventExpander();
+                eventExpander.setEventConfDao(eventConfDao);
+                eventExpander.afterPropertiesSet();
+                
+                m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
+                m_eventdIpcMgr.setEventdConfigMgr(m_eventdConfigMgr);
+                m_eventdIpcMgr.setEventExpander(eventExpander);
+                m_eventdIpcMgr.afterPropertiesSet();
+                
                 m_eventProxy = new EventProxy() {
 
                     public void send(Event event) throws EventProxyException {
@@ -173,6 +186,7 @@ public class OpenNMSTestCase extends TestCase {
                 
                 EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
                 m_eventd.setEventIpcManager(m_eventdIpcMgr);
+                m_eventd.setEventConfDao(eventConfDao);
                 m_eventd.init();
                 m_eventd.start();
             }

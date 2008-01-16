@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 08: Dependency inject EventConfDao and use that instead of
+//              EventConfigurationManager.  Create log() method. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2003 Jan 08: Added code to associate the IP address in traps with nodes
 //              and added the option to discover nodes based on traps.
@@ -41,7 +43,6 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
@@ -49,6 +50,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -56,6 +58,8 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -83,7 +87,8 @@ import org.opennms.netmgt.snmp.TrapProcessorFactory;
  * 
  */
 public class TrapHandler implements PausableFiber, TrapProcessorFactory,
-                                    TrapNotificationListener {
+                                    TrapNotificationListener,
+                                    InitializingBean {
     /**
      * The name of the logging category for Trapd.
      */
@@ -117,12 +122,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
     /**
      * The communication queue
      */
-    private FifoQueue m_backlogQ;
-
-    /**
-     * The list of known IPs
-     */
-    private Map m_knownIps;
+    private FifoQueue<TrapNotification> m_backlogQ;
 
     /**
      * The queue processing thread
@@ -133,6 +133,8 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
      * The class instance used to recieve new events from for the system.
      */
     private BroadcastEventProcessor m_eventReader;
+
+    private EventConfDao m_eventConfDao;
 
     /**
      * <P>
@@ -160,39 +162,36 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
     }
 
     private void addTrap(TrapNotification o) {
-        Category log = ThreadCategory.getInstance(getClass());
         try {
             m_backlogQ.add(o);
         } catch (InterruptedException e) {
-            log.warn("snmpReceivedTrap: Error adding trap to queue, it was "
+            log().warn("snmpReceivedTrap: Error adding trap to queue, it was "
                      + "interrupted", e);
         } catch (FifoQueueException e) {
-            log.warn("snmpReceivedTrap: Error adding trap to queue", e);
+            log().warn("snmpReceivedTrap: Error adding trap to queue", e);
         }
     }
 
     public synchronized void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        Category log = ThreadCategory.getInstance();
-
         try {
             // Get the newSuspectOnTrap flag
             boolean m_newSuspect = m_trapdConfig.getNewSuspectOnTrap();
 
             // set up the trap processor
-            m_backlogQ = new FifoQueueImpl();
+            m_backlogQ = new FifoQueueImpl<TrapNotification>();
             m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect,
-                                                 m_eventMgr);
+                                                 m_eventMgr, m_eventConfDao);
 
-            log.debug("start: Creating the trap queue processor");
+            log().debug("start: Creating the trap queue processor");
             
             SnmpUtils.registerForTraps(this, this,
                                        m_trapdConfig.getSnmpTrapPort());
 
-            log.debug("start: Creating the trap session");
+            log().debug("start: Creating the trap session");
         } catch (IOException e) {
-            log.error("Failed to setup SNMP trap port", e);
+            log().error("Failed to setup SNMP trap port", e);
             throw new UndeclaredThrowableException(e);
         }
 
@@ -201,7 +200,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
             m_eventReader.setEventManager(m_eventMgr);
             m_eventReader.open();
         } catch (Exception e) {
-            ThreadCategory.getInstance().error("Failed to create event reader",
+            log().error("Failed to create event reader",
                                                e);
             throw new UndeclaredThrowableException(e);
         }
@@ -222,15 +221,13 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        Category log = ThreadCategory.getInstance();
-
-        log.debug("start: Initializing the trapd config factory");
+        log().debug("start: Initializing the trapd config factory");
 
         m_processor.start();
 
         m_status = RUNNING;
 
-        log.debug("start: Trapd ready to receive traps");
+        log().debug("start: Trapd ready to receive traps");
     }
 
     /**
@@ -243,17 +240,15 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
 
         m_status = PAUSE_PENDING;
 
-        Category log = ThreadCategory.getInstance(getClass());
-
-        log.debug("Calling pause on processor");
+        log().debug("Calling pause on processor");
 
         m_processor.pause();
 
-        log.debug("Processor paused");
+        log().debug("Processor paused");
 
         m_status = PAUSED;
 
-        log.debug("Trapd paused");
+        log().debug("Trapd paused");
     }
 
     /**
@@ -266,17 +261,15 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
 
         m_status = RESUME_PENDING;
 
-        Category log = ThreadCategory.getInstance(getClass());
-
-        log.debug("Calling resume on processor");
+        log().debug("Calling resume on processor");
 
         m_processor.resume();
 
-        log.debug("Processor resumed");
+        log().debug("Processor resumed");
 
         m_status = RUNNING;
 
-        log.debug("Trapd resumed");
+        log().debug("Trapd resumed");
     }
 
     /**
@@ -284,27 +277,24 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
      * the command is silently discarded.
      */
     public synchronized void stop() {
-        Category log = ThreadCategory.getInstance(getClass());
-
         m_status = STOP_PENDING;
 
         // shutdown and wait on the background processing thread to exit.
-        log.debug("exit: closing communication paths.");
+        log().debug("exit: closing communication paths.");
 
         try {
-            log.debug("stop: Closing SNMP trap session.");
+            log().debug("stop: Closing SNMP trap session.");
 
-            SnmpUtils.unregisterForTraps(this,
-                                         m_trapdConfig.getSnmpTrapPort());
+            SnmpUtils.unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
 
-            log.debug("stop: SNMP trap session closed.");
+            log().debug("stop: SNMP trap session closed.");
         } catch (IOException e) {
-            log.warn("stop: exception occurred closing session", e);
+            log().warn("stop: exception occurred closing session", e);
         } catch (IllegalStateException e) {
-            log.debug("stop: The SNMP session was already closed");
+            log().debug("stop: The SNMP session was already closed");
         }
 
-        log.debug("stop: Stopping queue processor.");
+        log().debug("stop: Stopping queue processor.");
 
         // interrupt the processor daemon thread
         m_processor.stop();
@@ -313,7 +303,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
 
         m_status = STOPPED;
 
-        log.debug("stop: Trapd stopped");
+        log().debug("stop: Trapd stopped");
     }
 
     /**
@@ -351,8 +341,25 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
     }
 
     public void trapError(int error, String msg) {
-        Category log = ThreadCategory.getInstance(getClass());
-        log.warn("Error Processing Received Trap: error = " + error
+        log().warn("Error Processing Received Trap: error = " + error
                  + (msg != null ? ", ref = " + msg : ""));
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    public void afterPropertiesSet() {
+        Assert.state(m_eventMgr != null, "eventManager must be set");
+        Assert.state(m_trapdConfig != null, "trapdConfig must be set");
+        Assert.state(m_eventConfDao != null, "eventConfDao must be set");
+    }
+
+    public EventConfDao getEventConfDao() {
+        return m_eventConfDao;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
     }
 }
