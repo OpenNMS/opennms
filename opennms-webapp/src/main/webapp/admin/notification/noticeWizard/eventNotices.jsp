@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 16: Use EventConfDao. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -50,7 +51,7 @@
 %>
 
 <%!
-    EventconfFactory m_eventconfFactory;
+    EventConfDao m_eventconfFactory;
     NotificationFactory m_notificationFactory;
 
     public void init() throws ServletException {
