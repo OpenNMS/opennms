@@ -47,12 +47,16 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.resource.Vault;
 
 public class AssetModel extends Object {
 
-    public Asset getAsset(int nodeId) throws SQLException {
+    private static Pattern m_illegalInColumnName = null;
+	
+	public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
         Connection conn = Vault.getDbConnection();
 
@@ -235,6 +239,8 @@ public class AssetModel extends Object {
         MatchingAsset[] assets = new MatchingAsset[0];
         Connection conn = Vault.getDbConnection();
         Vector<MatchingAsset> vector = new Vector<MatchingAsset>();
+        
+        columnName = sanitizeColumnName(columnName);
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
@@ -351,6 +357,13 @@ public class AssetModel extends Object {
         }
 
         return false;
+    }
+    
+    private static String sanitizeColumnName(String columnName) {
+    	if (m_illegalInColumnName == null) {
+    		m_illegalInColumnName = Pattern.compile("[^A-Za-z0-9_]");
+    	}
+   		return m_illegalInColumnName.matcher(columnName).replaceAll("");
     }
 
     /**
