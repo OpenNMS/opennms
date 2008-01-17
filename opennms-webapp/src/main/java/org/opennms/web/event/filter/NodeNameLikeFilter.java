@@ -32,6 +32,9 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates all node filtering functionality. */
 public class NodeNameLikeFilter extends Object implements Filter {
     public static final String TYPE = "nodenamelike";
@@ -49,6 +52,15 @@ public class NodeNameLikeFilter extends Object implements Filter {
     public String getSql() {
         return (" EVENTID IN (SELECT EVENTID FROM EVENTS JOIN NODE ON EVENTS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%')");
         // return (" NODE.NODEID=EVENTS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" EVENTID IN (SELECT EVENTID FROM EVENTS JOIN NODE ON EVENTS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE ?)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+    	return 1;
     }
 
     public String getDescription() {

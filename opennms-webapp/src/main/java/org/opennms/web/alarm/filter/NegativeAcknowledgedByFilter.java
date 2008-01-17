@@ -32,6 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates filtering on exact unique event identifiers. */
 public class NegativeAcknowledgedByFilter extends Object implements Filter {
     public static final String TYPE = "acknowledgedByNot";
@@ -48,6 +51,15 @@ public class NegativeAcknowledgedByFilter extends Object implements Filter {
 
     public String getSql() {
         return (" (ALARMACKUSER<>'" + this.user + "' OR ALARMACKUSER IS NULL)");
+    }
+    
+    public String getParamSql() {
+        return (" (ALARMACKUSER<>? OR ALARMACKUSER IS NULL)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.user);
+    	return 1;
     }
 
     public String getDescription() {

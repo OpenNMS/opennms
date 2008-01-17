@@ -32,6 +32,7 @@
 
 package org.opennms.web.outage.filter;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
@@ -48,6 +49,15 @@ public class ServiceFilter extends Object implements Filter {
 
     public String getSql() {
         return (" OUTAGES.SERVICEID=" + this.serviceId);
+    }
+    
+    public String getParamSql() {
+        return (" OUTAGES.SERVICEID=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.serviceId);
+    	return 1;
     }
 
     public String getDescription() {

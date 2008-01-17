@@ -32,6 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates filtering on partial unique event identifiers. */
 public class PartialUEIFilter extends Object implements Filter {
     public static final String TYPE = "partialUei";
@@ -48,6 +51,15 @@ public class PartialUEIFilter extends Object implements Filter {
 
     public String getSql() {
         return (" LOWER(EVENTUEI) LIKE '%" + this.uei.toLowerCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" LOWER(EVENTUEI) LIKE ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.uei.toLowerCase()+"%");
+    	return 1;
     }
 
     public String getDescription() {

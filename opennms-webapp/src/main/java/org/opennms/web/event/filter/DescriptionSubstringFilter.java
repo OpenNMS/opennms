@@ -32,6 +32,9 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 public class DescriptionSubstringFilter extends Object implements Filter {
     public static final String TYPE = "descsub";
 
@@ -47,6 +50,15 @@ public class DescriptionSubstringFilter extends Object implements Filter {
 
     public String getSql() {
         return (" UPPER(EVENTDESCR) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" UPPER(EVENTDESCR) LIKE ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+    	return 1;
     }
 
     public String getDescription() {

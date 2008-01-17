@@ -32,6 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.opennms.web.alarm.AlarmUtil;
 
 /** Encapsulates severity filtering functionality. */
@@ -46,6 +49,15 @@ public class SeverityFilter extends Object implements Filter {
 
     public String getSql() {
         return (" SEVERITY=" + this.severity);
+    }
+    
+    public String getParamSql() {
+        return (" SEVERITY=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.severity);
+    	return 1;
     }
 
     public String getDescription() {

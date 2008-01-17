@@ -37,6 +37,8 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -89,6 +91,15 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         buffer.append(")");
 
         return buffer.toString();
+    }
+    
+    public String getParamSql() {
+        return (" UPPER(EVENTLOGMSG) LIKE ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+getQueryString().toUpperCase()+"%");
+    	return 1;
     }
 
     public String getDescription() {
