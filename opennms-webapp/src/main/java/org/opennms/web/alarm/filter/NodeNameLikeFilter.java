@@ -32,6 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates all node filtering functionality. */
 public class NodeNameLikeFilter extends Object implements Filter {
     public static final String TYPE = "nodenamelike";
@@ -49,6 +52,16 @@ public class NodeNameLikeFilter extends Object implements Filter {
     public String getSql() {
         return (" ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%')");
         // return (" NODE.NODEID=ALARMS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE ?)");
+        // return (" NODE.NODEID=ALARMS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+    	return 1;
     }
 
     public String getDescription() {

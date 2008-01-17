@@ -32,9 +32,16 @@
 
 package org.opennms.web.outage.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Convenience class to determine what sort of notices to include in a query. */
 public interface Filter {
     public String getSql();
+    
+    public String getParamSql();
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
 
     public String getDescription();
 

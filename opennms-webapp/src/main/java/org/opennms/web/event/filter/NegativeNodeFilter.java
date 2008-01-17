@@ -32,6 +32,7 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
@@ -48,6 +49,15 @@ public class NegativeNodeFilter extends Object implements Filter {
 
     public String getSql() {
         return (" (EVENTS.NODEID<>" + this.nodeId + " OR EVENTS.NODEID IS NULL)");
+    }
+    
+    public String getParamSql() {
+        return (" (EVENTS.NODEID<>? OR EVENTS.NODEID IS NULL)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.nodeId);
+    	return 1;
     }
 
     public String getDescription() {

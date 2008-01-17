@@ -32,6 +32,8 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
@@ -55,6 +57,16 @@ public class BeforeFirstEventTimeFilter extends Object implements Filter {
 
     public String getSql() {
         return (" FIRSTEVENTTIME < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
+    }
+    
+    public String getParamSql() {
+        return (" FIRSTEVENTTIME < to_timestamp(?, ?)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.date.toString());
+    	ps.setString(parameterIndex+1, EventConstants.POSTGRES_DATE_FORMAT);
+    	return 2;
     }
 
     public String getDescription() {

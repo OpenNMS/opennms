@@ -32,6 +32,7 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
@@ -48,6 +49,15 @@ public class NegativeServiceFilter extends Object implements Filter {
 
     public String getSql() {
         return (" (SERVICEID<>" + this.serviceId + " OR SERVICEID IS NULL)");
+    }
+    
+    public String getParamSql() {
+        return (" (SERVICEID<>? OR SERVICEID IS NULL)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.serviceId);
+    	return 1;
     }
 
     public String getDescription() {
