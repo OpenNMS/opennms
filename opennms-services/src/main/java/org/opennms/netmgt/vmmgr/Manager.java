@@ -13,6 +13,7 @@
  *
  * Modifications:
  *
+ * 2008 Jan 16: Test that we can call InetAddress.getLocalHost(). - dj@opennms.org
  * 2003 Jan 31: Cleaned up some unused imports.
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
@@ -40,6 +41,8 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -217,6 +220,15 @@ public class Manager implements ManagerMBean {
 
         testIcmpSocket();
         testRrdInitialize();
+        testGetLocalHost();
+    }
+
+    private void testGetLocalHost() {
+        try {
+            InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            throw new UndeclaredThrowableException(e, "Could not lookup the host name for the local host machine: " + e);
+        }
     }
 
     private void testIcmpSocket() {
