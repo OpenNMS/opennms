@@ -32,6 +32,8 @@
 
 package org.opennms.web.outage.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -58,6 +60,16 @@ public class LostServiceDateBeforeFilter extends Object implements Filter {
 
     public String getSql() {
         return (" ifLostService < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
+    }
+    
+    public String getParamSql() {
+        return (" ifLostService < to_timestamp(?, ?)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.date.toString());
+    	ps.setString(parameterIndex+1, EventConstants.POSTGRES_DATE_FORMAT);
+    	return 2;
     }
 
     public String getDescription() {

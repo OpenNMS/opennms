@@ -32,6 +32,7 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
@@ -48,6 +49,15 @@ public class ServiceFilter extends Object implements Filter {
 
     public String getSql() {
         return (" EVENTS.SERVICEID=" + this.serviceId);
+    }
+    
+    public String getParamSql() {
+        return (" EVENTS.SERVICEID=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.serviceId);
+    	return 1;
     }
 
     public String getDescription() {

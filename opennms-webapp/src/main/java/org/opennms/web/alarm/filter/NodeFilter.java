@@ -32,6 +32,7 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
@@ -48,6 +49,15 @@ public class NodeFilter extends Object implements Filter {
 
     public String getSql() {
         return (" ALARMS.NODEID=" + this.nodeId);
+    }
+    
+    public String getParamSql() {
+        return (" ALARMS.NODEID=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.nodeId);
+    	return 1;
     }
 
     public String getDescription() {

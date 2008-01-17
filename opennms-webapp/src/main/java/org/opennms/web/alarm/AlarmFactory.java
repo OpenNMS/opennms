@@ -231,13 +231,19 @@ public class AlarmFactory extends Object {
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
 //            select.append(" AND ALARMDISPLAY='Y' ");
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 alarmCount = rs.getInt("ALARMCOUNT");
@@ -273,14 +279,20 @@ public class AlarmFactory extends Object {
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
 //            select.append(" AND EVENTDISPLAY='Y'");
             select.append(" GROUP BY SEVERITY");
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 1; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 int severity = rs.getInt("SEVERITY");
@@ -400,7 +412,7 @@ public class AlarmFactory extends Object {
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
 //            select.append(" AND ALARMDISPLAY='Y' ");
@@ -413,8 +425,14 @@ public class AlarmFactory extends Object {
                 select.append(offset);
             }
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             alarms = rs2Alarms(rs);
 
@@ -813,7 +831,7 @@ public class AlarmFactory extends Object {
 
         for (int i = 0; i < filters.length; i++) {
             update.append(" AND");
-            update.append(filters[i].getSql());
+            update.append(filters[i].getParamSql());
         }
 
         Connection conn = Vault.getDbConnection();
@@ -822,6 +840,11 @@ public class AlarmFactory extends Object {
             PreparedStatement stmt = conn.prepareStatement(update.toString());
             stmt.setString(1, user);
             stmt.setTimestamp(2, new Timestamp(time.getTime()));
+            
+            int parameterIndex = 3;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
 
             stmt.executeUpdate();
             stmt.close();
@@ -924,13 +947,18 @@ public class AlarmFactory extends Object {
 
         for (int i = 0; i < filters.length; i++) {
             update.append(" AND");
-            update.append(filters[i].getSql());
+            update.append(filters[i].getParamSql());
         }
 
         Connection conn = Vault.getDbConnection();
 
         try {
             PreparedStatement stmt = conn.prepareStatement(update.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
 
             stmt.executeUpdate();
             stmt.close();

@@ -30,6 +30,9 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates all node filtering functionality. */
 public class AlarmIDFilter extends Object implements Filter {
     public static final String TYPE = "alarm";
@@ -42,6 +45,15 @@ public class AlarmIDFilter extends Object implements Filter {
 
     public String getSql() {
         return (" ALARMID=" + this.alarmId);
+    }
+    
+    public String getParamSql() {
+        return (" ALARMID=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.alarmId);
+    	return 1;
     }
 
     public String getDescription() {

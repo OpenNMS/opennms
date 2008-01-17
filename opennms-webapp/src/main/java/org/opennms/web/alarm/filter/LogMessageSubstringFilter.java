@@ -32,6 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 public class LogMessageSubstringFilter extends Object implements Filter {
     public static final String TYPE = "msgsub";
 
@@ -47,6 +50,15 @@ public class LogMessageSubstringFilter extends Object implements Filter {
 
     public String getSql() {
         return (" UPPER(logMsg) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" UPPER(logMsg) LIKE ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+    	return 1;
     }
 
     public String getDescription() {

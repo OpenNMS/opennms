@@ -32,6 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Convenience class to determine what sort of events to include in a query. */
 public interface Filter {
 
@@ -40,6 +43,19 @@ public interface Filter {
      * trailing space, but no leading AND or OR.
      */
     public String getSql();
+    
+    /**
+     * Returns a parameterized SQL where clause.  Remember to include a
+     * trailing space, but no leading AND or OR.
+     */
+    public String getParamSql();
+    
+    /**
+     * Binds the parameter values corresponding to the ? tokens in the string
+     * returned from getParamSql() to a prepared statement.  Returns the number
+     * of parameters that were bound.
+     */
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
 
     /**
      * Returns a terse string (including a "=") that describes this filter in

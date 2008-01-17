@@ -32,6 +32,9 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates all interface filtering functionality. */
 public class InterfaceFilter extends Object implements Filter {
     public static final String TYPE = "interface";
@@ -48,6 +51,15 @@ public class InterfaceFilter extends Object implements Filter {
 
     public String getSql() {
         return (" IPADDR='" + this.ipAddress + "'");
+    }
+    
+    public String getParamSql() {
+        return (" IPADDR=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.ipAddress);
+    	return 1;
     }
 
     public String getDescription() {

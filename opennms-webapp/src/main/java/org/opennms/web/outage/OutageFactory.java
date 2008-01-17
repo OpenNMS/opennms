@@ -233,11 +233,17 @@ public class OutageFactory extends Object {
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND ");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 outageCount = rs.getInt("OUTAGECOUNT");
@@ -340,7 +346,7 @@ public class OutageFactory extends Object {
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND ");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
             select.append(getOrderByClause(sortStyle));
@@ -354,8 +360,14 @@ public class OutageFactory extends Object {
 
             log.debug(select.toString());
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             outages = rs2Outages(rs);
 

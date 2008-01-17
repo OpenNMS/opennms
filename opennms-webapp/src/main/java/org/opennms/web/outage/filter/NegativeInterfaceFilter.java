@@ -32,6 +32,9 @@
 
 package org.opennms.web.outage.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates all interface filtering functionality. */
 public class NegativeInterfaceFilter extends Object implements Filter {
     public static final String TYPE = "interfacenot";
@@ -48,6 +51,15 @@ public class NegativeInterfaceFilter extends Object implements Filter {
 
     public String getSql() {
         return (" (OUTAGES.IPADDR<>'" + this.ipAddress + "' OR OUTAGES.IPADDR IS NULL)");
+    }
+    
+    public String getParamSql() {
+        return (" (OUTAGES.IPADDR<>? OR OUTAGES.IPADDR IS NULL)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.ipAddress);
+    	return 1;
     }
 
     public String getDescription() {

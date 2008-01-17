@@ -32,6 +32,9 @@
 
 package org.opennms.web.event.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /** Encapsulates filtering on exact unique event identifiers. */
 public class NegativeExactUEIFilter extends Object implements Filter {
     public static final String TYPE = "exactUeiNot";
@@ -48,6 +51,15 @@ public class NegativeExactUEIFilter extends Object implements Filter {
 
     public String getSql() {
         return (" EVENTUEI<>'" + this.uei + "'");
+    }
+    
+    public String getParamSql() {
+        return (" EVENTUEI<>?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.uei);
+    	return 1;
     }
 
     public String getDescription() {
