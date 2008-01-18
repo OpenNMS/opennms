@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 17: Get rid of Vectors and "Object element", format code
+//              a bit, and use Spring's Assert class. - dj@opennms.org
 // 2008 Jan 17: Indent, organize imports. - dj@opennms.org
 // 2008 Jan 17: Make the sanitize pattern for column names final, initialize it
 //              when we declare the variable, and make the name follow code
@@ -49,11 +51,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.opennms.core.resource.Vault;
+import org.springframework.util.Assert;
 
 public class AssetModel extends Object {
 
@@ -69,7 +73,7 @@ public class AssetModel extends Object {
 
             Asset[] assets = rs2Assets(rs);
 
-            // what if this returns more than one?
+            // XXX what if this returns more than one?
             if (assets.length > 0) {
                 asset = assets[0];
             }
@@ -80,7 +84,7 @@ public class AssetModel extends Object {
             Vault.releaseDbConnection(conn);
         }
 
-        return (asset);
+        return asset;
     }
 
     public Asset[] getAllAssets() throws SQLException {
@@ -99,13 +103,11 @@ public class AssetModel extends Object {
             Vault.releaseDbConnection(conn);
         }
 
-        return (assets);
+        return assets;
     }
 
     public void createAsset(Asset asset) throws SQLException {
-        if (asset == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        Assert.notNull(asset, "argument asset cannot be null");
 
         Connection conn = Vault.getDbConnection();
 
@@ -160,9 +162,7 @@ public class AssetModel extends Object {
     }
 
     public void modifyAsset(Asset asset) throws SQLException {
-        if (asset == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        Assert.notNull(asset, "argument asset cannot be null");
 
         Connection conn = Vault.getDbConnection();
 
@@ -227,21 +227,18 @@ public class AssetModel extends Object {
     }
 
     public static MatchingAsset[] searchAssets(String columnName, String searchText) throws SQLException {
-        if (columnName == null || searchText == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        Assert.notNull(columnName, "argument columnName cannot be null");
+        Assert.notNull(searchText, "argument searchText cannot be null");
 
-        //TODO: delete this test soon.
-        //the category column is used in the search and but is not in the
-        //s_columns static var.  This breaks the WebUI.
-        /*        if (!isColumnValid(columnName)) {
-            throw new IllegalArgumentException("Column \"" + columnName
-                + "\" is not a valid column name");
-        }
+        /* 
+         * TODO: delete this test soon.
+         * The category column is used in the search and but is not in the
+         * s_columns static var.  This breaks the WebUI.
          */
-        MatchingAsset[] assets = new MatchingAsset[0];
+        // Assert.isTrue(isColumnValid(columnName), "Column \"" + columnName + "\" is not a valid column name");
+        
         Connection conn = Vault.getDbConnection();
-        Vector<MatchingAsset> vector = new Vector<MatchingAsset>();
+        List<MatchingAsset> list = new ArrayList<MatchingAsset>();
 
         columnName = sanitizeColumnName(columnName);
 
@@ -254,13 +251,12 @@ public class AssetModel extends Object {
             while (rs.next()) {
                 MatchingAsset asset = new MatchingAsset();
 
-                Object element = new Integer(rs.getInt("nodeID"));
-                asset.nodeId = ((Integer) element).intValue();
+                asset.nodeId = rs.getInt("nodeID");
                 asset.nodeLabel = rs.getString("nodelabel");
                 asset.matchingValue = rs.getString(columnName);
                 asset.columnSearched = columnName;
 
-                vector.addElement(asset);
+                list.add(asset);
             }
 
             rs.close();
@@ -268,25 +264,17 @@ public class AssetModel extends Object {
         } finally {
             Vault.releaseDbConnection(conn);
         }
-
-        assets = new MatchingAsset[vector.size()];
-
-        for (int i = 0; i < assets.length; i++) {
-            assets[i] = vector.elementAt(i);
-        }
-
-        return assets;
+        
+        return list.toArray(new MatchingAsset[list.size()]);
     }
 
     protected static Asset[] rs2Assets(ResultSet rs) throws SQLException {
-        Asset[] assets = null;
-        Vector<Asset> vector = new Vector<Asset>();
+        List<Asset> list = new ArrayList<Asset>();
 
         while (rs.next()) {
             Asset asset = new Asset();
 
-            Object element = new Integer(rs.getInt("nodeID"));
-            asset.nodeId = ((Integer) element).intValue();
+            asset.nodeId = rs.getInt("nodeID");
 
             asset.setCategory(rs.getString("category"));
             asset.setManufacturer(rs.getString("manufacturer"));
@@ -327,19 +315,13 @@ public class AssetModel extends Object {
             asset.setThresholdCategory(rs.getString("thresholdCategory"));
             asset.setComments(rs.getString("comment"));
 
-            element = rs.getTimestamp("lastModifiedDate");
-            asset.lastModifiedDate = new Date(((Timestamp) element).getTime());
+            // Convert from java.sql.Timestamp to java.util.Date, since it looks more pretty or something
+            asset.lastModifiedDate = new Date(rs.getTimestamp("lastModifiedDate").getTime());
 
-            vector.addElement(asset);
+            list.add(asset);
         }
 
-        assets = new Asset[vector.size()];
-
-        for (int i = 0; i < assets.length; i++) {
-            assets[i] = vector.elementAt(i);
-        }
-
-        return assets;
+        return list.toArray(new Asset[list.size()]);
     }
 
     public static String[][] getColumns() {
@@ -349,12 +331,10 @@ public class AssetModel extends Object {
     //TODO: no one is calling this now... delete soon.
     @SuppressWarnings("unused")
     private static boolean isColumnValid(String column) {
-        if (column == null) {
-            throw new IllegalArgumentException("column cannot be null");
-        }
+        Assert.notNull(column, "argument column cannot be null");
 
-        for (int i = 0; i < s_columns.length; i++) {
-            if (column.equals(s_columns[i][1])) {
+        for (String[] assetColumn : s_columns) {
+            if (column.equals(assetColumn[1])) {
                 return true;
             }
         }
