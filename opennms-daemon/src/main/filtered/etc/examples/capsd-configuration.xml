@@ -160,6 +160,12 @@
         <property key="timeout" value="2000" />
         <property key="retry" value="2" />
     </protocol-plugin>
+    <protocol-plugin protocol="HP Insight Manager" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on" user-defined="false">
+        <property key="banner" value="*" />
+        <property key="port" value="2381" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
     <protocol-plugin protocol="Dell-OpenManage" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on" user-defined="false">
         <property key="banner" value="*" />
         <property key="port" value="1311" />
