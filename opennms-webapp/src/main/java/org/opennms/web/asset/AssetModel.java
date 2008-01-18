@@ -9,7 +9,8 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
-// 
+//
+// 2008 Jan 17: Indent, organize imports. - dj@opennms.org
 // 2008 Jan 17: Make the sanitize pattern for column names final, initialize it
 //              when we declare the variable, and make the name follow code
 //              conventions for static finals. - dj@opennms.org
@@ -50,7 +51,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.resource.Vault;
@@ -58,8 +58,8 @@ import org.opennms.core.resource.Vault;
 public class AssetModel extends Object {
 
     private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
-	
-	public Asset getAsset(int nodeId) throws SQLException {
+
+    public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
         Connection conn = Vault.getDbConnection();
 
@@ -234,15 +234,15 @@ public class AssetModel extends Object {
         //TODO: delete this test soon.
         //the category column is used in the search and but is not in the
         //s_columns static var.  This breaks the WebUI.
-/*        if (!isColumnValid(columnName)) {
+        /*        if (!isColumnValid(columnName)) {
             throw new IllegalArgumentException("Column \"" + columnName
                 + "\" is not a valid column name");
         }
-*/
+         */
         MatchingAsset[] assets = new MatchingAsset[0];
         Connection conn = Vault.getDbConnection();
         Vector<MatchingAsset> vector = new Vector<MatchingAsset>();
-        
+
         columnName = sanitizeColumnName(columnName);
 
         try {
@@ -361,7 +361,7 @@ public class AssetModel extends Object {
 
         return false;
     }
-    
+
     private static String sanitizeColumnName(String columnName) {
         return ILLEGAL_IN_COLUMN_NAME_PATTERN.matcher(columnName).replaceAll("");
     }
@@ -370,7 +370,8 @@ public class AssetModel extends Object {
      * Hard-coded (for now) list of human-readable asset columns and the
      * corresponding database column.
      */
-    private static final String[][] s_columns = new String[][] { new String[] { "Address 1", "address1" },
+    private static final String[][] s_columns = new String[][] {
+        new String[] { "Address 1", "address1" },
         new String[] { "Address 2", "address2" }, 
         new String[] { "Asset Number", "assetNumber" }, 
         new String[] { "Building", "building" }, 
