@@ -388,6 +388,10 @@ public class SnmpCollector implements ServiceCollector {
             try {
                 collectionSet.collect();
                 if (collectionSet.rescanNeeded()) {
+                    
+                    //TODO: the behavior of this object may have been re-factored away
+                    //verify that this is correct and remove this unused object if it
+                    //is no longer needed.  My gut thinks this should be investigated.
                     forceRescanState.rescanIndicated();
                 }
 //              Not done here anymore - see CollectableService
