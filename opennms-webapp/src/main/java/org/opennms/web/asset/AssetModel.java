@@ -10,6 +10,9 @@
 //
 // Modifications:
 // 
+// 2008 Jan 17: Make the sanitize pattern for column names final, initialize it
+//              when we declare the variable, and make the name follow code
+//              conventions for static finals. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2006 Aug 08: Bug #1547: Fix for FROM clause missing entry for node table. - dj@opennms.org
 // 2004 Jan 06: Added support for Display, Notify, Poller, and Threshold categories
@@ -54,7 +57,7 @@ import org.opennms.core.resource.Vault;
 
 public class AssetModel extends Object {
 
-    private static Pattern m_illegalInColumnName = null;
+    private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
 	public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
@@ -360,10 +363,7 @@ public class AssetModel extends Object {
     }
     
     private static String sanitizeColumnName(String columnName) {
-    	if (m_illegalInColumnName == null) {
-    		m_illegalInColumnName = Pattern.compile("[^A-Za-z0-9_]");
-    	}
-   		return m_illegalInColumnName.matcher(columnName).replaceAll("");
+        return ILLEGAL_IN_COLUMN_NAME_PATTERN.matcher(columnName).replaceAll("");
     }
 
     /**
