@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 18: Fix multi-line response handling; bug #1875.  Fix from
+//              Victor Jerlin <victor.jerlin@involve.com.mt> - dj@opennms.org
 // 2004 Apr 28: Modified to extend AbstractTcpPlugin 
 // 2003 Jul 18: Fixed exception to enable retries.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -90,8 +92,8 @@ public final class FtpPlugin extends AbstractTcpPlugin {
 
     /**
      * The regular expression test used to determine if the reply is a multi
-     * line reply. A multi line reply is one that each line, but the last, is in
-     * the form of "ddd-" where 'ddd' is the result code.
+     * line reply. A multi line reply is one that starts with "ddd-", and the
+     * last is in the form of "ddd " where 'ddd' is the result code.
      * 
      */
     private static final RE MULTILINE_RESULT;
@@ -147,11 +149,39 @@ public final class FtpPlugin extends AbstractTcpPlugin {
             // 221-Total traffic for this session was 102 bytes in 0 transfers.
             // 221 Thank you for using the FTP service on nethost0.
             //
-            String result = null;
-            do {
-                result = lineRdr.readLine();
+            // Or:
+            //
+            // 221-Start of header
+            // This could be anything
+            // 221 End of header
+            //
+            String result = lineRdr.readLine();
 
-            } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
+            if (MULTILINE_RESULT.match(result)) {
+	        // Ok we have a multi-line response...first three
+                // chars of the response line are the return code.
+                // The last line of the response will start with
+                // return code followed by a space.
+                String multiLineRC = "^" + new String(result.getBytes(), 0, 3) + " ";
+
+                /** 
+                 * Used to check for the end of a multiline response. The end of a multiline
+                 * response is the same 3 digit response code followed by a space
+                 */
+                RE endMultiLineRe;
+
+                // Create new regExp to look for last line
+                // of this mutli line response
+                try {
+                    endMultiLineRe = new RE(multiLineRC);
+                } catch (RESyntaxException ex) {
+                    throw new java.lang.reflect.UndeclaredThrowableException(ex);
+                }
+
+                do {
+                    result = lineRdr.readLine();
+                } while (result != null && !endMultiLineRe.match(result));
+            }
 
             if (result == null || result.length() == 0) {
                 log.info("Received truncated response from ftp server " + config.getInetAddress().getHostAddress());
@@ -183,10 +213,33 @@ public final class FtpPlugin extends AbstractTcpPlugin {
                 // In this case the final line of the response contains the
                 // return
                 // code we are looking for.
-                do {
-                    result = lineRdr.readLine();
+                result = lineRdr.readLine();
 
-                } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
+                if (MULTILINE_RESULT.match(result)) {
+	            // Ok we have a multi-line response...first three
+                    // chars of the response line are the return code.
+                    // The last line of the response will start with
+                    // return code followed by a space.
+                    String multiLineRC = "^" + new String(result.getBytes(), 0, 3) + " ";
+
+                    /** 
+                     * Used to check for the end of a multiline response. The end of a multiline
+                     * response is the same 3 digit response code followed by a space
+                     */
+                    RE endMultiLineRe;
+    
+                    // Create new regExp to look for last line
+                    // of this mutli line response
+                    try {
+                        endMultiLineRe = new RE(multiLineRC);
+                    } catch (RESyntaxException ex) {
+                        throw new java.lang.reflect.UndeclaredThrowableException(ex);
+                    }
+    
+                    do {
+                        result = lineRdr.readLine();
+                    } while (result != null && !endMultiLineRe.match(result));
+                }
 
                 if (result == null || result.length() == 0) {
                     log.info("Received truncated response from ftp server " + config.getInetAddress().getHostAddress());

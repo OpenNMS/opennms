@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 18: Fix multi-line response handling; bug #1875.  Fix from
+//              Victor Jerlin <victor.jerlin@involve.com.mt> - dj@opennms.org
 // 2004 May 05: Switch from SocketChannel to Socket with connection timeout.
 // 2003 Jul 21: Explicitly closed socket.
 // 2003 Jul 18: Enabled retries for monitors.
@@ -118,13 +120,7 @@ final public class FtpMonitor extends IPv4Monitor {
      * the same 3 digit response code, but has a hypen after the last number
      * instead of a space.
      */
-    private static RE MULTILINE = null;
-
-    /**
-     * Used to check for the end of a multiline response. The end of a multiline
-     * response is the same 3 digit response code followed by a space
-     */
-    private RE ENDMULTILINE = null;
+    private static final RE MULTILINE;
 
     static {
         try {
@@ -212,12 +208,18 @@ final public class FtpMonitor extends IPv4Monitor {
                     // chars of the response line are the return code.
                     // The last line of the response will start with
                     // return code followed by a space.
-                    String multiLineRC = new String(banner.getBytes(), 0, 3) + " ";
+                    String multiLineRC = "^" + new String(banner.getBytes(), 0, 3) + " ";
+
+                    /**
+                     * Used to check for the end of a multiline response. The end of a multiline
+                     * response is the same 3 digit response code followed by a space
+                     */
+                    RE endMultiLineRe;
 
                     // Create new regExp to look for last line
                     // of this mutli line response
                     try {
-                        ENDMULTILINE = new RE(multiLineRC);
+                        endMultiLineRe = new RE(multiLineRC);
                     } catch (RESyntaxException ex) {
                         throw new java.lang.reflect.UndeclaredThrowableException(ex);
                     }
@@ -226,7 +228,7 @@ final public class FtpMonitor extends IPv4Monitor {
                     // response
                     do {
                         banner = lineRdr.readLine();
-                    } while (banner != null && !ENDMULTILINE.match(banner));
+                    } while (banner != null && !endMultiLineRe.match(banner));
                     if (banner == null)
                         continue;
                 }
@@ -251,17 +253,43 @@ final public class FtpMonitor extends IPv4Monitor {
                     if (userid == null || userid.length() == 0 || password == null || password.length() == 0) {
                         bLoginOk = true;
                     } else {
-                        // send the use string
+                        // send the user string
                         //
                         String cmd = "user " + userid + "\r\n";
                         socket.getOutputStream().write(cmd.getBytes());
 
                         // get the response code.
                         //
-                        String response = null;
-                        do {
-                            response = lineRdr.readLine();
-                        } while (response != null && MULTILINE.match(response));
+                        String response = lineRdr.readLine();
+
+                        if (MULTILINE.match(response)) {
+                            // Ok we have a multi-line response...first three
+                            // chars of the response line are the return code.
+                            // The last line of the response will start with
+                            // return code followed by a space.
+                            String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
+
+                            /**
+                             * Used to check for the end of a multiline response. The end of a multiline
+                             * response is the same 3 digit response code followed by a space
+                             */
+                            RE endMultiLineRe;
+
+                            // Create new regExp to look for last line
+                            // of this mutli line response
+                            try {
+                                endMultiLineRe = new RE(multiLineRC);
+                            } catch (RESyntaxException ex) {
+                                throw new java.lang.reflect.UndeclaredThrowableException(ex);
+                            }
+
+                            // read until we hit the last line of the multi-line
+                            // response
+                            do {
+                                response = lineRdr.readLine();
+                            } while (response != null && !endMultiLineRe.match(response));
+                        }
+
                         if (response == null)
                             continue;
 
@@ -289,12 +317,18 @@ final public class FtpMonitor extends IPv4Monitor {
                                 // code.
                                 // The last line of the response will start with
                                 // return code followed by a space.
-                                String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
+                                String multiLineRC = "^" + new String(response.getBytes(), 0, 3) + " ";
+
+                                /**
+                                 * Used to check for the end of a multiline response. The end of a multiline
+                                 * response is the same 3 digit response code followed by a space
+                                 */
+                                RE endMultiLineRe;
 
                                 // Create new regExp to look for last line
                                 // of this mutli line response
                                 try {
-                                    ENDMULTILINE = new RE(multiLineRC);
+                                    endMultiLineRe = new RE(multiLineRC);
                                 } catch (RESyntaxException ex) {
                                     throw new java.lang.reflect.UndeclaredThrowableException(ex);
                                 }
@@ -304,7 +338,7 @@ final public class FtpMonitor extends IPv4Monitor {
                                 // response
                                 do {
                                     response = lineRdr.readLine();
-                                } while (response != null && !ENDMULTILINE.match(response));
+                                } while (response != null && !endMultiLineRe.match(response));
                                 if (response == null)
                                     continue;
                             }
@@ -346,10 +380,16 @@ final public class FtpMonitor extends IPv4Monitor {
                             // return code followed by a space.
                             String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
 
+                            /**
+                             * Used to check for the end of a multiline response. The end of a multiline
+                             * response is the same 3 digit response code followed by a space
+                             */
+                            RE endMultiLineRe;
+
                             // Create new regExp to look for last line
                             // of this mutli line response
                             try {
-                                ENDMULTILINE = new RE(multiLineRC);
+                                endMultiLineRe = new RE(multiLineRC);
                             } catch (RESyntaxException ex) {
                                 throw new java.lang.reflect.UndeclaredThrowableException(ex);
                             }
@@ -358,7 +398,7 @@ final public class FtpMonitor extends IPv4Monitor {
                             // response
                             do {
                                 response = lineRdr.readLine();
-                            } while (response != null && !ENDMULTILINE.match(response));
+                            } while (response != null && !endMultiLineRe.match(response));
 
                             if (response == null)
                                 continue;
