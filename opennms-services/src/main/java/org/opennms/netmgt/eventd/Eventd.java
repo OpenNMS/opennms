@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 17: Use JdbcTemplate for getting service name -> ID mapping. - dj@opennms.org
 // 2008 Jan 06: Dependency injection of EventConfDao, delay creation of
 //              BroadcastEventProcessor until onInit instead of in
 //              setEventIpcManager, and pass in EventConfDao. - dj@opennms.org
@@ -48,8 +49,6 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -67,6 +66,8 @@ import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.util.Assert;
 
 /**
@@ -198,39 +199,25 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         
         createBroadcastEventProcessor(m_eventIpcManager);
 
-        // Get a database connection and create the service table map
-        Connection tempConn = null;
-        try {
-            tempConn = m_dataSource.getConnection();
+        initializeServiceTableMap();
 
-            // create the service table map
-            PreparedStatement stmt = tempConn.prepareStatement(EventdConstants.SQL_DB_SVC_TABLE_READ);
-            ResultSet rset = stmt.executeQuery();
-            while (rset.next()) {
-                int svcid = rset.getInt(1);
-                String svcname = rset.getString(2);
+        initializeExternalIpcReceivers();
+    }
 
-                m_serviceTableMap.put(svcname, new Integer(svcid));
+    private void initializeServiceTableMap() {
+        new JdbcTemplate(m_dataSource).query(EventdConstants.SQL_DB_SVC_TABLE_READ, new RowCallbackHandler() {
+            public void processRow(ResultSet resultSet) throws SQLException {
+                addServiceMapping(resultSet.getString(2), resultSet.getInt(1));
             }
+        });
+    }
 
-            rset.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            throw new UndeclaredThrowableException(sqlE);
-        } finally {
-            try {
-                if (tempConn != null) {
-                    tempConn.close();
-                }
-            } catch (SQLException sqlE) {
-                log().warn("An error occured closing the database connection, ignoring", sqlE);
-            }
-        }
-
+    private void initializeExternalIpcReceivers() {
         // Create all the threads
 
         m_tcpReceiver = null;
         m_udpReceiver = null;
+        
         try {
             // XXX this is unused, but should it be used?
             // String timeoutReq = m_eFactory.getSocketSoTimeoutRequired();
@@ -241,11 +228,9 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
             m_udpReceiver.addEventHandler(this);
 
         } catch (IOException e) {
-            log().error("Error starting up the TCP/UDP threads of eventd", e);
+            log().error("Error starting up the TCP/UDP threads of eventd: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
-
-
     }
 
     protected void onStart() {
