@@ -79,7 +79,7 @@
         throw new MissingParameterException("ipaddr", requiredParameters);
     }
 
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
     sendSNMPRestartEvent(nodeId, ipAddr);
     

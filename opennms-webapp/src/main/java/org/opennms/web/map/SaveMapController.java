@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.db.Element;
 
 import org.opennms.web.map.view.*;
@@ -90,8 +91,8 @@ public class SaveMapController implements Controller {
 			
 		String mapName = request.getParameter("MapName");
 		String mapBackground = request.getParameter("MapBackground");
-		int mapWidth = Integer.parseInt(request.getParameter("MapWidth"));
-		int mapHeight = Integer.parseInt(request.getParameter("MapHeight"));
+		int mapWidth = WebSecurityUtils.safeParseInt(request.getParameter("MapWidth"));
+		int mapHeight = WebSecurityUtils.safeParseInt(request.getParameter("MapHeight"));
 		
 		String query = request.getQueryString();
 		String queryNodes = request.getParameter("Nodes");
@@ -127,13 +128,13 @@ public class SaveMapController implements Controller {
 				while (nodeST.hasMoreTokens()) {
 					String tmp = nodeST.nextToken();
 					if (counter == 1) {
-						id = Integer.parseInt(tmp);
+						id = WebSecurityUtils.safeParseInt(tmp);
 					}
 					if (counter == 2) {
-						x = Integer.parseInt(tmp);
+						x = WebSecurityUtils.safeParseInt(tmp);
 					}
 					if (counter == 3) {
-						y = Integer.parseInt(tmp);
+						y = WebSecurityUtils.safeParseInt(tmp);
 					}
 					if (counter == 4) {
 						icon = tmp;

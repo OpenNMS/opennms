@@ -57,6 +57,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * 
@@ -143,7 +144,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 Asset asset = new Asset();
 
                 // ignore tokens.get(0) = node label (for display only)
-                asset.setNodeId(Integer.parseInt((String) tokens.get(1)));
+                asset.setNodeId(WebSecurityUtils.safeParseInt((String) tokens.get(1)));
                 asset.setCategory(Util.decode((String) tokens.get(2)));
                 asset.setManufacturer(Util.decode((String) tokens.get(3)));
                 asset.setVendor(Util.decode((String) tokens.get(4)));

@@ -56,6 +56,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles querying the database for node, interface, service
@@ -89,7 +90,7 @@ public class GetInterfacesServlet extends HttpServlet {
         HttpSession user = request.getSession(true);
 
         try {
-            nodeId = Integer.parseInt(nodeIdString);
+            nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
         } catch (NumberFormatException numE) {
             throw new ServletException(numE.getMessage());
         }

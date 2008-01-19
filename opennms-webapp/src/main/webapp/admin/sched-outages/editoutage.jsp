@@ -5,6 +5,7 @@
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.common.*,
 		org.opennms.netmgt.config.poller.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
@@ -310,7 +311,7 @@ shortDayNames.put("31","31st");
 		dispatcher.forward( request, response );
 	} else if (request.getParameter("addNodeButton")!=null) {
 		try {
-			int newNodeId=Integer.parseInt(request.getParameter("newNode"));
+			int newNodeId=WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
 			org.opennms.netmgt.config.poller.Node newNode=new org.opennms.netmgt.config.poller.Node();
 			newNode.setId(newNodeId);
 			if(!theOutage.getNodeCollection().contains(newNode)) {
@@ -397,7 +398,7 @@ shortDayNames.put("31","31st");
 				found=true;
 				String indexStr=paramName.substring("deleteNode".length(), paramName.indexOf("."));
 				try {
-					int index=Integer.parseInt(indexStr);
+					int index=WebSecurityUtils.safeParseInt(indexStr);
 					theOutage.removeNode(theOutage.getNode(index));		
 				} catch (NumberFormatException e) {
 					
@@ -407,7 +408,7 @@ shortDayNames.put("31","31st");
 				found=true;
 				String indexStr=paramName.substring("deleteInterface".length(), paramName.indexOf("."));
 				try {
-					int index=Integer.parseInt(indexStr);
+					int index=WebSecurityUtils.safeParseInt(indexStr);
 					theOutage.removeInterface(theOutage.getInterface(index));		
 				} catch (NumberFormatException e) {
 					//Ignore - nothing we can do
@@ -416,7 +417,7 @@ shortDayNames.put("31","31st");
 				found=true;
 				String indexStr=paramName.substring("deleteTime".length(), paramName.indexOf("."));
 				try {
-					int index=Integer.parseInt(indexStr);
+					int index=WebSecurityUtils.safeParseInt(indexStr);
 					theOutage.removeTime(theOutage.getTime(index));
 				} catch (NumberFormatException e) {
 					//Ignore - nothing we can do

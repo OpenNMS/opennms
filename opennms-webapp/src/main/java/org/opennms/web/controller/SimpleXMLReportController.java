@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.report.availability.AvailabilityReportViewerService;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -61,7 +62,7 @@ public class SimpleXMLReportController extends AbstractController {
             }
         }
         try {
-            m_reportId = Integer.parseInt(req.getParameter("reportid"));
+            m_reportId = WebSecurityUtils.safeParseInt(req.getParameter("reportid"));
         } catch (NumberFormatException e) {
         }
         ModelAndView mav = new ModelAndView();

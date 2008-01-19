@@ -192,6 +192,10 @@ public class NoticeFactory extends Object {
      */
     public interface Filter {
         public String getSql();
+        
+        public String getParamSql();
+        
+        public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException;
 
         public String getDescription();
 
@@ -210,6 +214,15 @@ public class NoticeFactory extends Object {
 
         public String getSql() {
             return (" notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid='" + this.user + "')");
+        }
+        
+        public String getParamSql() {
+            return (" notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)");
+        }
+        
+        public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
+        	ps.setString(parameterIndex, this.user);
+        	return 1;
         }
 
         public String getDescription() {
@@ -246,6 +259,15 @@ public class NoticeFactory extends Object {
         public String getSql() {
             return (" ANSWEREDBY='" + this.responder + "'");
         }
+        
+        public String getParamSql() {
+            return (" ANSWEREDBY=?");
+        }
+        
+        public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
+        	ps.setString(parameterIndex, this.responder);
+        	return 1;
+        }
 
         public String getDescription() {
             return (TYPE + "=" + this.responder);
@@ -280,6 +302,15 @@ public class NoticeFactory extends Object {
 
         public String getSql() {
             return (" NODEID=" + this.nodeId);
+        }
+        
+        public String getParamSql() {
+            return (" NODEID=?");
+        }
+        
+        public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
+        	ps.setInt(parameterIndex, this.nodeId);
+        	return 1;
         }
 
         public String getDescription() {
@@ -326,6 +357,15 @@ public class NoticeFactory extends Object {
         public String getSql() {
             return (" INTERFACEID='" + this.ipAddress + "'");
         }
+        
+        public String getParamSql() {
+            return (" INTERFACEID=?");
+        }
+        
+        public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
+        	ps.setString(parameterIndex, this.ipAddress);
+        	return 1;
+        }
 
         public String getDescription() {
             return (TYPE + "=" + this.ipAddress);
@@ -360,6 +400,15 @@ public class NoticeFactory extends Object {
 
         public String getSql() {
             return (" SERVICEID=" + this.serviceId);
+        }
+        
+        public String getParamSql() {
+            return (" SERVICEID=?");
+        }
+        
+        public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
+        	ps.setInt(parameterIndex, this.serviceId);
+        	return 1;
         }
 
         public String getDescription() {
@@ -405,16 +454,22 @@ public class NoticeFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(*) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
+            StringBuffer select = new StringBuffer("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParams(stmt, parameterIndex);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 noticeCount = rs.getInt("NOTICECOUNT");
@@ -576,21 +631,33 @@ public class NoticeFactory extends Object {
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND");
-                select.append(filters[i].getSql());
+                select.append(filters[i].getParamSql());
             }
 
             select.append(getOrderByClause(sortStyle));
 
             if (useLimits) {
-                select.append(" LIMIT ");
-                select.append(limit);
-                select.append(" OFFSET ");
-                select.append(offset);
+                select.append(" LIMIT ?");
+                //select.append(limit);
+                select.append(" OFFSET ?");
+                //select.append(offset);
             }
             System.out.println(select.toString());
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            
+            int parameterIndex = 1;
+            for (int i = 0; i < filters.length; i++) {
+            	parameterIndex += filters[i].bindParams(stmt, parameterIndex);
+            }
+            
+            if (useLimits) {
+            	stmt.setInt(parameterIndex++, limit);
+            	stmt.setInt(parameterIndex, offset);
+            }
+            ResultSet rs = stmt.executeQuery();
+            
+            PreparedStatement ps = conn.prepareStatement(select.toString());
 
             notices = rs2Notices(rs);
 

@@ -34,7 +34,7 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils, org.opennms.web.element.*" %>
 
 
 <%
@@ -45,7 +45,7 @@
         throw new org.opennms.web.MissingParameterException("node");
     }
         
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     
     //gets active route entry on node
     

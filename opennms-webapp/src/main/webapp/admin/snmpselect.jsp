@@ -46,6 +46,7 @@
 	session="true"
 	import="java.io.File,
 		java.util.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -62,7 +63,7 @@
         throw new org.opennms.web.MissingParameterException( "node" );
     }
 
-    int nodeId = Integer.parseInt( nodeIdString );
+    int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     String nodeLabel = request.getParameter( "nodelabel" );
 

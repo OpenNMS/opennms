@@ -50,7 +50,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.category.*,
+	import="org.opennms.web.WebSecurityUtils,
+		org.opennms.web.category.*,
 		org.opennms.web.element.*,
 		java.util.*,
         org.springframework.util.Assert,
@@ -99,7 +100,7 @@
         throw new MissingParameterException("node");
     }
 
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
     //get the database node info
     Node node_db = NetworkElementFactory.getNode(nodeId);

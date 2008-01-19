@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
@@ -86,7 +87,7 @@ public class CustomViewController extends AbstractController implements Initiali
         String domain = request.getParameter("domain");
         int report_index = 0;
         if (r_index != null) {
-            report_index = Integer.parseInt(r_index);
+            report_index = WebSecurityUtils.safeParseInt(r_index);
         } else if (domain == null) {
             throw new MissingParameterException("report or domain", requiredParameters);
         }

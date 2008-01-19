@@ -44,6 +44,7 @@ import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * 
@@ -78,7 +79,7 @@ public class NodeRescanServlet extends HttpServlet {
         }
 
         try {
-            int nodeId = Integer.parseInt(nodeIdString);
+            int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
             // prepare the event
             Event outEvent = new Event();

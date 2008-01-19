@@ -54,6 +54,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.element.Node;
 import org.opennms.web.map.view.Manager;
@@ -156,13 +157,13 @@ public class AddNodesController implements Controller {
 			if (action.equals(MapsConstants.ADDNODES_NEIG_ACTION)) {
 				log.debug("Adding nodes neighbor of:"+ elems);
 				actionfound = true;
-				nodeids = (Integer[]) NetworkElementFactory.getLinkedNodeIdOnNode(Integer.parseInt(elems)).toArray(new Integer[0]);
+				nodeids = (Integer[]) NetworkElementFactory.getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems)).toArray(new Integer[0]);
 			}
 
 			if (action.equals(MapsConstants.ADDNODES_WITH_NEIG_ACTION)) {
 				log.debug("Adding nodes with neighbor of:"+ elems);
 				actionfound = true;
-				Set<Integer> linkednodeids = NetworkElementFactory.getLinkedNodeIdOnNode(Integer.parseInt(elems));
+				Set<Integer> linkednodeids = NetworkElementFactory.getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems));
 				linkednodeids.add(new Integer(elems));
 				nodeids = linkednodeids.toArray(new Integer[linkednodeids.size()]);
 			} 

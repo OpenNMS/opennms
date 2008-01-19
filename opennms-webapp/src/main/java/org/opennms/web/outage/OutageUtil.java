@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.outage.filter.Filter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.LostServiceDateAfterFilter;
@@ -160,27 +161,27 @@ public abstract class OutageUtil extends Object {
         String value = tokens.nextToken();
 
         if (type.equals(NodeFilter.TYPE)) {
-            filter = new NodeFilter(Integer.parseInt(value));
+            filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(Integer.parseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(OutageFilter.TYPE)) {
-            filter = new OutageFilter(Integer.parseInt(value));
+            filter = new OutageFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
-            filter = new NegativeNodeFilter(Integer.parseInt(value));
+            filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(value);
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
-            filter = new NegativeServiceFilter(Integer.parseInt(value));
+            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(LostServiceDateBeforeFilter.TYPE)) {
-            filter = new LostServiceDateBeforeFilter(Long.parseLong(value));
+            filter = new LostServiceDateBeforeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(LostServiceDateAfterFilter.TYPE)) {
-            filter = new LostServiceDateAfterFilter(Long.parseLong(value));
+            filter = new LostServiceDateAfterFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(RegainedServiceDateBeforeFilter.TYPE)) {
-            filter = new RegainedServiceDateBeforeFilter(Long.parseLong(value));
+            filter = new RegainedServiceDateBeforeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(RegainedServiceDateAfterFilter.TYPE)) {
-            filter = new RegainedServiceDateAfterFilter(Long.parseLong(value));
+            filter = new RegainedServiceDateAfterFilter(WebSecurityUtils.safeParseLong(value));
         }
 
         return filter;

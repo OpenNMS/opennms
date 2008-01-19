@@ -52,6 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
 import org.opennms.web.event.filter.Filter;
@@ -123,7 +124,7 @@ public class EventQueryServlet extends HttpServlet {
         // convenient syntax for ServiceFilter
         String service = request.getParameter("service");
         if (service != null && !service.equals(EventUtil.ANY_SERVICES_OPTION)) {
-            filterArray.add(new ServiceFilter(Integer.parseInt(service)));
+            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
         }
 
         // convenient syntax for IPLikeFilter
@@ -135,14 +136,14 @@ public class EventQueryServlet extends HttpServlet {
         // convenient syntax for SeverityFilter
         String severity = request.getParameter("severity");
         if (severity != null && !severity.equals(EventUtil.ANY_SEVERITIES_OPTION)) {
-            filterArray.add(new SeverityFilter(Integer.parseInt(severity)));
+            filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time
         String relativeTime = request.getParameter("relativetime");
         if (relativeTime != null && !relativeTime.equals(EventUtil.ANY_RELATIVE_TIMES_OPTION)) {
             try {
-                filterArray.add(EventUtil.getRelativeTimeFilter(Integer.parseInt(relativeTime)));
+                filterArray.add(EventUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
             } catch (IllegalArgumentException e) {
                 // ignore the relative time if it is an illegal value
                 this.log("Illegal relativetime value", e);
@@ -221,7 +222,7 @@ public class EventQueryServlet extends HttpServlet {
             throw new MissingParameterException(prefix + "hour", this.getRequiredDateFields(prefix));
         }
 
-        cal.set(Calendar.HOUR, Integer.parseInt(hourString));
+        cal.set(Calendar.HOUR, WebSecurityUtils.safeParseInt(hourString));
 
         // minute, from 0-59
         String minuteString = request.getParameter(prefix + "minute");
@@ -229,7 +230,7 @@ public class EventQueryServlet extends HttpServlet {
             throw new MissingParameterException(prefix + "minute", this.getRequiredDateFields(prefix));
         }
 
-        cal.set(Calendar.MINUTE, Integer.parseInt(minuteString));
+        cal.set(Calendar.MINUTE, WebSecurityUtils.safeParseInt(minuteString));
 
         // AM/PM, either AM or PM
         String amPmString = request.getParameter(prefix + "ampm");
@@ -251,7 +252,7 @@ public class EventQueryServlet extends HttpServlet {
             throw new MissingParameterException(prefix + "month", this.getRequiredDateFields(prefix));
         }
 
-        cal.set(Calendar.MONTH, Integer.parseInt(monthString));
+        cal.set(Calendar.MONTH, WebSecurityUtils.safeParseInt(monthString));
 
         // date, 1-31
         String dateString = request.getParameter(prefix + "date");
@@ -259,7 +260,7 @@ public class EventQueryServlet extends HttpServlet {
             throw new MissingParameterException(prefix + "date", this.getRequiredDateFields(prefix));
         }
 
-        cal.set(Calendar.DATE, Integer.parseInt(dateString));
+        cal.set(Calendar.DATE, WebSecurityUtils.safeParseInt(dateString));
 
         // year
         String yearString = request.getParameter(prefix + "year");
@@ -267,7 +268,7 @@ public class EventQueryServlet extends HttpServlet {
             throw new MissingParameterException(prefix + "year", this.getRequiredDateFields(prefix));
         }
 
-        cal.set(Calendar.YEAR, Integer.parseInt(yearString));
+        cal.set(Calendar.YEAR, WebSecurityUtils.safeParseInt(yearString));
 
         return cal.getTime();
     }

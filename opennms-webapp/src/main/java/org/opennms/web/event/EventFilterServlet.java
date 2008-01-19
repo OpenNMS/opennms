@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.filter.Filter;
 
 /**
@@ -117,7 +118,7 @@ public class EventFilterServlet extends HttpServlet {
 
         if (limitString != null) {
             try {
-                limit = Integer.parseInt(limitString);
+                limit = WebSecurityUtils.safeParseInt(limitString);
             } catch (NumberFormatException e) {
                 // do nothing, the default is aready set
             }
@@ -128,7 +129,7 @@ public class EventFilterServlet extends HttpServlet {
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
-                multiple = Integer.parseInt(multipleString);
+                multiple = WebSecurityUtils.safeParseInt(multipleString);
             } catch (NumberFormatException e) {
             }
         }

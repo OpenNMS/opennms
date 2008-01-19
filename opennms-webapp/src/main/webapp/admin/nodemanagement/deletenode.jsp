@@ -42,6 +42,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.element.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.MissingParameterException
 	"
@@ -56,7 +57,7 @@
     }
 
     try {
-        nodeId = Integer.parseInt(nodeIdString);
+        nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     } catch (NumberFormatException numE)  {
         throw new ServletException(numE);
     }

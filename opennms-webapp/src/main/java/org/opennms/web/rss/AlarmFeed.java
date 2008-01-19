@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmFactory;
 import org.opennms.web.alarm.AlarmUtil;
@@ -35,7 +36,7 @@ public class AlarmFeed extends AbstractFeed {
 
             ArrayList<Filter> filters = new ArrayList<Filter>();
             if (this.getRequest().getParameter("node") != null) {
-                Integer nodeId = Integer.parseInt(this.getRequest().getParameter("node"));
+                Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
                 filters.add(new NodeFilter(nodeId));
             }
             if (this.getRequest().getParameter("severity") != null) {

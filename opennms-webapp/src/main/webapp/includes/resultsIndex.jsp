@@ -34,7 +34,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="false" import="java.util.*,org.opennms.web.MissingParameterException" %>
+<%@page language="java" contentType="text/html" session="false" import="java.util.*,org.opennms.web.WebSecurityUtils,org.opennms.web.MissingParameterException" %>
 
 <%!
     protected static final String DEFAULT_LIMIT_PARAM_NAME    = "limit";
@@ -79,11 +79,11 @@
     }
 
     //get the count    
-    long count = Long.parseLong(countString);
+    long count = WebSecurityUtils.safeParseLong(countString);
     
     //get the limit and multiple, use the defaults if not set in the request
-    int limit    = (limitString    != null) ? Integer.parseInt(limitString)    : DEFAULT_LIMIT;
-    int multiple = (multipleString != null) ? Integer.parseInt(multipleString) : DEFAULT_MULTIPLE;
+    int limit    = (limitString    != null) ? WebSecurityUtils.safeParseInt(limitString)    : DEFAULT_LIMIT;
+    int multiple = (multipleString != null) ? WebSecurityUtils.safeParseInt(multipleString) : DEFAULT_MULTIPLE;
 
     //format the base url to accept limit and multiple parameters
     if( baseUrl.indexOf("?") < 0 ) {

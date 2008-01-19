@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles the data comming in from the destination wizard jsps.
@@ -140,7 +141,7 @@ public class DestinationWizardServlet extends HttpServlet {
             saveOutlineForm(path, request);
 
             if (action.equals("add")) {
-                int index = Integer.parseInt(request.getParameter("index"));
+                int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
                 Escalate newEscalate = new Escalate();
                 path.addEscalate(index, newEscalate);
 
@@ -148,7 +149,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 requestParams.put("targetIndex", request.getParameter("index"));
                 redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
             } else if (action.equals("remove")) {
-                int index = Integer.parseInt(request.getParameter("index"));
+                int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
                 removeEscalation(path, index);
                 redirectString.append(SOURCE_PAGE_OUTLINE);
             } else if (action.equals("edit")) {
@@ -188,7 +189,7 @@ public class DestinationWizardServlet extends HttpServlet {
             String emailTargets[] = request.getParameterValues("emails");
 
             Path newPath = (Path) user.getAttribute("newPath");
-            int index = Integer.parseInt(request.getParameter("targetIndex"));
+            int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             Target[] existingTargets = null;
 
             try {
@@ -298,7 +299,7 @@ public class DestinationWizardServlet extends HttpServlet {
             }
         } else if (sourcePage.equals(SOURCE_PAGE_INTERVALS)) {
             Path newPath = (Path) user.getAttribute("newPath");
-            int index = Integer.parseInt(request.getParameter("targetIndex"));
+            int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             Target targets[] = null;
 
             try {
@@ -319,7 +320,7 @@ public class DestinationWizardServlet extends HttpServlet {
             redirectString.append(SOURCE_PAGE_COMMANDS).append(makeQueryString(requestParams));
         } else if (sourcePage.equals(SOURCE_PAGE_COMMANDS)) {
             Path newPath = (Path) user.getAttribute("newPath");
-            int index = Integer.parseInt(request.getParameter("targetIndex"));
+            int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             Target targets[] = null;
 
             try {

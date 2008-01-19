@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,7 +55,7 @@ public class NodeCategoryBoxController extends AbstractController {
             throw new MissingParameterException("node");
         }
 
-        int nodeId = Integer.parseInt(nodeIdString);
+        int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
         List<OnmsCategory> categories = m_adminCategoryService.findByNode(nodeId);
         

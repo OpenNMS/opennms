@@ -43,9 +43,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.asset.*,
-		org.opennms.web.element.*,
-                org.opennms.web.acegisecurity.Authentication,
+	import="org.opennms.web.WebSecurityUtils,
+			org.opennms.web.asset.*,
+			org.opennms.web.element.*,
+            org.opennms.web.acegisecurity.Authentication,
         	org.opennms.web.MissingParameterException
 	"
 %>
@@ -61,7 +62,7 @@
         throw new MissingParameterException("node", new String[] { "node" });
     }
 
-    int nodeId = Integer.parseInt( nodeIdString );
+    int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
     String nodeLabel = NetworkElementFactory.getNodeLabel( nodeId );
     Asset asset = this.model.getAsset( nodeId );
     Node node_db = NetworkElementFactory.getNode( nodeId );

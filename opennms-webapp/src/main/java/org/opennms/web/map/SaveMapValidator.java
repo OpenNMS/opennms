@@ -1,6 +1,8 @@
 package org.opennms.web.map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.opennms.web.WebSecurityUtils;
 import org.springframework.validation.Errors;
 
 public class SaveMapValidator extends MapApplianceValidator {
@@ -19,7 +21,7 @@ public class SaveMapValidator extends MapApplianceValidator {
 			errors.rejectValue("MapId", MapsConstants.OPENMAP_ACTION+"Failed" , null, "HttpServletReqiest parameter MapId is required");
 		
 		try {
-			Integer.parseInt(mapIdentificator) ;
+			WebSecurityUtils.safeParseInt(mapIdentificator) ;
 		} catch (NumberFormatException e) {
 			errors.rejectValue("MapId", MapsConstants.OPENMAP_ACTION+"Failed" , null, "MapId is not an Integer");
 		}

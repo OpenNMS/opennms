@@ -52,6 +52,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles saving a group
@@ -85,7 +86,7 @@ public class UpdateGroupServlet extends HttpServlet {
             Collection<String> dutySchedules = getDutySchedulesForGroup(newGroup);
             dutySchedules.clear();
 
-            int dutyCount = Integer.parseInt(request.getParameter("dutySchedules"));
+            int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
             for (int duties = 0; duties < dutyCount; duties++) {
                 newSchedule.clear();
                 String deleteFlag = request.getParameter("deleteDuty" + duties);

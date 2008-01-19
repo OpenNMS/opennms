@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,7 +59,7 @@ public class FormProcGraphController extends AbstractController implements Initi
         String graphtype = request.getParameter("graphtype");
         String title = request.getParameter("title");
         String g_index = request.getParameter("graphindex");
-        int graph_index = (Integer.parseInt(g_index));
+        int graph_index = (WebSecurityUtils.safeParseInt(g_index));
         graph_index--; 
      
         // Save the modified variables into the working graph 

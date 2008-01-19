@@ -68,6 +68,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -216,7 +217,7 @@ public class DeleteNodesServlet extends HttpServlet {
         
         List<Integer> list = new ArrayList<Integer>(array.length);
         for (String a : array) {
-            list.add(Integer.parseInt(a));
+            list.add(WebSecurityUtils.safeParseInt(a));
         }
         return list;
     }

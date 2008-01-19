@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * Servlet implementation class for Servlet: AdminRoleServlet
@@ -135,10 +136,10 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
             WebRole role = getRoleManager().getRole(request.getParameter("role"));
             request.setAttribute("role", role);
             
-            int schedIndex = Integer.parseInt(request.getParameter("schedIndex"));
+            int schedIndex = WebSecurityUtils.safeParseInt(request.getParameter("schedIndex"));
             request.setAttribute("schedIndex", request.getParameter("schedIndex"));
             
-            int timeIndex = Integer.parseInt(request.getParameter("timeIndex"));
+            int timeIndex = WebSecurityUtils.safeParseInt(request.getParameter("timeIndex"));
             request.setAttribute("timeIndex", request.getParameter("timeIndex"));
             
             Schedule schedule = role.getSchedule(schedIndex);
@@ -225,7 +226,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         }
         
         public int getIntParameter(String name, HttpServletRequest request) {
-            return Integer.parseInt(request.getParameter(name));
+            return WebSecurityUtils.safeParseInt(request.getParameter(name));
         }
         
     }

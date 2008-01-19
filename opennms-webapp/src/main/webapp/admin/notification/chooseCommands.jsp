@@ -43,6 +43,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.Util,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*,
@@ -119,7 +120,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
 
   <br/>
 
-  <%=buildCommands(newPath, Integer.parseInt(request.getParameter("targetIndex")))%>
+  <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
 
   <div class="spacer"><!-- --></div>
 

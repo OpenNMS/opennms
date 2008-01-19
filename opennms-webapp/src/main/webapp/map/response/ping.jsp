@@ -53,7 +53,7 @@
     if(nodeIdString == null) {
         throw new MissingParameterException( "node", new String[] {"report", "node", "intf"} );
     }
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     
     //required parameter intf
     String intf = request.getParameter( "intf" );

@@ -171,8 +171,9 @@ public class NotificationModel extends Object {
                 element = new Integer(rs.getInt(EVENTID));
                 nbean.m_eventId = ((Integer) element).intValue();
 
-                Statement stmttmp = conn.createStatement();
-                ResultSet rstmp = stmttmp.executeQuery("SELECT servicename from service where serviceid = " + nbean.m_serviceId);
+                PreparedStatement stmttmp = conn.prepareStatement("SELECT servicename from service where serviceid = ?");
+                stmttmp.setInt(1, nbean.m_serviceId);
+                ResultSet rstmp = stmttmp.executeQuery();
 
                 if (rstmp.next()) {
                     element = rstmp.getString("servicename");
@@ -269,8 +270,9 @@ public class NotificationModel extends Object {
                 element = new Integer(rs.getInt(EVENTID));
                 nbean.m_eventId = ((Integer) element).intValue();
 
-                Statement stmttmp = conn.createStatement();
-                ResultSet rstmp = stmttmp.executeQuery("SELECT servicename from service where serviceid = " + nbean.m_serviceId);
+                PreparedStatement stmttmp = conn.prepareStatement("SELECT servicename from service where serviceid = ?");
+                stmttmp.setInt(1, nbean.m_serviceId);
+                ResultSet rstmp = stmttmp.executeQuery();
 
                 if (rstmp.next()) {
                     element = rstmp.getString("servicename");

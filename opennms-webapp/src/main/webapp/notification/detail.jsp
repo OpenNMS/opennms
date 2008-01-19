@@ -43,6 +43,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.notification.*,
 		org.opennms.web.element.*,
                 org.opennms.web.event.*
@@ -61,7 +62,7 @@
     int noticeID = -1;
     
     try {
-        noticeID = Integer.parseInt( noticeIdString );
+        noticeID = WebSecurityUtils.safeParseInt( noticeIdString );
     }
     catch( NumberFormatException e ) {
         throw new NoticeIdNotFoundException("The notice id must be an integer.",

@@ -44,6 +44,7 @@
 	import="org.opennms.netmgt.utils.NodeLabel,
 		org.opennms.core.resource.Vault,
         	org.opennms.web.MissingParameterException,
+        	org.opennms.web.WebSecurityUtils,
 		java.util.*,
 		java.sql.*
 	"
@@ -72,7 +73,7 @@
         throw new MissingParameterException( "node" );
     }
 
-    int nodeId = Integer.parseInt( nodeIdString );
+    int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     NodeLabel currentLabel = NodeLabel.retrieveLabel( nodeId, myConn );
     NodeLabel autoLabel = NodeLabel.computeLabel( nodeId, myConn );

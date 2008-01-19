@@ -43,7 +43,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.alarm.*,
+	import="org.opennms.web.WebSecurityUtils,
+			org.opennms.web.alarm.*,
 	        org.opennms.web.acegisecurity.Authentication"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -72,7 +73,7 @@
     int alarmId = -1;
 
     try {
-        alarmId = Integer.parseInt( alarmIdString );
+        alarmId = WebSecurityUtils.safeParseInt( alarmIdString );
     }
     catch( NumberFormatException e ) {
         throw new org.opennms.web.alarm.AlarmIdNotFoundException( "The alarm id must be an integer.", alarmIdString );

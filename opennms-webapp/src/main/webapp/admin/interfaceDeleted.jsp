@@ -43,6 +43,7 @@
 	session="true"
 	import="org.opennms.web.element.*,
 		org.opennms.web.category.*,
+		org.opennms.web.WebSecurityUtils,
 		java.util.*,
 		org.opennms.web.event.*,
 		org.opennms.web.MissingParameterException
@@ -65,7 +66,7 @@
     int nodeId = -1;
 
     try {
-        nodeId = Integer.parseInt( nodeIdString );
+        nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
     }
     catch( NumberFormatException e ) {
         //throw new WrongParameterDataTypeException

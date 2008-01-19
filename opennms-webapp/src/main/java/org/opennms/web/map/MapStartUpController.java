@@ -45,6 +45,7 @@ import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.config.MapStartUpConfig;
@@ -112,20 +113,20 @@ public class MapStartUpController extends SimpleFormController {
 		boolean isAdmin = request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE);
 		boolean fullscreen = Boolean.parseBoolean(request.getParameter("fullscreen"));
 		
-		int refresh = Integer.parseInt(request.getParameter("refresh"));
+		int refresh = WebSecurityUtils.safeParseInt(request.getParameter("refresh"));
 		
 		String dimension = request.getParameter("dimension");
 	
 		String mapToOpen = request.getParameter("mapToOpen");
 		
 		int mapToOpenId = MapsConstants.MAP_NOT_OPENED;
-		if (mapToOpen != null) mapToOpenId = Integer.parseInt(mapToOpen); 
+		if (mapToOpen != null) mapToOpenId = WebSecurityUtils.safeParseInt(mapToOpen); 
 
 		if (log.isDebugEnabled()) 
 			log.debug("StartUpValues: user/hasRoleAdmin/dimension/mapToOpen/refresh/fullscreen:" + user +"/"+ isAdmin + "/"+ dimension +"/" + mapToOpen +"/" + refresh +"/" + fullscreen );
 		String[] dim = dimension.split("x");
-		int mapwidth=Integer.parseInt(dim[0]);
-		int mapheight=Integer.parseInt(dim[1]);
+		int mapwidth=WebSecurityUtils.safeParseInt(dim[0]);
+		int mapheight=WebSecurityUtils.safeParseInt(dim[1]);
 	
 		MapStartUpConfig config = new MapStartUpConfig(user,isAdmin,mapwidth,mapheight,refresh,fullscreen,mapToOpenId); 
 		return config;	

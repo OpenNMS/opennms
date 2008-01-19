@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AdminApplicationService;
 
 public class DefaultAdminApplicationService implements
@@ -122,7 +123,7 @@ public class DefaultAdminApplicationService implements
             for (String idString : toAdd) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toAdd element '"
                                                        + idString
@@ -154,7 +155,7 @@ public class DefaultAdminApplicationService implements
             for (String idString : toDelete) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toDelete element '"
                                                        + idString
@@ -242,7 +243,7 @@ public class DefaultAdminApplicationService implements
             for (String idString : toAdd) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toAdd element '"
                                                        + idString
@@ -274,7 +275,7 @@ public class DefaultAdminApplicationService implements
             for (String idString : toDelete) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toDelete element '"
                                                        + idString
@@ -322,7 +323,7 @@ public class DefaultAdminApplicationService implements
     public OnmsApplication findApplication(String name) {
         int applicationId = -1;
         try {
-            applicationId = Integer.parseInt(name);
+            applicationId = WebSecurityUtils.safeParseInt(name);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("parameter 'applicationid' "
                                                + "with value '"
@@ -346,7 +347,7 @@ public class DefaultAdminApplicationService implements
         int ifServiceId;
         
         try {
-            ifServiceId = Integer.parseInt(ifServiceIdString);
+            ifServiceId = WebSecurityUtils.safeParseInt(ifServiceIdString);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("parameter ifserviceid '"
                                                + ifServiceIdString

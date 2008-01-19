@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * This servlet receives an HTTP POST with a list of alarms to acknowledge or
@@ -102,7 +103,7 @@ public class AcknowledgeAlarmServlet extends HttpServlet {
         // convert the alarm id strings to ints
         int[] alarmIds = new int[alarmIdStrings.length];
         for (int i = 0; i < alarmIds.length; i++) {
-            alarmIds[i] = Integer.parseInt(alarmIdStrings[i]);
+            alarmIds[i] = WebSecurityUtils.safeParseInt(alarmIdStrings[i]);
         }
 
         try {

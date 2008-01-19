@@ -63,6 +63,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.command.DistributedStatusDetailsCommand;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.DistributedStatusService;
@@ -659,7 +660,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         if (monitorId != null && monitorId.length() > 0) {
             try {
-                monitorIdInt = Integer.parseInt(monitorId);
+                monitorIdInt = WebSecurityUtils.safeParseInt(monitorId);
             } catch (NumberFormatException e) {
                 errors.add("Monitor ID '" + monitorId + "' is not an integer");
             }

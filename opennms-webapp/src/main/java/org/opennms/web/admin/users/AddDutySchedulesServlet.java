@@ -50,6 +50,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles adding new duty schedules to a users notification info
@@ -76,7 +77,7 @@ public class AddDutySchedulesServlet extends HttpServlet {
 
         User user = (User) userSession.getAttribute("user.modifyUser.jsp");
 
-        int dutyAddCount = Integer.parseInt(request.getParameter("numSchedules"));
+        int dutyAddCount = WebSecurityUtils.safeParseInt(request.getParameter("numSchedules"));
 
         for (int j = 0; j < dutyAddCount; j++) {
             user.addDutySchedule((new DutySchedule(new ArrayList<Boolean>(FALSE_LIST), 0, 0)).toString());

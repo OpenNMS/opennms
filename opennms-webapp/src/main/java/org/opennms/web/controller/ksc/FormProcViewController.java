@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,7 +69,7 @@ public class FormProcViewController extends AbstractController implements Initia
         if ((report_action.equals("Customize")) || (report_action.equals("Update"))) {
             String r_index = request.getParameter("report");
             if (r_index != null && !r_index.equals("null")) {
-               report_index = Integer.parseInt(r_index); 
+               report_index = WebSecurityUtils.safeParseInt(r_index); 
             } else if (domain == null) {
                 throw new MissingParameterException("report or domain", new String[] {"report or domain","type"});
             }

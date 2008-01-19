@@ -45,6 +45,7 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.Util,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
@@ -89,7 +90,7 @@
           <td valign="top" align="left">
           <%=intervalTable(newPath, 
                            request.getParameterValues("groups"), 
-                           Integer.parseInt(request.getParameter("targetIndex")),
+                           WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")),
                            intervals)%>
           </td>
         </tr>

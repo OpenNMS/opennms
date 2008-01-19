@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles saving a user
@@ -128,7 +129,7 @@ public class UpdateUserServlet extends HttpServlet {
             Collection<String> dutySchedules = getDutySchedulesForUser(newUser);
             dutySchedules.clear();
 
-            int dutyCount = Integer.parseInt(request.getParameter("dutySchedules"));
+            int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
             for (int duties = 0; duties < dutyCount; duties++) {
                 newSchedule.clear();
                 String deleteFlag = request.getParameter("deleteDuty" + duties);
@@ -139,8 +140,8 @@ public class UpdateUserServlet extends HttpServlet {
                         newSchedule.add(new Boolean(curDayFlag != null));
                     }
 
-                    int startTime = Integer.parseInt(request.getParameter("duty" + duties + "Begin"));
-                    int stopTime = Integer.parseInt(request.getParameter("duty" + duties + "End"));
+                    int startTime = WebSecurityUtils.safeParseInt(request.getParameter("duty" + duties + "Begin"));
+                    int stopTime = WebSecurityUtils.safeParseInt(request.getParameter("duty" + duties + "End"));
 
                     DutySchedule newDuty = new DutySchedule(newSchedule, startTime, stopTime);
                     dutySchedules.add(newDuty.toString());

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.EventFactory;
 import org.opennms.web.event.EventUtil;
@@ -34,7 +35,7 @@ public class EventFeed extends AbstractFeed {
 
             ArrayList<Filter> filters = new ArrayList<Filter>();
             if (this.getRequest().getParameter("node") != null) {
-                Integer nodeId = Integer.parseInt(this.getRequest().getParameter("node"));
+                Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
                 filters.add(new NodeFilter(nodeId));
             }
             if (this.getRequest().getParameter("severity") != null) {

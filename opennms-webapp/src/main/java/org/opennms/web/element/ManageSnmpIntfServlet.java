@@ -52,6 +52,7 @@ import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.web.WebSecurityUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -108,19 +109,19 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         if (nodeIdString == null) {
             throw new org.opennms.web.MissingParameterException("node");
         }
-        int nodeId = Integer.parseInt(nodeIdString);
+        int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
         String intfIdString = request.getParameter("intf");
         if (intfIdString == null) {
             throw new org.opennms.web.MissingParameterException("intf");
         }
-        int intfId = Integer.parseInt(intfIdString);
+        int intfId = WebSecurityUtils.safeParseInt(intfIdString);
 
         String statusString = request.getParameter("status");
         if (statusString == null) {
             throw new org.opennms.web.MissingParameterException("status");
         }
-        int status = Integer.parseInt(statusString);
+        int status = WebSecurityUtils.safeParseInt(statusString);
 
         log.debug("ManageSnmpIntfServlet.doPost: parameters - node " + nodeId + " intf " + intfId + " status " + status);
         String snmpIp = null;

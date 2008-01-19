@@ -59,6 +59,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -97,7 +98,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
 
         // the node being modified
         String nodeIdString = request.getParameter("node");
-        int currNodeId = Integer.parseInt(nodeIdString);
+        int currNodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
         String primeInt = null;
 

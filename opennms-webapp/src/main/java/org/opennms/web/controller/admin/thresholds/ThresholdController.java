@@ -26,6 +26,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -208,7 +209,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(thresholdIndexString==null) {
             throw new ServletException("thresholdIndex parameter required to edit a threshold");
         }
-        int thresholdIndex=Integer.parseInt(thresholdIndexString);
+        int thresholdIndex=WebSecurityUtils.safeParseInt(thresholdIndexString);
 
         Threshold threshold=configFactory.getGroup(groupName).getThreshold(thresholdIndex);
         modelAndView=new ModelAndView("admin/thresholds/editThreshold");
@@ -249,9 +250,9 @@ public class ThresholdController extends AbstractController implements Initializ
         
         int thresholdIndex;
         if (isExpression) {
-            thresholdIndex = Integer.parseInt(request.getParameter("expressionIndex"));
+            thresholdIndex = WebSecurityUtils.safeParseInt(request.getParameter("expressionIndex"));
         } else {
-            thresholdIndex = Integer.parseInt(request.getParameter("thresholdIndex"));
+            thresholdIndex = WebSecurityUtils.safeParseInt(request.getParameter("thresholdIndex"));
 
         }
 
@@ -269,7 +270,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
 
         String stringIndex = request.getParameter("filterSelected");
-        int filterIndex = stringIndex != null && !stringIndex.equals("") ? Integer.parseInt(stringIndex) - 1 : 0;
+        int filterIndex = stringIndex != null && !stringIndex.equals("") ? WebSecurityUtils.safeParseInt(stringIndex) - 1 : 0;
 
         /*
          * Save Threshold Filters on HTTP Session in order to restore the original list if user clicks on "Cancel"
@@ -328,7 +329,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(expressionIndexString==null) {
             throw new ServletException("expressionIndex parameter required to edit a threshold");
         }
-        int expressionIndex=Integer.parseInt(expressionIndexString);
+        int expressionIndex=WebSecurityUtils.safeParseInt(expressionIndexString);
 
         Expression expression=configFactory.getGroup(groupName).getExpression(expressionIndex);
         modelAndView=new ModelAndView("admin/thresholds/editExpression");
@@ -386,7 +387,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(thresholdIndexString==null) {
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
-        int thresholdIndex=Integer.parseInt(thresholdIndexString);
+        int thresholdIndex=WebSecurityUtils.safeParseInt(thresholdIndexString);
         Group group=configFactory.getGroup(groupName);
         group.removeThreshold(group.getThreshold(thresholdIndex));
         //and setup the group view again
@@ -402,7 +403,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(expressionIndexString==null) {
             throw new ServletException("expressionIndex parameter required to delete a threshold");
         }
-        int expressionIndex=Integer.parseInt(expressionIndexString);
+        int expressionIndex=WebSecurityUtils.safeParseInt(expressionIndexString);
         Group group=configFactory.getGroup(groupName);
         group.removeExpression(group.getExpression(expressionIndex));
         saveChanges();
@@ -437,9 +438,9 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         baseDef.setDsType(request.getParameter("dsType"));
         baseDef.setType(request.getParameter("type"));
-        baseDef.setRearm(Double.parseDouble(request.getParameter("rearm")));
-        baseDef.setTrigger(Integer.parseInt(request.getParameter("trigger")));
-        baseDef.setValue(Double.parseDouble(request.getParameter("value")));
+        baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
+        baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
+        baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
  
     }
     
@@ -472,7 +473,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(thresholdIndexString==null) {
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
-        int thresholdIndex=Integer.parseInt(thresholdIndexString);
+        int thresholdIndex=WebSecurityUtils.safeParseInt(thresholdIndexString);
         Threshold threshold=group.getThreshold(thresholdIndex);
         
         if(SAVE_BUTTON_TITLE.equals(submitAction)) {
@@ -511,7 +512,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(expressionIndexString==null) {
             throw new ServletException("expressionIndex parameter required to delete a threshold");
         }
-        int expressionIndex=Integer.parseInt(expressionIndexString);
+        int expressionIndex=WebSecurityUtils.safeParseInt(expressionIndexString);
         Expression expression=group.getExpression(expressionIndex);
         
         if(SAVE_BUTTON_TITLE.equals(submitAction)) {

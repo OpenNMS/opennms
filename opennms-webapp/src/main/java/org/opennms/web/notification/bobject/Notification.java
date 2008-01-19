@@ -39,6 +39,8 @@ package org.opennms.web.notification.bobject;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.web.WebSecurityUtils;
+
 /**
  * This class holds the information parsed from the notifications.xml
  * 
@@ -142,7 +144,7 @@ public class Notification {
 
         if (!m_interval.equals("all")) {
             // interval = TimeConverter.convertToMillis(m_interval);
-            interval = Integer.parseInt(m_interval);
+            interval = WebSecurityUtils.safeParseInt(m_interval);
         }
 
         return interval;
