@@ -196,9 +196,15 @@ public final class JMXDataCollectionConfigFactory {
 
             ThreadCategory.getInstance(JMXDataCollectionConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
             m_singleton = new JMXDataCollectionConfigFactory(cfgFile.getPath());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            m_singleton = new JMXDataCollectionConfigFactory("/opt/opennms/rrd/response/jmx/");
+        } catch (IOException ioe) {
+        	log().error("Unable to open JMX data collection config file", ioe);
+        	throw ioe;
+        } catch (MarshalException me) {
+        	log().error("Error unmarshalling JMX data collection config file", me);
+        	throw me;
+        } catch (ValidationException ve) {
+        	log().error("Error validating JMX data collection config file", ve);
+        	throw ve;
         }
 
         m_loaded = true;
@@ -461,6 +467,10 @@ public final class JMXDataCollectionConfigFactory {
         }
         
         return rrdPath;
+    }
+    
+    private static Category log() {
+    	return ThreadCategory.getInstance(JMXDataCollectionConfigFactory.class);
     }
     
 }
