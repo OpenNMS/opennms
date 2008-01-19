@@ -201,7 +201,7 @@ public class EventFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
@@ -497,14 +497,15 @@ public class EventFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(*) AS EVENTCOUNT FROM EVENTS WHERE ");
+            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
-            select.append(" AND NODEID=" + nodeId + " ");
+            select.append(" AND NODEID=?");
             select.append(" AND EVENTDISPLAY='Y' ");
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(select.toString());
+            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 eventCount = rs.getInt("EVENTCOUNT");

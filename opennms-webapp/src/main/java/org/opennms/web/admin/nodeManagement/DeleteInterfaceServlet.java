@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * @author brozow
@@ -68,7 +69,7 @@ public class DeleteInterfaceServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         checkParameters(request);
 
-        long nodeId = Long.parseLong(request.getParameter("node"));
+        long nodeId = WebSecurityUtils.safeParseLong(request.getParameter("node"));
         String ipAddr = request.getParameter("intf");
 
         // TODO provide a way to delete an interface that has a non-unique

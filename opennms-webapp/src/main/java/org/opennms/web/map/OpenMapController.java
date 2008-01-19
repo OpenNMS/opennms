@@ -46,6 +46,7 @@ import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.config.MapStartUpConfig;
 import org.opennms.web.map.view.*;
@@ -107,7 +108,7 @@ public class OpenMapController implements Controller {
 						+ " and MapHeight=" + mapHeight);
 			VMap map = null;
 			if(mapIdStr!=null){
-				int mapid = Integer.parseInt(mapIdStr);
+				int mapid = WebSecurityUtils.safeParseInt(mapIdStr);
 				log.debug("Opening map "+mapid+" for user "+user);
 				map = manager.openMap(mapid, user, !manager.isAdminMode());
 			}else{

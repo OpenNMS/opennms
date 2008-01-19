@@ -42,7 +42,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.notification.*,
+	import="org.opennms.web.WebSecurityUtils,
+		org.opennms.web.notification.*,
 		org.opennms.web.event.*,
 		org.opennms.web.element.*,
 		org.opennms.web.MissingParameterException
@@ -74,7 +75,7 @@
 
     String username = request.getRemoteUser();
     for (int i = 0; i < noticeIds.length; i++ ) {
-        this.model.acknowledged(username, Integer.parseInt(noticeIds[i]));
+        this.model.acknowledged(username, WebSecurityUtils.safeParseInt(noticeIds[i]));
     }
 
     //here again, I'm assuming that all succeeded, really need
@@ -82,7 +83,7 @@
     notices = new Notification[noticeIds.length];
 
     for (int i = 0; i < noticeIds.length; i++) {
-        notices[i] = this.model.getNoticeInfo(Integer.parseInt(noticeIds[i]));
+        notices[i] = this.model.getNoticeInfo(WebSecurityUtils.safeParseInt(noticeIds[i]));
     }
 %>
 

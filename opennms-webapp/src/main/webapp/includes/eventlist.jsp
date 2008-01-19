@@ -52,7 +52,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.event.*,
+	import="org.opennms.web.WebSecurityUtils,
+		org.opennms.web.event.*,
 		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.MissingParameterException
 	"
@@ -67,7 +68,7 @@
         throw new MissingParameterException("node");
    }
 
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     
     //optional parameters: ipAddr, service
     String ipAddr = request.getParameter("ipAddr");
@@ -79,7 +80,7 @@
 
    if( throttleString != null ) {
         try {
-           throttle = Integer.parseInt( throttleString );
+           throttle = WebSecurityUtils.safeParseInt( throttleString );
         }
         catch( NumberFormatException e ) {}
    }
@@ -106,7 +107,7 @@
     
     if( ipAddr != null ) {
         if( serviceIdString != null ) {
-            int serviceId = Integer.parseInt(serviceIdString);
+            int serviceId = WebSecurityUtils.safeParseInt(serviceIdString);
             events = EventFactory.getEventsForService(nodeId, ipAddr, serviceId, sortStyle, ackType, throttle, offset);
         }
         else {

@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.opennms.web.WebSecurityUtils;
+
 public abstract class NoticeUtil extends Object {
     protected static final Map<String, NoticeFactory.SortStyle> sortStylesString;
     protected static final Map<NoticeFactory.SortStyle, String> sortStyles;
@@ -141,11 +143,11 @@ public abstract class NoticeUtil extends Object {
         } else if (type.equals(NoticeFactory.ResponderFilter.TYPE)) {
             filter = new NoticeFactory.ResponderFilter(value);
         } else if (type.equals(NoticeFactory.NodeFilter.TYPE)) {
-            filter = new NoticeFactory.NodeFilter(Integer.parseInt(value));
+            filter = new NoticeFactory.NodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NoticeFactory.InterfaceFilter.TYPE)) {
             filter = new NoticeFactory.InterfaceFilter(value);
         } else if (type.equals(NoticeFactory.ServiceFilter.TYPE)) {
-            filter = new NoticeFactory.ServiceFilter(Integer.parseInt(value));
+            filter = new NoticeFactory.ServiceFilter(WebSecurityUtils.safeParseInt(value));
         }
 
         return filter;

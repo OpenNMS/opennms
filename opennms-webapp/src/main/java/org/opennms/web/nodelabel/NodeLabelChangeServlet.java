@@ -50,6 +50,7 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * Changes the label of a node, throws an event signalling that change, and then
@@ -90,7 +91,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
         }
 
         try {
-            int nodeId = Integer.parseInt(nodeIdString);
+            int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
             NodeLabel oldLabel = NodeLabel.retrieveLabel(nodeId);
             NodeLabel newLabel = null;
 

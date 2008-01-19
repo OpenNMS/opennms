@@ -49,6 +49,7 @@ import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
+import org.opennms.web.WebSecurityUtils;
 
 public class ModifyAssetServlet extends HttpServlet {
     private static final long serialVersionUID = 9203659232262966182L;
@@ -71,7 +72,7 @@ public class ModifyAssetServlet extends HttpServlet {
             throw new MissingParameterException("isnew", new String[] { "node", "isnew" });
         }
 
-        int nodeId = Integer.parseInt(nodeIdString);
+        int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
         boolean isNew = Boolean.valueOf(isNewString).booleanValue();
 
         Asset asset = this.parms2Asset(request, nodeId);

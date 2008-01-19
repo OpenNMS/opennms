@@ -42,6 +42,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.web.WebSecurityUtils;
 
 public class CurrentOutageParseResponse {
 
@@ -62,7 +63,7 @@ public class CurrentOutageParseResponse {
                 String outageId = StringUtils.substringAfter(parameterName, "chkbx_");
                 String parameterValue = request.getParameter(parameterName);
                 if (parameterValue.equals(SuppressOutageCheckBoxConstants.SELECTED)) {
-                    m_suppress.suppress(Integer.parseInt(outageId), request.getParameter("suppresstime_" + outageId),
+                    m_suppress.suppress(WebSecurityUtils.safeParseInt(outageId), request.getParameter("suppresstime_" + outageId),
                             outageService, request.getRemoteUser().toString());
 
                     myOutages.remove(outageId);

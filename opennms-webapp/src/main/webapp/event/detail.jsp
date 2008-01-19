@@ -47,6 +47,7 @@
 		java.util.regex.Matcher,
 		java.util.regex.Pattern,
 		org.opennms.netmgt.EventConstants,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.event.AcknowledgeEventServlet,
 		org.opennms.web.event.Event,
 		org.opennms.web.event.EventFactory,
@@ -66,7 +67,7 @@
     int eventId = -1;
 
     try {
-        eventId = Integer.parseInt( eventIdString );
+        eventId = WebSecurityUtils.safeParseInt( eventIdString );
     }
     catch( NumberFormatException e ) {
         throw new org.opennms.web.event.EventIdNotFoundException( "The event id must be an integer.", eventIdString );

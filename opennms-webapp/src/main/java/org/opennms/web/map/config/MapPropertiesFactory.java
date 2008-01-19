@@ -50,6 +50,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
 
@@ -482,7 +483,7 @@ public class MapPropertiesFactory extends Object {
 					+ ".color");
 			String flash = props.getProperty("severity." + severities[i]
 					+ ".flash");
-			Severity sev = new Severity(Integer.parseInt(id), label, color);
+			Severity sev = new Severity(WebSecurityUtils.safeParseInt(id), label, color);
 			if (flash != null && flash.equalsIgnoreCase("true"))
 				sev.setFlash(true);
 			log.debug("found severity " + severities[i] + " with id=" + id
@@ -506,7 +507,7 @@ public class MapPropertiesFactory extends Object {
 		String sevid = props.getProperty("severity." + defaultid + ".id");
 		String sevlabel = props.getProperty("severity." + defaultid + ".label");
 		String sevcolor = props.getProperty("severity." + defaultid + ".color");
-		defaultSeverity = new Severity(Integer.parseInt(sevid), sevlabel, sevcolor);
+		defaultSeverity = new Severity(WebSecurityUtils.safeParseInt(sevid), sevlabel, sevcolor);
 		
 		
 		String indeterminateId = props.getProperty("severity.indeterminate");
@@ -520,7 +521,7 @@ public class MapPropertiesFactory extends Object {
 				+ ".label");
 		String indsevcolor = props.getProperty("severity." + indeterminateId
 				+ ".color");
-		indeterminateSeverity = new Severity(Integer.parseInt(indsevid), indsevlabel, indsevcolor);
+		indeterminateSeverity = new Severity(WebSecurityUtils.safeParseInt(indsevid), indsevlabel, indsevcolor);
 		
 		//Links
 		String[] links = BundleLists.parseBundleList(props
@@ -531,7 +532,7 @@ public class MapPropertiesFactory extends Object {
 			log.error("Mandatory property 'link.default' not found!");
 			throw new IllegalStateException("The property 'link.default' is mandatory");
 		}
-		defaultLink = Integer.parseInt(defaultLinkStr);
+		defaultLink = WebSecurityUtils.safeParseInt(defaultLinkStr);
 
 		for (int i = 0; i < links.length; i++) {
 			String id = props.getProperty("link." + links[i] + ".id");
@@ -559,13 +560,13 @@ public class MapPropertiesFactory extends Object {
 				
 			int dash_arr=-1;
 			if(dasharray!=null)
-				dash_arr=Integer.parseInt(dasharray);
+				dash_arr=WebSecurityUtils.safeParseInt(dasharray);
 			
 			int snmp_type=-1;
 			if(snmptype!=null)
-				snmp_type=Integer.parseInt(snmptype);
+				snmp_type=WebSecurityUtils.safeParseInt(snmptype);
 
-			Link lnk = new Link(Integer.parseInt(id), speed,text,width,dash_arr,snmp_type);
+			Link lnk = new Link(WebSecurityUtils.safeParseInt(id), speed,text,width,dash_arr,snmp_type);
 			
 			log.debug("found link " + links[i] + " with id=" + id
 					+ ", text=" + text+ ", speed=" + speed+ ", width=" + width+ ", dash-array=" + dasharray+ "snmp-type=" + snmp_type+". Adding it.");
@@ -622,7 +623,7 @@ public class MapPropertiesFactory extends Object {
 			log.debug("found status " + statuses[i] + " with id=" + id
 					+ ", uei=" + uei + ", color=" + color + ", text=" + text
 					+ ". Adding it.");
-			Status status = new Status(Integer.parseInt(id), uei, color, text);
+			Status status = new Status(WebSecurityUtils.safeParseInt(id), uei, color, text);
 			statusesMap.put(uei, status);
 		}
 
@@ -643,7 +644,7 @@ public class MapPropertiesFactory extends Object {
 		String stuei = props.getProperty("status." + unknownid + ".uei");
 		String stcolor = props.getProperty("status." + unknownid + ".color");
 		String sttext = props.getProperty("status." + unknownid + ".text");
-		unknownStatus = new Status(Integer.parseInt(stid), stuei, stcolor, sttext);
+		unknownStatus = new Status(WebSecurityUtils.safeParseInt(stid), stuei, stcolor, sttext);
 		
 		String defaultstid = props.getProperty("status.default");
 		if (defaultstid == null) {
@@ -654,7 +655,7 @@ public class MapPropertiesFactory extends Object {
 		String stauei = props.getProperty("status." + defaultstid + ".uei");
 		String stacolor = props.getProperty("status." + defaultstid + ".color");
 		String statext = props.getProperty("status." + defaultstid + ".text");
-		defaultStatus = new Status(Integer.parseInt(staid), stauei, stacolor, statext);
+		defaultStatus = new Status(WebSecurityUtils.safeParseInt(staid), stauei, stacolor, statext);
 		
 		// look up statuses and their properties
 		String[] availes = BundleLists.parseBundleList(props
@@ -667,8 +668,8 @@ public class MapPropertiesFactory extends Object {
 			String flash = props.getProperty("avail." + availes[i] + ".flash");
 			log.debug("found avail " + availes[i] + " with id=" + id + ", min="
 					+ min + ", color=" + color + ". Adding it.");
-			Avail avail = new Avail(Integer.parseInt(id),
-					Integer.parseInt(min), color);
+			Avail avail = new Avail(WebSecurityUtils.safeParseInt(id),
+					WebSecurityUtils.safeParseInt(min), color);
 			if (flash != null && flash.equalsIgnoreCase("true"))
 				avail.setFlash(true);
 			availsMap.put(min, avail);
@@ -689,7 +690,7 @@ public class MapPropertiesFactory extends Object {
 			throw new IllegalStateException(
 					"Required avail.undefined properties not found.");
 		}
-		undefinedAvail = new Avail(Integer.parseInt(avid), Integer.parseInt(avmin), avcolor);
+		undefinedAvail = new Avail(WebSecurityUtils.safeParseInt(avid), WebSecurityUtils.safeParseInt(avmin), avcolor);
 
 		
 		String enableAvail = props.getProperty("avail.enable");
@@ -705,7 +706,7 @@ public class MapPropertiesFactory extends Object {
 		Iterator ite = availsMap.values().iterator();
 		while (ite.hasNext()) {
 			Avail av = (Avail) ite.next();
-			if (av.getId() == Integer.parseInt(disableAvailId)){
+			if (av.getId() == WebSecurityUtils.safeParseInt(disableAvailId)){
 				disabledAvail=av;
 				break;
 			}
@@ -845,7 +846,7 @@ public class MapPropertiesFactory extends Object {
 	    		Iterator<Link> it = linkSet.iterator();
 	    		while(it.hasNext()){
 	    			Link next = it.next();
-	    			if(Long.parseLong(next.getSpeed())==snmpifspeed){
+	    			if(WebSecurityUtils.safeParseLong(next.getSpeed())==snmpifspeed){
 	    				link=next;
 	    				break;
 	    			}

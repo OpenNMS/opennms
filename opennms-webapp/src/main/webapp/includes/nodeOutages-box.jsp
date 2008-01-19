@@ -47,7 +47,7 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.outage.*,java.util.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.outage.*,java.util.*" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%! 
@@ -62,7 +62,7 @@
         throw new org.opennms.web.MissingParameterException("node");
     }
         
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     
     //determine yesterday's respresentation
     Calendar cal = new GregorianCalendar();

@@ -56,6 +56,7 @@ import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.web.WebSecurityUtils;
 
 public class ScheduleEditorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -178,7 +179,7 @@ public class ScheduleEditorServlet extends HttpServlet {
             ScheduleManager schedMgr = getSchedMgr(request);
             
             
-            int schedIndex = Integer.parseInt(request.getParameter("scheduleIndex"));
+            int schedIndex = WebSecurityUtils.safeParseInt(request.getParameter("scheduleIndex"));
             
             request.getSession().setAttribute("currentSchedIndex", request.getParameter("scheduleIndex"));
             request.getSession().setAttribute("currentSchedule", schedMgr.getSchedule(schedIndex));
@@ -191,7 +192,7 @@ public class ScheduleEditorServlet extends HttpServlet {
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
             ScheduleManager schedMgr = getSchedMgr(request);
             
-            int schedIndex = Integer.parseInt(request.getParameter("scheduleIndex"));
+            int schedIndex = WebSecurityUtils.safeParseInt(request.getParameter("scheduleIndex"));
             
             request.getSession().setAttribute("currentSchedIndex", request.getParameter("scheduleIndex"));
             request.getSession().setAttribute("currentSchedule", schedMgr.getSchedule(schedIndex));
@@ -205,7 +206,7 @@ public class ScheduleEditorServlet extends HttpServlet {
             ScheduleManager schedMgr = getSchedMgr(request);
             
             // delete the schedule and save
-            int schedIndex = Integer.parseInt(request.getParameter("scheduleIndex"));
+            int schedIndex = WebSecurityUtils.safeParseInt(request.getParameter("scheduleIndex"));
             schedMgr.deleteSchedule(schedIndex);
             schedMgr.saveSchedules();
             

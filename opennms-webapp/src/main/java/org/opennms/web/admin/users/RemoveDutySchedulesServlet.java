@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.admin.users.parsers.DutySchedule;
 import org.opennms.web.admin.users.parsers.NotificationInfo;
 import org.opennms.web.admin.users.parsers.User;
@@ -67,7 +68,7 @@ public class RemoveDutySchedulesServlet extends HttpServlet {
 
         List<DutySchedule> dutySchedules = notif.getDutySchedules();
 
-        int dutyCount = Integer.parseInt(request.getParameter("dutySchedules"));
+        int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
         for (int i = 0; i < dutyCount; i++) {
             String curDuty = request.getParameter("deleteDuty" + i);
             if (curDuty != null) {
