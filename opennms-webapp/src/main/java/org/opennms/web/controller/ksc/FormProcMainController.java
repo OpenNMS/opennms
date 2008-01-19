@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -60,7 +61,7 @@ public class FormProcMainController extends AbstractController implements Initia
             if (r_index == null) {
                 throw new MissingParameterException("report");
             } 
-            report_index = Integer.parseInt(r_index);
+            report_index = WebSecurityUtils.safeParseInt(r_index);
             if ((report_action.equals("Customize")) || (report_action.equals("CreateFrom"))) {  
                 // Go ahead and tell report factory to put the report config into the working report area
                 getKscReportFactory().loadWorkingReport(report_index);

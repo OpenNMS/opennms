@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that manages the pathOutage table in the DB
@@ -68,7 +69,7 @@ public class SetCriticalPathServlet extends HttpServlet {
 	String task = request.getParameter("task");
 	int node = -1;
         try {
-            node = Integer.parseInt(nodeString);
+            node = WebSecurityUtils.safeParseInt(nodeString);
         } catch (NumberFormatException numE)  {
             throw new ServletException(numE);
         }

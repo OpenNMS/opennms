@@ -127,19 +127,19 @@
     }
 
     Calendar startCal = Calendar.getInstance();
-    startCal.set( Calendar.MONTH, Integer.parseInt( startMonth ));
-    startCal.set( Calendar.DATE, Integer.parseInt( startDate ));
-    startCal.set( Calendar.YEAR, Integer.parseInt( startYear ));
-    startCal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( startHour ));
+    startCal.set( Calendar.MONTH, WebSecurityUtils.safeParseInt( startMonth ));
+    startCal.set( Calendar.DATE, WebSecurityUtils.safeParseInt( startDate ));
+    startCal.set( Calendar.YEAR, WebSecurityUtils.safeParseInt( startYear ));
+    startCal.set( Calendar.HOUR_OF_DAY, WebSecurityUtils.safeParseInt( startHour ));
     startCal.set( Calendar.MINUTE, 0 );
     startCal.set( Calendar.SECOND, 0 );
     startCal.set( Calendar.MILLISECOND, 0 );
 
     Calendar endCal = Calendar.getInstance();
-    endCal.set( Calendar.MONTH, Integer.parseInt( endMonth ));
-    endCal.set( Calendar.DATE, Integer.parseInt( endDate ));
-    endCal.set( Calendar.YEAR, Integer.parseInt( endYear ));
-    endCal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( endHour ));
+    endCal.set( Calendar.MONTH, WebSecurityUtils.safeParseInt( endMonth ));
+    endCal.set( Calendar.DATE, WebSecurityUtils.safeParseInt( endDate ));
+    endCal.set( Calendar.YEAR, WebSecurityUtils.safeParseInt( endYear ));
+    endCal.set( Calendar.HOUR_OF_DAY, WebSecurityUtils.safeParseInt( endHour ));
     endCal.set( Calendar.MINUTE, 0 );
     endCal.set( Calendar.SECOND, 0 );
     endCal.set( Calendar.MILLISECOND, 0 );
@@ -148,8 +148,8 @@
     String end   = Long.toString( endCal.getTime().getTime() );
 
     //gather information for displaying around the image
-    String startPretty = new Date( Long.parseLong( start )).toString();
-    String endPretty   = new Date( Long.parseLong( end )).toString();
+    String startPretty = new Date( WebSecurityUtils.safeParseLong( start )).toString();
+    String endPretty   = new Date( WebSecurityUtils.safeParseLong( end )).toString();
     
     
     String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour" };

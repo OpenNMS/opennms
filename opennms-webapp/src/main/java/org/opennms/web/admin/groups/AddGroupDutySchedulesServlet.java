@@ -48,6 +48,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles adding new duty schedules to a group
@@ -65,7 +66,7 @@ public class AddGroupDutySchedulesServlet extends HttpServlet {
 
         Vector<Object> newSchedule = new Vector<Object>();
 
-        int dutyAddCount = Integer.parseInt(request.getParameter("numSchedules"));
+        int dutyAddCount = WebSecurityUtils.safeParseInt(request.getParameter("numSchedules"));
 
         for (int j = 0; j < dutyAddCount; j++) {
             // add 7 false boolean values for each day of the week

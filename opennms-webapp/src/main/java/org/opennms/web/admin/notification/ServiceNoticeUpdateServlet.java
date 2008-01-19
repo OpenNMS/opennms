@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles updating the ifservices table with the notice status
@@ -82,9 +83,9 @@ public class ServiceNoticeUpdateServlet extends HttpServlet {
 
             // decompose the key into nodeid, ipaddres and service id
             StringTokenizer tokenizer = new StringTokenizer(key, ",");
-            int nodeID = Integer.parseInt(tokenizer.nextToken());
+            int nodeID = WebSecurityUtils.safeParseInt(tokenizer.nextToken());
             String ipAddress = tokenizer.nextToken();
-            int serviceID = Integer.parseInt(tokenizer.nextToken());
+            int serviceID = WebSecurityUtils.safeParseInt(tokenizer.nextToken());
 
             updateService(nodeID, ipAddress, serviceID, (String) servicesCheckedMap.get(key));
         }

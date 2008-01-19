@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,8 +61,8 @@ public class FormProcReportController extends AbstractController implements Init
         String show_timespan = request.getParameter("show_timespan");
         String show_graphtype = request.getParameter("show_graphtype");
         String g_index = request.getParameter("graph_index");
-        int graph_index = Integer.parseInt(g_index);
-        int graphs_per_line = Integer.parseInt(request.getParameter("graphs_per_line"));
+        int graph_index = WebSecurityUtils.safeParseInt(g_index);
+        int graphs_per_line = WebSecurityUtils.safeParseInt(request.getParameter("graphs_per_line"));
      
         // Save the global variables into the working report
         report.setTitle(report_title);

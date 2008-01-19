@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 18: Move sanitizeColumnName to WebSecurityUtils.sanitizeDbColumnName
 // 2008 Jan 17: Get rid of Vectors and "Object element", format code
 //              a bit, and use Spring's Assert class. - dj@opennms.org
 // 2008 Jan 17: Indent, organize imports. - dj@opennms.org
@@ -57,11 +58,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.web.WebSecurityUtils;
 import org.springframework.util.Assert;
 
 public class AssetModel extends Object {
-
-    private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 
     public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
@@ -240,7 +240,7 @@ public class AssetModel extends Object {
         Connection conn = Vault.getDbConnection();
         List<MatchingAsset> list = new ArrayList<MatchingAsset>();
 
-        columnName = sanitizeColumnName(columnName);
+        columnName = WebSecurityUtils.sanitizeDbColumnName(columnName);
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
@@ -340,10 +340,6 @@ public class AssetModel extends Object {
         }
 
         return false;
-    }
-
-    private static String sanitizeColumnName(String columnName) {
-        return ILLEGAL_IN_COLUMN_NAME_PATTERN.matcher(columnName).replaceAll("");
     }
 
     /**

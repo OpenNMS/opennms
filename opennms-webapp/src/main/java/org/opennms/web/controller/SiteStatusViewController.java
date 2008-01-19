@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.AggregateStatusView;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.SiteStatusViewError;
@@ -84,8 +85,8 @@ public class SiteStatusViewController extends AbstractController {
 
         Collection<AggregateStatus> aggrStati;
         
-        if (nodeId != null && Integer.parseInt(nodeId) > 0) {
-            aggrStati = m_service.createAggregateStatusesUsingNodeId(Integer.parseInt(nodeId), statusView);
+        if (nodeId != null && WebSecurityUtils.safeParseInt(nodeId) > 0) {
+            aggrStati = m_service.createAggregateStatusesUsingNodeId(WebSecurityUtils.safeParseInt(nodeId), statusView);
         } else if (statusSite == null) {
             aggrStati = m_service.createAggregateStatuses(view);
         } else {

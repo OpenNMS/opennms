@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VMap;
 
@@ -79,9 +80,9 @@ public class NewMapController implements Controller {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 
-		int mapWidth = Integer.parseInt(request
+		int mapWidth = WebSecurityUtils.safeParseInt(request
 				.getParameter("MapWidth"));
-		int mapHeight = Integer.parseInt(request
+		int mapHeight = WebSecurityUtils.safeParseInt(request
 					.getParameter("MapHeight"));
 
 		if (log.isDebugEnabled())

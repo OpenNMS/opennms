@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
@@ -235,15 +236,15 @@ public abstract class EventUtil extends Object {
         String value = tokens.nextToken();
 
         if (type.equals(SeverityFilter.TYPE)) {
-            filter = new SeverityFilter(Integer.parseInt(value));
+            filter = new SeverityFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NodeFilter.TYPE)) {
-            filter = new NodeFilter(Integer.parseInt(value));
+            filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
             filter = new NodeNameLikeFilter(value);
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(Integer.parseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(PartialUEIFilter.TYPE)) {
             filter = new PartialUEIFilter(value);
         } else if (type.equals(ExactUEIFilter.TYPE)) {
@@ -251,13 +252,13 @@ public abstract class EventUtil extends Object {
         } else if (type.equals(AcknowledgedByFilter.TYPE)) {
             filter = new AcknowledgedByFilter(value);
         } else if (type.equals(NegativeSeverityFilter.TYPE)) {
-            filter = new NegativeSeverityFilter(Integer.parseInt(value));
+            filter = new NegativeSeverityFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
-            filter = new NegativeNodeFilter(Integer.parseInt(value));
+            filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(value);
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
-            filter = new NegativeServiceFilter(Integer.parseInt(value));
+            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativePartialUEIFilter.TYPE)) {
             filter = new NegativePartialUEIFilter(value);
         } else if (type.equals(NegativeExactUEIFilter.TYPE)) {
@@ -271,11 +272,11 @@ public abstract class EventUtil extends Object {
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeDateFilter.TYPE)) {
-            filter = new BeforeDateFilter(Long.parseLong(value));
+            filter = new BeforeDateFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(AfterDateFilter.TYPE)) {
-            filter = new AfterDateFilter(Long.parseLong(value));
+            filter = new AfterDateFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(AlarmIDFilter.TYPE)) {
-            filter = new AlarmIDFilter(Integer.parseInt(value));
+            filter = new AlarmIDFilter(WebSecurityUtils.safeParseInt(value));
         }
 
         return filter;

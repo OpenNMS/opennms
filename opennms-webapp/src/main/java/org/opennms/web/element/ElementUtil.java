@@ -37,6 +37,8 @@
 
 package org.opennms.web.element;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -223,10 +225,9 @@ public class ElementUtil extends Object {
         try {
             nodeId = Integer.parseInt(nodeIdString);
         } catch (NumberFormatException e) {
-            throw new ServletException("Wrong data type for \""
-                    + nodeIdParam + "\" "
-                    + "(value: \"" + nodeIdString
-                    + "\"), should be integer", e);
+            throw new ElementIdNotFoundException("Wrong data type for \""
+                    + nodeIdParam + "\", should be integer", nodeIdString, 
+                    "node", "element/node.jsp", "node", "element/nodeList.htm");
         }
 
         Node node = NetworkElementFactory.getNode(nodeId);
@@ -262,11 +263,10 @@ public class ElementUtil extends Object {
             try {
                 ipInterfaceId = Integer.parseInt(ifServiceIdString);
             } catch (NumberFormatException e) {
-                throw new ServletException("Wrong data type for \""
-                                           + ipInterfaceIdParam + "\" "
-                                           + "(value: \"" + ipInterfaceIdParam
-                                           + "\"), should be integer", e);
-                }
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + ipInterfaceIdParam + "\", should be integer",
+                        ifServiceIdString, "service");
+            }
 
                 intf = NetworkElementFactory.getInterface(ipInterfaceId);
         } else {
@@ -295,21 +295,18 @@ public class ElementUtil extends Object {
             try {
                 nodeId = Integer.parseInt(nodeIdString);
             } catch (NumberFormatException e) {
-                throw new ServletException("Wrong data type for \""
-                                           + nodeIdParam + "\" "
-                                           + "(value: \"" + nodeIdString
-                                           + "\"), should be integer", e);
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + nodeIdParam + "\", should be integer",
+                        nodeIdString, "node");
             }
 
             if (ifIndexString != null) {
                 try {
                     ifIndex = Integer.parseInt(ifIndexString);
                 } catch (NumberFormatException e) {
-                    throw new ServletException("Wrong data type for \""
-                                               + ifIndexParam + "\" "
-                                               + "(value: \""
-                                               + ifIndexString
-                                               + "\"), should be integer", e);
+                    throw new ElementIdNotFoundException("Wrong data type for \""
+                            + ifIndexParam + "\", should be integer",
+                            ifIndexString, "interface");
                 }
             }
 
@@ -352,11 +349,10 @@ public class ElementUtil extends Object {
             try {
                 ifServiceId = Integer.parseInt(ifServiceIdString);
             } catch (NumberFormatException e) {
-                throw new ServletException("Wrong data type for \""
-                                           + ifServiceIdParam + "\" "
-                                           + "(value: \"" + ifServiceIdString
-                                           + "\"), should be integer", e);
-                }
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + ifServiceIdParam + "\", should be integer",
+                        ifServiceIdString, "service");
+            }
 
                 service = NetworkElementFactory.getService(ifServiceId);
         } else {
@@ -391,20 +387,18 @@ public class ElementUtil extends Object {
             try {
                 nodeId = Integer.parseInt(nodeIdString);
             } catch (NumberFormatException e) {
-                throw new ServletException("Wrong data type for \""
-                                           + nodeIdParam + "\" "
-                                           + "(value: \"" + nodeIdString
-                                           + "\"), should be integer", e);
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + nodeIdParam + "\", should be integer",
+                        nodeIdString, "node");
             }
         
             try {
                 serviceId = Integer.parseInt(serviceIdString);
             } catch (NumberFormatException e) {
-                throw new ServletException("Wrong data type for \""
-                                           + serviceIdParam + "\" "
-                                           + "(value: \"" + serviceIdString
-                                           + "\"), should be integer", e);
-                }
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + serviceIdParam + "\", should be integer",
+                        serviceIdString, "service");
+            }
 
                 service = NetworkElementFactory.getService(nodeId, ipAddr,
                                                            serviceId);
@@ -416,6 +410,42 @@ public class ElementUtil extends Object {
         }
         
         return service;
+    }
+    
+    public static Service[] getServicesOnNodeByParams(HttpServletRequest request, int serviceId) throws SQLException {
+    	Service[] services;
+    	int nodeId;
+    	
+    	try {
+    		nodeId = Integer.parseInt(request.getParameter("node"));
+    	} catch (NumberFormatException nfe) {
+    		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
+    					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
+    	}
+    	services = NetworkElementFactory.getServicesOnNode(nodeId, serviceId);
+    	return services;
+    }
+    
+    public static boolean isRouteInfoNodeByParams(HttpServletRequest request) throws SQLException {
+    	int nodeId;
+    	
+    	try {
+    		nodeId = Integer.parseInt(request.getParameter("node"));
+    	} catch (NumberFormatException nfe) {
+    		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
+    					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
+    	}
+    	return NetworkElementFactory.isRouteInfoNode(nodeId);
+    }
+    
+    private static String encodeUrl(String in) {
+    	String out = "";
+		try {
+			out = URLEncoder.encode(in, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// ignore
+		}
+		return out;
     }
     
 

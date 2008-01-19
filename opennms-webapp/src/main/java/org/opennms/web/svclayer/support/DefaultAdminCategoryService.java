@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AdminCategoryService;
 
 public class DefaultAdminCategoryService implements
@@ -81,7 +82,7 @@ public class DefaultAdminCategoryService implements
     private OnmsCategory findCategory(String name) {
         int categoryId = -1;
         try {
-            categoryId = Integer.parseInt(name);
+            categoryId = WebSecurityUtils.safeParseInt(name);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("parameter 'categoryid' "
                                                + "with value '"
@@ -135,7 +136,7 @@ public class DefaultAdminCategoryService implements
             for (String idString : toAdd) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toAdd element '"
                                                        + idString
@@ -166,7 +167,7 @@ public class DefaultAdminCategoryService implements
             for (String idString : toDelete) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toDelete element '"
                                                        + idString
@@ -260,7 +261,7 @@ public class DefaultAdminCategoryService implements
             for (String idString : toAdd) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toAdd element '"
                                                        + idString
@@ -291,7 +292,7 @@ public class DefaultAdminCategoryService implements
             for (String idString : toDelete) {
                 Integer id;
                 try {
-                    id = Integer.parseInt(idString);
+                    id = WebSecurityUtils.safeParseInt(idString);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("toDelete element '"
                                                        + idString
@@ -325,7 +326,7 @@ public class DefaultAdminCategoryService implements
         int nodeId;
         
         try {
-            nodeId = Integer.parseInt(nodeIdString);
+            nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("parameter 'node' "
                                                + "with value '"

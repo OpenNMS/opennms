@@ -53,6 +53,7 @@ import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles updating the status of the notifications
@@ -99,11 +100,11 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	Specific newSpecific = new Specific();
         	newSpecific.setContent(ipAddr);
         	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals("800")){
-        		newSpecific.setTimeout(Long.parseLong(timeout));
+        		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
         	
         	if(retries!=null && !retries.trim().equals("") && !retries.equals("3")){
-        		newSpecific.setRetries(Integer.parseInt(retries));
+        		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
         	config.addSpecific(newSpecific);
         }
@@ -112,7 +113,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         if(action.equals(removeSpecificAction)){
         	log.debug("Removing Specific");
         	String specificIndex = request.getParameter("index");
-        	int index = Integer.parseInt(specificIndex);
+        	int index = WebSecurityUtils.safeParseInt(specificIndex);
         	Specific spec= config.getSpecific(index);
         	boolean result = config.removeSpecific(spec);
         	log.debug("Removing Specific result = "+result);
@@ -130,10 +131,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	newIR.setBegin(ipAddrBase);
         	newIR.setEnd(ipAddrEnd);
         	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals("800")){
-        		newIR.setTimeout(Long.parseLong(timeout));
+        		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
         	if(retries!=null && !retries.trim().equals("") && !retries.equals("3")){
-        		newIR.setRetries(Integer.parseInt(retries));
+        		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
         	config.addIncludeRange(newIR);
         }
@@ -142,7 +143,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         if(action.equals(removeIncludeRangeAction)){
         	log.debug("Removing Include Range");
         	String specificIndex = request.getParameter("index");
-        	int index = Integer.parseInt(specificIndex);
+        	int index = WebSecurityUtils.safeParseInt(specificIndex);
         	IncludeRange ir= config.getIncludeRange(index);
         	boolean result = config.removeIncludeRange(ir);
         	log.debug("Removing Include Range result = "+result);
@@ -164,7 +165,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         if(action.equals(removeExcludeRangeAction)){
         	log.debug("Removing Exclude Range");
         	String specificIndex = request.getParameter("index");
-        	int index = Integer.parseInt(specificIndex);
+        	int index = WebSecurityUtils.safeParseInt(specificIndex);
         	ExcludeRange er= config.getExcludeRange(index);
         	boolean result = config.removeExcludeRange(er);
         	log.debug("Removing Exclude Range result = "+result);

@@ -43,6 +43,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+			org.opennms.web.WebSecurityUtils,
             org.opennms.web.Util,
             org.opennms.netmgt.config.*,
             org.opennms.netmgt.config.destinationPaths.*"
@@ -64,7 +65,7 @@
 
             Collection targets = null;
 
-            int index = Integer.parseInt(request.getParameter("targetIndex"));
+            int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             if (index < 0) {
                 targets = newPath.getTargetCollection();
             } else {

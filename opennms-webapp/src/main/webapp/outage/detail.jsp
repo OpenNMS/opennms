@@ -43,6 +43,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.outage.*,
 		java.text.DateFormat
 	"
@@ -62,7 +63,7 @@
     int outageId = -1;
 
     try {
-        outageId = Integer.parseInt( outageIdString );
+        outageId = WebSecurityUtils.safeParseInt( outageIdString );
     }
     catch( NumberFormatException e ) {
         throw new org.opennms.web.outage.OutageIdNotFoundException( "The outage id must be an integer.", outageIdString );

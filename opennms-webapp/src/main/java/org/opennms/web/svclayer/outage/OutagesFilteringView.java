@@ -51,6 +51,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.web.WebSecurityUtils;
 
 public class OutagesFilteringView {
 
@@ -100,27 +101,27 @@ public class OutagesFilteringView {
                 }
 
                 if (parameterName.startsWith("smaller_iflostservice")) {
-                    Date date = new Date(Long.parseLong(parameterValue));
+                    Date date = new Date(WebSecurityUtils.safeParseLong(parameterValue));
                     queryResult = queryResult + " AND outages.iflostservice < "
                     + "'" + d_format.format(date) + "'";
 
                 }
 
                 if (parameterName.startsWith("bigger_iflostservice")) {
-                    Date date = new Date(Long.parseLong(parameterValue));
+                    Date date = new Date(WebSecurityUtils.safeParseLong(parameterValue));
                     queryResult = queryResult + " AND outages.iflostservice > "
                     + "'" + d_format.format(date) + "'";
 
                 }
 
                 if (parameterName.startsWith("smaller_ifregainedservice")) {
-                    Date date = new Date(Long.parseLong(parameterValue));
+                    Date date = new Date(WebSecurityUtils.safeParseLong(parameterValue));
                     queryResult = queryResult + " AND outages.iflostservice < "
                     + "'" + d_format.format(date) + "'";
                 }
 
                 if (parameterName.startsWith("bigger_ifregainedservice")) {
-                    Date date = new Date(Long.parseLong(parameterValue));
+                    Date date = new Date(WebSecurityUtils.safeParseLong(parameterValue));
                     queryResult = queryResult + " AND outages.iflostservice > "
                     + "'" + d_format.format(date) + "'";
                 }
@@ -135,54 +136,54 @@ public class OutagesFilteringView {
         OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
 
         if (request.getParameter("nodeid") != null && request.getParameter("nodeid").length() > 0) {
-            criteria.add(Restrictions.eq("node.id", Integer.parseInt(request.getParameter("nodeid"))));
+            criteria.add(Restrictions.eq("node.id", WebSecurityUtils.safeParseInt(request.getParameter("nodeid"))));
         }
 
         if (request.getParameter("not_nodeid") != null && request.getParameter("not_nodeid").length() > 0) {
-            criteria.add(Restrictions.ne("node.id", Integer.parseInt(request.getParameter("not_nodeid"))));
+            criteria.add(Restrictions.ne("node.id", WebSecurityUtils.safeParseInt(request.getParameter("not_nodeid"))));
         }
 
         if (request.getParameter("ipinterfaceid") != null  && request.getParameter("ipinterfaceid").length() > 0) {
-            criteria.add(Restrictions.eq("ipInterface.id", Integer.parseInt(request.getParameter("ipinterfaceid"))));
+            criteria.add(Restrictions.eq("ipInterface.id", WebSecurityUtils.safeParseInt(request.getParameter("ipinterfaceid"))));
         }
 
         if (request.getParameter("not_ipinterfaceid") != null && request.getParameter("not_ipinterfaceid").length() > 0) {
-            criteria.add(Restrictions.ne("ipInterface.id", Integer.parseInt(request.getParameter("not_ipinterfaceid"))));
+            criteria.add(Restrictions.ne("ipInterface.id", WebSecurityUtils.safeParseInt(request.getParameter("not_ipinterfaceid"))));
         }
 
         if (request.getParameter("serviceid") != null && request.getParameter("serviceid").length() > 0) {
-            criteria.add(Restrictions.eq("monitoredService.serviceType.id", Integer.parseInt(request.getParameter("serviceid"))));
+            criteria.add(Restrictions.eq("monitoredService.serviceType.id", WebSecurityUtils.safeParseInt(request.getParameter("serviceid"))));
         }
 
         if (request.getParameter("not_serviceid") != null && request.getParameter("not_serviceid").length() > 0) {
-            criteria.add(Restrictions.ne("monitoredService.serviceType.id", Integer.parseInt(request.getParameter("not_serviceid"))));
+            criteria.add(Restrictions.ne("monitoredService.serviceType.id", WebSecurityUtils.safeParseInt(request.getParameter("not_serviceid"))));
         }
         
         if (request.getParameter("ifserviceid") != null && request.getParameter("ifserviceid").length() > 0) {
-            criteria.add(Restrictions.eq("monitoredService.id", Integer.parseInt(request.getParameter("ifserviceid"))));
+            criteria.add(Restrictions.eq("monitoredService.id", WebSecurityUtils.safeParseInt(request.getParameter("ifserviceid"))));
         }
 
         if (request.getParameter("not_ifserviceid") != null && request.getParameter("not_ifserviceid").length() > 0) {
-            criteria.add(Restrictions.ne("monitoredService.id", Integer.parseInt(request.getParameter("not_ifserviceid"))));
+            criteria.add(Restrictions.ne("monitoredService.id", WebSecurityUtils.safeParseInt(request.getParameter("not_ifserviceid"))));
         }
 
         if (request.getParameter("smaller_iflostservice") != null && request.getParameter("smaller_iflostservice").length() > 0) {
-            Date date = new Date(Long.parseLong(request.getParameter("smaller_iflostservice")));
+            Date date = new Date(WebSecurityUtils.safeParseLong(request.getParameter("smaller_iflostservice")));
             criteria.add(Restrictions.lt("ifLostService", date));
         }
 
         if (request.getParameter("bigger_iflostservice") != null && request.getParameter("bigger_iflostservice").length() > 0) {
-            Date date = new Date(Long.parseLong(request.getParameter("bigger_iflostservice")));
+            Date date = new Date(WebSecurityUtils.safeParseLong(request.getParameter("bigger_iflostservice")));
             criteria.add(Restrictions.gt("ifLostService", date));
         }
 
         if (request.getParameter("smaller_ifregainedservice") != null && request.getParameter("smaller_ifregainedservice").length() > 0) {
-            Date date = new Date(Long.parseLong(request.getParameter("smaller_ifregainedservice")));
+            Date date = new Date(WebSecurityUtils.safeParseLong(request.getParameter("smaller_ifregainedservice")));
             criteria.add(Restrictions.lt("ifRegainedService", date));
         }
 
         if (request.getParameter("bigger_ifregainedservice") != null && request.getParameter("bigger_ifregainedservice").length() > 0) {
-            Date date = new Date(Long.parseLong(request.getParameter("bigger_ifregainedservice")));
+            Date date = new Date(WebSecurityUtils.safeParseLong(request.getParameter("bigger_ifregainedservice")));
             criteria.add(Restrictions.gt("ifRegainedService", date));
         }
 

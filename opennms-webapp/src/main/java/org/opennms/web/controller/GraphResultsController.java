@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.GraphResultsService;
@@ -109,8 +110,8 @@ public class GraphResultsController extends AbstractController implements Initia
             }
             
             // XXX could use some error checking
-            startLong = Long.parseLong(start);
-            endLong = Long.parseLong(end);
+            startLong = WebSecurityUtils.safeParseLong(start);
+            endLong = WebSecurityUtils.safeParseLong(end);
         } else if (startMonth != null || startDate != null 
                    || startYear != null || startHour != null
                    || endMonth != null || endDate != null || endYear != null
@@ -135,19 +136,19 @@ public class GraphResultsController extends AbstractController implements Initia
             }
 
             Calendar startCal = Calendar.getInstance();
-            startCal.set(Calendar.MONTH, Integer.parseInt(startMonth));
-            startCal.set(Calendar.DATE, Integer.parseInt(startDate));
-            startCal.set(Calendar.YEAR, Integer.parseInt(startYear));
-            startCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startHour));
+            startCal.set(Calendar.MONTH, WebSecurityUtils.safeParseInt(startMonth));
+            startCal.set(Calendar.DATE, WebSecurityUtils.safeParseInt(startDate));
+            startCal.set(Calendar.YEAR, WebSecurityUtils.safeParseInt(startYear));
+            startCal.set(Calendar.HOUR_OF_DAY, WebSecurityUtils.safeParseInt(startHour));
             startCal.set(Calendar.MINUTE, 0);
             startCal.set(Calendar.SECOND, 0);
             startCal.set(Calendar.MILLISECOND, 0);
 
             Calendar endCal = Calendar.getInstance();
-            endCal.set(Calendar.MONTH, Integer.parseInt(endMonth));
-            endCal.set(Calendar.DATE, Integer.parseInt(endDate));
-            endCal.set(Calendar.YEAR, Integer.parseInt(endYear));
-            endCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endHour));
+            endCal.set(Calendar.MONTH, WebSecurityUtils.safeParseInt(endMonth));
+            endCal.set(Calendar.DATE, WebSecurityUtils.safeParseInt(endDate));
+            endCal.set(Calendar.YEAR, WebSecurityUtils.safeParseInt(endYear));
+            endCal.set(Calendar.HOUR_OF_DAY, WebSecurityUtils.safeParseInt(endHour));
             endCal.set(Calendar.MINUTE, 0);
             endCal.set(Calendar.SECOND, 0);
             endCal.set(Calendar.MILLISECOND, 0);

@@ -41,7 +41,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.element.*,
+	import="org.opennms.web.WebSecurityUtils,
+		org.opennms.web.element.*,
 		org.opennms.web.*
 	"
 %>
@@ -54,7 +55,7 @@
         throw new MissingParameterException("node");
     }
     
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);
         
     String returnUrl = null;        

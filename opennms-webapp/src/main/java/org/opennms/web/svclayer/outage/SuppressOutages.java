@@ -38,6 +38,7 @@ package org.opennms.web.svclayer.outage;
 import java.util.GregorianCalendar;
 
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.web.WebSecurityUtils;
 
 public class SuppressOutages {
 
@@ -57,7 +58,7 @@ public class SuppressOutages {
 
 		} else {
 			// We just append the time to the suppresstime column.
-			suppress.add(GregorianCalendar.MINUTE, Integer.parseInt(time));
+			suppress.add(GregorianCalendar.MINUTE, WebSecurityUtils.safeParseInt(time));
 
 		}
 

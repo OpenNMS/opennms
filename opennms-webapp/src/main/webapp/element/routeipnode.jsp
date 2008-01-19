@@ -45,6 +45,7 @@
 	contentType="text/html"
 	session="true"
 	import="
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
 		java.util.*,
 		java.net.*,org.opennms.core.utils.IPSorter,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
@@ -94,7 +95,7 @@
         throw new org.opennms.web.MissingParameterException( "node" );
     }
 
-    int nodeId = Integer.parseInt( nodeIdString );
+    int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
     Node node_db = NetworkElementFactory.getNode( nodeId );

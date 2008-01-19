@@ -40,7 +40,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.element.*,
+	import="org.opennms.web.WebSecurityUtils,
+		org.opennms.web.element.*,
 		org.opennms.web.MissingParameterException,
 		org.opennms.web.category.*,
 		java.util.*,
@@ -69,8 +70,8 @@
     int serviceId = -1;
 
     try {
-        nodeId = Integer.parseInt( nodeIdString );
-        serviceId = Integer.parseInt( serviceIdString );
+        nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
+        serviceId = WebSecurityUtils.safeParseInt( serviceIdString );
     }
     catch( NumberFormatException e ) {
         //throw new WrongParameterDataTypeException

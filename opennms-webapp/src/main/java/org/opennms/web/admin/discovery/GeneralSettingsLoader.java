@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.web.WebSecurityUtils;
 
 
 
@@ -31,19 +32,19 @@ class GeneralSettingsLoader {
 		log.debug("timeout: "+timeoutStr);
 		
 		
-		long initSt = Long.parseLong(initSTStr);
-		long restartSt = Long.parseLong(restartSTStr);
+		long initSt = WebSecurityUtils.safeParseLong(initSTStr);
+		long restartSt = WebSecurityUtils.safeParseLong(restartSTStr);
 		
 		config.setInitialSleepTime(initSt);
 		config.setRestartSleepTime(restartSt);
 		//set the general settings loaded into current configuration
 		if(threadsStr!=null){
-			config.setThreads(Integer.parseInt(threadsStr));
+			config.setThreads(WebSecurityUtils.safeParseInt(threadsStr));
 		}
 		
 		
 		if(retriesStr!=null && (!retriesStr.trim().equals("") && !retriesStr.trim().equals("3"))){
-				config.setRetries(Integer.parseInt(retriesStr));
+				config.setRetries(WebSecurityUtils.safeParseInt(retriesStr));
 		}else{
 			config.deleteRetries();
 		}

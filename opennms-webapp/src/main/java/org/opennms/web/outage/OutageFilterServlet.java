@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.outage.filter.Filter;
 
 /**
@@ -134,7 +135,7 @@ public class OutageFilterServlet extends HttpServlet {
         int limit = DEFAULT_LIMIT;
         if (limitString != null) {
             try {
-                limit = Integer.parseInt(limitString);
+                limit = WebSecurityUtils.safeParseInt(limitString);
             } catch (NumberFormatException e) {
             }
         }
@@ -144,7 +145,7 @@ public class OutageFilterServlet extends HttpServlet {
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
-                multiple = Integer.parseInt(multipleString);
+                multiple = WebSecurityUtils.safeParseInt(multipleString);
             } catch (NumberFormatException e) {
             }
         }

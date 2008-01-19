@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -68,13 +69,13 @@ public class RrdGraphController extends AbstractController {
         long startTime;
         long endTime;
         try {
-            startTime = Long.parseLong(start);
+            startTime = WebSecurityUtils.safeParseLong(start);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Could not parse start '"
                                                + start + "' as an integer time: " + e.getMessage(), e);
         }
         try {
-            endTime = Long.parseLong(end);
+            endTime = WebSecurityUtils.safeParseLong(end);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Could not parse end '"
                                                + end + "' as an integer time: " + e.getMessage(), e);
