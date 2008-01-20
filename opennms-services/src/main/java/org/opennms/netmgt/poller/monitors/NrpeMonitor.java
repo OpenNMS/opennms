@@ -45,7 +45,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 import org.apache.log4j.Level;
 import org.opennms.netmgt.model.PollStatus;
@@ -57,6 +64,7 @@ import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpeException;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -92,6 +100,21 @@ final public class NrpeMonitor extends IPv4Monitor {
      */
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
                                                         // read()
+    
+    /**
+     * Whether to use SSL by default
+     */
+    private static final boolean DEFAULT_USESSL = false;
+    
+    /**
+     * Whether to use SSL for this particular instantiation
+     */
+    private boolean m_useSsl = DEFAULT_USESSL;
+    
+    /**
+     * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
+     */
+    private static final String[] ADH_CIPHER_SUITES = new String[] {"TLS_DH_anon_WITH_AES_128_CBC_SHA"};
 
     /**
      * Poll the specified address for service availability.
@@ -128,6 +151,7 @@ final public class NrpeMonitor extends IPv4Monitor {
         String command = ParameterMap.getKeyedString(parameters, "command", NrpePacket.HELLO_COMMAND);
         int port = ParameterMap.getKeyedInteger(parameters, "port", CheckNrpe.DEFAULT_PORT);
         int padding = ParameterMap.getKeyedInteger(parameters, "padding", NrpePacket.DEFAULT_PADDING);
+        m_useSsl = ParameterMap.getKeyedBoolean(parameters, "usessl", false);
 
 		/*
         // Port
@@ -168,10 +192,13 @@ final public class NrpeMonitor extends IPv4Monitor {
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
                 log().debug("NrpeMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                
+            	reason = "Perhaps check the value of 'usessl' for this monitor against the NRPE daemon configuration";
+                socket = wrapSocket(socket);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
-				reason = "Connected, but no response received";
+            	reason = "Connected successfully, but no response received";
 
 				NrpePacket p = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0,
 						command);
@@ -278,5 +305,35 @@ final public class NrpeMonitor extends IPv4Monitor {
             return PollStatus.get(serviceStatus, reason);
         }
     }
-
+    
+    protected Socket wrapSocket(Socket socket) throws IOException {
+    	if (! m_useSsl) {
+    		return socket;
+    	}
+    	
+        SSLSocketFactory sslSF = null;
+        TrustManager[] tm = { new RelaxedX509TrustManager() };
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, tm, new java.security.SecureRandom());
+        } catch (NoSuchAlgorithmException e) {
+            log().error("wrapSocket: Error wrapping socket, throwing runtime exception..."+e);
+            throw new IllegalStateException("No such algorithm in SSLSocketFactory: "+e);
+        } catch (KeyManagementException e) {
+            log().error("wrapSocket: Error wrapping socket, throwing runtime exception..."+e);
+            throw new IllegalStateException("Key management exception in SSLSocketFactory: "+e);
+        }
+        sslSF = sslContext.getSocketFactory();
+        Socket wrappedSocket;
+        InetAddress inetAddress = socket.getInetAddress();
+        String hostAddress = inetAddress.getHostAddress();
+        int port = socket.getPort();
+        wrappedSocket = sslSF.createSocket(socket, hostAddress, port, true);
+        SSLSocket sslSocket = (SSLSocket)wrappedSocket;
+        // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
+        // benefits of SSL, but it's how NRPE rolls so we have to play along.
+        sslSocket.setEnabledCipherSuites(ADH_CIPHER_SUITES);
+        return wrappedSocket;
+    }
 }
