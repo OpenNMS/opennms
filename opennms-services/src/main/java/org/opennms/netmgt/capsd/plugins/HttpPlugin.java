@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc. All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -98,9 +98,10 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * Redirection 4xx: Client error 5xx: Server error
  * </P>
  * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * 
  * @version 1.1.1.1
  * 
