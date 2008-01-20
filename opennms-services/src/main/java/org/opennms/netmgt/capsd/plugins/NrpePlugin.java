@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2007 Jan 20: Add SSL support to NrpePlugin. jeffg@opennms.org
 // 2005 Oct 25: Create NrpePlugin based on TcpPlugin. dj@gregor.com
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
@@ -49,14 +50,21 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+
 import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.capsd.ConnectionConfig;
 import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**
  * <P>
@@ -88,6 +96,21 @@ public final class NrpePlugin extends AbstractPlugin {
      * Default timeout (in milliseconds) for TCP requests
      */
     private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
+    
+    /**
+     * Default whether to use SSL
+     */
+    private final static boolean DEFAULT_USE_SSL = false;
+    
+    /**
+     * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
+     */
+    private static final String[] ADH_CIPHER_SUITES = new String[] {"TLS_DH_anon_WITH_AES_128_CBC_SHA"};
+    
+    /**
+     * Whether to use SSL for this instantiation
+     */
+    private boolean m_useSsl = DEFAULT_USE_SSL;
 
     /**
      * <P>
@@ -120,6 +143,7 @@ public final class NrpePlugin extends AbstractPlugin {
                 //
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
+                socket = wrapSocket(socket, host.toString(), port);
                 socket.setSoTimeout(timeout);
                 log.debug("NrpePlugin: connected to host: " + host + " on port: " + port);
 				
@@ -177,26 +201,26 @@ public final class NrpePlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("TcpPlugin: Connection refused to " + host.getHostAddress() + ":" + port);
+                log.debug("NrpePlugin: Connection refused to " + host.getHostAddress() + ":" + port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("TcpPlugin: Could not connect to host " + host.getHostAddress() + ", no route to host", e);
+                log.info("NrpePlugin: Could not connect to host " + host.getHostAddress() + ", no route to host", e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
-                log.debug("TcpPlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                log.debug("NrpePlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
                 isAServer = false;
             } catch (IOException e) {
-                log.info("TcpPlugin: An expected I/O exception occured connecting to host " + host.getHostAddress() + " on port " + port, e);
+                log.info("NrpePlugin: An expected I/O exception occured connecting to host " + host.getHostAddress() + " on port " + port, e);
                 isAServer = false;
             } catch (Throwable t) {
                 isAServer = false;
-                log.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host " + host.getHostAddress() + " on port " + port, t);
+                log.warn("NrpePlugin: An undeclared throwable exception was caught connecting to host " + host.getHostAddress() + " on port " + port, t);
             } finally {
                 try {
                     if (socket != null)
@@ -271,6 +295,7 @@ public final class NrpePlugin extends AbstractPlugin {
             timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
             banner = ParameterMap.getKeyedString(qualifiers, "banner", null);
             match = ParameterMap.getKeyedString(qualifiers, "match", null);
+            m_useSsl = ParameterMap.getKeyedBoolean(qualifiers, "usessl", DEFAULT_USE_SSL);
         }
 
         try {
@@ -296,5 +321,39 @@ public final class NrpePlugin extends AbstractPlugin {
         } catch (RESyntaxException e) {
             throw new java.lang.reflect.UndeclaredThrowableException(e);
         }
+    }
+    
+    protected Socket wrapSocket(Socket socket, String hostAddress, int hostPort) throws Exception {
+    	if (! m_useSsl) {
+    		if (log().isDebugEnabled()) {
+    			log().debug("Parameter 'usessl' is unset or false, not using SSL");
+    		}
+    		return socket;
+    	} else {
+    		if (log().isDebugEnabled()) {
+    			log().debug("Parameter 'usessl' is true, using SSL");
+    		}
+    	}
+
+    	Socket wrappedSocket;
+
+        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
+        // CERTIFICATES
+        SSLSocketFactory sslSF = null;
+
+        TrustManager[] tm = { new RelaxedX509TrustManager() };
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, tm, new java.security.SecureRandom());
+        sslSF = sslContext.getSocketFactory();
+        wrappedSocket = sslSF.createSocket(socket, hostAddress, hostPort, true);
+        SSLSocket sslSocket = (SSLSocket) wrappedSocket;
+        // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
+        // benefits of SSL, but it's how NRPE rolls so we have to play along.
+        sslSocket.setEnabledCipherSuites(ADH_CIPHER_SUITES);
+        return wrappedSocket;
+    }
+    
+    protected Category log() {
+    	return ThreadCategory.getInstance(getClass());
     }
 }

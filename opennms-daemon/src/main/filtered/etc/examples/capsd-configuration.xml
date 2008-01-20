@@ -216,6 +216,7 @@
         <property key="port" value="5666" />
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
+        <property key="usessl" value="true" />
         <property key="command" value="_NRPE_CHECK" />
     </protocol-plugin>
     <protocol-plugin protocol="DiskUsage-root" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on" user-defined="false">
