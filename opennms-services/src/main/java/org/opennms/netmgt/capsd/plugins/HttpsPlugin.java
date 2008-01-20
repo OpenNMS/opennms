@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc. All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -82,7 +82,7 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * </P>
  * 
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * 
  * 
  */
