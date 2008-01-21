@@ -104,7 +104,7 @@ final public class NrpeMonitor extends IPv4Monitor {
     /**
      * Whether to use SSL by default
      */
-    private static final boolean DEFAULT_USE_SSL = false;
+    private static final boolean DEFAULT_USE_SSL = true;
     
     /**
      * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
