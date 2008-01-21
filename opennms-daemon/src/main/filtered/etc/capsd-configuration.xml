@@ -132,7 +132,7 @@
         <property key="port" value="1311" />
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
-    </protocol-plugin>
+    </protocol-plugin>    
     <protocol-plugin protocol="NSClient" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false">
         <property key="banner" value="*" />
         <property key="port" value="1248" />
@@ -145,4 +145,19 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
     </protocol-plugin>
+    <protocol-plugin protocol="NRPE" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on" user-defined="false">
+        <property key="banner" value="*" />
+        <property key="port" value="5666" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="command" value="_NRPE_CHECK" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NRPE-NoSSL" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on" user-defined="false">
+        <property key="banner" value="*" />
+        <property key="port" value="5666" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="usessl" value="false" />
+        <property key="command" value="_NRPE_CHECK" />
+    </protocol-plugin>    
 </capsd-configuration>
