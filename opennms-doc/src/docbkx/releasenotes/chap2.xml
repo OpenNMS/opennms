@@ -4,24 +4,24 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <para>OpenNMS 1.3.6 is the next step in the accelerating release schedule
-  toward OpenNMS 2.0. This release is being tagged just before the annual
-  Dev-Jam developer's conference to provide a good launch point for the
-  development that will happen this week.</para>
-
   <section>
     <title>Changes in OpenNMS 1.3.10</title>
     
     <section>
       <title>New Features</title>
       
-      <para>TODO</para>
+      <para>The classes used to discover and poll NRPE (Nagios Remote
+      Plugin Execution) checks from OpenNMS now support the NRPE protool
+      over secure sockets layer (SSL). Since both the official NRPE addon
+      from Nagios and the NRPE listener of NSClient++ use SSL by default,
+      the new default in OpenNMS is to use SSL for NRPE.</para>
+      
     </section>
         
     <section>
       <title>Bug Fixes</title>
       
-      <para>If a notification destination path contained a bare e-mail
+      <para>If a notification destination path contains a bare e-mail
       address, OpenNMS is now configurable via notifd-configuration.xml to
       use the "email" or "javaEmail" command.</para>
 
@@ -192,6 +192,11 @@
   <section>
     <title>Changes in OpenNMS 1.3.6</title>
 
+	<para>OpenNMS 1.3.6 is the next step in the accelerating release schedule
+	toward OpenNMS 2.0. This release is being tagged just before the annual
+	Dev-Jam developer's conference to provide a good launch point for the
+	development that will happen this week.</para>
+  
     <section>
       <title>New Features</title>
 
