@@ -100,7 +100,7 @@ public final class NrpePlugin extends AbstractPlugin {
     /**
      * Default whether to use SSL
      */
-    private final static boolean DEFAULT_USE_SSL = false;
+    private final static boolean DEFAULT_USE_SSL = true;
     
     /**
      * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
