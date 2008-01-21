@@ -104,12 +104,7 @@ final public class NrpeMonitor extends IPv4Monitor {
     /**
      * Whether to use SSL by default
      */
-    private static final boolean DEFAULT_USESSL = false;
-    
-    /**
-     * Whether to use SSL for this particular instantiation
-     */
-    private boolean m_useSsl = DEFAULT_USESSL;
+    private static final boolean DEFAULT_USE_SSL = false;
     
     /**
      * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
@@ -151,7 +146,7 @@ final public class NrpeMonitor extends IPv4Monitor {
         String command = ParameterMap.getKeyedString(parameters, "command", NrpePacket.HELLO_COMMAND);
         int port = ParameterMap.getKeyedInteger(parameters, "port", CheckNrpe.DEFAULT_PORT);
         int padding = ParameterMap.getKeyedInteger(parameters, "padding", NrpePacket.DEFAULT_PADDING);
-        m_useSsl = ParameterMap.getKeyedBoolean(parameters, "usessl", false);
+        boolean useSsl = ParameterMap.getKeyedBoolean(parameters, "usessl", DEFAULT_USE_SSL);
 
 		/*
         // Port
@@ -194,7 +189,7 @@ final public class NrpeMonitor extends IPv4Monitor {
                 log().debug("NrpeMonitor: connected to host: " + ipv4Addr + " on port: " + port);
                 
             	reason = "Perhaps check the value of 'usessl' for this monitor against the NRPE daemon configuration";
-                socket = wrapSocket(socket);
+                socket = wrapSocket(socket, useSsl);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
@@ -306,8 +301,8 @@ final public class NrpeMonitor extends IPv4Monitor {
         }
     }
     
-    protected Socket wrapSocket(Socket socket) throws IOException {
-    	if (! m_useSsl) {
+    protected Socket wrapSocket(Socket socket, boolean useSsl) throws IOException {
+    	if (! useSsl) {
     		return socket;
     	}
     	
