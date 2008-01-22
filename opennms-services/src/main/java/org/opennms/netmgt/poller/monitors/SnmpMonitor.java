@@ -77,7 +77,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
 @Distributable(DistributionContext.DAEMON)
-final public class SnmpMonitor extends SnmpMonitorStrategy {
+public class SnmpMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.
      */

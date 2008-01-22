@@ -61,7 +61,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * 
  */
-public final class SnmpPlugin extends AbstractPlugin {
+public class SnmpPlugin extends AbstractPlugin {
     /**
      * The protocol supported by this plugin
      */
