@@ -1,13 +1,9 @@
 package org.opennms.web.element;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
 
-import javax.sql.DataSource;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.core.resource.db.DbConnectionFactory;
+import org.opennms.core.resource.db.DataSourceDbConnectionFactory;
 import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
 
 public class NetworkElementFactoryTest extends PopulatedTemporaryDatabaseTestCase {
@@ -42,38 +38,5 @@ public class NetworkElementFactoryTest extends PopulatedTemporaryDatabaseTestCas
 
         Node[] nodes = NetworkElementFactory.getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.length);
-    }
-    
-    public class DataSourceDbConnectionFactory implements DbConnectionFactory {
-        private DataSource m_dataSource;
-
-        public DataSourceDbConnectionFactory(DataSource dataSource) {
-            m_dataSource = dataSource;
-        }
-        
-        public void destroy() throws SQLException {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public Connection getConnection() throws SQLException {
-            return m_dataSource.getConnection();
-        }
-
-        public void init(String dbUrl, String dbDriver) throws ClassNotFoundException, SQLException {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public void init(String dbUrl, String dbDriver, Properties properties) throws ClassNotFoundException, SQLException {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public void releaseConnection(Connection connection) throws SQLException {
-            connection.close();
-        }
-        
     }
 }

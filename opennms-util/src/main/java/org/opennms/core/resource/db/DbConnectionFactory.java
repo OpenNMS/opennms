@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 // 
+// Modifications:
+//
+// 2008 Jan 21: Remove unused init methods. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +42,6 @@ package org.opennms.core.resource.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * A <code>DbConnectionFactory</code> allocates and deallocates connections
@@ -55,22 +58,6 @@ import java.util.Properties;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public interface DbConnectionFactory {
-    /**
-     * Initialize a database factory with the given URL and driver classname.
-     * Will guarantee that the JDBC driver is loaded and that connections will
-     * now be available.
-     * 
-     * <p>
-     * Only one <code>init</code> method should be called.
-     * 
-     * @param dbUrl
-     *            the JDBC URL used to retrieve connections
-     * @param dbDriver
-     *            a fully qualified class name for the JDBC driver that handles
-     *            this JDBC URL
-     */
-    public void init(String dbUrl, String dbDriver) throws ClassNotFoundException, SQLException;
-
     /**
      * Initialize a database factory with the given URL, driver classname, and
      * database credentials. Will guarantee that the JDBC driver is loaded and
@@ -90,25 +77,6 @@ public interface DbConnectionFactory {
      *            the credentials use to authenticate the username
      */
     public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException;
-
-    /**
-     * Initialize a database factory with the given URL, driver classname, and
-     * database properties. Will guarantee that the JDBC driver is loaded and
-     * that connections will be available.
-     * 
-     * <p>
-     * Only one <code>init</code> method should be called.
-     * 
-     * @param dbUrl
-     *            the JDBC URL used to retrieve connections
-     * @param dbDriver
-     *            a fully qualified class name for the JDBC driver that will
-     *            handle this JDBC URL
-     * @param properties
-     *            a collection of database properties, these may be specific to
-     *            your particular database
-     */
-    public void init(String dbUrl, String dbDriver, Properties properties) throws ClassNotFoundException, SQLException;
 
     /**
      * Deallocate all the resources that may have been allocated to this
