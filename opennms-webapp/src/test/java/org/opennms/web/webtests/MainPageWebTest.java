@@ -8,6 +8,10 @@
 //
 //OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+//Modifications:
+//
+//2008 Jan 21: Remove database options from web.xml. - dj@opennms.org
+//
 //Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 //This program is free software; you can redistribute it and/or modify
@@ -72,29 +76,6 @@ public class MainPageWebTest extends OpenNMSWebTestCase {
         "   <param-name>java.awt.headless</param-name>\n" + 
         "   <param-value>true</param-value>\n" + 
         "  </context-param>\n" + 
-        "  \n" + 
-        "  <!-- Database parameters -->  \n" + 
-        "  <context-param>\n" + 
-        "    <param-name>opennms.db.poolman</param-name>\n" + 
-        "    <param-value>org.opennms.core.resource.db.SimpleDbConnectionFactory</param-value>\n" + 
-        "  </context-param>\n" + 
-        "  <context-param>\n" + 
-        "    <param-name>opennms.db.driver</param-name>\n" + 
-        "    <param-value>org.hsqldb.jdbcDriver</param-value>\n" + 
-        "  </context-param>\n" + 
-        "  <context-param>\n" + 
-        "    <param-name>opennms.db.url</param-name>\n" + 
-        "    <param-value>jdbc:hsqldb:mem:test</param-value>\n" + 
-        "  </context-param>\n" + 
-        "  <context-param>\n" + 
-        "    <param-name>opennms.db.user</param-name>\n" + 
-        "    <param-value>sa</param-value>\n" + 
-        "  </context-param>\n" + 
-        "  <context-param>\n" + 
-        "    <param-name>opennms.db.password</param-name>\n" + 
-        "    <param-value></param-value>\n" + 
-        "  </context-param>\n" + 
-        "\n" + 
         "  \n" + 
         "  <!-- RTC Subscription parameters -->  \n" + 
         "  <context-param>\n" + 

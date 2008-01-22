@@ -10,6 +10,7 @@
 // 
 // Modifications:
 //
+// 2008 Jan 21: Use a DataSource instead of a DbConnectionFactory. - dj@opennms.org
 // 2007 Dec 08: Code formatting. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -52,6 +53,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import javax.sql.DataSource;
+
 import org.opennms.core.resource.db.DbConnectionFactory;
 
 /**
@@ -85,13 +88,7 @@ public class Vault extends Object {
      */
     protected static String homeDir = "/opt/opennms/";
 
-    /**
-     * A delegate object that encapsulates the JDBC database connection
-     * allocation management. For example, some factories might preallocate
-     * connections into pools, or some might allocate connections only when
-     * requested.
-     */
-    protected static DbConnectionFactory dbConnectionFactory;
+    private static DataSource s_dataSource;
 
     /**
      * Private, empty constructor so that this class cannot be instantiated.
@@ -99,17 +96,12 @@ public class Vault extends Object {
     private Vault() {
     }
 
-    /**
-     * Set the delegate class for managing JDBC database connection pools. This
-     * interface allows us to deploy <code>Vault</code> in different
-     * environments and using different database connection pooling models.
-     */
-    public static void setDbConnectionFactory(DbConnectionFactory factory) {
-        if (factory == null) {
+    public static void setDataSource(DataSource dataSource) {
+        if (dataSource == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        dbConnectionFactory = factory;
+        s_dataSource = dataSource;
     }
 
     /**
@@ -128,32 +120,24 @@ public class Vault extends Object {
      *             been specified.
      */
     public static Connection getDbConnection() throws SQLException {
-        if (dbConnectionFactory == null) {
-            throw new IllegalStateException("You must set a DbConnectionFactory before requesting a database connection.");
+        if (s_dataSource == null) {
+            throw new IllegalStateException("You must set a DataSource before requesting a database connection.");
         }
 
-        return dbConnectionFactory.getConnection();
+        return s_dataSource.getConnection();
     }
 
     /**
-     * Replace a database connection from the database connection factory.
+     * Release a database connection.
      * 
      * @param connection
      *            the connection to release
      * @throws SQLException
-     *             If a SQL error occurs while replacing or deallocating the
-     *             connection. This depends on the implementation of
-     *             {@link DbConnectionFactory DbConnectionFactory}being used.
-     * @throws IllegalStateException
-     *             If no {@link DbConnectionFactory DbConnectionFactory} has
-     *             been specified.
+     *             If a SQL error occurs while calling connection.close() on the
+     *             connection.
      */
     public static void releaseDbConnection(Connection connection) throws SQLException {
-        if (dbConnectionFactory == null) {
-            throw new IllegalStateException("You must set a DbConnectionFactory before releasing a database connection.");
-        }
-
-        dbConnectionFactory.releaseConnection(connection);
+        connection.close();
     }
 
     /**

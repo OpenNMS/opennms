@@ -1,9 +1,6 @@
 package org.opennms.web.element;
 
-
-
 import org.opennms.core.resource.Vault;
-import org.opennms.core.resource.db.DataSourceDbConnectionFactory;
 import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
 
 public class NetworkElementFactoryTest extends PopulatedTemporaryDatabaseTestCase {
@@ -13,7 +10,7 @@ public class NetworkElementFactoryTest extends PopulatedTemporaryDatabaseTestCas
         
         super.setUp();
         
-        Vault.setDbConnectionFactory(new DataSourceDbConnectionFactory(getDataSource()));
+        Vault.setDataSource(getDataSource());
     }
     
     public void testGetNodesWithIpLikeOneInterface() throws Exception {
