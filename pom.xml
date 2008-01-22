@@ -476,6 +476,7 @@ opennms.home = ${opennms.home}
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.3</version>
         <configuration>
+          <aggregate>true</aggregate>
           <use>false</use>
           <links>
             <link>http://java.sun.com/j2ee/1.4/docs/api</link>
