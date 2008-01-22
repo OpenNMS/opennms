@@ -16,6 +16,11 @@
       from Nagios and the NRPE listener of NSClient++ use SSL by default,
       the new default in OpenNMS is to use SSL for NRPE.</para>
       
+      <para>OpenNMS now supports discovery and monitoring of Windows
+      services (even those that do not provide network services, such as
+      the Task Scheduler) via the SNMP service that ships with Windows.
+      </para>
+      
     </section>
         
     <section>

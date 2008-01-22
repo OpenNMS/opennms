@@ -159,5 +159,10 @@
         <property key="retry" value="2" />
         <property key="usessl" value="false" />
         <property key="command" value="_NRPE_CHECK" />
-    </protocol-plugin>    
+    </protocol-plugin>
+    <protocol-plugin protocol="Windows-Task-Scheduler" class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on" user-defined="false">
+        <property key="timeout" value="2000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="Task Scheduler" />
+    </protocol-plugin>
 </capsd-configuration>
