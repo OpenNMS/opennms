@@ -20,6 +20,16 @@
       services (even those that do not provide network services, such as
       the Task Scheduler) via the SNMP service that ships with Windows.
       </para>
+
+      <para>Thresholding has been (optionally) moved into the collection 
+      daemon.  Changes to your configuration is required to use this new
+      code, but once done, thresholds are calculated on data as it is
+      collected.  This is significantly more efficient (data is not read
+      back from the RRD/JRB files on disk), and also removes the need
+      for the "range" parameter.  See the "New Work" section of 
+	http://www.opennms.org/index.php/Thresholding for details on 
+	modifying your configuration.  
+      </para>
       
     </section>
         
