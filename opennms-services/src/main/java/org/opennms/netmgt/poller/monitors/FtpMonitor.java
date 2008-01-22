@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 21: Rework to use FtpResponse. - dj@opennms.org
 // 2008 Jan 18: Fix multi-line response handling; bug #1875.  Fix from
 //              Victor Jerlin <victor.jerlin@involve.com.mt> - dj@opennms.org
 // 2004 May 05: Switch from SocketChannel to Socket with connection timeout.
@@ -57,13 +58,9 @@ import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
-import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.plugins.FtpResponse;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -116,21 +113,6 @@ final public class FtpMonitor extends IPv4Monitor {
     private static final String FTP_ERROR_425_TEXT = "425 Session is disconnected.";
 
     /**
-     * Used to check for a multiline response. A multline response begins with
-     * the same 3 digit response code, but has a hypen after the last number
-     * instead of a space.
-     */
-    private static final RE MULTILINE;
-
-    static {
-        try {
-            MULTILINE = new RE("^[0-9]{3}-");
-        } catch (RESyntaxException ex) {
-            throw new java.lang.reflect.UndeclaredThrowableException(ex);
-        }
-    }
-
-    /**
      * Poll the specified address for FTP service availability.
      * 
      * During the poll an attempt is made to connect on the specified port (by
@@ -151,337 +133,134 @@ final public class FtpMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        // check the interface type
-        //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
+        // Check the interface type
+        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        }
 
-        // Get the category logger
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // get the parameters
-        //
-        
+        // Get the parameters
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
-
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String userid = ParameterMap.getKeyedString(parameters, "userid", null);
         String password = ParameterMap.getKeyedString(parameters, "password", null);
 
         // Extract the address
-        //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + tracker);
+        if (log().isDebugEnabled()) {
+            log().debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + tracker);
+        }
 
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             try {
-                //
                 // create a connected socket
-                //
                 tracker.startAttempt();
 
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
+                log().debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
-                log.debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
 
                 BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                
+                FtpResponse bannerResponse = FtpResponse.readResponse(lineRdr);
 
-                // Tokenize the Banner Line, and check the first
-                // line for a valid return.
-                //
-                String banner = lineRdr.readLine();
-                double responseTime = tracker.elapsedTimeInMillis();
-
-                if (banner == null)
-                    continue;
-                if (MULTILINE.match(banner)) {
-                    // Ok we have a multi-line response...first three
-                    // chars of the response line are the return code.
-                    // The last line of the response will start with
-                    // return code followed by a space.
-                    String multiLineRC = "^" + new String(banner.getBytes(), 0, 3) + " ";
-
-                    /**
-                     * Used to check for the end of a multiline response. The end of a multiline
-                     * response is the same 3 digit response code followed by a space
-                     */
-                    RE endMultiLineRe;
-
-                    // Create new regExp to look for last line
-                    // of this mutli line response
-                    try {
-                        endMultiLineRe = new RE(multiLineRC);
-                    } catch (RESyntaxException ex) {
-                        throw new java.lang.reflect.UndeclaredThrowableException(ex);
-                    }
-
-                    // read until we hit the last line of the multi-line
-                    // response
-                    do {
-                        banner = lineRdr.readLine();
-                    } while (banner != null && !endMultiLineRe.match(banner));
-                    if (banner == null)
-                        continue;
-                }
-
-                StringTokenizer t = new StringTokenizer(banner);
-
-                int rc = -1;
-                try {
-                    rc = Integer.parseInt(t.nextToken());
-                } catch (NumberFormatException nfE) {
-                    nfE.fillInStackTrace();
-                    log.warn("Banner page returned invalid result code", nfE);
-                }
-
-                // Verify that return code is in proper range.
-                //
-                if (rc >= 200 && rc <= 299) {
-                    // 
+                if (bannerResponse.isSuccess()) {
                     // Attempt to login if userid and password available
-                    //
-                    boolean bLoginOk = false;
+                    boolean loggedInSuccessfully = false;
                     if (userid == null || userid.length() == 0 || password == null || password.length() == 0) {
-                        bLoginOk = true;
+                        loggedInSuccessfully = true;
                     } else {
-                        // send the user string
-                        //
-                        String cmd = "user " + userid + "\r\n";
-                        socket.getOutputStream().write(cmd.getBytes());
+                        FtpResponse.sendCommand(socket, "USER " + userid);
 
-                        // get the response code.
-                        //
-                        String response = lineRdr.readLine();
+                        FtpResponse userResponse = FtpResponse.readResponse(lineRdr);
 
-                        if (MULTILINE.match(response)) {
-                            // Ok we have a multi-line response...first three
-                            // chars of the response line are the return code.
-                            // The last line of the response will start with
-                            // return code followed by a space.
-                            String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
-
-                            /**
-                             * Used to check for the end of a multiline response. The end of a multiline
-                             * response is the same 3 digit response code followed by a space
-                             */
-                            RE endMultiLineRe;
-
-                            // Create new regExp to look for last line
-                            // of this mutli line response
-                            try {
-                                endMultiLineRe = new RE(multiLineRC);
-                            } catch (RESyntaxException ex) {
-                                throw new java.lang.reflect.UndeclaredThrowableException(ex);
-                            }
-
-                            // read until we hit the last line of the multi-line
-                            // response
-                            do {
-                                response = lineRdr.readLine();
-                            } while (response != null && !endMultiLineRe.match(response));
-                        }
-
-                        if (response == null)
-                            continue;
-
-                        t = new StringTokenizer(response);
-                        rc = Integer.parseInt(t.nextToken());
-
-                        // Verify that return code is in proper range.
-                        //
-                        if (rc >= 200 && rc <= 399) {
-                            // send the password
-                            //
-                            cmd = "pass " + password + "\r\n";
-                            socket.getOutputStream().write(cmd.getBytes());
-
-                            // get the response...check for multi-line response
-                            //
-                            response = lineRdr.readLine();
-                            if (response == null)
-                                continue;
-
-                            if (MULTILINE.match(response)) {
-                                // Ok we have a multi-line response...first
-                                // three
-                                // chars of the response line are the return
-                                // code.
-                                // The last line of the response will start with
-                                // return code followed by a space.
-                                String multiLineRC = "^" + new String(response.getBytes(), 0, 3) + " ";
-
-                                /**
-                                 * Used to check for the end of a multiline response. The end of a multiline
-                                 * response is the same 3 digit response code followed by a space
-                                 */
-                                RE endMultiLineRe;
-
-                                // Create new regExp to look for last line
-                                // of this mutli line response
-                                try {
-                                    endMultiLineRe = new RE(multiLineRC);
-                                } catch (RESyntaxException ex) {
-                                    throw new java.lang.reflect.UndeclaredThrowableException(ex);
+                        if (userResponse.isSuccess()) {
+                            FtpResponse.sendCommand(socket, "PASS " + password);
+                            
+                            FtpResponse passResponse = FtpResponse.readResponse(lineRdr);
+                            if (passResponse.isSuccess()) {
+                                if (log().isDebugEnabled()) {
+                                    log().debug("FtpMonitor.poll: Login successful, parsed return code: " + passResponse.getCode());
                                 }
-
-                                // read until we hit the last line of the
-                                // multi-line
-                                // response
-                                do {
-                                    response = lineRdr.readLine();
-                                } while (response != null && !endMultiLineRe.match(response));
-                                if (response == null)
-                                    continue;
-                            }
-
-                            // Verify that return code is in proper range.
-                            //
-                            if (log.isDebugEnabled())
-                                log.debug("FtpMonitor.poll: tokenizing respone to check for return code: " + response);
-                            t = new StringTokenizer(response);
-                            rc = Integer.parseInt(t.nextToken());
-                            if (rc >= 200 && rc <= 299) {
-                                if (log.isDebugEnabled())
-                                    log.debug("FtpMonitor.poll: Login successful, parsed return code: " + rc);
-                                bLoginOk = true;
+                                loggedInSuccessfully = true;
                             } else {
-                                if (log.isDebugEnabled())
-                                    log.debug("FtpMonitor.poll: Login failed, parsed return code: " + rc);
-                                bLoginOk = false;
+                                if (log().isDebugEnabled()) {
+                                    log().debug("FtpMonitor.poll: Login failed, parsed return code: " + passResponse.getCode() + ", full response: " + passResponse.toString());
+                                }
+                                loggedInSuccessfully = false;
                             }
                         }
                     }
 
-                    if (bLoginOk) {
-                        // FTP should recognize the QUIT command
-                        //
-                        String cmd = "QUIT\r\n";
-                        socket.getOutputStream().write(cmd.getBytes());
+                    // Store the response time before we try to quit
+                    double responseTime = tracker.elapsedTimeInMillis();
 
-                        // get the returned string, tokenize, and
-                        // verify the correct output.
-                        //
-                        String response = lineRdr.readLine();
-                        if (response == null)
-                            continue;
-                        if (MULTILINE.match(response)) {
-                            // Ok we have a multi-line response...first three
-                            // chars of the response line are the return code.
-                            // The last line of the response will start with
-                            // return code followed by a space.
-                            String multiLineRC = new String(response.getBytes(), 0, 3) + " ";
+                    if (loggedInSuccessfully) {
+                        FtpResponse.sendCommand(socket, "QUIT");
 
-                            /**
-                             * Used to check for the end of a multiline response. The end of a multiline
-                             * response is the same 3 digit response code followed by a space
-                             */
-                            RE endMultiLineRe;
+                        FtpResponse quitResponse = FtpResponse.readResponse(lineRdr);
 
-                            // Create new regExp to look for last line
-                            // of this mutli line response
-                            try {
-                                endMultiLineRe = new RE(multiLineRC);
-                            } catch (RESyntaxException ex) {
-                                throw new java.lang.reflect.UndeclaredThrowableException(ex);
-                            }
-
-                            // read until we hit the last line of the multi-line
-                            // response
-                            do {
-                                response = lineRdr.readLine();
-                            } while (response != null && !endMultiLineRe.match(response));
-
-                            if (response == null)
-                                continue;
-                        }
-
-                        t = new StringTokenizer(response);
-                        rc = Integer.parseInt(t.nextToken());
-
-                        // Verify that return code is in proper range.
-                        //
-
-                        if (rc >= 200 && rc <= 299) {
-                            serviceStatus = PollStatus.available(responseTime);
-                        }
-                        // Special Case: Also want to accept the following ERROR
-                        // message
-                        // generated by some FTP servers following a QUIT
-                        // command without
-                        // a previously successful login:
-                        //
-                        // "530 QUIT : User not logged in. Please login with
-                        // USER and PASS
-                        // first."
-                        //
-                        else if (rc == 530 && ( response.indexOf(FTP_ERROR_530_TEXT) != -1 ) ||( response.indexOf(FTP_ERROR_530_TEXT2) != -1 ) ) {
-                            serviceStatus = PollStatus.available(responseTime);
-                        }
-                        // Special Case: Also want to accept the following ERROR
-                        // message
-                        // generated by some FTP servers following a QUIT
-                        // command without
-                        // a previously successful login:
-                        //
-                        // "425 Session is disconnected."
-                        //
-                        else if (rc == 425 && response.indexOf(FTP_ERROR_425_TEXT) != -1) {
+                        /*
+                         * Special Cases for success:
+                         * 
+                         * Also want to accept the following
+                         * ERROR message generated by some FTP servers
+                         * following a QUIT command without a previous
+                         * successful login:
+                         *
+                         * "530 QUIT : User not logged in. Please login with
+                         * USER and PASS first."
+                         * 
+                         * Also want to accept the following ERROR
+                         * message generated by some FTP servers following a
+                         * QUIT command without a previously successful login:
+                         *
+                         * "425 Session is disconnected."
+                         */
+                        if (quitResponse.isSuccess()
+                                || (quitResponse.getCode() == 530 && (quitResponse.responseContains(FTP_ERROR_530_TEXT) || quitResponse.responseContains(FTP_ERROR_530_TEXT2)))
+                                || (quitResponse.getCode() == 425 && quitResponse.responseContains(FTP_ERROR_425_TEXT))) {
                             serviceStatus = PollStatus.available(responseTime);
                         }
                     }
                 }
 
-                // If we get this far and the status has not been set
-                // to available, then something didn't verify during
-                // the banner checking or login/QUIT command process.
+                /*
+                 * If we get this far and the status has not been set
+                 * to available, then something didn't verify during
+                 * the banner checking or login/QUIT command process.
+                 */
                 if (!serviceStatus.isAvailable()) {
                     serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-            	
             	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address: " + ipv4Addr, e);
-            	
             } catch (NoRouteToHostException e) {
-            	
             	serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + ipv4Addr, e);
-
             } catch (InterruptedIOException e) {
-            	
             	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
-
             } catch (ConnectException e) {
-            	
             	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
-            	
             } catch (IOException e) {
-            	
             	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
-            	
             } finally {
                 try {
                     // Close the socket
-                    if (socket != null)
+                    if (socket != null) {
                         socket.close();
+                    }
                 } catch (IOException e) {
-                    e.fillInStackTrace();
-                    log.debug("FtpMonitor.poll: Error closing socket.", e);
+                    log().debug("FtpMonitor.poll: Error closing socket: " + e, e);
                 }
             }
         }
 
-        //
-        // return the status of the service
-        //
         return serviceStatus;
     }
-
 }

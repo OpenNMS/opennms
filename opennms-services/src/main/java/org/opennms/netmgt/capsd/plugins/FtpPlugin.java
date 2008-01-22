@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 21: Rework to use FtpResponse. - dj@opennms.org
 // 2008 Jan 18: Fix multi-line response handling; bug #1875.  Fix from
 //              Victor Jerlin <victor.jerlin@involve.com.mt> - dj@opennms.org
 // 2004 Apr 28: Modified to extend AbstractTcpPlugin 
@@ -47,12 +48,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
 
@@ -72,11 +68,8 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * 
  */
 public final class FtpPlugin extends AbstractTcpPlugin {
-
     /**
-     * <P>
      * The default port on which the host is checked to see if it supports FTP.
-     * </P>
      */
     private static final int DEFAULT_PORT = 21;
 
@@ -88,30 +81,12 @@ public final class FtpPlugin extends AbstractTcpPlugin {
     /**
      * Default timeout (in milliseconds) for FTP requests.
      */
-    private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
+    private final static int DEFAULT_TIMEOUT = 5000;
 
     /**
-     * The regular expression test used to determine if the reply is a multi
-     * line reply. A multi line reply is one that starts with "ddd-", and the
-     * last is in the form of "ddd " where 'ddd' is the result code.
-     * 
-     */
-    private static final RE MULTILINE_RESULT;
-
-    /**
-     * <P>
      * The capability name of the plugin.
-     * </P>
      */
     private static final String PROTOCOL_NAME = "FTP";
-
-    static {
-        try {
-            MULTILINE_RESULT = new RE("^[1-5][0-9]{2}-");
-        } catch (RESyntaxException re) {
-            throw new java.lang.reflect.UndeclaredThrowableException(re);
-        }
-    }
 
     /**
      * @param protocol
@@ -132,133 +107,20 @@ public final class FtpPlugin extends AbstractTcpPlugin {
      * @throws IOException
      */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
-
-        boolean isAServer = false;
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        try {
-
-            BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            // Read responses from the server. The initial line should just
-            // be a banner, but go ahead and check for multiline response
-            // in the form of:
-            //
-            // 221-You have transferred 0 bytes in 0 files.
-            // 221-Total traffic for this session was 102 bytes in 0 transfers.
-            // 221 Thank you for using the FTP service on nethost0.
-            //
-            // Or:
-            //
-            // 221-Start of header
-            // This could be anything
-            // 221 End of header
-            //
-            String result = lineRdr.readLine();
-
-            if (MULTILINE_RESULT.match(result)) {
-	        // Ok we have a multi-line response...first three
-                // chars of the response line are the return code.
-                // The last line of the response will start with
-                // return code followed by a space.
-                String multiLineRC = "^" + new String(result.getBytes(), 0, 3) + " ";
-
-                /** 
-                 * Used to check for the end of a multiline response. The end of a multiline
-                 * response is the same 3 digit response code followed by a space
-                 */
-                RE endMultiLineRe;
-
-                // Create new regExp to look for last line
-                // of this mutli line response
-                try {
-                    endMultiLineRe = new RE(multiLineRC);
-                } catch (RESyntaxException ex) {
-                    throw new java.lang.reflect.UndeclaredThrowableException(ex);
-                }
-
-                do {
-                    result = lineRdr.readLine();
-                } while (result != null && !endMultiLineRe.match(result));
-            }
-
-            if (result == null || result.length() == 0) {
-                log.info("Received truncated response from ftp server " + config.getInetAddress().getHostAddress());
-                return isAServer;
-            }
-
-            // Tokenize the last line result
-            //
-            StringTokenizer t = new StringTokenizer(result);
-            int rc = Integer.parseInt(t.nextToken());
-            if (rc > 99 && rc < 600) {
-                //
-                // FTP should recoginize the QUIT command
-                //
-                String cmd = "QUIT\r\n";
-                socket.getOutputStream().write(cmd.getBytes());
-
-                // Response from QUIT command may be a multi-line response.
-                // We are expecting to get a response with an integer return
-                // code in the first token. We can't ge sure that the first
-                // response will give us what we want. Consider the following
-                // reponse for example:
-                //
-                // 221-You have transferred 0 bytes in 0 files.
-                // 221-Total traffic for this session was 102 bytes in 0
-                // transfers.
-                // 221 Thank you for using the FTP service on nethost0.
-                //
-                // In this case the final line of the response contains the
-                // return
-                // code we are looking for.
-                result = lineRdr.readLine();
-
-                if (MULTILINE_RESULT.match(result)) {
-	            // Ok we have a multi-line response...first three
-                    // chars of the response line are the return code.
-                    // The last line of the response will start with
-                    // return code followed by a space.
-                    String multiLineRC = "^" + new String(result.getBytes(), 0, 3) + " ";
-
-                    /** 
-                     * Used to check for the end of a multiline response. The end of a multiline
-                     * response is the same 3 digit response code followed by a space
-                     */
-                    RE endMultiLineRe;
-    
-                    // Create new regExp to look for last line
-                    // of this mutli line response
-                    try {
-                        endMultiLineRe = new RE(multiLineRC);
-                    } catch (RESyntaxException ex) {
-                        throw new java.lang.reflect.UndeclaredThrowableException(ex);
-                    }
-    
-                    do {
-                        result = lineRdr.readLine();
-                    } while (result != null && !endMultiLineRe.match(result));
-                }
-
-                if (result == null || result.length() == 0) {
-                    log.info("Received truncated response from ftp server " + config.getInetAddress().getHostAddress());
-                    return isAServer;
-                }
-
-                t = new StringTokenizer(result);
-                rc = Integer.parseInt(t.nextToken());
-                if (rc > 99 && rc < 600)
-                    isAServer = true;
-
-            }
-
-        } catch (NumberFormatException e) {
-            log.info("FtpPlugin: received invalid result code from server " + config.getInetAddress().getHostAddress(), e);
-            isAServer = false;
-
+        BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+  
+        FtpResponse connectResponse = FtpResponse.readResponse(rdr);
+        if (!connectResponse.isCodeValid()) {
+            return false;
         }
+        
+        FtpResponse.sendCommand(socket, "QUIT");
 
-        return isAServer;
+        FtpResponse quitResponse = FtpResponse.readResponse(rdr);
+        if (!quitResponse.isCodeValid()) {
+            return false;
+        }
+        
+        return true;
     }
 }
