@@ -104,6 +104,14 @@ public class Vault extends Object {
         s_dataSource = dataSource;
     }
 
+    public static DataSource getDataSource() throws SQLException {
+        if (s_dataSource == null) {
+            throw new IllegalStateException("You must set a DataSource before requesting a data source.");
+        }
+        
+        return s_dataSource;
+    }
+    
     /**
      * Retrieve a database connection from the database connection factory.
      * Depending on the implementation of the delegate
