@@ -2,10 +2,11 @@
 #  $Id$
 #
 # The version used to be passed from build.xml. It's hardcoded here
-%{!?version:%define version 1.3.7}
+# the build system generally passes --define "version X" to rpmbuild.
+%{!?version:%define version 1.3.10}
 # The release number is set to 0 unless overridden
 %{!?releasenumber:%define releasenumber 0}
-# The install prefix is equal to $OPENMS_HOME
+# The install prefix becomes $OPENMS_HOME in the finished package
 %{!?instprefix:%define instprefix /opt/opennms}
 # I think this is the directory where the package will be built
 %{!?packagedir:%define packagedir opennms-%version-%{releasenumber}}
@@ -54,6 +55,10 @@ Requires:		iplike
 
 BuildRequires:		jdk               >= 1.5
 
+Prefix: %{instprefix}
+Prefix: %{sharedir}
+Prefix: %{logdir}
+
 %description
 OpenNMS is an enterprise-grade network management platform.
 
@@ -73,7 +78,8 @@ web UI:
 * jetty
 
   A version of the web UI for OpenNMS which uses a built-in, embedded version
-  of Jetty, which runs in the same JVM as OpenNMS.
+  of Jetty, which runs in the same JVM as OpenNMS.  This is the recommended
+  version unless you have specific needs otherwise.
 
 %package core
 Summary:	The core OpenNMS backend.
@@ -89,6 +95,16 @@ notifications (ie, anything that is not part of the web UI).
 
 If you want to be able to view your data, you will need to install
 one of the opennms-webapp packages.
+
+The logs and data directories are relocatable.  By default, they are:
+
+  logs: %{logdir}
+  data: %{sharedir}
+
+If you wish to install them to an alternate location, use the --relocate rpm
+option, like so:
+
+  rpm -i --relocate %{logdir}=/mnt/netapp/opennms-logs opennms-core.rpm
 
 %if %{with_docs}
 %package docs
@@ -168,17 +184,11 @@ echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
 
-mkdir -p $RPM_BUILD_ROOT/opt/opennms
+mkdir -p $RPM_BUILD_ROOT%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT/opt/opennms
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
-
-mkdir -p $RPM_BUILD_ROOT/var/opennms
-mkdir -p $RPM_BUILD_ROOT/var/log/opennms
-mkdir -p $RPM_BUILD_ROOT/var/log/opennms/controller
-mkdir -p $RPM_BUILD_ROOT/var/log/opennms/daemon
-mkdir -p $RPM_BUILD_ROOT/var/log/opennms/webapp
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
 ### /etc/profile.d
@@ -207,11 +217,14 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 %endif
 
-### symlinks for system dirs to %{instprefix}
-
+install -d -m 755 $RPM_BUILD_ROOT%{logdir}
+mv $RPM_BUILD_ROOT%{instprefix}/logs/* $RPM_BUILD_ROOT%{logdir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
-ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
-ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
+install -d -m 755 $RPM_BUILD_ROOT %{logdir}/{controller,daemon,webapp}
+
+install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
+mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
+rm -rf $RPM_BUILD_ROOT%{instprefix}/share
 
 pushd $RPM_BUILD_ROOT
 
@@ -264,8 +277,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{instprefix}/docs
 %endif
 %attr(755,root,root)	%{instprefix}/lib
-			%{instprefix}/logs
-			%{instprefix}/share
 			%{sharedir}
 			%{logdir}
 
@@ -286,46 +297,73 @@ rm -rf $RPM_BUILD_ROOT
 %config %{webappsdir}/%{servletdir}/WEB-INF/web.xml
 %config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
 
-
 %post core
 
-echo -e "- moving *.sql.rpmnew files (if any)... \c"
-if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
-	for i in %{instprefix}/etc/*.sql.rpmnew; do
+if [ -n "$DEBUG" ]; then
+	env | grep RPM_INSTALL_PREFIX | sort -u
+fi
+
+if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
+	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
+	if [ -e "$RPM_INSTALL_PREFIX0/logs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/logs" ]; then
+		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX2."
+		echo "Your OpenNMS install may not function properly."
+	else
+		rm -rf "$RPM_INSTALL_PREFIX0/logs"
+		ln -sf "$RPM_INSTALL_PREFIX2" "$RPM_INSTALL_PREFIX0/logs"
+		echo "done"
+	fi
+fi
+
+if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
+	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
+	if [ -e "$RPM_INSTALL_PREFIX0/share" ] && [ ! -L "$RPM_INSTALL_PREFIX0/share" ]; then
+		echo "failed: $RPM_INSTALL_PREFIX0/share is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX1."
+		echo "Your OpenNMS install may not function properly."
+	else
+		rm -rf "$RPM_INSTALL_PREFIX0/share"
+		ln -sf "$RPM_INSTALL_PREFIX1" "$RPM_INSTALL_PREFIX0/share"
+		echo "done"
+	fi
+fi
+
+printf -- "- moving *.sql.rpmnew files (if any)... "
+if [ `ls $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
+	for i in $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew; do
 		mv $i ${i%%%%.rpmnew}
 	done
 fi
 echo "done"
 
-echo -e "- checking for old update files... \c"
+printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find %{instprefix}/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-CLASS_UPDATES=`find %{instprefix}/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+JAR_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+CLASS_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 let TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then
 	echo "FOUND"
 	echo ""
 	echo "WARNING: $TOTAL_UPDATES old update files were found in your"
-	echo "%{instprefix}/lib/updates directory.  They have been deleted"
+	echo "$RPM_INSTALL_PREFIX0/lib/updates directory.  They have been deleted"
 	echo "because they should now be out of date."
 	echo ""
 else
 	echo "done"
 fi
 
-rm -f %{instprefix}/etc/configured
+rm -f $RPM_INSTALL_PREFIX0/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
-		ln -sf %{instprefix}/bin/opennms $dir/init.d/opennms
+		ln -sf $RPM_INSTALL_PREFIX0/bin/opennms $dir/init.d/opennms
 		break
 	fi
 done
 
 for LIBNAME in jicmp jrrd; do
-	if [ `grep "opennms.library.${LIBNAME}" "%{instprefix}/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
+	if [ `grep "opennms.library.${LIBNAME}" "$RPM_INSTALL_PREFIX0/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then
-			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "%{instprefix}/etc/libraries.properties"
+			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$RPM_INSTALL_PREFIX0/etc/libraries.properties"
 		fi
 	fi
 done
@@ -334,6 +372,14 @@ echo ""
 echo " *** Installation complete.  You must still run the installer and"
 echo " *** make a few other changes before you start OpenNMS.  See the"
 echo " *** install guide and release notes for details."
+
+%postun core
+
+for dir in logs share; do
+	if [ -L "$RPM_INSTALL_PREFIX0/$dir" ]; then
+		rm -f "$RPM_INSTALL_PREFIX0/$dir"
+	fi
+done
 
 %changelog
 * Mon Oct 29 2007 Benjamin Reed <ranger@opennms.org>
