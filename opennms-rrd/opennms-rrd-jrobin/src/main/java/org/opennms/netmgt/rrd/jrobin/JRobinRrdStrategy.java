@@ -185,7 +185,10 @@ public class JRobinRrdStrategy implements RrdStrategy {
             long collectTime = (now - (now % interval)) / 1000L;
             rrd = new RrdDb(fileName);
             FetchData data = rrd.createFetchRequest(consolidationFunction, collectTime, collectTime).fetchData();
-            log().debug(data.toString());
+            if(log().isDebugEnabled()) {
+            	//The "toString" method of FetchData is quite computationally expensive; 
+            	log().debug(data.toString());
+            }
             double[] vals = data.getValues(ds);
             if (vals.length > 0) {
                 return new Double(vals[vals.length - 1]);
