@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 21: Use a DataSource instead of a DbConnectionFactory. - dj@opennms.org
 // 2008 Jan 21: Clean up init. - dj@opennms.org
 // 2007 Apr 05: Don't initialize log4j ourselves; let it happen in web.xml at
 //              the hands of Spring's log4j initializer. - dj@opennms.org
@@ -46,7 +47,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -56,6 +56,7 @@ import javax.servlet.ServletException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * Encapsulates all initialization and configuration needed by the OpenNMS
@@ -172,41 +173,15 @@ public class ServletInitializer extends Object {
 
             Vault.setProperties(properties);
             Vault.setHomeDir(homeDir);
-
-            // get the database parameters
-            String dbUrl = properties.getProperty("opennms.db.url");
-            String dbDriver = properties.getProperty("opennms.db.driver");
-            String username = properties.getProperty("opennms.db.user");
-            String password = properties.getProperty("opennms.db.password");
-
-            /* 
-             * Set the database connection pool manager (if one is set in
-             * the context).
-             */
-            String dbMgrClass = properties.getProperty("opennms.db.poolman");
-
+            
             try {
-                if (dbMgrClass != null) {
-                    Class<DbConnectionFactory> clazz = getClass(dbMgrClass, DbConnectionFactory.class);
-                    factory = clazz.newInstance();
-                    factory.init(dbUrl, dbDriver, username, password);
-                    Vault.setDbConnectionFactory(factory);
-                }
-            } catch (ClassNotFoundException e) {
-                throw new ServletException("Could not find the opennms.db.poolman class", e);
-            } catch (InstantiationException e) {
-                throw new ServletException("Could not instantiate the opennms.db.poolman class", e);
-            } catch (IllegalAccessException e) {
-                throw new ServletException("Could not instantiate the opennms.db.poolman class", e);
-            } catch (SQLException e) {
-                throw new ServletException("Could not initialize a database connection pool", e);
+                DataSourceFactory.init();
+            } catch (Exception e) {
+                throw new ServletException("Could not initialize data source factory: " + e, e);
             }
+            
+            Vault.setDataSource(DataSourceFactory.getInstance());
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> Class<T> getClass(String clazzName, Class<T> clazz) throws ClassNotFoundException {
-        return (Class<T>) Class.forName(clazzName);
     }
 
     private static void loadPropertiesFromFile(Properties opennmsProperties, String propertiesFile) throws FileNotFoundException, ServletException, IOException {
