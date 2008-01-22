@@ -143,7 +143,7 @@ public final class SshPlugin extends AbstractPlugin {
                     // service.
                     //
                     String response = lineRdr.readLine();
-                    if (regex.match(response)) {
+                    if ((response != null) && (regex.match(response))) {
 
                         if (log.isDebugEnabled())
                             log.debug("isServer: matching response=" + response);
@@ -161,13 +161,20 @@ public final class SshPlugin extends AbstractPlugin {
                             lineRdr.readLine();
                         } catch (IOException e) {
                         }
-                    } else {
+                    } else if (response != null) {
                         // Got a response but it didn't match...no need to
                         // attempt retries
                         isAServer = false;
                         if (log.isDebugEnabled())
                             log.debug("isServer: NON-matching response=" + response);
                         break;
+                    } else {
+                    	// Got a null response, we should not retry
+                    	isAServer = false;
+                    	if (log.isDebugEnabled()) {
+                    		log.debug("isServer: Null response, check SSH daemon and TCP wrappers configuration on host " + host.getHostAddress());
+                    	}
+                    	break;
                     }
                 }
             } catch (ConnectException e) {
