@@ -102,12 +102,6 @@ public class ServletInitializer extends Object {
      * OpenNMS configuration files.
      * </p>
      * 
-     * <p>
-     * If this method finds the property <code>opennms.db.poolman</code> in
-     * the <code>ServletContext</code>, it will create an instance of the
-     * classname specified there to use as the <code>DbConnectionManager</code>.
-     * </p>
-     * 
      * @param context
      *            the <code>ServletContext</code> instance in which your
      *            servlet is running
