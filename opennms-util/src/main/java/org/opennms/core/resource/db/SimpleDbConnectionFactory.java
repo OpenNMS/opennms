@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 // 
+// Modifications:
+//
+// 2008 Jan 21: Remove unused methods. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -73,19 +77,6 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
     protected Properties properties = null;
 
     /**
-     * Initialize a new database pool. This method will only load the JDBC
-     * driver.
-     */
-    public void init(String dbUrl, String dbDriver) throws ClassNotFoundException, SQLException {
-        if (dbUrl == null || dbDriver == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Class.forName(dbDriver);
-        this.url = dbUrl;
-    }
-
-    /**
      * Initialize a new database pool with the given database username and
      * password. This method will load the JDBC driver and store the given
      * database credentials. When a connection is requested, a new connection
@@ -101,23 +92,6 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
         this.url = dbUrl;
         this.username = username;
         this.password = password;
-    }
-
-    /**
-     * Initialize a new database pool with the given database properties. This
-     * method will load the JDBC driver and store the given database properties.
-     * When a connection is requested, a new connection will be made using the
-     * properties.
-     */
-    public void init(String dbUrl, String dbDriver, Properties properties) throws ClassNotFoundException, SQLException {
-        if (dbUrl == null || dbDriver == null || properties == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Class.forName(dbDriver);
-
-        this.url = dbUrl;
-        this.properties = properties;
     }
 
     /**
