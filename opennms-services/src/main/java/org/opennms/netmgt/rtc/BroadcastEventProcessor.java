@@ -94,6 +94,9 @@ final class BroadcastEventProcessor implements EventListener {
 
         // add the nodeUp event
         ueisOfInterest.add(EventConstants.NODE_UP_EVENT_UEI);
+        
+        // add the nodeCategoryMembershipChanged event
+        ueisOfInterest.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
 
         // add the interfaceUp event
         ueisOfInterest.add(EventConstants.INTERFACE_UP_EVENT_UEI);
