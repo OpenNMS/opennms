@@ -138,11 +138,12 @@ javaPaths() {
         if [ ! -d "$searchdir" ]; then
             continue;
         fi
+
 	# We search "j2*" for the Sun-supplied Java packages ("j2sdk"),
 	# "java" for the Java installation shipped with SuSE, and "Home"
 	# to catch /Library/Java/Home on Mac OS X.
 	jdirs="`find \"$searchdir\" -maxdepth 2 \\( -name \"j2*\" -o -name \"jdk*\" -o -name \"java\" -o -name \"Home\" \\) -print`"
-	for jdir in $jdirs; do
+	for jdir in $searchdir/java/default $searchdir/java/latest $jdirs; do
 	    if [ -x $jdir/bin/java ]; then
 		JP=$jdir/bin/java
 		javaCheck && return 0
