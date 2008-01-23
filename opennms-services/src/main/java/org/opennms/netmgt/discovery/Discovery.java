@@ -42,6 +42,10 @@ package org.opennms.netmgt.discovery;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,6 +53,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -86,6 +91,11 @@ public class Discovery extends AbstractServiceDaemon {
     private static final int PING_IDLE = 0;
     private static final int PING_RUNNING = 1;
     private static final int PING_FINISHING = 2;
+    
+    /**
+     * The SQL query used to get the list of managed IP addresses from the database
+     */
+    private static final String ALL_IP_ADDRS_SQL = "SELECT DISTINCT ipAddr FROM ipInterface WHERE isManaged <> 'D'";
     
     /**
      * a set of devices to skip discovery on
@@ -213,6 +223,7 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     protected void onStart() {
+    	syncAlreadyDiscovered();
         startTimer();
     }
 
@@ -226,6 +237,43 @@ public class Discovery extends AbstractServiceDaemon {
 
     protected void onResume() {
         startTimer();
+    }
+    
+    protected void syncAlreadyDiscovered() {
+    	/**
+    	 * Make a new list with which we'll replace the existing one, that way
+    	 * if something goes wrong with the DB we won't lose whatever was already
+    	 * in there
+    	 */
+    	Set<String> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
+    	Connection conn = null;
+
+    	try {
+    		conn = DataSourceFactory.getInstance().getConnection();
+    		PreparedStatement stmt = conn.prepareStatement(ALL_IP_ADDRS_SQL);
+    		ResultSet rs = stmt.executeQuery();
+    		if (rs != null) {
+    			while (rs.next()) {
+    				newAlreadyDiscovered.add(rs.getString(1));
+    			}
+    			rs.close();
+    		} else {
+    			log().warn("Got null ResultSet from query for all IP addresses");
+    		}
+    		stmt.close();
+    		m_alreadyDiscovered = newAlreadyDiscovered;
+    	} catch (SQLException sqle) {
+    		log().warn("Caught SQLException while trying to query for all IP addresses: " + sqle.getMessage());
+    	} finally {
+    		if (conn != null) {
+    			try {
+    				conn.close();
+    			} catch (SQLException sqle) {
+    				log().warn("Caught SQLException while closing DB connection after querying for all IP addresses: " + sqle.getMessage());
+    			}
+    		}
+    	}
+    	log().info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
     }
 
     @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
