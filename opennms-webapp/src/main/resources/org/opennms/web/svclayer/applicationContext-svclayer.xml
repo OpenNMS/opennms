@@ -117,6 +117,7 @@
   <bean id="adminCategoryService" class="org.opennms.web.svclayer.support.DefaultAdminCategoryService">
     <property name="categoryDao" ref="categoryDao"/>
     <property name="nodeDao" ref="nodeDao"/>
+    <property name="eventProxy" ref="eventProxy" />
   </bean>
   
   <!--  Manual Provisioning -->

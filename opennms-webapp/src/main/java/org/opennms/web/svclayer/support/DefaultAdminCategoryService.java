@@ -36,18 +36,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AdminCategoryService;
+import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
 public class DefaultAdminCategoryService implements
         AdminCategoryService {
     
     private CategoryDao m_categoryDao;
     private NodeDao m_nodeDao;
+    private EventProxy m_eventProxy;
     
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -63,6 +70,10 @@ public class DefaultAdminCategoryService implements
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+    
+    public void setEventProxy(EventProxy eventProxy) {
+        m_eventProxy = eventProxy;
     }
 
     public CategoryAndMemberNodes getCategory(String categoryIdString) {
@@ -214,6 +225,10 @@ public class DefaultAdminCategoryService implements
 
     public void removeCategory(String categoryIdString) {
         OnmsCategory category = findCategory(categoryIdString);
+        CategoryAndMemberNodes cat = getCategory(categoryIdString);
+        for (OnmsNode adriftNode : cat.getMemberNodes()) {
+        	notifyCategoryChange(adriftNode.getId());
+        }
         m_categoryDao.delete(category);
     }
 
@@ -283,6 +298,7 @@ public class DefaultAdminCategoryService implements
             }
             
             m_nodeDao.save(node);
+            notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
        } else if (editAction.equals("Remove")) {
             if (toDelete == null) {
                 return;
@@ -314,6 +330,7 @@ public class DefaultAdminCategoryService implements
             }
 
             m_nodeDao.save(node);
+            notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction
@@ -335,6 +352,20 @@ public class DefaultAdminCategoryService implements
                                                + "as an integer");
         }
         return m_nodeDao.get(nodeId);
+    }
+
+    private void notifyCategoryChange(int nodeId) {
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "CategoryUI");
+        bldr.setNodeid(nodeId);
+        send(bldr.getEvent());
+    }
+    
+    private void send(Event e) {
+        try {
+            m_eventProxy.send(e);
+        } catch (EventProxyException e1) {
+            throw new DataSourceLookupFailureException("Unable to send event to eventd", e1);
+        }
     }
     
     public class CategoryAndMemberNodes {
