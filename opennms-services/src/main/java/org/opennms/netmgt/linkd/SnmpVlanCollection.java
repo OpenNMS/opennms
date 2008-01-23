@@ -325,7 +325,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	        walker.start();
 
 	        try {
-	            walker.waitFor());
+	            walker.waitFor();
 	        } catch (InterruptedException e) {
 				m_dot1dbase = null;
 				m_dot1dbaseTable = null;
