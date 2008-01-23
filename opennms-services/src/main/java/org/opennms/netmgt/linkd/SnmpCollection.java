@@ -465,11 +465,7 @@ public final class SnmpCollection implements ReadyRunnable {
 			walker.start();
 
 			try {
-				// wait a maximum of five minutes!
-				//
-				// FIXME: Why do we do this. If we are successfully processing
-				// responses shouldn't we keep going?
-				walker.waitFor(300000);
+				walker.waitFor();
 			} catch (InterruptedException e) {
 				m_ipNetToMedia = null;
 				m_ipRoute = null;
