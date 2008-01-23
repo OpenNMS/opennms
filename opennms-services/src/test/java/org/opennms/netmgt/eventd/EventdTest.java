@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Add test for mapping from servicename to serviceId and
+//              persistence of events.serviceID. - dj@opennms.org
 // 2008 Jan 08: Make tests happy with EventConfigurationManager to
 //              EventConfDao rework. - dj@opennms.org
 //
@@ -41,8 +43,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.opennms.core.concurrent.BarrierSignaler;
+import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
@@ -50,6 +54,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class EventdTest extends OpenNMSTestCase {
     
@@ -83,6 +88,23 @@ public class EventdTest extends OpenNMSTestCase {
         sleep(1000);
         assertEquals(1, m_db.countRows("select * from events"));
         
+    }
+    
+    /**
+     * Test that eventd's service ID lookup works properly.
+     */
+    public void testPersistEventWithService() throws Exception {
+
+        assertEquals(0, m_db.countRows("select * from events"));
+
+        MockNode node = m_network.getNode(1);
+        MockInterface intf = node.getInterface("192.168.1.1");
+        MockService svc = intf.getService("ICMP");
+        sendServiceDownEvent(null, svc);
+
+        sleep(1000);
+        assertEquals("event count", 1, m_db.countRows("select * from events"));
+        assertNotSame("service ID for event", 0, new JdbcTemplate(m_db.getDataSource()).queryForInt("select serviceID from events"));
     }
     
     public void testPersistAlarm() throws Exception {
@@ -198,6 +220,28 @@ public class EventdTest extends OpenNMSTestCase {
      */
     private void sendNodeDownEvent(String reductionKey, MockNode node) {
         Event e = MockEventUtil.createNodeDownEvent("Test", node);
+        
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            e.setAlarmData(data);
+        } else {
+            e.setAlarmData(null);
+        }
+        
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent("testing");
+        e.setLogmsg(logmsg);
+        m_eventd.processEvent(e);
+    }
+    
+    /**
+     * @param reductionKey
+     */
+    private void sendServiceDownEvent(String reductionKey, MockService svc) {
+        Event e = MockEventUtil.createServiceUnresponsiveEvent("Test", svc, "Not responding");
         
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
