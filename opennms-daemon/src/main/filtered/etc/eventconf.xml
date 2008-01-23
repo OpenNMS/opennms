@@ -708,6 +708,18 @@
     <severity>Warning</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/nodes/nodeCategoryMembershipChanged</uei>
+    <event-label>OpenNMS-defined node event: nodeCategoryMembershipChanged</event-label>
+    <descr>
+      &lt;p&gt;Node category membership has changed for node
+      (%parm[nodelabel]%)&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      Node category membership has changed for node (%parm[nodelabel]%).
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
     <uei>uei.opennms.org/nodes/nodeDeleted</uei>
     <event-label>OpenNMS-defined node event: nodeDeleted</event-label>
     <descr>
