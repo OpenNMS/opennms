@@ -229,6 +229,11 @@ public class EventConstants {
      * The node added event UEI
      */
     public final static String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
+    
+	/**
+	 * The node category membership changed UEI
+	 */
+    public static final String NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeCategoryMembershipChanged";
 
     /**
      * The node gained interface event UEI

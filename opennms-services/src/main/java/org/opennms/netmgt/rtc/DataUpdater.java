@@ -391,8 +391,24 @@ final class DataUpdater implements Runnable {
         dataMgr.assetInfoChanged(nodeid);
 
         if (log.isDebugEnabled())
-            log.debug(m_event.getUei() + " rescanned: " + nodeid);
+            log.debug(m_event.getUei() + " asset info changed for node " + nodeid);
 
+    }
+    
+    /**
+     * If a node's surveillance category membership changed,
+     * update RTC since RTC categories may include surveillance
+     * categories via "categoryName" or "catinc*" rules
+     */
+    private void handleNodeCategoryMembershipChanged(long nodeid) {
+        Category log = ThreadCategory.getInstance(DataUpdater.class);
+
+        DataManager dataMgr = RTCManager.getDataManager();
+
+        dataMgr.nodeCategoryMembershipChanged(nodeid);
+
+        if (log.isDebugEnabled())
+            log.debug(m_event.getUei() + " surveillance category membership changed for node " + nodeid);
     }
 
     /**
@@ -487,6 +503,8 @@ final class DataUpdater implements Runnable {
             handleRtcUnsubscribe(m_event.getParms());
         } else if (eventUEI.equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
             handleAssetInfoChangedEvent(nodeid);
+        } else if (eventUEI.equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
+        	handleNodeCategoryMembershipChanged(nodeid);
         } else {
             if (log.isDebugEnabled())
                 log.debug("Event subscribed for not handled?!: " + eventUEI);

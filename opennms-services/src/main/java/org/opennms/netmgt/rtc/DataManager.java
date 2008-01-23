@@ -703,6 +703,21 @@ public class DataManager extends Object {
 
     	
     }
+    
+    public synchronized void nodeCategoryMembershipChanged(long nodeid) {
+        try {
+        	rtcNodeRescan(nodeid);
+        } catch (FilterParseException ex) {
+            log().warn("Failed to unmarshall database config", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (SQLException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (RTCException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
 
     /**
      * Update the categories for a node. This method will update the categories
