@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 23: Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,8 +40,6 @@ package org.opennms.netmgt.eventd.datablock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -59,7 +61,7 @@ import java.util.Map;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventKey extends LinkedHashMap implements Serializable, Comparable {
+public class EventKey extends LinkedHashMap<String, Object> implements Serializable, Comparable<EventKey> {
     /**
      * 
      */
@@ -159,7 +161,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
      * @param maskelements
      *            the maskelements that should form this key
      */
-    public EventKey(Map maskelements) {
+    public EventKey(Map<String, Object> maskelements) {
         super(maskelements);
 
         m_hashCode = 1;
@@ -186,10 +188,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
                 put(TAG_UEI, new EventMaskValueList(uei));
             }
         } else {
-            Enumeration en = mask.enumerateMaskelement();
-            while (en.hasMoreElements()) {
-                org.opennms.netmgt.xml.eventconf.Maskelement maskelement = (org.opennms.netmgt.xml.eventconf.Maskelement) en.nextElement();
-
+            for (org.opennms.netmgt.xml.eventconf.Maskelement maskelement : mask.getMaskelementCollection()) {
                 String name = maskelement.getMename();
 
                 EventMaskValueList value = new EventMaskValueList();
@@ -201,10 +200,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
                 put(name, value);
             }
             if (mask != null && mask.getVarbindCount() != 0) {
-                Enumeration varenum = mask.enumerateVarbind();
-                while (varenum.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Varbind varbind = (org.opennms.netmgt.xml.eventconf.Varbind) varenum.nextElement();
-
+                for (org.opennms.netmgt.xml.eventconf.Varbind varbind : mask.getVarbindCollection()) {
                     EventMaskValueList vbvalues = new EventMaskValueList();
                     int vbint = varbind.getVbnumber();
                     String vbnumber = Integer.toString(vbint);
@@ -238,10 +234,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
                 put(TAG_UEI, uei);
             }
         } else {
-            Enumeration en = mask.enumerateMaskelement();
-            while (en.hasMoreElements()) {
-                org.opennms.netmgt.xml.event.Maskelement maskelement = (org.opennms.netmgt.xml.event.Maskelement) en.nextElement();
-
+            for (org.opennms.netmgt.xml.event.Maskelement maskelement : mask.getMaskelementCollection()) {
                 String name = maskelement.getMename();
                 String value = getMaskElementValue(event, name);
 
@@ -250,9 +243,9 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
         }
     }
 
-    //
-    // Following methods are to ensure hashcode is not out of sync with elements
-    //
+    /*
+     * Following methods are to ensure hashcode is not out of sync with elements
+     */
 
     /**
      * Override to re-evaluate hashcode
@@ -269,7 +262,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
      * 
      * @see java.util.Hashtable#put(Object, Object)
      */
-    public Object put(Object key, Object value) {
+    public Object put(String key, Object value) {
         Object ret = super.put(key, value);
         evaluateHashCode();
         return ret;
@@ -280,7 +273,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
      * 
      * @see java.util.Hashtable#putAll(Map)
      */
-    public void putAll(Map m) {
+    public void putAll(Map<? extends String, ? extends Object> m) {
         super.putAll(m);
         evaluateHashCode();
     }
@@ -296,9 +289,9 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
         return ret;
     }
 
-    //
-    // End methods to ensure hashcode is not out of sync with elements
-    //
+    /*
+     * End methods to ensure hashcode is not out of sync with elements
+     */
 
     /**
      * <pre>
@@ -313,28 +306,21 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
     public void evaluateHashCode() {
         m_hashCode = 0;
 
-        if (isEmpty())
+        if (isEmpty()) {
             return;
+        }
 
-        String key;
-        Object value;
-
-        Iterator i = keySet().iterator();
-        while (i.hasNext()) {
+        for (String key : keySet()) {
             // m_hashCode = 31 * m_hashCode;
 
-            // key
-            key = (String) i.next();
-
             // value
-            value = get(key);
+            Object value = get(key);
 
             // add key
             m_hashCode += (key == null ? 0 : key.hashCode());
 
             // add value
             m_hashCode += (value == null ? 0 : value.hashCode());
-
         }
     }
 
@@ -343,12 +329,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
      * 
      * @see java.lang.Comparable#compareTo(Object)
      */
-    public int compareTo(Object o) {
-        if (!(o instanceof EventKey))
-            return -1;
-
-        EventKey obj = (EventKey) o;
-
+    public int compareTo(EventKey obj) {
         return (hashCode() - obj.hashCode());
     }
 
@@ -358,10 +339,11 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
      * @return a hash code for this object
      */
     public int hashCode() {
-        if (m_hashCode != -1111)
+        if (m_hashCode != -1111) {
             return m_hashCode;
-        else
+        } else {
             return super.hashCode();
+        }
     }
 
     /**
@@ -372,13 +354,8 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
     public String toString() {
         StringBuffer s = new StringBuffer("EventKey\n[\n\t");
 
-        Iterator i = entrySet().iterator();
-        while (i.hasNext()) {
-            Map.Entry e = (Map.Entry) i.next();
-            String key = (String) e.getKey();
-            Object value = e.getValue();
-
-            s.append(key + "    = " + value.toString() + "\n\t");
+        for (Map.Entry<String, Object> e : entrySet()) {
+            s.append(e.getKey() + "    = " + e.getValue().toString() + "\n\t");
         }
 
         s.append("\n]\n");
@@ -443,9 +420,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
         } else if (event.getParms() != null && event.getParms().getParmCount() > 0) {
             ArrayList<String> eventparms = new ArrayList<String>();
             org.opennms.netmgt.xml.event.Parms parms = event.getParms();
-            Enumeration parmenum = parms.enumerateParm();
-            while (parmenum.hasMoreElements()) {
-                org.opennms.netmgt.xml.event.Parm evParm = (org.opennms.netmgt.xml.event.Parm) parmenum.nextElement();
+            for (org.opennms.netmgt.xml.event.Parm evParm : parms.getParmCollection()) {
                 eventparms.add(org.opennms.netmgt.eventd.EventUtil.getValueAsString(evParm.getValue()));
             }
             int vbnumber = Integer.parseInt(mename);
