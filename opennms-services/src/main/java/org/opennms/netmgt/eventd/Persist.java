@@ -7,6 +7,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 23: Use Java 5 generics, format code, wrap debug logs within an if
+//              statement unless they are logging a plain String. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,8 +44,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -55,6 +60,7 @@ import org.opennms.netmgt.eventd.db.SnmpInfo;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
+import org.springframework.util.Assert;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -84,12 +90,9 @@ import org.opennms.netmgt.xml.event.Operaction;
  * - Alarm persisting added (many moons ago)
  * - Alarm persisting now removes oldest events by default.  Use "auto-clean" attribute
  *   in eventconf files.
- * 
  */
 class Persist {
-    //
     // Field sizes in the events table
-    //
     private static final int EVENT_UEI_FIELD_SIZE = 256;
 
     private static final int EVENT_HOST_FIELD_SIZE = 256;
@@ -279,21 +282,15 @@ class Persist {
      * 
      */
     private int getServiceID(String name) throws SQLException {
-        //
-        // Check the name to make sure that it is not null
-        //
-        if (name == null)
-            throw new NullPointerException("The service name was null");
+        Assert.notNull(name, "The service name must not be null");
 
         // ask persistd
-        //
         int id = Eventd.getServiceID(name);
-        if (id != -1)
+        if (id != -1) {
             return id;
+        }
 
-        //
         // talk to the database and get the identifer
-        //
         m_getSvcIdStmt.setString(1, name);
         ResultSet rset = null;
         try {
@@ -301,7 +298,6 @@ class Persist {
             if (rset.next()) {
                 id = rset.getInt(1);
             }
-
         } catch (SQLException e) {
             throw e;
         } finally {
@@ -309,13 +305,10 @@ class Persist {
         }
 
         // inform persistd about the new find
-        //
-        if (id != -1)
+        if (id != -1) {
             Eventd.addServiceMapping(name, id);
+        }
 
-        //
-        // return the id to the caller
-        //
         return id;
     }
 
@@ -337,10 +330,7 @@ class Persist {
      * 
      */
     private String getHostName(String hostip) throws SQLException {
-
-        //
         // talk to the database and get the identifer
-        //
         String hostname = hostip;
 
         m_getHostNameStmt.setString(1, hostip);
@@ -351,7 +341,6 @@ class Persist {
             if (rset.next()) {
                 hostname = rset.getString(1);
             }
-
         } catch (SQLException e) {
             throw e;
         } finally {
@@ -359,34 +348,34 @@ class Persist {
         }
 
         // hostname can be null - if it is, return the ip
-        //
-        if (hostname == null)
+        if (hostname == null) {
             hostname = hostip;
+        }
 
-        //
-        // return the hostname to the caller
-        //
         return hostname;
     }
     
     public void insertOrUpdateAlarm(Header eventHeader, Event event) throws SQLException {
-        
         int alarmId = isReductionNeeded(eventHeader, event);
         if (alarmId != -1) {
-            log().debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+            if (log().isDebugEnabled()) {
+                log().debug("Reducing event for: " + event.getDbid() + ": " + event.getUei());
+            }
             updateAlarm(eventHeader, event, alarmId);
             
-            /*
-             * This removes all previous events that have been reduced.
-             */
-            log().debug("insertOrUpdate: auto-clean is: "+event.getAlarmData().getAutoClean());
+            // This removes all previous events that have been reduced.
+            if (log().isDebugEnabled()) {
+                log().debug("insertOrUpdate: auto-clean is: " + event.getAlarmData().getAutoClean());
+            }
             if (event.getAlarmData().getAutoClean() == true) {
-                log().debug("insertOrUpdate: deleting previous events.");
+                log().debug("insertOrUpdate: deleting previous events");
                 cleanPreviousEvents(alarmId, event.getDbid());
             }
             
         } else {
-            log().debug("AlarmWriter is not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+            if (log().isDebugEnabled()) {
+                log().debug("Not reducing event for: " + event.getDbid() + ": " + event.getUei());
+            }
             insertAlarm(eventHeader, event);
         }
     }
@@ -402,25 +391,23 @@ class Persist {
             stmt.setInt(2, eventId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            log().error("cleanPreviousEvents: Couldn't remove old events.", e);
+            log().error("cleanPreviousEvents: Couldn't remove old events: " + e, e);
         }
 
         try {
             stmt.close();
         } catch (SQLException e) {
-            log().error("cleanPreviousEvents: Couldn't close statement.", e);
+            log().error("cleanPreviousEvents: Couldn't close statement: " + e, e);
         }
     }
 
     private Category log() {
-        Category log = ThreadCategory.getInstance(AlarmWriter.class);
-        return log;
+        return ThreadCategory.getInstance(getClass());
     }
 
     private int isReductionNeeded(Header eventHeader, Event event) throws SQLException {
-        
         if (log().isDebugEnabled()) {
-            log().debug("Persist.isReductionNeeded: reductionKey: "+event.getAlarmData().getReductionKey());
+            log().debug("Persist.isReductionNeeded: reductionKey: " + event.getAlarmData().getReductionKey());
         }
 
         m_reductionQuery.setString(1, event.getAlarmData().getReductionKey());
@@ -442,25 +429,19 @@ class Persist {
     }
     
     private void updateAlarm(Header eventHeader, Event event, int alarmId) throws SQLException {
-
-        Category log = ThreadCategory.getInstance(Persist.class);
-
         m_upDateStmt.setInt(1, event.getDbid());
-        
-        java.sql.Timestamp eventTime = getEventTime(event, log);
-        m_upDateStmt.setTimestamp(2, eventTime);
+        m_upDateStmt.setTimestamp(2, getEventTime(event));
         m_upDateStmt.setString(3, event.getAlarmData().getReductionKey());
 
-        if (log.isDebugEnabled())
-            log.debug("Persist.updateAlarm: reducing event: "+event.getDbid()+ "into alarm: ");
+        if (log().isDebugEnabled()) {
+            log().debug("Persist.updateAlarm: reducing event: " + event.getDbid() +  " into alarm");
+        }
         
         m_upDateStmt.executeUpdate();
-
 
         m_updateEventStmt.setInt(1, alarmId);
         m_updateEventStmt.setInt(2, event.getDbid());
         m_updateEventStmt.executeUpdate();
-        
     }
     
     /**
@@ -475,10 +456,10 @@ class Persist {
      */
     private void insertAlarm(Header eventHeader, Event event) throws SQLException {
         int alarmID = -1;
-        Category log = ThreadCategory.getInstance(AlarmWriter.class);
-        
         alarmID = getNextId();
-        if (log.isDebugEnabled()) log.debug("AlarmWriter: DBID: "+ alarmID);
+        if (log().isDebugEnabled()) {
+            log().debug("AlarmWriter: DBID: " + alarmID);
+        }
 
         //Column 1, alarmId
         m_insStmt.setInt(1, alarmID);
@@ -504,8 +485,8 @@ class Persist {
         if (event.getService() != null) {
             try {
                 svcId = getServiceID(event.getService());
-            } catch (SQLException sqlE) {
-                log.warn("AlarmWriter.insertAlarm: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
+            } catch (SQLException e) {
+                log().warn("insertAlarm: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1: " + e, e);
             }
         }
         m_insStmt.setObject(6, (svcId == -1 ? null : new Integer(svcId)));
@@ -526,10 +507,9 @@ class Persist {
         m_insStmt.setInt(11, event.getDbid());
         
         //Column 12, firstEventTime
-        java.sql.Timestamp eventTime = getEventTime(event, log);
-        m_insStmt.setTimestamp(12, eventTime);
-        
         //Column 13, lastEventTime
+        Timestamp eventTime = getEventTime(event);
+        m_insStmt.setTimestamp(12, eventTime);
         m_insStmt.setTimestamp(13, eventTime);
         
         //Column 14, description
@@ -551,8 +531,9 @@ class Persist {
         if (event.getTticket() != null) {
             set(m_insStmt, 17, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
             int ttstate = 0;
-            if (event.getTticket().getState().equals("on"))
+            if (event.getTticket().getState().equals("on")) {
                 ttstate = 1;
+            }
             set(m_insStmt, 18, ttstate);
         } else {
             m_insStmt.setNull(17, Types.VARCHAR);
@@ -593,8 +574,9 @@ class Persist {
             set(m_insStmt, 28, event.getAlarmData().getClearKey());
         }
         
-        if (log.isDebugEnabled())
-            log.debug("m_insStmt is: "+m_insStmt.toString());
+        if (log().isDebugEnabled()) {
+            log().debug("m_insStmt is: " + m_insStmt.toString());
+        }
         
         m_insStmt.executeUpdate();
         
@@ -602,8 +584,9 @@ class Persist {
         m_updateEventStmt.setInt(2, event.getDbid());
         m_updateEventStmt.executeUpdate();
 
-        if (log.isDebugEnabled())
-            log.debug("SUCCESSFULLY added " + event.getUei() + " related  data into the ALARMS table");
+        if (log().isDebugEnabled()) {
+            log().debug("SUCCESSFULLY added " + event.getUei() + " related  data into the ALARMS table");
+        }
    
     }
 
@@ -619,25 +602,18 @@ class Persist {
      *                properties file.
      */
     protected void insertEvent(Header eventHeader, Event event) throws SQLException {
-        Category log = ThreadCategory.getInstance(EventWriter.class);
-
-        // events next id from sequence
-        //
         // Execute the statement to get the next event id
-        //
         int eventID = getNextId();
 
-        if (log.isDebugEnabled()) {
-            log.debug("EventWriter: DBID: " + eventID);
+        if (log().isDebugEnabled()) {
+            log().debug("EventWriter: DBID: " + eventID);
         }
 
         synchronized (event) {
             event.setDbid(eventID);
         }
 
-        //
         // Set up the sql information now
-        //
 
         // eventID
         m_insStmt.setInt(1, eventID);
@@ -650,13 +626,9 @@ class Persist {
         set(m_insStmt, 3, event.hasNodeid() ? nodeid : -1);
 
         // eventTime
-        java.sql.Timestamp eventTime = getEventTime(event, log);
-        m_insStmt.setTimestamp(4, eventTime);
+        m_insStmt.setTimestamp(4, getEventTime(event));
         
-        //
-        // Resolve the event host to a hostname using
-        // the ipinterface table
-        //
+        // Resolve the event host to a hostname using the ipInterface table
         String hostname = getEventHost(event);
 
         // eventHost
@@ -671,25 +643,21 @@ class Persist {
         // eventSnmpHost
         set(m_insStmt, 8, Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
 
-        //
-        // convert the service name to a service id
-        //
-        int svcId = getEventServiceId(event, log);
-
-        // service identifier
-        set(m_insStmt, 9, svcId);
+        // service identifier - convert the service name to a service id
+        set(m_insStmt, 9, getEventServiceId(event));
 
         // eventSnmp
-        if (event.getSnmp() != null)
+        if (event.getSnmp() != null) {
             m_insStmt.setString(10, SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
-        else
+        } else {
             m_insStmt.setNull(10, Types.VARCHAR);
+        }
 
         // eventParms
 
-        //Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
+        // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
         String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
-        if(parametersString!=null) {
+        if (parametersString != null) {
             parametersString=parametersString.replace((char)0, ' ');
         }
         
@@ -703,7 +671,7 @@ class Persist {
         }
 
         // eventCreateTime
-        java.sql.Timestamp eventCreateTime = new java.sql.Timestamp((new java.util.Date()).getTime());
+        Timestamp eventCreateTime = new Timestamp(System.currentTimeMillis());
         m_insStmt.setTimestamp(12, eventCreateTime);
 
         // eventDescr
@@ -719,36 +687,32 @@ class Persist {
             // set log message
             set(m_insStmt, 15, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
             String logdest = event.getLogmsg().getDest();
-            // if 'logndisplay' set both log and display
-            // column to yes
             if (logdest.equals("logndisplay")) {
+                // if 'logndisplay' set both log and display column to yes
                 set(m_insStmt, 16, MSG_YES);
                 set(m_insStmt, 17, MSG_YES);
-            }
-            // if 'logonly' set log column to true
-            else if (logdest.equals("logonly")) {
+            } else if (logdest.equals("logonly")) {
+                // if 'logonly' set log column to true
                 set(m_insStmt, 16, MSG_YES);
                 set(m_insStmt, 17, MSG_NO);
-            }
-            // if 'displayonly' set display column to true
-            else if (logdest.equals("displayonly")) {
+            } else if (logdest.equals("displayonly")) {
+                // if 'displayonly' set display column to true
                 set(m_insStmt, 16, MSG_NO);
                 set(m_insStmt, 17, MSG_YES);
-            }
-            // if 'suppress' set both log and display to false
-            else if (logdest.equals("suppress")) {
+            } else if (logdest.equals("suppress")) {
+                // if 'suppress' set both log and display to false
                 set(m_insStmt, 16, MSG_NO);
                 set(m_insStmt, 17, MSG_NO);
             }
         } else {
             m_insStmt.setNull(15, Types.VARCHAR);
 
-            // If this is an event that had no match in the event conf
-            // mark it as to be logged and displayed so that there
-            // are no events that slip through the system
-            // without the user knowing about them
-
-            set(m_insStmt, 16, MSG_YES);
+            /*
+             * If this is an event that had no match in the event conf
+             * mark it as to be logged and displayed so that there
+             * are no events that slip through the system
+             * without the user knowing about them
+             */
             set(m_insStmt, 17, MSG_YES);
         }
 
@@ -772,12 +736,10 @@ class Persist {
 
         // eventOperAction / eventOperActionMenuText
         if (event.getOperactionCount() > 0) {
-            List a = new ArrayList();
-            List b = new ArrayList();
+            List<Operaction> a = new ArrayList<Operaction>();
+            List<String> b = new ArrayList<String>();
 
-            Enumeration en = event.enumerateOperaction();
-            while (en.hasMoreElements()) {
-                Operaction eoa = (Operaction) en.nextElement();
+            for (Operaction eoa : event.getOperactionCollection()) {
                 a.add(eoa);
                 b.add(eoa.getMenutext());
             }
@@ -796,8 +758,9 @@ class Persist {
         if (event.getTticket() != null) {
             set(m_insStmt, 27, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
             int ttstate = 0;
-            if (event.getTticket().getState().equals("on"))
+            if (event.getTticket().getState().equals("on")) {
                 ttstate = 1;
+            }
 
             set(m_insStmt, 28, ttstate);
         } else {
@@ -813,7 +776,6 @@ class Persist {
 
         // eventAckUser
         if (event.getAutoacknowledge() != null && event.getAutoacknowledge().getState().equals("on")) {
-
             set(m_insStmt, 31, Constants.format(event.getAutoacknowledge().getContent(), EVENT_ACKUSER_FIELD_SIZE));
 
             // eventAckTime - if autoacknowledge is present,
@@ -830,8 +792,9 @@ class Persist {
         // execute
         m_insStmt.executeUpdate();
 
-        if (log.isDebugEnabled())
-            log.debug("SUCCESSFULLY added " + event.getUei() + " related  data into the EVENTS table");
+        if (log().isDebugEnabled()) {
+            log().debug("SUCCESSFULLY added " + event.getUei() + " related  data into the EVENTS table");
+        }
     }
 
     /**
@@ -839,13 +802,13 @@ class Persist {
      * @param log
      * @return
      */
-    private int getEventServiceId(Event event, Category log) {
+    private int getEventServiceId(Event event) {
         int svcId = -1;
         if (event.getService() != null) {
             try {
                 svcId = getServiceID(event.getService());
-            } catch (SQLException sqlE) {
-                log.warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
+            } catch (SQLException e) {
+                log().warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1: e" + e, e);
             }
         }
         return svcId;
@@ -861,8 +824,7 @@ class Persist {
             try {
                 hostname = getHostName(hostname);
             } catch (SQLException sqlE) {
-                // hostname can be null - so do nothing
-                // use the IP
+                // hostname can be null - so use the IP
                 hostname = event.getHost();
             }
         }
@@ -874,16 +836,13 @@ class Persist {
      * @param log
      * @return
      */
-    private java.sql.Timestamp getEventTime(Event event, Category log) {
-        java.sql.Timestamp eventTime = null;
+    private Timestamp getEventTime(Event event) {
         try {
-            java.util.Date date = EventConstants.parseToDate(event.getTime());
-            eventTime = new java.sql.Timestamp(date.getTime());
-        } catch (java.text.ParseException pe) {
-            log.warn("Failed to convert time " + event.getTime() + " to java.sql.Timestamp, Setting current time instead", pe);
-            eventTime = new java.sql.Timestamp((new java.util.Date()).getTime());
+            return new Timestamp(EventConstants.parseToDate(event.getTime()).getTime());
+        } catch (ParseException e) {
+            log().warn("Failed to convert time " + event.getTime() + " to Timestamp, setting current time instead.  Exception: " + e, e);
+            return new Timestamp(System.currentTimeMillis());
         }
-        return eventTime;
     }
 
     /**
@@ -902,7 +861,7 @@ class Persist {
         try {
             m_dsConn.close();
         } catch (SQLException e) {
-            ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing database connection", e);
+            log().warn("SQLException while closing database connection", e);
         }
     }
     
@@ -917,12 +876,11 @@ class Persist {
         } catch (SQLException e) {
             throw e;
         } finally {
-        	if (rs != null) {
-        		rs.close();
-        	}
+            if (rs != null) {
+                rs.close();
+            }
         }
         rs = null;
         return id;
     }
-
 }
