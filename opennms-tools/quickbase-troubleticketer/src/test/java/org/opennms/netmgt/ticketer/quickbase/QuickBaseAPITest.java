@@ -21,15 +21,16 @@ import com.intuit.quickbase.util.QuickBaseException;
 
 public class QuickBaseAPITest extends TestCase {
     
-    public void testCreateLead() {
-        String className = "QuickBaseAPITEst";
-        
+    public void XXXtestCreateLead() {
         PrintWriter out = null;
         try {
             out = new PrintWriter(System.out);
             out.println("Welcome to QuickBase\n");
 
             QuickBaseClient qdb = createClient();
+            
+            
+            qdb.findDbByName("TPMG Support");
 
             HashMap tables = (HashMap)qdb.grantedDBs(false, false, true);
             if(tables == null) {
@@ -48,8 +49,6 @@ public class QuickBaseAPITest extends TestCase {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(new DOMSource(schema), new StreamResult(out));
                                      
-            
-            out.println(schema);
             NodeList fields = schema.getElementsByTagName("field");
             out.println("The QuickBase application " + tableName + " has " + fields.getLength() + " fields.");
             out.println("The fields are listed below.");
@@ -57,7 +56,7 @@ public class QuickBaseAPITest extends TestCase {
             for (int i = 0; i < fields.getLength(); i++) {
               out.println("Field ID: " + fields.item(i).getAttributes().getNamedItem("id").getNodeValue());
               out.println("Field Type: " + fields.item(i).getAttributes().getNamedItem("type").getNodeValue());
-              //out.println("Field Label: " + fields.item(i).getChildNodes().item(0).getNodeValue());
+              out.println("Field Label: " + fields.item(i).getChildNodes().item(0).getNodeValue());
             }
             
             }            
@@ -79,10 +78,28 @@ public class QuickBaseAPITest extends TestCase {
     
     
     private QuickBaseClient createClient() {
-        return new QuickBaseClient("user@example.com", "XXXXXX");
+        return new QuickBaseClient("brozow@opennms.org", "password");
     }
     
-    public void testCreateTicket() {
+    public void testCreateTicket() throws QuickBaseException, Exception {
+        QuickBaseClient qdb = createClient();
+        
+        
+        String appName = "TPMG Support";
+        String dbId = qdb.findDbByName(appName);
+        
+        System.out.println("dbId for "+appName+" is "+dbId);
+        
+        HashMap record = new HashMap();
+        record.put("request_type", "OpenNMS Alarm");
+        record.put("summary", "ticket summary");
+        record.put("description", "ticket details");
+        record.put("status", "Reported");
+        
+        String recordId = qdb.addRecord(dbId, record);
+        
+        System.out.println("record Id is "+recordId);
+        
     }
     
     public void testUpdateTicket() {
