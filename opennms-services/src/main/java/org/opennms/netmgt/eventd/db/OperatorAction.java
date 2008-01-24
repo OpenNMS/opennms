@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 23: Use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,6 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.xml.event.Operaction;
@@ -76,18 +79,18 @@ public class OperatorAction {
      * 
      * @return the formatted string
      */
-    public static String format(List opacts, int sz) {
+    public static String format(List<Operaction> opacts, int sz) {
         StringBuffer buf = new StringBuffer();
         boolean first = true;
 
-        Iterator i = opacts.iterator();
-        while (i.hasNext()) {
-            if (!first)
+        for (Operaction opact : opacts) {
+            if (!first) {
                 buf.append(Constants.MULTIPLE_VAL_DELIM);
-            else
+            } else {
                 first = false;
+            }
 
-            buf.append(Constants.escape(format((Operaction) i.next()), Constants.MULTIPLE_VAL_DELIM));
+            buf.append(Constants.escape(format(opact), Constants.MULTIPLE_VAL_DELIM));
         }
 
         if (buf.length() >= sz) {
