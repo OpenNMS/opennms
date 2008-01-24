@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 23: Use Java 5 generics. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -171,19 +175,21 @@ public class Constants {
      *                object.
      * 
      */
-    public static String format(List strings, int maxlen) {
-        if (strings == null)
+    public static String format(List<String> strings, int maxlen) {
+        if (strings == null) {
             return null;
+        }
 
         StringBuffer buf = new StringBuffer();
         boolean first = true;
-        Iterator i = strings.iterator();
+        Iterator<String> i = strings.iterator();
 
         while (i.hasNext() && buf.length() < maxlen) {
-            String s = (String) i.next();
+            String s = i.next();
             s = escape(s, MULTIPLE_VAL_DELIM);
-            if (!first)
+            if (!first) {
                 buf.append(MULTIPLE_VAL_DELIM);
+            }
             buf.append(s);
             first = false;
         }
