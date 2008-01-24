@@ -1207,7 +1207,7 @@ create table pathOutage (
 	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
-create index pathoutage_nodeid_idx on pathOutage(nodeID);
+create unique index pathoutage_nodeid on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
 
