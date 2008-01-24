@@ -72,7 +72,7 @@ public final class EventdConstants {
      */
     public final static String SQL_DB_ALARM_UPDATE_EVENT =
             "UPDATE alarms " +
-            "   SET counter = counter+1, lastEventID = ?, lastEventTime = ? " +
+            "   SET counter = counter+1, lastEventID = ?, lastEventTime = ?, logmsg = ? " +
             " WHERE reductionKey = ?";
 
     /**
