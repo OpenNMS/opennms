@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -44,8 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -80,15 +81,14 @@ final class UdpReceivedEvent {
     /**
      * The list of event that have been acknowledged.
      */
-    private List m_ackEvents;
+    private List<Event> m_ackEvents;
 
     /**
      * Private constructor to prevent the used of <em>new</em> except by the
      * <code>make</code> method.
      */
     private UdpReceivedEvent() {
-        // constructor not supported
-        // except through make method!
+        // constructor not supported except through make method!
     }
 
     /**
@@ -130,7 +130,7 @@ final class UdpReceivedEvent {
         e.m_sender = addr;
         e.m_port = port;
         e.m_eventXML = new String(data, 0, len, "US-ASCII");
-        e.m_ackEvents = new ArrayList(16);
+        e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
         return e;
     }
@@ -149,8 +149,8 @@ final class UdpReceivedEvent {
      */
     Log unmarshal() throws ValidationException, MarshalException {
         if (m_log == null) {
-            StringReader rdr = new StringReader(this.m_eventXML);
-            m_log = (Log) Unmarshaller.unmarshal(Log.class, rdr);
+            StringReader rdr = new StringReader(m_eventXML);
+            m_log = CastorUtils.unmarshal(Log.class, rdr);
         }
         return m_log;
     }
@@ -163,8 +163,9 @@ final class UdpReceivedEvent {
      *            The event to acknowledge.
      */
     void ackEvent(Event e) {
-        if (!m_ackEvents.contains(e))
+        if (!m_ackEvents.contains(e)) {
             m_ackEvents.add(e);
+        }
     }
 
     /**
@@ -191,7 +192,7 @@ final class UdpReceivedEvent {
     /**
      * Get the acknowledged events
      */
-    public List getAckedEvents() {
+    public List<Event> getAckedEvents() {
         return m_ackEvents;
     }
 

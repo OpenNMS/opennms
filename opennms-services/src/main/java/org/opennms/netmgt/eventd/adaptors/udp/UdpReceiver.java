@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -57,7 +58,7 @@ class UdpReceiver implements Runnable {
     /**
      * The list of incomming events.
      */
-    private List m_eventsIn;
+    private List<UdpReceivedEvent> m_eventsIn;
 
     /**
      * The Fiber's status.
@@ -82,7 +83,7 @@ class UdpReceiver implements Runnable {
     /**
      * construct a new receiver
      */
-    UdpReceiver(DatagramSocket sock, List xchange) {
+    UdpReceiver(DatagramSocket sock, List<UdpReceivedEvent> xchange) {
         m_eventsIn = xchange;
         m_stop = false;
         m_dgSock = sock;
@@ -95,15 +96,14 @@ class UdpReceiver implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = ThreadCategory.getInstance(getClass());
-            if (log.isDebugEnabled())
-                log.debug("Stopping and joining thread context " + m_context.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Stopping and joining thread context " + m_context.getName());
+            }
 
             m_context.interrupt();
             m_context.join();
 
-            if (log.isDebugEnabled())
-                log.debug("Thread context stopped and joined");
+            log().debug("Thread context stopped and joined");
         }
     }
 
@@ -119,69 +119,58 @@ class UdpReceiver implements Runnable {
      */
     public void run() {
         // get the context
-        //
         m_context = Thread.currentThread();
 
         // Get a log instance
-        //
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
-
+        
         if (m_stop) {
-            if (isTracing)
-                log.debug("Stop flag set before thread started, exiting");
+            log().debug("Stop flag set before thread started, exiting");
             return;
-        } else if (isTracing)
-            log.debug("Thread context started");
+        } else {
+            log().debug("Thread context started");
+        }
 
         // allocate a buffer
-        //
         final int length = 0xffff;
         final byte[] buffer = new byte[length];
         DatagramPacket pkt = new DatagramPacket(buffer, length);
 
-        // set an SO timout to make sure we don't block forever
-        // if a socket is closed.
-        //
+        // Set an SO timout to make sure we don't block forever if a socket is closed.
         try {
-            if (isTracing)
-                log.debug("Setting socket timeout to 500ms");
+            log().debug("Setting socket timeout to 500ms");
 
             m_dgSock.setSoTimeout(500);
         } catch (SocketException e) {
-            log.warn("An I/O error occured while trying to set the socket timeout", e);
+            log().warn("An I/O error occured while trying to set the socket timeout: " + e, e);
         }
 
-        // Increase the receive buffer for the
-        // socket
-        //
+        // Increase the receive buffer for the socket
         try {
-            if (isTracing)
-                log.debug("Setting receive buffer size to " + length);
+            if (log().isDebugEnabled()) {
+                log().debug("Setting receive buffer size to " + length);
+            }
 
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
-            log.info("Failed to set the receive buffer to " + length, e);
+            log().info("Failed to set the receive buffer to " + length + ": " + e, e);
         }
 
         // set to avoid numerious tracing message
-        // 
         boolean ioInterrupted = false;
 
         // now start processing incomming request
-        //
         while (!m_stop) {
             if (m_context.isInterrupted()) {
-                if (isTracing)
-                    log.debug("Thread context interrupted");
+                log().debug("Thread context interrupted");
 
                 break;
             }
 
             try {
-                if (isTracing && !ioInterrupted)
-                    log.debug("Wating on a datagram to arrive");
+                if (log().isDebugEnabled() && !ioInterrupted) {
+                    log().debug("Wating on a datagram to arrive");
+                }
 
                 m_dgSock.receive(pkt);
                 ioInterrupted = false; // reset the flag
@@ -189,13 +178,12 @@ class UdpReceiver implements Runnable {
                 ioInterrupted = true;
                 continue;
             } catch (IOException e) {
-                log.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                log().error("An I/O exception occured on the datagram receipt port, exiting: " + e, e);
                 break;
             }
 
             try {
-                if (isTracing)
-                    log.debug("Sending received packet to processor");
+                log().debug("Sending received packet to processor");
 
                 UdpReceivedEvent re = UdpReceivedEvent.make(pkt);
                 synchronized (m_eventsIn) {
@@ -203,20 +191,22 @@ class UdpReceiver implements Runnable {
                     m_eventsIn.notify();
                 }
             } catch (UnsupportedEncodingException e) {
-                log.warn("Failed to convert received XML event, discarding", e);
+                log().warn("Failed to convert received XML event, discarding: " + e, e);
             }
 
             pkt = new DatagramPacket(buffer, length);
 
-        } // end while status ok
+        }
 
-        if (isTracing)
-            log.debug("Thread context exiting");
+        log().debug("Thread context exiting");
 
-    } // end run method
+    }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
 
-} // end class
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+}
