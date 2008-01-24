@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,7 +41,6 @@ package org.opennms.netmgt.eventd.datablock;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * The maskelement values in a 'EventKey' are stored in this ArrayList subclass
@@ -51,7 +51,9 @@ import java.util.Iterator;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventMaskValueList extends ArrayList {
+public class EventMaskValueList extends ArrayList<String> {
+    private static final long serialVersionUID = 1L;
+    
     /**
      * The hash code calculated from the elements
      */
@@ -68,7 +70,7 @@ public class EventMaskValueList extends ArrayList {
     /**
      * constructor for this class
      */
-    public EventMaskValueList(Collection c) {
+    public EventMaskValueList(Collection<String> c) {
         super(c);
         evaluateHashCode();
     }
@@ -93,16 +95,16 @@ public class EventMaskValueList extends ArrayList {
         evaluateHashCode();
     }
 
-    //
-    // Following methods are to ensure hashcode is not out of sync with elements
-    //
+    /*
+     * Following methods are to ensure hashcode is not out of sync with elements
+     */
 
     /**
      * Override to re-evaluate hashcode
      * 
      * @see java.util.ArrayList#add(Object)
      */
-    public boolean add(Object o) {
+    public boolean add(String o) {
         boolean ret = super.add(o);
         evaluateHashCode();
         return ret;
@@ -113,7 +115,7 @@ public class EventMaskValueList extends ArrayList {
      * 
      * @see java.util.ArrayList#add(int, Object)
      */
-    public void add(int index, Object o) {
+    public void add(int index, String o) {
         super.add(index, o);
         evaluateHashCode();
     }
@@ -123,7 +125,7 @@ public class EventMaskValueList extends ArrayList {
      * 
      * @see java.util.ArrayList#addAll(Collection)
      */
-    public boolean addAll(Collection o) {
+    public boolean addAll(Collection<? extends String> o) {
         boolean ret = super.addAll(o);
         evaluateHashCode();
         return ret;
@@ -134,7 +136,7 @@ public class EventMaskValueList extends ArrayList {
      * 
      * @see java.util.ArrayList#addAll(int, Collection)
      */
-    public boolean addAll(int index, Collection o) {
+    public boolean addAll(int index, Collection<? extends String> o) {
         boolean ret = super.addAll(index, o);
         evaluateHashCode();
         return ret;
@@ -155,8 +157,8 @@ public class EventMaskValueList extends ArrayList {
      * 
      * @see java.util.ArrayList#remove(int)
      */
-    public Object remove(int index) {
-        Object obj = super.remove(index);
+    public String remove(int index) {
+        String obj = super.remove(index);
         evaluateHashCode();
 
         return obj;
@@ -177,7 +179,7 @@ public class EventMaskValueList extends ArrayList {
      * 
      * @see java.util.ArrayList#remove(Object)
      */
-    public boolean remove(Object o) {
+    public boolean remove(String o) {
         boolean ret = super.remove(o);
         evaluateHashCode();
         return ret;
@@ -199,15 +201,15 @@ public class EventMaskValueList extends ArrayList {
      * 
      * @see java.util.ArrayList#set(int,Object)
      */
-    public Object set(int index, Object o) {
-        Object old = super.set(index, o);
+    public String set(int index, String o) {
+        String old = super.set(index, o);
         evaluateHashCode();
         return old;
     }
 
-    //
-    // End methods to ensure hashcode is not out of sync with elements
-    //
+    /*
+     * End methods to ensure hashcode is not out of sync with elements
+     */
 
     /**
      * <p>
@@ -227,17 +229,19 @@ public class EventMaskValueList extends ArrayList {
      */
     private int evaluateHashCode(String value) {
         int h = 0;
-        if (value == null)
+        if (value == null) {
             return h;
+        }
 
         int length = value.length();
-        if (value.startsWith(".1.")) // eid?
-        {
+        if (value.startsWith(".1.")) {
+            // eid?
             StringBuffer newValue = new StringBuffer();
             for (int i = 0; i < length; i++) {
                 char tc = value.charAt(i);
-                if (tc != '.')
+                if (tc != '.') {
                     newValue.append(tc);
+                }
             }
 
             value = newValue.toString();
@@ -250,13 +254,15 @@ public class EventMaskValueList extends ArrayList {
             int lastIndex = len - 1;
 
             for (int i = 0; i <= lastIndex; i++) {
-                if (i != 0)
+                if (i != 0) {
                     h = 31 * h / i - val[i];
-                else
+                } else {
                     h = 31 * h - val[i];
+                }
             }
-        } else
+        } else {
             h = value.hashCode();
+        }
 
         return h;
     }
@@ -266,15 +272,10 @@ public class EventMaskValueList extends ArrayList {
      */
     public void evaluateHashCode() {
         int hashCode = 1;
-        Iterator i = iterator();
-        while (i.hasNext()) {
-            Object obj = i.next();
+        for (String str : this) {
             m_hashCode = 31 * hashCode;
-            if (obj != null) {
-                if (obj instanceof String)
-                    m_hashCode += evaluateHashCode((String) obj);
-                else
-                    m_hashCode += obj.hashCode();
+            if (str != null) {
+                m_hashCode += evaluateHashCode(str);
             }
         }
     }
@@ -285,9 +286,9 @@ public class EventMaskValueList extends ArrayList {
      * @return a hash code for this object
      */
     public int hashCode() {
-        if (m_hashCode != -1111)
+        if (m_hashCode != -1111) {
             return m_hashCode;
-        else {
+        } else {
             evaluateHashCode();
             return m_hashCode;
         }
