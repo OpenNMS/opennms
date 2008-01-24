@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -51,6 +52,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.springframework.util.Assert;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -87,17 +89,17 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     /**
      * The list of incomming events.
      */
-    private List m_eventsIn;
+    private List<UdpReceivedEvent> m_eventsIn;
 
     /**
      * The list of outgoing event-receipts by UUID.
      */
-    private List m_eventUuidsOut;
+    private List<UdpReceivedEvent> m_eventUuidsOut;
 
     /**
      * The list of registered event handlers.
      */
-    private List m_handlers;
+    private List<EventHandler> m_handlers;
 
     /**
      * The Fiber's status.
@@ -120,30 +122,17 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     private String m_logPrefix;
 
     public UdpEventReceiver() {
-        m_dgSock = null;
-        m_dgPort = UDP_PORT;
-
-        m_eventsIn = new LinkedList();
-        m_eventUuidsOut = new LinkedList();
-
-        m_handlers = new ArrayList(3);
-        m_status = START_PENDING;
-
-        m_dgSock = null;
-        m_receiver = null;
-        m_processor = null;
-        m_output = null;
-        m_logPrefix = null;
+        this(UDP_PORT);
     }
 
     public UdpEventReceiver(int port) {
         m_dgSock = null;
         m_dgPort = port;
 
-        m_eventsIn = new LinkedList();
-        m_eventUuidsOut = new LinkedList();
+        m_eventsIn = new LinkedList<UdpReceivedEvent>();
+        m_eventUuidsOut = new LinkedList<UdpReceivedEvent>();
 
-        m_handlers = new ArrayList(3);
+        m_handlers = new ArrayList<EventHandler>(3);
         m_status = START_PENDING;
 
         m_dgSock = null;
@@ -154,8 +143,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     public synchronized void start() {
-        if (m_status != START_PENDING)
-            throw new RuntimeException("The Fiber is in an incorrect state");
+        assertNotRunning();
 
         m_status = STARTING;
 
@@ -188,6 +176,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
             oThread.interrupt();
 
             m_status = STOPPED;
+            
             throw e;
         }
 
@@ -195,8 +184,9 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     public synchronized void stop() {
-        if (m_status == STOPPED)
+        if (m_status == STOPPED) {
             return;
+        }
         if (m_status == START_PENDING) {
             m_status = STOPPED;
             return;
@@ -209,8 +199,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
             m_processor.stop();
             m_output.stop();
         } catch (InterruptedException e) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.warn("The thread was interrupted while attempting to join sub-threads", e);
+            log().warn("The thread was interrupted while attempting to join sub-threads: " + e, e);
         }
 
         m_dgSock.close();
@@ -233,8 +222,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     public void setPort(Integer port) {
-        if (m_status == STARTING || m_status == RUNNING || m_status == STOP_PENDING)
-            throw new IllegalStateException("The process is already running");
+        assertNotRunning();
 
         m_dgPort = port.intValue();
     }
@@ -253,8 +241,9 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      */
     public void addEventHandler(EventHandler handler) {
         synchronized (m_handlers) {
-            if (!m_handlers.contains(handler))
+            if (!m_handlers.contains(handler)) {
                 m_handlers.add(handler);
+            }
         }
     }
 
@@ -283,5 +272,13 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
 
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
+    }
+    
+    private void assertNotRunning() {
+        Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

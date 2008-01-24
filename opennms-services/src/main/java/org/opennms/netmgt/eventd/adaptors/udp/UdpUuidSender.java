@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -43,7 +44,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +70,7 @@ final class UdpUuidSender implements Runnable {
     /**
      * The list of outgoing event-receipts by UUID.
      */
-    private List m_eventUuidsOut;
+    private List<UdpReceivedEvent> m_eventUuidsOut;
 
     /**
      * The stop flag
@@ -90,7 +90,7 @@ final class UdpUuidSender implements Runnable {
     /**
      * The list of handlers
      */
-    private List m_handlers;
+    private List<EventHandler> m_handlers;
 
     /**
      * The log prefix
@@ -100,7 +100,7 @@ final class UdpUuidSender implements Runnable {
     /**
      * Constructs a new instance of this runnable.
      */
-    UdpUuidSender(DatagramSocket sock, List uuidsOut, List handlers) {
+    UdpUuidSender(DatagramSocket sock, List<UdpReceivedEvent> uuidsOut, List<EventHandler> handlers) {
         m_context = null;
         m_dgSock = sock;
         m_stop = false;
@@ -115,15 +115,14 @@ final class UdpUuidSender implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = ThreadCategory.getInstance(getClass());
-            if (log.isDebugEnabled())
-                log.debug("Stopping and joining thread context " + m_context.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Stopping and joining thread context " + m_context.getName());
+            }
 
             m_context.interrupt();
             m_context.join();
 
-            if (log.isDebugEnabled())
-                log.debug("Thread context stopped and joined");
+            log().debug("Thread context stopped and joined");
         }
     }
 
@@ -136,45 +135,37 @@ final class UdpUuidSender implements Runnable {
 
     public void run() {
         // get the context
-        //
         m_context = Thread.currentThread();
 
         // get a logger
-        //
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
+        boolean isTracing = log().isDebugEnabled();
 
         if (m_stop) {
-            if (isTracing)
-                log.debug("Stop flag set before thread started, exiting");
+            log().debug("Stop flag set before thread started, exiting");
             return;
-        } else if (isTracing)
-            log.debug("Thread context started");
+        } else {
+            log().debug("Thread context started");
+        }
 
-        // This loop is labeled so that it can be
-        // exited quickly when the thread is interrupted
-        //
-        ArrayList eventHold = new ArrayList(30);
-        Map receipts = new HashMap();
+        /*
+         * This loop is labeled so that it can be
+         * exited quickly when the thread is interrupted.
+         */
+        List<UdpReceivedEvent> eventHold = new ArrayList<UdpReceivedEvent>(30);
+        Map<UdpReceivedEvent, EventReceipt> receipts = new HashMap<UdpReceivedEvent, EventReceipt>();
 
         RunLoop: while (!m_stop) {
-            if (isTracing)
-                log.debug("Waiting on event receipts to be generated");
+            log().debug("Waiting on event receipts to be generated");
 
             synchronized (m_eventUuidsOut) {
-                // wait for an event to show up.
-                // wait in 1 second intervals
-                //
+                // wait for an event to show up.  wait in 1 second intervals
                 while (m_eventUuidsOut.isEmpty()) {
                     try {
-                        // use wait instead of sleep to
-                        // release the lock!
-                        //
+                        // use wait instead of sleep to release the lock!
                         m_eventUuidsOut.wait(1000);
                     } catch (InterruptedException ie) {
-                        if (isTracing)
-                            log.debug("Thread context interrupted");
+                        log().debug("Thread context interrupted");
                         break RunLoop;
                     }
                 }
@@ -184,20 +175,15 @@ final class UdpUuidSender implements Runnable {
             }
 
             if (isTracing) {
-                log.debug("Received " + eventHold.size() + " event receipts to process");
-                log.debug("Processing receipts");
+                log().debug("Received " + eventHold.size() + " event receipts to process");
+                log().debug("Processing receipts");
             }
 
             // build an event-receipt
-            //
-            Iterator iter = eventHold.iterator();
-            while (iter.hasNext()) {
-                UdpReceivedEvent re = (UdpReceivedEvent) iter.next();
-                Iterator xiter = re.getAckedEvents().iterator();
-                while (xiter.hasNext()) {
-                    Event e = (Event) xiter.next();
+            for (UdpReceivedEvent re : eventHold) {
+                for (Event e : re.getAckedEvents()) {
                     if (e.getUuid() != null) {
-                        EventReceipt receipt = (EventReceipt) receipts.get(re);
+                        EventReceipt receipt = receipts.get(re);
                         if (receipt == null) {
                             receipt = new EventReceipt();
                             receipts.put(re, receipt);
@@ -208,24 +194,20 @@ final class UdpUuidSender implements Runnable {
             }
             eventHold.clear();
 
-            if (isTracing)
-                log.debug("Event receipts sorted, transmitting receipts");
+            log().debug("Event receipts sorted, transmitting receipts");
 
             // turn them into XML and send it out the socket
-            // 
-            iter = receipts.entrySet().iterator();
-            while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                UdpReceivedEvent re = (UdpReceivedEvent) entry.getKey();
-                EventReceipt receipt = (EventReceipt) entry.getValue();
+            for (Map.Entry<UdpReceivedEvent, EventReceipt> entry : receipts.entrySet()) {
+                UdpReceivedEvent re = entry.getKey();
+                EventReceipt receipt = entry.getValue();
 
                 StringWriter writer = new StringWriter();
                 try {
                     Marshaller.marshal(receipt, writer);
                 } catch (ValidationException e) {
-                    log.warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort(), e);
+                    log().warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
                 } catch (MarshalException e) {
-                    log.warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort(), e);
+                    log().warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
                 }
 
                 String xml = writer.getBuffer().toString();
@@ -234,43 +216,45 @@ final class UdpUuidSender implements Runnable {
                     DatagramPacket pkt = new DatagramPacket(xml_bytes, xml_bytes.length, re.getSender(), re.getPort());
 
                     if (isTracing) {
-                        log.debug("Transmitting receipt to destination " + re.getSender().getHostAddress() + ":" + re.getPort());
+                        log().debug("Transmitting receipt to destination " + re.getSender().getHostAddress() + ":" + re.getPort());
                     }
 
                     m_dgSock.send(pkt);
+                    
                     synchronized (m_handlers) {
-                        Iterator i = m_handlers.iterator();
-                        while (i.hasNext()) {
+                        for (EventHandler handler : m_handlers) {
                             try {
-                                ((EventHandler) i.next()).receiptSent(receipt);
+                                handler.receiptSent(receipt);
                             } catch (Throwable t) {
-                                log.warn("Error processing event receipt", t);
+                                log().warn("Error processing event receipt: "+ t, t);
                             }
                         }
                     }
 
                     if (isTracing) {
-                        log.debug("Receipt transmitted OK {");
-                        log.debug(xml);
-                        log.debug("}");
+                        log().debug("Receipt transmitted OK {");
+                        log().debug(xml);
+                        log().debug("}");
                     }
                 } catch (UnsupportedEncodingException e) {
-                    log.warn("Failed to convert XML to byte array", e);
+                    log().warn("Failed to convert XML to byte array: " + e, e);
                 } catch (IOException e) {
-                    log.warn("Failed to send packet to host" + re.getSender().getHostAddress() + ":" + re.getPort(), e);
+                    log().warn("Failed to send packet to host" + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
                 }
             }
+            
             receipts.clear();
+        }
 
-        } // end RunLoop
-
-        if (isTracing)
-            log.debug("Context finished, returning");
-
-    } // end run()
+        log().debug("Context finished, returning");
+    }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
-} // end EventProcessor Class
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+}
 
