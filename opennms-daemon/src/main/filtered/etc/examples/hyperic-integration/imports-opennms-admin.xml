@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
+    date-stamp="2008-01-24T12:47:01.384-05:00"
+    last-import="2008-01-24T12:47:01.380-05:00" foreign-source="opennms-admin">
+    <node node-label="barbrady" foreign-id="1" building="hq-server">
+        <interface ip-addr="172.20.1.11" descr="if1" status="1" snmp-primary="P">
+            <monitored-service service-name="HypericHQ"/>
+            <monitored-service service-name="SNMP"/>
+            <monitored-service service-name="ICMP"/>
+        </interface>
+        <category name="EMS"/>
+    </node>
+</model-import>
