@@ -41,14 +41,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.event.filter.Filter;
 
 /**
@@ -59,33 +57,19 @@ import org.opennms.web.event.filter.Filter;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AcknowledgeEventByFilterServlet extends HttpServlet {
+public class AcknowledgeEventByFilterServlet extends BaseAcknowledgeServlet {
     private static final long serialVersionUID = 1L;
     
-    /** The URL to redirect the client to in case of success. */
-    protected String redirectSuccess;
-
-    /**
-     * Looks up the <code>dispath.success</code> parameter in the servlet's
-     * config. If not present, this servlet will throw an exception so it will
-     * be marked unavailable.
-     */
-    public void init() throws ServletException {
-        ServletConfig config = this.getServletConfig();
-
-        this.redirectSuccess = config.getInitParameter("redirect.success");
-
-        if (this.redirectSuccess == null) {
-            throw new UnavailableException("Require a redirect.success init parameter.");
-        }
-    }
-
     /**
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // required parameter
+    	if(request.isUserInRole( Authentication.READONLY_ROLE)) {
+    		//ERROR: unauthorised user trying to access this servlet by surreptitious means
+    		throw new ServletException("Unauthorized access to this servlet");
+    	}
+    	// required parameter
         String[] filterStrings = request.getParameterValues("filter");
         String action = request.getParameter("action");
 
@@ -109,9 +93,9 @@ public class AcknowledgeEventByFilterServlet extends HttpServlet {
         Filter[] filters = filterArray.toArray(new Filter[filterArray.size()]);
 
         try {
-            if (action.equals(AcknowledgeEventServlet.ACKNOWLEDGE_ACTION)) {
+            if (action.equals(ACKNOWLEDGE_ACTION)) {
                 EventFactory.acknowledge(filters, request.getRemoteUser());
-            } else if (action.equals(AcknowledgeEventServlet.UNACKNOWLEDGE_ACTION)) {
+            } else if (action.equals(UNACKNOWLEDGE_ACTION)) {
                 EventFactory.unacknowledge(filters);
             } else {
                 throw new ServletException("Unknown acknowledge action: " + action);
@@ -121,30 +105,6 @@ public class AcknowledgeEventByFilterServlet extends HttpServlet {
         } catch (SQLException e) {
             throw new ServletException("Database exception", e);
         }
-    }
-
-    /**
-     * Convenience method for dynamically creating the redirect URL if
-     * necessary.
-     */
-    protected String getRedirectString(HttpServletRequest request) {
-        String redirectValue = request.getParameter("redirect");
-
-        if (redirectValue != null) {
-            return redirectValue;
-        }
-
-        redirectValue = this.redirectSuccess;
-        String redirectParms = request.getParameter("redirectParms");
-
-        if (redirectParms != null) {
-            StringBuffer buffer = new StringBuffer(this.redirectSuccess);
-            buffer.append("?");
-            buffer.append(redirectParms);
-            redirectValue = buffer.toString();
-        }
-
-        return redirectValue;
     }
 
 }
