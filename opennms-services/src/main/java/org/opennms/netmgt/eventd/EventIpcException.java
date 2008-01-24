@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 23: Add serialVersionUID. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,6 +44,8 @@ package org.opennms.netmgt.eventd;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public final class EventIpcException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Default class constructor. Constructs a new exception with a default
      * message.
