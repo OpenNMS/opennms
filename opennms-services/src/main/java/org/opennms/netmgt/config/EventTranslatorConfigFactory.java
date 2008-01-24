@@ -366,7 +366,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			// if the event doesn't match the mapping then don't apply the translation
 			if (!matches(srcEvent)) return null;
 			
-			Event targetEvent = EventUtil.cloneEvent(srcEvent);
+			Event targetEvent = cloneEvent(srcEvent);
 			
 			for (Iterator it = getAssignmentSpecs().iterator(); it.hasNext();) {
 				AssignmentSpec assignSpec = (AssignmentSpec) it.next();
@@ -376,6 +376,16 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			targetEvent.setSource(TRANSLATOR_NAME);
 			return targetEvent;
 		}
+
+        private Event cloneEvent(Event srcEvent) {
+            Event clonedEvent = EventUtil.cloneEvent(srcEvent);
+            /* since alarmData is computed based on translated information in 
+             * eventd using the data from eventconf, we unset it here to eventd
+             * can reset to the proper new settings.
+             */ 
+            clonedEvent.setAlarmData(null);
+            return clonedEvent;
+        }
 
 		public Mapping getMapping() {
 			return m_mapping;
