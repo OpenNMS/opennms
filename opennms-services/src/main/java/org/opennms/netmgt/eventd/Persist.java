@@ -431,7 +431,8 @@ class Persist {
     private void updateAlarm(Header eventHeader, Event event, int alarmId) throws SQLException {
         m_upDateStmt.setInt(1, event.getDbid());
         m_upDateStmt.setTimestamp(2, getEventTime(event));
-        m_upDateStmt.setString(3, event.getAlarmData().getReductionKey());
+        set(m_upDateStmt, 3, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
+        m_upDateStmt.setString(4, event.getAlarmData().getReductionKey());
 
         if (log().isDebugEnabled()) {
             log().debug("Persist.updateAlarm: reducing event: " + event.getDbid() +  " into alarm");
