@@ -302,7 +302,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     private void assertNotRunning() {
-        Assert.state(m_status == START_PENDING || m_status == STOPPED, "The service is already running and cannot be modified or started");
+        Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
     }
 
     private Category log() {
