@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -52,6 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.springframework.util.Assert;
 
 /**
  * This class is the access point for the agents to hook into the event queue.
@@ -71,7 +73,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * The value that defines unlimited events per connection.
      */
-    static final int UNLIMITED_EVENTS = -1;
+    public static final int UNLIMITED_EVENTS = -1;
 
     /**
      * The main server thread. This thread of execution is used to handle all
@@ -89,7 +91,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * passed to all event handlers. The event handlers <em>MUST NOT</em>
      * modify the passed event.
      */
-    private List m_handlers;
+    private List<EventHandler> m_handlers;
 
     /**
      * The fiber's status.
@@ -116,13 +118,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * server socket allocation is delayed until the fiber is actually started.
      */
     public TcpEventReceiver() throws IOException {
-        m_handlers = new ArrayList(3);
-        m_status = START_PENDING;
-        m_tcpPort = TcpServer.TCP_PORT;
-        m_server = null;
-        m_worker = null;
-        m_logPrefix = null;
-        m_recsPerConn = UNLIMITED_EVENTS;
+        this(TcpServer.TCP_PORT);
     }
 
     /**
@@ -133,7 +129,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *            The binding port for the TCP/IP server socket.
      */
     public TcpEventReceiver(int port) throws IOException {
-        m_handlers = new ArrayList(3);
+        m_handlers = new ArrayList<EventHandler>(3);
         m_status = START_PENDING;
         m_tcpPort = port;
         m_server = null;
@@ -155,8 +151,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *             thread cannot be started.
      */
     public synchronized void start() {
-        if (m_status != START_PENDING && m_status != STOPPED)
-            throw new IllegalStateException("The Fiber is in an incorrect state");
+        assertNotRunning();
 
         m_status = STARTING;
         try {
@@ -168,7 +163,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
                 m_server.setEventsPerConnection(m_recsPerConn);
             }
         } catch (IOException e) {
-            throw new UndeclaredThrowableException(e, "Error opening server socket");
+            throw new UndeclaredThrowableException(e, "Error opening server socket: " + e);
         }
         m_worker = new Thread(m_server, "Event TCP Server[" + m_tcpPort + "]");
 
@@ -189,8 +184,9 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * {@link java.lang.Thread#join joined}.
      */
     public synchronized void stop() {
-        if (m_status == STOPPED)
+        if (m_status == STOPPED) {
             return;
+        }
         if (m_status == START_PENDING) {
             m_status = STOPPED;
             return;
@@ -198,15 +194,11 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
         m_status = STOP_PENDING;
 
-        // Stop the main server thread
-        // then iterate over the connected
-        // threads
-        //
+        // Stop the main server thread then iterate over the connected threads
         try {
             m_server.stop();
         } catch (InterruptedException e) {
-            Category log = ThreadCategory.getInstance(getClass());
-            log.warn("Thread Interrupted while attempting to join server socket thread", e);
+            log().warn("Thread Interrupted while attempting to join server socket thread", e);
         }
         m_server = null;
         m_worker = null;
@@ -252,8 +244,9 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      */
     public void addEventHandler(EventHandler handler) {
         synchronized (m_handlers) {
-            if (!m_handlers.contains(handler))
+            if (!m_handlers.contains(handler)) {
                 m_handlers.add(handler);
+            }
         }
     }
 
@@ -277,8 +270,8 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     public void setPort(Integer port) {
-        if (m_status != START_PENDING && m_status != STOPPED)
-            throw new IllegalStateException("The service is already running and cannot be modified");
+        assertNotRunning();
+        
         m_tcpPort = port.intValue();
     }
 
@@ -303,8 +296,16 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *            The number of event records.
      */
     public void setEventsPerConnection(Integer number) {
-        if (m_status != START_PENDING && m_status != STOPPED)
-            throw new IllegalStateException("The managed bean is already running and its state cannot be changed");
+        assertNotRunning();
+
         m_recsPerConn = number.intValue();
+    }
+
+    private void assertNotRunning() {
+        Assert.state(m_status == START_PENDING || m_status == STOPPED, "The service is already running and cannot be modified or started");
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }
