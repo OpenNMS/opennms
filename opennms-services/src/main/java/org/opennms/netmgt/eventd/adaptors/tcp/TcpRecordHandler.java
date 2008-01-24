@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -45,7 +46,6 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.PipedOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
@@ -76,7 +76,7 @@ final class TcpRecordHandler implements Runnable {
     /**
      * The list of piped output streams and execptions.
      */
-    private List m_xchange;
+    private List<Object> m_xchange;
 
     /**
      * The input stream socket
@@ -149,9 +149,9 @@ final class TcpRecordHandler implements Runnable {
      */
     private void closeStream() throws IOException {
         // close the current output stream
-        // 
-        if (m_out != null)
+        if (m_out != null) {
             m_out.close();
+        }
         m_out = null;
     }
 
@@ -159,13 +159,9 @@ final class TcpRecordHandler implements Runnable {
      * Allocates a new stream
      */
     private void newStream() throws IOException {
-        // create a new piped writer
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
-        if (isTracing)
-            log.debug("Opening new PipedOutputStream and adding it to the queue");
+        log().debug("Opening new PipedOutputStream and adding it to the queue");
 
+        // create a new piped writer
         PipedOutputStream pipeOut = new PipedOutputStream();
         try {
             synchronized (pipeOut) {
@@ -173,22 +169,20 @@ final class TcpRecordHandler implements Runnable {
                     m_xchange.add(pipeOut);
                     m_xchange.notify();
                 }
-                if (isTracing)
-                    log.debug("Added pipe to the xchange list");
+                log().debug("Added pipe to the xchange list");
 
                 pipeOut.wait();
 
-                if (isTracing)
-                    log.debug("Pipe Signaled");
+                log().debug("Pipe Signaled");
             }
         } catch (InterruptedException e) {
-            if (isTracing)
-                log.debug("An I/O error occured", e);
+            if (log().isDebugEnabled()) {
+                log().debug("An I/O error occured: " + e, e);
+            }
             throw new IOException("The thread was interrupted");
         }
 
-        if (isTracing)
-            log.debug("PipedOutputStream connected");
+        log().debug("PipedOutputStream connected");
 
         m_out = pipeOut;
     }
@@ -198,12 +192,13 @@ final class TcpRecordHandler implements Runnable {
      */
     private void forward(char ch) throws IOException {
         try {
-            if (m_out != null)
+            if (m_out != null) {
                 m_out.write((int) ch);
+            }
         } catch (IOException e) {
-            Category log = ThreadCategory.getInstance(getClass());
-            if (log.isDebugEnabled())
-                log.debug("An I/O error occured", e);
+            if (log().isDebugEnabled()) {
+                log().debug("An I/O error occured: " + e, e);
+            }
             throw e;
         }
     }
@@ -216,65 +211,71 @@ final class TcpRecordHandler implements Runnable {
      * @param xchange
      *            The io exchange
      */
-    TcpRecordHandler(Socket s, List xchange) {
+    TcpRecordHandler(Socket s, List<Object> xchange) {
         m_stop = false;
         m_context = null;
         m_xchange = xchange;
         m_connection = s;
 
         // looks for '</([a-zA-Z0-9]+:)?log>'
-        //
         m_tokenizer = new StateManager[] { new StateManager(0, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == '<')
+                if (ch == '<') {
                     return 1;
+                }
                 return m_level;
             }
         }, new StateManager(1, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == '/')
+                if (ch == '/') {
                     return 2;
+                }
                 return 0;
             }
         }, new StateManager(2, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == 'l')
+                if (ch == 'l') {
                     return 5;
-                else if (Character.isLetterOrDigit(ch))
+                } else if (Character.isLetterOrDigit(ch)){
                     return 3;
+                }
                 return 0;
             }
         }, new StateManager(3, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == ':')
+                if (ch == ':') {
                     return 4;
-                else if (Character.isLetterOrDigit(ch))
+                } else if (Character.isLetterOrDigit(ch)) {
                     return m_level;
+                }
                 return 0;
             }
         }, new StateManager(4, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == 'l')
+                if (ch == 'l') {
                     return 5;
+                }
                 return 0;
             }
         }, new StateManager(5, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == 'o')
+                if (ch == 'o') {
                     return 6;
+                }
                 return 0;
             }
         }, new StateManager(6, this) {
             int next(char ch) throws IOException {
                 onTransition(ch);
-                if (ch == 'g')
+                if (ch == 'g') {
                     return 7;
+                }
                 return 0;
             }
         }, new StateManager(7, this) {
@@ -287,35 +288,34 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         },
-        //
-                // The state tree starts here!
-                //
-                new StateManager(8, this) { // gobbles up white space after
-                                            // record
-                    int next(char ch) throws IOException {
-                        if (ch == '<') {
-                            onTransition(ch);
-                            return 1;
-                        } // else discard
-                        return m_level;
-                    }
+        
+        // The state tree starts here!
+        new StateManager(8, this) { // gobbles up white space after
+            // record
+            int next(char ch) throws IOException {
+                if (ch == '<') {
+                    onTransition(ch);
+                    return 1;
+                } // else discard
+                return m_level;
+            }
 
-                    void onTransition(char ch) throws IOException {
-                        m_handler.newStream();
-                        super.onTransition(ch);
-                    }
-                } };
-    } // constructor
+            void onTransition(char ch) throws IOException {
+                m_handler.newStream();
+                super.onTransition(ch);
+            }
+        } };
+    }
 
     /**
      * Returns true if the context is alive
      */
     boolean isAlive() {
-        boolean rc = false;
-        if (m_context != null)
-            rc = m_context.isAlive();
-
-        return rc;
+        if (m_context != null) {
+            return m_context.isAlive();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -324,19 +324,21 @@ final class TcpRecordHandler implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            if (log.isDebugEnabled())
-                log.debug("Interrupting thread " + m_context.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Interrupting thread " + m_context.getName());
+            }
 
             m_context.interrupt();
 
-            if (log.isDebugEnabled())
-                log.debug("Joining Thread " + m_context.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Joining Thread " + m_context.getName());
+            }
 
             m_context.join();
 
-            if (log.isDebugEnabled())
-                log.debug("Thread " + m_context.getName() + " Joined");
+            if (log().isDebugEnabled()) {
+                log().debug("Thread " + m_context.getName() + " Joined");
+            }
 
         }
     }
@@ -346,42 +348,37 @@ final class TcpRecordHandler implements Runnable {
      */
     public void run() {
         // get the thread context right off
-        //
         m_context = Thread.currentThread();
         synchronized (m_context) {
             m_context.notifyAll();
         }
 
-        // log the thread startup
-        //
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        // Check the stop flag, if it is set then go a head and exit
-        // before doing any work on the socket
-        //
+        /*
+         * Check the stop flag, if it is set then go a head and exit
+         * before doing any work on the socket
+         */
         if (m_stop) {
-            if (log.isDebugEnabled())
-                log.debug("Stop flag set before thread startup, thread exiting");
+            log().debug("Stop flag set before thread startup, thread exiting");
 
             return;
-        } else if (log.isDebugEnabled()) {
-            InetAddress sender = m_connection.getInetAddress();
-            log.debug("Thread started, remote is " + sender.getHostAddress());
+        } else if (log().isDebugEnabled()) {
+            log().debug("Thread started, remote is " + m_connection.getInetAddress().getHostAddress());
         }
 
         // get the input stream
-        //
         InputStream socketIn = null;
         try {
-            m_connection.setSoTimeout(500); // needed incase connection closed!
+            m_connection.setSoTimeout(500); // needed in case connection closed!
             socketIn = new BufferedInputStream(m_connection.getInputStream());
         } catch (IOException e) {
-            if (!m_stop)
-                log.warn("An I/O Exception occured", e);
+            if (!m_stop) {
+                log().warn("An I/O Exception occured: " + e, e);
+            }
             m_xchange.add(e);
 
-            if (log.isDebugEnabled())
-                log.debug("Thread exiting due to socket exception, stop flag = " + m_stop);
+            if (log().isDebugEnabled()) {
+                log().debug("Thread exiting due to socket exception, stop flag = " + m_stop);
+            }
 
             return;
         }
@@ -391,10 +388,8 @@ final class TcpRecordHandler implements Runnable {
         boolean moreInput = true;
         while (moreInput) {
             // check to see if the thread is interrupted
-            //
             if (Thread.interrupted()) {
-                if (log.isDebugEnabled())
-                    log.debug("Thread Interrupted");
+                log().debug("Thread Interrupted");
                 break;
             }
 
@@ -414,8 +409,9 @@ final class TcpRecordHandler implements Runnable {
                 continue;
             } catch (IOException e) {
                 m_xchange.add(e);
-                if (!m_stop)
-                    log.warn("An I/O error occured reading from the remote host", e);
+                if (!m_stop) {
+                    log().warn("An I/O error occured reading from the remote host: " + e, e);
+                }
                 moreInput = false;
                 continue;
             }
@@ -424,11 +420,13 @@ final class TcpRecordHandler implements Runnable {
                 level = m_tokenizer[level].next((char) ch);
             } catch (IOException e) {
                 if (!m_stop) {
-                    log.warn("An I/O error occured writing to the processor stream", e);
-                    log.warn("Discarding the remainder of the event contents");
+                    log().warn("An I/O error occured writing to the processor stream: " + e, e);
+                    log().warn("Discarding the remainder of the event contents");
                     try {
-                        // this will discard current stream
-                        // and cause all forwards to be discarded.
+                        /*
+                         * this will discard current stream
+                         * and cause all forwards to be discarded.
+                         */
                         closeStream();
                     } catch (IOException e2) {
                     }
@@ -437,23 +435,26 @@ final class TcpRecordHandler implements Runnable {
                     moreInput = false;
                 }
             }
+        }
 
-        } // end while
-
-        // ensure that the receive knows that no new element
-        // is coming!
+        // ensure that the receiver knows that no new element is coming!
         try {
-            if (m_out != null)
+            if (m_out != null) {
                 m_out.close();
+            }
         } catch (IOException e) {
-            if (!m_stop)
-                log.warn("An I/O Error occured closing the processor stream", e);
+            if (!m_stop) {
+                log().warn("An I/O Error occured closing the processor stream: " + e, e);
+            }
         }
 
         m_xchange.add(new EOFException("No More Input"));
 
-        if (log.isDebugEnabled())
-            log.debug("Thread Terminated");
+        log().debug("Thread Terminated");
 
-    } // end run method
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

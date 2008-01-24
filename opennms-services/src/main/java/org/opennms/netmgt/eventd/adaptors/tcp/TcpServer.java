@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -50,6 +51,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.eventd.adaptors.EventHandler;
 
 /**
  * This class implement the server features necessary to receive events from
@@ -112,7 +114,7 @@ final class TcpServer implements Runnable {
      * The list of event handlers
      */
     // TODO: This should be generified
-    private List m_handlers;
+    private List<EventHandler> m_handlers;
 
     /**
      * The logging context
@@ -131,7 +133,7 @@ final class TcpServer implements Runnable {
      * @param parent
      *            The parent fiber
      */
-    public TcpServer(Fiber parent, List handlers) throws IOException {
+    public TcpServer(Fiber parent, List<EventHandler> handlers) throws IOException {
         m_parent = parent;
         m_tcpPort = TCP_PORT;
         m_tcpSock = new ServerSocket(m_tcpPort);
@@ -152,7 +154,7 @@ final class TcpServer implements Runnable {
      * @param port
      *            The port to listen on.
      */
-    public TcpServer(Fiber parent, List handlers, int port) throws IOException {
+    public TcpServer(Fiber parent, List<EventHandler> handlers, int port) throws IOException {
         m_parent = parent;
         m_tcpPort = port;
         try {
@@ -175,60 +177,55 @@ final class TcpServer implements Runnable {
      * Once called the object cannot be reused in another thread.
      */
     public void stop() throws InterruptedException {
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
-
-        if (isTracing) {
-            log.debug("stop method invoked.");
-        }
+        log().debug("stop method invoked");
 
         // Stop this context
-        //
         m_stop = true;
         if (m_context != null) {
-            if (isTracing) {
-                log.debug("Interrupting and joining context thread " + m_context.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Interrupting and joining context thread " + m_context.getName());
             }
 
             m_context.interrupt();
             m_context.join();
 
-            if (isTracing) {
-                log.debug("Thread context stopped and joined " + m_context.getName());
+            if (log().isDebugEnabled()) {
+                log().debug("Thread context stopped and joined " + m_context.getName());
             }
 
             m_context = null;
         }
 
-        if (isTracing) {
-            log.debug("Attempting to stop and join all stream handlers");
-            log.debug("There are " + m_receivers.size() + " receivers");
+        if (log().isDebugEnabled()) {
+            log().debug("Attempting to stop and join all stream handlers");
+            log().debug("There are " + m_receivers.size() + " receivers");
         }
 
         // stop all the receivers
-        //
         int ndx = 0; // for tracing!
         Iterator<TcpStreamHandler> i = m_receivers.iterator();
         while (i.hasNext()) {
             TcpStreamHandler t = i.next();
             if (t.isAlive()) {
-                if (isTracing) {
-                    log.debug("Calling stop on handler index " + ndx);
+                if (log().isDebugEnabled()) {
+                    log().debug("Calling stop on handler index " + ndx);
                 }
 
                 t.stop();
 
-                if (isTracing) {
-                    log.debug("Stopped handler index " + ndx);
+                if (log().isDebugEnabled()) {
+                    log().debug("Stopped handler index " + ndx);
                 }
             }
             ndx++;
             i.remove();
         }
 
-        if (isTracing) {
-            log.debug("All TCP Handlers are stopped and removed");
-        }
+        log().debug("All TCP Handlers are stopped and removed");
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -250,103 +247,87 @@ final class TcpServer implements Runnable {
      * logic so that it can be executed in it's own java thread.
      */
     public void run() {
-        // get the thread context for
-        // the ability to stop the process
-        //
+        // get the thread context for the ability to stop the process
         m_context = Thread.currentThread();
         synchronized (m_context) {
             m_context.notifyAll();
         }
 
         // get the log information
-        //
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(this.getClass());
-        boolean isTracing = log.isDebugEnabled();
-
+        
         // check to see if the thread has already been stopped.
-        //
         if (m_stop) {
-            if (isTracing) {
-                log.debug("Stop flag set on thread startup");
-            }
+            log().debug("Stop flag set on thread startup");
 
             try {
                 if (m_tcpSock != null) {
                     m_tcpSock.close();
                 }
 
-                if (isTracing) {
-                    log.debug("The socket has been closed");
-                }
+                log().debug("The socket has been closed");
             } catch (Exception e) {
-                if (isTracing) {
-                    log.debug("An exception occured closing the socket", e);
-                }
+                log().warn("An exception occured closing the socket: " + e, e);
             }
 
-            if (isTracing) {
-                log.debug("Thread exiting");
-            }
+            log().debug("Thread exiting");
 
             return;
         }
 
-        // get the logger
-        //
-        if (isTracing) {
-            log.debug("Server connection processor started on port " + m_tcpPort);
+        if (log().isDebugEnabled()) {
+            log().debug("Server connection processor started on port " + m_tcpPort);
         }
 
-        //
-        // Set the initial timeout on the socket. This allows
-        // the thread to wakeup every 1/2 second and check the
-        // shutdown status.
-        //
+        /*
+         *
+         * Set the initial timeout on the socket. This allows
+         * the thread to wakeup every 1/2 second and check the
+         * shutdown status.
+         */
         try {
             m_tcpSock.setSoTimeout(500);
         } catch (SocketException e) {
             if (!m_stop) {
-                log.warn("An I/O exception occured setting the socket timeout", e);
+                log().warn("An I/O exception occured setting the socket timeout: " + e, e);
             }
 
-            if (isTracing) {
-                log.debug("Thread exiting due to socket error");
+            if (log().isDebugEnabled()) {
+                log().debug("Thread exiting due to socket error: " + e, e);
             }
 
             return;
         }
+        
         // used to avoid seeing the trace message repeatedly
-        //
         boolean ioInterrupted = false;
 
-        //
-        // Check the status of the fiber and respond
-        // correctly. When the fiber enters a STOPPED or
-        // STOP PENDING state then shutdown occurs by exiting
-        // the while loop
-        //
+        /*
+         * Check the status of the fiber and respond
+         * correctly. When the fiber enters a STOPPED or
+         * STOP PENDING state then shutdown occurs by exiting
+         * the while loop
+         */
         while (m_parent.getStatus() != Fiber.STOPPED && m_parent.getStatus() != Fiber.STOP_PENDING && !m_stop) {
             try {
-                if (isTracing && !ioInterrupted) {
-                    log.debug("Waiting for new connection");
+                if (log().isDebugEnabled() && !ioInterrupted) {
+                    log().debug("Waiting for new connection");
                 }
 
-                // Get the newbie socket connection from the client.
-                // After accepting the connection start up a thread
-                // to process the request
-                //
+                /*
+                 * Get the newbie socket connection from the client.
+                 * After accepting the connection start up a thread
+                 * to process the request
+                 */
                 Socket newbie = m_tcpSock.accept();
                 ioInterrupted = false; // reset the flag
 
-                // build a connection string for
-                // the thread identifier
-                //
+                // build a connection string for the thread identifier
                 StringBuffer connection = new StringBuffer(newbie.getInetAddress().getHostAddress());
                 connection.append(":").append(newbie.getPort());
 
-                if (isTracing) {
-                    log.debug("New connection accepted from " + connection);
+                if (log().isDebugEnabled()) {
+                    log().debug("New connection accepted from " + connection);
                 }
 
                 // start a new handler
@@ -357,33 +338,32 @@ final class TcpServer implements Runnable {
                     try {
                         processor.wait();
                     } catch (InterruptedException e) {
-                        log.warn("The thread was interrupted", e);
+                        log().warn("The thread was interrupted: " + e, e);
                     }
                 }
 
-                if (isTracing) {
-                    log.debug("A new stream handler thread has been started");
-                }
+                log().debug("A new stream handler thread has been started");
 
                 // add the handler to the list
-                //
                 m_receivers.add(handler);
             } catch (InterruptedIOException e) {
-                // do nothing on interrupted I/O
-                // DON'T Continue, the end of the loop
-                // checks and removes terminated threads
-                //
+                /*
+                 * do nothing on interrupted I/O
+                 * DON'T Continue, the end of the loop
+                 * checks and removes terminated threads
+                 */
                 ioInterrupted = true;
             } catch (IOException e) {
-                log.error("Server Socket I/O Error", e);
+                log().error("Server Socket I/O Error: " + e, e);
                 break;
             }
 
-            // go through the threads in the list of
-            // receivers and find the dead ones. When
-            // their no longer alive just remove them
-            // from the list.
-            //
+            /*
+             * Go through the threads in the list of
+             * receivers and find the dead ones. When
+             * they are no longer alive just remove them
+             * from the list.
+             */
             Iterator<TcpStreamHandler> i = m_receivers.iterator();
             while (i.hasNext()) {
                 TcpStreamHandler t = i.next();
@@ -393,26 +373,18 @@ final class TcpServer implements Runnable {
             }
         }
 
-        // Either a fatal I/O error has occured or the
-        // service has been stopped.
-        //
+        // Either a fatal I/O error has occured or the service has been stopped.
         try {
-            if (isTracing) {
-                log.debug("closing the server socket connection");
-            }
+            log().debug("closing the server socket connection");
 
             m_tcpSock.close();
         } catch (Throwable t) {
-            log.error("An I/O Error Occcured Closing the Server Socket", t);
+            log().error("An I/O Error Occcured Closing the Server Socket: " + t, t);
         }
 
         // Log the termination of this runnable
-        //
-        if (isTracing) {
-            log.debug("TCP Server Shutdown");
-        }
-
-    } // end run();
+        log().debug("TCP Server Shutdown");
+    }
 
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
@@ -421,6 +393,4 @@ final class TcpServer implements Runnable {
     public void setEventsPerConnection(int number) {
         m_recsPerConn = number;
     }
-
-} // end TcpServer Class
-
+}
