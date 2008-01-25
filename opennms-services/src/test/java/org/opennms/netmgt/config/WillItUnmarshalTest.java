@@ -68,6 +68,7 @@ import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
+import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
@@ -248,6 +249,9 @@ public class WillItUnmarshalTest extends TestCase {
     }
     public void testLinkdConfiguration() throws Exception {
         unmarshal("linkd-configuration.xml", LinkdConfiguration.class);
+    }
+    public void testExampleMailTransportTest() throws Exception {
+        unmarshalExample("mail-transport-test.xml", MailTransportTest.class);
     }
     public void testMonitoringLocations() throws Exception {
         unmarshal("monitoring-locations.xml", MonitoringLocationsConfiguration.class);
