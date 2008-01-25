@@ -42,6 +42,16 @@
         <property key="timeout" value="5000" />
         <property key="retry" value="1" />
     </protocol-plugin>
+    <protocol-plugin protocol="HypericAgent" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on" user-defined="false">
+        <property key="port" value="2144" />
+        <property key="timeout" value="2000" />
+        <property key="retry" value="1" />
+    </protocol-plugin>
+    <protocol-plugin protocol="HypericHQ" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="off" user-defined="false">
+        <property key="port" value="7080" />
+        <property key="timeout" value="2000" />
+        <property key="retry" value="1" />
+    </protocol-plugin>
     <protocol-plugin protocol="FTP" class-name="org.opennms.netmgt.capsd.plugins.FtpPlugin" scan="on" user-defined="false">
         <property key="port" value="21" />
         <property key="timeout" value="2000" />
