@@ -211,7 +211,6 @@ END
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
-ln -sf %{_docdir}/%{name}-%{version} $RPM_BUILD_ROOT%{instprefix}/docs
 cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
@@ -296,6 +295,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644 root root 755)
 %config %{webappsdir}/%{servletdir}/WEB-INF/web.xml
 %config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
+
+%post docs
+printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
+if [ -e "$RPM_INSTALL_PREFIX0/docs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/docs" ]; then
+	echo "failed: $RPM_INSTALL_PREFIX0/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+else
+	rm -rf "$RPM_INSTALL_PREFIX0/docs"
+	ln -sf "%{_docdir}/%{name}-%{version}" "$RPM_INSTALL_PREFIX0/docs"
+	echo "done"
+fi
 
 %post core
 
