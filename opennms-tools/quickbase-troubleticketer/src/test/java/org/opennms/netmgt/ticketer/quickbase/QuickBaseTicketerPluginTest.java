@@ -87,7 +87,7 @@ public class QuickBaseTicketerPluginTest extends TestCase {
     public void testGet() {
         
     	//This may need to be changed ;-)
-        String ticketId = "92";
+        String ticketId = "19";
 		Ticket newTicket = m_ticketer.get(ticketId);
         
         assertNotNull(newTicket);
