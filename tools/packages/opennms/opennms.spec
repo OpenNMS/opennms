@@ -306,6 +306,13 @@ else
 	echo "done"
 fi
 
+%postun docs
+if [ "$1" = 0 ]; then
+	if [ -L "$RPM_INSTALL_PREFIX0/docs" ]; then
+		rm -f "$RPM_INSTALL_PREFIX0/docs"
+	fi
+fi
+
 %post core
 
 if [ -n "$DEBUG" ]; then
