@@ -10,6 +10,7 @@
  * 
  * Modifications:
  *
+ * 2008 Jan 24: Fix testOneMatchingSpec test. - dj@opennms.org
  * 2007 Jun 30: Make tests work again. - dj@opennms.org
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -56,6 +57,7 @@ import org.easymock.EasyMock;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -103,7 +105,6 @@ public class CollectdTest extends TestCase {
 
     private MockScheduler m_scheduler;
     private CollectionSpecification m_spec;
-    private CollectdPackage m_wpkg; 
     
     private PlatformTransactionManager m_transactionManager;
     
@@ -204,6 +205,8 @@ public class CollectdTest extends TestCase {
         svc.setStatus("on");
 
         m_collectdPackage = new CollectdPackage(pkg, "localhost", false);
+        
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("thresholds.xml")));
     }
 
     @Override
@@ -351,7 +354,6 @@ public class CollectdTest extends TestCase {
         
         setupTransactionManager();
   
-        expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_wpkg));
         expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_collectdPackage));
         
         m_easyMockUtils.replayAll();
@@ -361,7 +363,7 @@ public class CollectdTest extends TestCase {
         
         m_scheduler.next();
 
-        assertEquals(1, m_scheduler.getEntryCount());
+        assertEquals("scheduler entry count", 1, m_scheduler.getEntryCount());
 
         m_scheduler.next();
 
