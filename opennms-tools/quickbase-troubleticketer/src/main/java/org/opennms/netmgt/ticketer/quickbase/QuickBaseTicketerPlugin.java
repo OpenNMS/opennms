@@ -35,11 +35,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -48,8 +58,12 @@ import org.opennms.netmgt.ticketd.Ticket;
 import org.opennms.netmgt.ticketd.TicketerPlugin;
 import org.opennms.netmgt.ticketd.Ticket.State;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.util.Assert;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.intuit.quickbase.util.QuickBaseClient;
 import com.intuit.quickbase.util.QuickBaseException;
@@ -63,12 +77,34 @@ import com.intuit.quickbase.util.QuickBaseException;
  */
 public class QuickBaseTicketerPlugin implements TicketerPlugin {
     
+    Properties m_properties;
+    
 	public Ticket get(String ticketId) {
-		return null;
+	    try {
+	        Properties props = getProperties();
+	        MyQuickBaseClient qdb = createClient(getUserName(props), getPassword(props));
+	    
+	        String dbId = qdb.findDbByName(getApplicationName(props));
+	        
+	        HashMap<String, String> record = qdb.getRecordInfo(dbId, ticketId);
+	        
+	        Ticket ticket = new Ticket();
+	        ticket.setId(ticketId);
+	        ticket.setModificationTimestamp(record.get(getModificationTimeStampFile(props)));
+	        ticket.setSummary(record.get(getSummaryField(props)));
+	        ticket.setDetails(record.get(getDetailsField(props)));
+	        ticket.setState(getTicketStateValue(record.get(getStateField(props)), props));
+	        
+	        return ticket;
+        
+	    } catch (Exception e) {
+	        throw new DataRetrievalFailureException("Failed to commit QuickBase transaction: "+e.getMessage(), e);
+	    }
+    
 	}
 
-	private QuickBaseClient createClient() {
-	    return new QuickBaseClient("brozow@opennms.org", "password");
+	private MyQuickBaseClient createClient(String username, String passwd) {
+	    return new MyQuickBaseClient(username, passwd);
 	}
 	
 	private Properties getProperties() {
@@ -77,7 +113,7 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	    File config = new File(etc, "quickbase.properties");
 	    
 	    
-	    Properties props = new Properties();
+	    Properties props = new Properties(System.getProperties());
 	    
 	    InputStream in = null;
 	    try {
@@ -87,8 +123,8 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	        log().error("Unable to load "+config+" ignoring.", e);
 	    } finally {
 	        IOUtils.closeQuietly(in);
-	    }  
-	        
+	    } 
+	    
 	    return props; 
 
 	}
@@ -107,10 +143,9 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	        
 	       Properties props = getProperties();
 	       
-	       QuickBaseClient qdb = createClient();
+	       QuickBaseClient qdb = createClient(getUserName(props), getPassword(props));
 	       
-	       String appName = "TPMG Support";
-	       String dbId = qdb.findDbByName(appName);
+           String dbId = qdb.findDbByName(getApplicationName(props));
 	       
            HashMap<String, String> record = new HashMap<String, String>();
            
@@ -123,10 +158,13 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	           String recordId = qdb.addRecord(dbId, record);
 	           ticket.setId(recordId);
 	       } else {
-	           
-	           
-	           
-	           qdb.editRecord(dbId, record, ticket.getId());
+	           Ticket oldTicket = get(ticket.getId());
+	           if (ticket.getModificationTimestamp().equals(oldTicket.getModificationTimestamp())) {
+	               qdb.editRecord(dbId, record, ticket.getId());	               
+	           } else {
+	               throw new OptimisticLockingFailureException("Ticket has been updated while this ticket was in memory! Reload and try again!");
+	           }
+
 	       }
 	       
 	    } catch (Exception e) {
@@ -136,19 +174,52 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	}
 
     private String getQuickBaseStateValue(State state, Properties props) {
-        return props.getProperty("statemap.ticket."+state.name());
+        return getRequiredProperty(props, "statemap.ticket."+state.name());
+    }
+    
+    private State getTicketStateValue(String status, Properties props) {
+        return State.valueOf(getRequiredProperty(props, "statemap.quickbase."+status));
+    }
+
+    private String getRequiredProperty(Properties props, String propName) {
+        assertPropertyDefined(props, propName);
+        return props.getProperty(propName);
+    }
+
+    private void assertPropertyDefined(Properties props, String propName) {
+        Assert.notNull(props.getProperty(propName), propName + " is not defined in quickbase.properties");
+    }
+    
+    private String getIdField(Properties props) {
+        return getRequiredProperty(props, "ticket.id");
+    }
+    
+    private String getModificationTimeStampFile(Properties props) {
+        return getRequiredProperty(props, "ticket.modificationTimestamp");
     }
 
     private String getStateField(Properties props) {
-        return props.getProperty("ticket.state");
+        return getRequiredProperty(props, "ticket.state");
     }
 
     private String getDetailsField(Properties props) {
-        return props.getProperty("ticket.details");
+        return getRequiredProperty(props, "ticket.details");
     }
 
     private String getSummaryField(Properties props) {
-        return props.getProperty("ticket.summary");
+        return getRequiredProperty(props, "ticket.summary");
+    }
+    
+    private String getApplicationName(Properties props) {
+        return getRequiredProperty(props, "quickbase.appname");
+    }
+    
+    private String getUserName(Properties props) {
+        return getRequiredProperty(props, "quickbase.username");
+    }
+    
+    private String getPassword(Properties props) {
+        return getRequiredProperty(props, "quickbase.password");
     }
 
     private void addAdditionCreationFields(HashMap<String, String> record, Properties props) {
@@ -161,6 +232,49 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
                 record.put(field, props.getProperty(key));
             }
         }
+    }
+    
+    private static class MyQuickBaseClient extends QuickBaseClient {
+
+        public MyQuickBaseClient(String username, String password) {
+            super(username, password);
+        }
+        
+        public HashMap getRecordInfo(String dbid, String rid) throws QuickBaseException, Exception {
+            Document qdbRequest = newXmlDocument();
+            addRequestParameter(qdbRequest, "rid", rid);
+            
+            Document qdbResponse = postApiXml(dbid, "API_GetRecordInfo", qdbRequest);
+            
+            NodeList records = getNodeList(qdbResponse, "field");
+            if (records == null) return null;
+            
+            HashMap record = new HashMap(0);
+            for (int recordCounter = 0; recordCounter < records.getLength(); recordCounter++){
+                Element field = (Element)records.item(recordCounter);
+                String id = field.getElementsByTagName("fid").item(0).getChildNodes().item(0).getNodeValue();
+                Node valueNode = field.getElementsByTagName("value").item(0).getChildNodes().item(0);
+                String value = (valueNode == null ? null : valueNode.getNodeValue());
+                record.put(id, value);
+            }
+            
+            return record;
+        }
+        
+        private NodeList getNodeList(Document xmlDoc, String select){
+            String currentNodeName;
+            Element el = xmlDoc.getDocumentElement();
+            NodeList nl = null;
+            StringTokenizer st = new StringTokenizer(select, "/");
+            while (st.hasMoreTokens()){
+              currentNodeName = st.nextToken();
+              if (el ==null){return null;}
+              nl = el.getElementsByTagName(currentNodeName);
+              el = (Element) nl.item(0);
+              }
+            return nl;
+          }
+        
     }
     
  }
