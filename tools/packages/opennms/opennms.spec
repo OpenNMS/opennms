@@ -375,11 +375,13 @@ echo " *** install guide and release notes for details."
 
 %postun core
 
-for dir in logs share; do
-	if [ -L "$RPM_INSTALL_PREFIX0/$dir" ]; then
-		rm -f "$RPM_INSTALL_PREFIX0/$dir"
-	fi
-done
+if [ "$1" = 0 ]; then
+	for dir in logs share; do
+		if [ -L "$RPM_INSTALL_PREFIX0/$dir" ]; then
+			rm -f "$RPM_INSTALL_PREFIX0/$dir"
+		fi
+	done
+fi
 
 %changelog
 * Mon Oct 29 2007 Benjamin Reed <ranger@opennms.org>
