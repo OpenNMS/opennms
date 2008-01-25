@@ -1511,7 +1511,7 @@
   
   <event>
     <uei>uei.opennms.org/internal/promoteQueueData</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made promote data from the RRD Queue</event-label>
+    <event-label>OpenNMS defined event: A request has been made promote data from the RRD Queue</event-label>
     <descr>
       This event is generated to invoke the promotion data of the Queueing RRD Strategy.
     </descr>
@@ -1521,90 +1521,108 @@
     <severity>Normal</severity>
   </event>
 
-        <event-file>events/ia.events.xml</event-file>
-        <event-file>events/3Com.events.xml</event-file>
-        <event-file>events/ADIC-v2.events.xml</event-file>
-        <event-file>events/Adtran.events.xml</event-file>
-        <event-file>events/Adtran.Atlas.events.xml</event-file>
-        <event-file>events/AirDefense.events.xml</event-file>
-        <event-file>events/Alteon.events.xml</event-file>
-        <event-file>events/Altiga.events.xml</event-file>
-        <event-file>events/APC.events.xml</event-file>
-        <event-file>events/APC.Best.events.xml</event-file>
-        <event-file>events/APC.Exide.events.xml</event-file>
-        <event-file>events/BackupExec.events.xml</event-file>
-        <event-file>events/BEA.events.xml</event-file>
-        <event-file>events/BGP4.events.xml</event-file>
-        <event-file>events/BlackBerryServer.events.xml</event-file>
-        <event-file>events/Brocade.events.xml</event-file>
-        <event-file>events/Cisco2.events.xml</event-file>
-        <event-file>events/Cisco.5300dchan.events.xml</event-file>
-        <event-file>events/Cisco.events.xml</event-file>
-        <event-file>events/Cisco.airespace.xml</event-file>
-        <event-file>events/Colubris.events.xml</event-file>
-        <event-file>events/Covergence.events.xml</event-file>
-        <event-file>events/CPQHPIM.events.xml</event-file>
-        <event-file>events/Clarent.events.xml</event-file>
-        <event-file>events/Clarinet.events.xml</event-file>
-        <event-file>events/Cricket.events.xml</event-file>
-        <event-file>events/Dell-DRAC2.events.xml</event-file>
-        <event-file>events/DellOpenManage.events.xml</event-file>
-        <event-file>events/DPS.events.xml</event-file>
-        <event-file>events/F5.events.xml</event-file>
-        <event-file>events/Fore.events.xml</event-file>
-        <event-file>events/FoundryNetworks.events.xml</event-file>
-        <event-file>events/FujitsuSiemens.events.xml</event-file>
-        <event-file>events/Groupwise.events.xml</event-file>
-        <event-file>events/HP.events.xml</event-file>
-        <event-file>events/IBM.events.xml</event-file>
-        <event-file>events/IBM-UMS.events.xml</event-file>
-        <event-file>events/IBMRSA2.events.xml</event-file>
-        <event-file>events/IEEE802dot11.events.xml</event-file>
-        <event-file>events/Intel.events.xml</event-file>
-        <event-file>events/ISS.events.xml</event-file>
-        <event-file>events/IPUnity-SES-MIB.events.xml</event-file>
-        <event-file>events/K5Systems.events.xml</event-file>
-        <event-file>events/Liebert.events.xml</event-file>
-        <event-file>events/Liebert.600SM.events.xml</event-file>
-        <event-file>events/Linksys.events.xml</event-file>
-        <event-file>events/MGE-UPS.events.xml</event-file>
-        <event-file>events/Microsoft.events.xml</event-file>
-        <event-file>events/MRV.events.xml</event-file>
-        <event-file>events/Mylex.events.xml</event-file>
-        <event-file>events/NetApp.events.xml</event-file>
-        <event-file>events/Netbotz.events.xml</event-file>
-        <event-file>events/Netgear.events.xml</event-file>
-        <event-file>events/Netscreen.events.xml</event-file>
-        <event-file>events/NetSNMP.events.xml</event-file>
-        <event-file>events/Nokia.events.xml</event-file>
-        <event-file>events/NORTEL.Contivity.events.xml</event-file>
-        <event-file>events/Novell.events.xml</event-file>
-        <event-file>events/Oracle.events.xml</event-file>
-        <event-file>events/OSPF.events.xml</event-file>
-        <event-file>events/Patrol.events.xml</event-file>
-        <event-file>events/Pixelmetrix.events.xml</event-file>
-        <event-file>events/Primecluster.events.xml</event-file>
-        <event-file>events/Quintum.events.xml</event-file>
-        <event-file>events/Redline.events.xml</event-file>
-        <event-file>events/RFC1628.events.xml</event-file>
-        <event-file>events/Rightfax.events.xml</event-file>
-        <event-file>events/Sensaphone.events.xml</event-file>
-        <event-file>events/Snort.events.xml</event-file>
-        <event-file>events/SonicWall.events.xml</event-file>
-        <event-file>events/Symbol.events.xml</event-file>
-        <event-file>events/Syslogd.events.xml</event-file>
-        <event-file>events/SystemEdge.events.xml</event-file>
-        <event-file>events/TrippLite.events.xml</event-file>
-        <event-file>events/TUT.events.xml</event-file>
-        <event-file>events/UPS-MIB.events.xml</event-file>
-        <event-file>events/Uptime.events.xml</event-file>
-        <event-file>events/Veraz.events.xml</event-file>
-        <event-file>events/VMWare.events.xml</event-file>
-        <event-file>events/Waverider.3000.events.xml</event-file>
-        <event-file>events/Xerox-V2.events.xml</event-file>
-        <event-file>events/Xerox.events.xml</event-file>
+  <event>
+    <uei>uei.opennms.org/internal/translator/hypericAlert</uei>
+    <event-label>OpenNMS defined event: An event received from Hyperic has been translated</event-label>
+    <descr>
+      This is a translated Hyperic Alert to associate with OpenNMS entity..&lt;p&gt;
 
-        <event-file>events/Standard.events.xml</event-file>
+      &lt;p&gt;Alert reason: %parm[action.shortReason]% &lt;/p&gt;
+      &lt;p&gt;Alert reason: %parm[action.longReason]% &lt;/p&gt;
+      &lt;p&gt;&lt;a href=&quot;%parm[resource.url]%" &gt; %parm[resource.name]% &lt;/a&gt;&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;Hyperic HQ Alert: %parm[action.longReason]% &lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false" />
+  </event>
   
-        <event-file>events/default.events.xml</event-file>
+  <event-file>events/ia.events.xml</event-file>
+  <event-file>events/3Com.events.xml</event-file>
+  <event-file>events/ADIC-v2.events.xml</event-file>
+  <event-file>events/Adtran.events.xml</event-file>
+  <event-file>events/Adtran.Atlas.events.xml</event-file>
+  <event-file>events/AirDefense.events.xml</event-file>
+  <event-file>events/Alteon.events.xml</event-file>
+  <event-file>events/Altiga.events.xml</event-file>
+  <event-file>events/APC.events.xml</event-file>
+  <event-file>events/APC.Best.events.xml</event-file>
+  <event-file>events/APC.Exide.events.xml</event-file>
+  <event-file>events/BackupExec.events.xml</event-file>
+  <event-file>events/BEA.events.xml</event-file>
+  <event-file>events/BGP4.events.xml</event-file>
+  <event-file>events/BlackBerryServer.events.xml</event-file>
+  <event-file>events/Brocade.events.xml</event-file>
+  <event-file>events/Cisco2.events.xml</event-file>
+  <event-file>events/Cisco.5300dchan.events.xml</event-file>
+  <event-file>events/Cisco.events.xml</event-file>
+  <event-file>events/Cisco.airespace.xml</event-file>
+  <event-file>events/Colubris.events.xml</event-file>
+  <event-file>events/Covergence.events.xml</event-file>
+  <event-file>events/CPQHPIM.events.xml</event-file>
+  <event-file>events/Clarent.events.xml</event-file>
+  <event-file>events/Clarinet.events.xml</event-file>
+  <event-file>events/Cricket.events.xml</event-file>
+  <event-file>events/Dell-DRAC2.events.xml</event-file>
+  <event-file>events/DellOpenManage.events.xml</event-file>
+  <event-file>events/DPS.events.xml</event-file>
+  <event-file>events/F5.events.xml</event-file>
+  <event-file>events/Fore.events.xml</event-file>
+  <event-file>events/FoundryNetworks.events.xml</event-file>
+  <event-file>events/FujitsuSiemens.events.xml</event-file>
+  <event-file>events/Groupwise.events.xml</event-file>
+  <event-file>events/HP.events.xml</event-file>
+  <event-file>events/Hyperic.events.xml</event-file>
+  <event-file>events/IBM.events.xml</event-file>
+  <event-file>events/IBM-UMS.events.xml</event-file>
+  <event-file>events/IBMRSA2.events.xml</event-file>
+  <event-file>events/IEEE802dot11.events.xml</event-file>
+  <event-file>events/Intel.events.xml</event-file>
+  <event-file>events/ISS.events.xml</event-file>
+  <event-file>events/IPUnity-SES-MIB.events.xml</event-file>
+  <event-file>events/K5Systems.events.xml</event-file>
+  <event-file>events/Liebert.events.xml</event-file>
+  <event-file>events/Liebert.600SM.events.xml</event-file>
+  <event-file>events/Linksys.events.xml</event-file>
+  <event-file>events/MGE-UPS.events.xml</event-file>
+  <event-file>events/Microsoft.events.xml</event-file>
+  <event-file>events/MRV.events.xml</event-file>
+  <event-file>events/Mylex.events.xml</event-file>
+  <event-file>events/NetApp.events.xml</event-file>
+  <event-file>events/Netbotz.events.xml</event-file>
+  <event-file>events/Netgear.events.xml</event-file>
+  <event-file>events/Netscreen.events.xml</event-file>
+  <event-file>events/NetSNMP.events.xml</event-file>
+  <event-file>events/Nokia.events.xml</event-file>
+  <event-file>events/NORTEL.Contivity.events.xml</event-file>
+  <event-file>events/Novell.events.xml</event-file>
+  <event-file>events/Oracle.events.xml</event-file>
+  <event-file>events/OSPF.events.xml</event-file>
+  <event-file>events/Patrol.events.xml</event-file>
+  <event-file>events/Pixelmetrix.events.xml</event-file>
+  <event-file>events/Primecluster.events.xml</event-file>
+  <event-file>events/Quintum.events.xml</event-file>
+  <event-file>events/Redline.events.xml</event-file>
+  <event-file>events/RFC1628.events.xml</event-file>
+  <event-file>events/Rightfax.events.xml</event-file>
+  <event-file>events/Sensaphone.events.xml</event-file>
+  <event-file>events/Snort.events.xml</event-file>
+  <event-file>events/SonicWall.events.xml</event-file>
+  <event-file>events/Symbol.events.xml</event-file>
+  <event-file>events/Syslogd.events.xml</event-file>
+  <event-file>events/SystemEdge.events.xml</event-file>
+  <event-file>events/TrippLite.events.xml</event-file>
+  <event-file>events/TUT.events.xml</event-file>
+  <event-file>events/UPS-MIB.events.xml</event-file>
+  <event-file>events/Uptime.events.xml</event-file>
+  <event-file>events/Veraz.events.xml</event-file>
+  <event-file>events/VMWare.events.xml</event-file>
+  <event-file>events/Waverider.3000.events.xml</event-file>
+  <event-file>events/Xerox-V2.events.xml</event-file>
+  <event-file>events/Xerox.events.xml</event-file>
+
+  <event-file>events/Standard.events.xml</event-file>
+
+  <event-file>events/default.events.xml</event-file>
 </events>
