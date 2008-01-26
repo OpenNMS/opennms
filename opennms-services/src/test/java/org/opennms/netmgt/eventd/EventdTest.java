@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Add some @Override annotations, kill main method. - dj@opennms.org
 // 2008 Jan 23: Add test for mapping from servicename to serviceId and
 //              persistence of events.serviceID. - dj@opennms.org
 // 2008 Jan 08: Make tests happy with EventConfigurationManager to
@@ -64,15 +65,12 @@ public class EventdTest extends OpenNMSTestCase {
         daoTestConfig.afterPropertiesSet();
     }
 
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(EventdTest.class);
-    }
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         m_eventd.stop();

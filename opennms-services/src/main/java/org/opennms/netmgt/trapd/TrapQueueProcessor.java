@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Switch dependency injection to use setter injection
+//              instead of constructor injection and implement
+//              InitializingBean interface.  Improve assertions and
+//              exceptions. - dj@opennms.org
 // 2008 Jan 08: Format code, Java 5 generics, use dependency injection
 //              for EventConfDao and use it instead of EventConfigurationManager. - dj@opennms.org
 // 2008 Jan 05: Indent. - dj@opennms.org
@@ -60,6 +64,8 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * The TrapQueueProcessor handles the conversion of V1 and V2 traps to events
@@ -73,7 +79,7 @@ import org.opennms.netmgt.xml.eventconf.Logmsg;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements Runnable, PausableFiber {
+class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
     /**
      * The input queue
      */
@@ -99,10 +105,16 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      * Whether or not a newSuspect event should be generated with a trap from an
      * unknown IP address
      */
-    private boolean m_newSuspect;
+    private Boolean m_newSuspect;
 
+    /**
+     * The event IPC manager to which we send events created from traps.
+     */
     private EventIpcManager m_eventMgr;
 
+    /**
+     * The event configuration DAO that we use to convert from traps to events.
+     */
     private EventConfDao m_eventConfDao;
 
     /**
@@ -281,18 +293,13 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
     /**
      * The constructor
-     * @param eventConfDao TODO
      */
-    TrapQueueProcessor(FifoQueue<TrapNotification> backlog, boolean newSuspect, EventIpcManager eventMgr, EventConfDao eventConfDao) {
-        m_backlogQ = backlog;
-        m_newSuspect = newSuspect;
-        m_eventMgr = eventMgr;
-        m_eventConfDao = eventConfDao;
+    public TrapQueueProcessor() {
         try {
             m_localAddr = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException uhE) {
+        } catch (UnknownHostException e) {
             m_localAddr = "localhost";
-            log().error("<ctor>: Error looking up local hostname", uhE);
+            log().error("<ctor>: Error looking up local hostname: " + e, e);
         }
 
     }
@@ -309,9 +316,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      *  
      */
     public synchronized void start() {
-        if (m_worker != null) {
-            throw new IllegalStateException("The fiber is running or has already run");
-        }
+        Assert.state(m_worker == null, "The fiber is running or has already run");
 
         m_status = STARTING;
 
@@ -327,8 +332,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      * Pauses the current fiber.
      */
     public synchronized void pause() {
-        if (m_worker == null || m_worker.isAlive() == false)
-            throw new IllegalStateException("The fiber is not running");
+        Assert.state(m_worker != null && m_worker.isAlive(), "The fiber is not running");
 
         m_status = PAUSED;
         notifyAll();
@@ -338,8 +342,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      * Resumes the currently paused fiber.
      */
     public synchronized void resume() {
-        if (m_worker == null || m_worker.isAlive() == false)
-            throw new IllegalStateException("The fiber is not running");
+        Assert.state(m_worker != null && m_worker.isAlive(), "The fiber is not running");
 
         m_status = RUNNING;
         notifyAll();
@@ -355,8 +358,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      *             Thrown if the fiber has never been started.
      */
     public synchronized void stop() {
-        if (m_worker == null)
-            throw new IllegalStateException("The fiber has never run");
+        Assert.state(m_worker != null, "The fiber has never run");
 
         m_status = STOP_PENDING;
         m_worker.interrupt();
@@ -378,8 +380,9 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      * @return The status of the Fiber.
      */
     public synchronized int getStatus() {
-        if (m_worker != null && !m_worker.isAlive())
+        if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;
+        }
 
         return m_status;
     }
@@ -417,7 +420,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
                 try {
                     process(o);
                 } catch (Throwable t) {
-                    log().error("Unexpected error processing trap", t);
+                    log().error("Unexpected error processing trap: " + t, t);
                 }
             }
         }
@@ -425,5 +428,44 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
+    }
+
+    public FifoQueue<TrapNotification> getBacklogQ() {
+        return m_backlogQ;
+    }
+
+    public void setBacklogQ(FifoQueue<TrapNotification> backlogQ) {
+        m_backlogQ = backlogQ;
+    }
+
+    public EventConfDao getEventConfDao() {
+        return m_eventConfDao;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
+    }
+
+    public EventIpcManager getEventMgr() {
+        return m_eventMgr;
+    }
+
+    public void setEventMgr(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
+
+    public Boolean isNewSuspect() {
+        return m_newSuspect;
+    }
+
+    public void setNewSuspect(Boolean newSuspect) {
+        m_newSuspect = newSuspect;
+    }
+
+    public void afterPropertiesSet() throws IllegalStateException {
+        Assert.state(m_backlogQ != null, "property backlogQ must be set");
+        Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
+        Assert.state(m_eventMgr != null, "property eventMgr must be set");
+        Assert.state(m_newSuspect != null, "property newSuspect must be set");
     }
 }

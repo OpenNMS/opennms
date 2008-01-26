@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Rename TrapdIPMgr to JdbcTrapdIpMgr and create an interface for the key methods, TrapdIpMgr. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,18 +34,19 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.trapd;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.DataSourceFactory;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * This class represents a singular instance that is used to map trap IP
@@ -55,46 +57,34 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-final class TrapdIPMgr {
+public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
+    private DataSource m_dataSource;
+    
     /**
      * The SQL statement used to extract the list of currently known IP
      * addresses and their node IDs from the IP Interface table.
      */
-    private final static String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
+    private final  String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
 
     /**
      * A Map of IP addresses and node IDs
      */
-    private static Map m_knownips = new HashMap();
+    private Map<String, Long> m_knownips = new HashMap<String, Long>();
 
     /**
-     * Default construct for the instance. This constructor always throws an
-     * exception to the caller.
-     * 
-     * @throws java.lang.UnsupportedOperationException
-     *             Always thrown.
-     * 
+     * Default construct for the instance.
      */
-    private TrapdIPMgr() {
-        throw new UnsupportedOperationException("Construction is not supported");
+    public JdbcTrapdIpMgr() {
     }
 
-    /**
-     * Clears and synchronizes the internal known IP address cache with the
-     * current information contained in the database. To synchronize the cache
-     * the method opens a new connection to the database, loads the address, and
-     * then closes it's connection.
-     * 
-     * @throws java.sql.SQLException
-     *             Thrown if the connection cannot be created or a database
-     *             error occurs.
-     * 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.trapd.TrapdIpMgr#dataSourceSync()
      */
-    protected static synchronized void dataSourceSync() throws SQLException {
-        java.sql.Connection c = null;
+    public synchronized void dataSourceSync() throws SQLException {
+        Connection c = null;
         try {
             // Get database connection
-            c = DataSourceFactory.getInstance().getConnection();
+            c = m_dataSource.getConnection();
 
             // Run with it
             //
@@ -116,71 +106,65 @@ final class TrapdIPMgr {
             s.close();
         } finally {
             try {
-                if (c != null)
+                if (c != null) {
                     c.close();
+                }
             } catch (SQLException sqlE) {
             }
         }
     }
 
-    /**
-     * Returns the nodeid for the IP Address
-     * 
-     * @param addr
-     *            The IP Address to query.
-     * 
-     * @return The node ID of the IP Address if known.
-     * 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.trapd.TrapdIpMgr#getNodeId(java.lang.String)
      */
-    protected static synchronized long getNodeId(String addr) {
+    public synchronized long getNodeId(String addr) {
         if (addr == null) {
             return -1;
         }
-        return longValue((Long) m_knownips.get(addr));
+        return longValue(m_knownips.get(addr));
     }
 
-    /**
-     * Sets the IP Address and Node ID in the Map.
-     * 
-     * @param addr
-     *            The IP Address to add.
-     * @param nodeid
-     *            The Node ID to add.
-     * 
-     * @return The nodeid if it existed in the map.
-     * 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.trapd.TrapdIpMgr#setNodeId(java.lang.String, long)
      */
-    protected static synchronized long setNodeId(String addr, long nodeid) {
+    public synchronized long setNodeId(String addr, long nodeid) {
         if (addr == null || nodeid == -1) {
             return -1;
         }
         
-        return longValue((Long) m_knownips.put(addr, new Long(nodeid)));
+        return longValue(m_knownips.put(addr, new Long(nodeid)));
     }
 
-    /**
-     * Removes an address from the node ID map.
-     * 
-     * @param addr
-     *            The address to remove from the node ID map.
-     * 
-     * @return The nodeid that was in the map.
-     * 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.trapd.TrapdIpMgr#removeNodeId(java.lang.String)
      */
-    protected static synchronized long removeNodeId(String addr) {
+    public synchronized long removeNodeId(String addr) {
         if (addr == null) {
             return -1;
         }
-        return longValue((Long) m_knownips.remove(addr));
+        return longValue(m_knownips.remove(addr));
     }
 
-    protected static synchronized void clearKnownIpsMap() {
-        m_knownips = new HashMap();
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.trapd.TrapdIpMgr#clearKnownIpsMap()
+     */
+    public synchronized void clearKnownIpsMap() {
+        m_knownips.clear();
     }
 
     private static long longValue(Long result) {
         return (result == null ? -1 : result.longValue());
     }
 
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
 
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_dataSource != null, "property dataSource must be set");
+    }
 }

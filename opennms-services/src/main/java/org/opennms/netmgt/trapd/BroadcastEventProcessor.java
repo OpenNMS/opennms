@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Dependency inject TrapdIpMgr and implement InitializingBean and DisposableBean interfaces. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,9 +34,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.trapd;
 
 import java.util.ArrayList;
@@ -47,14 +45,18 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * 
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class BroadcastEventProcessor implements EventListener {
+public final class BroadcastEventProcessor implements EventListener, InitializingBean, DisposableBean {
     private EventIpcManager m_eventMgr;
+    private TrapdIpMgr m_trapdIpMgr;
 
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -64,13 +66,19 @@ public final class BroadcastEventProcessor implements EventListener {
         m_eventMgr = eventMgr;
     }
 
+    public TrapdIpMgr getTrapdIpMgr() {
+        return m_trapdIpMgr;
+    }
+
+    public void setTrapdIpMgr(TrapdIpMgr trapdIpMgr) {
+        m_trapdIpMgr = trapdIpMgr;
+    }
+
     /**
      * Create message selector to set to the subscription
      */
     public void open() {
-        verifyState();
-
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
         ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
         ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
@@ -81,14 +89,16 @@ public final class BroadcastEventProcessor implements EventListener {
      * Unsubscribe from eventd
      */
     public void close() {
-        verifyState();
         m_eventMgr.removeEventListener(this);
     }
 
-    private void verifyState() {
-        if (m_eventMgr == null) {
-            throw new IllegalStateException("event manager not set");
-        }
+    public void afterPropertiesSet() {
+        Assert.state(m_eventMgr != null, "eventManager not set");
+        Assert.state(m_trapdIpMgr != null, "trapIpMgr not set");
+    }
+
+    public void destroy() throws Exception {
+        close();
     }
 
     /**
@@ -124,7 +134,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 log.warn("Not " + action + "ing interface to known node list: "
                     + "interface is null");
             } else {
-                TrapdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
+                m_trapdIpMgr.setNodeId(event.getInterface(), event.getNodeid());
                 if (log.isDebugEnabled()) {
                     log.debug("Successfully " + action + "ed "
                               + event.getInterface() + " to known node list");
@@ -132,7 +142,7 @@ public final class BroadcastEventProcessor implements EventListener {
             }
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             if (event.getInterface() != null) {
-                TrapdIPMgr.removeNodeId(event.getInterface());
+                m_trapdIpMgr.removeNodeId(event.getInterface());
             }
             if (log.isDebugEnabled()) {
                 log.debug("Removed " + event.getInterface()

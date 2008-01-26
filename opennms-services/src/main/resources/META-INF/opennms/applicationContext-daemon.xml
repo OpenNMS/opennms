@@ -5,12 +5,40 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  
-  <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
+  <bean id="eventdConfigManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="eventdConfigManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventdConfigManager-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.getInstance</value></property>
   </bean>
   
-  <bean id="eventIpcManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
+  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload"/>
+
+  <bean id="eventconfFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventconfFactory.setInstance</value></property>
+    <property name="arguments">
+      <list>
+        <ref local="eventConfDao"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
+    <property name="eventConfDao" ref="eventConfDao"/>
+  </bean>
+
+  <bean id="eventIpcManager" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+    <property name="eventdConfigMgr" ref="eventdConfigManager"/>
+    <property name="eventExpander" ref="eventExpander"/>
+  </bean>
+
+  <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.setIpcManager</value></property>
+    <property name="arguments">
+      <list>
+        <ref local="eventIpcManager"/>
+      </list>
+    </property>
   </bean>
 </beans>

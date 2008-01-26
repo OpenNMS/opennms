@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Dependency inject TrapdIpMgr. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -48,9 +52,12 @@ public class EventCreator implements TrapProcessor {
     private Event m_event;
     private Snmp m_snmpInfo;
     private Parms m_parms;
+    private TrapdIpMgr m_trapdIpMgr;
 
     
-    EventCreator() {
+    EventCreator(TrapdIpMgr trapdIpMgr) {
+        m_trapdIpMgr = trapdIpMgr;
+        
         m_event = new Event();
         m_event.setSource("trapd");
         m_event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
@@ -60,7 +67,6 @@ public class EventCreator implements TrapProcessor {
 
         m_parms = new Parms();
         m_event.setParms(m_parms);
-        
     }
     
     public void setCommunity(String community) {
@@ -99,7 +105,7 @@ public class EventCreator implements TrapProcessor {
         String trapInterface = trapAddress.getHostAddress();
         m_event.setSnmphost(trapInterface);
         m_event.setInterface(trapInterface);
-        long nodeId = TrapdIPMgr.getNodeId(trapInterface);
+        long nodeId = m_trapdIpMgr.getNodeId(trapInterface);
         if (nodeId != -1) {
             m_event.setNodeid(nodeId);
         }

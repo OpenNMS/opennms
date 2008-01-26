@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Rename TrapHandler to Trapd since Trapd did almost nothing.
+//              Dependency inject all of the bits for Trapd. - dj@opennms.org
 // 2008 Jan 08: Dependency inject EventConfDao and use that instead of
 //              EventConfigurationManager.  Create log() method. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -43,16 +45,12 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.TrapdConfig;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
@@ -86,35 +84,10 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
-public class TrapHandler implements PausableFiber, TrapProcessorFactory,
+public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory,
                                     TrapNotificationListener,
                                     InitializingBean {
-    /**
-     * The name of the logging category for Trapd.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Trapd";
-
-    /**
-     * The singlton instance.
-     */
-    private static final TrapHandler m_singleton = new TrapHandler();
-
-    /**
-     * Set the Trapd configuration
-     */
-    private TrapdConfig m_trapdConfig;
-    
-    /**
-     * Event manager
-     */
-    private EventIpcManager m_eventMgr;
-
-    /**
-     * The name of this service.
-     */
-    private String m_name = LOG4J_CATEGORY;
-
-    /**
+    /*
      * The last status sent to the service control manager.
      */
     private int m_status = START_PENDING;
@@ -134,7 +107,15 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
      */
     private BroadcastEventProcessor m_eventReader;
 
-    private EventConfDao m_eventConfDao;
+    /**
+     * Trapd IP manager.  Contains IP address -> node ID mapping.
+     */
+    private TrapdIpMgr m_trapdIpMgr;
+
+    private Integer m_snmpTrapPort;
+
+    private boolean m_registeredForTraps;
+
 
     /**
      * <P>
@@ -146,15 +127,12 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
      * 
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
-    public TrapHandler() {
-    }
-
-    public void setTrapdConfig(TrapdConfig trapdConfig) {
-        m_trapdConfig = trapdConfig;
+    public Trapd() {
+        super("OpenNMS.Trapd");
     }
     
     public TrapProcessor createTrapProcessor() {
-        return new EventCreator();
+        return new EventCreator(m_trapdIpMgr);
     }
 
     public void trapReceived(TrapNotification trapNotification) {
@@ -172,22 +150,23 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
         }
     }
 
-    public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    public synchronized void onInit() {
+        Assert.state(m_trapdIpMgr != null, "trapdIpMgr must be set");
+        Assert.state(m_eventReader != null, "eventReader must be set");
+        Assert.state(m_backlogQ != null, "backlogQ must be set");
+        Assert.state(m_snmpTrapPort != null, "snmpTrapPort must be set");
+        Assert.state(m_processor != null, "processor must be set");
 
         try {
-            // Get the newSuspectOnTrap flag
-            boolean m_newSuspect = m_trapdConfig.getNewSuspectOnTrap();
+            m_trapdIpMgr.dataSourceSync();
+        } catch (SQLException e) {
+            log().error("Failed to load known IP address list: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        }
 
-            // set up the trap processor
-            m_backlogQ = new FifoQueueImpl<TrapNotification>();
-            m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect,
-                                                 m_eventMgr, m_eventConfDao);
-
-            log().debug("start: Creating the trap queue processor");
-            
-            SnmpUtils.registerForTraps(this, this,
-                                       m_trapdConfig.getSnmpTrapPort());
+        try {
+            SnmpUtils.registerForTraps(this, this, getSnmpTrapPort());
+            m_registeredForTraps = true;
 
             log().debug("start: Creating the trap session");
         } catch (IOException e) {
@@ -196,12 +175,9 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
         }
 
         try {
-            m_eventReader = new BroadcastEventProcessor();
-            m_eventReader.setEventManager(m_eventMgr);
             m_eventReader.open();
         } catch (Exception e) {
-            log().error("Failed to create event reader",
-                                               e);
+            log().error("Failed to open event reader: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -216,10 +192,8 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      * @see org.opennms.protocols.snmp.SnmpTrapHandler
      */
-    public synchronized void start() {
+    public synchronized void onStart() {
         m_status = STARTING;
-
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         log().debug("start: Initializing the trapd config factory");
 
@@ -233,7 +207,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
     /**
      * Pauses Trapd
      */
-    public void pause() {
+    public void onPause() {
         if (m_status != RUNNING) {
             return;
         }
@@ -254,7 +228,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
     /**
      * Resumes Trapd
      */
-    public void resume() {
+    public void onResume() {
         if (m_status != PAUSED) {
             return;
         }
@@ -276,20 +250,23 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
      * Stops the currently running service. If the service is not running then
      * the command is silently discarded.
      */
-    public synchronized void stop() {
+    public synchronized void onStop() {
         m_status = STOP_PENDING;
 
         // shutdown and wait on the background processing thread to exit.
         log().debug("exit: closing communication paths.");
 
         try {
-            log().debug("stop: Closing SNMP trap session.");
+            if (m_registeredForTraps) {
+                log().debug("stop: Closing SNMP trap session.");
+                SnmpUtils.unregisterForTraps(this, getSnmpTrapPort());
+                log().debug("stop: SNMP trap session closed.");
+            } else {
+                log().debug("stop: not attemping to closing SNMP trap session--it was never opened");
+            }
 
-            SnmpUtils.unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
-
-            log().debug("stop: SNMP trap session closed.");
         } catch (IOException e) {
-            log().warn("stop: exception occurred closing session", e);
+            log().warn("stop: exception occurred closing session: " + e, e);
         } catch (IllegalStateException e) {
             log().debug("stop: The SNMP session was already closed");
         }
@@ -315,51 +292,48 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
         return m_status;
     }
 
-    /**
-     * Returns the singular instance of the trapd daemon. There can be only one
-     * instance of this service per virtual machine.
-     */
-    public static TrapHandler getInstance() {
-        return m_singleton;
-    }
-
-    /**
-     * Returns the name of the service.
-     * 
-     * @return The service's name.
-     */
-    public String getName() {
-        return m_name;
-    }
-    
-    public EventIpcManager getEventManager() {
-        return m_eventMgr;
-    }
-
-    public void setEventManager(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
-    }
-
     public void trapError(int error, String msg) {
         log().warn("Error Processing Received Trap: error = " + error
                  + (msg != null ? ", ref = " + msg : ""));
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    public TrapdIpMgr getTrapdIpMgr() {
+        return m_trapdIpMgr;
     }
 
-    public void afterPropertiesSet() {
-        Assert.state(m_eventMgr != null, "eventManager must be set");
-        Assert.state(m_trapdConfig != null, "trapdConfig must be set");
-        Assert.state(m_eventConfDao != null, "eventConfDao must be set");
+    public void setTrapdIpMgr(TrapdIpMgr trapdIpMgr) {
+        m_trapdIpMgr = trapdIpMgr;
     }
 
-    public EventConfDao getEventConfDao() {
-        return m_eventConfDao;
+    public BroadcastEventProcessor getEventReader() {
+        return m_eventReader;
     }
 
-    public void setEventConfDao(EventConfDao eventConfDao) {
-        m_eventConfDao = eventConfDao;
+    public void setEventReader(BroadcastEventProcessor eventReader) {
+        m_eventReader = eventReader;
+    }
+
+    public FifoQueue<TrapNotification> getBacklogQ() {
+        return m_backlogQ;
+    }
+
+    public void setBacklogQ(FifoQueue<TrapNotification> backlogQ) {
+        m_backlogQ = backlogQ;
+    }
+
+    public TrapQueueProcessor getProcessor() {
+        return m_processor;
+    }
+
+    public void setProcessor(TrapQueueProcessor processor) {
+        m_processor = processor;
+    }
+
+    public int getSnmpTrapPort() {
+        return m_snmpTrapPort;
+    }
+    
+    public void setSnmpTrapPort(int snmpTrapPort) {
+        m_snmpTrapPort = snmpTrapPort;
     }
 }

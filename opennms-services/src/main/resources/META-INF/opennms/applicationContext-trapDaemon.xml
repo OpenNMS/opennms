@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
+    <property name="trapdIpMgr" ref="trapdIpMgr"/>
+    <property name="eventReader" ref="eventReader"/>
+    <property name="backlogQ" ref="backlogQ"/>
+    <property name="processor" ref="processor"/>
+    <property name="snmpTrapPort" ref="snmpTrapPort"/>
+  </bean>
+  
+  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="trapdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="trapdConfig-init" lazy-init="true">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.getInstance</value></property>
+  </bean>
+  
+  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+  
+  <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
+    <property name="eventManager" ref="eventIpcManager"/>
+    <property name="trapdIpMgr" ref="trapdIpMgr"/>
+  </bean>
+  
+  <bean id="backlogQ" class="org.opennms.core.queue.FifoQueueImpl"/>
+  
+  <bean id="processor" class="org.opennms.netmgt.trapd.TrapQueueProcessor">
+    <property name="backlogQ" ref="backlogQ"/>
+    <property name="eventConfDao" ref="eventConfDao"/>
+    <property name="eventMgr" ref="eventIpcManager"/>
+    <property name="newSuspect" ref="newSuspectOnTrap"/>
+  </bean>
+  
+  <bean id="newSuspectOnTrap" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="trapdConfig"/>
+    <property name="targetMethod" value="getNewSuspectOnTrap"/>
+  </bean>
+  
+  <bean id="snmpTrapPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="trapdConfig"/>
+    <property name="targetMethod" value="getSnmpTrapPort"/>
+  </bean>
+</beans>

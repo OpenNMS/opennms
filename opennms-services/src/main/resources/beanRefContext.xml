@@ -102,4 +102,22 @@
      </constructor-arg>
      <constructor-arg ref="commonContext" />
    </bean>
+        
+    <bean id="eventDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-eventDaemon.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daemonContext" />
+   </bean>
+        
+    <bean id="trapDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-trapDaemon.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daemonContext" />
+   </bean>
 </beans>
