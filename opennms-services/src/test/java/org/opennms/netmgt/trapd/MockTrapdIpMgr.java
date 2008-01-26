@@ -1,7 +1,5 @@
 package org.opennms.netmgt.trapd;
 
-import java.sql.SQLException;
-
 /**
  * A TrapdIpMgr that doesn't talk to the database.  If we want something
  * there for our test, we'll populate it.
@@ -13,7 +11,7 @@ public class MockTrapdIpMgr extends JdbcTrapdIpMgr {
     }
 
     @Override
-    public synchronized void dataSourceSync() throws SQLException {
+    public synchronized void dataSourceSync() {
         // Don't do anything... don't want to have to mess with the DB here
     }  
 }

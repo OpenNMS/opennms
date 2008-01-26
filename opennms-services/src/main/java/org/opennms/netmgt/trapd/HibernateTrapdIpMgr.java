@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Jan 26: Use JdbcTemplate.  It's all perty now. - dj@opennms.org
 // 2008 Jan 26: Rename TrapdIPMgr to JdbcTrapdIpMgr and create an interface for the key methods, TrapdIpMgr. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -37,16 +36,12 @@
 //
 package org.opennms.netmgt.trapd;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -58,37 +53,26 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
-    private DataSource m_dataSource;
+public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
+    private IpInterfaceDao m_ipInterfaceDao;
     
-    /**
-     * The SQL statement used to extract the list of currently known IP
-     * addresses and their node IDs from the IP Interface table.
-     */
-    private final  String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
-
     /**
      * A Map of IP addresses and node IDs
      */
-    private Map<String, Long> m_knownips = new HashMap<String, Long>();
+    private Map<String, Integer> m_knownips = new HashMap<String, Integer>();
 
     /**
      * Default construct for the instance.
      */
-    public JdbcTrapdIpMgr() {
+    public HibernateTrapdIpMgr() {
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#dataSourceSync()
      */
+    @Transactional(readOnly = true)
     public synchronized void dataSourceSync() {
-        m_knownips.clear();
-
-        new JdbcTemplate(m_dataSource).query(IP_LOAD_SQL, new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                m_knownips.put(rs.getString(1), rs.getLong(2));
-            }
-        });
+        m_knownips = m_ipInterfaceDao.getInterfacesForNodes();
     }
 
     /* (non-Javadoc)
@@ -109,7 +93,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
             return -1;
         }
         
-        return longValue(m_knownips.put(addr, new Long(nodeid)));
+        return longValue(m_knownips.put(addr, new Integer((int) nodeid)));
     }
 
     /* (non-Javadoc)
@@ -129,19 +113,19 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         m_knownips.clear();
     }
 
-    private static long longValue(Long result) {
+    private static long longValue(Integer result) {
         return (result == null ? -1 : result.longValue());
     }
 
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
-
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_dataSource != null, "property dataSource must be set");
+        Assert.state(m_ipInterfaceDao != null, "property ipInterfaceDao must be set");
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
     }
 }
