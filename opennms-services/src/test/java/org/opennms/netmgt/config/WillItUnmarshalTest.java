@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jan 25: Add Hyperic tests and test for subdirectories in examples. - dj@opennms.org
  * 2007 Aug 03: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 Daniel J. Gregor, Jr.  All rights reserved.
@@ -36,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -69,6 +71,7 @@ import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
+import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
@@ -196,6 +199,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testExampleCapsdConfiguration() throws Exception {
         unmarshalExample("capsd-configuration.xml", CapsdConfiguration.class);
     }
+    public void testExampleHypericCapsdConfiguration() throws Exception {
+        unmarshalExample("hyperic-integration/capsd-configuration.xml", CapsdConfiguration.class);
+    }
     public void testCategories() throws Exception {
         unmarshal("categories.xml", Catinfo.class);
     }
@@ -229,6 +235,12 @@ public class WillItUnmarshalTest extends TestCase {
     public void testEventconf() throws Exception {
         unmarshal("eventconf.xml", Events.class);
     }
+    public void testExampleHypericEventconf() throws Exception {
+        unmarshalExample("hyperic-integration/eventconf.xml", Events.class);
+    }
+    public void testExampleHypericEvents() throws Exception {
+        unmarshalExample("hyperic-integration/Hyperic.events.xml", Events.class);
+    }
     public void testEventsArchiverConfiguration() throws Exception {
         unmarshal("events-archiver-configuration.xml", EventsArchiverConfiguration.class);
     }
@@ -252,6 +264,12 @@ public class WillItUnmarshalTest extends TestCase {
     }
     public void testExampleMailTransportTest() throws Exception {
         unmarshalExample("mail-transport-test.xml", MailTransportTest.class);
+    }
+    public void testExampleHypericImportsHQ() throws Exception {
+        unmarshalExample("hyperic-integration/imports-HQ.xml", ModelImport.class);
+    }
+    public void testExampleHypericImportsOpennmsAdmin() throws Exception {
+        unmarshalExample("hyperic-integration/imports-opennms-admin.xml", ModelImport.class);
     }
     public void testMonitoringLocations() throws Exception {
         unmarshal("monitoring-locations.xml", MonitoringLocationsConfiguration.class);
@@ -301,6 +319,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testExamplePollerConfiguration() throws Exception {
         unmarshalExample("poller-configuration.xml", PollerConfiguration.class);
     }
+    public void testExampleHypericPollerConfiguration() throws Exception {
+        unmarshalExample("hyperic-integration/poller-configuration.xml", PollerConfiguration.class);
+    }
     public void testRtcConfiguration() throws Exception {
         unmarshal("rtc-configuration.xml", RTCConfiguration.class);
     }
@@ -345,6 +366,9 @@ public class WillItUnmarshalTest extends TestCase {
     }
     public void testTranslatorConfiguration() throws Exception {
         unmarshal("translator-configuration.xml", EventTranslatorConfiguration.class);
+    }
+    public void testExampleHypericTranslatorConfiguration() throws Exception {
+        unmarshalExample("hyperic-integration/translator-configuration.xml", EventTranslatorConfiguration.class);
     }
     public void testTrapdonfiguration() throws Exception {
         unmarshal("trapd-configuration.xml", TrapdConfiguration.class);
@@ -402,15 +426,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testCheckAllDaemonXmlExampleConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
         File examplesDir = new File(someConfigFile.getParentFile(), "examples");
-        assertTrue("daemon configuration configuration directory exists at " + examplesDir.getAbsolutePath(), examplesDir.exists());
-        assertTrue("daemon configuration examples directory is a directory at " + examplesDir.getAbsolutePath(), examplesDir.isDirectory());
 
-        String[] configFiles = examplesDir.list(new FilenameFilter() {
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
-            } });
-        
-        Set<String> allXml = new HashSet<String>(Arrays.asList(configFiles));
+        Set<String> allXml = new HashSet<String>();
+        findConfigurationFilesInDirectory(examplesDir, null, allXml);
         
         allXml.removeAll(m_exampleFilesTested);
         
@@ -418,6 +436,29 @@ public class WillItUnmarshalTest extends TestCase {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);
             fail("These files in " + examplesDir.getAbsolutePath() + " were not tested: \n\t" + StringUtils.collectionToDelimitedString(files, "\n\t"));
+        }
+    }
+
+    private void findConfigurationFilesInDirectory(File directory, String directoryPrefix, Set<String> allXml) {
+        assertTrue("directory to search for configuration files in is not a directory at " + directory.getAbsolutePath(), directory.isDirectory());
+
+        String[] configFiles = directory.list(new FilenameFilter() {
+            public boolean accept(File file, String name) {
+                return name.endsWith(".xml");
+            } });
+        for (String configFile : configFiles) {
+            allXml.add((directoryPrefix != null) ? (directoryPrefix + File.separator + configFile) : configFile);
+        }
+        
+        File[] subDirectories = directory.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isDirectory() && !file.getName().startsWith(".");
+            }
+        });
+        
+        for (File subDirectory : subDirectories) {
+            String newPrefix = (directoryPrefix != null) ? (directoryPrefix + File.separator + subDirectory.getName()) : subDirectory.getName();
+            findConfigurationFilesInDirectory(subDirectory, newPrefix, allXml);
         }
     }
     
@@ -444,21 +485,21 @@ public class WillItUnmarshalTest extends TestCase {
     }
     
     private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
-        return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested);
+        return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
     }
 
     private static <T>T unmarshalExample(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
-        return unmarshal(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested);
+        return unmarshal(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
     }
 
-    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet) throws MarshalException, ValidationException, FileNotFoundException {
+    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws MarshalException, ValidationException, FileNotFoundException {
         // Be conservative about what we ship, so don't be lenient
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
         T config = CastorUtils.unmarshal(clazz, new FileReader(file));
         
         assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
-        testedSet.add(file.getName());
+        testedSet.add(fileName);
         
         return config;
     }
