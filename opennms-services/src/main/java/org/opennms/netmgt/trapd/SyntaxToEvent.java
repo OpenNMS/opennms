@@ -31,8 +31,6 @@
 //
 package org.opennms.netmgt.trapd;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -78,7 +76,6 @@ public class SyntaxToEvent {
     }
 
     public static Parm processSyntax(String name, SnmpValue value) {
-        Category log = ThreadCategory.getInstance(SyntaxToEvent.class);
         Value val = new Value();
 
         boolean found = false;
