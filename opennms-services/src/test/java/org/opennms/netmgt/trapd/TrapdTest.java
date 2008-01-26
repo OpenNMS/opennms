@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Test startup of trapd with Spring. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,52 +33,66 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-//
-//  $Id$
-//
-
 package org.opennms.netmgt.trapd;
 
 import java.io.Reader;
 import java.net.InetAddress;
 
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.DaoTestConfigBean;
 
-public class TrapdTest extends OpenNMSTestCase {
-    private static int m_port = 1162;
-    private static Trapd m_trapd = new Trapd();
+public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests { //  extends OpenNMSTestCase {
+    private int m_port = 1162;
+    private Trapd m_trapd = new Trapd();
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    public TrapdTest() throws Exception {
+        super();
 
-        assertNotNull(DataSourceFactory.getInstance());
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.afterPropertiesSet();
         
         Reader rdr = ConfigurationTestUtils.getReaderForResourceWithReplacements(this, "trapd-configuration.xml", new String[] { "@snmp-trap-port@", Integer.toString(m_port) });
         TrapdConfigFactory.setInstance(new TrapdConfigFactory(rdr));
-        
-        m_trapd = new Trapd();
-        m_trapd.init();
-        m_trapd.start();
+    }
+    
+
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:META-INF/opennms/applicationContext-daemon.xml",
+                "classpath:META-INF/opennms/applicationContext-trapDaemon.xml"
+        };
     }
 
-    public void tearDown() throws Exception {
-        m_trapd.stop();
-        m_trapd = null;
-        super.tearDown();
+    @Override
+    protected void onSetUpInTransactionIfEnabled() throws Exception {
+        m_trapd.onStart();
+    }
+
+    @Override
+    protected void onTearDownInTransactionIfEnabled() throws Exception {
+        m_trapd.onStop();
+    }
+    
+    public Trapd getDaemon() {
+        return m_trapd;
+    }
+
+    public void setDaemon(Trapd daemon) {
+        m_trapd = daemon;
     }
 
     public void testSnmpV1TrapSend() throws Exception {
-        String localhost = myLocalHost();
-        InetAddress localAddr = InetAddress.getByName(myLocalHost());
+        String localhost = "127.0.0.1";
+        InetAddress localAddr = InetAddress.getByName(localhost);
 
         SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
         pdu.setEnterprise(SnmpObjId.get(".1.3.6.1.4.1.5813"));
@@ -82,8 +100,6 @@ public class TrapdTest extends OpenNMSTestCase {
         pdu.setSpecific(0);
         pdu.setTimeStamp(666L);
         pdu.setAgentAddress(localAddr);
-
-
 
         Event e = new Event();
         e.setUei("uei.opennms.org/default/trap");
@@ -101,10 +117,9 @@ public class TrapdTest extends OpenNMSTestCase {
         pdu.send(localhost, m_port, "public");
         pdu.send(localhost, m_port, "public");
 
-        assertEquals(1, ea.waitForAnticipated(1000).size());
+        assertEquals("number of anticipated events", 1, ea.waitForAnticipated(1000).size());
         Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-
+        assertEquals("number of unanticipated events", 0, ea.unanticipatedEvents().size());
     }
 }
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.MockTrapdIpMgr"/>
+  
+  <bean id="newSuspectOnTrap" class="java.lang.Boolean">
+    <constructor-arg><value>true</value></constructor-arg>
+  </bean>
+  
+  <bean id="snmpTrapPort" class="java.lang.Integer">
+    <constructor-arg><value>10000</value></constructor-arg>
+  </bean>
+  
+  <bean id="eventConfDaoFile" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.test.ConfigurationTestUtils.getFileForResource</value></property>
+    <property name="arguments">
+      <list>
+        <ref local="trapdIpMgr"/> <!-- this is a hack but it's in the right class so it will find eventconf.xml -->
+        <value>eventconf.xml</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload">
+    <constructor-arg><ref local="eventConfDaoFile"/></constructor-arg>
+  </bean>
+</beans>

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Use Spring to setup objects. - dj@opennms.org
 // 2008 Jan 08: Dependency inject EventConfDao. - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 //
@@ -45,15 +46,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -62,12 +60,11 @@ import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.PropertySettingTestSuite;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-public class TrapHandlerTest extends TestCase {
-
+public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTests { // extends TestCase {
     public static TestSuite suite() {
         Class testClass = TrapHandlerTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
@@ -76,49 +73,53 @@ public class TrapHandlerTest extends TestCase {
         return suite;
     }
 
+    private Trapd m_trapd = null;
 
-    private TrapHandler m_trapHandler = null;
+    private EventAnticipator m_anticipator;
 
-    private EventAnticipator m_anticipator = null;
-
-    private MockEventIpcManager m_eventMgr = null;
+    private MockEventIpcManager m_eventMgr;
 
     private InetAddress m_localhost = null;
 
-    private int m_port = 10000;
+    private int m_snmpTrapPort = 10000;
+
+    private boolean m_doStop = false;
 
     private static final String m_ip = "127.0.0.1";
+    
     private static final long m_nodeId = 1;
 
-    protected void setUp() throws Exception {
+    private MockTrapdIpMgr m_trapdIpMgr;
+
+    private TrapQueueProcessor m_processor;
+    
+    @Override
+    protected String[] getConfigLocations() {
+        return new String[] {
+                "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
+                "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml",
+                "classpath:META-INF/opennms/mockEventIpcManager.xml"
+        };
+    }
+
+    @Override
+    protected void onSetUp() throws Exception {
+        super.onSetUp();
+        
+        super.setDirty();
+        
         MockLogAppender.setupLogging();
 
         m_anticipator = new EventAnticipator();
-
-        m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventAnticipator(m_anticipator);
 
         m_localhost = InetAddress.getByName(m_ip);
+        
+        m_trapdIpMgr.clearKnownIpsMap();
+        m_trapdIpMgr.setNodeId(m_ip, m_nodeId);
 
-        TrapdIPMgr.clearKnownIpsMap();
-        TrapdIPMgr.setNodeId(m_ip, m_nodeId);
-    }
-
-    protected void setUpTrapHandler(boolean newSuspectOnTrap) {
-        MockTrapdConfig mockTrapdConfig = new MockTrapdConfig();
-        mockTrapdConfig.setSnmpTrapPort(m_port);
-        mockTrapdConfig.setNewSuspectOnTrap(newSuspectOnTrap);
-
-        DefaultEventConfDao eventConfDao = new DefaultEventConfDao(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
-        eventConfDao.reload();
-
-        m_trapHandler = new TrapHandler();
-        m_trapHandler.setTrapdConfig(mockTrapdConfig);
-        m_trapHandler.setEventManager(m_eventMgr);
-        m_trapHandler.setEventConfDao(eventConfDao);
-        m_trapHandler.afterPropertiesSet();
-        m_trapHandler.init();
-        m_trapHandler.start();
+        m_trapd.start();
+        m_doStop = true;
     }
 
     public void finishUp() {
@@ -131,35 +132,36 @@ public class TrapHandlerTest extends TestCase {
         m_anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
     }
 
-    public void tearDown() {
-        if (m_trapHandler != null) {
-            m_trapHandler.stop();
-            m_trapHandler = null;
+    @Override
+    public void onTearDown() throws Exception {
+        if (m_trapd != null && m_doStop) {
+            m_trapd.stop();
+            m_trapd = null;
         }
+        
+        super.onTearDown();
     }
 
-
-
     public void testV1TrapNoNewSuspect() throws Exception {
-        TrapdIPMgr.clearKnownIpsMap();
+        m_trapdIpMgr.clearKnownIpsMap();
         anticipateAndSend(false, false, "uei.opennms.org/default/trap", "v1",
                 null, 6, 1);
     }
 
     public void testV2TrapNoNewSuspect() throws Exception {
-        TrapdIPMgr.clearKnownIpsMap();
+        m_trapdIpMgr.clearKnownIpsMap();
         anticipateAndSend(false, false, "uei.opennms.org/default/trap",
                 "v2c", null, 6, 1);
     }
 
     public void testV1TrapNewSuspect() throws Exception {
-        TrapdIPMgr.clearKnownIpsMap();
+        m_trapdIpMgr.clearKnownIpsMap();
         anticipateAndSend(true, false, "uei.opennms.org/default/trap",
                 "v1", null, 6, 1);
     }
 
     public void testV2TrapNewSuspect() throws Exception {
-        TrapdIPMgr.clearKnownIpsMap();
+        m_trapdIpMgr.clearKnownIpsMap();
         anticipateAndSend(true, false, "uei.opennms.org/default/trap",
                 "v2c", null, 6, 1);
     }
@@ -310,7 +312,7 @@ public class TrapHandlerTest extends TestCase {
 
     public void testNodeGainedModifiesIpMgr() throws Exception {
         long nodeId = 2;
-        setUpTrapHandler(true);
+        m_processor.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -332,7 +334,7 @@ public class TrapHandlerTest extends TestCase {
 
     public void testInterfaceReparentedModifiesIpMgr() throws Exception {
         long nodeId = 2;
-        setUpTrapHandler(true);
+        m_processor.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -354,7 +356,7 @@ public class TrapHandlerTest extends TestCase {
 
     public void testInterfaceDeletedModifiesIpMgr() throws Exception {
         long nodeId = 0;
-        setUpTrapHandler(true);
+        m_processor.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
@@ -394,7 +396,7 @@ public class TrapHandlerTest extends TestCase {
             String event,
             String version, String enterprise,
             int generic, int specific) throws Exception {
-        setUpTrapHandler(newSuspectOnTrap);
+        m_processor.setNewSuspect(newSuspectOnTrap);
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
@@ -424,7 +426,7 @@ public class TrapHandlerTest extends TestCase {
             String event,
             String version, String enterprise,
             int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
-        setUpTrapHandler(newSuspectOnTrap);
+        m_processor.setNewSuspect(newSuspectOnTrap);
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
@@ -490,7 +492,7 @@ public class TrapHandlerTest extends TestCase {
         pdu.setTimeStamp(0);
         pdu.setAgentAddress(m_localhost);
 
-        pdu.send(m_localhost.getHostAddress(), m_port, "public");
+        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
     }
 
     public void sendV1Trap(String enterprise, int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds)
@@ -506,7 +508,7 @@ public class TrapHandlerTest extends TestCase {
             Map.Entry pairs = (Map.Entry)it.next();
             pdu.addVarBind(SnmpObjId.get((String) pairs.getKey()), (SnmpValue) pairs.getValue());
         }
-        pdu.send(m_localhost.getHostAddress(), m_port, "public");
+        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
     }
 
 
@@ -533,7 +535,7 @@ public class TrapHandlerTest extends TestCase {
                     SnmpUtils.getValueFactory().getObjectId(enterpriseId));
         }
 
-        pdu.send(m_localhost.getHostAddress(), m_port, "public");
+        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
     }
 
     public void sendV2Trap(String enterprise, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
@@ -558,13 +560,42 @@ public class TrapHandlerTest extends TestCase {
             pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"),
                     SnmpUtils.getValueFactory().getObjectId(enterpriseId));
         }
-        Iterator it = varbinds.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            pdu.addVarBind(SnmpObjId.get((String) pairs.getKey()), (SnmpValue) pairs.getValue());
+        for (Map.Entry<String, SnmpValue> entry : varbinds.entrySet()) {
+            pdu.addVarBind(SnmpObjId.get(entry.getKey()), entry.getValue());
         }
 
-        pdu.send(m_localhost.getHostAddress(), m_port, "public");
+        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
     }
 
+    public Trapd getDaemon() {
+        return m_trapd;
+    }
+
+    public void setDaemon(Trapd trapd) {
+        m_trapd = trapd;
+    }
+
+    public MockTrapdIpMgr getTrapdIpMgr() {
+        return m_trapdIpMgr;
+    }
+
+    public void setTrapdIpMgr(MockTrapdIpMgr trapdIpMgr) {
+        m_trapdIpMgr = trapdIpMgr;
+    }
+
+    public TrapQueueProcessor getProcessor() {
+        return m_processor;
+    }
+
+    public void setProcessor(TrapQueueProcessor processor) {
+        m_processor = processor;
+    }
+
+    public MockEventIpcManager getEventMgr() {
+        return m_eventMgr;
+    }
+
+    public void setEventMgr(MockEventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
 }

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: AbstractSpringContextJmxServiceDaemon is our friend. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,33 +33,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.trapd.jmx;
 
-public class Trapd implements TrapdMBean {
-    public void init() {
-        org.opennms.netmgt.trapd.Trapd.getInstance().init();
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+
+public class Trapd extends AbstractSpringContextJmxServiceDaemon implements TrapdMBean {
+    @Override
+    protected String getLoggingPrefix() {
+        return "OpenNMS.Trapd";
     }
 
-    public void start() {
-        org.opennms.netmgt.trapd.Trapd.getInstance().start();
-    }
-
-    public void stop() {
-        org.opennms.netmgt.trapd.Trapd.getInstance();
-    }
-
-    public int getStatus() {
-        return org.opennms.netmgt.trapd.Trapd.getInstance().getStatus();
-    }
-
-    public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    @Override
+    protected String getSpringContext() {
+        return "trapDaemonContext";       
     }
 }
