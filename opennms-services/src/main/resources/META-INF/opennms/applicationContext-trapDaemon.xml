@@ -20,9 +20,14 @@
   <bean id="trapdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="trapdConfig-init" lazy-init="true">
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.getInstance</value></property>
   </bean>
-  
+
+<!-- 
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
     <property name="dataSource" ref="dataSource"/>
+  </bean>
+  -->
+  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.HibernateTrapdIpMgr">
+    <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
   </bean>
   
   <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
@@ -48,4 +53,6 @@
     <property name="targetObject" ref="trapdConfig"/>
     <property name="targetMethod" value="getSnmpTrapPort"/>
   </bean>
+  
+  <tx:annotation-driven/>
 </beans>

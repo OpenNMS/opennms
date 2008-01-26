@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Add getInterfacesForNodes. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,6 +38,9 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -76,6 +83,20 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
                     "left join fetch snmpIf.ipInterfaces " +
                     "join ipIf.monitoredServices as monSvc " +
                     "where monSvc.serviceType.name = ?", svcName);
+    }
+
+    public Map<String, Integer> getInterfacesForNodes() {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        
+        List l = getHibernateTemplate().find("select distinct ipIf.ipAddress, ipIf.node.id from OnmsIpInterface as ipIf");
+
+        for (Object o : l) {
+            String ip = (String) ((Object[]) o)[0];
+            Integer nodeId = (Integer) ((Object[]) o)[1];
+            map.put(ip, nodeId);
+        }
+        
+        return map;
     }
 
 }

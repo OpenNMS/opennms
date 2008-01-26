@@ -35,10 +35,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-//
-//  $Id$
-//
-
 package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
@@ -64,7 +60,7 @@ import org.opennms.test.PropertySettingTestSuite;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTests { // extends TestCase {
+public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTests {
     public static TestSuite suite() {
         Class testClass = TrapHandlerTest.class;
         TestSuite suite = new TestSuite(testClass.getName());

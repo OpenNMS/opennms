@@ -28,4 +28,7 @@
   <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload">
     <constructor-arg><ref local="eventConfDaoFile"/></constructor-arg>
   </bean>
+
+  <!--  Make the tx:annotation-driven element in applicationContext-trapDaemon happy -->
+  <bean id="transactionManager" class="org.opennms.netmgt.mock.MockPlatformTransactionManager"/>
 </beans>

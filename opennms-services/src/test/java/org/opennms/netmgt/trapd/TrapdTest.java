@@ -49,7 +49,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 
-public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests { //  extends OpenNMSTestCase {
+public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private int m_port = 1162;
     private Trapd m_trapd = new Trapd();
 
@@ -67,6 +67,7 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
+                "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:META-INF/opennms/applicationContext-trapDaemon.xml"
         };

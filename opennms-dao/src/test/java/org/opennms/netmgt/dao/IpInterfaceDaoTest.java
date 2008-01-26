@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Add test for getInterfacesForNodes. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,27 +37,43 @@ package org.opennms.netmgt.dao;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 
 
-public class IpInterfaceDaoTest extends AbstractDaoTestCase {
-    
+public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
+
     public void testGetByIpAddress() {
-        Collection ifaces = getIpInterfaceDao().findByIpAddress("192.168.1.1");
+        Collection<OnmsIpInterface> ifaces = getIpInterfaceDao().findByIpAddress("192.168.1.1");
         assertEquals(1, ifaces.size());
-        OnmsIpInterface iface = (OnmsIpInterface)ifaces.iterator().next();
+        OnmsIpInterface iface = ifaces.iterator().next();
         assertEquals("node1", iface.getNode().getLabel());
+        
         int count = 0;
-        for (Iterator it = iface.getMonitoredServices().iterator(); it.hasNext();) {
-			//OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
-        	it.next();
-			count++;
-		}
+        for (Iterator<OnmsMonitoredService> it = iface.getMonitoredServices().iterator(); it.hasNext();) {
+            it.next();
+            count++;
+        }
+        
         assertEquals(2, count);
         assertEquals(2, iface.getMonitoredServices().size());
         assertEquals("192.168.1.1", iface.getInetAddress().getHostAddress());
-        
     }
 
+    public void testGetInterfacesForNodes() {
+        Map<String, Integer> interfaceNodes = getIpInterfaceDao().getInterfacesForNodes();
+        assertNotNull("interfaceNodes", interfaceNodes);
+        
+        for (Entry<String, Integer> entry : interfaceNodes.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+        
+        assertEquals("node ID for 192.168.1.1", new Integer(1), interfaceNodes.get("192.168.1.1"));
+        assertEquals("node ID for 192.168.1.2", new Integer(1), interfaceNodes.get("192.168.1.2"));
+        assertEquals("node ID for 192.168.2.1", new Integer(2), interfaceNodes.get("192.168.2.1"));
+        assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
+    }
 }
