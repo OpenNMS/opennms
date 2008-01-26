@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Add getInterfacesForNodes. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,11 +33,10 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -54,4 +57,9 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
     public abstract Collection<OnmsIpInterface> findByServiceType(String svcName);
 
     public abstract Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName);
+
+    /**
+     * Returns a map of all IP to node ID mappings in the database.
+     */
+    public abstract Map<String, Integer> getInterfacesForNodes();
 }
