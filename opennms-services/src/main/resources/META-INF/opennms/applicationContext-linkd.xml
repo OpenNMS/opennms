@@ -11,30 +11,32 @@
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
 	">
 
-    <aop:aspectj-autoproxy proxy-target-class="true"/>
-    
-	
-     <bean id="queryManager" class="org.opennms.netmgt.linkd.DbEventWriter">
-	     <property name="jdbcTemplate" ref="jdbcTemplate" />
-	 </bean>
+    <aop:aspectj-autoproxy proxy-target-class="true" />
 
-     <bean id="scheduler" class="org.opennms.netmgt.linkd.scheduler.Scheduler">
-        <constructor-arg value="Linkd"/>
-		<constructor-arg>
-          <util:property-path path="linkdConfig.threads" />
-        </constructor-arg>
- 	 </bean>
- 	 
-	<bean id="receiver" class="org.opennms.netmgt.linkd.LinkdEventProcessor"> 	 
-	  <property name="eventMgr" ref="eventIpcManager" />
-	</bean>
 
-	<bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
-	  <property name="queryManager" ref="queryManager" /> 
-	  <property name="linkdConfig" ref="linkdConfig" />
-	  <property name="scheduler" ref="scheduler"/>
-	  <property name="eventListener" ref="receiver"/>
-	</bean>
-	
+    <bean id="queryManager"
+      class="org.opennms.netmgt.linkd.DbEventWriter">
+      <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+
+    <bean id="scheduler" class="org.opennms.netmgt.linkd.scheduler.Scheduler">
+      <constructor-arg value="Linkd" />
+      <constructor-arg>
+        <util:property-path path="linkdConfig.threads" />
+      </constructor-arg>
+    </bean>
+
+    <bean id="receiver"
+      class="org.opennms.netmgt.linkd.LinkdEventProcessor">
+      <property name="eventMgr" ref="eventIpcManager" />
+    </bean>
+
+    <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
+      <property name="queryManager" ref="queryManager" />
+      <property name="linkdConfig" ref="linkdConfig" />
+      <property name="scheduler" ref="scheduler" />
+      <property name="eventListener" ref="receiver" />
+    </bean>
+
     <tx:annotation-driven/>
 </beans>
