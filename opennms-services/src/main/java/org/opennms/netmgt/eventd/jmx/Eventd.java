@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Spring load with AbstractSpringContextJmxServiceDaemon. - dj@opennms.org
 // 2008 Jan 08: Initialize EventconfFactory (for EventConfDao) instead of
 //              EventConfigurationManager, dependency inject EventConfDao into
 //              Eventd and EventExpander, create and dependency inject EventExpander
@@ -38,116 +39,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.eventd.jmx;
 
-import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.SQLException;
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.EventconfFactory;
-import org.opennms.netmgt.config.EventdConfigFactory;
-import org.opennms.netmgt.eventd.EventExpander;
-import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.springframework.dao.DataAccessException;
-
-
-public class Eventd implements EventdMBean {
-    /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
-
-    public void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        org.opennms.netmgt.eventd.Eventd e = org.opennms.netmgt.eventd.Eventd.getInstance();
-
-        try {
-            EventdConfigFactory.reload();
-            DataSourceFactory.init();
-        } catch (FileNotFoundException ex) {
-            log().error("Failed to load eventd configuration. File Not Found:", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            log().error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log().error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ClassNotFoundException ex) {
-            log().error("Failed to init database connection factory", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (SQLException ex) {
-            log().error("Failed to init database connection factory", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (PropertyVetoException ex) {
-            log().error("Failed to init database connection factory", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        // load configuration(eventconf)
-        try {
-            EventconfFactory.init();
-        } catch (DataAccessException ex) {
-            log().error("Failed to load event configuration: " + ex, ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-        e.setEventConfDao(EventconfFactory.getInstance());
-        
-        e.setConfigManager(EventdConfigFactory.getInstance());
-        
-        EventExpander eventExpander = new EventExpander();
-        eventExpander.setEventConfDao(EventconfFactory.getInstance());
-        eventExpander.afterPropertiesSet();
-
-        EventIpcManagerDefaultImpl ipcMgr = new EventIpcManagerDefaultImpl();
-        ipcMgr.setEventdConfigMgr(EventdConfigFactory.getInstance());
-        ipcMgr.setEventExpander(eventExpander);
-        ipcMgr.afterPropertiesSet();
-        
-        EventIpcManagerFactory.setIpcManager(ipcMgr);
-        EventIpcManagerFactory.init();
-        
-        e.setDataSource(DataSourceFactory.getDataSource());
-        e.setEventIpcManager(ipcMgr);
-        e.init();
-        
+public class Eventd extends AbstractSpringContextJmxServiceDaemon implements EventdMBean {
+    @Override
+    protected String getLoggingPrefix() {
+        return "OpenNMS.Eventd";
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    public void start() {
-        org.opennms.netmgt.eventd.Eventd.getInstance().start();
-    }
-
-    public void stop() {
-        org.opennms.netmgt.eventd.Eventd.getInstance().stop();
-    }
-
-    public int getStatus() {
-        return org.opennms.netmgt.eventd.Eventd.getInstance().getStatus();
-    }
-
-    public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    @Override
+    protected String getSpringContext() {
+        return "eventDaemonContext";       
     }
 }

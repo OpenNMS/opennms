@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Get rid of the Eventd singleton and getInstance. - dj@opennms.org
 // 2008 Jan 17: Use JdbcTemplate for getting service name -> ID mapping. - dj@opennms.org
 // 2008 Jan 06: Dependency injection of EventConfDao, delay creation of
 //              BroadcastEventProcessor until onInit instead of in
@@ -110,11 +111,6 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
      * The log4j category used to log debug messsages and statements.
      */
     public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
-
-    /**
-     * Singleton instance of this class
-     */
-    private static final Eventd m_singleton = new Eventd();
 
     /**
      * The service table map
@@ -290,10 +286,6 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
      */
     public static synchronized void addServiceMapping(String svcname, int serviceid) {
         m_serviceTableMap.put(svcname, new Integer(serviceid));
-    }
-
-    public static Eventd getInstance() {
-        return m_singleton;
     }
 
     public boolean processEvent(Event event) {
