@@ -36,7 +36,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.ServiceDaemon;
 
 public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServiceDaemon {
-    public void afterPropertiesSet() throws Exception {
+    public final void afterPropertiesSet() throws Exception {
         init();
     }
 
