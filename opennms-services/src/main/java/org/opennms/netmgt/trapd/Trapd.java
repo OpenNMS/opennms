@@ -80,108 +80,108 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * 
  */
 public class Trapd extends AbstractServiceDaemon {
-	/**
-	 * The name of the logging category for Trapd.
-	 */
-	private static final String LOG4J_CATEGORY = "OpenNMS.Trapd";
+    /**
+     * The name of the logging category for Trapd.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Trapd";
 
-	/**
-	 * The singlton instance.
-	 */
-	private static final Trapd m_singleton = new Trapd();
+    /**
+     * The singlton instance.
+     */
+    private static final Trapd m_singleton = new Trapd();
 
     private EventDao m_eventDao;
 
-	/**
-	 * <P>
-	 * Constructs a new Trapd object that receives and forwards trap messages
-	 * via JSDT. The session is initialized with the default client name of <EM>
-	 * OpenNMS.trapd</EM>. The trap session is started on the default port, as
-	 * defined by the SNMP libarary.
-	 * </P>
-	 * 
-	 * @see org.opennms.protocols.snmp.SnmpTrapSession
-	 */
-	public Trapd() {
-		super("OpenNMS.Trapd");
-	}
+    /**
+     * <P>
+     * Constructs a new Trapd object that receives and forwards trap messages
+     * via JSDT. The session is initialized with the default client name of <EM>
+     * OpenNMS.trapd</EM>. The trap session is started on the default port, as
+     * defined by the SNMP libarary.
+     * </P>
+     * 
+     * @see org.opennms.protocols.snmp.SnmpTrapSession
+     */
+    public Trapd() {
+        super("OpenNMS.Trapd");
+    }
 
     protected void onInit() {
 
 
-		try {
-			log().debug("start: Initializing the trapd config factory");
-			TrapdConfigFactory.init();
-		} catch (MarshalException e) {
-			log().error("Failed to load configuration", e);
-			throw new UndeclaredThrowableException(e);
-		} catch (ValidationException e) {
-			log().error("Failed to load configuration", e);
-			throw new UndeclaredThrowableException(e);
-		} catch (IOException e) {
-			log().error("Failed to load configuration", e);
-			throw new UndeclaredThrowableException(e);
-		}
+        try {
+            log().debug("start: Initializing the trapd config factory");
+            TrapdConfigFactory.init();
+        } catch (MarshalException e) {
+            log().error("Failed to load configuration", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ValidationException e) {
+            log().error("Failed to load configuration", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (IOException e) {
+            log().error("Failed to load configuration", e);
+            throw new UndeclaredThrowableException(e);
+        }
 
-		try {
-			// clear out the known nodes
-			TrapdIPMgr.dataSourceSync();
-		} catch (SQLException e) {
-			log().error("Failed to load known IP address list", e);
-			throw new UndeclaredThrowableException(e);
-		}
+        try {
+            // clear out the known nodes
+            TrapdIPMgr.dataSourceSync();
+        } catch (SQLException e) {
+            log().error("Failed to load known IP address list", e);
+            throw new UndeclaredThrowableException(e);
+        }
 
-                EventIpcManagerFactory.init();
-                EventconfFactory.init();
+        EventIpcManagerFactory.init();
+        EventconfFactory.init();
 
-		TrapHandler trapHandler = getTrapHandler();
-		trapHandler.setTrapdConfig(TrapdConfigFactory.getInstance());
-		trapHandler.setEventManager(EventIpcManagerFactory.getIpcManager());
-                trapHandler.setEventConfDao(EventconfFactory.getInstance());
-                trapHandler.afterPropertiesSet();
+        TrapHandler trapHandler = getTrapHandler();
+        trapHandler.setTrapdConfig(TrapdConfigFactory.getInstance());
+        trapHandler.setEventManager(EventIpcManagerFactory.getIpcManager());
+        trapHandler.setEventConfDao(EventconfFactory.getInstance());
+        trapHandler.afterPropertiesSet();
 
-		trapHandler.init();
-	}
+        trapHandler.init();
+    }
 
-	protected void onStart() {
-		getTrapHandler().start();
-	}
+    protected void onStart() {
+        getTrapHandler().start();
+    }
 
-	protected void onPause() {
-		getTrapHandler().pause();
-	}
+    protected void onPause() {
+        getTrapHandler().pause();
+    }
 
-	protected void onResume() {
-		getTrapHandler().resume();
-	}
+    protected void onResume() {
+        getTrapHandler().resume();
+    }
 
-	protected void onStop() {
-		getTrapHandler().stop();
-	}
+    protected void onStop() {
+        getTrapHandler().stop();
+    }
 
-	/**
-	 * Returns the current status of the service.
-	 * 
-	 * @return The service's status.
-	 */
-	public synchronized int getStatus() {
-		return getTrapHandler().getStatus();
-	}
+    /**
+     * Returns the current status of the service.
+     * 
+     * @return The service's status.
+     */
+    public synchronized int getStatus() {
+        return getTrapHandler().getStatus();
+    }
 
-	/**
-	 * Returns the singular instance of the trapd daemon. There can be only one
-	 * instance of this service per virtual machine.
-	 */
-	public static Trapd getInstance() {
-		return m_singleton;
-	}
+    /**
+     * Returns the singular instance of the trapd daemon. There can be only one
+     * instance of this service per virtual machine.
+     */
+    public static Trapd getInstance() {
+        return m_singleton;
+    }
 
-	private TrapHandler getTrapHandler() {
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    private TrapHandler getTrapHandler() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		return TrapHandler.getInstance();
-	}
+        return TrapHandler.getInstance();
+    }
 
     public EventDao getEventDao() {
         return m_eventDao;
