@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: A little bit more dependency injection work. - dj@opennms.org
 // 2008 Jan 26: Finish the last of the dependency injection in Eventd. - dj@opennms.org
 // 2008 Jan 26: Inject DataSource and EventdServiceManager into EventIpcManagerDefaultImpl. - dj@opennms.org
 // 2008 Jan 08: Initialize EventconfFactory instead of EventConfigurationManager
@@ -46,6 +47,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -60,6 +63,9 @@ import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
+import org.opennms.netmgt.eventd.adaptors.EventHandler;
+import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
+import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -194,14 +200,29 @@ public class OpenNMSTestCase extends TestCase {
                 };
                 
                 EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
+                
+                EventIpcManagerEventHandlerProxy proxy = new EventIpcManagerEventHandlerProxy();
+                proxy.setEventIpcManager(m_eventdIpcMgr);
+                proxy.afterPropertiesSet();
+                List<EventHandler> eventHandlers = new ArrayList<EventHandler>(0);
+                eventHandlers.add(proxy);
+                
+                TcpEventReceiver tcpEventReceiver = new TcpEventReceiver();
+                tcpEventReceiver.setPort(m_eventdConfigMgr.getTCPPort());
+                tcpEventReceiver.setEventHandlers(eventHandlers);
+                
+                UdpEventReceiver udpEventReceiver = new UdpEventReceiver();
+                udpEventReceiver.setPort(m_eventdConfigMgr.getUDPPort());
+                tcpEventReceiver.setEventHandlers(eventHandlers);
+                
+                List<EventReceiver> eventReceivers = new ArrayList<EventReceiver>(2);
+                eventReceivers.add(tcpEventReceiver);
+                eventReceivers.add(udpEventReceiver);
 
                 m_eventd = new Eventd();
                 m_eventd.setEventdServiceManager(eventdServiceManager);
-                m_eventd.setEventIpcManager(m_eventdIpcMgr);
-                m_eventd.setTcpReceiver(new TcpEventReceiver(m_eventdConfigMgr.getTCPPort()));
-                m_eventd.setUdpReceiver(new UdpEventReceiver(m_eventdConfigMgr.getUDPPort()));
+                m_eventd.setEventReceivers(eventReceivers);
                 m_eventd.setReceiver(new BroadcastEventProcessor(m_eventdIpcMgr, eventConfDao));
-                m_eventd.setLocalHostAddress(myLocalHost());
                 
                 m_eventd.init();
                 m_eventd.start();
