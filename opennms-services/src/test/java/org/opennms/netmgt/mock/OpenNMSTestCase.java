@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 27: The EventdConfigManager doesn't need to be a field. - dj@opennms.org 
 // 2008 Jan 26: A little bit more dependency injection work. - dj@opennms.org
 // 2008 Jan 26: Finish the last of the dependency injection in Eventd. - dj@opennms.org
 // 2008 Jan 26: Inject DataSource and EventdServiceManager into EventIpcManagerDefaultImpl. - dj@opennms.org
@@ -86,8 +87,6 @@ public class OpenNMSTestCase extends TestCase {
     protected static Eventd m_eventd;
     protected static EventIpcManagerDefaultImpl m_eventdIpcMgr;
 
-    protected static EventdConfigManager m_eventdConfigMgr;
-    
     protected static boolean m_runSupers = true;
 
     /**
@@ -161,7 +160,7 @@ public class OpenNMSTestCase extends TestCase {
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
             
             if (isStartEventd()) {
-                m_eventdConfigMgr = new MockEventConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/mock/eventd-configuration.xml"));
+                EventdConfigManager eventdConfigMgr = new MockEventConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/mock/eventd-configuration.xml"));
                 
                 JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
                 eventdServiceManager.setDataSource(m_db);
@@ -181,7 +180,7 @@ public class OpenNMSTestCase extends TestCase {
                 eventExpander.afterPropertiesSet();
                 
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
-                m_eventdIpcMgr.setEventdConfigMgr(m_eventdConfigMgr);
+                m_eventdIpcMgr.setEventdConfigMgr(eventdConfigMgr);
                 m_eventdIpcMgr.setEventExpander(eventExpander);
                 m_eventdIpcMgr.setEventdServiceManager(eventdServiceManager);
                 m_eventdIpcMgr.setDataSource(m_db);
@@ -208,11 +207,11 @@ public class OpenNMSTestCase extends TestCase {
                 eventHandlers.add(proxy);
                 
                 TcpEventReceiver tcpEventReceiver = new TcpEventReceiver();
-                tcpEventReceiver.setPort(m_eventdConfigMgr.getTCPPort());
+                tcpEventReceiver.setPort(eventdConfigMgr.getTCPPort());
                 tcpEventReceiver.setEventHandlers(eventHandlers);
                 
                 UdpEventReceiver udpEventReceiver = new UdpEventReceiver();
-                udpEventReceiver.setPort(m_eventdConfigMgr.getUDPPort());
+                udpEventReceiver.setPort(eventdConfigMgr.getUDPPort());
                 tcpEventReceiver.setEventHandlers(eventHandlers);
                 
                 List<EventReceiver> eventReceivers = new ArrayList<EventReceiver>(2);
