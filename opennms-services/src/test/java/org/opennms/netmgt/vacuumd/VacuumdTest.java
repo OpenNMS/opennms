@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2008 Jan 26: Don't call methods directly on Eventd to send events
+ *              (they are moving, anyway)--use EventIpcManager. - dj@opennms.org
  * 2007 Jun 10: Use SimpleJdbcTemplate for queries. - dj@opennms.org
  * 2007 Jun 09: Move the config into a test resource. - dj@opennms.org
  * 2007 Mar 13: VacuumdConfigFactory.setConfigReader(Reader) is gone.  Use new VacuumdConfigFactory(Reader) and setInstance, instead. - dj@opennms.org
@@ -396,11 +398,11 @@ public class VacuumdTest extends OpenNMSTestCase {
     
     private void bringNodeDownCreatingEvent(int nodeid) {
         MockNode node = m_network.getNode(nodeid);
-        m_eventd.processEvent(node.createDownEvent());
+        m_eventdIpcMgr.sendNow(node.createDownEvent());
     }
 
     private void bringNodeUpCreatingEvent(int nodeid) {
         MockNode node = m_network.getNode(nodeid);
-        m_eventd.processEvent(node.createUpEvent());
+        m_eventdIpcMgr.sendNow(node.createUpEvent());
     }
 }
