@@ -36,6 +36,7 @@
 package org.opennms.netmgt.eventd;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.test.DaoTestConfigBean;
 
 /**
@@ -43,6 +44,7 @@ import org.opennms.test.DaoTestConfigBean;
  */
 public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private Eventd m_daemon;
+    private EventIpcManager m_eventIpcManager;
     
     public EventdSpringTest() {
         super();
@@ -63,12 +65,26 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
         assertNotNull("daemon bean", m_daemon);
         m_daemon.onStart();
     }
-
+    
+    // FIXME: I get OutOfMemory errors if I run more than one test in this TestCase
+    public void FIXMEtestSendEvent() throws Exception {
+        EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
+        m_eventIpcManager.sendNow(builder.getEvent());
+    }
+    
     public Eventd getDaemon() {
         return m_daemon;
     }
 
     public void setDaemon(Eventd daemon) {
         m_daemon = daemon;
+    }
+
+    public EventIpcManager getEventIpcManager() {
+        return m_eventIpcManager;
+    }
+
+    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+        m_eventIpcManager = eventIpcManager;
     }
 }

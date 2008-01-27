@@ -9,6 +9,10 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Dependency injection using setter injection instead of
+//              constructor injection and implement InitializingBean.
+//              Move some common setters and initializion into Persist.
+//              Implement log method. - dj@opennms.org
 // 2008 Jan 23: Use Java 5 generics, format code, wrap debug logs within an if
 //              statement unless they are logging a plain String. - dj@opennms.org
 //
@@ -48,10 +52,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.OperatorAction;
@@ -153,11 +158,6 @@ class Persist {
     protected Connection m_dsConn;
 
     /**
-     * SQL statement to get service id for a service name
-     */
-    protected PreparedStatement m_getSvcIdStmt;
-
-    /**
      * SQL statement to get hostname for an ip from the ipinterface table
      */
     protected PreparedStatement m_getHostNameStmt;
@@ -175,6 +175,10 @@ class Persist {
     protected PreparedStatement m_upDateStmt;
 
     protected PreparedStatement m_updateEventStmt;
+
+    private EventdServiceManager m_eventdServiceManager;
+
+    private DataSource m_dataSource;
 
     /**
      * Sets the statement up for a String value.
@@ -282,34 +286,7 @@ class Persist {
      * 
      */
     private int getServiceID(String name) throws SQLException {
-        Assert.notNull(name, "The service name must not be null");
-
-        // ask persistd
-        int id = Eventd.getServiceID(name);
-        if (id != -1) {
-            return id;
-        }
-
-        // talk to the database and get the identifer
-        m_getSvcIdStmt.setString(1, name);
-        ResultSet rset = null;
-        try {
-            rset = m_getSvcIdStmt.executeQuery();
-            if (rset.next()) {
-                id = rset.getInt(1);
-            }
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            rset.close();
-        }
-
-        // inform persistd about the new find
-        if (id != -1) {
-            Eventd.addServiceMapping(name, id);
-        }
-
-        return id;
+        return m_eventdServiceManager.getServiceId(name);
     }
 
     /**
@@ -401,7 +378,7 @@ class Persist {
         }
     }
 
-    private Category log() {
+    protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -846,13 +823,7 @@ class Persist {
         }
     }
 
-    /**
-     * Constructor
-     * @param connectionFactory 
-     */
-    public Persist() throws SQLException {
-        // Get a database connection
-        m_dsConn = DataSourceFactory.getInstance().getConnection();
+    public Persist() {
     }
 
     /**
@@ -884,4 +855,28 @@ class Persist {
         rs = null;
         return id;
     }
+
+    public EventdServiceManager getEventdServiceManager() {
+        return m_eventdServiceManager;
+    }
+
+    public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
+        m_eventdServiceManager = eventdServiceManager;
+    }
+
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+    }
+
+    public void afterPropertiesSet() throws SQLException {
+        Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
+        Assert.state(m_dataSource != null, "property dataSource must be set");
+
+        // Get a database connection
+        m_dsConn = m_dataSource.getConnection();
+}
 }

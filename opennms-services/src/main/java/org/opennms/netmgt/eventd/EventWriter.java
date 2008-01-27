@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Dependency injection using setter injection instead of
+//              constructor injection and implement InitializingBean.
+//              Move some common setters and initializion into Persist.
+//              Implement log method. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,10 +43,10 @@ package org.opennms.netmgt.eventd;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -63,39 +70,41 @@ import org.opennms.netmgt.xml.event.Header;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-final class EventWriter extends Persist {
+final class EventWriter extends Persist implements InitializingBean {
+    private String m_getNextEventIdStr;
 
-    /**
-     * Constructor
-     * @param connectionFactory 
-     * @param getNextEventIdStr
-     */
-    public EventWriter(String getNextEventIdStr) throws SQLException {
+    public EventWriter() {
         super();
-        //
-        // prepare the SQL statement
-        //
-        m_getSvcIdStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
-        m_getHostNameStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
-        m_getNextIdStmt = m_dsConn.prepareStatement(getNextEventIdStr);
-        m_insStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
-        // set the database for rollback support
-        //
-        try {
-            m_dsConn.setAutoCommit(false);
-        } catch (SQLException se) {
-            ThreadCategory.getInstance(EventWriter.class).warn("Unable to set auto commit mode");
-        }
     }
     
+    @Override
+    public void afterPropertiesSet() throws SQLException {
+        super.afterPropertiesSet();
+        
+        Assert.state(m_getNextEventIdStr != null, "property getNextEventIdStr must be set");
+        
+        // prepare the SQL statement
+        m_getHostNameStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
+        m_getNextIdStmt = m_dsConn.prepareStatement(getGetNextEventIdStr());
+        m_insStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
+
+        // XXX any reason why we can't do this in our super's afterPropertiesSet()?
+        // set the database for rollback support
+        try {
+            m_dsConn.setAutoCommit(false);
+        } catch (SQLException e) {
+            log().warn("Unable to set auto commit mode: " + e, e);
+        }
+    }
+
+
     public void close() {
         try {
-            m_getSvcIdStmt.close();
             m_getHostNameStmt.close();
             m_getNextIdStmt.close();
             m_insStmt.close();
-        } catch (SQLException sqle) {
-            ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing prepared statements", sqle);
+        } catch (SQLException e) {
+            log().warn("SQLException while closing prepared statements: " + e, e);
         } finally {
             super.close();
         }
@@ -112,18 +121,16 @@ final class EventWriter extends Persist {
      */
     public void persistEvent(Header eventHeader, Event event) throws SQLException {
         if (event != null) {
-            Category log = ThreadCategory.getInstance(EventWriter.class);
-
             // Check value of <logmsg> attribute 'dest', if set to
             // "donotpersist" then simply return, the uei is not to be
             // persisted to the database
             String logdest = event.getLogmsg().getDest();
             if (logdest.equals("donotpersist")) {
-                log.debug("EventWriter: uei '" + event.getUei() + "' marked as 'doNotPersist'.");
+                log().debug("EventWriter: uei '" + event.getUei() + "' marked as 'doNotPersist'.");
                 return;
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("EventWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+                if (log().isDebugEnabled()) {
+                    log().debug("EventWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
                 }
             }
 
@@ -133,19 +140,27 @@ final class EventWriter extends Persist {
                 // commit
                 m_dsConn.commit();
             } catch (SQLException e) {
-                log.warn("Error inserting event into the datastore", e);
+                log().warn("Error inserting event into the datastore", e);
                 try {
                     m_dsConn.rollback();
                 } catch (Exception e2) {
-                    log.warn("Rollback of transaction failed!", e2);
+                    log().warn("Rollback of transaction failed!", e2);
                 }
 
                 throw e;
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("EventWriter finished for : " + event.getUei());
+            if (log().isDebugEnabled()) {
+                log().debug("EventWriter finished for : " + event.getUei());
             }
         }
+    }
+
+    public String getGetNextEventIdStr() {
+        return m_getNextEventIdStr;
+    }
+
+    public void setGetNextEventIdStr(String getNextEventIdStr) {
+        m_getNextEventIdStr = getNextEventIdStr;
     }
 }
