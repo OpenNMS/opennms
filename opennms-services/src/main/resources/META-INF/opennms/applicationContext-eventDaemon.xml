@@ -7,9 +7,34 @@
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
     <property name="eventIpcManager" ref="eventIpcManager"/>
-    <property name="configManager" ref="eventdConfigManager"/>
-    <property name="eventConfDao" ref="eventConfDao"/>
     <property name="eventdServiceManager" ref="eventdServiceManager"/>
+    <property name="tcpReceiver" ref="tcpReceiver"/>
+    <property name="udpReceiver" ref="udpReceiver"/>
+    <property name="receiver" ref="receiver"/>
+    <property name="localHostAddress" ref="localHostAddress"/>
+  </bean>
+  
+  <bean id="tcpReceiver" class="org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver">
+    <constructor-arg><ref local="tcpPort"/></constructor-arg>
+  </bean>
+  
+  <bean id="udpReceiver" class="org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver">
+    <constructor-arg><ref local="udpPort"/></constructor-arg>
+  </bean>
+  
+  <bean id="tcpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getTCPPort"/>
+  </bean>
+  
+  <bean id="udpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getUDPPort"/>
+  </bean>
+  
+  <bean id="receiver" class="org.opennms.netmgt.eventd.BroadcastEventProcessor">
+    <constructor-arg><ref bean="eventIpcManager"/></constructor-arg>
+    <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
 
   <tx:annotation-driven/>
