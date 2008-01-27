@@ -14,7 +14,11 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 public class TemporaryDatabase implements DataSource {
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
@@ -296,6 +300,8 @@ public class TemporaryDatabase implements DataSource {
                     if ((dropAttempt + 1) >= MAX_DATABASE_DROP_ATTEMPTS) {
                         final String message = "Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e;
                         System.err.println(new Date().toString() + ": " + message);
+                        dumpThreads();
+                        
                         SQLException newException = new SQLException(message);
                         newException.initCause(e);
                         throw newException;
@@ -334,6 +340,33 @@ public class TemporaryDatabase implements DataSource {
 
         m_destroyed = true;
     }
+    
+    public static void dumpThreads() {
+        Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
+        int daemons = 0;
+        for (Thread t : threads.keySet()) {
+            if (t.isDaemon()) {
+                daemons++;
+            }
+        }
+        System.err.println("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
+        Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
+            public int compare(Thread t1, Thread t2) {
+                return new Long(t1.getId()).compareTo(new Long(t2.getId()));
+            }
+        });
+        sortedThreads.putAll(threads);
+
+        for (Entry<Thread, StackTraceElement[]> entry : sortedThreads.entrySet()) {
+            Thread thread = entry.getKey();
+            System.err.println("Thread " + thread.getId() + (thread.isDaemon() ? " (daemon)" : "") + ": " + thread + " (state: " + thread.getState() + ")");
+            for (StackTraceElement e : entry.getValue()) {
+                System.err.println("\t" + e);
+            }
+        }
+        System.err.println("Thread dump completed.");
+    }
+
 
     public Connection getConnection() throws SQLException {
         return m_dataSource.getConnection();

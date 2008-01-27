@@ -8,6 +8,8 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2008 Jan 27: Do a thread dump to stderr if we exhaust our database drop attempts. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -328,6 +330,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
                     if ((dropAttempt + 1) >= MAX_DATABASE_DROP_ATTEMPTS) {
                         final String message = "Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e;
                         System.err.println(new Date().toString() + ": " + message);
+                        TemporaryDatabase.dumpThreads();
+
                         SQLException newException = new SQLException(message);
                         newException.initCause(e);
                         throw newException;
