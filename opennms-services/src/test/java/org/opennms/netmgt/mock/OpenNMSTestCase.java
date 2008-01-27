@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Finish the last of the dependency injection in Eventd. - dj@opennms.org
 // 2008 Jan 26: Inject DataSource and EventdServiceManager into EventIpcManagerDefaultImpl. - dj@opennms.org
 // 2008 Jan 08: Initialize EventconfFactory instead of EventConfigurationManager
 //              and dependency inject newly appropriate Eventd bits. - dj@opennms.org
@@ -53,11 +54,14 @@ import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
+import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
+import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
@@ -193,10 +197,12 @@ public class OpenNMSTestCase extends TestCase {
 
                 m_eventd = new Eventd();
                 m_eventd.setEventdServiceManager(eventdServiceManager);
-                m_eventd.setConfigManager(m_eventdConfigMgr);
-
                 m_eventd.setEventIpcManager(m_eventdIpcMgr);
-                m_eventd.setEventConfDao(eventConfDao);
+                m_eventd.setTcpReceiver(new TcpEventReceiver(m_eventdConfigMgr.getTCPPort()));
+                m_eventd.setUdpReceiver(new UdpEventReceiver(m_eventdConfigMgr.getUDPPort()));
+                m_eventd.setReceiver(new BroadcastEventProcessor(m_eventdIpcMgr, eventConfDao));
+                m_eventd.setLocalHostAddress(myLocalHost());
+                
                 m_eventd.init();
                 m_eventd.start();
             }
