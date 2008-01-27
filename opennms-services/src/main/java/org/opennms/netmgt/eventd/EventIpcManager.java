@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 27: Remove EventdConfigManager getter and setter. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,7 +40,6 @@ package org.opennms.netmgt.eventd;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -96,9 +99,4 @@ public interface EventIpcManager {
      * listener is no more interested in
      */
     public void removeEventListener(EventListener listener, String uei);
-    
-    public EventdConfigManager getEventdConfigMgr();
-    
-    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr);
-    
 }

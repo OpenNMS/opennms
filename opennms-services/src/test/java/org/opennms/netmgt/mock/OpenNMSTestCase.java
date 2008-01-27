@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 27: Move createStandardNetwork to MockNetwork.  Follow
+//              eventd changes. - dj@opennms.org
 // 2008 Jan 27: The EventdConfigManager doesn't need to be a field. - dj@opennms.org 
 // 2008 Jan 26: A little bit more dependency injection work. - dj@opennms.org
 // 2008 Jan 26: Finish the last of the dependency injection in Eventd. - dj@opennms.org
@@ -59,7 +61,6 @@ import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
-import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
@@ -69,6 +70,9 @@ import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
+import org.opennms.netmgt.eventd.processor.EventExpander;
+import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
+import org.opennms.netmgt.eventd.processor.EventProcessor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
@@ -160,6 +164,8 @@ public class OpenNMSTestCase extends TestCase {
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
             
             if (isStartEventd()) {
+                m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
+
                 EventdConfigManager eventdConfigMgr = new MockEventConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/mock/eventd-configuration.xml"));
                 
                 JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
@@ -178,12 +184,35 @@ public class OpenNMSTestCase extends TestCase {
                 EventExpander eventExpander = new EventExpander();
                 eventExpander.setEventConfDao(eventConfDao);
                 eventExpander.afterPropertiesSet();
+
+                org.opennms.netmgt.eventd.processor.JdbcEventWriter jdbcEventWriter = new org.opennms.netmgt.eventd.processor.JdbcEventWriter();
+                jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
+                jdbcEventWriter.setDataSource(m_db);
+                jdbcEventWriter.setGetNextIdString(eventdConfigMgr.getGetNextEventID());
+                jdbcEventWriter.afterPropertiesSet();
                 
-                m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
-                m_eventdIpcMgr.setEventdConfigMgr(eventdConfigMgr);
-                m_eventdIpcMgr.setEventExpander(eventExpander);
-                m_eventdIpcMgr.setEventdServiceManager(eventdServiceManager);
-                m_eventdIpcMgr.setDataSource(m_db);
+                EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor();
+                eventIpcBroadcastProcessor.setEventIpcManager(m_eventdIpcMgr);
+                eventIpcBroadcastProcessor.afterPropertiesSet();
+
+                org.opennms.netmgt.eventd.processor.JdbcAlarmWriter jdbcAlarmWriter = new org.opennms.netmgt.eventd.processor.JdbcAlarmWriter();
+                jdbcAlarmWriter.setEventdServiceManager(eventdServiceManager);
+                jdbcAlarmWriter.setDataSource(m_db);
+                jdbcAlarmWriter.setGetNextIdString(eventdConfigMgr.getGetNextAlarmID());
+                jdbcAlarmWriter.afterPropertiesSet();
+                
+                List<EventProcessor> eventProcessors = new ArrayList<EventProcessor>(3);
+                eventProcessors.add(eventExpander);
+                eventProcessors.add(jdbcEventWriter);
+                eventProcessors.add(eventIpcBroadcastProcessor);
+                eventProcessors.add(jdbcAlarmWriter);
+                
+                org.opennms.netmgt.eventd.EventHandler eventHandler = new org.opennms.netmgt.eventd.EventHandler();
+                eventHandler.setEventProcessors(eventProcessors);
+                eventHandler.afterPropertiesSet();
+                
+                m_eventdIpcMgr.setHandlerPoolSize(eventdConfigMgr.getReceivers());
+                m_eventdIpcMgr.setEventHandler(eventHandler);
                 m_eventdIpcMgr.afterPropertiesSet();
                 
                 m_eventProxy = new EventProxy() {
@@ -203,7 +232,7 @@ public class OpenNMSTestCase extends TestCase {
                 EventIpcManagerEventHandlerProxy proxy = new EventIpcManagerEventHandlerProxy();
                 proxy.setEventIpcManager(m_eventdIpcMgr);
                 proxy.afterPropertiesSet();
-                List<EventHandler> eventHandlers = new ArrayList<EventHandler>(0);
+                List<EventHandler> eventHandlers = new ArrayList<EventHandler>(1);
                 eventHandlers.add(proxy);
                 
                 TcpEventReceiver tcpEventReceiver = new TcpEventReceiver();
@@ -240,25 +269,7 @@ public class OpenNMSTestCase extends TestCase {
 
     protected void createMockNetwork() {
         m_network = new MockNetwork();
-        m_network.setCriticalService("ICMP");
-        m_network.addNode(1, "Router");
-        m_network.addInterface("192.168.1.1");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addInterface("192.168.1.2");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addNode(2, "Server");
-        m_network.addInterface("192.168.1.3");
-        m_network.addService("ICMP");
-        m_network.addService("HTTP");
-        m_network.addNode(3, "Firewall");
-        m_network.addInterface("192.168.1.4");
-        m_network.addService("SMTP");
-        m_network.addService("HTTP");
-        m_network.addInterface("192.168.1.5");
-        m_network.addService("SMTP");
-        m_network.addService("HTTP");
+        m_network.createStandardNetwork();
     }
     
     @Override

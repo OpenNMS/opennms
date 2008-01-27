@@ -9,6 +9,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 27: Implement EventProcessor interface and make this class
+//              and its subclasses thread safe. - dj@opennms.org
 // 2008 Jan 27: Push methods in Persist that are only used by a single
 //              subclass into that subclass.
 // 2008 Jan 26: Dependency injection using setter injection instead of
@@ -39,11 +41,9 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.eventd.processor;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -54,7 +54,11 @@ import javax.sql.DataSource;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.eventd.EventdConstants;
+import org.opennms.netmgt.eventd.EventdServiceManager;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -86,7 +90,7 @@ import org.springframework.util.Assert;
  * - Alarm persisting now removes oldest events by default.  Use "auto-clean" attribute
  *   in eventconf files.
  */
-class Persist {
+public abstract class AbstractJdbcPersister implements InitializingBean, EventProcessor {
     // Field sizes in the events table
     protected static final int EVENT_UEI_FIELD_SIZE = 256;
 
@@ -135,42 +139,20 @@ class Persist {
     /**
      * The character to put in if the log or display is to be set to yes
      */
-    protected static char MSG_YES = 'Y';
+    protected static final char MSG_YES = 'Y';
 
     /**
      * The character to put in if the log or display is to be set to no
      */
-    protected static char MSG_NO = 'N';
-
-    /**
-     * The database connection
-     */
-    protected Connection m_dsConn;
-
-    /**
-     * SQL statement to get hostname for an ip from the ipinterface table
-     */
-    protected PreparedStatement m_getHostNameStmt;
-
-    /**
-     * SQL statement to get next event id from sequence
-     */
-    protected PreparedStatement m_getNextIdStmt;
-
-    /**
-     * SQL statement to get insert an event into the db
-     */
-    protected PreparedStatement m_insStmt;
-    protected PreparedStatement m_reductionQuery;
-    protected PreparedStatement m_upDateStmt;
-
-    protected PreparedStatement m_updateEventStmt;
+    protected static final char MSG_NO = 'N';
 
     private EventdServiceManager m_eventdServiceManager;
 
     private DataSource m_dataSource;
+    
+    private String m_getNextIdString;
 
-    public Persist() {
+    public AbstractJdbcPersister() {
     }
 
     /**
@@ -295,39 +277,45 @@ class Persist {
             return new Timestamp(System.currentTimeMillis());
         }
     }
-
-    /**
-     * Close all the connection statements
-     */
-    public void close() {
-        try {
-            m_dsConn.close();
-        } catch (SQLException e) {
-            log().warn("SQLException while closing database connection", e);
-        }
-    }
     
     protected int getNextId() throws SQLException {
-        int id;
-        // Get the next id from sequence specified in
-        ResultSet rs = null;
-        try {
-            rs = m_getNextIdStmt.executeQuery();
-            rs.next();
-            id = rs.getInt(1);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
-        }
-        rs = null;
-        return id;
+//        PreparedStatement getNextIdStmt = m_connection.prepareStatement(getGetNextIdString());
+//        
+//        try {
+//            int id;
+//            // Get the next id from sequence specified in
+//            ResultSet rs = null;
+//            try {
+//                rs = getNextIdStmt.executeQuery();
+//                rs.next();
+//                id = rs.getInt(1);
+//            } catch (SQLException e) {
+//                throw e;
+//            } finally {
+//                if (rs != null) {
+//                    rs.close();
+//                }
+//            }
+//            rs = null;
+//            return id;
+//        } finally {
+//            try {
+//                getNextIdStmt.close();
+//            } catch (SQLException e) {
+//                log().warn("SQLException while closing prepared statement: " + e, e);
+//            }
+//        }
+        return new JdbcTemplate(getDataSource()).queryForInt(getGetNextIdString());
     }
 
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
+    }
+
+    public void afterPropertiesSet() throws SQLException {
+        Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
+        Assert.state(m_dataSource != null, "property dataSource must be set");
+        Assert.state(m_getNextIdString != null, "property getNextIdString must be set");
     }
 
     public EventdServiceManager getEventdServiceManager() {
@@ -346,11 +334,11 @@ class Persist {
         m_dataSource = dataSource;
     }
 
-    public void afterPropertiesSet() throws SQLException {
-        Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
-        Assert.state(m_dataSource != null, "property dataSource must be set");
+    public String getGetNextIdString() {
+        return m_getNextIdString;
+    }
 
-        // Get a database connection
-        m_dsConn = m_dataSource.getConnection();
-}
+    public void setGetNextIdString(String getNextIdString) {
+        m_getNextIdString = getNextIdString;
+    }
 }

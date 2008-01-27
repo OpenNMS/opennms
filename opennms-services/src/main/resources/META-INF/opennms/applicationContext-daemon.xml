@@ -28,15 +28,18 @@
     </property>
   </bean>
   
-  <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
+  <bean id="eventExpander" class="org.opennms.netmgt.eventd.processor.EventExpander">
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
 
   <bean id="eventIpcManager" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
-    <property name="eventdConfigMgr" ref="eventdConfigManager"/>
-    <property name="eventExpander" ref="eventExpander"/>
-    <property name="dataSource" ref="dataSource"/>
-    <property name="eventdServiceManager" ref="eventdServiceManager"/>
+    <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
+    <property name="eventHandler" ref="eventdEventHandler"/>
+  </bean>
+
+  <bean id="eventIpcManagerHandlerPoolSize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getReceivers"/>
   </bean>
 
   <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -56,5 +59,42 @@
 
   <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.DaoEventdServiceManager">
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
+  </bean>
+  
+  <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.EventHandler">
+    <property name="eventProcessors">
+      <list>
+        <ref local="eventExpander"/>
+        <ref local="eventWriter"/>
+        <ref local="eventIpcBroadcastProcessor"/>
+        <ref local="alarmWriter"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.JdbcEventWriter">
+    <property name="getNextIdString" ref="getNextEventIdSql"/>
+    <property name="dataSource" ref="dataSource"/>
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
+  </bean>
+
+  <bean id="getNextEventIdSql" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getGetNextEventID"/>
+  </bean>
+  
+  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+    <property name="eventIpcManager" ref="eventIpcManager"/>
+  </bean>
+
+  <bean id="alarmWriter" class="org.opennms.netmgt.eventd.processor.JdbcAlarmWriter">
+    <property name="getNextIdString" ref="getNextAlarmIdSql"/>
+    <property name="dataSource" ref="dataSource"/>
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
+  </bean>
+  
+  <bean id="getNextAlarmIdSql" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getGetNextAlarmID"/>
   </bean>
 </beans>

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 27: Move createStandardNetwork from OpenNMSTestCase to here. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -278,5 +282,26 @@ public class MockNetwork extends MockContainer {
         return counter.getCount();
     }
 
+    public void createStandardNetwork() {
+        setCriticalService("ICMP");
+        addNode(1, "Router");
+        addInterface("192.168.1.1");
+        addService("ICMP");
+        addService("SMTP");
+        addInterface("192.168.1.2");
+        addService("ICMP");
+        addService("SMTP");
+        addNode(2, "Server");
+        addInterface("192.168.1.3");
+        addService("ICMP");
+        addService("HTTP");
+        addNode(3, "Firewall");
+        addInterface("192.168.1.4");
+        addService("SMTP");
+        addService("HTTP");
+        addInterface("192.168.1.5");
+        addService("SMTP");
+        addService("HTTP");
+    }
 
 }
