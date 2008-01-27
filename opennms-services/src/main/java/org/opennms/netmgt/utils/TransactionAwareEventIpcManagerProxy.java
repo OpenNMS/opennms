@@ -3,7 +3,6 @@ package org.opennms.netmgt.utils;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -110,10 +109,6 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         m_eventIpcManager.broadcastNow(event);
     }
 
-    public EventdConfigManager getEventdConfigMgr() {
-        return m_eventIpcManager.getEventdConfigMgr();
-    }
-
     public void removeEventListener(EventListener listener, List<String> ueiList) {
         m_eventIpcManager.removeEventListener(listener, ueiList);
     }
@@ -195,10 +190,4 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         }
         return (eventsHolder.getPendingEvents() == passedInEvents);
     }
-
-    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
-        m_eventIpcManager.setEventdConfigMgr(eventdConfigMgr);
-    }
-
-
 }

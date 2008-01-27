@@ -34,11 +34,13 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.eventd.processor;
 
 import java.sql.SQLException;
 
 import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
+import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
+import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.trapd.EventConstants;
@@ -48,8 +50,8 @@ import org.opennms.netmgt.utils.EventBuilder;
  * This class tests some of the quirky behaviors of presisting events.
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
-    private EventWriter m_eventWriter;
+public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
+    private JdbcEventWriter m_jdbcEventWriter;
 
     @Override
     protected void setUp() throws Exception {
@@ -59,25 +61,18 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         eventdServiceManager.setDataSource(getDataSource());
         eventdServiceManager.afterPropertiesSet();
         
-        m_eventWriter = new EventWriter();
-        m_eventWriter.setEventdServiceManager(eventdServiceManager);
-        m_eventWriter.setDataSource(getDataSource());
-        m_eventWriter.setGetNextEventIdStr("SELECT nextval('eventsNxtId')");
-        m_eventWriter.afterPropertiesSet();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        if (m_eventWriter != null) {
-            m_eventWriter.close();
-        }
+        m_jdbcEventWriter = new JdbcEventWriter();
+        m_jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
+        m_jdbcEventWriter.setDataSource(getDataSource());
+        m_jdbcEventWriter.setGetNextIdString("SELECT nextval('eventsNxtId')");
+        m_jdbcEventWriter.afterPropertiesSet();
     }
 
     /**
      * tests sequence of newly initialized db
      */
     public void testNextEventId() {
-        int nextId = getJdbcTemplate().queryForInt(m_eventWriter.getGetNextEventIdStr());
+        int nextId = getJdbcTemplate().queryForInt(m_jdbcEventWriter.getGetNextIdString());
         
         // an empty db should produce '1' here
         assertEquals(1, nextId);
@@ -106,7 +101,7 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
 
         bldr.addParam("test", b64);
 
-        m_eventWriter.persistEvent(null, bldr.getEvent());
+        m_jdbcEventWriter.process(null, bldr.getEvent());
     }
 
     /**
@@ -119,6 +114,6 @@ public class EventWriterTest extends PopulatedTemporaryDatabaseTestCase {
 
         bldr.setDescription("abc\u0000def");
 
-        m_eventWriter.persistEvent(null, bldr.getEvent());
+        m_jdbcEventWriter.process(null, bldr.getEvent());
     }
 }
