@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Constructors don't throw IOException, so stop lying. ;-) - dj@opennms.org
 // 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -34,9 +35,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.eventd.adaptors.tcp;
 
 import java.io.IOException;
@@ -117,7 +115,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * Constructs a new TCP/IP event receiver on the default TCP/IP port. The
      * server socket allocation is delayed until the fiber is actually started.
      */
-    public TcpEventReceiver() throws IOException {
+    public TcpEventReceiver() {
         this(TcpServer.TCP_PORT);
     }
 
@@ -128,7 +126,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * @param port
      *            The binding port for the TCP/IP server socket.
      */
-    public TcpEventReceiver(int port) throws IOException {
+    public TcpEventReceiver(int port) {
         m_handlers = new ArrayList<EventHandler>(3);
         m_status = START_PENDING;
         m_tcpPort = port;
