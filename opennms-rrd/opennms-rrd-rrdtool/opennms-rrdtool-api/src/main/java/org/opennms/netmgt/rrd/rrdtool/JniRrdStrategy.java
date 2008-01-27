@@ -69,7 +69,9 @@ import org.springframework.util.FileCopyUtils;
  * See the individual methods for more details
  */
 public class JniRrdStrategy implements RrdStrategy {
-    
+	
+	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
+	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
 
     boolean initialized = false;
 
@@ -413,6 +415,12 @@ public class JniRrdStrategy implements RrdStrategy {
         
         // this close the stream when its finished
         String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+        
+        // one particular warning message that originates in libart should be ignored
+        if (errors.length() > 0 && errors.contains(IGNORABLE_LIBART_WARNING_STRING)) {
+        	log().debug("Ignoring libart warning message in rrdtool stderr stream: " + IGNORABLE_LIBART_WARNING_STRING);
+        	errors = errors.replaceAll(IGNORABLE_LIBART_WARNING_REGEX, "");
+        }
         if (errors.length() > 0) {
             throw new RrdException(errors);
         }
