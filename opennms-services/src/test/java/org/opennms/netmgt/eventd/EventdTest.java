@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Don't call methods directly on Eventd to send events
+//              (they are moving, anyway)--use EventIpcManager.
 // 2008 Jan 26: Add some @Override annotations, kill main method. - dj@opennms.org
 // 2008 Jan 23: Add test for mapping from servicename to serviceId and
 //              persistence of events.serviceID. - dj@opennms.org
@@ -232,7 +234,8 @@ public class EventdTest extends OpenNMSTestCase {
         logmsg.setDest("logndisplay");
         logmsg.setContent("testing");
         e.setLogmsg(logmsg);
-        m_eventd.processEvent(e);
+        
+        m_eventdIpcMgr.sendNow(e);
     }
 
     /**
@@ -254,7 +257,8 @@ public class EventdTest extends OpenNMSTestCase {
         logmsg.setDest("logndisplay");
         logmsg.setContent("testing");
         e.setLogmsg(logmsg);
-        m_eventd.processEvent(e);
+        
+        m_eventdIpcMgr.sendNow(e);
     }
 
 
