@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Inject DataSource and EventdServiceManager into EventIpcManagerDefaultImpl. - dj@opennms.org
 // 2008 Jan 08: Initialize EventconfFactory instead of EventConfigurationManager
 //              and dependency inject newly appropriate Eventd bits. - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
@@ -56,6 +57,7 @@ import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
+import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
@@ -149,10 +151,11 @@ public class OpenNMSTestCase extends TestCase {
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
             
             if (isStartEventd()) {
-                m_eventd = new Eventd();
-                m_eventd.setDataSource(m_db);
                 m_eventdConfigMgr = new MockEventConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/mock/eventd-configuration.xml"));
-                m_eventd.setConfigManager(m_eventdConfigMgr);
+                
+                JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
+                eventdServiceManager.setDataSource(m_db);
+                eventdServiceManager.afterPropertiesSet();
 
                 /*
                  * Make sure we specify a full resource path since "this" is
@@ -170,6 +173,8 @@ public class OpenNMSTestCase extends TestCase {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
                 m_eventdIpcMgr.setEventdConfigMgr(m_eventdConfigMgr);
                 m_eventdIpcMgr.setEventExpander(eventExpander);
+                m_eventdIpcMgr.setEventdServiceManager(eventdServiceManager);
+                m_eventdIpcMgr.setDataSource(m_db);
                 m_eventdIpcMgr.afterPropertiesSet();
                 
                 m_eventProxy = new EventProxy() {
@@ -185,6 +190,11 @@ public class OpenNMSTestCase extends TestCase {
                 };
                 
                 EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
+
+                m_eventd = new Eventd();
+                m_eventd.setEventdServiceManager(eventdServiceManager);
+                m_eventd.setConfigManager(m_eventdConfigMgr);
+
                 m_eventd.setEventIpcManager(m_eventdIpcMgr);
                 m_eventd.setEventConfDao(eventConfDao);
                 m_eventd.init();

@@ -31,6 +31,8 @@
   <bean id="eventIpcManager" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
     <property name="eventdConfigMgr" ref="eventdConfigManager"/>
     <property name="eventExpander" ref="eventExpander"/>
+    <property name="dataSource" ref="dataSource"/>
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
   </bean>
 
   <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -40,5 +42,9 @@
         <ref local="eventIpcManager"/>
       </list>
     </property>
+  </bean>
+  
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.JdbcEventdServiceManager">
+    <property name="dataSource" ref="dataSource"/>
   </bean>
 </beans>

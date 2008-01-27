@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 jan 26: Move m_serviceTableMap into JdbcEventdServiceManager. - dj@opennms.org
 // 2008 Jan 26: Get rid of the Eventd singleton and getInstance. - dj@opennms.org
 // 2008 Jan 17: Use JdbcTemplate for getting service name -> ID mapping. - dj@opennms.org
 // 2008 Jan 06: Dependency injection of EventConfDao, delay creation of
@@ -50,13 +51,6 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
@@ -67,8 +61,6 @@ import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.util.Assert;
 
 /**
@@ -105,17 +97,12 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public final class Eventd extends AbstractServiceDaemon implements org.opennms.netmgt.eventd.adaptors.EventHandler {
-    private static EventIpcManager m_eventIpcManager;
+    private EventIpcManager m_eventIpcManager;
     
     /**
      * The log4j category used to log debug messsages and statements.
      */
     public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
-
-    /**
-     * The service table map
-     */
-    private static Map<String, Integer> m_serviceTableMap;
 
     /**
      * The handler for events coming in through TCP
@@ -139,17 +126,13 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     private String m_address = null;
 
     private EventdConfigManager m_eFactory;
-    private EventDao m_eventDao;
 
-    private DataSource m_dataSource;
+    private EventDao m_eventDao;
 
     private EventConfDao m_eventConfDao;
 
-    static {
-        // map of service names to service identifer
-        m_serviceTableMap = Collections.synchronizedMap(new HashMap<String, Integer>());
-    }
-
+    private EventdServiceManager m_eventdServiceManager;
+    
     /**
      * Constuctor creates the localhost address(to be used eventually when
      * eventd originates events during correlation) and the broadcast queue
@@ -190,22 +173,14 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     }
 
     protected void onInit() {
-        Assert.state(m_dataSource != null, "dataSource not initialized");
-        Assert.state(m_eventConfDao != null, "eventConfDao not initialized");
+        Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
+        Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
         
         createBroadcastEventProcessor(m_eventIpcManager);
 
-        initializeServiceTableMap();
+        m_eventdServiceManager.dataSourceSync();
 
         initializeExternalIpcReceivers();
-    }
-
-    private void initializeServiceTableMap() {
-        new JdbcTemplate(m_dataSource).query(EventdConstants.SQL_DB_SVC_TABLE_READ, new RowCallbackHandler() {
-            public void processRow(ResultSet resultSet) throws SQLException {
-                addServiceMapping(resultSet.getString(2), resultSet.getInt(1));
-            }
-        });
     }
 
     private void initializeExternalIpcReceivers() {
@@ -265,29 +240,6 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         return m_address;
     }
 
-    /**
-     * Return the service id for the name passed
-     * 
-     * @param svcname
-     *            the service name whose service id is required
-     * 
-     * @return the service id for the name passed, -1 if not found
-     */
-    public static synchronized int getServiceID(String svcname) {
-        if (m_serviceTableMap.containsKey(svcname)) {
-            return m_serviceTableMap.get(svcname).intValue();
-        } else {
-            return -1;
-        }
-    }
-
-    /**
-     * Add the svcname/svcid mapping to the servicetable map
-     */
-    public static synchronized void addServiceMapping(String svcname, int serviceid) {
-        m_serviceTableMap.put(svcname, new Integer(serviceid));
-    }
-
     public boolean processEvent(Event event) {
         m_eventIpcManager.sendNow(event);
         return true;
@@ -295,10 +247,6 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     public void receiptSent(EventReceipt event) {
         // do nothing
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
     }
 
     public void setConfigManager(EventdConfigManager configManager) {
@@ -327,5 +275,13 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
+    }
+
+    public EventdServiceManager getEventdServiceManager() {
+        return m_eventdServiceManager;
+    }
+
+    public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
+        m_eventdServiceManager = eventdServiceManager;
     }
 }
