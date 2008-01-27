@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Some code and comment formatting. - dj@opennms.org
 // 2008 Jan 26: Dependency injection for DataSource and EventdServiceManager. - dj@opennms.org
 // 2008 Jan 08: Dependency inject EventExpander, pass EventExpander to 
 //              EventHandler, and create log() method. - dj@opennms.org
@@ -233,13 +234,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
         m_listeners = new ArrayList<EventListener>();
         m_listenerThreads = new HashMap<String, ListenerThread>();
 
-        // get number of threads
-        int numReceivers = m_eventdConfigMgr.getReceivers();
-        // create handler pool
-        m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, numReceivers);
-        // start pool
+        m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, m_eventdConfigMgr.getReceivers());
         m_eventHandlerPool.start();
-        // database sequence query string
+        
         m_getNextEventIdStr = m_eventdConfigMgr.getGetNextEventID();
         m_getNextAlarmIdStr = m_eventdConfigMgr.getGetNextAlarmID();
     }
@@ -248,8 +245,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
      * Called by a service to send an event to other listeners.
      */
     public synchronized void sendNow(Event event) {
-        // create a new event handler for the event and queue it to the
-        // eventhandler thread pool
         Events events = new Events();
         events.addEvent(event);
 
@@ -268,14 +263,14 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
         // event handler thread pool
         try {
             m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr, m_eventExpander, m_eventdServiceManager, m_dataSource));
-        } catch (InterruptedException iE) {
-            log().warn("Unable to queue event log to the event handler pool queue", iE);
+        } catch (InterruptedException e) {
+            log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
 
-            throw new UndeclaredEventException(iE);
-        } catch (FifoQueueException qE) {
-            log().warn("Unable to queue event log to the event handler pool queue", qE);
+            throw new UndeclaredEventException(e);
+        } catch (FifoQueueException e) {
+            log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
 
-            throw new UndeclaredEventException(qE);
+            throw new UndeclaredEventException(e);
         }
     }
 
@@ -302,10 +297,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
                 if (log().isDebugEnabled()) {
                     log().debug("Queued event to listener: " + listener.getName());
                 }
-            } catch (FifoQueueException fe) {
-                log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
-            } catch (InterruptedException ie) {
-                log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), ie);
+            } catch (FifoQueueException e) {
+                log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName() + ": " + e, e);
+            } catch (InterruptedException e) {
+                log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName() + ": " + e, e);
             }
         }
 
@@ -327,10 +322,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
                         if (log().isDebugEnabled()) {
                             log().debug("Queued event "+uei+" to listener: " + listener.getName());
                         }
-                    } catch (FifoQueueException fe) {
-                        log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), fe);
-                    } catch (InterruptedException ie) {
-                        log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName(), ie);
+                    } catch (FifoQueueException e) {
+                        log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName() + ": " + e, e);
+                    } catch (InterruptedException e) {
+                        log().error("Error queueing event " + event.getUei() + " to listener thread " + listener.getName() + ": " + e, e);
                     }
                 }
             } else {
@@ -449,8 +444,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
 
             m_ueiListeners.put(uei, listenersList);
         } else {
-            if (!listenersList.contains(listener))
+            if (!listenersList.contains(listener)) {
                 listenersList.add(listener);
+            }
         }
 
         // remove from list of listeners listening for all events
