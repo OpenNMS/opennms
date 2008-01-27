@@ -6,20 +6,36 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
-    <property name="eventIpcManager" ref="eventIpcManager"/>
     <property name="eventdServiceManager" ref="eventdServiceManager"/>
-    <property name="tcpReceiver" ref="tcpReceiver"/>
-    <property name="udpReceiver" ref="udpReceiver"/>
+    <property name="eventReceivers">
+      <list>
+        <ref local="tcpReceiver"/>
+        <ref local="udpReceiver"/>
+      </list>
+    </property>
     <property name="receiver" ref="receiver"/>
-    <property name="localHostAddress" ref="localHostAddress"/>
+  </bean>
+  
+  <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy">
+    <property name="eventIpcManager" ref="eventIpcManager"/>
   </bean>
   
   <bean id="tcpReceiver" class="org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver">
-    <constructor-arg><ref local="tcpPort"/></constructor-arg>
+    <property name="port" ref="tcpPort"/>
+    <property name="eventHandlers">
+      <list>
+        <ref local="eventHandler"/>
+      </list>
+    </property>
   </bean>
   
   <bean id="udpReceiver" class="org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver">
-    <constructor-arg><ref local="udpPort"/></constructor-arg>
+    <property name="port" ref="udpPort"/>
+    <property name="eventHandlers">
+      <list>
+        <ref local="eventHandler"/>
+      </list>
+    </property>
   </bean>
   
   <bean id="tcpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

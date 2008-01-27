@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Pull the EventHandler code into EventIpcManagerEventHandlerProxy
+//              and inject it.  Get rid of localHostAddress--it wasn't used.
+//              Turn Tcp/UdpEventReceiver into just a list of EventReceivers
+//              since we treat them all the same, anyway. - dj@opennms.org
 // 2008 Jan 26: Dependency inject the last of the objects.  Move local
 //              host address code into DaemonUtils.  Reorganize so that
 //              Ron* methods match the lifecycle ordering. - dj@opennms.org
@@ -48,10 +52,10 @@
 package org.opennms.netmgt.eventd;
 
 
+import java.util.Collection;
+
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
 import org.springframework.util.Assert;
 
 /**
@@ -87,26 +91,11 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class Eventd extends AbstractServiceDaemon implements org.opennms.netmgt.eventd.adaptors.EventHandler {
-    /**
-     * Our fearless IPC manager.
-     */
-    private EventIpcManager m_eventIpcManager;
-    
+public final class Eventd extends AbstractServiceDaemon {
     /**
      * The log4j category used to log debug messsages and statements.
      */
     public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
-
-    /**
-     * The handler for events coming in through TCP
-     */
-    private EventReceiver m_tcpReceiver;
-
-    /**
-     * The handler for events coming in through UDP
-     */
-    private EventReceiver m_udpReceiver;
 
     /**
      * Reference to the event processor
@@ -114,16 +103,15 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
     private BroadcastEventProcessor m_receiver;
 
     /**
-     * Contains dotted-decimal representation of the IP address where Eventd is
-     * running. Used when eventd broadcasts events.
-     */
-    private String m_localHostAddress;
-
-    /**
      * Class that handles mapping of service names to service IDs.
      */
     private EventdServiceManager m_eventdServiceManager;
-    
+
+    /**
+     * All handlers that can receive events to be started/stopped with Eventd.
+     */
+    private Collection<EventReceiver> m_eventReceivers;
+
     /**
      * Constuctor creates the localhost address(to be used eventually when
      * eventd originates events during correlation) and the broadcast queue
@@ -134,21 +122,17 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
 
     protected void onInit() {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
-        Assert.state(m_tcpReceiver != null, "property tcpReceiver must be set");
-        Assert.state(m_udpReceiver != null, "property udpReceiver must be set");
+        Assert.state(m_eventReceivers != null, "property eventReceivers must be set");
         Assert.state(m_receiver != null, "property receiver must be set");
-        Assert.state(m_localHostAddress != null, "property localHostAddress must be set");
         
         m_eventdServiceManager.dataSourceSync();
-
-        m_tcpReceiver.addEventHandler(this);
-        m_udpReceiver.addEventHandler(this);
     }
 
     protected void onStart() {
-        m_tcpReceiver.start();
-        m_udpReceiver.start();
-
+        for (EventReceiver eventReceiver : m_eventReceivers) {
+            eventReceiver.start();
+        }
+        
         if (log().isDebugEnabled()) {
             log().debug("Listener threads started");
         }
@@ -164,12 +148,8 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
             log().debug("calling shutdown on tcp/udp listener threads");
         }
 
-        if (m_tcpReceiver != null) {
-            m_tcpReceiver.stop();
-        }
-
-        if (m_udpReceiver != null) {
-            m_udpReceiver.stop();
+        for (EventReceiver eventReceiver : m_eventReceivers) {
+            eventReceiver.stop();
         }
 
         if (m_receiver != null) {
@@ -181,45 +161,12 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         }
     }
 
-    public boolean processEvent(Event event) {
-        m_eventIpcManager.sendNow(event);
-        return true;
-    }
-
-    public void receiptSent(EventReceipt event) {
-        // do nothing
-    }
-
-    public EventIpcManager getEventIpcManager() {
-        return m_eventIpcManager;
-    }
-
-    public void setEventIpcManager(EventIpcManager manager) {
-        m_eventIpcManager = manager;
-    }
-
     public EventdServiceManager getEventdServiceManager() {
         return m_eventdServiceManager;
     }
 
     public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
         m_eventdServiceManager = eventdServiceManager;
-    }
-
-    public EventReceiver getTcpReceiver() {
-        return m_tcpReceiver;
-    }
-
-    public void setTcpReceiver(EventReceiver tcpReceiver) {
-        m_tcpReceiver = tcpReceiver;
-    }
-
-    public EventReceiver getUdpReceiver() {
-        return m_udpReceiver;
-    }
-
-    public void setUdpReceiver(EventReceiver udpReceiver) {
-        m_udpReceiver = udpReceiver;
     }
 
     public BroadcastEventProcessor getReceiver() {
@@ -230,17 +177,11 @@ public final class Eventd extends AbstractServiceDaemon implements org.opennms.n
         m_receiver = receiver;
     }
 
-    /**
-     * Used to retrieve the local host address. The address of the machine on
-     * which Eventd is running.
-     * 
-     * @return The local machines hostname.
-     */
-    public String getLocalHostAddress() {
-        return m_localHostAddress;
+    public Collection<EventReceiver> getEventReceivers() {
+        return m_eventReceivers;
     }
 
-    public void setLocalHostAddress(String localHostAddress) {
-        m_localHostAddress = localHostAddress;
+    public void setEventReceivers(Collection<EventReceiver> eventReceivers) {
+        m_eventReceivers = eventReceivers;
     }
 }

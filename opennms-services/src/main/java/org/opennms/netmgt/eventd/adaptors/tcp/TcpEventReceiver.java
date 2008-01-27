@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Rename m_handlers to m_eventHandlers and expose a
+//              getter and setter. - dj@opennms.org
 // 2008 Jan 26: Constructors don't throw IOException, so stop lying. ;-) - dj@opennms.org
 // 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -89,7 +91,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * passed to all event handlers. The event handlers <em>MUST NOT</em>
      * modify the passed event.
      */
-    private List<EventHandler> m_handlers;
+    private List<EventHandler> m_eventHandlers;
 
     /**
      * The fiber's status.
@@ -127,7 +129,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *            The binding port for the TCP/IP server socket.
      */
     public TcpEventReceiver(int port) {
-        m_handlers = new ArrayList<EventHandler>(3);
+        m_eventHandlers = new ArrayList<EventHandler>(3);
         m_status = START_PENDING;
         m_tcpPort = port;
         m_server = null;
@@ -153,7 +155,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
         m_status = STARTING;
         try {
-            m_server = new TcpServer(this, m_handlers, m_tcpPort);
+            m_server = new TcpServer(this, m_eventHandlers, m_tcpPort);
             if (m_logPrefix != null) {
                 m_server.setLogPrefix(m_logPrefix);
             }
@@ -241,9 +243,9 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * 
      */
     public void addEventHandler(EventHandler handler) {
-        synchronized (m_handlers) {
-            if (!m_handlers.contains(handler)) {
-                m_handlers.add(handler);
+        synchronized (m_eventHandlers) {
+            if (!m_eventHandlers.contains(handler)) {
+                m_eventHandlers.add(handler);
             }
         }
     }
@@ -258,9 +260,17 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * 
      */
     public void removeEventHandler(EventHandler handler) {
-        synchronized (m_handlers) {
-            m_handlers.remove(handler);
+        synchronized (m_eventHandlers) {
+            m_eventHandlers.remove(handler);
         }
+    }
+
+    public List<EventHandler> getEventHandlers() {
+        return m_eventHandlers;
+    }
+
+    public void setEventHandlers(List<EventHandler> eventHandlers) {
+        m_eventHandlers = eventHandlers;
     }
 
     public Integer getPort() {
