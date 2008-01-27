@@ -13,7 +13,7 @@
         <ref local="udpReceiver"/>
       </list>
     </property>
-    <property name="receiver" ref="receiver"/>
+    <property name="receiver" ref="broadcastEventProcessor"/>
   </bean>
   
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy">
@@ -48,7 +48,7 @@
     <property name="targetMethod" value="getUDPPort"/>
   </bean>
   
-  <bean id="receiver" class="org.opennms.netmgt.eventd.BroadcastEventProcessor">
+  <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor">
     <constructor-arg><ref bean="eventIpcManager"/></constructor-arg>
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
