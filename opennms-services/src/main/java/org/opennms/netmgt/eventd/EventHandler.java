@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Use setter injection for EventWriter and AlarmWriter.
+//              Add dependency injection for DataSource and
+//              EventdServiceManager - dj@opennms.org
 // 2008 Jan 06: Format code a bit, dependency inject EventExpander,
 //              and create log() method. - dj@opennms.org
 //
@@ -42,12 +45,16 @@ package org.opennms.netmgt.eventd;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * The EventHandler is the Runnable that essentially does all the work on an
@@ -60,7 +67,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-final class EventHandler implements Runnable {
+final class EventHandler implements Runnable, InitializingBean {
     /**
      * log of events
      */
@@ -75,6 +82,10 @@ final class EventHandler implements Runnable {
 
     private EventExpander m_eventExpander;
 
+    private EventdServiceManager m_eventdServiceManager;
+
+    private DataSource m_dataSource;
+
     /**
      * Constructor for the eventhandler
      * @param eventLog
@@ -82,13 +93,18 @@ final class EventHandler implements Runnable {
      * @param getNextEventId
      *            the sql statement to get next event id from sequence
      * @param eventExpander TODO
+     * @param dataSource TODO
      * @param connectionFactory 
      */
-    public EventHandler(Log eventLog, String getNextEventId, String getNextAlarmIdStr, EventExpander eventExpander) {
+    public EventHandler(Log eventLog, String getNextEventId, String getNextAlarmIdStr, EventExpander eventExpander, EventdServiceManager eventdServiceManager, DataSource dataSource) {
         m_eventLog = eventLog;
         m_getNextEventIdStr = getNextEventId;
         m_getNextAlarmIdStr = getNextAlarmIdStr;
         m_eventExpander = eventExpander;
+        m_eventdServiceManager = eventdServiceManager;
+        m_dataSource = dataSource;
+        
+        afterPropertiesSet();
     }
 
     /**
@@ -115,8 +131,17 @@ final class EventHandler implements Runnable {
             AlarmWriter alarmWriter = null;
             try {
                 try {
-                    eventWriter = new EventWriter(m_getNextEventIdStr);
-                    alarmWriter = new AlarmWriter(m_getNextAlarmIdStr);
+                    eventWriter = new EventWriter();
+                    eventWriter.setDataSource(m_dataSource);
+                    eventWriter.setEventdServiceManager(m_eventdServiceManager);
+                    eventWriter.setGetNextEventIdStr(m_getNextEventIdStr);
+                    eventWriter.afterPropertiesSet();
+                    
+                    alarmWriter = new AlarmWriter();
+                    alarmWriter.setDataSource(m_dataSource);
+                    alarmWriter.setEventdServiceManager(m_eventdServiceManager);
+                    alarmWriter.setGetNextAlarmIdStr(m_getNextAlarmIdStr);
+                    alarmWriter.afterPropertiesSet();
                 } catch (Throwable t) {
                     log().warn("Exception creating EventWriter", t);
                     log().warn("Event(s) CANNOT be inserted into the database");
@@ -181,4 +206,20 @@ final class EventHandler implements Runnable {
         return ThreadCategory.getInstance(getClass());
     }
 
+    public void afterPropertiesSet() throws IllegalStateException {
+        Assert.state(m_eventLog != null, "property eventLog must be set");
+        Assert.state(m_getNextEventIdStr != null, "property getNextEventId must be set");
+        Assert.state(m_getNextAlarmIdStr != null, "property getNextAlarmIdStr must be set");
+        Assert.state(m_eventExpander != null, "property eventExpander must be set");
+        Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
+        Assert.state(m_dataSource != null, "property dataSource must be set");
+    }
+
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+    }
 }

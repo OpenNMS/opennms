@@ -1,5 +1,7 @@
 package org.opennms.netmgt.eventd;
 
+import javax.sql.DataSource;
+
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
@@ -48,6 +50,47 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    public void testInitWithNoDataSource() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalStateException("dataSource not set"));
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
+        manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
+        EventExpander eventExpander = new EventExpander();
+        eventExpander.setEventConfDao(EasyMock.createMock(EventConfDao.class));
+        eventExpander.afterPropertiesSet();
+        manager.setEventExpander(eventExpander);
+
+        try {
+            manager.afterPropertiesSet();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+
+        ta.verifyAnticipated();
+    }
+    
+    public void testInitWithNoEventdServiceManager() {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalStateException("eventdServiceManager not set"));
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
+        manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
+        EventExpander eventExpander = new EventExpander();
+        eventExpander.setEventConfDao(EasyMock.createMock(EventConfDao.class));
+        eventExpander.afterPropertiesSet();
+        manager.setDataSource(EasyMock.createMock(DataSource.class));
+        manager.setEventExpander(eventExpander);
+
+        try {
+            manager.afterPropertiesSet();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+
+        ta.verifyAnticipated();
+    }
+    
     public void testInit() throws Exception {
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
         manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
@@ -55,6 +98,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         eventExpander.setEventConfDao(EasyMock.createMock(EventConfDao.class));
         eventExpander.afterPropertiesSet();
         manager.setEventExpander(eventExpander);
+        manager.setDataSource(EasyMock.createMock(DataSource.class));
+        manager.setEventdServiceManager(EasyMock.createMock(EventdServiceManager.class));
         manager.afterPropertiesSet();
     }
 }

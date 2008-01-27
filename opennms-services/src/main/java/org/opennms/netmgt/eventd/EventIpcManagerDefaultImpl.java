@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Dependency injection for DataSource and EventdServiceManager. - dj@opennms.org
 // 2008 Jan 08: Dependency inject EventExpander, pass EventExpander to 
 //              EventHandler, and create log() method. - dj@opennms.org
 // 2008 Jan 07: Indent and format code a bit, implement log(). - dj@opennms.org
@@ -50,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
@@ -72,7 +75,7 @@ import org.springframework.util.Assert;
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, InitializingBean {
     
-    private static EventdConfigManager m_eventdConfigMgr;
+    private EventdConfigManager m_eventdConfigMgr;
     
     /**
      * Hash table of list of event listeners keyed by event UEI
@@ -102,6 +105,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
     private String m_getNextAlarmIdStr;
 
     private EventExpander m_eventExpander;
+    
+    private EventdServiceManager m_eventdServiceManager;
+
+    private DataSource m_dataSource;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -219,6 +226,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
     public synchronized void afterPropertiesSet() {
         Assert.state(m_eventdConfigMgr != null, "eventdConfigMgr not set");
         Assert.state(m_eventExpander != null, "eventExpander not set");
+        Assert.state(m_dataSource != null, "dataSource not set");
+        Assert.state(m_eventdServiceManager != null, "eventdServiceManager not set");
         
         m_ueiListeners = new HashMap<String, List<EventListener>>();
         m_listeners = new ArrayList<EventListener>();
@@ -258,7 +267,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
         // create a new event handler for the events and queue it to the
         // event handler thread pool
         try {
-            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr, m_eventExpander));
+            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr, m_eventExpander, m_eventdServiceManager, m_dataSource));
         } catch (InterruptedException iE) {
             log().warn("Unable to queue event log to the event handler pool queue", iE);
 
@@ -544,5 +553,21 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
     
     public void setEventExpander(EventExpander eventExpander) {
         m_eventExpander = eventExpander;
+    }
+
+    public EventdServiceManager getEventdServiceManager() {
+        return m_eventdServiceManager;
+    }
+
+    public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
+        m_eventdServiceManager = eventdServiceManager;
+    }
+
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
     }
 }

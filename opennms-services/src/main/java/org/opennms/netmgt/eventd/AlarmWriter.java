@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jan 26: Dependency injection using setter injection instead of
+//              constructor injection and implement InitializingBean.
+//              Move some common setters and initializion into Persist.
+//              Implement log method. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,10 +43,9 @@ package org.opennms.netmgt.eventd;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
+import org.springframework.util.Assert;
 
 /**
  * AlarmWriter writes events classified as alarms to the database.
@@ -54,43 +60,49 @@ import org.opennms.netmgt.xml.event.Header;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 final class AlarmWriter extends Persist {
+    private String m_getNextAlarmIdStr;
 
     /**
      * Constructor
      * @param connectionFactory 
      */
-    public AlarmWriter(String getNextAlarmIdStr) throws SQLException {
+    public AlarmWriter() {
         super();
-        //
+    }
+    
+    @Override
+    public void afterPropertiesSet() throws SQLException {
+        super.afterPropertiesSet();
+        
+        Assert.state(m_getNextAlarmIdStr != null, "property getNextAlarmIdStr must be set");
+
         // prepare the SQL statement
-        //
-        m_getSvcIdStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
         m_getHostNameStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
-        m_getNextIdStmt = m_dsConn.prepareStatement(getNextAlarmIdStr);
+        m_getNextIdStmt = m_dsConn.prepareStatement(getGetNextAlarmIdStr());
         m_insStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
         m_reductionQuery = m_dsConn.prepareStatement(EventdConstants.SQL_DB_ALARM_REDUCTION_QUERY);
         m_upDateStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
         m_updateEventStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_UPDATE_EVENT_WITH_ALARM_ID);
+
+        // XXX any reason why we can't do this in our super's afterPropertiesSet()?
         // set the database for rollback support
-        //
         try {
             m_dsConn.setAutoCommit(false);
-        } catch (SQLException se) {
-            ThreadCategory.getInstance(AlarmWriter.class).warn("Unable to set auto commit mode");
+        } catch (SQLException e) {
+            log().warn("Unable to set auto commit mode: " + e, e);
         }
     }
     
     public void close() {
         try {
-            m_getSvcIdStmt.close();
             m_getHostNameStmt.close();
             m_getNextIdStmt.close();
             m_insStmt.close();
             m_reductionQuery.close();
             m_upDateStmt.close();
             m_updateEventStmt.close();
-        } catch (SQLException sqle) {
-            ThreadCategory.getInstance(AlarmWriter.class).warn("SQLException while closing prepared statements", sqle);
+        } catch (SQLException e) {
+            log().warn("SQLException while closing prepared statements: " + e, e);
         } finally {
             super.close();
         }
@@ -107,18 +119,16 @@ final class AlarmWriter extends Persist {
      */
     public void persistAlarm(Header eventHeader, Event event) throws SQLException {
         if (event != null) {
-            Category log = ThreadCategory.getInstance(AlarmWriter.class);
-
             // Check value of <logmsg> attribute 'dest', if set to
             // "donotpersist" then simply return, the uei is not to be
             // persisted to the database
             String logdest = event.getLogmsg().getDest();
             if (logdest.equals("donotpersist") || event.getAlarmData() == null) {
-                log.debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist' or reductionKey is null.");
+                log().debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist' or reductionKey is null.");
                 return;
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("AlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+                if (log().isDebugEnabled()) {
+                    log().debug("AlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
                 }
             }
 
@@ -139,20 +149,29 @@ final class AlarmWriter extends Persist {
                         m_dsConn.rollback();
                         m_dsConn.setAutoCommit(false);
                     } catch (Exception e2) {
-                        log.warn("Rollback of transaction failed!", e2);
+                        log().warn("Rollback of transaction failed!", e2);
                     }
                     if (attempt > 1) {
-                        log.warn("Error in attempt: "+attempt+" inserting alarm into the datastore", e);
+                        log().warn("Error in attempt: "+attempt+" inserting alarm into the datastore", e);
                         throw e;
                     } else {
-                        log.info("Retrying insertOrUpdate statement after first attempt: "+ e.getMessage());
+                        log().info("Retrying insertOrUpdate statement after first attempt: "+ e.getMessage());
                     }
                 }
                 attempt++;
             }
 
-            if (log.isDebugEnabled())
-                log.debug("AlarmWriter finished for : " + event.getUei());
+            if (log().isDebugEnabled()) {
+                log().debug("AlarmWriter finished for : " + event.getUei());
+            }
         }
+    }
+
+    public String getGetNextAlarmIdStr() {
+        return m_getNextAlarmIdStr;
+    }
+
+    public void setGetNextAlarmIdStr(String getNextAlarmIdStr) {
+        m_getNextAlarmIdStr = getNextAlarmIdStr;
     }
 }

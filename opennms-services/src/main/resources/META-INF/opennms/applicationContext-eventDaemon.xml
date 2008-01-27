@@ -6,10 +6,10 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
-    <property name="dataSource" ref="dataSource"/>
     <property name="eventIpcManager" ref="eventIpcManager"/>
     <property name="configManager" ref="eventdConfigManager"/>
     <property name="eventConfDao" ref="eventConfDao"/>
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
   </bean>
 
   <tx:annotation-driven/>
