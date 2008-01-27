@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 26: Rename m_handlers to m_eventHandlers and expose a
+//              getter and setter. - dj@opennms.org
 // 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -99,7 +101,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     /**
      * The list of registered event handlers.
      */
-    private List<EventHandler> m_handlers;
+    private List<EventHandler> m_eventHandlers;
 
     /**
      * The Fiber's status.
@@ -132,7 +134,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         m_eventsIn = new LinkedList<UdpReceivedEvent>();
         m_eventUuidsOut = new LinkedList<UdpReceivedEvent>();
 
-        m_handlers = new ArrayList<EventHandler>(3);
+        m_eventHandlers = new ArrayList<EventHandler>(3);
         m_status = START_PENDING;
 
         m_dgSock = null;
@@ -151,8 +153,8 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
             m_dgSock = new DatagramSocket(m_dgPort);
 
             m_receiver = new UdpReceiver(m_dgSock, m_eventsIn);
-            m_processor = new UdpProcessor(m_handlers, m_eventsIn, m_eventUuidsOut);
-            m_output = new UdpUuidSender(m_dgSock, m_eventUuidsOut, m_handlers);
+            m_processor = new UdpProcessor(m_eventHandlers, m_eventsIn, m_eventUuidsOut);
+            m_output = new UdpUuidSender(m_dgSock, m_eventUuidsOut, m_eventHandlers);
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
@@ -240,9 +242,9 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      * 
      */
     public void addEventHandler(EventHandler handler) {
-        synchronized (m_handlers) {
-            if (!m_handlers.contains(handler)) {
-                m_handlers.add(handler);
+        synchronized (m_eventHandlers) {
+            if (!m_eventHandlers.contains(handler)) {
+                m_eventHandlers.add(handler);
             }
         }
     }
@@ -257,9 +259,17 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      * 
      */
     public void removeEventHandler(EventHandler handler) {
-        synchronized (m_handlers) {
-            m_handlers.remove(handler);
+        synchronized (m_eventHandlers) {
+            m_eventHandlers.remove(handler);
         }
+    }
+
+    public List<EventHandler> getEventHandlers() {
+        return m_eventHandlers;
+    }
+
+    public void setEventHandlers(List<EventHandler> eventHandlers) {
+        m_eventHandlers = eventHandlers;
     }
 
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
