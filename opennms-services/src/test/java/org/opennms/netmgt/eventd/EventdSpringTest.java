@@ -61,9 +61,11 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
         };
     }
     
-    public void testDaemonNonNull() throws Exception {
+    public void testDaemon() throws Exception {
         assertNotNull("daemon bean", m_daemon);
+        
         m_daemon.onStart();
+        m_daemon.onStop();
     }
     
     // FIXME: I get OutOfMemory errors if I run more than one test in this TestCase
