@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jan 27: Enable the service test and make it do something for real. - dj@opennms.org
  * 2008 Jan 26: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
@@ -56,22 +57,41 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
+                "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:META-INF/opennms/applicationContext-eventDaemon.xml"
         };
     }
     
-    public void testDaemon() throws Exception {
+    // FIXME: I get OutOfMemory errors if I run more than one test in this TestCase
+    public void FIXMEtestDaemon() throws Exception {
         assertNotNull("daemon bean", m_daemon);
         
         m_daemon.onStart();
         m_daemon.onStop();
     }
     
-    // FIXME: I get OutOfMemory errors if I run more than one test in this TestCase
-    public void FIXMEtestSendEvent() throws Exception {
+    public void testSendEventWithService() throws Exception {
+        int serviceId = 1;
+        String serviceName = "some bogus service";
+
+        m_daemon.onStart();
+
+        getSimpleJdbcTemplate().update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
+        setComplete();
+        endTransaction();
+        startNewTransaction();
+        
         EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
+        builder.setService(serviceName);
         m_eventIpcManager.sendNow(builder.getEvent());
+        
+        Thread.sleep(1000);
+        
+        assertEquals("event count", 1, getJdbcTemplate().queryForInt("select count(*) from events"));
+        assertEquals("event service ID", serviceId, getJdbcTemplate().queryForInt("select serviceID from events"));
+
+        m_daemon.onStop();
     }
     
     public Eventd getDaemon() {
