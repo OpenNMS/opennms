@@ -113,7 +113,6 @@ final class TcpServer implements Runnable {
     /**
      * The list of event handlers
      */
-    // TODO: This should be generified
     private List<EventHandler> m_handlers;
 
     /**
