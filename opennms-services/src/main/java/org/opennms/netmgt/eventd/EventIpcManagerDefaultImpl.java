@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 27: Dependency inject (now-threadsafe) EventHandler. - dj@opennms.org
 // 2008 Jan 26: Some code and comment formatting. - dj@opennms.org
 // 2008 Jan 26: Dependency injection for DataSource and EventdServiceManager. - dj@opennms.org
 // 2008 Jan 08: Dependency inject EventExpander, pass EventExpander to 
@@ -42,9 +43,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
@@ -52,15 +50,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.apache.log4j.Category;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -75,9 +70,6 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, InitializingBean {
-    
-    private EventdConfigManager m_eventdConfigMgr;
-    
     /**
      * Hash table of list of event listeners keyed by event UEI
      */
@@ -98,18 +90,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
      */
     private RunnableConsumerThreadPool m_eventHandlerPool;
 
-    /**
-     * The query string to get the next event id from the database sequence
-     */
-    private String m_getNextEventIdStr;
+    private EventHandler m_eventHandler;
 
-    private String m_getNextAlarmIdStr;
-
-    private EventExpander m_eventExpander;
-    
-    private EventdServiceManager m_eventdServiceManager;
-
-    private DataSource m_dataSource;
+    private Integer m_handlerPoolSize;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -144,7 +127,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
         ListenerThread(EventListener listener, FifoQueue<Event> lq) {
             m_shutdown = false;
             m_listener = listener;
-            ;
             m_queue = lq;
             m_delegateThread = new Thread(this, listener.getName());
         }
@@ -225,20 +207,15 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
     }
     
     public synchronized void afterPropertiesSet() {
-        Assert.state(m_eventdConfigMgr != null, "eventdConfigMgr not set");
-        Assert.state(m_eventExpander != null, "eventExpander not set");
-        Assert.state(m_dataSource != null, "dataSource not set");
-        Assert.state(m_eventdServiceManager != null, "eventdServiceManager not set");
+        Assert.state(m_eventHandler != null, "eventHandler not set");
+        Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
         
         m_ueiListeners = new HashMap<String, List<EventListener>>();
         m_listeners = new ArrayList<EventListener>();
         m_listenerThreads = new HashMap<String, ListenerThread>();
 
-        m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, m_eventdConfigMgr.getReceivers());
+        m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, m_handlerPoolSize);
         m_eventHandlerPool.start();
-        
-        m_getNextEventIdStr = m_eventdConfigMgr.getGetNextEventID();
-        m_getNextAlarmIdStr = m_eventdConfigMgr.getGetNextAlarmID();
     }
 
     /**
@@ -262,7 +239,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
         // create a new event handler for the events and queue it to the
         // event handler thread pool
         try {
-            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr, m_eventExpander, m_eventdServiceManager, m_dataSource));
+            m_eventHandlerPool.getRunQueue().add(m_eventHandler.createRunnable(eventLog));
         } catch (InterruptedException e) {
             log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
 
@@ -529,41 +506,19 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, Initializing
         return ThreadCategory.getInstance(getClass());
     }
 
-    /**
-     * @return Returns the eventdConfigMgr.
-     */
-    public EventdConfigManager getEventdConfigMgr() {
-        return m_eventdConfigMgr;
-    }
-    
-    /**
-     * @param eventdConfigMgr The eventdConfigMgr to set.
-     */
-    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
-        m_eventdConfigMgr = eventdConfigMgr;
+    public EventHandler getEventHandler() {
+        return m_eventHandler;
     }
 
-    public EventExpander getEventExpander() {
-        return m_eventExpander;
-    }
-    
-    public void setEventExpander(EventExpander eventExpander) {
-        m_eventExpander = eventExpander;
+    public void setEventHandler(EventHandler eventHandler) {
+        m_eventHandler = eventHandler;
     }
 
-    public EventdServiceManager getEventdServiceManager() {
-        return m_eventdServiceManager;
+    public int getHandlerPoolSize() {
+        return m_handlerPoolSize;
     }
 
-    public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
-        m_eventdServiceManager = eventdServiceManager;
-    }
-
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
+    public void setHandlerPoolSize(int numHandlers) {
+        m_handlerPoolSize = numHandlers;
     }
 }

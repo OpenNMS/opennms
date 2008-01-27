@@ -1,11 +1,7 @@
 package org.opennms.netmgt.eventd;
 
-import javax.sql.DataSource;
-
 import junit.framework.TestCase;
 
-import org.easymock.EasyMock;
-import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigFactory;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.ThrowableAnticipator;
@@ -19,12 +15,13 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         EventdConfigFactory.init();
     }
     
-    public void testInitWithNoEventdConfigMgr() {
+    public void testInitWithNoHandlerPoolSize() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("eventdConfigMgr not set"));
+        ta.anticipate(new IllegalStateException("handlerPoolSize not set"));
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-
+        manager.setEventHandler(new EventHandler());
+        
         try {
             manager.afterPropertiesSet();
         } catch (Throwable t) {
@@ -34,53 +31,12 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         ta.verifyAnticipated();
     }
     
-    public void testInitWithNoEventExpander() {
+    public void testInitWithNoEventHandler() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("eventExpander not set"));
+        ta.anticipate(new IllegalStateException("eventHandler not set"));
 
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-        manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
-
-        try {
-            manager.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-
-        ta.verifyAnticipated();
-    }
-    
-    public void testInitWithNoDataSource() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("dataSource not set"));
-
-        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-        manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
-        EventExpander eventExpander = new EventExpander();
-        eventExpander.setEventConfDao(EasyMock.createMock(EventConfDao.class));
-        eventExpander.afterPropertiesSet();
-        manager.setEventExpander(eventExpander);
-
-        try {
-            manager.afterPropertiesSet();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-
-        ta.verifyAnticipated();
-    }
-    
-    public void testInitWithNoEventdServiceManager() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("eventdServiceManager not set"));
-
-        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-        manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
-        EventExpander eventExpander = new EventExpander();
-        eventExpander.setEventConfDao(EasyMock.createMock(EventConfDao.class));
-        eventExpander.afterPropertiesSet();
-        manager.setDataSource(EasyMock.createMock(DataSource.class));
-        manager.setEventExpander(eventExpander);
+        manager.setHandlerPoolSize(5);
 
         try {
             manager.afterPropertiesSet();
@@ -93,13 +49,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     
     public void testInit() throws Exception {
         EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl();
-        manager.setEventdConfigMgr(EventdConfigFactory.getInstance());
-        EventExpander eventExpander = new EventExpander();
-        eventExpander.setEventConfDao(EasyMock.createMock(EventConfDao.class));
-        eventExpander.afterPropertiesSet();
-        manager.setEventExpander(eventExpander);
-        manager.setDataSource(EasyMock.createMock(DataSource.class));
-        manager.setEventdServiceManager(EasyMock.createMock(EventdServiceManager.class));
+        manager.setEventHandler(new EventHandler());
+        manager.setHandlerPoolSize(5);
         manager.afterPropertiesSet();
     }
 }

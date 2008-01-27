@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 27: Implement EventProcessor interface. - dj@opennms.org
 // 2008 Jan 06: Make static methods non-static, allow us to dependency
 //              inject EventConfDao and use that instead of EventConfigurationManager.
 //              - dj@opennms.org
@@ -43,14 +44,16 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.eventd.processor;
 
 import java.util.Enumeration;
 
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -101,7 +104,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class EventExpander implements InitializingBean {
+public final class EventExpander implements EventProcessor, InitializingBean {
     private EventConfDao m_eventConfDao;
     
     /**
@@ -722,12 +725,16 @@ public final class EventExpander implements InitializingBean {
 
     } // end expandEvent()
 
+
+    public void process(Header eventHeader, Event event) {
+        expandEvent(event);
+    }
+
     public EventConfDao getEventConfDao() {
         return m_eventConfDao;
     }
 
-    public void setEventConfDao(
-            EventConfDao eventConfDao) {
+    public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
     }
 }
