@@ -326,6 +326,19 @@
     <severity>Warning</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/internal/capsd/suspectScanCompleted</uei>
+    <event-label>OpenNMS-defined internal event: suspect scan completed</event-label>
+    <descr>
+      &lt;p&gt;The suspect services scan of interface %interface%
+      has completed.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      The suspect services scan of interface %interface%
+      has completed.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
     <uei>uei.opennms.org/internal/interfaceManaged</uei>
     <event-label>OpenNMS-defined internal event: interfaceManaged</event-label>
     <descr>

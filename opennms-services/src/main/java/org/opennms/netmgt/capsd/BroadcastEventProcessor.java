@@ -1491,7 +1491,14 @@ public class BroadcastEventProcessor implements InitializingBean {
     public void handleNewSuspect(Event event) throws InsufficientInformationException {
         // ensure the event has an interface
         EventUtils.checkInterface(event);
-        // new poll event
+        
+        // discard this newSuspect if one is already enqueued for the same IP address
+        if (SuspectEventProcessor.isScanQueuedForAddress(event.getInterface())) {
+        	log().info("Ignoring newSuspect event for interface " + event.getInterface() + " because a newSuspect scan for that interface already exists in the queue");
+        	return;
+        }
+        
+        // new suspect event
         try {
             log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
             m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
@@ -2074,7 +2081,7 @@ public class BroadcastEventProcessor implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_suspectEventProcessorFactory != null, "The suspectEventProcessor must be set");
         Assert.state(m_scheduler != null, "The schedule must be set");
-        Assert.state(m_suspectQ != null, "The scheduleQueue must be set");
+        Assert.state(m_suspectQ != null, "The suspectQueue must be set");
         Assert.state(m_localServer != null, "The localServer must be set");
     }
 
