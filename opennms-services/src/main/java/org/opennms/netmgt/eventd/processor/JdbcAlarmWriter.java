@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 28: Add a few tests to check that the Event is valid. - dj@opennms.org
 // 2008 Jan 28: Use EmptyResultDataAccessException instead of
 //              IncorrectResultSizeDataAccessException. - dj@opennms.org
 // 2008 Jan 27: Make thread-safe and use Spring's SQL exception translation
@@ -61,6 +62,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.util.Assert;
 
 /**
  * AlarmWriter writes events classified as alarms to the database.
@@ -84,94 +86,100 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
      *            the actual event to be inserted
      */
     public void process(Header eventHeader, Event event) throws SQLException {
-        if (event != null) {
-            /*
-             * Check value of <logmsg> attribute 'dest', if set to
-             * "donotpersist" then simply return, the uei is not to be
-             * persisted to the database
-             */
-            String logdest = event.getLogmsg().getDest();
-            if (logdest.equals("donotpersist")) {
-                if (log().isDebugEnabled()) {
-                    log().debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist'; not processing alarm.");
-                }
-                return;
-            } else if (event.getAlarmData() == null) {
-                if (log().isDebugEnabled()) {
-                    log().debug("AlarmWriter: uei '" + event.getUei() + "' does not have alarm data; not processing alarm.");
-                }
-                return;
-            }
-            
+        if (event == null) {
+            log().info("The event argument is null, not doing any processing");
+        }
+
+        /*
+         * Check value of <logmsg> attribute 'dest', if set to
+         * "donotpersist" then simply return, the uei is not to be
+         * persisted to the database
+         */
+        Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
+        if ("donotpersist".equals(event.getLogmsg().getDest())) {
             if (log().isDebugEnabled()) {
-                log().debug("AlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+                log().debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'donotpersist'; not processing alarm.");
             }
+            return;
+        }
+        
+        if (event.getAlarmData() == null) {
+            if (log().isDebugEnabled()) {
+                log().debug("AlarmWriter: uei '" + event.getUei() + "' does not have alarm data; not processing alarm.");
+            }
+            return;
+        }
 
-            /*
-             * Try twice incase the transaction fails.  This could happen if 2 or more threads query the db
-             * at the same time and determine that insert needs to happen.  One insert will complete the other
-             * will fail.  The next time through the loop, the alarm will be reduced with an update. 
-             */
-            boolean updated = false;
-            for (int attempt = 1; attempt <= 2 && !updated; attempt++) {
-                Connection connection = getDataSource().getConnection();
+        Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");
+        
+        if (log().isDebugEnabled()) {
+            log().debug("AlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+        }
 
-                try {
-                    connection.setAutoCommit(false);
+        /*
+         * Try twice incase the transaction fails.  This could happen if 2 or more threads query the db
+         * at the same time and determine that insert needs to happen.  One insert will complete the other
+         * will fail.  The next time through the loop, the alarm will be reduced with an update. 
+         */
+        boolean updated = false;
+        for (int attempt = 1; attempt <= 2 && !updated; attempt++) {
+            Connection connection = getDataSource().getConnection();
 
-                    int alarmId = isReductionNeeded(eventHeader, event, connection);
-                    if (alarmId != -1) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("Reducing event for " + event.getDbid() + " with UEI " + event.getUei());
-                        }
+            try {
+                connection.setAutoCommit(false);
 
-                        updateAlarm(eventHeader, event, alarmId, connection);
+                int alarmId = isReductionNeeded(eventHeader, event, connection);
+                if (alarmId != -1) {
+                    if (log().isDebugEnabled()) {
+                        log().debug("Reducing event for " + event.getDbid() + " with UEI " + event.getUei());
+                    }
 
-                        if (event.getAlarmData().getAutoClean() == true) {
-                            log().debug("insertOrUpdate: deleting previous events for alarm " + alarmId);
-                            cleanPreviousEvents(alarmId, event.getDbid(), connection);
-                        }
+                    updateAlarm(eventHeader, event, alarmId, connection);
 
+                    if (event.getAlarmData().getAutoClean() == true) {
+                        log().debug("insertOrUpdate: deleting previous events for alarm " + alarmId);
+                        cleanPreviousEvents(alarmId, event.getDbid(), connection);
+                    }
+
+                    updated = true;
+                } else {
+                    if (log().isDebugEnabled()) {
+                        log().debug("Inserting new alarm (not reducing) for event " + event.getDbid() + " with UEI " + event.getUei());
+                    }
+
+                    try {
+                        insertAlarm(eventHeader, event, connection);
                         updated = true;
-                    } else {
-                        if (log().isDebugEnabled()) {
-                            log().debug("Inserting new alarm (not reducing) for event " + event.getDbid() + " with UEI " + event.getUei());
+                    } catch (DataIntegrityViolationException e) {
+                        if (attempt > 1) {
+                            log().error("Error in attempt: "+attempt+" inserting alarm for event " + event.getDbid() + " into the datastore: " + e, e);
+                            throw e;
+                        } else {
+                            log().info("Retrying insertOrUpdate statement of alarm for event " + event.getDbid() + " after first attempt: " + e.getClass() + ": " + e.getMessage());
                         }
-
-                        try {
-                            insertAlarm(eventHeader, event, connection);
-                            updated = true;
-                        } catch (DataIntegrityViolationException e) {
-                            if (attempt > 1) {
-                                log().error("Error in attempt: "+attempt+" inserting alarm for event " + event.getDbid() + " into the datastore: " + e, e);
-                                throw e;
-                            } else {
-                                log().info("Retrying insertOrUpdate statement of alarm for event " + event.getDbid() + " after first attempt: " + e.getClass() + ": " + e.getMessage());
-                            }
-                        } 
-                    }
-                } finally {
-                    if (updated) {
-                        try {
-                            connection.commit();
-                        } catch (SQLException e) {
-                            log().error("Commit of transaction failed: " + e, e);
-                        }
-                    } else {
-                        try {
-                            connection.rollback();
-                        } catch (SQLException e) {
-                            log().error("Rollback of transaction failed: " + e, e);
-                        }
-                    }
-
-                    connection.close();
+                    } 
                 }
-            }
+            } finally {
+                if (updated) {
+                    try {
+                        connection.commit();
+                    } catch (SQLException e) {
+                        log().error("Commit of transaction failed: " + e, e);
+                    }
+                } else {
+                    try {
+                        connection.rollback();
+                    } catch (SQLException e) {
+                        log().error("Rollback of transaction failed: " + e, e);
+                    }
+                }
 
-            if (log().isDebugEnabled()) {
-                log().debug("AlarmWriter finished for event " + event.getDbid() + " with UEI " + event.getUei());
+                connection.close();
             }
+        }
+
+        if (log().isDebugEnabled()) {
+            log().debug("AlarmWriter finished for event " + event.getDbid() + " with UEI " + event.getUei());
         }
     }
 
