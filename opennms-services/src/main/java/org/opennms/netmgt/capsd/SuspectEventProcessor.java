@@ -66,10 +66,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.IPSorter;
@@ -125,6 +127,8 @@ final class SuspectEventProcessor implements Runnable {
     private CapsdDbSyncer m_capsdDbSyncer;
 
     private PluginManager m_pluginManager;
+    
+    private static Set<String> m_queuedSuspectTracker;
 
     /**
      * Constructor.
@@ -141,6 +145,12 @@ final class SuspectEventProcessor implements Runnable {
         m_capsdDbSyncer = capsdDbSyncer;
         m_pluginManager = pluginManager;
         m_suspectIf = ifAddress;
+        
+        // Add the interface address to the Set that tracks suspect
+        // scans in the queue
+        synchronized (m_queuedSuspectTracker) {
+        	m_queuedSuspectTracker.add(ifAddress);
+        }
     }
 
     /**
@@ -1584,6 +1594,12 @@ final class SuspectEventProcessor implements Runnable {
         catch (Throwable t) {
             log().error("Error writing records", t);
         }
+        finally {
+        	// remove the interface we've just scanned from the tracker set
+        	synchronized(m_queuedSuspectTracker) {
+        		m_queuedSuspectTracker.remove(ifaddr.getHostAddress());
+        	}
+        }
 
         // Send events
         //
@@ -1600,9 +1616,12 @@ final class SuspectEventProcessor implements Runnable {
 
         }
 
-        if (log().isDebugEnabled())
-            log().debug("SuspectEventProcessor for " + m_suspectIf
-                    + " completed.");
+        // send suspectScanCompleted event regardless of scan outcome
+    	if (log().isDebugEnabled()) {
+    		log().debug("sendInterfaceEvents: sending suspect scan completed event for " + ifaddr.getHostAddress());
+    		log().debug("SuspectEventProcessor for " + m_suspectIf + " completed.");
+    	}
+    	createAndSendSuspectScanCompletedEvent(ifaddr);
     } // end run
 
     private static Category log() {
@@ -1738,6 +1757,30 @@ final class SuspectEventProcessor implements Runnable {
                 }
             }
         }
+    }
+    
+    /** 
+     * Responsible for setting the Set used to track suspect scans that
+     * are already enqueued for processing.  Should be called once by Capsd
+     * at startup.
+     * 
+     * @param queuedSuspectsTracker
+     * 			The synchronized Set to use
+     */
+    public static synchronized void setQueuedSuspectsTracker(Set<String> queuedSuspectTracker) {
+    	m_queuedSuspectTracker = Collections.synchronizedSet(queuedSuspectTracker);
+    }
+    
+    /**
+     * Is a suspect scan already enqueued for a given IP address?
+     * 
+     * @param ipAddr
+     * 			The IP address of interest
+     */
+    public static boolean isScanQueuedForAddress(String ipAddr) {
+    	synchronized(m_queuedSuspectTracker) {
+    		return (m_queuedSuspectTracker.contains(ipAddr));
+    	}
     }
 
     /**
@@ -2098,6 +2141,20 @@ final class SuspectEventProcessor implements Runnable {
 
         sendEvent(bldr.getEvent());
 
+    }
+    
+    /**
+     * This method is responsible for creating and sending a
+     * 'suspectScanCompleted' event to Eventd
+     * 
+     * @param ipAddr
+     * 			IP address of the interface for which the suspect scan has completed
+     */
+    private void createAndSendSuspectScanCompletedEvent(InetAddress ipAddr) {
+    	EventBuilder bldr = createEventBuilder(EventConstants.SUSPECT_SCAN_COMPLETED_EVENT_UEI);
+    	bldr.setInterface(ipAddr.getHostAddress());
+    	bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
+    	sendEvent(bldr.getEvent());
     }
 
 } // end class
