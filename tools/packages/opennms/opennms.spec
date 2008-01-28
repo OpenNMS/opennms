@@ -272,9 +272,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{bindir}/*
 %attr(755,root,root)	%{instprefix}/contrib
-%if %{with_docs}
-%attr(755,root,root)	%{instprefix}/docs
-%endif
 %attr(755,root,root)	%{instprefix}/lib
 			%{sharedir}
 			%{logdir}
