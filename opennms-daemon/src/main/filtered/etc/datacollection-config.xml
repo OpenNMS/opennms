@@ -45,7 +45,8 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)">
+    <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)"
+                  resourceLabel="${ns-dskPath} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
