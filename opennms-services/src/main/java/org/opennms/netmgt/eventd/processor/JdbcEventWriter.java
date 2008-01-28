@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 28: Catch EmptyResultDataAccessException in getHostName(String).
+//              Thanks for the catch, jeffg! - dj@opennms.org
 // 2008 Jan 27: Make thread-safe. - dj@opennms.org
 // 2008 Jan 27: Push methods in Persist that are only used by a single
 //              subclass into that subclass.
@@ -59,6 +61,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
@@ -384,7 +387,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * 
      */
     // FIXME: This uses JdbcTemplate and not the passed in connection
-    private String getHostName(String hostip, Connection connection) throws SQLException {
+    String getHostName(String hostip, Connection connection) throws SQLException {
 //        PreparedStatement getHostNameStmt = getConnection().prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
 //
 //        try {
@@ -414,7 +417,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 //        } finally {
 //            getHostNameStmt.close();
 //        }
-        return new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { hostip });
+        try {
+            return new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { hostip });
+        } catch (EmptyResultDataAccessException e) {
+            return hostip;
+        }
     }
 
     /**
