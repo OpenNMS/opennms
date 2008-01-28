@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 28: Add a test for getHostName when there is no match in the DB. - dj@opennms.org
 // 2008 Jan 26: Change to use dependency injection for EventWriter and refactor
 //              quite a bit. - dj@opennms.org
 //
@@ -36,11 +37,11 @@
 //
 package org.opennms.netmgt.eventd.processor;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
-import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.trapd.EventConstants;
@@ -115,5 +116,14 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         bldr.setDescription("abc\u0000def");
 
         m_jdbcEventWriter.process(null, bldr.getEvent());
+    }
+    
+    public void testGetHostNameWithNoHostMatch() throws Exception {
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_jdbcEventWriter.getHostName("192.168.1.1", connection));
+        } finally {
+            connection.close();
+        }
     }
 }
