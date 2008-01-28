@@ -42,6 +42,7 @@ package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
@@ -184,11 +185,15 @@ public class Capsd extends AbstractServiceDaemon {
         getCapsdDbSyncer().syncManagementState();
         
         log().debug("init: Syncing primary SNMP interface state...");
-        getCapsdDbSyncer().syncSnmpPrimaryState();     
+        getCapsdDbSyncer().syncSnmpPrimaryState();
 
 	}
 
     protected void onStart() {
+    	// Set the Set that SuspectEventProcessor will use to track
+    	// suspect scans that are in progress
+    	SuspectEventProcessor.setQueuedSuspectsTracker(new HashSet<String>());
+    	
 		// Start the suspect event and rescan thread pools
         log().debug("start: Starting runnable thread pools...");
 
