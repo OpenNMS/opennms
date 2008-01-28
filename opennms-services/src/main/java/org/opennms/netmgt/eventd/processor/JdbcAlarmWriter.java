@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jan 28: Use EmptyResultDataAccessException instead of
+//              IncorrectResultSizeDataAccessException. - dj@opennms.org
 // 2008 Jan 27: Make thread-safe and use Spring's SQL exception translation
 //              to help us only retry the alarm insertion when we see a
 //              data integrity violation (violation of a uniqueness
@@ -56,7 +58,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 
@@ -383,16 +385,12 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
             }
             
             return alarmId;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            if (e.getActualSize() == 0) {
-                if (log().isDebugEnabled()) {
-                    log().debug("Persist.isReductionNeeded: no for reductionKey: " + event.getAlarmData().getReductionKey());
-                }
-                
-                return -1;
-            } else {
-                throw e;
+        } catch (EmptyResultDataAccessException e) {
+            if (log().isDebugEnabled()) {
+                log().debug("Persist.isReductionNeeded: no for reductionKey: " + event.getAlarmData().getReductionKey());
             }
+                
+            return -1;
         }
     }
 
