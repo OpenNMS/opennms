@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jan 27: Test checks for event validity. - dj@opennms.org
 // 2008 Jan 27: Move alarm-specific tests to JdbcAlarmWriterTest. - dj@opennms.org
 // 2008 Jan 26: Change to use dependency injection for EventWriter and refactor
 //              quite a bit. - dj@opennms.org
@@ -54,6 +55,7 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.util.StringUtils;
@@ -211,6 +213,42 @@ public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
         MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
         assertEquals(0, rowCount);
 
+    }
+    
+    public void testNoLogmsg() throws Exception {
+        Event event = new Event();
+        event.setAlarmData(new AlarmData());
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("event does not have a logmsg"));
+        try {
+            m_jdbcAlarmWriter.process(null, event);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public void testNoAlarmData() throws Exception {
+        Event event = new Event();
+        event.setLogmsg(new Logmsg());
+        
+        m_jdbcAlarmWriter.process(null, event);
+    }
+
+    public void testNoDbid() throws Exception {
+        Event event = new Event();
+        event.setLogmsg(new Logmsg());
+        event.setAlarmData(new AlarmData());
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("event does not have a dbid"));
+        try {
+            m_jdbcAlarmWriter.process(null, event);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
     }
         
     private void sendNodeDownEvent(String reductionKey, MockNode node) throws SQLException {
