@@ -311,7 +311,7 @@
       <form method="post" action="alarm/ticket/update.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
-        <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicketState) || (alarm.troubleTicketState != 'OPEN')}"/>
+        <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicketState)}"/>
       </form>
 
       <form method="post" action="alarm/ticket/close.htm">
