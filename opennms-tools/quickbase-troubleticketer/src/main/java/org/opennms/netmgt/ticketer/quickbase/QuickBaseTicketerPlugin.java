@@ -82,7 +82,7 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	public Ticket get(String ticketId) {
 	    try {
 	        Properties props = getProperties();
-	        MyQuickBaseClient qdb = createClient(getUserName(props), getPassword(props));
+	        MyQuickBaseClient qdb = createClient(getUserName(props), getPassword(props), getUrl(props));
 	    
 	        String dbId = qdb.findDbByName(getApplicationName(props));
 	        
@@ -103,8 +103,8 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
     
 	}
 
-	private MyQuickBaseClient createClient(String username, String passwd) {
-	    return new MyQuickBaseClient(username, passwd);
+    private MyQuickBaseClient createClient(String username, String passwd, String url) {
+	    return new MyQuickBaseClient(username, passwd, url);
 	}
 	
 	private Properties getProperties() {
@@ -143,7 +143,7 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
 	        
 	       Properties props = getProperties();
 	       
-	       QuickBaseClient qdb = createClient(getUserName(props), getPassword(props));
+	       QuickBaseClient qdb = createClient(getUserName(props), getPassword(props), getUrl(props));
 	       
            String dbId = qdb.findDbByName(getApplicationName(props));
 	       
@@ -221,6 +221,11 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
     private String getPassword(Properties props) {
         return getRequiredProperty(props, "quickbase.password");
     }
+    
+    private String getUrl(Properties props) {
+        return getRequiredProperty(props, "quickbase.url");
+    }
+
 
     private void addAdditionCreationFields(HashMap<String, String> record, Properties props) {
         final String prefix = "quickbase.create.";
@@ -236,8 +241,8 @@ public class QuickBaseTicketerPlugin implements TicketerPlugin {
     
     private static class MyQuickBaseClient extends QuickBaseClient {
 
-        public MyQuickBaseClient(String username, String password) {
-            super(username, password);
+        public MyQuickBaseClient(String username, String password, String url) {
+            super(username, password, url);
         }
         
         public HashMap getRecordInfo(String dbid, String rid) throws QuickBaseException, Exception {
