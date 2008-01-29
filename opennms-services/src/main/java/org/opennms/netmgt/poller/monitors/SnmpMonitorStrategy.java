@@ -123,7 +123,10 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
         if (value.startsWith(".")) {
             value = value.substring(1);
         }
-        if (operand.startsWith(".")) {
+        
+        // Bug 2178 -- if this is a regex match, a leading "." in the operand
+        // should not be stripped
+        if (operand.startsWith(".") && !MATCHES.equals(operator)) {
             operand = operand.substring(1);
         }
         
