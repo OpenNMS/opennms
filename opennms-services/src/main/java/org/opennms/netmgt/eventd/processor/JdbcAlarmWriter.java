@@ -86,9 +86,7 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
      *            the actual event to be inserted
      */
     public void process(Header eventHeader, Event event) throws SQLException {
-        if (event == null) {
-            log().info("The event argument is null, not doing any processing");
-        }
+        Assert.notNull(event, "event argument must not be null");
 
         /*
          * Check value of <logmsg> attribute 'dest', if set to

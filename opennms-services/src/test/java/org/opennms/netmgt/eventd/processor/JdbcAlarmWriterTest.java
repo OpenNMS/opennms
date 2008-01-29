@@ -214,6 +214,17 @@ public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals(0, rowCount);
 
     }
+
+    public void testNullEvent() throws Exception {
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("event argument must not be null"));
+        try {
+            m_jdbcAlarmWriter.process(null, null);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
     
     public void testNoLogmsg() throws Exception {
         Event event = new Event();
