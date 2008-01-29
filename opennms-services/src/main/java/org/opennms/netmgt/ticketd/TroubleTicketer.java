@@ -130,6 +130,8 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 		}
         } catch (InsufficientInformationException ex) {
             log().warn("Unable to create trouble ticket due to lack of information: "+ex.getMessage());
+        } catch (Throwable t) {
+            log().error("Error occurred during trouble ticket processing!", t);
         }
 	}
 
