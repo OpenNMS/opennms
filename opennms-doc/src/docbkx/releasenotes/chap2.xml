@@ -31,6 +31,10 @@
 	modifying your configuration.  
       </para>
       
+      <para>It is now possible to relocate the /var/opennms and
+      /var/log/opennms when installing the RPMs, using the "--relocate"
+      option to RPM.
+      </para>
     </section>
         
     <section>

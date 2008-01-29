@@ -56,9 +56,10 @@
       url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
       section on SourceForge.</para>
 
-      <para><programlisting><computeroutput># </computeroutput><command>rpm -i opennms-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm
-</command><computeroutput># </computeroutput><command>rpm -i opennms-webapp-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm
-</command><computeroutput># </computeroutput><command>rpm -i opennms-docs-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm</command></programlisting></para>
+      <para><programlisting><computeroutput># </computeroutput><command>rpm -i opennms*-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm</command></programlisting></para>
+      <para>Note that as of 1.3.10, you can use the "--relocate" flag to RPM if
+      you wish to put the logs and collection data in an alternate location:</para>
+      <para><programlisting><computeroutput># </computeroutput><command>rpm -i --relocate /var/opennms=/mnt/netapp/opennms-data /var/log/opennms=/mnt/netapp/opennms-logs opennms*.rpm</command></programlisting></para>
     </section>
 
     <section>
