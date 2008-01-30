@@ -9,6 +9,18 @@
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
 
+    <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
+                  resourceLabel="${cvmTempStatusDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ciscoEnvMonVoltageStatusIndex" label="Cisco Voltage"
+                  resourceLabel="${cvmVoltStatusDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <resourceType name="applIndex" label="Network Services Application"
                   resourceLabel="${applDescription} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
@@ -376,11 +388,15 @@
         <mibObj oid=".1.3.6.1.4.1.9.2.1.8" instance="0" alias="freeMem" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.2.1.46" instance="0" alias="bufferFail" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.2.1.47" instance="0" alias="bufferNoMem" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="1" alias="tempin" type="gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="2" alias="tempout1" type="gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="3" alias="tempout2" type="gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="4" alias="tempout3" type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer" />
+      </group>
+      <group name="cisco-temperature" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.2" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusValue" type="gauge" />
+      </group>
+      <group name="cisco-voltage" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.2.1.2" instance="ciscoEnvMonVoltageStatusIndex" alias="cvmVoltStatusDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.2.1.3" instance="ciscoEnvMonVoltageStatusIndex" alias="cvmVoltStatusValue" type="gauge" />
       </group>
       <group name="cisco-router-interface" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer" />
@@ -1502,6 +1518,8 @@
         <collect>
           <includeGroup>cisco-memory</includeGroup>
           <includeGroup>cisco-router</includeGroup>
+          <includeGroup>cisco-temperature</includeGroup>
+          <includeGroup>cisco-voltage</includeGroup>
           <includeGroup>cisco-router-interface</includeGroup>
           <includeGroup>adsl-line</includeGroup>
           <includeGroup>cisco-rttmon-latest-jitter-stats</includeGroup>
