@@ -4,9 +4,9 @@ import java.util.regex.Pattern;
 
 public class WebSecurityUtils {
 	
-	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9]");
+	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	
-	private final static Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.]");
+	private final static Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.+-]");
 	
 	private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
