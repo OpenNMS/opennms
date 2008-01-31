@@ -29,18 +29,24 @@
  */
 package org.opennms.ovapi;
 
-import java.io.FileDescriptor;
 
 public interface OVsPMD {
 	
 	int OVS_CMD_EXIT = 0;
 
-    public FileDescriptor OVsInit();
+	// int OVsInit(int* sp)
+    public int OVsInit(int[] sp);
+    
+    // int OVsInitComplete(OVsCodeType code, char* message)
+	public int OVsInitComplete(String response);
 	
-	public void OVsInitComplete(String response);
-	
+	// int OVsReceive(OVsPMDCommand* command)
 	public int OVsReceive();
 	
+	// int OVsDone(char *message)
 	public void OVsDone(String response);
+	
+	// int OVsResponse(OVsCodeType code, char* message)
+	
 
 }

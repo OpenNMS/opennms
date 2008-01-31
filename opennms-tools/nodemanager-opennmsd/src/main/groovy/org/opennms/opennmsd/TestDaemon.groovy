@@ -30,37 +30,60 @@
 
 package org.opennms.opennmsd;
 
-
-import org.opennms.opennmsd.AbstractEventForwarder
-import groovy.xml.MarkupBuilder
-
-class DefaultEventForwarder extends AbstractEventForwarder {
+public class TestDaemon implements Runnable {
     
-    String host = InetAddress.getLocalHost().hostName;
-    String openNmsHost;
+    OpenNMSDaemon m_daemon;
+    DefaultConfiguration m_config;
+    DefaultEventForwarder m_forwarder;
     
-    protected void forwardEvents(List eventsToFoward) {
+    public TestDaemon() {
+        m_daemon = new OpenNMSDaemon();
+        m_config = new DefaultConfiguration();
         
-        System.err.println("openNmsHost is ${openNmsHost}")
-        Socket socket = new Socket(openNmsHost, 5817);
-        socket.outputStream.withWriter { out ->
+        m_forwarder = new DefaultEventForwarder();
+        m_forwarder.setOpenNmsHost("127.0.0.1");
+      
+        m_daemon.setConfiguration(m_config);
+        m_daemon.setEventForwarder(m_forwarder);
+        m_daemon.onInit();
         
-          def xml = new MarkupBuilder(out);
-          xml.log {
-              events {
-                  for(NNMEvent e in eventsToFoward) {
-                      event {
-                          uei("uei.opennms.org/internal/discovery/${e.name}")
-                          source("opennmsd")
-                          time(e.timeStamp)
-                          host(m_host)
-                          'interface'(e.sourceAddress)
-                      }
-                  }
-              }
-          }
+    }
+
+    private void addShutdownHook() {
+        
+        Runnable r = { 
+                println "Stopping!"
+                m_daemon.onStop();
+        } as Runnable;
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(r));
+        
+    }
+    
+    public void run() {
+        for(i in 1..10) {
+            NNMEvent e = TestNNMEvent.createEvent("category${i}", getSeverity(i), "event${i}", "192.168.1.${i}");
+            m_daemon.onEvent(e);
+            Thread.sleep(10000);
         }
         
+    }
+    
+    public String getSeverity(int i) {
+        if (i % 2) {
+            return "Warning"
+        } else {
+            return "Normal"
+        }
+    }
+    
+
+    public static void main(String[] args) {
+        
+        TestDaemon daemon = new TestDaemon();
+        daemon.addShutdownHook();
+        
+        daemon.run();
     }
 
 }

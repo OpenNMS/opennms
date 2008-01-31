@@ -57,10 +57,14 @@ public class DefaultConfigurationTest extends TestCase {
         DefaultConfiguration config = new DefaultConfiguration();
         config.setConfigFile(confFile);
         config.load();
+        
+        assertNotNull(config.getFilterChain());
     }
+    
 
     private File getTestConfFile(String fileName) {
         File resourcesDir = new File(new File(new File("src"), "test"), "resources");
         return new File(resourcesDir, fileName);
     }
+    
 }
