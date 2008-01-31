@@ -72,17 +72,23 @@ public abstract class AbstractEventForwarder implements EventForwarder, Runnable
     }
 
     public void run() {
+        
+        try {
 
-        while(true) {
-            NNMEvent event = (NNMEvent)m_queue.poll();
+            while(true) {
+                NNMEvent event = (NNMEvent)m_queue.take();
+                
+                List events = new LinkedList();
+                events.add(event);
             
-            List events = new LinkedList();
-            events.add(event);
+                m_queue.drainTo(events);
             
-            m_queue.drainTo(events);
+                forwardEvents(events);
             
-            forwardEvents(events);
-            
+            }
+        
+        } catch (InterruptedException e) {
+            // thread interrupted so complete it
         }
         
     }
