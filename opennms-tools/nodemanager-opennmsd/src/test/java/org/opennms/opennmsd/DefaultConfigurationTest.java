@@ -58,7 +58,7 @@ public class DefaultConfigurationTest extends TestCase {
         config.setConfigFile(confFile);
         config.load();
         
-        assertNotNull(config.getFilterChain());
+	//        assertNotNull(config.getFilterChain());
     }
     
 

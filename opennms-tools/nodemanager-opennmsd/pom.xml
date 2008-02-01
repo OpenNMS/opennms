@@ -37,6 +37,29 @@
           </execution>
         </executions>
       </plugin>
+       <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.ovapi.OVsDaemon</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <!-- appendAssemblyId>false</appendAssemblyId -->
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
@@ -80,6 +103,11 @@ groovy.compiler.output.path=target/classes
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>1.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
