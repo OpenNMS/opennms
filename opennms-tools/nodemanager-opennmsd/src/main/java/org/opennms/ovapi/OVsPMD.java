@@ -29,24 +29,60 @@
  */
 package org.opennms.ovapi;
 
+import com.sun.jna.*;
+import com.sun.jna.ptr.*;
 
-public interface OVsPMD {
+public interface OVsPMD extends Library {
+
+    public static final OVsPMD INSTANCE = (OVsPMD)Native.synchronizedLibrary((OVsPMD)Native.loadLibrary("ov", OVsPMD.class));
+
+    public static class OVsPMDCommand extends Structure {
+	public int code;
+	public String message;
+    };
 	
-	int OVS_CMD_EXIT = 0;
+    public static final int OVS_NO_CODE                  = 0;
+    public static final int OVS_RSP_SUCCESS              = 1;
+    public static final int OVS_RSP_FAILURE              = 2;
+    public static final int OVS_RSP_DONE                 = 3;
+    public static final int OVS_RSP_STATUS               = 4;
+    public static final int OVS_CMD_NOOP                 = 5;
+    public static final int OVS_CMD_EXIT                 = 6;
+    public static final int OVS_CMD_DEPENDENCY_FAILED    = 7;
+    public static final int OVS_REQ_START                = 8;
+    public static final int OVS_REQ_STOP                 = 9;
+    public static final int OVS_REQ_STATUS               = 10;
+    public static final int OVS_REQ_ABORT                = 11;
+    public static final int OVS_RSP_ERROR                = 12;
 
-	// int OVsInit(int* sp)
-    public int OVsInit(int[] sp);
+    public static final int OVS_CMD_PAUSE                = 15;
+    public static final int OVS_CMD_RESUME               = 16;
+    public static final int OVS_RSP_PAUSE_ACK            = 17;
+    public static final int OVS_RSP_RESUME_ACK           = 18;
+    public static final int OVS_RSP_PAUSE_NACK           = 19;
+    public static final int OVS_RSP_RESUME_NACK          = 20;
+
+    public static final int OVS_RSP_VERBOSE_MSG          = 21;
+    public static final int OVS_RSP_LAST_MSG             = 22;
+
+    public static final int OVS_STATE_RUNNING            = 23;
+    public static final int OVS_STATE_PAUSED             = 24;
+    public static final int OVS_STATE_ALL_STOPPED        = 25;
+    public static final int OVS_STATE_START_COMPLETE     = 26;
+
+    // int OVsInit(int* sp)
+    public int OVsInit(IntByReference sp);
     
     // int OVsInitComplete(OVsCodeType code, char* message)
-	public int OVsInitComplete(String response);
-	
-	// int OVsReceive(OVsPMDCommand* command)
-	public int OVsReceive();
-	
-	// int OVsDone(char *message)
-	public void OVsDone(String response);
-	
-	// int OVsResponse(OVsCodeType code, char* message)
-	
+    public int OVsInitComplete(int code, String message);
+    
+    // int OVsReceive(OVsPMDCommand* command)
+    public int OVsReceive(OVsPMDCommand command);
+    
+    // int OVsDone(char *message)
+    public int OVsDone(String response);
+    
+    // int OVsResponse(OVsCodeType code, char* message)
+    public int OVsResponse(int code, String message);
 
 }
