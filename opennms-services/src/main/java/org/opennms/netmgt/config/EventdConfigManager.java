@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 02: Use CastorUtils.unmarshal and add IP address methods. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,17 +33,15 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * @author david
@@ -59,9 +61,18 @@ public class EventdConfigManager {
      * @throws IOException 
      */
     protected EventdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (EventdConfiguration) Unmarshaller.unmarshal(EventdConfiguration.class, reader);
+        m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader);
         reader.close();
 
+    }
+    
+    /**
+     * Return the IP address on which eventd listens for TCP connections.
+     * 
+     * @return the IP address on which eventd listens for TCP connections
+     */
+    public synchronized String getTCPIpAddress() {
+        return m_config.getTCPAddress();
     }
     
     /**
@@ -71,6 +82,15 @@ public class EventdConfigManager {
      */
     public synchronized int getTCPPort() {
         return m_config.getTCPPort();
+    }
+
+    /**
+     * Return the IP address on which eventd listens for UDP packets.
+     * 
+     * @return the IP address on which eventd listens for UDP packets
+     */
+    public synchronized String getUDPIpAddress() {
+        return m_config.getUDPAddress();
     }
 
     /**

@@ -22,6 +22,7 @@
   
   <bean id="tcpReceiver" class="org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver">
     <property name="port" ref="tcpPort"/>
+    <property name="ipAddress" ref="tcpIpAddress"/>
     <property name="eventHandlers">
       <list>
         <ref local="eventHandler"/>
@@ -31,6 +32,7 @@
   
   <bean id="udpReceiver" class="org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver">
     <property name="port" ref="udpPort"/>
+    <property name="ipAddress" ref="udpIpAddress"/>
     <property name="eventHandlers">
       <list>
         <ref local="eventHandler"/>
@@ -38,9 +40,19 @@
     </property>
   </bean>
   
+  <bean id="tcpIpAddress" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getTCPIpAddress"/>
+  </bean>
+
   <bean id="tcpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="eventdConfigManager"/>
     <property name="targetMethod" value="getTCPPort"/>
+  </bean>
+
+  <bean id="udpIpAddress" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getUDPIpAddress"/>
   </bean>
   
   <bean id="udpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
