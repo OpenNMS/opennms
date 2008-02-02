@@ -61,7 +61,7 @@
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
   </bean>
   
-  <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.EventHandler">
+  <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <property name="eventProcessors">
       <list>
         <ref local="eventExpander"/>
@@ -84,7 +84,7 @@
   </bean>
   
   <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-    <property name="eventIpcManager" ref="eventIpcManager"/>
+    <property name="eventIpcBroadcaster" ref="eventIpcManager"/>
   </bean>
 
   <bean id="alarmWriter" class="org.opennms.netmgt.eventd.processor.JdbcAlarmWriter">

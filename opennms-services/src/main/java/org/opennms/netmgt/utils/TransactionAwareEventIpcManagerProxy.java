@@ -105,10 +105,6 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         m_eventIpcManager.addEventListener(listener);
     }
 
-    public void broadcastNow(Event event) {
-        m_eventIpcManager.broadcastNow(event);
-    }
-
     public void removeEventListener(EventListener listener, List<String> ueiList) {
         m_eventIpcManager.removeEventListener(listener, ueiList);
     }

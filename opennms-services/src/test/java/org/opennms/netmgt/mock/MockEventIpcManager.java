@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.EventdConfigManager;
+import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -52,7 +53,7 @@ import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockUtil;
 
-public class MockEventIpcManager implements EventIpcManager {
+public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster {
 
     static class ListenerKeeper {
         EventListener m_listener;
