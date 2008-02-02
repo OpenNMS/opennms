@@ -32,4 +32,8 @@ public interface CollectionAgent extends NetworkInterface {
     
     public abstract InetAddress getInetAddress();
 
+    public abstract long getSavedSysUpTime();
+
+    public abstract void setSavedSysUpTime(long sysUpTime);
+
 }
