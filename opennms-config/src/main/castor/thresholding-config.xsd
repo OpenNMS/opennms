@@ -188,7 +188,7 @@
     <complexType>
       <complexContent>
         <extension base="this:basethresholddef">
-          <attribute name="ds-name" type="string">
+          <attribute name="ds-name" type="string" use="required">
             <annotation>
               <documentation>
                 RRD datasource name. Mutually exclusive with expression,
@@ -208,7 +208,7 @@
     <complexType>
       <complexContent>
         <extension base="this:basethresholddef">
-          <attribute name="expression" type="string">
+          <attribute name="expression" type="string" use="required">
             <annotation>
               <documentation>
                 An expression of Datasource names and constants to be
