@@ -153,7 +153,7 @@
         </tr>
         <tr>
           <td width="10%" valign="top" align="left">
-            Varbind:
+            Parameter:
           </td>
           <td valign="top" align="left">
             Name: <input type="text" size="30" name="varbindName" value='<%=varbindName%>'/>
