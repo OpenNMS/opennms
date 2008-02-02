@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Listen on 127.0.0.1.  We don't need to share our DHCP polling
+//              service with the world.  Bug #2224. - dj@opennms.org
 // 2005 Jan 28: Added ability to listen on port 67 and/or 68
 //              depending on config options
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -189,7 +191,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
             if (log().isDebugEnabled()) {
                 log().debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
             }
-            m_server = new ServerSocket(dFactory.getPort());
+            m_server = new ServerSocket(dFactory.getPort(), 0, InetAddress.getByName("127.0.0.1"));
         } catch (IOException ex) {
             throw new UndeclaredThrowableException(ex);
         }
