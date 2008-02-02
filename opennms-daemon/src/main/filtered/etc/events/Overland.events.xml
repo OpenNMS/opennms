@@ -1,0 +1,226 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Start of auto generated data from MIB: OVERLAND-NEXTGEN -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventDoorOpen</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventDoorOpen</event-label>
+	<descr>
+&lt;p&gt;A library door has been opened.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventDoorOpen trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventMailSlotAccessed</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventMailSlotAccessed</event-label>
+	<descr>
+&lt;p&gt;A mail slot is being accessed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventMailSlotAccessed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventHardFault</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventHardFault</event-label>
+	<descr>
+&lt;p&gt;The library has posted a hard fault.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventHardFault trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventSlaveFailed</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventSlaveFailed</event-label>
+	<descr>
+&lt;p&gt;A slave module has faulted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventSlaveFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventPowerSupplyFailed</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventPowerSupplyFailed</event-label>
+	<descr>
+&lt;p&gt;One of the redundant power supplies has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventPowerSupplyFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventRequestDriveClean</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventRequestDriveClean</event-label>
+	<descr>
+&lt;p&gt;One of the library tape drives has requested a
+cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventRequestDriveClean trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventFanStalled</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventFanStalled</event-label>
+	<descr>
+&lt;p&gt;A tape drive fan has stalled.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventFanStalled trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventDriveError</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventDriveError</event-label>
+	<descr>
+&lt;p&gt;A tape drive error has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventDriveError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventDriveRemoved</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventDriveRemoved</event-label>
+	<descr>
+&lt;p&gt;A tape drive has been removed from the library.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventDriveRemoved trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventSlaveRemoved</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventSlaveRemoved</event-label>
+	<descr>
+&lt;p&gt;A slave module has been removed from the library.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventSlaveRemoved trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventFailedOver</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventFailedOver</event-label>
+	<descr>
+&lt;p&gt;The library is failed over to the Secondary Master.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventFailedOver trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventLoaderRetriesExcessive</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventLoaderRetriesExcessive</event-label>
+	<descr>
+&lt;p&gt;The library has detected excessive loader retries.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventLoaderRetriesExcessive trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3351.1.3.2.6.1.13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overland/neo/eventLoaderOK</uei>
+	<event-label>OVERLAND-NEXTGEN defined trap event: eventLoaderOK</event-label>
+	<descr>
+&lt;p&gt;The library has reverted to normal operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			OVERLAND-NEXTGEN defined trap event: eventLoaderOK trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: OVERLAND-NEXTGEN -->
+</events>
