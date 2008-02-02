@@ -18,27 +18,45 @@
     </annotation>
 
     <complexType>
+      <attribute name="TCPAddress" use="required" type="string">
+        <annotation>
+          <documentation>The IP address on which eventd listens for TCP connections.
+          If "*" is specified, eventd will bind to all addresses.  The default
+          address is 127.0.0.1.</documentation>
+        </annotation>
+      </attribute>
+      
       <attribute name="TCPPort" use="required">
         <annotation>
           <documentation>The port on which eventd listens for TCP connections.
-          The standard port is 5817.</documentation>
+          The default port is 5817.</documentation>
         </annotation>
         <simpleType>
           <restriction base="int">
             <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
           </restriction>
         </simpleType>
       </attribute>
 
+      <attribute name="UDPAddress" use="required" type="string">
+        <annotation>
+          <documentation>The IP address on which eventd listens for UDP packets.
+          If "*" is specified, eventd will bind to all addresses.  The default
+          address is 127.0.0.1.</documentation>
+        </annotation>
+      </attribute>
+
       <attribute name="UDPPort" use="required">
         <annotation>
-          <documentation>The port on which eventd listens for UDP data. The
-          standard port is 5817.</documentation>
+          <documentation>The port on which eventd listens for UDP packets. The
+          default port is 5817.</documentation>
         </annotation>
         
         <simpleType>
           <restriction base="int">
             <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
           </restriction>
         </simpleType>
       </attribute>
