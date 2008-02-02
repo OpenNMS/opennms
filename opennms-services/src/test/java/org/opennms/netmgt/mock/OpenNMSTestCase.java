@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Remove EventdConfigManager--we can directly inject the values we want. - dj@opennms.org
 // 2008 Jan 27: Move createStandardNetwork to MockNetwork.  Follow
 //              eventd changes. - dj@opennms.org
 // 2008 Jan 27: The EventdConfigManager doesn't need to be a field. - dj@opennms.org 
@@ -58,7 +59,6 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
@@ -74,6 +74,8 @@ import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventExpander;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.eventd.processor.EventProcessor;
+import org.opennms.netmgt.eventd.processor.JdbcAlarmWriter;
+import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
@@ -167,8 +169,6 @@ public class OpenNMSTestCase extends TestCase {
             if (isStartEventd()) {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
 
-                EventdConfigManager eventdConfigMgr = new MockEventConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/mock/eventd-configuration.xml"));
-                
                 JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
                 eventdServiceManager.setDataSource(m_db);
                 eventdServiceManager.afterPropertiesSet();
@@ -186,20 +186,20 @@ public class OpenNMSTestCase extends TestCase {
                 eventExpander.setEventConfDao(eventConfDao);
                 eventExpander.afterPropertiesSet();
 
-                org.opennms.netmgt.eventd.processor.JdbcEventWriter jdbcEventWriter = new org.opennms.netmgt.eventd.processor.JdbcEventWriter();
+                JdbcEventWriter jdbcEventWriter = new JdbcEventWriter();
                 jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
                 jdbcEventWriter.setDataSource(m_db);
-                jdbcEventWriter.setGetNextIdString(eventdConfigMgr.getGetNextEventID());
+                jdbcEventWriter.setGetNextIdString("select nextVal('eventsNxtId')"); // for HSQL: "SELECT max(eventId)+1 from events"
                 jdbcEventWriter.afterPropertiesSet();
                 
                 EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor();
                 eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
                 eventIpcBroadcastProcessor.afterPropertiesSet();
 
-                org.opennms.netmgt.eventd.processor.JdbcAlarmWriter jdbcAlarmWriter = new org.opennms.netmgt.eventd.processor.JdbcAlarmWriter();
+                JdbcAlarmWriter jdbcAlarmWriter = new JdbcAlarmWriter();
                 jdbcAlarmWriter.setEventdServiceManager(eventdServiceManager);
                 jdbcAlarmWriter.setDataSource(m_db);
-                jdbcAlarmWriter.setGetNextIdString(eventdConfigMgr.getGetNextAlarmID());
+                jdbcAlarmWriter.setGetNextIdString("select nextVal('alarmsNxtId')"); // for HSQL: "SELECT max(alarmId)+1 from alarms"
                 jdbcAlarmWriter.afterPropertiesSet();
                 
                 List<EventProcessor> eventProcessors = new ArrayList<EventProcessor>(3);
@@ -212,7 +212,7 @@ public class OpenNMSTestCase extends TestCase {
                 eventHandler.setEventProcessors(eventProcessors);
                 eventHandler.afterPropertiesSet();
                 
-                m_eventdIpcMgr.setHandlerPoolSize(eventdConfigMgr.getReceivers());
+                m_eventdIpcMgr.setHandlerPoolSize(5);
                 m_eventdIpcMgr.setEventHandler(eventHandler);
                 m_eventdIpcMgr.afterPropertiesSet();
                 
@@ -237,11 +237,11 @@ public class OpenNMSTestCase extends TestCase {
                 eventHandlers.add(proxy);
                 
                 TcpEventReceiver tcpEventReceiver = new TcpEventReceiver();
-                tcpEventReceiver.setPort(eventdConfigMgr.getTCPPort());
+                tcpEventReceiver.setPort(5837);
                 tcpEventReceiver.setEventHandlers(eventHandlers);
                 
                 UdpEventReceiver udpEventReceiver = new UdpEventReceiver();
-                udpEventReceiver.setPort(eventdConfigMgr.getUDPPort());
+                udpEventReceiver.setPort(5837);
                 tcpEventReceiver.setEventHandlers(eventHandlers);
                 
                 List<EventReceiver> eventReceivers = new ArrayList<EventReceiver>(2);
@@ -299,7 +299,7 @@ public class OpenNMSTestCase extends TestCase {
         return m_startEventd;
     }
 
-    public void testDoNothing() {}
+    public void testDoNothing() { sleep(1000); }
 
     protected void sleep(long millis) {
         try {

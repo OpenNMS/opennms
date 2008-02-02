@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Allow specific of the server IP address. - dj@opennms.org
 // 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -41,6 +42,7 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -67,6 +69,11 @@ final class TcpServer implements Runnable {
      * connection to the server will be processed by its own thread.
      */
     static final int TCP_PORT = 5817;
+
+    /**
+     * The default IP address where the server listens for connections.
+     */
+    static final String DEFAULT_IP_ADDRESS = "127.0.0.1";
 
     /**
      * The TCP/IP Port for the server socket's binding. By default this should
@@ -125,6 +132,8 @@ final class TcpServer implements Runnable {
      */
     private int m_recsPerConn;
 
+    private InetAddress m_ipAddress;
+
     /**
      * Constructs a new instance of an server to handle incomming tcp
      * connections.
@@ -133,15 +142,7 @@ final class TcpServer implements Runnable {
      *            The parent fiber
      */
     public TcpServer(Fiber parent, List<EventHandler> handlers) throws IOException {
-        m_parent = parent;
-        m_tcpPort = TCP_PORT;
-        m_tcpSock = new ServerSocket(m_tcpPort);
-        m_receivers = new LinkedList<TcpStreamHandler>();
-        m_stop = false;
-        m_context = null;
-        m_handlers = handlers;
-        m_logPrefix = org.opennms.netmgt.eventd.Eventd.LOG4J_CATEGORY;
-        m_recsPerConn = TcpEventReceiver.UNLIMITED_EVENTS;
+        this(parent, handlers, TCP_PORT, InetAddress.getByName(DEFAULT_IP_ADDRESS));
     }
 
     /**
@@ -152,23 +153,26 @@ final class TcpServer implements Runnable {
      *            The parent fiber
      * @param port
      *            The port to listen on.
+     * @param address TODO
      */
-    public TcpServer(Fiber parent, List<EventHandler> handlers, int port) throws IOException {
+    public TcpServer(Fiber parent, List<EventHandler> handlers, int port, InetAddress address) throws IOException {
         m_parent = parent;
         m_tcpPort = port;
-        try {
-            m_tcpSock = new ServerSocket(m_tcpPort);
-        } catch (IOException e) {
-            IOException n = new IOException("Could not create listening TCP socket on port " + m_tcpPort + ": " + e);
-            n.initCause(e);
-            throw n;
-        }
+        m_ipAddress = address;
         m_receivers = new LinkedList<TcpStreamHandler>();
         m_stop = false;
         m_context = null;
         m_handlers = handlers;
         m_logPrefix = org.opennms.netmgt.eventd.Eventd.LOG4J_CATEGORY;
         m_recsPerConn = TcpEventReceiver.UNLIMITED_EVENTS;
+
+        try {
+            m_tcpSock = new ServerSocket(m_tcpPort, 0, m_ipAddress);
+        } catch (IOException e) {
+            IOException n = new IOException("Could not create listening TCP socket on " + m_ipAddress + ":" + m_tcpPort + ": " + e);
+            n.initCause(e);
+            throw n;
+        }
     }
 
     /**
@@ -275,7 +279,7 @@ final class TcpServer implements Runnable {
         }
 
         if (log().isDebugEnabled()) {
-            log().debug("Server connection processor started on port " + m_tcpPort);
+            log().debug("Server connection processor started on " + m_ipAddress + ":" + m_tcpPort);
         }
 
         /*

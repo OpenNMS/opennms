@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Allow specific of the server IP address. - dj@opennms.org
 // 2008 Jan 26: Rename m_handlers to m_eventHandlers and expose a
 //              getter and setter. - dj@opennms.org
 // 2008 Jan 26: Constructors don't throw IOException, so stop lying. ;-) - dj@opennms.org
@@ -41,6 +42,8 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,11 +117,18 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     private int m_recsPerConn;
 
     /**
+     * The IP address that the TcpServer will listen on.  If null, bind to all
+     * interfaces.
+     */
+    private String m_ipAddress;
+
+    /**
      * Constructs a new TCP/IP event receiver on the default TCP/IP port. The
      * server socket allocation is delayed until the fiber is actually started.
+     * @throws UnknownHostException 
      */
-    public TcpEventReceiver() {
-        this(TcpServer.TCP_PORT);
+    public TcpEventReceiver() throws UnknownHostException {
+        this(TcpServer.TCP_PORT, TcpServer.DEFAULT_IP_ADDRESS);
     }
 
     /**
@@ -127,11 +137,14 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * 
      * @param port
      *            The binding port for the TCP/IP server socket.
+     * @param ipAddress TODO
+     * @throws UnknownHostException 
      */
-    public TcpEventReceiver(int port) {
+    public TcpEventReceiver(int port, String ipAddress) throws UnknownHostException {
         m_eventHandlers = new ArrayList<EventHandler>(3);
         m_status = START_PENDING;
         m_tcpPort = port;
+        m_ipAddress = ipAddress;
         m_server = null;
         m_worker = null;
         m_logPrefix = null;
@@ -155,7 +168,8 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
         m_status = STARTING;
         try {
-            m_server = new TcpServer(this, m_eventHandlers, m_tcpPort);
+            InetAddress address = "*".equals(m_ipAddress) ? null : InetAddress.getByName(m_ipAddress);
+            m_server = new TcpServer(this, m_eventHandlers, m_tcpPort, address);
             if (m_logPrefix != null) {
                 m_server.setLogPrefix(m_logPrefix);
             }
@@ -271,6 +285,16 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     public void setEventHandlers(List<EventHandler> eventHandlers) {
         m_eventHandlers = eventHandlers;
+    }
+
+    public String getIpAddress() {
+        return m_ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        assertNotRunning();
+        
+        m_ipAddress = ipAddress;
     }
 
     public Integer getPort() {

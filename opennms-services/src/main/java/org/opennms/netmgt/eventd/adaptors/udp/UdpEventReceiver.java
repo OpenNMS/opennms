@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Allow specific of the server IP address. - dj@opennms.org
 // 2008 Jan 26: Rename m_handlers to m_eventHandlers and expose a
 //              getter and setter. - dj@opennms.org
 // 2008 Jan 23: Java 5 generics, log() method, format code. - dj@opennms.org
@@ -41,6 +42,7 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -114,6 +116,11 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     private DatagramSocket m_dgSock;
 
     /**
+     * The IP address for the UDP socket to bind on.
+     */
+    private String m_ipAddress;
+
+    /**
      * The UDP socket port binding.
      */
     private int m_dgPort;
@@ -124,11 +131,12 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     private String m_logPrefix;
 
     public UdpEventReceiver() {
-        this(UDP_PORT);
+        this(UDP_PORT, null);
     }
 
-    public UdpEventReceiver(int port) {
+    public UdpEventReceiver(int port, String ipAddress) {
         m_dgSock = null;
+        m_ipAddress = ipAddress;
         m_dgPort = port;
 
         m_eventsIn = new LinkedList<UdpReceivedEvent>();
@@ -150,7 +158,8 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         m_status = STARTING;
 
         try {
-            m_dgSock = new DatagramSocket(m_dgPort);
+            InetAddress address = "*".equals(m_ipAddress) ? null : InetAddress.getByName(m_ipAddress);
+            m_dgSock = new DatagramSocket(m_dgPort, address);
 
             m_receiver = new UdpReceiver(m_dgSock, m_eventsIn);
             m_processor = new UdpProcessor(m_eventHandlers, m_eventsIn, m_eventUuidsOut);
@@ -221,6 +230,16 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     public void destroy() {
+    }
+
+    public String getIpAddress() {
+        return m_ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        assertNotRunning();
+        
+        m_ipAddress = ipAddress;
     }
 
     public void setPort(Integer port) {
