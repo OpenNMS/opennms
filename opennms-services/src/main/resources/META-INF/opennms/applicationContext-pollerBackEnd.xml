@@ -11,19 +11,16 @@
     </constructor-arg>
   </bean>
 
-  <bean name="daemon"
-    class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+  <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager" ref="eventIpcManager" />
-    <property name="disconnectedTimeout"
-      ref="monitorDisconnectedTimeout" />
+    <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
   </bean>
 
-  <bean id="methodInvokingJobDetail"
-    class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
     <property name="targetObject" ref="daemon" />
     <property name="targetMethod" value="checkForDisconnectedMonitors" />
   </bean>
@@ -34,8 +31,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="monitorCheckTrigger"
-    class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+  <bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
     <property name="repeatInterval" ref="monitorCheckInterval" />
     <property name="jobDetail" ref="methodInvokingJobDetail" />
   </bean>
@@ -49,7 +45,6 @@
       </list>
     </property>
   </bean>
-
 
   <tx:annotation-driven />
 </beans>
