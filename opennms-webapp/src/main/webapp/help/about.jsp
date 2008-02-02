@@ -165,14 +165,14 @@
       
       	   <td>
 		<p>
-        	Powered By Tomcat<br/>
+        	Powered By Jetty<br/>
 		<a href="http://jetty.mortbay.org" target="_new"><img src="images/powered_by_jetty.gif" hspace="0" vspace="0"
       		   border="0" alt="jetty.mortbay.org"></a>.
       		</p>
 	   </td>
            <td>
 		<p>
-		Built on Tobi Oetiker's RRDTool<br/>
+		Support for Tobi Oetiker's RRDTool<br/>
         	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool-logo-dark.png" hspace="0" vspace="0" width="121" height="48"
            	border="0" alt="www.rrdtool.org"></a>
       		</p>      
@@ -186,7 +186,7 @@
 	   </td>
       	   <td>
 		<p>
-        	Powered By Tomcat<br/>
+        	Support for Tomcat<br/>
 		<a href="http://tomcat.apache.org/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" width="77" height="80"
       		   border="0" alt="tomcat.apache.org"></a>.
       		</p>
