@@ -187,21 +187,6 @@
       </group>
       <group name="windows-host" ifType="ignore">
         <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
-        <!-- Drive information is from the hrStorage table. -->
-        <!-- I'm cheating and assuming that the second and third -->
-        <!-- entries refer to Drive_C and Drive_D -->
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="2" alias="hrDescDisk2" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="hrUnitsDisk2" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="hrSizeDisk2" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="hrUsedDisk2" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="3" alias="hrDescDisk3" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="hrUnitsDisk3" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="hrSizeDisk3" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="hrUsedDisk3" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="4" alias="hrDescDisk4" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="4" alias="hrUnitsDisk4" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="4" alias="hrSizeDisk4" type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="4" alias="hrUsedDisk4" type="integer" />
         <!-- Memory in KBytes -->
         <mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
       </group>
@@ -1653,6 +1638,7 @@
           <includeGroup>snmpinformant-processes</includeGroup>
           <includeGroup>snmpinformant-sqlserver</includeGroup>
           <includeGroup>snmpinformant-network</includeGroup>
+          <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>windows-host</includeGroup>
         </collect>
       </systemDef>
