@@ -1639,6 +1639,7 @@
   <event-file>events/Novell.events.xml</event-file>
   <event-file>events/Oracle.events.xml</event-file>
   <event-file>events/OSPF.events.xml</event-file>
+  <event-file>events/Overland.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/Pixelmetrix.events.xml</event-file>
   <event-file>events/Primecluster.events.xml</event-file>
