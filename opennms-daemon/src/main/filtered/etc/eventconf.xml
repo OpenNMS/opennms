@@ -1551,6 +1551,30 @@
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="1" auto-clean="false" />
   </event>
   
+  <event>
+    <uei>uei.opennms.org/internal/syslogdConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: Syslogd configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when the Syslogd configuration has changed and should be reloaded
+    </descr>
+    <logmsg dest='logndisplay'>
+      The Syslogd configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event> 
+  
+  <event>
+    <uei>uei.opennms.org/internal/discoveryConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: discovery configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when discovery configuration has changed and should be reloaded
+    </descr>
+    <logmsg dest='logndisplay'>
+      The discovery configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event> 
+  
   <event-file>events/ia.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/ADIC-v2.events.xml</event-file>
@@ -1577,8 +1601,11 @@
   <event-file>events/Clarent.events.xml</event-file>
   <event-file>events/Clarinet.events.xml</event-file>
   <event-file>events/Cricket.events.xml</event-file>
+  <event-file>events/DellArrayManager.events.xml</event-file>
   <event-file>events/Dell-DRAC2.events.xml</event-file>
   <event-file>events/DellOpenManage.events.xml</event-file>
+  <event-file>events/DellRacHost.events.xml</event-file>
+  <event-file>events/DellStorageManagement.events.xml</event-file>
   <event-file>events/DPS.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/Fore.events.xml</event-file>
