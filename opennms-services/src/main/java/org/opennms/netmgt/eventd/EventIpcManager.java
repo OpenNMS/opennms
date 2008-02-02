@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Pull broadcastNow out into EventIpcBroadcaster. - dj@opennms.org
 // 2008 Jan 27: Remove EventdConfigManager getter and setter. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,9 +34,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
-
 package org.opennms.netmgt.eventd;
 
 import java.util.List;
@@ -60,13 +58,10 @@ public interface EventIpcManager {
      */
     public void sendNow(Log eventLog);
 
-    // TODO: Make a sendNow that takes a list of events so we don't need to
-    // mess with Log everywhere that sends multiple events
-    
-    /**
-     * Called by eventd to send an event to all interested listeners
+    /*
+     * TODO: Make a sendNow that takes a list of events so we don't need to
+     * mess with Log everywhere that sends multiple events.
      */
-    public void broadcastNow(Event event);
 
     /**
      * Registers an event listener that is interested in all events

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 02: Clean up logging and comments a bit. - dj@opennms.org
 // 2008 Jan 26: Pull the EventHandler code into EventIpcManagerEventHandlerProxy
 //              and inject it.  Get rid of localHostAddress--it wasn't used.
 //              Turn Tcp/UdpEventReceiver into just a list of EventReceivers
@@ -133,21 +134,15 @@ public final class Eventd extends AbstractServiceDaemon {
             eventReceiver.start();
         }
         
-        if (log().isDebugEnabled()) {
-            log().debug("Listener threads started");
-        }
+        log().debug("Listener threads started");
 
-        if (log().isDebugEnabled()) {
-            log().debug("Eventd running");
-        }
+        log().debug("Eventd running");
     }
 
     protected void onStop() {
-        // Stop listener threads
-        if (log().isDebugEnabled()) {
-            log().debug("calling shutdown on tcp/udp listener threads");
-        }
+        log().debug("calling shutdown on tcp/udp listener threads");
 
+        // Stop listener threads
         for (EventReceiver eventReceiver : m_eventReceivers) {
             eventReceiver.stop();
         }
@@ -156,9 +151,7 @@ public final class Eventd extends AbstractServiceDaemon {
             m_receiver.close();
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("shutdown on tcp/udp listener threads returned");
-        }
+        log().debug("shutdown on tcp/udp listener threads returned");
     }
 
     public EventdServiceManager getEventdServiceManager() {

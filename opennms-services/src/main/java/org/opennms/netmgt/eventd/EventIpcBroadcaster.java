@@ -10,8 +10,7 @@
 //
 // Modifications:
 //
-// 2008 Feb 02: Move broadcastNow to EventIpcBroadcaster. - dj@opennms.org
-// 2008 Jan 27: Created this file. - dj@opennms.org
+// 2008 Feb 02: Created this file. - dj@opennms.org
 //
 // Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
 //
@@ -23,7 +22,7 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
@@ -34,34 +33,17 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.eventd.processor;
+package org.opennms.netmgt.eventd;
 
-import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
- * EventProcessor that braodcasts events to other interested
- * daemons with EventIpcBroadcaster.broadcastNow(Event).
+ * Back-end interface for the EventIpcManager.  Used by eventd to send events
+ * to interested listeners. 
  */
-public class EventIpcBroadcastProcessor implements EventProcessor, InitializingBean {
-    private EventIpcBroadcaster m_eventIpcBroadcaster;
-    
-    public void afterPropertiesSet() throws IllegalStateException {
-        Assert.state(m_eventIpcBroadcaster != null, "property eventIpcBroadcaster must be set");
-    }
-
-    public void process(Header eventHeader, Event event) {
-        m_eventIpcBroadcaster.broadcastNow(event);
-    }
-
-    public EventIpcBroadcaster getEventIpcBroadcaster() {
-        return m_eventIpcBroadcaster;
-    }
-
-    public void setEventIpcBroadcaster(EventIpcBroadcaster eventIpcManager) {
-        m_eventIpcBroadcaster = eventIpcManager;
-    }
+public interface EventIpcBroadcaster {
+    /**
+     * Called by eventd to send an event to all interested listeners.
+     */
+    public abstract void broadcastNow(Event event);
 }
