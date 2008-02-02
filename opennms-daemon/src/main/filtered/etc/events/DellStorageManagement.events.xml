@@ -1,0 +1,4369 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Start of auto generated data from MIB: STORAGEMANAGEMENT-MIB -->
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">101</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertStorageManagementInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertStorageManagementInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Storage Management Information
+There is no global status change associated with this trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertStorageManagementInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">102</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertStorageManagementNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertStorageManagementNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;There is no global status change associated with this trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertStorageManagementNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">103</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertStorageManagementWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertStorageManagementWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Storage Management has detected a device independent warning condition.
+There is no global status change associated with this trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertStorageManagementWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">104</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertStorageManagementFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertStorageManagementFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Storage Management has detected a device independent error condition.
+There is no global status change associated with this trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertStorageManagementFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">105</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertStorageManagementNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertStorageManagementNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Storage Management has detected a device independent non-recoverable condition.
+There is no global status change associated with this trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertStorageManagementNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">751</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertControllerInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertControllerInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Controller information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertControllerInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">752</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertControllerNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertControllerNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Controller has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertControllerNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">753</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertControllerWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertControllerWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Controller is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertControllerWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">754</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertControllerFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertControllerFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Controller is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertControllerFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">755</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertControllerNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertControllerNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Controller is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertControllerNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">801</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertChannelInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertChannelInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Channel information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertChannelInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">802</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertChannelNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertChannelNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Channel has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertChannelNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">803</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertChannelWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertChannelWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Channel is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertChannelWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">804</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertChannelFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertChannelFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Channel is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertChannelFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">805</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertChannelNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertChannelNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Channel is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertChannelNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">851</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEnclosureInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEnclosureInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Enclosure information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEnclosureInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">852</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEnclosureNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEnclosureNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Enclosure has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEnclosureNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">853</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEnclosureWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEnclosureWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Enclosure is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEnclosureWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">854</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEnclosureFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEnclosureFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Enclosure is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEnclosureFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">855</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEnclosureNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEnclosureNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Enclosure is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEnclosureNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">901</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertArrayDiskInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertArrayDiskInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Array Disk information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertArrayDiskInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">902</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertArrayDiskNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertArrayDiskNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Array Disk has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertArrayDiskNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">903</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertArrayDiskWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertArrayDiskWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Array Disk is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertArrayDiskWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">904</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertArrayDiskFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertArrayDiskFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Array Disk is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertArrayDiskFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">905</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertArrayDiskNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertArrayDiskNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Array Disk is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertArrayDiskNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">951</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEMMInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEMMInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;EMM information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEMMInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">952</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEMMNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEMMNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;EMM has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEMMNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">953</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEMMWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEMMWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;EMM is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEMMWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">954</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEMMFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEMMFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;EMM is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEMMFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">955</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertEMMNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertEMMNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;EMM is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertEMMNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1001</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertPowerSupplyInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertPowerSupplyInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Power Supply information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertPowerSupplyInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1002</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertPowerSupplyNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertPowerSupplyNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Power Supply has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertPowerSupplyNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1003</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertPowerSupplyWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertPowerSupplyWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Power Supply is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertPowerSupplyWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1004</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertPowerSupplyFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertPowerSupplyFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Power Supply is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertPowerSupplyFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1005</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertPowerSupplyNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertPowerSupplyNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Power Supply is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertPowerSupplyNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1051</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertTemperatureProbeInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Temperature Probe information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertTemperatureProbeInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1052</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertTemperatureProbeNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Temperature Probe has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertTemperatureProbeNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1053</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertTemperatureProbeWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Temperature Probe is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertTemperatureProbeWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1054</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertTemperatureProbeFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Temperature Probe is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertTemperatureProbeFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1055</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertTemperatureProbeNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Temperature Probe is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertTemperatureProbeNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1101</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertFanInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertFanInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Fan information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertFanInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1102</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertFanNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertFanNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Fan has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertFanNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1103</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertFanWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertFanWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Fan is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertFanWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1104</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertFanFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertFanFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Fan is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertFanFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1105</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertFanNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertFanNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Fan is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertFanNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1151</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertBatteryInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertBatteryInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Battery information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertBatteryInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1152</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertBatteryNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertBatteryNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Battery has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertBatteryNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1153</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertBatteryWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertBatteryWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Battery is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertBatteryWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1154</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertBatteryFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertBatteryFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Battery is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertBatteryFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1155</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertBatteryNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertBatteryNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Battery is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertBatteryNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1201</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertVirtualDiskInformation</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertVirtualDiskInformation</event-label>
+        <descr xmlns="">
+&lt;p&gt;Virtual Disk information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertVirtualDiskInformation trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1202</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertVirtualDiskNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertVirtualDiskNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Virtual Disk has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertVirtualDiskNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1203</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertVirtualDiskWarning</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertVirtualDiskWarning</event-label>
+        <descr xmlns="">
+&lt;p&gt;Virtual Disk is in warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertVirtualDiskWarning trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1204</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertVirtualDiskFailure</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertVirtualDiskFailure</event-label>
+        <descr xmlns="">
+&lt;p&gt;Virtual Disk is in error state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertVirtualDiskFailure trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1205</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertVirtualDiskNonRecoverable</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertVirtualDiskNonRecoverable</event-label>
+        <descr xmlns="">
+&lt;p&gt;Virtual Disk is non-recoverable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertVirtualDiskNonRecoverable trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1304</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertRedundancyNormal</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertRedundancyNormal</event-label>
+        <descr xmlns="">
+&lt;p&gt;Redundancy has returned to normal.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertRedundancyNormal trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1305</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertRedundancyDegraded</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertRedundancyDegraded</event-label>
+        <descr xmlns="">
+&lt;p&gt;Redundancy has been degraded.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertRedundancyDegraded trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename xmlns="">id</mename>
+                <mevalue xmlns="">.1.3.6.1.4.1.674.10893.1.20.200</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">generic</mename>
+                <mevalue xmlns="">6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename xmlns="">specific</mename>
+                <mevalue xmlns="">1306</mevalue>
+            </maskelement>
+        </mask>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertRedundancyLost</uei>
+        <event-label xmlns="">StorageManagement-MIB defined trap event: alertRedundancyLost</event-label>
+        <descr xmlns="">
+&lt;p&gt;Redundancy has been lost.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	messageIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	descriptionEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	locationEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNameEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectOIDEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	objectNexusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	currentStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	previousStatusEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+			Dell Storage Management: alertRedundancyLost trap received 
+			messageIDEvent=%parm[#1]% 
+			descriptionEvent=%parm[#2]% 
+			locationEvent=%parm[#3]% 
+			objectNameEvent=%parm[#4]% 
+			objectOIDEvent=%parm[#5]% 
+			objectNexusEvent=%parm[#6]% 
+			currentStatusEvent=%parm[#7]% 
+			previousStatusEvent=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+        <severity xmlns="">Major</severity>
+    </event>
+</events>
