@@ -69,40 +69,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         
     }
 
-    static public final class IfNumberTracker extends SingleInstanceTracker {
-    	int m_ifNumber = -1;
-    
-    	IfNumberTracker() {
-    		super(SnmpObjId.get(SnmpCollector.INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
-    	}
-    
-    	protected void storeResult(SnmpObjId base, SnmpInstId inst,
-    			SnmpValue val) {
-    		m_ifNumber = val.toInt();
-    	}
-    
-    	public int getIfNumber() {
-    		return m_ifNumber;
-    	}
-    	
-        public String toString() {
-        	StringBuffer buffer = new StringBuffer();
-        	
-        	buffer.append(getClass().getName());
-        	buffer.append("@");
-        	buffer.append(Integer.toHexString(hashCode()));
-        	
-        	buffer.append(": ifNumber: " + m_ifNumber);
-        	
-        	return buffer.toString();
-        }
-
-    }
-
     private CollectionAgent m_agent;
     private OnmsSnmpCollection m_snmpCollection;
     private SnmpIfCollector m_ifCollector;
-    private SnmpCollectionSet.IfNumberTracker m_ifNumber;
+    private IfNumberTracker m_ifNumber;
+    private SysUpTimeTracker m_sysUpTime;
     private SnmpNodeCollector m_nodeCollector;
     private int m_status=ServiceCollector.COLLECTION_FAILED;
     
@@ -125,6 +96,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     	buffer.append(m_ifNumber);
     	buffer.append("\n");
     	
+        buffer.append("SysUpTimeTracker: ");
+        buffer.append(m_sysUpTime);
+        buffer.append("\n");
+        
     	buffer.append("SnmpNodeCollector: ");
     	buffer.append(m_nodeCollector);
     	buffer.append("\n");
@@ -143,10 +118,16 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_ifCollector;
     }
 
-    public SnmpCollectionSet.IfNumberTracker getIfNumber() {
+    public IfNumberTracker getIfNumber() {
         if (m_ifNumber == null)
             m_ifNumber = createIfNumberTracker();
         return m_ifNumber;
+    }
+
+    public SysUpTimeTracker getSysUpTime() {
+        if (m_sysUpTime == null)
+            m_sysUpTime = createSysUpTimeTracker();
+        return m_sysUpTime;
     }
 
     public SnmpNodeCollector getNodeCollector() {
@@ -163,12 +144,20 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return nodeCollector;
     }
 
-    private SnmpCollectionSet.IfNumberTracker createIfNumberTracker() {
-        SnmpCollectionSet.IfNumberTracker ifNumber = null;
+    private IfNumberTracker createIfNumberTracker() {
+        IfNumberTracker ifNumber = null;
         if (hasInterfaceDataToCollect()) {
-            ifNumber = new SnmpCollectionSet.IfNumberTracker();
+            ifNumber = new IfNumberTracker();
         }
         return ifNumber;
+    }
+
+    private SysUpTimeTracker createSysUpTimeTracker() {
+        SysUpTimeTracker sysUpTime = null;
+        if (hasInterfaceDataToCollect()) {
+            sysUpTime = new SysUpTimeTracker();
+        }
+        return sysUpTime;
     }
 
     private SnmpIfCollector createIfCollector() {
@@ -235,15 +224,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_snmpCollection.getAttributeTypes(m_agent);
     }
 
-    public Collection getResources() {
+    public Collection<? extends CollectionResource> getResources() {
         return m_snmpCollection.getResources(m_agent);
     }
 
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
         
-        for (Iterator iter = getResources().iterator(); iter.hasNext();) {
-            CollectionResource resource = (CollectionResource) iter.next();
+        for (CollectionResource resource : getResources()) {
             resource.visit(visitor);
         }
         
@@ -251,10 +239,13 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
     
     CollectionTracker getTracker() {
-        List<Collectable> trackers = new ArrayList<Collectable>(3);
+        List<Collectable> trackers = new ArrayList<Collectable>(4);
        
         if (getIfNumber() != null) {
         	trackers.add(getIfNumber());
+        }
+        if (getSysUpTime() != null) {
+            trackers.add(getSysUpTime());
         }
         if (getNodeCollector() != null) {
         	trackers.add(getNodeCollector());
@@ -327,22 +318,45 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         
         logIfCounts();
     
-        if (ifCountHasChanged(getCollectionAgent())) {
+        if (getIfNumber().isChanged(getCollectionAgent().getSavedIfCount())) {
             log().info("Sending rescan event because the number of interfaces on primary SNMP "
             + "interface " + getCollectionAgent().getHostAddress()
             + " has changed, generating 'ForceRescan' event.");
             rescanNeeded.rescanIndicated();
         }
     
-        getCollectionAgent().setSavedIfCount(getIfNumber().getIfNumber());
+        getCollectionAgent().setSavedIfCount(getIfNumber().getIntValue());
+    }
+
+    void checkForSystemRestart(SnmpCollectionSet.RescanNeeded rescanNeeded) {
+        if (!hasInterfaceDataToCollect()) return;
+
+        logSysUpTime();
+
+        if (getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime())) {
+            log().info("Sending rescan event because sysUpTime has changed on primary SNMP "
+            + "interface " + getCollectionAgent().getHostAddress()
+            + ", generating 'ForceRescan' event.");
+            rescanNeeded.rescanIndicated();
+        }
+
+        getCollectionAgent().setSavedSysUpTime(getSysUpTime().getLongValue());
     }
 
     private void logIfCounts() {
         CollectionAgent agent = getCollectionAgent();
         log().debug("collect: nodeId: " + agent.getNodeId()
                 + " interface: " + agent.getHostAddress()
-                + " ifCount: " + getIfNumber().getIfNumber() 
+                + " ifCount: " + getIfNumber().getIntValue() 
                 + " savedIfCount: " + agent.getSavedIfCount());
+    }
+
+    private void logSysUpTime() {
+        CollectionAgent agent = getCollectionAgent();
+        log().debug("collect: nodeId: " + agent.getNodeId()
+                + " interface: " + agent.getHostAddress()
+                + " sysUpTime: " + getSysUpTime().getLongValue()
+                + " savedSysUpTime: " + agent.getSavedSysUpTime());
     }
 
     public boolean rescanNeeded() {
@@ -361,7 +375,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         });
             
         checkForNewInterfaces(rescanNeeded);
-        
+        checkForSystemRestart(rescanNeeded);
+
         return rescanNeeded.rescanIsNeeded();
     }
     
@@ -415,10 +430,6 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             return new OneToOnePersister(params);
         }
     }*/
-
-    private boolean ifCountHasChanged(CollectionAgent agent) {
-        return (agent.getSavedIfCount() != -1) && (getIfNumber().getIfNumber() != agent.getSavedIfCount());
-    }
 
     private NodeResourceType getNodeResourceType() {
         return m_snmpCollection.getNodeResourceType(getCollectionAgent());

@@ -126,6 +126,12 @@ public class SnmpCollector implements ServiceCollector {
     static final String INTERFACES_IFNUMBER = ".1.3.6.1.2.1.2.1";
 
     /**
+     * Object identifier used to retrieve system uptime. This is the MIB-II
+     * system.sysUpTime value.
+     */
+    static final String NODE_SYSUPTIME = ".1.3.6.1.2.1.1.3";
+
+    /**
      * Valid values for the 'snmpStorageFlag' attribute in datacollection-config
      * XML file. "primary" = only primary SNMP interface should be collected and
      * stored "all" = all primary SNMP interfaces should be collected and stored

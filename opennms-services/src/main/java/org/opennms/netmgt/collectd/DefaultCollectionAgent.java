@@ -64,6 +64,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     // miscellaneous junk?
     private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
+    private long m_sysUpTime = -1;
 
         // cached attributes
     private int m_nodeId = -1;
@@ -277,5 +278,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         
         return ifInfos;
     }
+
+    public long getSavedSysUpTime() {
+        return m_sysUpTime;
+    }
+
+    public void setSavedSysUpTime(long sysUpTime) {
+        m_sysUpTime = sysUpTime;
+    }
+    
 
 }
