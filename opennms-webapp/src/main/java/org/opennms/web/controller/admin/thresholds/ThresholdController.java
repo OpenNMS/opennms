@@ -130,17 +130,31 @@ public class ThresholdController extends AbstractController implements Initializ
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         
         Group group=configFactory.getGroup(groupName);
-        Threshold threshold=new Threshold();
-        //Set the two default values which need to be set for the UI to work properly
-        threshold.setDsType("node");
-        threshold.setType("high"); 
-	threshold.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
-        
+
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
         int thresholdIndex=group.getThresholdCount();
         
-        group.addThreshold(threshold);
+        //Check if last threshold has dsName. If not, we assume that is a new definition (not saved yet on thresholds.xml)
+        Threshold threshold = null;
+        if (thresholdIndex > 0) {
+            threshold=group.getThreshold(thresholdIndex-1);
+            if (threshold.getDsName() == null || threshold.getDsName().equals("")) {
+            	thresholdIndex--;
+            } else {
+            	threshold = null;
+            }
+        }
+        
+        // create a new threshold object
+        if (threshold == null) {
+            threshold=new Threshold();
+            //Set the two default values which need to be set for the UI to work properly
+            threshold.setDsType("node");
+            threshold.setType("high"); 
+            threshold.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
+            group.addThreshold(threshold);
+        }
         
         //Double check the guess index, just in case:
         if(threshold!=group.getThreshold(thresholdIndex)) {
@@ -169,17 +183,32 @@ public class ThresholdController extends AbstractController implements Initializ
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         
         Group group=configFactory.getGroup(groupName);
-        Expression expression=new Expression();
-        //Set the two default values which need to be set for the UI to work properly
-        expression.setDsType("node");
-        expression.setType("high"); 
-        
+
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
         int expressionIndex=group.getExpressionCount();
         
-        group.addExpression(expression);
+        //Check if last expression has expression def. If not, we assume that is a new definition (not saved yet on thresholds.xml)
+        Expression expression = null;
+        if (expressionIndex > 0) {
+            expression = group.getExpression(expressionIndex-1);
+            if (expression.getExpression() == null || expression.getExpression().equals("")) {
+	            expressionIndex--;
+            } else {
+            	expression = null;
+            }
+        }
         
+        // create a new expression object
+        if (expression == null) {
+            expression=new Expression();
+            //Set the two default values which need to be set for the UI to work properly
+            expression.setDsType("node");
+            expression.setType("high");
+            expression.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
+            group.addExpression(expression);
+        }
+    
         //Double check the guess index, just in case:
         if(expression!=group.getExpression(expressionIndex)) {
             //Ok, our guesses on indexing were completely wrong.  Failover and check each threshold in the group
@@ -478,6 +507,10 @@ public class ThresholdController extends AbstractController implements Initializ
         
         if(SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, threshold);
+            String dsName = request.getParameter("dsName");
+            if (dsName == null || dsName.equals("")) {
+            	throw new ServletException("ds-name cannot be null or empty string");
+            }
             threshold.setDsName(request.getParameter("dsName"));
             saveChanges();
          } else if (CANCEL_BUTTON_TITLE.equals(submitAction)) {
@@ -517,7 +550,11 @@ public class ThresholdController extends AbstractController implements Initializ
         
         if(SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, expression);
-            expression.setExpression(request.getParameter("expression"));
+            String expDef = request.getParameter("expression");
+            if (expDef == null || expDef.equals("")) {
+            	throw new ServletException("expression content cannot be null or empty string");
+            }
+            expression.setExpression(expDef);
             saveChanges();
          } else if (CANCEL_BUTTON_TITLE.equals(submitAction)) {
             String isNew=request.getParameter("isNew");
