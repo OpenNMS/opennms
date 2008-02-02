@@ -60,6 +60,8 @@ import org.opennms.netmgt.filter.node.AIntegerCompareRight;
 import org.opennms.netmgt.filter.node.AIntegerOctet;
 import org.opennms.netmgt.filter.node.AIpaddrIpIdent;
 import org.opennms.netmgt.filter.node.AIplikeExprPart;
+import org.opennms.netmgt.filter.node.AIsNotNullExprPart;
+import org.opennms.netmgt.filter.node.AIsNullExprPart;
 import org.opennms.netmgt.filter.node.ALessThanEqualExprPart;
 import org.opennms.netmgt.filter.node.ALessThanExprPart;
 import org.opennms.netmgt.filter.node.ALikeExprPart;
@@ -707,6 +709,16 @@ public class SQLTranslation extends DepthFirstAdapter {
             m_ipaddr.append(node.getInteger().getText());
         }
         outAIntegerOctet(node);
+    }
+    
+    public void caseAIsNullExprPart(AIsNullExprPart node) {
+        m_where.append(validateIdent(node.getIdent().getText()));
+        m_where.append(" IS NULL");
+    }
+
+    public void caseIsNotNullExprPart(AIsNotNullExprPart node) {
+        m_where.append(validateIdent(node.getIdent().getText()));
+        m_where.append(" IS NOT NULL");
     }
 
     /**

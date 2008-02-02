@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[2.0.2.v200712142013]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
 	<configs>
-		<config>src/main/resources/org/opennms/netmgt/importer/importer-context.xml</config>
+		<config>src/main/resources/META-INF/opennms/applicationContext-importer.xml</config>
+		<config>src/main/resources/beanRefContext.xml</config>
 	</configs>
 	<configSets>
+		<configSet>
+			<name><![CDATA[Importer]]></name>
+			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
+				<config>/opennms-services/src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
+				<config>src/main/resources/META-INF/opennms/applicationContext-importer.xml</config>
+			</configs>
+		</configSet>
 	</configSets>
 </beansProjectDescription>
