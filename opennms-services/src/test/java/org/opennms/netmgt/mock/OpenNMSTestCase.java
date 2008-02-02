@@ -61,6 +61,7 @@ import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
+import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
@@ -192,7 +193,7 @@ public class OpenNMSTestCase extends TestCase {
                 jdbcEventWriter.afterPropertiesSet();
                 
                 EventIpcBroadcastProcessor eventIpcBroadcastProcessor = new EventIpcBroadcastProcessor();
-                eventIpcBroadcastProcessor.setEventIpcManager(m_eventdIpcMgr);
+                eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
                 eventIpcBroadcastProcessor.afterPropertiesSet();
 
                 org.opennms.netmgt.eventd.processor.JdbcAlarmWriter jdbcAlarmWriter = new org.opennms.netmgt.eventd.processor.JdbcAlarmWriter();
@@ -207,7 +208,7 @@ public class OpenNMSTestCase extends TestCase {
                 eventProcessors.add(eventIpcBroadcastProcessor);
                 eventProcessors.add(jdbcAlarmWriter);
                 
-                org.opennms.netmgt.eventd.EventHandler eventHandler = new org.opennms.netmgt.eventd.EventHandler();
+                DefaultEventHandlerImpl eventHandler = new DefaultEventHandlerImpl();
                 eventHandler.setEventProcessors(eventProcessors);
                 eventHandler.afterPropertiesSet();
                 
