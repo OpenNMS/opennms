@@ -1,44 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-    <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
-      <constructor-arg><value>600000</value></constructor-arg>
-    </bean>
+  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
+    <constructor-arg>
+      <value>600000</value>
+    </constructor-arg>
+  </bean>
 
-	<bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
-	  <property name="locationMonitorDao" ref="locationMonitorDao" />
-	  <property name="monitoredServiceDao" ref="monitoredServiceDao" />
-	  <property name="pollerConfig" ref="pollerConfig" />
-	  <property name="timeKeeper" ref="timeKeeper" />
-	  <property name="eventIpcManager" ref="eventIpcManager"/>
-      <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout"/>
-	</bean>
-	
-	<bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-	  <property name="targetObject" ref="daemon" />
-	  <property name="targetMethod" value="checkForDisconnectedMonitors" />
-	</bean>
+  <bean name="daemon"
+    class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="locationMonitorDao" ref="locationMonitorDao" />
+    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="pollerConfig" ref="pollerConfig" />
+    <property name="timeKeeper" ref="timeKeeper" />
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="disconnectedTimeout"
+      ref="monitorDisconnectedTimeout" />
+  </bean>
 
-    <bean name="monitorCheckInterval" class="java.lang.Long">
-      <constructor-arg><value>10000</value></constructor-arg>
-    </bean>
+  <bean id="methodInvokingJobDetail"
+    class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="daemon" />
+    <property name="targetMethod" value="checkForDisconnectedMonitors" />
+  </bean>
 
-	<bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-      <property name="repeatInterval" ref="monitorCheckInterval" />
-	  <property name="jobDetail" ref="methodInvokingJobDetail"/>
-	</bean>
-	
-	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-      <property name="schedulerName" value="PollerBackEnd" />
-	  <property name="triggers">
-	    <list><ref bean="monitorCheckTrigger"/></list>
-	  </property>
-	</bean>
-	
-	
-    <tx:annotation-driven/>
+  <bean name="monitorCheckInterval" class="java.lang.Long">
+    <constructor-arg>
+      <value>10000</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="monitorCheckTrigger"
+    class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="repeatInterval" ref="monitorCheckInterval" />
+    <property name="jobDetail" ref="methodInvokingJobDetail" />
+  </bean>
+
+  <bean
+    class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="schedulerName" value="PollerBackEnd" />
+    <property name="triggers">
+      <list>
+        <ref bean="monitorCheckTrigger" />
+      </list>
+    </property>
+  </bean>
+
+
+  <tx:annotation-driven />
 </beans>
