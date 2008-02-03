@@ -128,10 +128,14 @@ final public class StrafePingMonitor extends IPv4Monitor {
             responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
-                return PollStatus.unavailable("the failure ping count (" + failurePingCount + ") was reached");
+            	if (log().isDebugEnabled()) {
+            		log().debug("Service " +svc.getSvcName()+ " on interface " +svc.getIpAddr()+ " is down, but continuing to gather latency data");
+            	}
+                serviceStatus = PollStatus.unavailable("the failure ping count (" + failurePingCount + ") was reached");
+            } else {
+            	serviceStatus = PollStatus.available();
             }
-
-            serviceStatus = PollStatus.available();
+            
             Collections.sort(responseTimes, new Comparator<Number>() {
 
                 public int compare(Number arg0, Number arg1) {
