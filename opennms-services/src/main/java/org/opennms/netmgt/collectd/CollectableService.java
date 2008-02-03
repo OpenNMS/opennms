@@ -349,6 +349,7 @@ final class CollectableService implements ReadyRunnable {
                         Collectd.instrumentation().beginPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
                             BasePersister persister = createPersister(m_params, m_repository);
+                            persister.setIgnorePersist(result.ignorePersist());
                             result.visit(persister);
                         } finally {
                             Collectd.instrumentation().endPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());

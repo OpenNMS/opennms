@@ -211,7 +211,11 @@ public class HttpCollector implements ServiceCollector {
         
         public HttpCollectionResource getResource() {
             return m_collectionResource;
-        }       
+        }
+
+		public boolean ignorePersist() {
+			return false;
+		}       
     }
 
 
