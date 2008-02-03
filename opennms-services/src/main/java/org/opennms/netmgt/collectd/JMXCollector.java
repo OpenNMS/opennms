@@ -912,7 +912,11 @@ public abstract class JMXCollector implements ServiceCollector {
             visitor.visitCollectionSet(this);
             m_collectionResource.visit(visitor);
             visitor.completeCollectionSet(this);
-        }        
+        }
+
+		public boolean ignorePersist() {
+			return false;
+		}        
     
     }
     

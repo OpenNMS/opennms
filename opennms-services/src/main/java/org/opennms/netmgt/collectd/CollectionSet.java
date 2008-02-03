@@ -44,4 +44,6 @@ public interface CollectionSet {
      * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
      */
     public void visit(CollectionSetVisitor visitor);
+    
+    public boolean ignorePersist();
 }

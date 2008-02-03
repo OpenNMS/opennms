@@ -347,7 +347,10 @@ public class CollectdTest extends TestCase {
                 visitor.visitCollectionSet(this);   
                 visitor.completeCollectionSet(this);
             }
-         
+
+			public boolean ignorePersist() {
+				return false;
+			}
         };      
         expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class))).andReturn(collectionSetResult);
         setupInterface(iface);

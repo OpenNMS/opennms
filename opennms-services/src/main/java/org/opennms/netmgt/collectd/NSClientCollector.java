@@ -185,7 +185,11 @@ public class NSClientCollector implements ServiceCollector {
 
         public NSClientCollectionResource getResource() {
             return m_collectionResource;
-        }        
+        }
+
+		public boolean ignorePersist() {
+			return false;
+		}        
     }
     
     @SuppressWarnings("unchecked")

@@ -38,7 +38,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +46,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -447,6 +445,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return this.m_status;
     }
 
- 
+	public boolean ignorePersist() {
+		return getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime());
+	}
 
 }
