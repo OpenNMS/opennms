@@ -273,7 +273,10 @@ public class CollectdIntegrationTest extends TestCase {
                     visitor.visitCollectionSet(this);   
                     visitor.completeCollectionSet(this);
                 }
-             
+
+				public boolean ignorePersist() {
+					return false;
+				}
             }; 
             return collectionSetResult;
         }
