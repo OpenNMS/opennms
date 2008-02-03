@@ -18,7 +18,7 @@
     </annotation>
 
     <complexType>
-      <attribute name="TCPAddress" use="required" type="string">
+      <attribute name="TCPAddress" use="optional" type="string" default="127.0.0.1" >
         <annotation>
           <documentation>The IP address on which eventd listens for TCP connections.
           If "*" is specified, eventd will bind to all addresses.  The default
@@ -39,7 +39,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="UDPAddress" use="required" type="string">
+      <attribute name="UDPAddress" use="optional" type="string" default="127.0.0.1" >
         <annotation>
           <documentation>The IP address on which eventd listens for UDP packets.
           If "*" is specified, eventd will bind to all addresses.  The default
