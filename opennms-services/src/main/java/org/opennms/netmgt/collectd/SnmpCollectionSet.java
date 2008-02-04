@@ -453,8 +453,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return this.m_status;
     }
 
-	public boolean ignorePersist() {
-		return m_ignorePersist;
-	}
+    public boolean ignorePersist() {
+        return m_ignorePersist;
+    }
 
 }
