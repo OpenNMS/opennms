@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
+//              for tracking editing state in the user's session. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,12 +41,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -52,8 +59,10 @@ public class FormProcReportController extends AbstractController implements Init
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
+        
         // Get The Customizable Report 
-        Report report = getKscReportFactory().getWorkingReport();
+        Report report = editor.getWorkingReport();
 
         // Get Form Variables
         String action = request.getParameter("action");
@@ -86,11 +95,16 @@ public class FormProcReportController extends AbstractController implements Init
 
         if (action.equals("Save")) {
             // The working model is complete now... lets save working model to configuration file 
-            saveFactory();
+            try {
+                editor.unloadWorkingReport(getKscReportFactory());  // first copy working report into report arrays
+                getKscReportFactory().saveCurrent();          // Now unmarshal array to file
+            } catch (Exception e) {
+                throw new ServletException("Couldn't save KSC_PerformanceReportFactory.", e);
+            }
         } else {
             if (action.equals("AddGraph") || action.equals("ModGraph")) {
                 // Making a graph change... load it into the working area (the graph_index of -1 indicates a new graph)
-                getKscReportFactory().loadWorkingGraph(graph_index);
+                editor.loadWorkingGraph(graph_index);
             } else {
                 if (action.equals("DelGraph")) { 
                     report.removeGraph(report.getGraph(graph_index));
@@ -107,7 +121,7 @@ public class FormProcReportController extends AbstractController implements Init
         } else if (action.equals("AddGraph")) {
             return new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
         } else if (action.equals("ModGraph")) {
-            Graph graph = getKscReportFactory().getWorkingGraph();
+            Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
             return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", "resourceId", resource.getId());
         } else {
@@ -115,15 +129,6 @@ public class FormProcReportController extends AbstractController implements Init
         }
     }
     
-    private void saveFactory() throws ServletException {    
-        try {
-            getKscReportFactory().unloadWorkingReport();  // first copy working report into report arrays
-            getKscReportFactory().saveCurrent();          // Now unmarshal array to file
-        } catch (Exception e) {
-            throw new ServletException("Couldn't save KSC_PerformanceReportFactory.", e);
-        }
-      }
-
     public KSC_PerformanceReportFactory getKscReportFactory() {
         return m_kscReportFactory;
     }
@@ -141,12 +146,8 @@ public class FormProcReportController extends AbstractController implements Init
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("property kscReportFactory must be set");
-        }
-        if (m_kscReportService == null) {
-            throw new IllegalStateException("property kscReportService must be set");
-        }
+        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
+        Assert.state(m_kscReportService != null, "property kscReportService must be set");
     }
 
 }

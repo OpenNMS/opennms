@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
+//              for tracking editing state in the user's session.
+//              Refactor handleRequestInternal(). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,9 +42,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -48,53 +56,42 @@ public class FormProcMainController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // Get Form Variables
-        int report_index = 0; 
-        String report_action = request.getParameter("report_action");
+        String action = request.getParameter("report_action");
         
-        if (report_action == null) {
+        if (action == null) {
             throw new MissingParameterException("report_action");
         }
-          
-        if ((report_action.equals("Customize")) || (report_action.equals("View")) || (report_action.equals("CreateFrom")) || (report_action.equals("Delete"))) {
-            String r_index = request.getParameter("report");
-            if (r_index == null) {
-                throw new MissingParameterException("report");
-            } 
-            report_index = WebSecurityUtils.safeParseInt(r_index);
-            if ((report_action.equals("Customize")) || (report_action.equals("CreateFrom"))) {  
-                // Go ahead and tell report factory to put the report config into the working report area
-                getKscReportFactory().loadWorkingReport(report_index);
-                if (report_action.equals("CreateFrom")) {  // Need to set index to -1 for this case to have Customizer create new report index 
-                   getKscReportFactory().setWorkingReportIndex(-1);
-                }
-            }
-            if (report_action.equals("Delete")) {  // Take care of this case right now
-                getKscReportFactory().deleteReportAndSave(report_index); 
-            }
-        } else { 
-            if (report_action.equals("Create")) {
-                report_index = -1;
-               // Go ahead and tell report factory to put the report config (a blank config) into the working report area
-               getKscReportFactory().loadWorkingReport(report_index);
-            }
-            else {
-                throw new ServletException ("Invalid Parameter contents for report_action");
-            }
-        }
+
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
         
-        if (report_action.equals("View")) {
+        if (action.equals("Customize")) {
+            editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
+            return new ModelAndView("redirect:/KSC/customReport.htm");
+        } else if (action.equals("CreateFrom")) {
+            editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
+            return new ModelAndView("redirect:/KSC/customReport.htm");
+        } else if (action.equals("Delete")) {
+            getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
+            return new ModelAndView("redirect:/KSC/index.htm");
+        } else if (action.equals("Create")) {
+            editor.loadNewWorkingReport();
+            return new ModelAndView("redirect:/KSC/customReport.htm");
+        } else if (action.equals("View")) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
-            modelAndView.addObject("report", report_index);
+            modelAndView.addObject("report", getReportIndex(request));
             modelAndView.addObject("type", "custom");
             return modelAndView;
-        } else { 
-            if ((report_action.equals("Customize")) || (report_action.equals("Create")) || (report_action.equals("CreateFrom"))) {
-                return new ModelAndView("redirect:/KSC/customReport.htm");
-            } else {
-                return new ModelAndView("redirect:/KSC/index.htm");
-            } 
+        } else {
+            throw new ServletException ("Invalid Parameter contents for report_action: " + action);
         }
+    }
+
+    private int getReportIndex(HttpServletRequest request) {
+        String report = request.getParameter("report");
+        if (report == null) {
+            throw new MissingParameterException("report");
+        } 
+        return WebSecurityUtils.safeParseInt(report);
     }
 
     public KSC_PerformanceReportFactory getKscReportFactory() {
@@ -106,11 +103,6 @@ public class FormProcMainController extends AbstractController implements Initia
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("property kscReportFactory must be set");
-        }
+        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
     }
-
-   
-
 }

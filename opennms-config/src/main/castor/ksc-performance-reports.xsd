@@ -29,6 +29,8 @@
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:Graph"/>
       </sequence>
+      
+      <attribute name="id" type="int" use="optional"/>
 
       <attribute name="title" type="string" use="required"/>
 

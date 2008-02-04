@@ -6,6 +6,11 @@
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
+//              for tracking editing state in the user's session. - dj@opennms.org
+//
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -35,11 +40,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -50,8 +57,10 @@ public class FormProcGraphController extends AbstractController implements Initi
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
+        
         // Get The Customizable (Working) Graph 
-        Graph graph = getKscReportFactory().getWorkingGraph();
+        Graph graph = editor.getWorkingGraph();
 
         // Get Form Variables
         String action = request.getParameter("action");
@@ -71,7 +80,7 @@ public class FormProcGraphController extends AbstractController implements Initi
 
         if (action.equals("Save")) {
             // The working graph is complete now... lets save working graph to working report 
-            getKscReportFactory().unloadWorkingGraph(graph_index);
+            editor.unloadWorkingGraph(graph_index);
         }
         
         if (action.equals("Save") || action.equals("Cancel")) {
@@ -109,11 +118,7 @@ public class FormProcGraphController extends AbstractController implements Initi
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("property kscReportFactory must be set");
-        }
-        if (m_kscReportService == null) {
-            throw new IllegalStateException("property kscReportService must be set");
-        }
+        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
+        Assert.state(m_kscReportService != null, "property kscReportService must be set");
     }
 }

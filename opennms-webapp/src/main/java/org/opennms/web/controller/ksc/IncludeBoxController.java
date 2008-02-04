@@ -6,6 +6,10 @@
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet(). - dj@opennms.org
+//
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -36,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -56,8 +61,6 @@ public class IncludeBoxController extends AbstractController implements Initiali
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_kscReportService == null) {
-            throw new IllegalStateException("property kscReportService must be set");
-        }
+        Assert.state(m_kscReportService != null, "property kscReportService must be set");
     }
 }
