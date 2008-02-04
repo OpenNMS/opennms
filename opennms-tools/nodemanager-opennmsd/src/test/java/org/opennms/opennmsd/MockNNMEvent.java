@@ -33,7 +33,7 @@ package org.opennms.opennmsd;
 
 import java.util.Date;
 
-class TestNNMEvent implements NNMEvent {
+class MockNNMEvent implements NNMEvent {
     private String m_category;
     private String m_name;
     private String m_severity;
@@ -73,7 +73,7 @@ class TestNNMEvent implements NNMEvent {
     
     public static NNMEvent createEvent(String category, String severity,
             String name, String address) {
-        TestNNMEvent event = new TestNNMEvent();
+        MockNNMEvent event = new MockNNMEvent();
         event.setCategory(category);
         event.setName(name);
         event.setSourceAddress(address);

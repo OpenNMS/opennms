@@ -57,7 +57,7 @@ public class OpenNMSDaemonTest extends MockObjectTestCase {
     }
     
     public static NNMEvent getEvent() {
-        return TestNNMEvent.createEvent("Category", "Warning", "linkDown", "1.1.1.1");
+        return MockNNMEvent.createEvent("Category", "Warning", "linkDown", "1.1.1.1");
     }
 
     public EventForwarder getForwarder() {

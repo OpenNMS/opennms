@@ -38,7 +38,7 @@ public class FilterTest extends TestCase {
     
     public void setUp() {
         m_filter = new Filter();
-        m_event = TestNNMEvent.createEvent("Category", "Severity", "name", "1.1.1.1");
+        m_event = MockNNMEvent.createEvent("Category", "Severity", "name", "1.1.1.1");
         
     }
     
