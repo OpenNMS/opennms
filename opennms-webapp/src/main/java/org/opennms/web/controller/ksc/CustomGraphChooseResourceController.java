@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet(). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -43,6 +47,7 @@ import org.opennms.web.MissingParameterException;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -96,9 +101,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_resourceService == null) {
-            throw new IllegalStateException("property resourceService must be set");
-        }
+        Assert.state(m_resourceService != null, "property resourceService must be set");
     }
 
 }

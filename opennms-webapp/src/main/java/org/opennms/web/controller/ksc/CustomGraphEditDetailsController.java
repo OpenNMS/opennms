@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
+//              for tracking editing state in the user's session. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
@@ -45,6 +51,7 @@ import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -64,8 +71,10 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         //optional parameter graphtype
         String prefabReportName = request.getParameter("graphtype");
         
-        Report report = getKscReportFactory().getWorkingReport(); 
-        org.opennms.netmgt.config.kscReports.Graph sample_graph = getKscReportFactory().getWorkingGraph(); 
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
+        
+        Report report = editor.getWorkingReport(); 
+        org.opennms.netmgt.config.kscReports.Graph sample_graph = editor.getWorkingGraph(); 
         if (sample_graph == null) {
             throw new IllegalArgumentException("Invalid working graph argument -- null pointer. Possibly missing prefab report in snmp-graph.properties?");
         }
@@ -100,7 +109,7 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         modelAndView.addObject("timeSpans", getKscReportService().getTimeSpans(false));
         modelAndView.addObject("timeSpan", sample_graph.getTimespan());
         
-        int graph_index = getKscReportFactory().getWorkingGraphIndex(); 
+        int graph_index = editor.getWorkingGraphIndex(); 
         int max_graphs = report.getGraphCount();
         if (graph_index == -1) {
             graph_index = max_graphs++;
@@ -145,15 +154,9 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_resourceService == null) {
-            throw new IllegalStateException("property resourceService must be set");
-        }
-        if (m_kscReportService == null) {
-            throw new IllegalStateException("property kscReportService must be set");
-        }
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("property kscReportFactory must be set");
-        }
+        Assert.state(m_resourceService != null, "property resourceService must be set");
+        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
     }
 
 }
