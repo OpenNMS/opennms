@@ -35,67 +35,80 @@ import java.io.PrintWriter;
 import com.sun.jna.ptr.IntByReference;
 
 public abstract class OVsDaemon implements Runnable {
-    
+
     protected abstract String onInit();
-	
+
     protected abstract String onStop();
 
     public static void main(String[] args) {
-	try {
+        try {
             log("starting");
-	    execute();
-	} catch(Throwable t) {
-	    log("an exception was caught!", t);
-	}
-    }	
+            execute();
+        } catch (Throwable t) {
+            log("an exception was caught!", t);
+        }
+    }
+
     public static void execute() {
-	OVsPMD ovspmd = OVsPMD.INSTANCE;
+        OVsPMD ovspmd = OVsPMD.INSTANCE;
 
-	IntByReference sp = new IntByReference();
+        IntByReference sp = new IntByReference();
 
-	if (ovspmd.OVsInit(sp) < 0) {
-	    log("error calling OVsInit");
-	}
+        if (ovspmd.OVsInit(sp) < 0) {
+            log("error calling OVsInit");
+        }
 
-	if (ovspmd.OVsInitComplete(OVsPMD.OVS_RSP_SUCCESS, "opennmsd has initialized successfully!") < 0) {
-	    log("error calling OVsInitComplete");
-	}
+        if (ovspmd.OVsInitComplete(OVsPMD.OVS_RSP_SUCCESS,
+                "opennmsd has initialized successfully!") < 0) {
+            log("error calling OVsInitComplete");
+        }
 
-	long start = System.currentTimeMillis();
-	long end = start;
-	while(end - start < 60000)  {
-            log("opennms has been running for "+(end-start)/1000.0+" seconds.");
-	    try { Thread.sleep(1000); } catch (InterruptedException e) {}
-	    if (ovspmd.OVsResponse(OVsPMD.OVS_RSP_LAST_MSG, "opennmsd has been running for "+(end-start)/1000.0+" seconds.") < 0) {
-		log("error calling OVsResponse");
-	    }
+        long start = System.currentTimeMillis();
+        long end = start;
+        while (end - start < 60000) {
+            log("opennms has been running for " + (end - start) / 1000.0
+                    + " seconds.");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            if (ovspmd.OVsResponse(OVsPMD.OVS_RSP_LAST_MSG,
+                    "opennmsd has been running for " + (end - start) / 1000.0
+                            + " seconds.") < 0) {
+                log("error calling OVsResponse");
+            }
             end = System.currentTimeMillis();
-	}
+        }
 
-	if (ovspmd.OVsDone("opennmsd if finished") < 0) {
-	    log("error occurred calling OVsDone");
-	}
+        if (ovspmd.OVsDone("opennmsd if finished") < 0) {
+            log("error occurred calling OVsDone");
+        }
     }
 
     public static void log(String msg) {
-	log(msg, null);
+        log(msg, null);
     }
 
     public synchronized static void log(String msg, Throwable t) {
         System.err.println(msg);
-	if (t != null) t.printStackTrace();
-	PrintWriter out = null;
-	try {
-	    out = new PrintWriter(new FileWriter("/tmp/ov.out", true));
-	    out.println(msg);
-	    if (t != null) {
-		t.printStackTrace(out);
-	    }
-	} catch (Exception e) {
-	    throw new RuntimeException("Error logggin!", e);
-	} finally {
-	    try { if (out != null) out.close(); } catch (Exception e) {}
-	}
+        if (t != null)
+            t.printStackTrace();
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(new FileWriter("/tmp/ov.out", true));
+            out.println(msg);
+            if (t != null) {
+                t.printStackTrace(out);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error logggin!", e);
+        } finally {
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+            }
+        }
 
     }
 
