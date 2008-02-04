@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Move getReportList()
+//              work into KSC_PerformanceReportFactory. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,13 +43,12 @@ import java.util.Map;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.config.kscReports.ReportsList;
-import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.util.Assert;
 
 public class DefaultKscReportService implements KscReportService, InitializingBean {
     
@@ -130,7 +134,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     
 
     private void initTimeSpans() {
-        for (String timeSpan : getKscReportFactory().timespan_options) {
+        for (String timeSpan : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
             s_timeSpans.put(timeSpan, timeSpan);
         }
         
@@ -147,19 +151,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
     
     public Map<Integer, String> getReportList() {
-        ReportsList report_configuration = KSC_PerformanceReportFactory.getConfiguration();  
-        if (report_configuration == null) {
-            throw new DataAccessResourceFailureException("Couldn't retrieve KSC Report File configuration");
-        }
-        
-        Report[] report_array = report_configuration.getReport();
-        
-        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>();
-        for (int i = 0; i < report_configuration.getReportCount(); i++ ) {
-            reports.put(i, report_array[i].getTitle());
-        }
-        
-        return reports;
+        return m_kscReportFactory.getReportList();  
     }
 
     public ResourceService getResourceService() {
@@ -179,12 +171,8 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_resourceService == null) {
-            throw new IllegalStateException("resourceService property has not been set");
-        }
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("kscReportFactory property has not been set");
-        }
+        Assert.state(m_resourceService != null, "resourceService property has not been set");
+        Assert.state(m_kscReportFactory != null, "kscReportFactory property has not been set");
         
         initTimeSpans();
     }

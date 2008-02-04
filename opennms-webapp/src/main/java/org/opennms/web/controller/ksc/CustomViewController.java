@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Asserts in afterPropertiesSet() and setDefaultGraphsPerLine().
+//              Use new getReportByIndex method on the KSC factory. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -50,7 +55,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.MissingParameterException;
@@ -60,6 +64,7 @@ import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -108,8 +113,7 @@ public class CustomViewController extends AbstractController implements Initiali
         } else if ("domain".equals(report_type)) {
             report = getKscReportService().buildDomainReport(domain);
         } else if ("custom".equals(report_type)) {
-            ReportsList reports_list = KSC_PerformanceReportFactory.getConfiguration();
-            report = reports_list.getReport(report_index);
+            report = m_kscReportFactory.getReportByIndex(report_index);
         } else {
             throw new IllegalArgumentException("value to 'type' parameter of '" + report_type + "' is not supported.  Must be one of: node, domain, or custom");
         }
@@ -280,9 +284,8 @@ public class CustomViewController extends AbstractController implements Initiali
     }
 
     public void setDefaultGraphsPerLine(int defaultGraphsPerLine) {
-        if (defaultGraphsPerLine <= 0) {
-            throw new IllegalArgumentException("property defaultGraphsPerLine must be greater than zero");
-        }
+        Assert.isTrue(defaultGraphsPerLine > 0, "property defaultGraphsPerLine must be greater than zero");
+
         m_defaultGraphsPerLine = defaultGraphsPerLine;
     }
 
@@ -303,21 +306,12 @@ public class CustomViewController extends AbstractController implements Initiali
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("property kscReportFactory must be set");
-        }
-        if (m_kscReportService == null) {
-            throw new IllegalStateException("property kscReportService must be set");
-        }
-        if (m_resourceService == null) {
-            throw new IllegalStateException("property resourceService must be set");
-        }
-        if (m_defaultGraphsPerLine == 0) {
-            throw new IllegalStateException("property defaultGraphsPerLine must be set");
-        }
+        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
+        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_resourceService != null, "property resourceService must be set");
+        Assert.state(m_defaultGraphsPerLine != 0, "property defaultGraphsPerLine must be set");
         
         m_executor = Executors.newSingleThreadExecutor();
-
     }
 
 }

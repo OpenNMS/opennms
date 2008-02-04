@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
+//              for tracking editing state in the user's session. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -46,6 +52,7 @@ import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -58,7 +65,7 @@ public class CustomReportController extends AbstractController implements Initia
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Get Form Variables
-        Report report = getKscReportFactory().getWorkingReport();
+        Report report = KscReportEditor.getFromSession(request.getSession(), true).getWorkingReport();
         if (report == null) {
             throw new IllegalStateException("There is no working report");
         }
@@ -117,15 +124,9 @@ public class CustomReportController extends AbstractController implements Initia
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (m_kscReportFactory == null) {
-            throw new IllegalStateException("property kscReportFactory must be set");
-        }
-        if (m_kscReportService == null) {
-            throw new IllegalStateException("property kscReportService must be set");
-        }
-        if (m_resourceService == null) {
-            throw new IllegalStateException("property resourceService must be set");
-        }
+        Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
+        Assert.state(m_kscReportService != null, "property kscReportService must be set");
+        Assert.state(m_resourceService != null, "property resourceService must be set");
     }
 
 }
