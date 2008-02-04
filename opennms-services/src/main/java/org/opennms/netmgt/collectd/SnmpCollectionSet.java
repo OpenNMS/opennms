@@ -74,6 +74,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private SysUpTimeTracker m_sysUpTime;
     private SnmpNodeCollector m_nodeCollector;
     private int m_status=ServiceCollector.COLLECTION_FAILED;
+    private boolean m_ignorePersist;
     
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
@@ -331,14 +332,21 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
         logSysUpTime();
 
+    	m_ignorePersist = false;
         if (getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime())) {
             log().info("Sending rescan event because sysUpTime has changed on primary SNMP "
             + "interface " + getCollectionAgent().getHostAddress()
             + ", generating 'ForceRescan' event.");
             rescanNeeded.rescanIndicated();
+            /*
+             * Only on sysUpTime change (i.e. SNMP Agent Restart) we must ignore collected data
+             * to avoid spikes on RRD/JRB files
+             */
+            m_ignorePersist = true;
+            getCollectionAgent().setSavedSysUpTime(-1);
+        } else {
+            getCollectionAgent().setSavedSysUpTime(getSysUpTime().getLongValue());
         }
-
-        getCollectionAgent().setSavedSysUpTime(getSysUpTime().getLongValue());
     }
 
     private void logIfCounts() {
@@ -446,7 +454,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
 	public boolean ignorePersist() {
-		return getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime());
+		return m_ignorePersist;
 	}
 
 }
