@@ -44,7 +44,7 @@ public class FilterChainTest extends TestCase {
     public void setUp() {
         m_chainBldr = new FilterChainBuilder();
         
-        m_event = TestNNMEvent.createEvent("Category", "Severity", "name", "1.1.1.1");
+        m_event = MockNNMEvent.createEvent("Category", "Severity", "name", "1.1.1.1");
     }
     
     public void testNoMatchingFilter() {
