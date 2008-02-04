@@ -70,7 +70,8 @@ class TestNNMEvent implements NNMEvent {
     public void setTimeStamp(Date timeStamp) {
         m_timeStamp = timeStamp;
     }
-    static NNMEvent createEvent(String category, String severity,
+    
+    public static NNMEvent createEvent(String category, String severity,
             String name, String address) {
         TestNNMEvent event = new TestNNMEvent();
         event.setCategory(category);

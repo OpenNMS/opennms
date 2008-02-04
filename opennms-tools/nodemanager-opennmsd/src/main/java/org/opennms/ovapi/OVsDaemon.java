@@ -29,9 +29,10 @@
  */
 package org.opennms.ovapi;
 
-import com.sun.jna.*;
-import com.sun.jna.ptr.*;
-import java.io.*;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+import com.sun.jna.ptr.IntByReference;
 
 public abstract class OVsDaemon implements Runnable {
     

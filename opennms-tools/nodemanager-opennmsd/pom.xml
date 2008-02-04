@@ -93,6 +93,7 @@ groovy.compiler.output.path=target/classes
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
       <version>1.2.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>backport-util-concurrent</groupId>
@@ -110,4 +111,28 @@ groovy.compiler.output.path=target/classes
       <version>3.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+  </repositories>
 </project>
