@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Feb 04: Use InetAddress.getByName("127.0.0.1") to connect to the DHCP
+//              server within OpenNMS.  Fixes bug #2243. - dj@opennms.org
 // 2005 Jan 28: Added extended capabilities to
 //              allow detection of servers on
 //              subnets other than the onms
@@ -38,9 +40,6 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Stop = 8
-//
-
 package org.opennms.netmgt.dhcpd;
 
 import java.io.IOException;
@@ -235,7 +234,7 @@ final class Poller {
         try {
             if (log.isDebugEnabled())
                 log.debug("Poller.ctor: opening socket connection with DHCP client daemon on port " + DhcpdConfigFactory.getInstance().getPort());
-            m_connection = new Socket(InetAddress.getLocalHost(), DhcpdConfigFactory.getInstance().getPort());
+            m_connection = new Socket(InetAddress.getByName("127.0.0.1"), DhcpdConfigFactory.getInstance().getPort());
 
             if (log.isDebugEnabled())
                 log.debug("Poller.ctor: setting socket timeout to " + timeout);
