@@ -32,9 +32,85 @@ package org.opennms.ovapi;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import org.opennms.ovapi.CLibrary.fd_set;
+import org.opennms.ovapi.CLibrary.timeval;
+import org.opennms.ovapi.OVsPMD.OVsPMDCommand;
+
 import com.sun.jna.ptr.IntByReference;
 
-public abstract class OVsDaemon implements Runnable {
+import edu.emory.mathcs.backport.java.util.concurrent.Callable;
+
+public abstract class OVsDaemon implements Callable {
+    
+    private static class DefaultOVsDaemon extends OVsDaemon {
+
+        protected String onInit() {
+            return "DefaultOVsDaemon has finished initializing.";
+        }
+
+        protected String onStop() {
+            return "stop called";
+        }
+
+        public Object XXcall() throws Exception {
+            
+            long start = System.currentTimeMillis();
+            long end = start;
+            while ( (end - start) < 120000 ) {
+                setStatus("DefaultOVsDaemon has been running for "  + (end - start) + " ms");
+                end = System.currentTimeMillis();
+            }
+            
+            return "DefaultOVsDaemon has finished and is now exiting.";
+        }
+        
+        public Object call() throws Exception {
+            long start = System.currentTimeMillis();
+            long end = start;
+            int code = OVsPMD.OVS_CMD_NOOP; 
+            
+            CLibrary clib = CLibrary.INSTANCE;
+            
+            fd_set fdset = new fd_set();
+            timeval tm = new timeval();
+
+            boolean finished = false;
+            while (!finished) {
+                fdset.zero();
+                fdset.set(getPmdFd());
+            
+                if (!tm.isSet()) {
+                    tm.setTimeInMillis(1000);
+                }
+            
+                long selectStart = System.currentTimeMillis();
+                int fds = clib.select(getPmdFd()+1, fdset, null, null, tm);
+                long selectEnd = System.currentTimeMillis();
+                end = selectEnd;
+                
+                setStatus("Select returned after "+(selectEnd - selectStart)+ " millis.  pmd " + 
+                        (fdset.isSet(getPmdFd()) ? "is" : "is not") + " set in readfds, return val is "+fds+", elapsed time = "+(end - start)+ "ms");
+                
+                code = OVsPMD.OVS_CMD_NOOP;
+                if (fdset.isSet(getPmdFd())) {
+                    code = readPmdCmd();
+                    setStatus("Received cmd code "+code+" from pmd");
+                }
+                
+                if (code == OVsPMD.OVS_CMD_EXIT) {
+                    finished = true;
+                }
+            }     
+            
+            Thread.sleep(5000);
+            end = System.currentTimeMillis();
+            return "DefaultOVsDaemon has finished and is now exiting after "+(end-start)+" ms. code was "+code+" pmdfs set is "+fdset.isSet(getPmdFd());
+        }
+        
+    }
+    
+    private OVsPMD m_ovspmd = OVsPMD.INSTANCE;
+    private int m_ovspmdFd;
 
     protected abstract String onInit();
 
@@ -43,46 +119,70 @@ public abstract class OVsDaemon implements Runnable {
     public static void main(String[] args) {
         try {
             log("starting");
-            execute();
+            OVsDaemon daemon = new DefaultOVsDaemon();
+            daemon.execute();
         } catch (Throwable t) {
             log("an exception was caught!", t);
         }
     }
+    
+    public int getPmdFd() {
+        return m_ovspmdFd;
+    }
 
-    public static void execute() {
-        OVsPMD ovspmd = OVsPMD.INSTANCE;
+    public void execute() {
 
         IntByReference sp = new IntByReference();
 
-        if (ovspmd.OVsInit(sp) < 0) {
+        if (m_ovspmd.OVsInit(sp) < 0) {
             log("error calling OVsInit");
         }
+        
+        m_ovspmdFd = sp.getValue();
 
-        if (ovspmd.OVsInitComplete(OVsPMD.OVS_RSP_SUCCESS,
-                "opennmsd has initialized successfully!") < 0) {
+        String initResponse = "";
+        int success = OVsPMD.OVS_RSP_FAILURE;
+        try {
+        
+            initResponse = onInit();
+            success = OVsPMD.OVS_RSP_SUCCESS;
+            
+        } catch (Throwable t) {
+            initResponse = "Exception occurred initializing "+this+": "+t;
+            log(initResponse, t);
+        }
+
+        if (m_ovspmd.OVsInitComplete(success, initResponse) < 0) {
             log("error calling OVsInitComplete");
         }
-
-        long start = System.currentTimeMillis();
-        long end = start;
-        while (end - start < 60000) {
-            log("opennms has been running for " + (end - start) / 1000.0
-                    + " seconds.");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            if (ovspmd.OVsResponse(OVsPMD.OVS_RSP_LAST_MSG,
-                    "opennmsd has been running for " + (end - start) / 1000.0
-                            + " seconds.") < 0) {
-                log("error calling OVsResponse");
-            }
-            end = System.currentTimeMillis();
+        
+        String callmsg;
+        try {
+            callmsg = (String)call();
+        } catch (Throwable t) {
+            callmsg = "Exception occurred calling "+this+": "+t;
+            log(callmsg, t);
         }
-
-        if (ovspmd.OVsDone("opennmsd if finished") < 0) {
+        
+        if (m_ovspmd.OVsDone(callmsg) < 0) {
             log("error occurred calling OVsDone");
         }
+    }
+    
+    public void setStatus(String message) {
+        if (m_ovspmd.OVsResponse(OVsPMD.OVS_RSP_LAST_MSG, message) < 0) {
+            log("error calling OVsResponse");
+        }
+    }
+
+    public int readPmdCmd() {
+        OVsPMDCommand command = new OVsPMDCommand();
+        
+        if (m_ovspmd.OVsReceive(command) < 0) {
+            log("error calling OVsReceive");
+        }
+        
+        return command.code;
     }
 
     public static void log(String msg) {

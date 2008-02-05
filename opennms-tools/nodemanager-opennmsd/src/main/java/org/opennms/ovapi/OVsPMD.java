@@ -29,16 +29,18 @@
  */
 package org.opennms.ovapi;
 
-import com.sun.jna.*;
-import com.sun.jna.ptr.*;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.Structure;
+import com.sun.jna.ptr.IntByReference;
 
 public interface OVsPMD extends Library {
 
     public static final OVsPMD INSTANCE = (OVsPMD)Native.synchronizedLibrary((OVsPMD)Native.loadLibrary("ov", OVsPMD.class));
 
     public static class OVsPMDCommand extends Structure {
-	public int code;
-	public String message;
+        public int code;
+        public String message;
     };
 	
     public static final int OVS_NO_CODE                  = 0;
