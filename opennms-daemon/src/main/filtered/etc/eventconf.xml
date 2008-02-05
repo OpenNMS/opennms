@@ -1528,7 +1528,7 @@
     <descr>
       This event is generated to invoke the promotion data of the Queueing RRD Strategy.
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest='logonly'>
       A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
     </logmsg>
     <severity>Normal</severity>
