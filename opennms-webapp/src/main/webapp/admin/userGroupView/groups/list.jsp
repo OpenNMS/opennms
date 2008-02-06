@@ -126,7 +126,10 @@
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
 
+<br />
        <a href="admin/userGroupView/groups/newGroup.jsp"> <img <% if (pageAction != null && pageAction.equals("cantrename")) { %> onload="alert('Unable to rename group -- new name already in use, please choose a different one.')" <% } %> src="images/add1.gif" alt="Add new group"> Add new group</a>
+<br />
+<br />
 
   <table>
 
