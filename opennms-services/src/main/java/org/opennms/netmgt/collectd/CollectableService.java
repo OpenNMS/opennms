@@ -305,7 +305,7 @@ final class CollectableService implements ReadyRunnable {
 		// Any change in status?
 		//
 		if (status != m_status) {
-			// Generate SNMP collection transition events
+			// Generate data collection transition events
 			if (log().isDebugEnabled())
 				log().debug("run: change in collection status, generating event.");
 
@@ -338,7 +338,7 @@ final class CollectableService implements ReadyRunnable {
         }
         
 	private int doCollection() {
-		// Perform SNMP data collection
+		// Perform data collection
 		//
 		log().info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName());
 		CollectionSet result=null;
@@ -363,7 +363,7 @@ final class CollectableService implements ReadyRunnable {
 		        return result.getStatus();
 		    }
 		} catch (Throwable t) {
-		    log().error("run: An undeclared throwable was caught during data collection for interface " + getHostAddress(), t);
+		    log().error("run: An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
 		}
 		//Fall-through case - something went wrong, we failed
 		return ServiceCollector.COLLECTION_FAILED;
@@ -408,7 +408,7 @@ final class CollectableService implements ReadyRunnable {
                 try {
                     reinitialize(newIface);
                     if (log().isDebugEnabled())
-                        log().debug("Completed reinitializing SNMP collector for " + getHostAddress());
+                        log().debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                 } catch (RuntimeException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
@@ -512,10 +512,10 @@ final class CollectableService implements ReadyRunnable {
                 //
                 try {
                     if (log().isDebugEnabled())
-                        log().debug("Reinitializing SNMP collector for " + getHostAddress());
+                        log().debug("Reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
                     if (log().isDebugEnabled())
-                        log().debug("Completed reinitializing SNMP collector for " + getHostAddress());
+                        log().debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                 } catch (RuntimeException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
