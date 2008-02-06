@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Feb 05: Load up a smaller EventConfDao and run one more test. - dj@opennms.org
  * 2008 Jan 27: Enable the service test and make it do something for real. - dj@opennms.org
  * 2008 Jan 26: Created this file. - dj@opennms.org
  *
@@ -59,12 +60,12 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:META-INF/opennms/applicationContext-eventDaemon.xml"
+                "classpath:META-INF/opennms/applicationContext-eventDaemon.xml",
+                "classpath:META-INF/opennms/smallEventConfDao.xml"
         };
     }
     
-    // FIXME: I get OutOfMemory errors if I run more than one test in this TestCase
-    public void FIXMEtestDaemon() throws Exception {
+    public void testDaemon() throws Exception {
         assertNotNull("daemon bean", m_daemon);
         
         m_daemon.onStart();
