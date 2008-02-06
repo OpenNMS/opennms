@@ -37,6 +37,18 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>jna.library.path</name>
+              <value>/opt/OV/lib</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
        <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
