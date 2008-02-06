@@ -1,20 +1,33 @@
 package org.opennms.netmgt.utils;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.mock.OpenNMSIntegrationTestCase;
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.DaoTestConfigBean;
 
-public class TransactionAwareEventIpcManagerProxyTest extends OpenNMSIntegrationTestCase {
+public class TransactionAwareEventIpcManagerProxyTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     
     private TransactionAwareEventIpcManagerProxy m_proxy;
     private int m_eventNumber = 1;
+    private MockEventIpcManager m_eventIpcManager;
+    
+    public TransactionAwareEventIpcManagerProxyTest() {
+        super();
+        
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
+    }
 
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
           "META-INF/opennms/applicationContext-dao.xml",
           "META-INF/opennms/applicationContext-daemon.xml",
-          "org/opennms/netmgt/utils/applicationContext-testTAEventIpcMgrTest.xml"
+          "org/opennms/netmgt/utils/applicationContext-testTAEventIpcMgrTest.xml",
+          "META-INF/opennms/mockEventIpcManager.xml",
+          "META-INF/opennms/smallEventConfDao.xml"
         };
     }
     
@@ -91,5 +104,17 @@ public class TransactionAwareEventIpcManagerProxyTest extends OpenNMSIntegration
         this.endTransaction();
     }
     
+    private EventAnticipator getEventAnticipator() {
+        return m_eventIpcManager.getEventAnticipator();
+    }
+
+    public MockEventIpcManager getEventIpcManager() {
+        return m_eventIpcManager;
+    }
+
+    public void setEventIpcManager(MockEventIpcManager eventIpcManager) {
+        m_eventIpcManager = eventIpcManager;
+    }
+
 
 }
