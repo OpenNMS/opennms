@@ -24,11 +24,10 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>com.centriccrm</groupId>
-      <artifactId>tools</artifactId>
-      <version>4.1</version>
-      <scope>system</scope>
-      <systemPath>${centric.tools.jar}</systemPath>
+      <groupId>org.aspcfs</groupId>
+      <artifactId>centric_crm_tools</artifactId>
+      <version>4.1.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
