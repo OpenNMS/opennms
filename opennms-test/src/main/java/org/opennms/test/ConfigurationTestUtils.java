@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 05: Allow setting the object to null and we'll use ourselves. - dj@opennms.org
 // 2007 Dec 25: Add getUrlForResource and getFileForResource. - dj@opennms.org
 // 2007 Aug 02: Add getFileForConfigFile. - dj@opennms.org
 // 2007 Jul 03: Check for something passing in a Class as an object (as I tend to do,
@@ -63,9 +64,13 @@ public class ConfigurationTestUtils extends Assert {
     private static final String DAEMON_DIRECTORY = "opennms-daemon";
 
     public static URL getUrlForResource(Object obj, String resource) {
-        URL url = obj.getClass().getResource(resource);
+        URL url = getClass(obj).getResource(resource);
         assertNotNull("could not get resource '" + resource + "' as a URL", url);
         return url;
+    }
+
+    private static Class<? extends Object> getClass(Object obj) {
+        return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class.getClass();
     }
     
     public static File getFileForResource(Object obj, String resource) {
@@ -87,7 +92,7 @@ public class ConfigurationTestUtils extends Assert {
     public static InputStream getInputStreamForResource(Object obj,
             String resource) {
         assertFalse("obj should not be an instance of java.lang.Class; you usually want to use 'this'", obj instanceof Class);
-        InputStream is = obj.getClass().getResourceAsStream(resource);
+        InputStream is = getClass(obj).getResourceAsStream(resource);
         assertNotNull("could not get resource '" + resource + "' as an input stream", is);
         return is;
     }
