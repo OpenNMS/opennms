@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 05: Java 5 generics, some code formatting. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,7 +39,6 @@ package org.opennms.netmgt.mock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -49,7 +52,6 @@ import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockUtil;
 
@@ -94,7 +96,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         }
     };
 
-    private List m_listeners = new ArrayList();
+    private List<ListenerKeeper> m_listeners = new ArrayList<ListenerKeeper>();
 
     private int m_pendingEvents;
 
@@ -112,8 +114,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_listeners.add(new ListenerKeeper(listener, null));
     }
 
-    public void addEventListener(EventListener listener, List ueilist) {
-        m_listeners.add(new ListenerKeeper(listener, new HashSet(ueilist)));
+    public void addEventListener(EventListener listener, List<String> ueilist) {
+        m_listeners.add(new ListenerKeeper(listener, new HashSet<String>(ueilist)));
     }
 
     public void addEventListener(EventListener listener, String uei) {
@@ -121,10 +123,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     }
 
     public void broadcastNow(Event event) {
-    		MockUtil.println("Sending: " + new EventWrapper(event));
-		Iterator it = m_listeners.iterator();
-		while (it.hasNext()) {
-            ListenerKeeper k = (ListenerKeeper) it.next();
+        MockUtil.println("Sending: " + new EventWrapper(event));
+        for (ListenerKeeper k : m_listeners) {
             k.sendEventIfAppropriate(event);
         }
     }
@@ -145,8 +145,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_listeners.remove(new ListenerKeeper(listener, null));
     }
 
-    public void removeEventListener(EventListener listener, List ueiList) {
-        m_listeners.remove(new ListenerKeeper(listener, new HashSet(ueiList)));
+    public void removeEventListener(EventListener listener, List<String> ueiList) {
+        m_listeners.remove(new ListenerKeeper(listener, new HashSet<String>(ueiList)));
     }
 
     public void removeEventListener(EventListener listener, String uei) {
@@ -210,9 +210,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     }
 
     public void sendNow(Log eventLog) {
-        Events events = eventLog.getEvents();
-        for (int i = 0; i < events.getEventCount(); i++) {
-            Event event = events.getEvent(i);
+        for (Event event : eventLog.getEvents().getEventCollection()) {
             sendNow(event);
         }
     }
@@ -221,10 +219,13 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
      * 
      */
     public synchronized void finishProcessingEvents() {
-        
         while (m_pendingEvents > 0) {
             MockUtil.println("Waiting for event processing: m_pendingEvents = "+m_pendingEvents);
-            try { wait(); } catch (InterruptedException e) {}
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                // Do nothing
+            }
         }
     }
 
@@ -244,7 +245,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     }
 
     public void reset() {
-        m_listeners = new ArrayList();
+        m_listeners = new ArrayList<ListenerKeeper>();
         m_anticipator.reset();
     }
 
