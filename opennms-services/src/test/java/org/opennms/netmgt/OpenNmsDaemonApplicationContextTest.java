@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2008 Feb 05: applicationContext-daemon.xml now depends on applicationContext-dao.xml
+ *              which depends on having a dataSource available. - dj@opennms.org
  * 2008 Jan 26: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
@@ -35,14 +37,14 @@
  */
 package org.opennms.netmgt;
 
+import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.test.DaoTestConfigBean;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class OpenNmsDaemonApplicationContextTest extends AbstractDependencyInjectionSpringContextTests {
+public class OpenNmsDaemonApplicationContextTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private EventIpcManager m_eventIpcManager;
     
     
@@ -56,6 +58,7 @@ public class OpenNmsDaemonApplicationContextTest extends AbstractDependencyInjec
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
+                "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml"
         };
     }
