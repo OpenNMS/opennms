@@ -36,6 +36,7 @@
 JP=""
 num_args="$#"
 all_args="$*"
+searchdirs="/usr /opt /Library"
 
 #
 # Needed functions.
@@ -103,28 +104,29 @@ javaCheck()
 # This function attempts to find a path
 # to a java executable.  It searchs for
 # files (hopefully directories) that match
-# the regex "^j2*" and appends "/bin/java".
+# the regex "^j2*" or "^java$" and appends "/bin/java".
 # It then tests to see if this there is an
 # executable file by this name.  This is not
 # foolproof but should get us close.
 #
-javaPaths()
-{
-	jdirs=`find /usr -name "j2*" -maxdepth 2 -printf "%p " 2>/dev/null`
-	for jdir in $jdirs
-	do
-		if [ -x $jdir/bin/java ]
-		then
-			JP=$jdir/bin/java
-			javaCheck
-			if [ "$?" -eq "0" ]
-			then
-				return 0
-			else
-				return 1
-			fi
+javaPaths() {
+	for searchdir in $searchdirs; do
+		if [ ! -d "$searchdir" ]; then
+			continue;
 		fi
+
+		# We search "j2*" for the Sun-supplied Java packages ("j2sdk"),
+		# "java" for the Java installation shipped with SuSE, and "Home"
+		# to catch /Library/Java/Home on Mac OS X.
+		jdirs="`find \"$searchdir\" -maxdepth 2 \\( -name \"j2*\" -o -name \"jdk*\" -o -name \"java\" -o -name \"Home\" \\) -print`"
+		for jdir in $searchdir/java/default $searchdir/java/latest $jdirs; do
+			if [ -x $jdir/bin/java ]; then
+				JP=$jdir/bin/java
+				javaCheck && return 0
+			fi
+		done
 	done
+	return 1
 }
 
 #
