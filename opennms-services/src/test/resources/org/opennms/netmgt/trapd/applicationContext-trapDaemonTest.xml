@@ -19,8 +19,8 @@
     <property name="staticMethod"><value>org.opennms.test.ConfigurationTestUtils.getFileForResource</value></property>
     <property name="arguments">
       <list>
-        <ref local="trapdIpMgr"/> <!-- this is a hack but it's in the right class so it will find eventconf.xml -->
-        <value>eventconf.xml</value>
+        <null/>
+        <value>/org/opennms/netmgt/trapd/eventconf.xml</value>
       </list>
     </property>
   </bean>
