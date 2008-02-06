@@ -4,7 +4,12 @@
 
   <subtitle>About This Release</subtitle>
 
-  <para>Release 1.3.10 is another smallish bug fix / feature release.</para>
+  <para>Release 1.3.10 is another bug fix/feature release. It contains a lot
+  of bug fixes in preparation for the next stable release 1.6.0, as well as
+  some changes to thresholding. In addition, OpenNMS now supports integration
+  with the Hyperic HQ agent.</para>
+
+  <para>The code word for 1.3.10 is "caucus"</para>
 
   <para>Release 1.3.9 is a small bug fix/feature release. A bug was fixed that
   could cause database connections to hang, and some small webUI enhancements
