@@ -19,7 +19,7 @@
 
       <para>The classes used to discover and poll NRPE (Nagios Remote Plugin
       Execution) checks from OpenNMS now support the <ulink
-      url="http://www.opennms.org/index.php/NRPE_SSL_Support">NRPE protool
+      url="http://www.opennms.org/index.php/NRPE_SSL_Support">NRPE protocol
       over secure sockets layer (SSL)</ulink>. Since both the official NRPE
       addon from Nagios and the NRPE listener of NSClient++ use SSL by
       default, the new default in OpenNMS is to use SSL for NRPE.</para>
