@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 06: Add nodeId to the WHERE clause for SQL_DB_HOSTIP_TO_HOSTNAME to
+//              address the main issue in bug #2247. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -111,6 +116,6 @@ public final class EventdConstants {
      * The SQL statement necessary to convert the event host into a hostname
      * using the 'ipinterface' table.
      */
-    public final static String SQL_DB_HOSTIP_TO_HOSTNAME = "SELECT ipHostname FROM ipinterface WHERE ipAddr = ?";
+    public final static String SQL_DB_HOSTIP_TO_HOSTNAME = "SELECT ipHostname FROM ipinterface WHERE nodeId = ? AND ipAddr = ?";
 
 }
