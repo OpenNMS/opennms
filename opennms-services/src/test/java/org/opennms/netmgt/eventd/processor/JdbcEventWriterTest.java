@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 06: Add tests for bugs from bug #2247. - dj@opennms.org
 // 2008 Jan 28: Add a test for getHostName when there is no match in the DB. - dj@opennms.org
 // 2008 Jan 26: Change to use dependency injection for EventWriter and refactor
 //              quite a bit. - dj@opennms.org
@@ -46,6 +47,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This class tests some of the quirky behaviors of presisting events.
@@ -118,10 +120,101 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         m_jdbcEventWriter.process(null, bldr.getEvent());
     }
     
+    public void testGetƒventHostWithNullHost() throws Exception {
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
+        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
+        
+        Event event = new Event();
+        
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the hostname for the IP address that was passed", null, m_jdbcEventWriter.getEventHost(event, connection));
+        } finally {
+            connection.close();
+        }
+    }
+    
+    public void testGetƒventHostWithHostNoNodeId() throws Exception {
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
+        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
+        
+        Event event = new Event();
+        event.setHost("192.168.1.1");
+        
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the hostname for the IP address that was passed", event.getHost(), m_jdbcEventWriter.getEventHost(event, connection));
+        } finally {
+            connection.close();
+        }
+    }
+    
+    public void testGetEventHostWithOneMatch() throws Exception {
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
+        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
+
+        Event event = new Event();
+        event.setNodeid(nodeId);
+        event.setHost("192.168.1.1");
+
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the hostname for the IP address that was passed", "First Interface", m_jdbcEventWriter.getEventHost(event, connection));
+        } finally {
+            connection.close();
+        }
+    }
+    
+    public void testGetHostNameWithOneMatch() throws Exception {
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
+        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
+        
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the hostname for the IP address that was passed", "First Interface", m_jdbcEventWriter.getHostName(1, "192.168.1.1", connection));
+        } finally {
+            connection.close();
+        }
+    }
+    
+    public void testGetHostNameWithOneMatchNullHostname() throws Exception {
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
+        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr) VALUES (?, ?)", nodeId, "192.168.1.1");
+        
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_jdbcEventWriter.getHostName(1, "192.168.1.1", connection));
+        } finally {
+            connection.close();
+        }
+    }
+    
+    public void testGetHostNameWithTwoMatch() throws Exception {
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeLabel) VALUES (nextVal('nodeNxtId'), now(), ?)", "First Node");
+        int nodeId1 = jdbcTemplate.queryForInt("SELECT nodeId FROM node WHERE nodeLabel = ?", "First Node");
+        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeLabel) VALUES (nextVal('nodeNxtId'), now(), ?)", "Second Node");
+        int nodeId2 = jdbcTemplate.queryForInt("SELECT nodeId FROM node WHERE nodeLabel = ?", "Second Node");
+        
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId1, "192.168.1.1", "First Interface");
+        jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId2, "192.168.1.1", "Second Interface");
+        
+        Connection connection = getDataSource().getConnection();
+        try {
+            assertEquals("getHostName should return the IP address it was passed", "First Interface", m_jdbcEventWriter.getHostName(nodeId1, "192.168.1.1", connection));
+        } finally {
+            connection.close();
+        }
+    }
+    
     public void testGetHostNameWithNoHostMatch() throws Exception {
         Connection connection = getDataSource().getConnection();
         try {
-            assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_jdbcEventWriter.getHostName("192.168.1.1", connection));
+            assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_jdbcEventWriter.getHostName(1, "192.168.1.1", connection));
         } finally {
             connection.close();
         }
