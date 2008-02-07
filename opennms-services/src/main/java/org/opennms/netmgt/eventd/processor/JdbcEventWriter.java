@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 06: Fix bugs from bug #2247. - dj@opennms.org
 // 2008 Jan 28: Catch EmptyResultDataAccessException in getHostName(String).
 //              Thanks for the catch, jeffg! - dj@opennms.org
 // 2008 Jan 27: Make thread-safe. - dj@opennms.org
@@ -61,6 +62,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -95,7 +97,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * @param event
      *            the actual event to be inserted
      */
-    public void process(Header eventHeader, Event event) throws SQLException {
+    public void process(Header eventHeader, Event event) throws SQLException, DataAccessException {
         if (event != null) {
             /*
              * Check value of <logmsg> attribute 'dest', if set to
@@ -128,11 +130,20 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
                     connection.commit();
                 } catch (SQLException e) {
-                    log().warn("Error inserting event into the datastore", e);
+                    log().warn("Error inserting event into the datastore: " + e, e);
                     try {
                         connection.rollback();
                     } catch (Exception e2) {
-                        log().warn("Rollback of transaction failed!", e2);
+                        log().warn("Rollback of transaction failed: " + e2, e2);
+                    }
+
+                    throw e;
+                } catch (DataAccessException e) {
+                    log().warn("Error inserting event into the datastore: " + e, e);
+                    try {
+                        connection.rollback();
+                    } catch (Exception e2) {
+                        log().warn("Rollback of transaction failed: " + e2, e2);
                     }
 
                     throw e;
@@ -373,7 +384,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * This method is used to convert the event host into a hostname id by
      * performing a lookup in the database. If the conversion is successful then
      * the corresponding hosname will be returned to the caller.
-     * 
+     * @param nodeId TODO
      * @param hostip
      *            The event host
      * 
@@ -387,7 +398,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * 
      */
     // FIXME: This uses JdbcTemplate and not the passed in connection
-    String getHostName(String hostip, Connection connection) throws SQLException {
+    String getHostName(int nodeId, String hostip, Connection connection) throws SQLException {
 //        PreparedStatement getHostNameStmt = getConnection().prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
 //
 //        try {
@@ -418,7 +429,8 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 //            getHostNameStmt.close();
 //        }
         try {
-            return new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { hostip });
+            String hostname = new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
+            return (hostname != null) ? hostname : hostip;
         } catch (EmptyResultDataAccessException e) {
             return hostip;
         }
@@ -430,31 +442,37 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * @return
      */
     private int getEventServiceId(Event event) {
-        int svcId = -1;
-        if (event.getService() != null) {
-            try {
-                svcId = getServiceID(event.getService());
-            } catch (SQLException e) {
-                log().warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1: e" + e, e);
-            }
+        if (event.getService() == null) {
+            return -1;
         }
-        return svcId;
+        
+        try {
+            return getServiceID(event.getService());
+        } catch (Throwable t) {
+            log().warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1.  Error: " + t, t);
+            return -1;
+        }
     }
 
     /**
      * @param event
      * @return
      */
-    private String getEventHost(Event event, Connection connection) {
-        String hostname = event.getHost();
-        if (hostname != null) {
-            try {
-                hostname = getHostName(hostname, connection);
-            } catch (SQLException sqlE) {
-                // hostname can be null - so use the IP
-                hostname = event.getHost();
-            }
+    protected String getEventHost(Event event, Connection connection) {
+        if (event.getHost() == null) {
+            return null;
         }
-        return hostname;
+        
+        // If the event doesn't have a node ID, we can't lookup the IP address and be sure we have the right one since we don't know what node it is on
+        if (!event.hasNodeid()) {
+            return event.getHost();
+        }
+        
+        try {
+            return getHostName((int) event.getNodeid(), event.getHost(), connection);
+        } catch (Throwable t) {
+            log().warn("EventWriter.add: Error converting host IP \"" + event.getHost() + "\" to a hostname, storing the IP.  Error: " + t, t);
+            return event.getHost();
+        }
     }
 }
