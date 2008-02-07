@@ -135,7 +135,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         }
     }
     
-    public void testGetƒventHostWithHostNoNodeId() throws Exception {
+    public void testGetEventHostWithHostNoNodeId() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
