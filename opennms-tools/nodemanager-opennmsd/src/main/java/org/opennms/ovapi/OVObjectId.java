@@ -3,25 +3,10 @@ package org.opennms.ovapi;
 import org.opennms.ovapi.OVsnmp.ObjectID;
 import org.opennms.ovapi.OVsnmp.ObjectIDByReference;
 
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 public class OVObjectId {
-    
-    private  static final int MEM_SIZE = 512;
-    
-    private static class MemHolder extends ThreadLocal {
-        protected synchronized Object initialValue() {
-            return new Memory(MEM_SIZE);
-        }
-        
-        public Memory getMemory() {
-            return (Memory)get();
-        }
-    }
-    
-    private static MemHolder memHolder = new MemHolder();
     
     private ObjectID m_oid;
     private int m_len;
@@ -54,7 +39,7 @@ public class OVObjectId {
         if (isNull()) {
             return "";
         }
-        return ovsnmp().OVsnmpOidToStr(m_oid, m_len, memHolder.getMemory(), MEM_SIZE);
+        return ovsnmp().OVsnmpOidToStr(m_oid, m_len, OVsnmp.s_memHolder.getMemory(), OVsnmp.MEM_SIZE);
     }
     
     public OVObjectId copy() {

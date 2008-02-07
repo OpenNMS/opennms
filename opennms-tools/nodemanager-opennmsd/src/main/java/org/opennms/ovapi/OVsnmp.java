@@ -44,6 +44,20 @@ public interface OVsnmp extends Library {
     
     public static final OVsnmp INSTANCE = (OVsnmp)Native.loadLibrary("ovsnmp", OVsnmp.class);
 
+    public static final int MEM_SIZE = 512;
+    
+    public static class MemHolder extends ThreadLocal {
+        protected synchronized Object initialValue() {
+            return new Memory(MEM_SIZE);
+        }
+        
+        public Memory getMemory() {
+            return (Memory)get();
+        }
+    }
+    
+    public static final MemHolder s_memHolder = new MemHolder();
+
     // void  * OVsnmpMalloc (size_t size);
     Pointer OVsnmpMalloc(int size);
     
@@ -107,16 +121,109 @@ public interface OVsnmp extends Library {
     
     
     public static class OVuint64 extends Structure {
+
         public NativeLong high;
         public NativeLong low;
+        
+        public OVuint64() {
+            this(0);
+        }
+        
+        public OVuint64(int val) {
+            setValue(val);
+        }
+        
+        public OVuint64(OVuint64 val) {
+            setValue(val);
+        }
+        
+        public OVuint64(String val) {
+            setValue(val);
+        }
+
+        public OVuint64(long val) {
+            setValue(val);
+        }
+
+        private void setValue(int val) {
+            OVsnmp.INSTANCE.OVuint64AssignUInt32(this, new NativeLong(val));
+        }
+        
+        private void setValue(OVuint64 val) {
+            OVsnmp.INSTANCE.OVuint64Assign(this, val);
+        }
+        
+        private void setValue(String str) {
+            OVsnmp.INSTANCE.OVuint64FromStr(this, str, Pointer.NULL, 10);
+        }
+        
+        private void setValue(long val) {
+            int lowerBits = (int)(val & 0x00000000ffffffffL);
+            int upperBits = (int)((val >>> 32) & 0x00000000ffffffffL);
+            OVuint64 acc = new OVuint64(upperBits);
+            acc = acc.shiftLeft(32);
+            acc = acc.add(new OVuint64(lowerBits));
+            setValue(acc);
+        }
+        
+        public OVuint64 shiftLeft(int cnt) {
+            OVuint64 result = new OVuint64();
+            OVsnmp.INSTANCE.OVuint64Shift(this, result, (byte)'l', cnt);
+            return result;
+        }
+        
+        public OVuint64 shiftRight(int cnt) {
+            OVuint64 result = new OVuint64();
+            OVsnmp.INSTANCE.OVuint64Shift(this, result, (byte)'r', cnt);
+            return result;
+        }
+        
+        public OVuint64 add(OVuint64 val) {
+            OVuint64 result = new OVuint64();
+            OVsnmp.INSTANCE.OVuint64Add(this, val, result);
+            return result;
+        }
+        
+        public OVuint64 subtract(OVuint64 val) {
+            OVuint64 result = new OVuint64();
+            OVsnmp.INSTANCE.OVuint64Subtract(this, val, result);
+            return result;
+        }
+        
+        public String toString() {
+            Memory mem = OVsnmp.s_memHolder.getMemory();
+            OVsnmp.INSTANCE.OVuint64ToStr(mem, this, 10, "#");
+            return new String(mem.getString(0));
+        }
+        
+        public String toHexString() {
+            Memory mem = OVsnmp.s_memHolder.getMemory();
+            OVsnmp.INSTANCE.OVuint64ToStr(mem, this, 16, "#");
+            return new String(mem.getString(0));
+        }
+        
+        public String toNativeValue() {
+            return "[h:"+Integer.toHexString(high.intValue())+", l:"+Integer.toHexString(low.intValue())+"]";
+        }
+        
+        public long longValue() {
+            // XXX This is a cheat we are using the representation even though
+            // the OV docs say that its platform dependent.  
+            long upper = (high.intValue() & 0xffffffffL);
+            long lower = (low.intValue() & 0xffffffffL);
+            long result = (upper << 32) | lower;
+            
+            return result;
+        }
+        
     }
+    
     
     // void OVuint64Assign( OVuint64 *val1, const OVuint64 *val2 );
     void OVuint64Assign( OVuint64 val1, OVuint64 val2);
-
     
     // void OVuint64AssignUInt32( OVuint64 *val1, const unsigned long val2 );
-    void OVuint64AssingUInt32( OVuint64 val1, NativeLong val2);
+    void OVuint64AssignUInt32( OVuint64 val1, NativeLong val2);
     
     // int  OVuint64FromStr( OVuint64 *val, const char *s,
     //          char  **sprt, int base );
@@ -124,7 +231,48 @@ public interface OVsnmp extends Library {
     
     // int OVuint64ToStr( char *s,  const OVuint64 *val,
     //         int base, const char *flags);
-    int OVuint64ToStr( byte[] s, OVuint64 val, int base, String flags);
+    int OVuint64ToStr( Pointer s, OVuint64 val, int base, String flags);
+    
+    // int  OVuint64Shift( const OVuint64 *val,
+    //         OVuint64 *result,  char dir, int cnt );
+    int OVuint64Shift(OVuint64 val, OVuint64 result, byte dir, int cnt);
+
+    // int  OVuint64Add( const OVuint64 *a64,
+    //         const OVuint64 *b64,  OVuint64 *c64 );
+    int OVuint64Add(OVuint64 a64, OVuint64 b64, OVuint64 c64);
+
+    // int OVuint64AddUInt32( const  OVuint64 *a64,
+    //         const unsigned long b32, OVuint64 *c64  );
+    
+    // int OVuint64Cmp( const  OVuint64 *a64,
+    //         const OVuint64 *b64 );
+    int OVuint64Cmp(OVuint64 a64, OVuint64 b64);
+    
+    // int  OVuint64CmpUInt32( const OVuint64 *a64,
+    //         const unsigned  long b32 );
+
+    // int OVuint64Divide( const OVuint64  *a64,
+    //         const OVuint64 *b64, OVuint64 *c64 );
+
+    // int  OVuint64DivideUInt32( const OVuint64 *a64,
+    //         const unsigned  long b32, OVuint64 *c64 );
+
+    // int OVuint64Mutliply(  const OVuint64 *a64,
+    //         const OVuint64 *b64, OVuint64  *c64 );
+
+    // int OVuint64MultiplyUInt32( const OVuint64  *a64,
+    //         const unsigned long b32, OVuint64 *c64 );
+
+    // int OVuint64Subtract( const  OVuint64 *a64,
+    //         const OVuint64 *b64, OVuint64 *c64  );
+    int OVuint64Subtract(OVuint64 a64, OVuint64 b64, OVuint64 c64);
+
+    // int OVuint64SubtractUInt32( const OVuint64  *a64,
+    //         const unsigned long  b32, OVuint64 *c64:
+
+    
+    
+    
 
     
     
