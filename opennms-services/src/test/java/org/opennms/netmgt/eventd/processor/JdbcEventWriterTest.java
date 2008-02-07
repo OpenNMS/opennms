@@ -120,7 +120,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         m_jdbcEventWriter.process(null, bldr.getEvent());
     }
     
-    public void testGetƒventHostWithNullHost() throws Exception {
+    public void testGetEventHostWithNullHost() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
