@@ -331,6 +331,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testExampleScriptdConfiguration() throws Exception {
         unmarshalExample("scriptd-configuration.xml", ScriptdConfiguration.class);
     }
+    public void testExampleScriptdConfigurationWithEventProxy() throws Exception {
+        unmarshalExample("scriptd-configuration-with-event-proxy.xml", ScriptdConfiguration.class);
+    }
     public void testSiteStatusViews() throws Exception {
         unmarshal("site-status-views.xml", SiteStatusViewConfiguration.class);
     }
