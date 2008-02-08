@@ -10,10 +10,18 @@ public class OVObjectId {
     
     private ObjectID m_oid;
     private int m_len;
+    private boolean m_shouldFree = true;
+    
+    public static OVObjectId get(ObjectID oid, int len, boolean shouldFree) {
+        if (oid == null) {
+            return null;
+        }
+        return new OVObjectId(oid, len, shouldFree);
+    }
     
     public OVObjectId() {
         m_oid = new ObjectID();
-        m_len = -1;
+        m_len = 0;
     }
     
     public OVObjectId(String objectId) {
@@ -26,9 +34,10 @@ public class OVObjectId {
         m_len = pLen.getValue();
     }
     
-    public OVObjectId(ObjectID oid, int len) {
+    private OVObjectId(ObjectID oid, int len, boolean shouldFree) {
         m_oid = oid;
         m_len = len;
+        m_shouldFree = shouldFree;
     }
     
     public boolean isNull() {
@@ -49,7 +58,7 @@ public class OVObjectId {
         
         ObjectID oid = ovsnmp().OVsnmpOidCopy(m_oid, m_len);
         
-        return new OVObjectId(oid, m_len);
+        return new OVObjectId(oid, m_len, true);
         
     }
     
@@ -66,7 +75,7 @@ public class OVObjectId {
         m_oid = pOid.getValue();
         m_len = pLen.getValue();
         
-        
+        m_shouldFree = true;
     }
     
     public OVObjectId concat(OVObjectId oid2) {
@@ -75,14 +84,13 @@ public class OVObjectId {
         
         ovsnmp().OVsnmpOidConcat(pOid, pLen, m_oid, m_len, oid2.m_oid, oid2.m_len);
         
-        return new OVObjectId(pOid.getValue(), pLen.getValue());
+        return new OVObjectId(pOid.getValue(), pLen.getValue(), true);
 
     }
     
     public void free() {
-        if (isNull()) {
-            ovsnmp().OVsnmpFree(m_oid.getPointer());
-            m_oid.setPointer(Pointer.NULL);
+        if (!isNull() && m_shouldFree) {
+            m_oid.free();
             m_len = -1;
         }
     }

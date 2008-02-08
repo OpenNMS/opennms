@@ -108,6 +108,12 @@ groovy.compiler.output.path=target/classes
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>mock-snmp-agent</artifactId>
+      <version>1.3.10</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>backport-util-concurrent</groupId>
       <artifactId>backport-util-concurrent</artifactId>
       <version>3.1</version>
