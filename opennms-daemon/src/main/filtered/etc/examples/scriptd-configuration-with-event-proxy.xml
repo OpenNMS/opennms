@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<scriptd-configuration>
+	<engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
+	<start-script language="beanshell">
+
+		import org.opennms.netmgt.scriptd.ins.events.InsServerListener;
+
+                log = bsf.lookupBean("log");
+		log.debug("Starting Script");
+		log.debug("Start TCP PROXY for INS Event ");
+
+		InsServerListener isl = new InsServerListener();
+		
+		//optional (if not setted, default port (8154) is used)
+		//isl.setListeningPort(8152);
+		
+		//optional (if not setted, no authentication is required)
+		//isl.setSharedASCIIString("1234567890");
+		
+		//required properties
+                isl.setCriteriaRestriction("eventuei = 'uei.opennms.org/nodes/nodeDown' and nodeid not in (select nodeid from events where eventuei = 'uei.opennms.org/nodes/nodeUp')");
+		isl.start();
+
+	</start-script>
+
+	<stop-script language="beanshell">
+                
+		log.debug("executing a stop script");
+		isl.interrupt();
+
+	</stop-script>
+
+	<event-script language="beanshell">
+		event = bsf.lookupBean("event");
+		
+		//The following instructions filter events by UEI.
+		if (
+                   (event.uei.equals("uei.opennms.org/nodes/nodeUp")) 
+		|| (event.uei.equals("uei.opennms.org/noded/nodeDown"))
+                   )
+		{
+			log.debug("Flushing event "+event.uei+" to client listening");
+			isl.flushEvent(event);
+		}
+		
+	</event-script>
+
+
+</scriptd-configuration>
+
