@@ -20,78 +20,21 @@ import org.opennms.netmgt.xml.event.Event;
  * @see main method for usage example 
  */
 
-public class InsServerListener extends Thread {
+public class InsServerListener extends InsServerAbstractListener {
 	
 	private Category log;
 
-	private final static int DEFAULT_LISTENING_PORT = 8154;
-
-	/**
-	 * the port on which server listens
-	 */
-	private int listeningPort = DEFAULT_LISTENING_PORT;
-	
-	/**
-	 * the shared string for client authentication
-	 * If the shared string is not setted, then server doesn't require authentication 
-	 */
-	private String sharedASCIIString = null;
-	
-	/**
-	 * The uei of the event representing an alarm
-	 */
-	private String alarmUEI;
-	
-	/**
-	 * The uei of the event to clear corrensponding alarm
-	 */
-	private String clearAlarmUEI;
-	
 	private ServerSocket listener;
 	
 	private Set<InsSession> activeSessions=new HashSet<InsSession>();
-
-	public int getListeningPort() {
-		return listeningPort;
-	}
-
-	public void setListeningPort(int listeningPort) {
-		this.listeningPort = listeningPort;
-	}
-	
-	public void setSharedASCIIString(String sharedASCIIString) {
-		this.sharedASCIIString = sharedASCIIString;
-	}
-	
-	public String getSharedASCIIString() {
-		return sharedASCIIString;
-	}
-	
-	public String getAlarmUEI() {
-		return alarmUEI;
-	}
-
-	public void setAlarmUEI(String alarmUEI) {
-		this.alarmUEI = alarmUEI;
-	}
-
-	public String getClearAlarmUEI() {
-		return clearAlarmUEI;
-	}
-
-	public void setClearAlarmUEI(String clearAlarmUEI) {
-		this.clearAlarmUEI = clearAlarmUEI;
-	}
 
 	/**
 	 * listens for incoming connection on defined port (default is 8154)
 	 */
 	public void run() {
 		log=ThreadCategory.getInstance(this.getClass());
-		if(alarmUEI==null)
-			throw new IllegalStateException("The property alarmUEI cannot be null!");
-		if(clearAlarmUEI==null)
-			throw new IllegalStateException("The property clearAlarmUEI cannot be null!");
+		if(criteriaRestriction ==null)
+			throw new IllegalStateException("The property criteriaRestriction cannot be null!");
 		log.info("InsServerListener started: listening on port "+listeningPort);
 		try {
 			listener = new ServerSocket(listeningPort);
@@ -103,10 +46,9 @@ public class InsServerListener extends Thread {
 				server = listener.accept();
 				InsSession session = new InsSession(server);
 				//only if the sharedASCIIString is valorized, requires authentication
-				if(sharedASCIIString!=null)
-					session.setSharedAsciiAuthString(sharedASCIIString);
-				session.setAlarmUEI(alarmUEI);
-				session.setClearAlarmUEI(clearAlarmUEI);
+				if(sharedAuthAsciiString!=null)
+					session.setSharedASCIIString(sharedAuthAsciiString);
+				session.setCriteriaRestriction(criteriaRestriction);
 				session.start();
 				activeSessions.add(session);
 			}
@@ -177,9 +119,6 @@ public class InsServerListener extends Thread {
 		//isl.setSharedASCIIString("1234567890");
 		
 		//required properties
-        isl.setAlarmUEI("uei.opennms.org/nodes/nodeUp");
-        isl.setClearAlarmUEI("uei.opennms.org/nodes/nodeDown");
-		
 		
 		isl.start();
 
