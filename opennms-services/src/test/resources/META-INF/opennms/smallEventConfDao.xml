@@ -6,7 +6,7 @@
     <property name="staticMethod"><value>org.opennms.test.ConfigurationTestUtils.getFileForResource</value></property>
     <property name="arguments">
       <list>
-        <null/>
+        <bean class="org.opennms.netmgt.xml.event.Event"/>
         <value>/etc/eventconf.xml</value>
       </list>
     </property>
