@@ -57,6 +57,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,6 +80,14 @@ public class InstallerDb {
     public static final float POSTGRES_MIN_VERSION = 7.3f;
 
     private static final int s_fetch_size = 1024;
+    
+    private static Comparator<Constraint> constraintComparator = new Comparator<Constraint>() {
+
+		public int compare(Constraint o1, Constraint o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+    	
+    }; 
     
     private IndexDao m_indexDao = new IndexDao();
 
@@ -641,7 +651,7 @@ public class InstallerDb {
         } catch (Exception e) {
             throw new Exception("Could not parse column type '" + returnType + "' for function '" + function + "'.  Nested exception: " + e.getMessage(), e);
         }
-        int retType = ((Integer) types.get(c.getType())).intValue();
+        int retType = (types.get(c.getType())).intValue();
 
         return functionExists(function, columnTypes, retType);
     }
@@ -822,23 +832,25 @@ public class InstallerDb {
                         throw new Exception("Could not parse constraint for table '" + tableName + "'.  Nested exception: " + e.getMessage(), e);
                     }
                     List<String> constraintColumns = constraint.getColumns();
-                    if (constraintColumns.size() == 0) {
-                        throw new IllegalStateException(
+                    if (constraint.getType()!=Constraint.CHECK) {
+                    	if(constraintColumns.size() == 0) {
+                    		throw new IllegalStateException(
                                                         "constraint with no constrained columns");
-                    }
+                    	}
 
-                    for (String constrainedName : constraintColumns) {
-                        Column constrained = findColumn(columns,
-                                                        constrainedName);
-                        if (constrained == null) {
-                            throw new Exception(
-                                                "constraint "
+                    	for (String constrainedName : constraintColumns) {
+                    		Column constrained = findColumn(columns,
+                                                        	constrainedName);
+                    		if (constrained == null) {
+                    			throw new Exception(
+                                                	"constraint "
                                                         + constraint.getName()
                                                         + " references column \""
                                                         + constrainedName
                                                         + "\", which is not a column in the table "
                                                         + tableName);
-                        }
+                    		}
+                    	}
                     }
                     constraints.add(constraint);
                 } else {
@@ -860,6 +872,7 @@ public class InstallerDb {
 
         table.setName(tableName);
         table.setColumns(columns);
+        Collections.sort(constraints, InstallerDb.constraintComparator);
         table.setConstraints(constraints);
         table.setNotNullOnPrimaryKeyColumns();
 
@@ -919,7 +932,8 @@ public class InstallerDb {
 
         List<Column> columns = getColumnsFromDB(tableName);
         List<Constraint> constraints = getConstraintsFromDB(tableName);
-
+        Collections.sort(constraints, InstallerDb.constraintComparator);
+        
         table.setColumns(columns);
         table.setConstraints(constraints);
         return table;
@@ -1035,7 +1049,7 @@ public class InstallerDb {
         LinkedList<Constraint> constraints = new LinkedList<Constraint>();
 
         String query = "SELECT c.oid, c.conname, c.contype, c.conrelid, "
-            + "c.confrelid, a.relname, c.confupdtype, c.confdeltype from pg_class a "
+            + "c.confrelid, a.relname, c.confupdtype, c.confdeltype, c.consrc from pg_class a "
             + "right join pg_constraint c on c.confrelid = a.oid "
             + "where c.conrelid = (select oid from pg_class where relname = '"
                 + tableName.toLowerCase() + "') order by c.oid";
@@ -1051,6 +1065,7 @@ public class InstallerDb {
             String ftable = rs.getString(6);
             String foreignUpdType = rs.getString(7);
             String foreignDelType = rs.getString(8);
+            String checkExpression = rs.getString(9);
   
             Constraint constraint;
             if ("p".equals(type)) {
@@ -1069,6 +1084,8 @@ public class InstallerDb {
                 constraint = new Constraint(tableName.toLowerCase(), name,
                                             columns, ftable, fcolumns,
                                             foreignUpdType, foreignDelType);
+            } else if ("c".equals(type)) {
+            	constraint = new Constraint(tableName.toLowerCase(), name, checkExpression);
             } else {
                 throw new Exception("Do not support constraint type \""
                         + type + "\" in constraint \"" + name + "\"");
@@ -2746,7 +2763,7 @@ public class InstallerDb {
                                                         + "')");
         }
         
-        private PreparedStatement getStatement() throws SQLException {
+        private PreparedStatement getStatement() {
             /*
             if (m_statement == null) {
                 createStatement();
