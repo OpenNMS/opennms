@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Feb 10: Pull common event checks into checkEventSanityAndDoWeProcess in
+//              AbstractJdbcPersister. - dj@opennms.org
 // 2008 Feb 06: Fix bugs from bug #2247. - dj@opennms.org
 // 2008 Jan 28: Catch EmptyResultDataAccessException in getHostName(String).
 //              Thanks for the catch, jeffg! - dj@opennms.org
@@ -98,67 +100,52 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      *            the actual event to be inserted
      */
     public void process(Header eventHeader, Event event) throws SQLException, DataAccessException {
-        if (event != null) {
-            /*
-             * Check value of <logmsg> attribute 'dest', if set to
-             * "donotpersist" then simply return, the uei is not to be
-             *  persisted to the database
-             */
-            String logdest = event.getLogmsg().getDest();
-            if (logdest.equals("donotpersist")) {
-                log().debug("EventWriter: uei '" + event.getUei() + "' marked as 'doNotPersist'.");
-                return;
-            }
+        if (!checkEventSanityAndDoWeProcess(event, "JdbcEventWriter")) {
+            return;
+        }
             
-            if (log().isDebugEnabled()) {
-                log().debug("EventWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
-            }
+        if (log().isDebugEnabled()) {
+            log().debug("JdbcEventWriter: processing " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+        }
 
-            Connection connection = getDataSource().getConnection();
+        Connection connection = getDataSource().getConnection();
+
+        try {
+            connection.setAutoCommit(false);
 
             try {
-                // set the database for rollback support
+                insertEvent(eventHeader, event, connection);
+
+                connection.commit();
+            } catch (SQLException e) {
+                log().warn("JdbcEventWriter: Error inserting event into the datastore: " + e, e);
                 try {
-                    connection.setAutoCommit(false);
-                } catch (SQLException e) {
-                    log().warn("Unable to turn off auto commit mode: " + e, e);
-                    throw e;
+                    connection.rollback();
+                } catch (Exception e2) {
+                    log().warn("JdbcEventWriter: Rollback of transaction failed: " + e2, e2);
                 }
 
+                throw e;
+            } catch (DataAccessException e) {
+                log().warn("JdbcEventWriter: Error inserting event into the datastore: " + e, e);
                 try {
-                    insertEvent(eventHeader, event, connection);
-
-                    connection.commit();
-                } catch (SQLException e) {
-                    log().warn("Error inserting event into the datastore: " + e, e);
-                    try {
-                        connection.rollback();
-                    } catch (Exception e2) {
-                        log().warn("Rollback of transaction failed: " + e2, e2);
-                    }
-
-                    throw e;
-                } catch (DataAccessException e) {
-                    log().warn("Error inserting event into the datastore: " + e, e);
-                    try {
-                        connection.rollback();
-                    } catch (Exception e2) {
-                        log().warn("Rollback of transaction failed: " + e2, e2);
-                    }
-
-                    throw e;
+                    connection.rollback();
+                } catch (Exception e2) {
+                    log().warn("JdbcEventWriter: Rollback of transaction failed: " + e2, e2);
                 }
-            } finally {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log().warn("SQLException while closing database connection: " + e, e);
-                }
+
+                throw e;
             }
-
-            if (log().isDebugEnabled()) {
-                log().debug("EventWriter finished for : " + event.getUei());
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                log().warn("JdbcEventWriter: SQLException while closing database connection: " + e, e);
             }
+        }
+
+        if (log().isDebugEnabled()) {
+            log().debug("JdbcEventWriter: EventWriter finished for : " + event.getUei());
         }
     }
 
