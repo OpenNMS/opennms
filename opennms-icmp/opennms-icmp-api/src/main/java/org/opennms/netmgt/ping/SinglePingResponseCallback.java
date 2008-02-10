@@ -12,25 +12,25 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     private Throwable error = null;
     private Long responseTime = null;
     private InetAddress m_host;
-    
-	public SinglePingResponseCallback(InetAddress host) {
-	    m_host = host;
+
+    public SinglePingResponseCallback(InetAddress host) {
+        m_host = host;
     }
 
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-	    info("got response for address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
-	    responseTime = packet.getPingRTT();
-	    bs.signalAll();
-	}
+        info("got response for address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId() + " with a responseTime "+packet.getPingRTT());
+        responseTime = packet.getPingRTT();
+        bs.signalAll();
+    }
 
     private Category log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
-	public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
-	    info("timed out pinging address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId());
-	    bs.signalAll();
-	}
+    public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
+        info("timed out pinging address " + address + ", thread " + packet.getTID() + ", seq " + packet.getSequenceId());
+        bs.signalAll();
+    }
 
     public void handleError(InetAddress address, ICMPEchoPacket pr, Throwable t) {
         info("an error occurred pinging " + address, t);
@@ -41,7 +41,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     public void waitFor(long timeout) throws InterruptedException {
         bs.waitFor(timeout);
     }
-    
+
     public void waitFor() throws InterruptedException {
         info("waiting for ping to "+m_host+" to finish");
         bs.waitFor();
@@ -51,7 +51,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     public Long getResponseTime() {
         return responseTime;
     }
-    
+
     public void info(String msg) {
         log().info(msg);
     }
