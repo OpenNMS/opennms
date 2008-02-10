@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +37,6 @@ package org.opennms.netmgt.mock;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -103,13 +106,13 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
     };
     
     private List<MibObject> m_attrList;
-    private Map m_attrMap;
+    private Map<String, MibObject> m_attrMap;
 
     
     
     public MockDataCollectionConfig() {
         setAttrList(new ArrayList<MibObject>());
-        setAttrMap(new TreeMap());
+        setAttrMap(new TreeMap<String, MibObject>());
         addInitialAttributeTypes();
     }
 
@@ -121,11 +124,11 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         return m_attrList;
     }
 
-    public void setAttrMap(Map attrMap) {
+    public void setAttrMap(Map<String, MibObject> attrMap) {
         m_attrMap = attrMap;
     }
 
-    public Map getAttrMap() {
+    public Map<String, MibObject> getAttrMap() {
         return m_attrMap;
     }
     
@@ -165,7 +168,7 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
     }
 
     public MibObject getAttributeType(String aliasOrOid) {
-        return (MibObject)getAttrMap().get(aliasOrOid);
+        return getAttrMap().get(aliasOrOid);
     }
 
     public void addAttributeType(String alias, String oid, String inst, String type) {
@@ -177,8 +180,8 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         return 10;
     }
 
-    public List getRRAList(String collectionName) {
-        return Collections.EMPTY_LIST;
+    public List<String> getRRAList(String collectionName) {
+        return new ArrayList<String>(0);
     }
 
     public String getRrdPath() {
@@ -197,9 +200,9 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         return getAttrList();
     }
 
-	public Map<String,ResourceType> getConfiguredResourceTypes() {
-		return Collections.EMPTY_MAP;
-	}
+    public Map<String,ResourceType> getConfiguredResourceTypes() {
+        return new TreeMap<String, ResourceType>();
+    }
 
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();
@@ -208,6 +211,6 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         repo.setStep(getStep(collectionName));
         repo.setHeartBeat((2 * getStep(collectionName)));
         return repo;
-}
+    }
 
 }

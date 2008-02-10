@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +35,6 @@
 //
 package org.opennms.netmgt.config;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -138,13 +141,10 @@ public class PollerConfigFactoryTest extends TestCase {
     }
     
     static class TestPollerConfigManager extends PollerConfigManager {
-        String m_xml;
-        private String m_localServer;
-        private boolean m_verifyServer;
+        private String m_xml;
+
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
             super(new StringReader(xml), localServer, verifyServer);
-            m_localServer = localServer;
-            m_verifyServer = verifyServer;
             save();
         }
 

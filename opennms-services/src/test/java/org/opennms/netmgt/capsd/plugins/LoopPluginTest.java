@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Fix warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -71,7 +75,7 @@ public class LoopPluginTest extends TestCase {
      * Test method for 'org.opennms.netmgt.capsd.plugins.LoopPlugin.isProtocolSupported(InetAddress, Map)'
      */
     public void testIsProtocolSupportedInetAddressMap() throws UnknownHostException {
-        Map qualifiers = new HashMap();
+        Map<String, Object> qualifiers = new HashMap<String, Object>();
         qualifiers.put("ip-match", "127.*.*.1-2");
         qualifiers.put("is-supported", "true");
         Plugin plugin = new LoopPlugin();

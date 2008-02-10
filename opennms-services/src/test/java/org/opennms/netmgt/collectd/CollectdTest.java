@@ -10,6 +10,7 @@
  * 
  * Modifications:
  *
+ * 2008 Feb 09: Fix warnings. - dj@opennms.org
  * 2008 Jan 24: Fix testOneMatchingSpec test. - dj@opennms.org
  * 2007 Jun 30: Make tests work again. - dj@opennms.org
  *
@@ -66,7 +67,6 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -100,11 +100,9 @@ public class CollectdTest extends TestCase {
     private CollectorConfigDao m_collectorConfigDao;
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipIfDao;
-    private MonitoredServiceDao m_monSvcDao;
     private ServiceCollector m_collector;
 
     private MockScheduler m_scheduler;
-    private CollectionSpecification m_spec;
     
     private PlatformTransactionManager m_transactionManager;
     
@@ -122,13 +120,12 @@ public class CollectdTest extends TestCase {
         m_collectorConfigDao = m_easyMockUtils.createMock(CollectorConfigDao.class);
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_ipIfDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
-        m_monSvcDao = m_easyMockUtils.createMock(MonitoredServiceDao.class);
         m_collector = m_easyMockUtils.createMock(ServiceCollector.class);
         m_scheduler = new MockScheduler();
 
         m_eventIpcManager.addEventListener(isA(EventListener.class));
         expectLastCall().anyTimes();
-        m_eventIpcManager.addEventListener(isA(EventListener.class), isA(List.class));
+        m_eventIpcManager.addEventListener(isA(EventListener.class), isAList(String.class));
         expectLastCall().anyTimes();
         m_eventIpcManager.addEventListener(isA(EventListener.class), isA(String.class));
         expectLastCall().anyTimes();
@@ -231,10 +228,6 @@ public class CollectdTest extends TestCase {
         return m_nodeDao;
     }
 
-    private MonitoredServiceDao getMonitoredServiceDao() {
-        return m_monSvcDao;
-    }
-
     private IpInterfaceDao getIpInterfaceDao() {
         return m_ipIfDao;
     }
@@ -245,10 +238,6 @@ public class CollectdTest extends TestCase {
 
     private EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
-    }
-
-    private CollectionSpecification getCollectionSpecification() {
-        return m_spec;
     }
 
     private OnmsIpInterface getInterface() {
@@ -352,7 +341,7 @@ public class CollectdTest extends TestCase {
 				return false;
 			}
         };      
-        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class))).andReturn(collectionSetResult);
+        expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, String.class))).andReturn(collectionSetResult);
         setupInterface(iface);
         
         setupTransactionManager();
@@ -376,6 +365,11 @@ public class CollectdTest extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    private <K> List<K> isAList(Class<K> innerClass) {
+        return isA(List.class);
+    }
+
+    @SuppressWarnings("unchecked")
     private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {
         return isA(Map.class);
     }
@@ -390,17 +384,6 @@ public class CollectdTest extends TestCase {
         expectLastCall().anyTimes();
         m_transactionManager.commit(isA(TransactionStatus.class)); //anyTimes();
         expectLastCall().anyTimes();
-    }
-
-    private void setupSpecs(OnmsIpInterface iface, String svcName, List<CollectionSpecification> specs) {
-//        expect(m_collectorConfigDao.getSpecificationsForInterface(iface, svcName)).andReturn(Collections.singleton(collector));
-
-        /*
-        m_collectorConfigDao.expects(once()).method("getSpecificationsForInterface").
-        with(same(iface), eq(svcName)).
-        will(returnValue(specs));
-        */
-//        m_collectorConfigDao.
     }
 
     private void setupInterface(OnmsIpInterface iface) {

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,6 @@ package org.opennms.netmgt.mock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +51,7 @@ import org.opennms.netmgt.model.PollStatus;
  */
 abstract public class MockContainer extends MockElement {
 
-    private Map m_members = new HashMap();
+    private Map<Object, MockElement> m_members = new HashMap<Object, MockElement>();
 
     protected MockContainer(MockContainer parent) {
         super(parent);
@@ -73,12 +76,12 @@ abstract public class MockContainer extends MockElement {
 
     // model
     protected MockElement getMember(Object key) {
-        return (MockElement) m_members.get(key);
+        return m_members.get(key);
     }
 
     // model
-    protected List getMembers() {
-        return new ArrayList(m_members.values());
+    protected List<MockElement> getMembers() {
+        return new ArrayList<MockElement>(m_members.values());
     }
 
     // stats
@@ -94,7 +97,7 @@ abstract public class MockContainer extends MockElement {
                 pollCount += service.getPollCount();
             }
         }
-        ;
+
         PollCounter pollCounter = new PollCounter();
         visit(pollCounter);
         return pollCounter.getPollCount();
@@ -102,11 +105,10 @@ abstract public class MockContainer extends MockElement {
 
     // FIXME: where should this live?
     public PollStatus getPollStatus() {
-        Iterator it = m_members.values().iterator();
-        while (it.hasNext()) {
-            MockElement element = (MockElement) it.next();
-            if (element.getPollStatus().isUp())
+        for (MockElement element : m_members.values()) {
+            if (element.getPollStatus().isUp()) {
                 return PollStatus.up();
+            }
         }
         return PollStatus.down();
     }
@@ -134,7 +136,7 @@ abstract public class MockContainer extends MockElement {
                 service.resetPollCount();
             }
         }
-        ;
+
         PollCountReset pollCounter = new PollCountReset();
         visit(pollCounter);
     }
@@ -147,9 +149,7 @@ abstract public class MockContainer extends MockElement {
 
     // impl
     protected void visitMembers(MockVisitor v) {
-        Iterator it = m_members.values().iterator();
-        while (it.hasNext()) {
-            MockElement element = (MockElement) it.next();
+        for (MockElement element : m_members.values()) {
             element.visit(v);
         }
     }

@@ -8,6 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
+ * 2008 Feb 10: Organize imports. - dj@opennms.org
+ *
  * Copyright (C) 2007 The OpenNMS Group.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,7 +44,6 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
-import org.opennms.netmgt.threshd.ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorRelativeChange.ThresholdEvaluatorStateRelativeChange;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;

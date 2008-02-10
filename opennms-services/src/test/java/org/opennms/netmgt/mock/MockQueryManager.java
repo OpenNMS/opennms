@@ -66,8 +66,8 @@ public class MockQueryManager implements QueryManager {
         return m_network.getService(nodeId, ipAddr, serviceName) != null;
     }
 
-    public List getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
-        final Set serviceIds = new HashSet();
+    public List<Integer> getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
+        final Set<Integer> serviceIds = new HashSet<Integer>();
 
         MockVisitor gatherServices = new MockVisitorAdapter() {
 
@@ -80,11 +80,11 @@ public class MockQueryManager implements QueryManager {
         };
         m_network.visit(gatherServices);
 
-        return new ArrayList(serviceIds);
+        return new ArrayList<Integer>(serviceIds);
     }
 
-    public List getInterfacesWithService(final String svcName) throws SQLException {
-        final List ifKeys = new ArrayList();
+    public List<IfKey> getInterfacesWithService(final String svcName) throws SQLException {
+        final List<IfKey> ifKeys = new ArrayList<IfKey>();
 
         MockVisitor gatherInterfaces = new MockVisitorAdapter() {
 

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,9 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
@@ -128,6 +130,7 @@ public class SnmpCollectorTest extends TestCase {
         rdr.close();
 
         m_transMgr = new DataSourceTransactionManager(m_db) {
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected void doCommit(DefaultTransactionStatus status) {
@@ -437,8 +440,6 @@ public class SnmpCollectorTest extends TestCase {
     }
 
     private CollectionSpecification createCollectionSpec(String svcName) {
-        Collection outageCalendars = new LinkedList();
-
         Package pkg = new Package();
         Filter filter = new Filter();
         filter.setContent("IPADDR IPLIKE *.*.*.*");
@@ -450,7 +451,6 @@ public class SnmpCollectorTest extends TestCase {
         CollectdPackage wpkg = new CollectdPackage(pkg, "foo", false);
         CollectionSpecification spec = new CollectionSpecification(wpkg,
                                                                    svcName,
-                                                                   outageCalendars,
                                                                    m_snmpCollector);
         return spec;
     }

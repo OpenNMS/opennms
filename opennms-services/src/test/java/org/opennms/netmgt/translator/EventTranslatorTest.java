@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Remove warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +37,6 @@ package org.opennms.netmgt.translator;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
@@ -46,8 +49,8 @@ import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -205,7 +208,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         // test empty  parm list fails
         Event teWithNoParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
         Parms parms = teWithNoParms.getParms();
-        parms.setParmCollection(new ArrayList(0));
+        parms.removeAllParm();
         assertFalse(m_config.isTranslationEvent(teWithNoParms));
 
         // test missing a parm fails
@@ -246,7 +249,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         // test empty  parm list fails
         Event teWithNoParms = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "Down");
         Parms parms = teWithNoParms.getParms();
-        parms.setParmCollection(new ArrayList(0));
+        parms.removeAllParm();
         assertTrue(m_config.translateEvent(teWithNoParms).isEmpty());
 
         // test missing a parm fails

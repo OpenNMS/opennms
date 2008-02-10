@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.opennms.netmgt.ticketd;
 
 import org.easymock.EasyMock;
@@ -14,7 +11,6 @@ import junit.framework.TestCase;
 
 /**
  * @author david
- *
  */
 public class DefaultTicketerServiceLayerTest extends TestCase {
 
@@ -181,6 +177,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
+    @SuppressWarnings("unused")
     private void expectUpdatedTicket() {
         m_ticketerPlugin.saveOrUpdate(m_ticket);
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 09: Eliminate warnings, Java 5 generics and loops. - dj@opennms.org
 // 2007 Aug 03: Change Castor methods clearX -> removeAllX. - dj@opennms.org
 // 2007 May 06: Use Java 5 generics and remove an unused method to
 //              eliminate warnings. - dj@opennms.org
@@ -40,8 +41,8 @@ package org.opennms.netmgt.mock;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -94,7 +95,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     private Service m_currentSvc;
 
     private MockNetwork m_network;
-    
+
     public MockPollerConfig(MockNetwork network) {
         m_network = network;
         setConfig(new Outages());
@@ -132,11 +133,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         pkg.addOutageCalendar(outageName);
 
     }
-    
+
     public void addScheduledOutage(String outageName, long begin, long end, String ipAddr) {
         addScheduledOutage(m_currentPkg, outageName, begin, end, ipAddr);
     }
-    
+
     public void addScheduledOutage(Package pkg, String outageName, String dayOfWeek, String beginTime, String endTime, String ipAddr) {
         Outage outage = new Outage();
         outage.setName(outageName);
@@ -151,19 +152,19 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         time.setDay(dayOfWeek);
         time.setBegins(beginTime);
         time.setEnds(endTime);
-       
+
         outage.addTime(time);
 
         getConfig().addOutage(outage);
 
         pkg.addOutageCalendar(outageName);
     }
-    
+
     public void addScheduledOutage(String outageName, String dayOfWeek, String beginTime, String endTime, String ipAddr) {
         addScheduledOutage(m_currentPkg, outageName, dayOfWeek, beginTime, endTime, ipAddr);
     }
 
-    
+
     public void addService(String name, ServiceMonitor monitor) {
         addService(name, m_defaultPollInterval, monitor);
     }
@@ -179,7 +180,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         }
         addServiceMonitor(name, monitor);
     }
-    
+
     private void addServiceMonitor(String name, ServiceMonitor monitor) {
         if (!hasServiceMonitor(name))
             m_svcMonitors.put(name, monitor);
@@ -200,22 +201,21 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
         m_pkgs.add(m_currentPkg);
     }
-    
+
     public void addMonitor(String svcName, String className) {
         addServiceMonitor(svcName, new MockMonitor(m_network, svcName));
-        
+
     }
 
-    public Enumeration enumeratePackage() {
+    public Enumeration<Package> enumeratePackage() {
         return m_pkgs.elements();
     }
 
     private Service findService(Package pkg, String svcName) {
-        Enumeration svcs = pkg.enumerateService();
-        while (svcs.hasMoreElements()) {
-            Service svc = (Service) svcs.nextElement();
-            if (svcName.equals(svc.getName()))
+        for (Service svc : pkg.getServiceCollection()) {
+            if (svcName.equals(svc.getName())) {
                 return svc;
+            }
         }
         return null;
     }
@@ -231,7 +231,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     public String getNextOutageIdSql() {
         return m_nextOutageIdSql;
     }
-    
+
     public Package getPackage(String name) {
         for (Package pkg : m_pkgs) {
             if (pkg.getName().equals(name)) {
@@ -241,7 +241,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return null;
     }
 
-    public List getRRAList(Package pkg) {
+    public List<String> getRRAList(Package pkg) {
         return null;
     }
 
@@ -306,7 +306,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         // TODO Auto-generated method stub
         return m_pollAll ;
     }
-    
+
     public void setPollAllIfNoCriticalServiceDefined(boolean pollAll) {
         m_pollAll = pollAll;
     }
@@ -334,11 +334,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     public boolean serviceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }
-    
+
     public void setNextOutageIdSql(String nextOutageIdSql) {
         m_nextOutageIdSql = nextOutageIdSql;
     }
-    
+
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }
@@ -350,7 +350,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     public void setInterfaceMatch(String matchRegexp) {
         m_currentPkg.addIncludeUrl(matchRegexp);
     }
-    
+
 
     public void setNodeOutageProcessingEnabled(boolean outageProcessingEnabled) {
         m_outageProcessingEnabled = outageProcessingEnabled;
@@ -364,7 +364,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         Service svc = findService(pkg, svcName);
         if (svc == null)
             throw new IllegalArgumentException("No service named: "+svcName+" in package "+pkg);
-            
+
         svc.setInterval(interval);
     }
 
@@ -387,19 +387,19 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {
         // TODO Auto-generated method stub
-        
+
     }
 
     public Service getServiceInPackage(String svcName, Package pkg) {
         return findService(pkg, svcName);
     }
-    
+
     public void update() {
-        
+
     }
-    
+
     public void save() {
-        
+
     }
 
     public void addParameter(String key, String value) {
@@ -408,7 +408,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         param.setValue(value);
         m_currentSvc.addParameter(param);
     }
-    
+
     public void addPackage(Package pkg) {
         m_pkgs.add(pkg);
     }
@@ -418,23 +418,23 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return null;
     }
 
-    public List getAllPackageMatches(String ipAddr) {
-        return Collections.EMPTY_LIST;
+    public List<String> getAllPackageMatches(String ipAddr) {
+        return new ArrayList<String>(0);
     }
 
-	public boolean pathOutageEnabled() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void releaseAllServiceMonitors() {
-		// TODO Auto-generated method stub
-		
-	}
-
-    public List getIpList(Package pkg) {
+    public boolean pathOutageEnabled() {
         // TODO Auto-generated method stub
-        return Collections.EMPTY_LIST;
+        return false;
+    }
+
+    public void releaseAllServiceMonitors() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public List<String> getIpList(Package pkg) {
+        // TODO Auto-generated method stub
+        return new ArrayList<String>(0);
     }
 
     public ServiceSelector getServiceSelectorForPackage(Package pkg) {
@@ -444,7 +444,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
         throw new UnsupportedOperationException("not yet implelmented");
-        
+
     }
 
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
