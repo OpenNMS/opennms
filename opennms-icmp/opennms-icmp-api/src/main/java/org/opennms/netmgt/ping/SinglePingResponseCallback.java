@@ -9,6 +9,7 @@ import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 public class SinglePingResponseCallback implements PingResponseCallback {
     private BarrierSignaler bs = new BarrierSignaler(1);
+    @SuppressWarnings("unused")
     private Throwable error = null;
     private Long responseTime = null;
     private InetAddress m_host;
