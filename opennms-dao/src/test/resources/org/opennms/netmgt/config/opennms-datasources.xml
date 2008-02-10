@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasource-configuration
+  xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
+                      http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+  <jdbc-data-source name="opennms"
+      class-name="org.postgresql.Driver"
+      url="jdbc:postgresql://localhost:5432/opennms"
+      user-name="opennms"
+      password="opennms" />
+  <jdbc-data-source name="opennms2"
+      class-name="org.postgresql.Driver"
+      url="jdbc:postgresql://localhost:5432/opennms">
+    <param name="user" value="opennms" />
+    <param name="password" value="opennms" />
+  </jdbc-data-source>
+</datasource-configuration>

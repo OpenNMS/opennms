@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Feb 10: Organize imports. - dj@opennms.org
  * 2007 Apr 14: Call setDirty() at the end of runTest, not early on. - dj@opennms.org
  * 2007 Apr 07: Add docs; use ArrayList instead of LinkedList. - dj@opennms.org
  * 
@@ -42,7 +43,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
