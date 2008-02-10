@@ -32,6 +32,7 @@ import org.springframework.core.io.Resource;
 
 public class SnmpThresholderTest extends TestCase {
 
+    @SuppressWarnings("deprecation")
     private SnmpThresholder m_snmpThresholder;
     private ThresholdNetworkInterface m_iface;
     private SnmpThresholdNetworkInterface m_thresholdInterface;
@@ -42,6 +43,7 @@ public class SnmpThresholderTest extends TestCase {
     
     private EasyMockUtils m_mocks = new EasyMockUtils();
         
+    @SuppressWarnings("deprecation")
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -86,6 +88,7 @@ public class SnmpThresholderTest extends TestCase {
 //      ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository(dir.getParentFile().getAbsolutePath());
     }
 
+    @SuppressWarnings("deprecation")
     public void testCheckNodeDirNullDirectory() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("directory argument cannot be null"));
@@ -98,6 +101,7 @@ public class SnmpThresholderTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    @SuppressWarnings("deprecation")
     public void testCheckNodeDirNullThresholdNetworkInterface() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("thresholdNetworkInterface argument cannot be null"));
@@ -111,6 +115,7 @@ public class SnmpThresholderTest extends TestCase {
     }
 
     // FIXME: This doesn't work now that config has been moved into SnmpThresholdNetworkInterface 
+    @SuppressWarnings("deprecation")
     public void FIXMEtestCheckNodeDirNullThresholdConfiguration() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("thresholdConfiguration argument cannot be null"));
@@ -123,6 +128,7 @@ public class SnmpThresholderTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    @SuppressWarnings("deprecation")
     public void testCheckNodeDirNullDate() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("date argument cannot be null"));
@@ -135,6 +141,7 @@ public class SnmpThresholderTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    @SuppressWarnings("deprecation")
     public void testCheckNodeDirNullEvents() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("events argument cannot be null"));
@@ -148,6 +155,7 @@ public class SnmpThresholderTest extends TestCase {
     }
     
     // FIXME: This doesn't work because the nodeId underneath is now an int, not an Integer
+    @SuppressWarnings("deprecation")
     public void FIXMEtestCheckNodeDirNullSnmpIfaceNodeId() throws Exception {
         ThresholdNetworkInterface intf = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(0, InetAddress.getByName("192.168.1.1"));
         SnmpThresholdNetworkInterface snmpIface = new SnmpThresholdNetworkInterface(m_thresholdsDao, intf, m_params);
@@ -165,6 +173,7 @@ public class SnmpThresholderTest extends TestCase {
     }
     
     // FIXME: This doesn't work because of an NPE in SnmpThresholdInterface.getIpAddress() 
+    @SuppressWarnings("deprecation")
     public void FIXMEtestCheckNodeDirNullSnmpIfaceInetAddress() {
 //        IPv4NetworkInterface intf = new IPv4NetworkInterface(null);
         ThresholdNetworkInterface intf = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(1, null);
@@ -181,6 +190,7 @@ public class SnmpThresholderTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    @SuppressWarnings("deprecation")
     public void testCheckNodeDirNullFoo() throws Exception {
         /*
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -200,6 +210,7 @@ public class SnmpThresholderTest extends TestCase {
     }
     
     
+    @SuppressWarnings("deprecation")
     public void testStripRrdExtensionWithValidExtension() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension()); 
@@ -207,12 +218,14 @@ public class SnmpThresholderTest extends TestCase {
         assertEquals("stripped file name", "foo", strippedName);
     }
     
+    @SuppressWarnings("deprecation")
     public void testStripRrdExtensionWithNoExtension() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo");
         assertNull("stripped file name should be null, but was: " + strippedName, strippedName);
     }
     
+    @SuppressWarnings("deprecation")
     public void testStripRrdExtensionWithValidExtensionTwice() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension() + RrdUtils.getExtension()); 
@@ -220,6 +233,7 @@ public class SnmpThresholderTest extends TestCase {
         assertEquals("stripped file name", "foo" + RrdUtils.getExtension(), strippedName);
     }
     
+    @SuppressWarnings("deprecation")
     public void testStripRrdExtensionWithValidExtensionNotAtEnd() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension() + ".bar"); 
@@ -244,6 +258,7 @@ public class SnmpThresholderTest extends TestCase {
         assertEquals(4, count); // as defined on test-thresholods.xml
     }
     
+    @SuppressWarnings("deprecation")
     public void testInterfaces() throws Exception {
         System.err.println("--------------------------------------------------------");
         setUpRrdStrategy();
@@ -306,6 +321,7 @@ public class SnmpThresholderTest extends TestCase {
         assertEquals(2, events.getEventCount()); // with Filters Enabled. See test-thresholds.xml
     }
   
+    @SuppressWarnings("deprecation")
     public void testThresholdWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
         setUpRrdStrategy();
@@ -374,6 +390,7 @@ public class SnmpThresholderTest extends TestCase {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void testExpressionWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
         // Set storeByGroup, because JRBs will be created with this feature
