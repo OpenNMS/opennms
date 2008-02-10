@@ -42,15 +42,12 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -202,19 +199,9 @@ public class CollectdConfigFactory {
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
 
-        /*
-         * marshall to a string first, then write the string to the file. This
-         * way the original config
-         * isn't lost if the xml from the marshall is hosed.
-         */
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_collectdConfig.getConfig(), stringWriter);
-        if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(cfgFile);
-            fileWriter.write(stringWriter.toString());
-            fileWriter.flush();
-            fileWriter.close();
-        }
+        CollectdConfiguration config = m_collectdConfig.getConfig();
+
+        CastorUtils.marshalViaString(config, cfgFile);
 
         reload();
     }
