@@ -2051,6 +2051,41 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().updateIplike();
         getInstallerDb().closeConnection();
     }
+    
+    public void testCreateTableWithCheckConstraint() throws Exception {
+    	final String cname="setfilter_type_valid";
+    	final String checkexpression="(((\"type\" >= 0) AND (\"type\" <= 2)))";
+        final String sql = "create table setFilter ( id integer, type integer, " +
+        		"constraint "+cname+" check "+checkexpression+");\n";
+        getInstallerDb().readTables(new StringReader(sql));
+    	Table table=getInstallerDb().getTableFromSQL("setFilter");
+    	List<Constraint> constraints=table.getConstraints();
+    	assertTrue(constraints.size()==1);
+    	Constraint constraint=constraints.get(0);
+    	assertTrue(cname.equals(constraint.getName()));
+    	assertTrue(checkexpression.equals("("+constraint.getCheckExpression()+")"));
+    }
+    
+    public void testUpgradeAddCheckConstraint() throws Exception {
+       	final String cname="setfilter_type_valid";
+    	final String checkexpression="(((\"type\" >= 0) AND (\"type\" <= 2)))";
+        final String sql_start = "create table setFilter ( id integer, type integer);\n";
+        executeSQL(sql_start);
+        
+        final String sql_upgrade = "create table setFilter ( id integer, type integer, " +
+						"constraint "+cname+" check "+checkexpression+");\n";
+        getInstallerDb().readTables(new StringReader(sql_upgrade));
+        getInstallerDb().createTables();
+        
+        //Check created table
+    	Table table=getInstallerDb().getTableFromDB("setFilter");
+    	List<Constraint> constraints=table.getConstraints();
+    	assertTrue(constraints.size()==1);
+    	Constraint constraint=constraints.get(0);
+    	assertTrue(cname.equals(constraint.getName()));
+    	assertTrue(checkexpression.equals("("+constraint.getCheckExpression()+")"));
+  	
+    }
 
     public void addTableFromSQL(String tableName) throws SQLException {
         String partialSQL = null;
