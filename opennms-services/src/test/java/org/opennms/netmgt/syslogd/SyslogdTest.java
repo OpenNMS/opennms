@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 10: Eliminate warnings, use ConfigurationTestUtils. - dj@opennms.org
 // 2007 Aug 24: Fix failing tests and warnings. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
@@ -38,9 +39,7 @@
 //
 package org.opennms.netmgt.syslogd;
 
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Level;
@@ -55,6 +54,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
@@ -62,7 +62,6 @@ import org.opennms.test.mock.MockUtil;
 public class SyslogdTest extends OpenNMSTestCase {
 
     private Syslogd m_syslogd;
-    private SyslogdConfigFactory m_factory;
 
     public SyslogdTest() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
@@ -80,10 +79,13 @@ public class SyslogdTest extends OpenNMSTestCase {
         MockDatabase db = new MockDatabase();
         db.populate(network);
         DataSourceFactory.setInstance(db);
-        Reader rdr = new InputStreamReader(getClass().getResourceAsStream( "/etc/syslogd-configuration.xml"));
-
-        m_factory = new SyslogdConfigFactory(rdr);
-        rdr.close();
+        
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/etc/syslogd-configuration.xml");
+        try {  
+            new SyslogdConfigFactory(rdr);
+        } finally {
+            rdr.close();
+        }
 
         m_syslogd = new Syslogd();
         m_syslogd.init();

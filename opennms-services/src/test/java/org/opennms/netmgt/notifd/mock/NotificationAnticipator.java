@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,6 @@ package org.opennms.netmgt.notifd.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -43,16 +46,13 @@ import org.opennms.test.mock.MockUtil;
 
 /**
  * @author brozow
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class NotificationAnticipator {
 
-    List m_anticipated = new ArrayList();
-    List m_unanticipated = new ArrayList();
-    List m_earlyArrival = new ArrayList();
-    List m_lateBloomers = new ArrayList();
+    List<MockNotification> m_anticipated = new ArrayList<MockNotification>();
+    List<MockNotification> m_unanticipated = new ArrayList<MockNotification>();
+    List<MockNotification[]> m_earlyArrival = new ArrayList<MockNotification[]>();
+    List<MockNotification[]> m_lateBloomers = new ArrayList<MockNotification[]>();
 
     long m_expectedDiff = 1000;
 
@@ -91,7 +91,7 @@ public class NotificationAnticipator {
     public synchronized void notificationReceived(MockNotification mn) {
         int i = m_anticipated.indexOf(mn);
         if (i != -1) {
-            MockNotification notification = (MockNotification) m_anticipated.get(i);
+            MockNotification notification = m_anticipated.get(i);
 
             long receivedTime = mn.getExpectedTime();
             long expectedTime = notification.getExpectedTime();
@@ -117,19 +117,19 @@ public class NotificationAnticipator {
         }
     }
 
-    public Collection getAnticipatedNotifications() {
+    public Collection<MockNotification> getAnticipatedNotifications() {
         return Collections.unmodifiableCollection(m_anticipated);
     }
 
     public void reset() {
-        m_anticipated = new ArrayList();
-        m_unanticipated = new ArrayList();
+        m_anticipated = new ArrayList<MockNotification>();
+        m_unanticipated = new ArrayList<MockNotification>();
     }
 
     /**
      * @return
      */
-    public Collection getUnanticipated() {
+    public Collection<MockNotification> getUnanticipated() {
         return Collections.unmodifiableCollection(m_unanticipated);
     }
 
@@ -137,13 +137,13 @@ public class NotificationAnticipator {
      * @param i
      * @return
      */
-    public synchronized Collection waitForAnticipated(long millis) {
+    public synchronized Collection<MockNotification> waitForAnticipated(long millis) {
         long waitTime = millis;
         long start = System.currentTimeMillis();
         long now = start;
         while (waitTime > 0) {
             if (m_anticipated.isEmpty())
-                return Collections.EMPTY_LIST;
+                return new ArrayList<MockNotification>(0);
             try {
                 wait(waitTime);
             } catch (InterruptedException e) {
@@ -202,13 +202,13 @@ public class NotificationAnticipator {
     }
 
     private static String listNotifications(String prefix,
-            Collection notifications) {
+            Collection<?> notifications) {
         StringBuffer b = new StringBuffer();
 
-        for (Iterator it = notifications.iterator(); it.hasNext();) {
+        for (Object o : notifications) {
             MockNotification notification;
             MockNotification received = null;
-            Object o = it.next();
+
             if (o instanceof MockNotification[]) {
                 notification = ((MockNotification[]) o)[0];
                 received = ((MockNotification[]) o)[1];

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -61,7 +65,7 @@ public class MockPollContext implements PollContext, EventListener {
     private EventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_mockNetwork;
-    private List m_pendingPollEvents = new LinkedList();
+    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
     
 
     public String getCriticalServiceName() {
@@ -86,11 +90,13 @@ public class MockPollContext implements PollContext, EventListener {
     }
     
     public void setEventMgr(EventIpcManager eventMgr) {
-        if (m_eventMgr != null)
+        if (m_eventMgr != null) {
             m_eventMgr.removeEventListener(this);
+        }
         m_eventMgr = eventMgr;
-        if (m_eventMgr != null)
+        if (m_eventMgr != null) {
             m_eventMgr.addEventListener(this);
+        }
     }
     
     public void setDatabase(MockDatabase db) {
@@ -173,20 +179,20 @@ public class MockPollContext implements PollContext, EventListener {
 
     public synchronized void onEvent(Event e) {
         synchronized (m_pendingPollEvents) {
-            for (Iterator it = m_pendingPollEvents .iterator(); it.hasNext();) {
-                PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+            for (PendingPollEvent pollEvent : m_pendingPollEvents) {
                 if (e.equals(pollEvent.getEvent())) {
                     pollEvent.complete(e);
                 }
             }
             
-            for (Iterator it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
-                PendingPollEvent pollEvent = (PendingPollEvent) it.next();
-                if (pollEvent.isPending()) break;
+            for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
+                PendingPollEvent pollEvent = it.next();
+                if (pollEvent.isPending()) {
+                    break;
+                }
                 
                 pollEvent.processPending();
                 it.remove();
-                
             }
         }
     }

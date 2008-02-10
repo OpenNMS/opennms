@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +35,6 @@
 //
 package org.opennms.netmgt.mock;
 
-import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -45,7 +48,7 @@ import org.snmp4j.smi.VariableBinding;
  */
 public class MockAgent {
     
-    private SortedMap m_subAgents = new TreeMap();
+    private SortedMap<OID, SubAgent> m_subAgents = new TreeMap<OID, SubAgent>();
 
     public void addSubAgent(SubAgent subAgent) {
         m_subAgents.put(subAgent.getBaseOID(), subAgent);
@@ -58,11 +61,11 @@ public class MockAgent {
      */
     public VariableBinding getNext(OID oid) {
         VariableBinding result = null;
-        for (Iterator it = m_subAgents.values().iterator(); it.hasNext();) {
-            SubAgent subAgent = (SubAgent) it.next();
+        for (SubAgent subAgent : m_subAgents.values()) {
             result = subAgent.getNext(oid);
-            if (result != null)
+            if (result != null) {
                 return result;
+            }
         }
         
         return result;
@@ -73,10 +76,9 @@ public class MockAgent {
      * @return
      */
     public VariableBinding get(OID oid) {
-        for (Iterator it = m_subAgents.keySet().iterator(); it.hasNext();) {
-            OID agentKey = (OID) it.next();   
+        for (OID agentKey : m_subAgents.keySet()) {
             if (oid.startsWith(agentKey)) {
-                SubAgent subAgent = (SubAgent)m_subAgents.get(agentKey);
+                SubAgent subAgent = m_subAgents.get(agentKey);
                 return subAgent.get(oid);
             }
         }

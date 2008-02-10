@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -72,7 +76,7 @@ public class HttpCollectionConfigFactoryTest extends TestCase {
                 "    </uris>\n" + 
                 "  </http-collection>\n" + 
                 "</http-datacollection-config>");
-        HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(rdr);
+        new HttpCollectionConfigFactory(rdr);
         assertNotNull(HttpCollectionConfigFactory.getConfig());
     }
 

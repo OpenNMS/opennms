@@ -1,6 +1,3 @@
-package org.opennms.netmgt.mock;
-
-//
 // This file is part of the OpenNMS(R) Application.
 //
 // OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
@@ -9,6 +6,10 @@ package org.opennms.netmgt.mock;
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -31,10 +32,10 @@ package org.opennms.netmgt.mock;
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
+package org.opennms.netmgt.mock;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.model.PollStatus;
@@ -57,7 +58,7 @@ public class MockService extends MockElement implements MonitoredService {
 
     private String m_svcName;
 
-    private List m_triggers = new ArrayList();
+    private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
 
     private NetworkInterface m_netAddr;
 
@@ -134,9 +135,7 @@ public class MockService extends MockElement implements MonitoredService {
     public PollStatus poll() {
         m_pollCount++;
         
-        Iterator it = m_triggers.iterator();
-        while (it.hasNext()) {
-            PollAnticipator trigger = (PollAnticipator) it.next();
+        for (PollAnticipator trigger : m_triggers) {
             trigger.poll(this);
         }
 

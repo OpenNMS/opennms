@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 09: Use Java 5 generics. - dj@opennms.org
 // 2008 Jan 27: Move createStandardNetwork from OpenNMSTestCase to here. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -63,15 +64,15 @@ public class MockNetwork extends MockContainer {
 
     private MockNode m_currentNode;
 
-    private Map m_idToNameMap = new HashMap();
+    private Map<Integer, String> m_idToNameMap = new HashMap<Integer, String>();
 
     private int m_invalidPollCount;
 
-    private Map m_nameToIdMap = new HashMap();
+    private Map<String, Integer> m_nameToIdMap = new HashMap<String, Integer>();
     
     private String m_criticalService;
 	
-	private String m_ifAlias;
+    private String m_ifAlias;
 
     private int m_nextServiceId = 1;
 
@@ -127,7 +128,7 @@ public class MockNetwork extends MockContainer {
     }
 
     // model
-    public Map getIdToNameMap() {
+    public Map<Integer, String> getIdToNameMap() {
         return Collections.unmodifiableMap(m_idToNameMap);
     }
 
@@ -148,7 +149,7 @@ public class MockNetwork extends MockContainer {
     }
 
     // model
-    public Map getNameToIdMap() {
+    public Map<String, Integer> getNameToIdMap() {
         return Collections.unmodifiableMap(m_nameToIdMap);
     }
 
@@ -173,7 +174,7 @@ public class MockNetwork extends MockContainer {
             }
 
         }
-        ;
+
         NodeFinder finder = new NodeFinder();
         visit(finder);
         return finder.getNode() == null ? -1 : finder.getNode().getNodeId();
@@ -189,7 +190,7 @@ public class MockNetwork extends MockContainer {
     private int getServiceId(String svcName) {
         int serviceId;
         if (m_nameToIdMap.containsKey(svcName)) {
-            serviceId = ((Integer) m_nameToIdMap.get(svcName)).intValue();
+            serviceId = m_nameToIdMap.get(svcName).intValue();
         } else {
             serviceId = m_nextServiceId++;
             Integer serviceIdObj = new Integer(serviceId);

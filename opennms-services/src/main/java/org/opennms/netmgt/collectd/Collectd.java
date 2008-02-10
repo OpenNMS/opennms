@@ -13,6 +13,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 09: Remove outage calendar from CollectionSpecification. - dj@opennms.org
 // 2007 Jun 30: Java 5 generics, log when we do match a specification. - dj@oopennms.org
 // 2006 Aug 15: Remove old, incorrect comment. Fix up log message. -
 // dj@opennms.org
@@ -570,7 +571,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 log().debug(sb.toString());
             }
             
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, Collections.EMPTY_LIST, getServiceCollector(svcName)));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName)));
         }
         return matchingPkgs;
     }

@@ -10,7 +10,7 @@
 //
 // Modfications:
 //
-// 2008 Feb 09: Indent, format code and comments. - dj@opennms.org
+// 2008 Feb 09: Indent, format code and comments, remove Outage collection. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -37,7 +37,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -59,17 +58,13 @@ public class CollectionSpecification {
     private CollectdPackage m_package;
     private String m_svcName;
     private ServiceCollector m_collector;
-    private Map m_parameters;
+    private Map<String, String> m_parameters;
 
-    //FIXME: Why is this not used?
-    private Collection m_outageCalendars;
-
-
-    public CollectionSpecification(CollectdPackage wpkg, String svcName, Collection outageCalendars, ServiceCollector collector) {
+    public CollectionSpecification(CollectdPackage wpkg, String svcName, ServiceCollector collector) {
         m_package = wpkg;
         m_svcName = svcName;
         m_collector = collector;
-        m_outageCalendars = outageCalendars;
+        
         initializeParameters();
     }
 
@@ -122,7 +117,7 @@ public class CollectionSpecification {
         return m_collector;
     }
 
-    private Map getPropertyMap() {
+    private Map<String, String> getPropertyMap() {
         return m_parameters;
     }
 
@@ -131,7 +126,7 @@ public class CollectionSpecification {
      * plus various other Collection specific parameters (e.g. storeByNodeID etc)
      * @return A read only Map instance
      */
-    public Map getReadOnlyPropertyMap() {
+    public Map<String, String> getReadOnlyPropertyMap() {
         return Collections.unmodifiableMap(m_parameters);
     }
 
@@ -147,7 +142,6 @@ public class CollectionSpecification {
         return stg.equalsIgnoreCase("no") || stg.equalsIgnoreCase("off") || stg.equalsIgnoreCase("false");
     }
 
-    @SuppressWarnings("unchecked")
     private void initializeParameters() {
         Map<String, String> m = new TreeMap<String, String>();
         m.put("SERVICE", m_svcName);
@@ -257,10 +251,7 @@ public class CollectionSpecification {
          * interface then break and return true. Otherwise process the
          * next outage.
          */ 
-        Iterator<String> iter = m_package.getPackage().getOutageCalendarCollection().iterator();
-        while (iter.hasNext()) {
-            String outageName = iter.next();
-
+        for (String outageName : m_package.getPackage().getOutageCalendarCollection()) {
             // Does the outage apply to the current time?
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
@@ -286,9 +277,7 @@ public class CollectionSpecification {
         }
     }
 
-
     public RrdRepository getRrdRepository(String collectionName) {
         return m_collector.getRrdRepository(collectionName);
     }
-
 }

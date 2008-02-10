@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -64,7 +68,7 @@ public interface QueryManager {
      * @return
      * @throws SQLException
      */
-    public List getActiveServiceIdsForInterface(String ipaddr) throws SQLException;
+    public List<Integer> getActiveServiceIdsForInterface(String ipaddr) throws SQLException;
 
     /**
      * @param ipaddr
@@ -92,7 +96,7 @@ public interface QueryManager {
      * @return
      * @throws SQLException
      */
-    public List getInterfacesWithService(String svcName) throws SQLException;
+    public List<IfKey> getInterfacesWithService(String svcName) throws SQLException;
 
     /**
      * @param poller

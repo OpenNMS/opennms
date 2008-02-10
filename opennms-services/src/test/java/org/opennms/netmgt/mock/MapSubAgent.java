@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,7 +49,7 @@ import org.snmp4j.smi.VariableBinding;
  */
 public class MapSubAgent implements SubAgent {
 
-    SortedMap m_values = new TreeMap();
+    private SortedMap<OID, Variable> m_values = new TreeMap<OID, Variable>();
     private OID m_base;
 
     /**
@@ -73,20 +77,24 @@ public class MapSubAgent implements SubAgent {
     
     public VariableBinding getNext(OID requested) {
         OID successor = nextOID(requested);
-        SortedMap tailMap = m_values.tailMap(successor);
-        if (tailMap.isEmpty()) return null;
+        SortedMap<OID, Variable> tailMap = m_values.tailMap(successor);
+        if (tailMap.isEmpty()) {
+            return null;
+        }
         
-        OID next = (OID)tailMap.firstKey();
-        Variable value = (Variable)tailMap.get(next);
+        OID next = tailMap.firstKey();
+        Variable value = tailMap.get(next);
         return new VariableBinding(next, value);
         
     }
     
     public VariableBinding get(OID requested) {
-        if (!m_values.containsKey(requested)) return null;
+        if (!m_values.containsKey(requested)) {
+            return null;
+        }
         
         OID response = new OID(requested);
-        Variable value = (Variable)m_values.get(response);
+        Variable value = m_values.get(response);
         return new VariableBinding(response, value);
             
     }

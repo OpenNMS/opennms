@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings (suppresed warnings on unused methods). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,26 +35,21 @@
 //
 package org.opennms.netmgt.passive;
 
-import java.io.StringReader;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -301,6 +300,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         return p;
     }
     
+    @SuppressWarnings("unused")
     private String getTranslationTestConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<passive-status-configuration \n" + 
@@ -344,6 +344,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
 
     
+    @SuppressWarnings("unused")
     private String getStandardConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<passive-status-configuration \n" + 
@@ -403,6 +404,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
+    @SuppressWarnings("unused")
     private String getLiteralFieldConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
@@ -430,6 +432,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
+    @SuppressWarnings("unused")
     private String getLiteralParmConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
@@ -457,6 +460,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
+    @SuppressWarnings("unused")
     private String getRegExFieldConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
@@ -484,6 +488,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
+    @SuppressWarnings("unused")
     private String getRegExParmConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Indent, organize imports, use Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,11 +40,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Properties;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
@@ -94,11 +94,11 @@ public class MockEventUtil {
         return createServiceEvent(source, EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, svc, null);
     }
     
-	public static Event createDemandPollServiceEvent(String source, MockService svc, int demandPollId) {
-		Event event = createServiceEvent(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
-		addEventParm(event, EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
-		return event;
-	}
+    public static Event createDemandPollServiceEvent(String source, MockService svc, int demandPollId) {
+        Event event = createServiceEvent(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
+        addEventParm(event, EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
+        return event;
+    }
 
     
     public static Event createNodeGainedServiceEvent(String source, MockService svc) {
@@ -227,38 +227,38 @@ public class MockEventUtil {
         if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
 			return false;
         }
-		
-		if (e1.getNodeid() != e2.getNodeid()) {
-			return false;
-		}
-		if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
-			return false;
-		}
-		if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
-			return false;
-		}
-		
-		return true;
+
+        if (e1.getNodeid() != e2.getNodeid()) {
+            return false;
+        }
+        if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
+            return false;
+        }
+        if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
+            return false;
+        }
+
+        return true;
     }
 
-	public static void printEvent(String prefix, Event event) {
+    public static void printEvent(String prefix, Event event) {
         if (!MockUtil.printEnabled()) {
-			return;
+            return;
         }
         if (prefix == null) {
             prefix = "Event";
         }
+        // FIXME: Do we need to spit something out to stderr?
         System.err.println(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
     }
 
-	public static void printEvents(String prefix, Collection events) {
+    public static void printEvents(String prefix, Collection<Event> events) {
         if (!MockUtil.printEnabled()) {
-			return;
+            return;
         }
-		
-        Iterator it = events.iterator();
-        while (it.hasNext()) {
-            printEvent(prefix, (Event) it.next());
+
+        for (Event event : events) {
+            printEvent(prefix, event);
         }
     }
 

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 10: Organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,10 +51,7 @@ import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.xml.sax.SAXException;
-
-import junit.framework.TestCase;
 
 public class DataSenderTest extends OpenNMSTestCase {
     /*

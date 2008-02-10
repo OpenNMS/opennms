@@ -118,7 +118,7 @@ public class MockInterface extends MockContainer {
             }
 
         }
-        ;
+
         IFStatusCalculator calc = new IFStatusCalculator();
         visit(calc);
         return calc.getStatus();

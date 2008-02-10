@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +35,6 @@
 //
 package org.opennms.netmgt.poller.mock;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class MockInterval implements ScheduleInterval {
     
     private Timer m_timer;
     private long m_interval;
-    private List m_suspensions = new LinkedList();
+    private List<Suspension> m_suspensions = new LinkedList<Suspension>();
     
     /**
      * @param l
@@ -80,10 +83,10 @@ public class MockInterval implements ScheduleInterval {
     }
     
     public boolean scheduledSuspension() {
-        for (Iterator it = m_suspensions.iterator(); it.hasNext();) {
-            Suspension suspension = (Suspension) it.next();
-            if (suspension.contains(m_timer.getCurrentTime()))
+        for (Suspension suspension : m_suspensions) {
+            if (suspension.contains(m_timer.getCurrentTime())) {
                 return (suspension.m_end - m_timer.getCurrentTime()) > 0;
+            }
         }
         return false;
     }

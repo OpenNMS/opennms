@@ -2,36 +2,33 @@ package org.opennms.netmgt.vulnscand;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
-
+import org.opennms.test.DaoTestConfigBean;
 
 public class SchedulerTest extends TestCase {
 
-	protected void setUp() throws Exception {
-		
-		System.setProperty("opennms.home", "src/test/test-configurations/vulnscand");
-		
-		VulnscandConfigFactory.init();
-		
-		super.setUp();
-	
-		
-	}
+    public SchedulerTest() {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.setRelativeHomeDirectory("src/test/test-configurations/vulnscand");
+        bean.afterPropertiesSet();
+    }
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
-	public void testCreate() throws Exception {
-//		FifoQueue q = new FifoQueueImpl();
-//		Scheduler scheduler = new Scheduler(q);
-//		Vulnscand vulnscand = null;
-//		vulnscand.initialize();
-		
-		
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-	}
+        VulnscandConfigFactory.init();
+    }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    public void testCreate() throws Exception {
+//      FifoQueue q = new FifoQueueImpl();
+//      Scheduler scheduler = new Scheduler(q);
+//      Vulnscand vulnscand = null;
+//      vulnscand.initialize();
+    }
 }

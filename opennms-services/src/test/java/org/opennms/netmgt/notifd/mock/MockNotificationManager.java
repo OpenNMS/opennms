@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,8 +33,6 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.notifd.mock;
 
 import java.io.IOException;
@@ -45,18 +47,12 @@ import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
 /**
  * @author david
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class MockNotificationManager extends NotificationManager {
-    
-    private String m_mgrString;
 
     public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) throws MarshalException, ValidationException {
         super(configManager, db);
         Reader reader = new StringReader(mgrString);
-        m_mgrString = mgrString;
         parseXML(reader);
         
     }

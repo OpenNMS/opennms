@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +42,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.scheduler.Scheduler;
 
 
@@ -50,7 +53,7 @@ public class MockScheduler implements Scheduler {
      * Commented out because it is not currently used in this monitor
      */
     //private long m_currentTime = 0;
-    private SortedMap m_scheduleEntries = new TreeMap();
+    private SortedMap<Long, List<ReadyRunnable>> m_scheduleEntries = new TreeMap<Long, List<ReadyRunnable>>();
 
     public MockScheduler() {
         this(new MockTimer());
@@ -64,9 +67,9 @@ public class MockScheduler implements Scheduler {
     public void schedule(long interval, ReadyRunnable schedule) {
         Long nextTime = new Long(getCurrentTime()+interval);
         //MockUtil.println("Scheduled "+schedule+" for "+nextTime);
-        List entries = (List)m_scheduleEntries.get(nextTime);
+        List<ReadyRunnable> entries = m_scheduleEntries.get(nextTime);
         if (entries == null) {
-            entries = new LinkedList();
+            entries = new LinkedList<ReadyRunnable>();
             m_scheduleEntries.put(nextTime, entries);
         }
             
@@ -77,36 +80,40 @@ public class MockScheduler implements Scheduler {
         return m_scheduleEntries.size();
     }
     
-    public Map getEntries() {
+    public Map<Long, List<ReadyRunnable>> getEntries() {
         return m_scheduleEntries;
     }
     
     public long getNextTime() {
-        if (m_scheduleEntries.isEmpty())
+        if (m_scheduleEntries.isEmpty()) {
             throw new IllegalStateException("Nothing scheduled");
+        }
 
-        Long nextTime = (Long)m_scheduleEntries.firstKey();
+        Long nextTime = m_scheduleEntries.firstKey();
         return nextTime.longValue();
     }
     
     public long next() {
-        if (m_scheduleEntries.isEmpty())
+        if (m_scheduleEntries.isEmpty()) {
             throw new IllegalStateException("Nothing scheduled");
+        }
         
-        Long nextTime = (Long)m_scheduleEntries.firstKey();
-        List entries = (List)m_scheduleEntries.get(nextTime);
-        Runnable runnable = (Runnable)entries.get(0);
+        Long nextTime = m_scheduleEntries.firstKey();
+        List<ReadyRunnable> entries = m_scheduleEntries.get(nextTime);
+        Runnable runnable = entries.get(0);
         m_timer.setCurrentTime(nextTime.longValue());
         entries.remove(0);
-        if (entries.isEmpty())
+        if (entries.isEmpty()) {
             m_scheduleEntries.remove(nextTime);
+        }
         runnable.run();
         return getCurrentTime();
     }
     
     public long tick(int step) {
-        if (m_scheduleEntries.isEmpty())
+        if (m_scheduleEntries.isEmpty()) {
             throw new IllegalStateException("Nothing scheduled");
+        }
         
         long endTime = getCurrentTime()+step;
         while (getNextTime() <= endTime) {
