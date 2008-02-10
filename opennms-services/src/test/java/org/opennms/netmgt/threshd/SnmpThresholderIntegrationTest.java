@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 10: Eliminate warnings. - dj@opennms.org
 // 2007 Jan 29: Modify to work with TestCase changes; rename to show that it's an integration test. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -35,13 +36,16 @@
 //
 package org.opennms.netmgt.threshd;
 
-
 import java.io.File;
 
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 
+/**
+ * FIXME: Should this test case go away now that we use ThresholdingVisitor?
+ */
 public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
+    @SuppressWarnings("deprecation")
     protected void setUp() throws Exception {
         super.setUp();
         

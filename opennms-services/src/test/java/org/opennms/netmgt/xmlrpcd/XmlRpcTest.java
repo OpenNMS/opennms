@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modificiations:
+//
+// 2008 Feb 10: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -67,10 +71,6 @@ public class XmlRpcTest extends MockObjectTestCase {
 
     }
     
-    private Provisioner createLocalProxy(Provisioner bean) {
-        return bean;
-    }
-
     private Provisioner createRemoteProxy(Provisioner bean) throws Exception {
         setUpWebServer();
         

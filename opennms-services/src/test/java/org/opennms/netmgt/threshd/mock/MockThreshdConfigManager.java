@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 10: Add a constructor that takes a Reader. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +36,7 @@
 package org.opennms.netmgt.threshd.mock;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -42,7 +47,10 @@ public class MockThreshdConfigManager extends ThreshdConfigManager {
 
     public MockThreshdConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         super(new StringReader(xml), localServer, verifyServer);
-        // TODO Auto-generated constructor stub
+    }
+
+    public MockThreshdConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+        super(rdr, localServer, verifyServer);
     }
 
     public void reloadXML() throws IOException, MarshalException, ValidationException {

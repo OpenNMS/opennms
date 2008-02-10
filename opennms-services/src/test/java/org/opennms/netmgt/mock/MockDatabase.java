@@ -336,7 +336,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         return countOpenOutagesForService(svc) > 0;
     }
     
-    public Collection getOutages() {
+    public Collection<Outage> getOutages() {
         return getOutages(null, new Object[0]);
     }
     
@@ -358,17 +358,17 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         return outages;
     }
     
-    public Collection getOpenOutages(MockService svc) {
+    public Collection<Outage> getOpenOutages(MockService svc) {
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is null",
                 svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }
     
-    public Collection getOutages(MockService svc) {
+    public Collection<Outage> getOutages(MockService svc) {
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ?",
                 svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }
     
-    public Collection getClosedOutages(MockService svc) {
+    public Collection<Outage> getClosedOutages(MockService svc) {
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is not null",
                 svc.getNodeId(), svc.getIpAddr(), svc.getId());
     }

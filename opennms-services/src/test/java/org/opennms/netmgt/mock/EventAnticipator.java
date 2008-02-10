@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 09: Eliminate warnings, use Java 5 generics and loops. - dj@opennms.org
 // 2007 Aug 24: Add the ability to reset either of the anticipated
 //              and unanticipated lists individually. - dj@opennms.org
 //
@@ -39,7 +40,6 @@ package org.opennms.netmgt.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -49,15 +49,12 @@ import org.opennms.netmgt.xml.event.Event;
 
 /**
  * @author brozow
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class EventAnticipator implements EventListener {
 
-    List m_anticipatedEvents = new ArrayList();
+    List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
 
-    List m_unanticipatedEvents = new ArrayList();
+    List<Event> m_unanticipatedEvents = new ArrayList<Event>();
 
     /**
      */
@@ -85,11 +82,9 @@ public class EventAnticipator implements EventListener {
         }
     }
 
-    public synchronized Collection getAnticipatedEvents() {
-        List events = new ArrayList(m_anticipatedEvents.size());
-        Iterator it = m_anticipatedEvents.iterator();
-        while (it.hasNext()) {
-            EventWrapper w = (EventWrapper) it.next();
+    public synchronized Collection<Event> getAnticipatedEvents() {
+        List<Event> events = new ArrayList<Event>(m_anticipatedEvents.size());
+        for (EventWrapper w : m_anticipatedEvents) {
             events.add(w.getEvent());
         }
         return events;
@@ -101,17 +96,17 @@ public class EventAnticipator implements EventListener {
     }
 
     public void resetUnanticipated() {
-        m_unanticipatedEvents = new ArrayList();
+        m_unanticipatedEvents = new ArrayList<Event>();
     }
 
     public void resetAnticipated() {
-        m_anticipatedEvents = new ArrayList();
+        m_anticipatedEvents = new ArrayList<EventWrapper>();
     }
 
     /**
      * @return
      */
-    public Collection unanticipatedEvents() {
+    public Collection<Event> unanticipatedEvents() {
         return Collections.unmodifiableCollection(m_unanticipatedEvents);
     }
 
@@ -119,13 +114,13 @@ public class EventAnticipator implements EventListener {
      * @param i
      * @return
      */
-    public synchronized Collection waitForAnticipated(long millis) {
+    public synchronized Collection<Event> waitForAnticipated(long millis) {
         long waitTime = millis;
         long start = System.currentTimeMillis();
         long now = start;
         while (waitTime > 0) {
             if (m_anticipatedEvents.isEmpty())
-                return Collections.EMPTY_LIST;
+                return new ArrayList<Event>(0);
             try {
                 wait(waitTime);
             } catch (InterruptedException e) {
@@ -142,55 +137,53 @@ public class EventAnticipator implements EventListener {
     public void eventProcessed(Event event) {
     }
 
-	public void verifyAnticipated(long wait,
-			long sleepMiddle,
-			long sleepAfter,
-			int anticipatedSize,
-			int unanticipatedSize) {
-		
-		StringBuffer problems = new StringBuffer();
+    public void verifyAnticipated(long wait,
+            long sleepMiddle,
+            long sleepAfter,
+            int anticipatedSize,
+            int unanticipatedSize) {
 
-		Collection missingEvents = waitForAnticipated(wait);
-		
-		if (sleepMiddle > 0) {
-			try {
-				Thread.sleep(sleepMiddle);
-			} catch (InterruptedException e) {
-			}
-		}
+        StringBuffer problems = new StringBuffer();
 
-		if (missingEvents.size() != anticipatedSize) {
-			problems.append(missingEvents.size() +
-					" expected events still outstanding (expected " +
-					anticipatedSize + "):\n");
-			problems.append(listEvents("\t", missingEvents));
-		}
-		if (unanticipatedEvents().size() != unanticipatedSize) {
-			problems.append(unanticipatedEvents().size() +
-					" unanticipated events received (expected " +
-					unanticipatedSize + "):\n");
-			problems.append(listEvents("\t", unanticipatedEvents()));
-		}
-		
-		if (problems.length() > 0) {
-			problems.deleteCharAt(problems.length() - 1);
-			Assert.fail(problems.toString());
-		}
-	}
+        Collection<Event> missingEvents = waitForAnticipated(wait);
 
-	private static String listEvents(String prefix,
-			Collection events) {
-		StringBuffer b = new StringBuffer();
-		
-		for (Iterator it = events.iterator(); it.hasNext();) {
-			Event event = (Event) it.next();
-			b.append(prefix);
-			b.append(event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
-			b.append("\n");
-		}
+        if (sleepMiddle > 0) {
+            try {
+                Thread.sleep(sleepMiddle);
+            } catch (InterruptedException e) {
+            }
+        }
 
-		return b.toString();
-	}
+        if (missingEvents.size() != anticipatedSize) {
+            problems.append(missingEvents.size() +
+                    " expected events still outstanding (expected " +
+                    anticipatedSize + "):\n");
+            problems.append(listEvents("\t", missingEvents));
+        }
+        if (unanticipatedEvents().size() != unanticipatedSize) {
+            problems.append(unanticipatedEvents().size() +
+                    " unanticipated events received (expected " +
+                    unanticipatedSize + "):\n");
+            problems.append(listEvents("\t", unanticipatedEvents()));
+        }
+
+        if (problems.length() > 0) {
+            problems.deleteCharAt(problems.length() - 1);
+            Assert.fail(problems.toString());
+        }
+    }
+
+    private static String listEvents(String prefix, Collection<Event> events) {
+        StringBuffer b = new StringBuffer();
+
+        for (Event event : events) {
+            b.append(prefix);
+            b.append(event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
+            b.append("\n");
+        }
+
+        return b.toString();
+    }
 
     public String getName() {
         return "eventAnticipator";

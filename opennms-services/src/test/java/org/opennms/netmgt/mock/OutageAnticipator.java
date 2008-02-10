@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics and loops. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,11 +35,9 @@
 //
 package org.opennms.netmgt.mock;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +59,9 @@ public class OutageAnticipator implements EventListener {
     private int m_expectedOpenCount;
     private int m_expectedOutageCount;
     
-    private Map m_pendingOpens = new HashMap();
-    private Map m_pendingCloses = new HashMap();
-    private Set m_expectedOutages = new HashSet();
+    private Map<EventWrapper, List<Outage>> m_pendingOpens = new HashMap<EventWrapper, List<Outage>>();
+    private Map<EventWrapper, List<Outage>> m_pendingCloses = new HashMap<EventWrapper, List<Outage>>();
+    private Set<Outage> m_expectedOutages = new HashSet<Outage>();
     
     public OutageAnticipator(MockDatabase db) {
         m_db = db;
@@ -104,14 +106,12 @@ public class OutageAnticipator implements EventListener {
         return anticipates(m_pendingCloses, svc);
     }
 
-    private synchronized boolean anticipates(Map pending, MockService svc) {
-        Collection vals = pending.values();
-        for (Iterator it = vals.iterator(); it.hasNext();) {
-            List outageList = (List) it.next();
-            for (Iterator iter = outageList.iterator(); iter.hasNext();) {
-                Outage outage = (Outage) iter.next();
-                if (outage.isForService(svc))
+    private synchronized boolean anticipates(Map<EventWrapper, List<Outage>> pending, MockService svc) {
+        for (List<Outage> outageList : pending.values()) {
+            for (Outage outage : outageList) {
+                if (outage.isForService(svc)) {
                     return true;
+                }
             }
         }
         return false;
@@ -122,20 +122,22 @@ public class OutageAnticipator implements EventListener {
      * @param outageEvent
      * @param svc
      */
-    protected synchronized void addToOutageList(Map outageMap, Event outageEvent, Outage outage) {
+    protected synchronized void addToOutageList(Map<EventWrapper, List<Outage>> outageMap, Event outageEvent, Outage outage) {
         EventWrapper w = new EventWrapper(outageEvent);
-        List list = (List)outageMap.get(w);
+        List<Outage> list = outageMap.get(w);
         if (list == null) {
-            list = new LinkedList();
+            list = new LinkedList<Outage>();
             outageMap.put(w, list);
         }
         list.add(outage);
     }
     
-    protected synchronized void removeFromOutageList(Map outageMap, Event outageEvent, Outage outage) {
+    protected synchronized void removeFromOutageList(Map<EventWrapper, List<Outage>> outageMap, Event outageEvent, Outage outage) {
         EventWrapper w = new EventWrapper(outageEvent);
-        List list = (List)outageMap.get(w);
-        if (list == null) return;
+        List<Outage> list = outageMap.get(w);
+        if (list == null) {
+            return;
+        }
         list.remove(outage);
         
     }
@@ -149,9 +151,7 @@ public class OutageAnticipator implements EventListener {
                     // descrease the open ones.. leave the total the same
                     m_expectedOpenCount++;
                     
-                    Collection openOutages = m_db.getOpenOutages(svc);
-                    for (Iterator it = openOutages.iterator(); it.hasNext();) {
-                        Outage outage = (Outage) it.next();
+                    for (Outage outage : m_db.getOpenOutages(svc)) {
                         MockUtil.println("Deanticipating outage closed: "+outage);
 
                         removeFromOutageList(m_pendingCloses, regainService, outage);
@@ -170,9 +170,7 @@ public class OutageAnticipator implements EventListener {
                     // descrease the open ones.. leave the total the same
                     m_expectedOpenCount--;
                     
-                    Collection openOutages = m_db.getOpenOutages(svc);
-                    for (Iterator it = openOutages.iterator(); it.hasNext();) {
-                        Outage outage = (Outage) it.next();
+                    for (Outage outage : m_db.getOpenOutages(svc)) {
                         MockUtil.println("Anticipating outage closed: "+outage);
 
                         addToOutageList(m_pendingCloses, regainService, outage);
@@ -218,19 +216,19 @@ public class OutageAnticipator implements EventListener {
         if (m_pendingOpens.size() != 0 || m_pendingCloses.size() != 0) 
             return false;
         
-        Set currentOutages = new HashSet(m_db.getOutages());
+        Set<Outage> currentOutages = new HashSet<Outage>(m_db.getOutages());
         if (!m_expectedOutages.equals(currentOutages)) {
-            for (Iterator expectedIt = m_expectedOutages.iterator(); expectedIt.hasNext();) {
-                Outage expectedOutage = (Outage) expectedIt.next();
+            for (Outage expectedOutage : m_expectedOutages) {
                 if (currentOutages.contains(expectedOutage)) {
                     currentOutages.remove(expectedOutage);
                 } else {
+                    // FIXME: Do we need to print to stderr?
                     System.err.println("Expected outage "+expectedOutage.toDetailedString()+" not in current Set");
                 }
             }
-            for (Iterator unexpectedId = currentOutages.iterator(); unexpectedId.hasNext();) {
-                Outage unexpecedOutage = (Outage) unexpectedId.next();
-                System.err.println("Unexpected outage "+unexpecedOutage.toDetailedString()+" in database");
+            for (Outage unexpectedOutage : currentOutages) {
+                // FIXME: Do we need to print to stderr?
+                System.err.println("Unexpected outage "+unexpectedOutage.toDetailedString()+" in database");
             }
             return false;
         }
@@ -248,25 +246,20 @@ public class OutageAnticipator implements EventListener {
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
     public synchronized void onEvent(Event e) {
-        Collection pendingOpens = getOutageList(m_pendingOpens, e);
-        for (Iterator it = pendingOpens.iterator(); it.hasNext();) {
-            Outage outage = (Outage) it.next();
+        for (Outage outage : getOutageList(m_pendingOpens, e)) {
             outage.setLostEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
             m_expectedOutages.add(outage);
         }
         clearOutageList(m_pendingOpens, e);
         
-        Collection pendingCloses = getOutageList(m_pendingCloses, e);
-        for (Iterator it = pendingCloses.iterator(); it.hasNext();) {
-            Outage outage = (Outage) it.next();
+        for (Outage outage : getOutageList(m_pendingCloses, e)) {
             closeExpectedOutages(e, outage);
         }
         clearOutageList(m_pendingCloses, e);
     }
 
     private synchronized void closeExpectedOutages(Event e, Outage pendingOutage) {
-        for (Iterator it = m_expectedOutages.iterator(); it.hasNext();) {
-            Outage outage = (Outage) it.next();
+        for (Outage outage : m_expectedOutages) {
             if (pendingOutage.equals(outage)) {
                 outage.setRegainedEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
             }
@@ -286,13 +279,13 @@ public class OutageAnticipator implements EventListener {
      * @param e
      * @return
      */
-    private synchronized Collection getOutageList(Map pending, Event e) {
+    private synchronized List<Outage> getOutageList(Map<EventWrapper, List<Outage>> pending, Event e) {
         EventWrapper w = new EventWrapper(e);
         if (pending.containsKey(w)) {
-            return (Collection)pending.get(w);
+            return pending.get(w);
         }
         
-        return Collections.EMPTY_LIST;
+        return new ArrayList<Outage>(0);
     }
 
     /**

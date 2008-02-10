@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,8 +33,6 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.UnknownHostException;
@@ -43,6 +45,7 @@ import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+
 public class LoopMonitorTest extends TestCase {
 
     protected void setUp() throws Exception {
@@ -60,7 +63,7 @@ public class LoopMonitorTest extends TestCase {
         
         ServiceMonitor sm = new LoopMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", "127.0.0.1", "LOOP");
-        Map parms = new HashMap();
+        Map<String, String> parms = new HashMap<String, String>();
 
         parms.put("ip-match", "127.0.0.1-2");
         parms.put("is-supported", "true");

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -39,23 +43,22 @@ import java.util.List;
 
 /**
  * @author brozow
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class PollAnticipator {
 
-    List m_anticipatedPolls = new ArrayList();
+    List<MockService> m_anticipatedPolls = new ArrayList<MockService>();
 
-    List m_unanticipatedPolls = new ArrayList();
+    List<MockService> m_unanticipatedPolls = new ArrayList<MockService>();
 
     /**
      * @param element
      * @return
      */
     public void anticipateAllServices(MockElement element) {
-        // this visit anticipates a poll on all of the services beneath
-        // an element it visits
+        /*
+         * This visit anticipates a poll on all of the services beneath
+         * an element it visits.
+         */
         MockVisitor anticipateSvcs = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 anticipatePoll(svc);
@@ -78,13 +81,15 @@ public class PollAnticipator {
      */
     public synchronized void poll(MockService service) {
 
-        if (m_anticipatedPolls.contains(service))
+        if (m_anticipatedPolls.contains(service)) {
             m_anticipatedPolls.remove(service);
-        else
+        } else {
             m_unanticipatedPolls.add(service);
+        }
 
-        if (m_anticipatedPolls.isEmpty())
+        if (m_anticipatedPolls.isEmpty()) {
             notifyAll();
+        }
     }
 
     public synchronized void reset() {
@@ -114,12 +119,13 @@ public class PollAnticipator {
      * all come in before the timeout return an empty list. Otherwise return a
      * readonly list of the services that were anticipated but not received.
      */
-    public synchronized Collection waitForAnticipated(long millis) {
+    public synchronized Collection<MockService> waitForAnticipated(long millis) {
         long start = System.currentTimeMillis();
         long now = start;
         while ((now - start) < millis) {
-            if (m_anticipatedPolls.isEmpty())
-                return Collections.EMPTY_LIST;
+            if (m_anticipatedPolls.isEmpty()) {
+                return new ArrayList<MockService>(0);
+            }
             waitFor(millis);
             now = System.currentTimeMillis();
         }

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,8 +33,6 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
@@ -41,7 +43,6 @@ import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
@@ -91,7 +92,6 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(99, "1.1.1.1", "HTTP");
 
         
@@ -122,7 +122,6 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
 
         
@@ -176,7 +175,6 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         
         p.setKey("port");
         p.setValue("80");
@@ -211,7 +209,6 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
 
         p.setKey("port");
@@ -297,7 +294,6 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(1, "localhost", "HTTP");
         
         p.setKey("port");
@@ -344,7 +340,6 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpsMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(1, "localhost", "HTTPS");
         
         p.setKey("port");
@@ -390,7 +385,6 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
         
         p.setKey("url");
@@ -439,7 +433,6 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        Package pkg = new Package();
         MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
         
         p.setKey("port");

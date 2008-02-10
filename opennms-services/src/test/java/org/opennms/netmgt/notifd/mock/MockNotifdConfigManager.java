@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,8 +33,6 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.notifd.mock;
 
 import java.io.IOException;
@@ -42,13 +44,9 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotifdConfigManager;
 /**
  * @author David Hustace <david@opennms.org>
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class MockNotifdConfigManager extends NotifdConfigManager {
         
-    private String m_configString;
     private String m_nextNotifIdSql;
     private String m_nextUserNotifIdSql;
 
@@ -65,7 +63,6 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
      */
     public MockNotifdConfigManager(String configString) throws MarshalException, ValidationException, IOException {
         Reader reader = new StringReader(configString);
-        m_configString = configString;
         parseXml(reader);
         reader.close();
     }

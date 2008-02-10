@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 09: Eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +41,6 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -127,6 +130,8 @@ public class MockNetworkTest extends TestCase {
     }
 
     static class MockNetworkInterface extends IPv4NetworkInterface {
+        private static final long serialVersionUID = 1L;
+
         public MockNetworkInterface(String addr) throws UnknownHostException {
             super(InetAddress.getByName(addr));
         }
@@ -464,20 +469,18 @@ public class MockNetworkTest extends TestCase {
         assertFalse(queryManager.activeServiceExists("Test", 1, "192.168.1.17", "ICMP"));
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-        Collection expectedSvcs = iface.getServices();
+        Collection<MockService> expectedSvcs = getServicesForInterface(iface);
 
-        List svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
+        List<Integer> svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
 
-        Iterator it = expectedSvcs.iterator();
-        while (it.hasNext()) {
-            MockService svc = (MockService) it.next();
+        for (MockService svc : expectedSvcs) {
             assertTrue(svcs.contains(new Integer(svc.getId())));
         }
 
-        List ifKeys = queryManager.getInterfacesWithService("HTTP");
+        List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");
         MockInterface httpIf = m_network.getInterface(2, "192.168.1.3");
         assertEquals(1, ifKeys.size());
-        IfKey key = (IfKey) ifKeys.get(0);
+        IfKey key = ifKeys.get(0);
         assertEquals(httpIf.getNode().getNodeId(), key.getNodeId());
         assertEquals(httpIf.getIpAddr(), key.getIpAddr());
 
@@ -488,6 +491,11 @@ public class MockNetworkTest extends TestCase {
 
         assertEquals(2, queryManager.getServiceCountForInterface("192.168.1.1"));
 
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<MockService> getServicesForInterface(MockInterface iface) {
+        return (Collection<MockService>) iface.getServices();
     }
 
     public void testRemove() {

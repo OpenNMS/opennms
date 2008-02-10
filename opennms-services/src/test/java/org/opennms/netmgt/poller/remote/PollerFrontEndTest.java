@@ -8,6 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ * 
+ * 2008 Feb 10: Eliminate warnings, use EasyMockUtils. - dj@opennms.org
+ *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,10 +43,8 @@ import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,11 +59,11 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.monitors.HttpMonitor;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
+import org.opennms.test.mock.EasyMockUtils;
 
 public class PollerFrontEndTest extends TestCase {
 
-    public static class PolledServiceChangeEventEquals implements
-    IArgumentMatcher {
+    public static class PolledServiceChangeEventEquals implements IArgumentMatcher {
 
         private ServicePollStateChangedEvent m_expected;
 
@@ -128,11 +130,12 @@ public class PollerFrontEndTest extends TestCase {
 
     private DefaultPollerFrontEnd m_frontEnd;
 
-    private List m_mocks = new ArrayList();
-
+    private EasyMockUtils m_mock = new EasyMockUtils(); 
+    
     private DemoPollerConfiguration m_oldPollerConfiguration;
 
     private ServicePollStateChangedListener m_polledServiceListener;
+    
     private DemoPollerConfiguration m_pollerConfiguration;
 
     private PollService m_pollService;
@@ -145,9 +148,8 @@ public class PollerFrontEndTest extends TestCase {
 
     private PollerSettings m_settings;
 
-    private boolean m_started;
-
     private MonitorStatus m_oldStatus = MonitorStatus.STARTED;
+
     private MonitorStatus m_monitorStatus = MonitorStatus.CONFIG_CHANGED;
 
     public void testAfterPropertiesSetWhenNotRegistered() throws Exception {
@@ -164,13 +166,13 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateAfterPropertiesSet();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
         assertTrue(m_frontEnd.isRegistered());
 
-        verifyMocks();
+        m_mock.verifyAll();
     }
 
     public void testConfigCheck() throws Exception {
@@ -181,13 +183,13 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateCheckConfig();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
         m_frontEnd.checkConfig();
 
-        verifyMocks();
+        m_mock.verifyAll();
     }
 
     public void testDetails() {
@@ -201,13 +203,13 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateAfterPropertiesSet();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
         assertTrue(m_frontEnd.isRegistered());
 
-        verifyMocks();
+        m_mock.verifyAll();
     }
 
     public void testNotYetRegistered() throws Exception {
@@ -215,13 +217,13 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateAfterPropertiesSet();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
         assertFalse(m_frontEnd.isRegistered());
 
-        verifyMocks();
+        m_mock.verifyAll();
     }
 
     public void testPoll() throws Exception {
@@ -234,7 +236,7 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateGetServicePollState();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
@@ -243,7 +245,7 @@ public class PollerFrontEndTest extends TestCase {
         ServicePollState pollState = m_frontEnd
         .getServicePollState(pollConfig().getFirstId());
 
-        verifyMocks();
+        m_mock.verifyAll();
 
         assertEquals(PollStatus.SERVICE_AVAILABLE, pollState.getLastPoll()
                      .getStatusCode());
@@ -256,7 +258,7 @@ public class PollerFrontEndTest extends TestCase {
 
         anticiapateRegister();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
@@ -266,7 +268,7 @@ public class PollerFrontEndTest extends TestCase {
 
         assertTrue(m_frontEnd.isRegistered());
 
-        verifyMocks();
+        m_mock.verifyAll();
 
     }
 
@@ -290,7 +292,7 @@ public class PollerFrontEndTest extends TestCase {
 
 //      expect(m_backEnd.pollerStarting(1, getPollerDetails())).andReturn(true);
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
@@ -300,7 +302,7 @@ public class PollerFrontEndTest extends TestCase {
         assertEquals(start, m_frontEnd.getServicePollState(polledServiceId)
                      .getNextPollTime());
 
-        verifyMocks();
+        m_mock.verifyAll();
     }
 
     public void testStop() throws Exception {
@@ -311,7 +313,7 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateStop();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
@@ -321,7 +323,7 @@ public class PollerFrontEndTest extends TestCase {
 
         assertFalse(m_frontEnd.isStarted());
 
-        verifyMocks();
+        m_mock.verifyAll();
     }
     
     public void testPause() throws Exception {
@@ -337,7 +339,7 @@ public class PollerFrontEndTest extends TestCase {
         
         anticipateCheckConfig();
         
-        replayMocks();
+        m_mock.replayAll();
         
         m_frontEnd.afterPropertiesSet();
         
@@ -345,7 +347,7 @@ public class PollerFrontEndTest extends TestCase {
         
         m_frontEnd.checkConfig();
         
-        verifyMocks();
+        m_mock.verifyAll();
     }
     
     public void testDisconnect() throws Exception {
@@ -361,7 +363,7 @@ public class PollerFrontEndTest extends TestCase {
         
         anticipateCheckConfig();
         
-        replayMocks();
+        m_mock.replayAll();
         
         m_frontEnd.afterPropertiesSet();
         
@@ -369,7 +371,7 @@ public class PollerFrontEndTest extends TestCase {
         
         m_frontEnd.checkConfig();
         
-        verifyMocks();
+        m_mock.verifyAll();
     }
 
     private void setMonitorStatus(MonitorStatus status) {
@@ -380,12 +382,12 @@ public class PollerFrontEndTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
 
-        m_backEnd = createMock(PollerBackEnd.class);
-        m_settings = createMock(PollerSettings.class);
-        m_pollService = createMock(PollService.class);
-        m_registrationListener = createMock(PropertyChangeListener.class);
-        m_polledServiceListener = createMock(ServicePollStateChangedListener.class);
-        m_configChangeListener = createMock(ConfigurationChangedListener.class);
+        m_backEnd = m_mock.createMock(PollerBackEnd.class);
+        m_settings = m_mock.createMock(PollerSettings.class);
+        m_pollService = m_mock.createMock(PollService.class);
+        m_registrationListener = m_mock.createMock(PropertyChangeListener.class);
+        m_polledServiceListener = m_mock.createMock(ServicePollStateChangedListener.class);
+        m_configChangeListener = m_mock.createMock(ConfigurationChangedListener.class);
 
         setPollConfig(new DemoPollerConfiguration());
         m_oldPollerConfiguration = null;
@@ -561,10 +563,6 @@ public class PollerFrontEndTest extends TestCase {
 
     }
 
-    private Date getOldConfigurationTimestamp() {
-        return (oldConfig() == null ? null : oldConfig().getConfigurationTimestamp());
-    }
-
     private void anticipatePollerStopping() {
         m_backEnd.pollerStopping(getRegisteredId());
     }
@@ -606,20 +604,6 @@ public class PollerFrontEndTest extends TestCase {
         anticipateFireServicePollStateChanged();
     }
 
-    private void anticipateStart() {
-        if (m_started) return;
-
-        if (getRegisteredId() == null) {
-            return;
-        }
-
-        anticipateGetMonitorId();
-
-
-        m_started = true;
-
-    }
-
     private void anticipateStop() {
         anticipateGetMonitorId();
         anticipatePollerStopping();
@@ -639,17 +623,9 @@ public class PollerFrontEndTest extends TestCase {
                      .get(propertyName));
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T createMock(Class<T> name) {
-        T mock = EasyMock.createMock(name);
-        m_mocks.add(mock);
-        return mock;
-    }
-
     private PropertyChangeEvent eq(PropertyChangeEvent e) {
         EasyMock.reportMatcher(new PropertyChangeEventEquals(e));
         return null;
-
     }
     
     private ServicePollStateChangedEvent eq(ServicePollStateChangedEvent e) {
@@ -659,11 +635,6 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private Map<String, String> getPollerDetails() {
-        /*
-         * Map<String, String> pollerDetails = new HashMap<String, String>();
-         * pollerDetails.put("os.name", System.getProperty("os.name")); return
-         * pollerDetails;
-         */
         return m_frontEnd.getDetails();
     }
 
@@ -677,10 +648,6 @@ public class PollerFrontEndTest extends TestCase {
 
     private DemoPollerConfiguration pollConfig() {
         return m_pollerConfiguration;
-    }
-
-    private void replayMocks() {
-        EasyMock.replay(m_mocks.toArray());
     }
 
     private void setPollConfig(DemoPollerConfiguration pollerConfiguration) {
@@ -701,16 +668,11 @@ public class PollerFrontEndTest extends TestCase {
 
         anticipateAfterPropertiesSet();
 
-        replayMocks();
+        m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
 
-        verifyMocks();
-    }
-
-    private void verifyMocks() {
-        EasyMock.verify(m_mocks.toArray());
-        EasyMock.reset(m_mocks.toArray());
+        m_mock.verifyAll();
     }
 
 }

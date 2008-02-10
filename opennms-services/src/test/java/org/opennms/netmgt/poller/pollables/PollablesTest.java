@@ -69,6 +69,7 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
@@ -91,11 +92,9 @@ public class PollablesTest extends TestCase {
     private MockNode mNode2;
     private MockService mDot1Smtp;
     private MockService mDot1Icmp;
-    private MockService mDot2Smtp;
     private MockService mDot2Icmp;
     private MockInterface mDot3;
     private MockService mDot3Http;
-    private MockService mDot3Icmp;
     private PollableNode pNode1;
     private PollableInterface pDot1;
     private PollableService pDot1Smtp;
@@ -115,10 +114,11 @@ public class PollablesTest extends TestCase {
     
     private int m_lockCount = 0;
     
-
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(PollablesTest.class);
+    public PollablesTest() {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
     }
+
 
     /*
      * @see TestCase#setUp()
@@ -200,13 +200,11 @@ public class PollablesTest extends TestCase {
         mDot1Smtp = mDot1.getService("SMTP");
         mDot1Icmp = mDot1.getService("ICMP");
         mDot2 = mNode1.getInterface("192.168.1.2");
-        mDot2Smtp = mDot2.getService("SMTP");
         mDot2Icmp = mDot2.getService("ICMP");
         
         mNode2 = m_mockNetwork.getNode(2);
         mDot3 = mNode2.getInterface("192.168.1.3");
         mDot3Http = mDot3.getService("HTTP");
-        mDot3Icmp = mDot3.getService("ICMP");
         
         assignPollableMembers(m_network);
         

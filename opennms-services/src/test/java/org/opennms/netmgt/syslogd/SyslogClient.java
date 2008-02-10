@@ -1,5 +1,3 @@
-package org.opennms.netmgt.syslogd;
-
 // This file is part of the OpenNMS(R) Application.
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
@@ -11,6 +9,10 @@ package org.opennms.netmgt.syslogd;
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2008 Feb 10: Eliminate warnings. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
@@ -34,6 +36,7 @@ package org.opennms.netmgt.syslogd;
 // http://www.opennms.org/
 // http://www.opennms.com/
 //
+package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -87,7 +90,6 @@ public class SyslogClient {
     private static final int PORT = 10514;
 
     private String ident;
-    private int logopt;
     private int facility;
 
     private InetAddress address;
@@ -97,24 +99,21 @@ public class SyslogClient {
     /// Creating a Syslog instance is equivalent of the Unix openlog() call.
     // @exception SyslogException if there was a problem
     public SyslogClient(String ident, int logopt, int facility) throws UnknownHostException {
-        if (ident == null)
+        if (ident == null) {
             this.ident = new String(Thread.currentThread().getName());
-        else
+        } else {
             this.ident = ident;
-        this.logopt = logopt;
+        }
         this.facility = facility;
 
         try {
             address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
         }
-        catch (UnknownHostException e) {
-        }
+        
         try {
             socket = new DatagramSocket();
-        }
-        catch (SocketException e) {
-        }
-        catch (IOException e) {
+        } catch (SocketException e) {
         }
     }
 
@@ -123,13 +122,12 @@ public class SyslogClient {
     // class provides constants for these fields. The msg is what is
     // actually logged.
     // @exception SyslogException if there was a problem
+    @SuppressWarnings("deprecation")
     public void syslog(int priority, String msg) {
         int pricode;
         int length;
-        int idx, sidx, nidx;
-        StringBuffer buffer;
+        int idx;
         byte[] data;
-        byte[] numbuf = new byte[32];
         String strObj;
 
         pricode = MakePriorityCode(facility, priority);
@@ -143,7 +141,7 @@ public class SyslogClient {
         idx = 0;
         data[idx++] = (byte) '<';
 
-        strObj = priObj.toString(priObj.intValue());
+        strObj = Integer.toString(priObj.intValue());
         strObj.getBytes(0, strObj.length(), data, idx);
         idx += strObj.length();
 
