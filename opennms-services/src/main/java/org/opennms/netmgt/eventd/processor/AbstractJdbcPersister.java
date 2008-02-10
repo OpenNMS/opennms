@@ -341,4 +341,22 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     public void setGetNextIdString(String getNextIdString) {
         m_getNextIdString = getNextIdString;
     }
+
+    protected boolean checkEventSanityAndDoWeProcess(Event event, String logPrefix) {
+        Assert.notNull(event, "event argument must not be null");
+    
+        /*
+         * Check value of <logmsg> attribute 'dest', if set to
+         * "donotpersist" then simply return, the uei is not to be
+         * persisted to the database
+         */
+        Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
+        if ("donotpersist".equals(event.getLogmsg().getDest())) {
+            if (log().isDebugEnabled()) {
+                log().debug(logPrefix + ": uei '" + event.getUei() + "' marked as 'donotpersist'; not processing event.");
+            }
+            return false;
+        }
+        return true;
+    }
 }

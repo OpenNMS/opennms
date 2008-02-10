@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Feb 10: Pull common event checks into checkEventSanityAndDoWeProcess in
+//              AbstractJdbcPersister. - dj@opennms.org
 // 2008 Jan 28: Add a few tests to check that the Event is valid. - dj@opennms.org
 // 2008 Jan 28: Use EmptyResultDataAccessException instead of
 //              IncorrectResultSizeDataAccessException. - dj@opennms.org
@@ -86,24 +88,13 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
      *            the actual event to be inserted
      */
     public void process(Header eventHeader, Event event) throws SQLException {
-        Assert.notNull(event, "event argument must not be null");
-
-        /*
-         * Check value of <logmsg> attribute 'dest', if set to
-         * "donotpersist" then simply return, the uei is not to be
-         * persisted to the database
-         */
-        Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
-        if ("donotpersist".equals(event.getLogmsg().getDest())) {
-            if (log().isDebugEnabled()) {
-                log().debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'donotpersist'; not processing alarm.");
-            }
+        if (!checkEventSanityAndDoWeProcess(event, "JdbcAlarmWriter")) {
             return;
         }
         
         if (event.getAlarmData() == null) {
             if (log().isDebugEnabled()) {
-                log().debug("AlarmWriter: uei '" + event.getUei() + "' does not have alarm data; not processing alarm.");
+                log().debug("JdbcAlarmWriter: uei '" + event.getUei() + "' does not have alarm data; not processing into an alarm.");
             }
             return;
         }
@@ -111,7 +102,7 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
         Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");
         
         if (log().isDebugEnabled()) {
-            log().debug("AlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+            log().debug("JdbcAlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
         }
 
         /*
@@ -129,20 +120,20 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
                 int alarmId = isReductionNeeded(eventHeader, event, connection);
                 if (alarmId != -1) {
                     if (log().isDebugEnabled()) {
-                        log().debug("Reducing event for " + event.getDbid() + " with UEI " + event.getUei());
+                        log().debug("JdbcAlarmWriter: Reducing event for " + event.getDbid() + " with UEI " + event.getUei());
                     }
 
                     updateAlarm(eventHeader, event, alarmId, connection);
 
                     if (event.getAlarmData().getAutoClean() == true) {
-                        log().debug("insertOrUpdate: deleting previous events for alarm " + alarmId);
+                        log().debug("JdbcAlarmWriter: deleting previous events for alarm " + alarmId);
                         cleanPreviousEvents(alarmId, event.getDbid(), connection);
                     }
 
                     updated = true;
                 } else {
                     if (log().isDebugEnabled()) {
-                        log().debug("Inserting new alarm (not reducing) for event " + event.getDbid() + " with UEI " + event.getUei());
+                        log().debug("JdbcAlarmWriter: Inserting new alarm (not reducing) for event " + event.getDbid() + " with UEI " + event.getUei());
                     }
 
                     try {
@@ -150,10 +141,10 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
                         updated = true;
                     } catch (DataIntegrityViolationException e) {
                         if (attempt > 1) {
-                            log().error("Error in attempt: "+attempt+" inserting alarm for event " + event.getDbid() + " into the datastore: " + e, e);
+                            log().error("JdbcAlarmWriter: Error in attempt: "+attempt+" inserting alarm for event " + event.getDbid() + " into the datastore: " + e, e);
                             throw e;
                         } else {
-                            log().info("Retrying insertOrUpdate statement of alarm for event " + event.getDbid() + " after first attempt: " + e.getClass() + ": " + e.getMessage());
+                            log().info("JdbcAlarmWriter: Retrying processing of alarm for event " + event.getDbid() + " after first attempt: " + e.getClass() + ": " + e.getMessage());
                         }
                     } 
                 }
@@ -162,13 +153,13 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
                     try {
                         connection.commit();
                     } catch (SQLException e) {
-                        log().error("Commit of transaction failed: " + e, e);
+                        log().error("JdbcAlarmWriter: Commit of transaction failed: " + e, e);
                     }
                 } else {
                     try {
                         connection.rollback();
                     } catch (SQLException e) {
-                        log().error("Rollback of transaction failed: " + e, e);
+                        log().error("JdbcAlarmWriter: Rollback of transaction failed: " + e, e);
                     }
                 }
 
