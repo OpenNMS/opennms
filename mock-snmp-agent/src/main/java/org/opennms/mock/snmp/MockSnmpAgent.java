@@ -8,6 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ * 
+ * 2008 Feb 10: Eliminate warnings. - dj@opennms.org
+ * 
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -153,17 +157,17 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     
     public static void main(String[] args) {
     	if (args.length < 2) {
-    		System.err.println("Usage: MockSnmpAgent props-file listen-addr\n\nWhere props-file is relative to CLASSPATH\nand listen-addr is of the form 10.11.12.13/1161 to listen on port 1161");
-    		System.exit(1);
+    	    System.err.println("Usage: MockSnmpAgent props-file listen-addr\n\nWhere props-file is relative to CLASSPATH\nand listen-addr is of the form 10.11.12.13/1161 to listen on port 1161");
+    	    System.exit(1);
     	}
     	ClassPathResource moFile = new ClassPathResource(args[0]);
        	String bindAddress = args[1];
     	
-    	try {
-    		MockSnmpAgent agt = MockSnmpAgent.createAgentAndRun(moFile, bindAddress);
-    	} catch (InterruptedException e) {
-    		System.exit(0);
-    	}
+       	try {
+       	    MockSnmpAgent.createAgentAndRun(moFile, bindAddress);
+       	} catch (InterruptedException e) {
+       	    System.exit(0);
+       	}
     }    
 
     public void shutDownAndWait() throws InterruptedException {
