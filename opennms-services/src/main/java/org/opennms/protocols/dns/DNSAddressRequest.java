@@ -388,7 +388,7 @@ public class DNSAddressRequest {
         DNSInputStream dnsIn = new DNSInputStream(data, 0, length);
         int id = dnsIn.readShort();
         if (id != m_reqID)
-            throw new IOException("ID does not match request");
+            throw new IOException("ID in received packet (" + id + ") does not match ID from request (" + m_reqID + ")");
 
         //
         // read in the flags
