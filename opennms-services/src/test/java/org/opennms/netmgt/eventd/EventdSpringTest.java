@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Feb 10: Fix failing test testSendEventWithService. - dj@opennms.org
  * 2008 Feb 05: Load up a smaller EventConfDao and run one more test. - dj@opennms.org
  * 2008 Jan 27: Enable the service test and make it do something for real. - dj@opennms.org
  * 2008 Jan 26: Created this file. - dj@opennms.org
@@ -84,6 +85,7 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
         startNewTransaction();
         
         EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
+        builder.setLogMessage("logndisplay");
         builder.setService(serviceName);
         m_eventIpcManager.sendNow(builder.getEvent());
         
