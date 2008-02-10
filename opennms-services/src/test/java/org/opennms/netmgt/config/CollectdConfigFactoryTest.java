@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Feb 10: Simplify setUp() a bit. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,49 +33,50 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-
 package org.opennms.netmgt.config;
 
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.test.ConfigurationTestUtils;
 
 public class CollectdConfigFactoryTest extends TestCase {
-	
-	private CollectdConfigFactory m_factory;
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		MockNetwork network = new MockNetwork();
-		
-		MockDatabase db = new MockDatabase();
-		db.populate(network);
-		
-		DataSourceFactory.setInstance(db);
-		
-		
+    private CollectdConfigFactory m_factory;
 
-		Reader rdr = new InputStreamReader(getClass().getResourceAsStream("/org/opennms/netmgt/config/collectd-testdata.xml"));
-		m_factory = new CollectdConfigFactory(rdr, "localhost", false);
-		rdr.close();
-		
-	}
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-	protected void tearDown() throws Exception {
-		// TODO Auto-generated method stub
-		super.tearDown();
-	}
-	
-	public void testGetName() {
-		String pkgName = "example1";
-		CollectdPackage wpkg = m_factory.getPackage(pkgName);
-		assertNotNull(wpkg);
-		assertEquals(pkgName, wpkg.getName());
-	}
+        MockNetwork network = new MockNetwork();
+
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+
+        DataSourceFactory.setInstance(db);
+
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "collectd-testdata.xml");
+        try {
+            m_factory = new CollectdConfigFactory(rdr, "localhost", false);
+        } finally {
+            rdr.close();
+        }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        // TODO Auto-generated method stub
+        super.tearDown();
+    }
+
+    public void testGetName() {
+        String pkgName = "example1";
+        CollectdPackage wpkg = m_factory.getPackage(pkgName);
+        assertNotNull(wpkg);
+        assertEquals(pkgName, wpkg.getName());
+    }
 
 }
