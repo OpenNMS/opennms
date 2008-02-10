@@ -1,6 +1,10 @@
 package org.opennms.netmgt.dao.castor;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 
 import org.exolab.castor.xml.MarshalException;
@@ -85,5 +89,22 @@ public class CastorUtils {
         } catch (ValidationException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("Unmarshalling XML file", e);
         }
+    }
+
+    /**
+     * Marshall to a string first, then write the string to the file. This
+     * way the original config isn't lost if the xml from the marshall is hosed.
+     * 
+     * FIXME: This could still stand to write to a temporary file and/or make a
+     * temporary backup of the production configuration file.
+     */
+    public static void marshalViaString(Object config, File cfgFile) throws MarshalException, ValidationException, IOException {
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(config, stringWriter);
+
+        FileWriter fileWriter = new FileWriter(cfgFile);
+        fileWriter.write(stringWriter.toString());
+        fileWriter.flush();
+        fileWriter.close();
     }
 }
