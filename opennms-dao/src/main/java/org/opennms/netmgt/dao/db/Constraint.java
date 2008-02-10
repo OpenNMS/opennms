@@ -46,6 +46,8 @@ public class Constraint {
     public static final int PRIMARY_KEY = 1;
 
     public static final int FOREIGN_KEY = 2;
+    
+    public static final int CHECK = 3;
 
     private String m_name;
 
@@ -62,6 +64,8 @@ public class Constraint {
     private String m_fdeltype;
 
     private String m_fupdtype;
+    
+    private String m_checkExpression;
 
     public Constraint(String table, String constraint) throws Exception {
         this.parse(constraint);
@@ -77,13 +81,19 @@ public class Constraint {
     }
     */
     
+    /**
+     * Construct a primary key constraint from it's required elements
+     */
     public Constraint(String table, String name, List<String> columns) {
         setTable(table);
         setName(name);
         setType(PRIMARY_KEY);
         setColumns(columns);
     }
-
+    
+    /**
+     * Construct a foreign key constraint from it's required elements
+     */
     public Constraint(String table, String name, List<String> columns, String ftable, List<String> fcolumns, String fupdtype, String fdeltype) throws Exception {
         setTable(table);
         setName(name);
@@ -93,6 +103,16 @@ public class Constraint {
         setForeignColumns(fcolumns);
         setForeignUpdType(fupdtype);
         setForeignDelType(fdeltype);
+    }
+    
+    /**
+     * Construct a check type constraint from it's required elements
+     */
+    public Constraint(String table, String name, String checkExpression) {
+    	setTable(table);
+    	setName(name);
+    	setCheckExpression(checkExpression);
+    	setType(CHECK);
     }
 
     public void setForeignUpdType(String fupdtype) {
@@ -125,6 +145,10 @@ public class Constraint {
     
     public boolean isForeignKeyConstraint() {
     	return m_type == FOREIGN_KEY;
+    }
+    
+    public boolean isCheckConstraint() {
+    	return m_type == CHECK;
     }
     
 	public String getTable() {
@@ -190,6 +214,14 @@ public class Constraint {
         }
     }
 
+	public String getCheckExpression() {
+		return m_checkExpression;
+	}
+
+	public void setCheckExpression(String expression) {
+		m_checkExpression = expression;
+	}
+	
     public String toString() {
         StringBuffer b = new StringBuffer();
 
@@ -212,6 +244,13 @@ public class Constraint {
             }
             b.append(StringUtils.collectionToDelimitedString(m_columns, ", "));
             break;
+        case CHECK:
+        	b.append(" check (");
+        	if(m_checkExpression == null || m_checkExpression.length()==0) {
+        		throw new IllegalStateException("Check constraint has no check expression... not allowed!");
+        	}
+        	b.append(m_checkExpression);
+        	break;
         }
         
         b.append(")");
@@ -244,6 +283,8 @@ public class Constraint {
     private void parse(String constraintSQL) throws Exception {
         Matcher m;
 
+        	
+        //Check if the constraint is a primary key constraint
         m = Pattern.compile("(?i)constraint (\\S+) "
         		+ "primary key \\((.*)\\)").matcher(constraintSQL);
         if (m.matches()) {
@@ -253,7 +294,18 @@ public class Constraint {
             setColumns(Arrays.asList(columns));
             return;
         }
+        
+        //Check if the constraint is a check constraint
+        m = Pattern.compile("(?i)constraint (\\S+) "
+        		+ "check \\((.*)\\)").matcher(constraintSQL);
+        if(m.matches()) {
+            setName(m.group(1));
+        	setType(CHECK);
+        	setCheckExpression(m.group(2));
+        	return;
+        }
 
+        //Finally, check if the constraint is a foreign key constraint (the most complex)
         m = Pattern.compile("(?i)constraint (\\S+)\\s+"
                 + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
                 + "references\\s+(\\S+)"
@@ -356,6 +408,10 @@ public class Constraint {
                 return false;
             }
         }
+        
+        if(m_checkExpression != null && other.getCheckExpression()!=null && !m_checkExpression.equals(other.getCheckExpression())) {
+        	return false;
+        }
 
         return true;
     }
@@ -363,5 +419,6 @@ public class Constraint {
     public int hashCode() {
         return m_name.hashCode() + new Integer(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumns.hashCode() + m_fdeltype.hashCode();
     }
+
 
 }
