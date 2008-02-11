@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 10: Use default configs. - dj@opennms.org
 // 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
 //              and new Spring context files. - dj@opennms.org
 //
@@ -75,7 +76,6 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     
     public ModelImporterTest() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.setRelativeHomeDirectory("src/test/opennms-home");
         bean.afterPropertiesSet();
     }
     

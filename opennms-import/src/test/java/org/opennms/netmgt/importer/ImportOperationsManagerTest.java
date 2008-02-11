@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 10: Use default configs. - dj@opennms.org
 // 2007 Aug 25: Use AbstractTransactionalTemporaryDatabaseSpringContextTests
 //              and new Spring context files. - dj@opennms.org 
 // 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
@@ -83,7 +84,6 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     
     public ImportOperationsManagerTest() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.setRelativeHomeDirectory("src/test/opennms-home");
         bean.afterPropertiesSet();
     }
 
