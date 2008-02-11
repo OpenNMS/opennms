@@ -5,19 +5,7 @@
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
   <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
-    <property name="properties">
-      <props>
-        <prop key="test.overridden.properties">NOT_FOUND</prop>
-      </props>
-    </property>
-    <property name="order" value="1" />
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-  </bean>
-
-  <bean id="overridePropertiesForTesting" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
-    <property name="ignoreResourceNotFound" value="true" />
-    <property name="location" value="${test.overridden.properties}" />
-    <property name="order" value="2" />
   </bean>
 
   <!-- 
