@@ -68,7 +68,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
     /**
      * A mapping of the configured package to a list of IPs selected via filter
-     * rules, so as to avoid repetetive database access.
+     * rules, so as to avoid redundant database access.
      */
     private static Map<org.opennms.netmgt.config.linkd.Package, List<String>> m_pkgIpMap;
 
@@ -485,6 +485,10 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
         if (!filterPassed)
             return false;
+        return interfaceInPackageRange(iface, pkg);
+    }
+    
+    public synchronized boolean interfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg) {
     
         //
         // Ensure that the interface is in the specific list or
