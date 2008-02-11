@@ -38,35 +38,16 @@
 //
 package org.opennms.netmgt.importer;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.netmgt.importer.ImporterService;
-import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.utils.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.importer.jmx.ImporterService;
+import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 
-public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    private MockEventIpcManager m_eventIpcMgr;
-    private ImporterService m_daemon;
-
-    public ImporterServiceTest() {
+public class ImporterServiceJmxTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+    public ImporterServiceJmxTest() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
-    }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:/META-INF/opennms/applicationContext-importer.xml",
-                "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-                "classpath:/META-INF/opennms/eventIpcManager-factoryInit.xml",
-                "classpath:/META-INF/opennms/smallEventConfDao.xml",
-                "classpath:/importerServiceTest.xml"
-        };
     }
 
     @Override
@@ -76,41 +57,13 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
         MockLogAppender.setupLogging();
     }
 
-    public void testSchedule() throws Exception {
-        anticipateEvent(createEvent(EventConstants.IMPORT_STARTED_UEI));
-        anticipateEvent(createEvent(EventConstants.IMPORT_SUCCESSFUL_UEI));
+    public void testStartStop() throws Exception {
+        ImporterServiceMBean mbean = new ImporterService();
+        mbean.init();
+        mbean.start();
         
-        getDaemon().start();
-
-        Thread.sleep(60000);
-      
-        getDaemon().destroy();
+        Thread.sleep(3000);
         
-        verifyAnticipated();
-    }
-
-    private void verifyAnticipated() {
-        m_eventIpcMgr.getEventAnticipator().resetUnanticipated();
-        m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
-    }
-
-    public Event createEvent(String uei) {
-        return new EventBuilder(uei, "ModelImporter").getEvent();
-    }
-
-    private void anticipateEvent(Event e) {
-        m_eventIpcMgr.getEventAnticipator().anticipateEvent(e);
-    }
-
-    public void setEventIpcManager(MockEventIpcManager eventIpcMgr) {
-        m_eventIpcMgr = eventIpcMgr;
-    }
-
-    public ImporterService getDaemon() {
-        return m_daemon;
-    }
-
-    public void setDaemon(ImporterService daemon) {
-        m_daemon = daemon;
+        mbean.stop();
     }
 }
