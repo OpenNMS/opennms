@@ -240,7 +240,7 @@ public class Linkd extends AbstractServiceDaemon {
 			Iterator<LinkableNode> ite = nodes.iterator();
 			while (ite.hasNext()) {
 				LinkableNode node = ite.next();
-				if (m_linkdConfig.interfaceInPackage(node.getSnmpPrimaryIpAddr(), m_linkdConfig.getPackage(pkg)))
+				if (isInterfaceInPackage(node.getSnmpPrimaryIpAddr(), pkg))
 					nodesOnPkg.add(node);
 			}
 			return nodesOnPkg;
@@ -251,7 +251,12 @@ public class Linkd extends AbstractServiceDaemon {
 		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
-	
+
+	public boolean isInterfaceInPackageRange(String ipaddr, String pkg) {
+		if (m_linkdConfig.interfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
+		return false;
+	}
+
 	void scheduleNodeCollection(int nodeid) {
 
 		LinkableNode node = null;
@@ -462,7 +467,7 @@ public class Linkd extends AbstractServiceDaemon {
 			log().info("sendNewSuspectEvent: nothing to send suspect event previously sent for ip address: "
 							+ ipaddress);
 			return;
-		} else if (!isInterfaceInPackage(ipaddress, pkgName)) {
+		} else if (!isInterfaceInPackageRange(ipaddress, pkgName)) {
 			log().info("sendNewSuspectEvent: nothing to send for ip address: "
 					+ ipaddress + " not in package: " + pkgName);
 			return;

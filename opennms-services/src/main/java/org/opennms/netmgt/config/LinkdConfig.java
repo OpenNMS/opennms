@@ -83,6 +83,25 @@ public interface LinkdConfig {
     public abstract boolean interfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
+     * This method is used to determine if the named interface is included in
+     * the passed package definition. If the interface belongs to the package
+     * then a value of true is returned. If the interface does not belong to the
+     * package a false value is returned.
+     * 
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is already in the database.
+     * 
+     * @param iface
+     *            The interface to test against the package.
+     * @param pkg
+     *            The package to check for the inclusion of the interface.
+     * 
+     * @return True if the interface is included in the package, false
+     *         otherwise.
+     */
+    public abstract boolean interfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+
+    /**
      * Returns the first package that the ip belongs to, null if none.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
