@@ -809,6 +809,11 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
+                    log().debug("Marking CollectableService for deletion because an interface was deleted:  Service nodeid="+cSvc.getNodeId()+
+                                ", deleted node:"+nodeId+
+                                "service address:"+addr.getHostName()+
+                                "deleted interface:"+ipAddr);
+
                     updates.markForDeletion();
                 }
 
@@ -977,6 +982,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
+                    log().debug("Marking CollectableService for deletion because a node was deleted:  Service nodeid="+cSvc.getNodeId()+
+                                ", deleted node:"+nodeId);
                     updates.markForDeletion();
                 }
 
@@ -1241,10 +1248,11 @@ public class Collectd extends AbstractServiceDaemon implements
 
         Category log = log();
 
+        //INCORRECT; we now support all *sorts* of data collection.  This is *way* out of date
         // Currently only support SNMP data collection.
         //
-        if (!event.getService().equals("SNMP"))
-            return;
+        //if (!event.getService().equals("SNMP"))
+        //    return;
 
         int nodeId = (int) event.getNodeid();
         String ipAddr = event.getInterface();
@@ -1262,9 +1270,11 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Only interested in entries with matching nodeId, IP address
                 // and service
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(
-                                                                              ipAddr))
-                        && cSvc.getServiceName().equals(svcName))
+                
+                //WATCH the brackets; there userd to be an extra close bracket after the ipAddr comparision which borked this whole expression
+                if (!(cSvc.getNodeId() == nodeId && 
+                        addr.getHostName().equals(ipAddr) && 
+                        cSvc.getServiceName().equals(svcName))) 
                     continue;
 
                 synchronized (cSvc) {
@@ -1276,6 +1286,13 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
+                    log().debug("Marking CollectableService for deletion because a service was deleted:  Service nodeid="+cSvc.getNodeId()+
+                                ", deleted node:"+nodeId+
+                                ", service address:"+addr.getHostName()+
+                                ", deleted interface:"+ipAddr+
+                                ", service servicename:"+cSvc.getServiceName()+
+                                ", deleted service name:"+svcName+
+                                ", event source "+event.getSource());
                     updates.markForDeletion();
                 }
 

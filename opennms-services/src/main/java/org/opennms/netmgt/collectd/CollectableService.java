@@ -281,15 +281,16 @@ final class CollectableService implements ReadyRunnable {
     public void run() {
         // Process any oustanding updates.
         //
-        if (processUpdates() == ABORT_COLLECTION)
+        if (processUpdates() == ABORT_COLLECTION) {
+            log().debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for "+this);
             return;
+        }
 
         // Update last scheduled poll time
         m_lastScheduledCollectionTime = System.currentTimeMillis();
 
         // Check scheduled outages to see if any apply indicating
         // that the collection should be skipped
-        //
         if (!m_spec.scheduledOutage(m_agent)) {
 
         	int status = doCollection();
@@ -408,7 +409,7 @@ final class CollectableService implements ReadyRunnable {
                 try {
                     reinitialize(newIface);
                     if (log().isDebugEnabled())
-                        log().debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                        log().debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                 } catch (RuntimeException rE) {
                     log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
