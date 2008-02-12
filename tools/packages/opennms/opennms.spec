@@ -275,6 +275,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{instprefix}/lib
 			%{sharedir}
 			%{logdir}
+			%{logdir}/{controller,daemon,webapp}
 
 %if %{with_docs}
 %files docs
@@ -327,6 +328,12 @@ if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 		echo "done"
 	fi
 fi
+
+for dir in controller daemon webapp; do
+	if [ ! -d "$RPM_INSTALL_PREFIX2/$dir" ]; then
+		mkdir -p "$RPM_INSTALL_PREFIX2/$dir"
+	fi
+done
 
 if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
