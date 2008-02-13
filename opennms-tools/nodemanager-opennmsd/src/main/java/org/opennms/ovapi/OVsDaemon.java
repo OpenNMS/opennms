@@ -32,11 +32,10 @@ package org.opennms.ovapi;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
-import org.opennms.ovapi.CLibrary.fd_set;
-import org.opennms.ovapi.CLibrary.timeval;
-import org.opennms.ovapi.OVsPMD.OVsPMDCommand;
-
-import com.sun.jna.ptr.IntByReference;
+import org.opennms.nnm.swig.NNM;
+import org.opennms.nnm.swig.OVsPMDCommand;
+import org.opennms.nnm.swig.fd_set;
+import org.opennms.nnm.swig.timeval;
 
 import edu.emory.mathcs.backport.java.util.concurrent.Callable;
 
@@ -67,10 +66,9 @@ public abstract class OVsDaemon implements Callable {
         public Object call() throws Exception {
             long start = System.currentTimeMillis();
             long end = start;
-            int code = OVsPMD.OVS_CMD_NOOP; 
+            int code = NNM.OVS_CMD_NOOP; 
             
-            CLibrary clib = CLibrary.INSTANCE;
-            
+
             fd_set fdset = new fd_set();
             timeval tm = new timeval();
 
@@ -79,25 +77,24 @@ public abstract class OVsDaemon implements Callable {
                 fdset.zero();
                 fdset.set(getPmdFd());
             
-                if (!tm.isSet()) {
-                    tm.setTimeInMillis(1000);
-                }
+                tm.setTimeInMillis(1000);
+                
             
                 long selectStart = System.currentTimeMillis();
-                int fds = clib.select(getPmdFd()+1, fdset, null, null, tm);
+                int fds = NNM.select(getPmdFd()+1, fdset, null, null, tm);
                 long selectEnd = System.currentTimeMillis();
                 end = selectEnd;
                 
                 setStatus("Select returned after "+(selectEnd - selectStart)+ " millis.  pmd " + 
                         (fdset.isSet(getPmdFd()) ? "is" : "is not") + " set in readfds, return val is "+fds+", elapsed time = "+(end - start)+ "ms");
                 
-                code = OVsPMD.OVS_CMD_NOOP;
+                code = NNM.OVS_CMD_NOOP;
                 if (fdset.isSet(getPmdFd())) {
                     code = readPmdCmd();
                     setStatus("Received cmd code "+code+" from pmd");
                 }
                 
-                if (code == OVsPMD.OVS_CMD_EXIT) {
+                if (code == NNM.OVS_CMD_EXIT) {
                     finished = true;
                 }
             }     
@@ -109,7 +106,6 @@ public abstract class OVsDaemon implements Callable {
         
     }
     
-    private OVsPMD m_ovspmd = OVsPMD.INSTANCE;
     private int m_ovspmdFd;
 
     protected abstract String onInit();
@@ -132,27 +128,27 @@ public abstract class OVsDaemon implements Callable {
 
     public void execute() {
 
-        IntByReference sp = new IntByReference();
+        int[] sp = new int[1];
 
-        if (m_ovspmd.OVsInit(sp) < 0) {
+        if (NNM.OVsInit(sp) < 0) {
             log("error calling OVsInit");
         }
         
-        m_ovspmdFd = sp.getValue();
+        m_ovspmdFd = sp[0];
 
         String initResponse = "";
-        int success = OVsPMD.OVS_RSP_FAILURE;
+        int success = NNM.OVS_RSP_FAILURE;
         try {
         
             initResponse = onInit();
-            success = OVsPMD.OVS_RSP_SUCCESS;
+            success = NNM.OVS_RSP_SUCCESS;
             
         } catch (Throwable t) {
             initResponse = "Exception occurred initializing "+this+": "+t;
             log(initResponse, t);
         }
 
-        if (m_ovspmd.OVsInitComplete(success, initResponse) < 0) {
+        if (initComplete(initResponse, success) < 0) {
             log("error calling OVsInitComplete");
         }
         
@@ -164,13 +160,19 @@ public abstract class OVsDaemon implements Callable {
             log(callmsg, t);
         }
         
-        if (m_ovspmd.OVsDone(callmsg) < 0) {
+        if (NNM.OVsDone(callmsg) < 0) {
             log("error occurred calling OVsDone");
         }
     }
+
+    private int initComplete(String initResponse, int success) {
+        log("OVsInitComlete("+initResponse+", \""+success+"\")");
+        return NNM.OVsInitComplete(success, initResponse);
+    }
     
     public void setStatus(String message) {
-        if (m_ovspmd.OVsResponse(OVsPMD.OVS_RSP_LAST_MSG, message) < 0) {
+        log("OVsResponse(OVS_RSP_LAST_MSG, \""+message+"\")");
+        if (NNM.OVsResponse(NNM.OVS_RSP_LAST_MSG, message) < 0) {
             log("error calling OVsResponse");
         }
     }
@@ -178,11 +180,11 @@ public abstract class OVsDaemon implements Callable {
     public int readPmdCmd() {
         OVsPMDCommand command = new OVsPMDCommand();
         
-        if (m_ovspmd.OVsReceive(command) < 0) {
+        if (NNM.OVsReceive(command) < 0) {
             log("error calling OVsReceive");
         }
         
-        return command.code;
+        return command.getCode();
     }
 
     public static void log(String msg) {
