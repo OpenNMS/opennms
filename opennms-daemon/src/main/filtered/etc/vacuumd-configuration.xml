@@ -26,27 +26,148 @@
   </statement>
     
   <automations>
-    <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
-    <automation name="cleanUp" interval="30000" action-name="deletePastClearedAlarms" active="true" />
-    <automation name="fullCleanUp" interval="300000" action-name="deleteAllPastClearedAlarms" active="true" />
-    <automation name="GC" interval="300000" action-name="garbageCollect" active="true" />
-    <automation name="fullGC" interval="300000" action-name="fullGarbageCollect" active="true" />
-    <automation name="unclear" interval="30000" trigger-name="selectClearedAlarms" action-name="resetSeverity" active="true" />
-    <automation name="escalation" interval="30000" trigger-name="selectSuspectAlarms" action-name="escalateAlarm" action-event="eventEscalated" active="false" />
-    <automation name="purgeStatisticsReports" interval="3600000" action-name="deletePurgeableStatisticsReports" active="true" />
+    <automation name="cosmicClear" interval="30000" active="true" 
+                trigger-name="selectResolvers" 
+                action-name="clearProblems" />
+                
+    <automation name="cleanUp" interval="30000" active="true"
+                action-name="deletePastClearedAlarms" />
+                
+    <automation name="fullCleanUp" interval="300000" active="true" 
+                action-name="deleteAllPastClearedAlarms" />
+                
+    <automation name="GC" interval="300000" active="true" 
+                action-name="garbageCollect" />
+                
+    <automation name="fullGC" interval="300000" active="true" 
+                action-name="fullGarbageCollect" />
+                
+    <automation name="unclear" interval="30000"  active="true" 
+                trigger-name="selectClearedAlarms" 
+                action-name="resetSeverity" />
+                
+    <automation name="escalation" interval="30000" active="true" 
+                trigger-name="selectSuspectAlarms" 
+                action-name="escalateAlarm" 
+                action-event="eventEscalated" />
+                
+    <automation name="purgeStatisticsReports" active="true"
+                interval="3600000" 
+                action-name="deletePurgeableStatisticsReports" />
+    
+    <!-- Enable these automation for automatic Trouble Ticketing -->
+    <automation name="createTickets" interval="30000" active="false" 
+                trigger-name="selectNullTicketStateAlarms" 
+                action-name="acknowledgeAlarm" 
+                action-event="createTicket" />
+    <automation name="createCriticalTicket" interval="30000" active="false" 
+                trigger-name="selectCritialOpenAlarms" 
+                action-name="acknowledgeAlarm" 
+                action-event="createTicket" />
+    <automation name="updateTickets" interval="15000" active="false"
+                trigger-name="selectNotNullTicketStateAlarms" 
+                action-name="updateAutomationTime" 
+                action-event="updateTicket" />
+    <automation name="closeClearedAlarmTickets" interval="60000" active="false" 
+                trigger-name="selectClearedAlarmWithOpenTicketState" 
+                action-name="updateAutomationTime" 
+                action-event="closeTicket" />
+    <automation name="clearAlarmsForClosedTickets" interval="60000" active="false" 
+                trigger-name="selectClosedTicketStateForProblemAlarms" 
+                action-name="clearClosedTicketAlarms" />
   </automations>
   
   <triggers>
   
+    <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet -->
+    <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1" >
+      <statement>
+          SELECT a.alarmid AS _alarmid, 
+                 now() AS _ts
+            FROM alarms a
+           WHERE a.tticketstate = 3
+             AND a.severity &gt; 2
+             AND a.alarmType = 1 
+      </statement>
+    </trigger>
+  
+    <!-- Find Alarms that are older than 15 minutes with no Ticket ID (Only works with PostgreSQL 8.1 or better) -->
+    <trigger name="selectNullTicketStateAlarms" operator="&gt;=" row-count="1" >
+      <statement>
+          SELECT a.alarmid AS _alarmid, 
+                 a.eventuei AS _eventuei, 
+                 'admin' AS _user, 
+                 a.tticketID AS _tticketID,
+                 now() AS _ts
+            FROM alarms a
+           WHERE a.severity &gt; 2 
+             AND a.alarmType = 1 
+             AND a.alarmAckUser is NULL 
+             AND a.tticketState IS NULL
+             AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
+      </statement>
+    </trigger>
+
+    <!-- Find Alarms that are in critical state with no TicketID and open ticket.  This handles issues where 
+         alarms are continuously being reduced and has escalated high enough to require a ticket when 
+         the alarm hasn't been escalated. (Only works with PostgreSQL 8.1 or better) -->
+    <trigger name="selectCritialOpenAlarms" operator="&gt;=" row-count="1" >
+      <statement>
+          SELECT a.alarmid AS _alarmid, 
+                 a.eventuei AS _eventuei, 
+                 'admin' AS _user, 
+                 a.tticketID AS _tticketID,
+                 now() AS _ts
+            FROM alarms a
+           WHERE a.severity = 7 
+             AND a.alarmType = 1 
+             AND a.alarmAckUser is NULL 
+             AND a.tticketState IS NULL
+             AND lasteventtime &lt; now() - interval '5 minutes'
+      </statement>
+    </trigger>
+    
+    <!-- Find Alarms that have a TicketState (Only works with PostgreSQL 8.1 or better) -->
+    <trigger name="selectNotNullTicketStateAlarms" operator="&gt;=" row-count="1" >
+      <statement>
+          SELECT a.alarmid AS _alarmid, 
+                 a.eventuei AS _eventuei, 
+                 'admin' AS _user, 
+                 a.tticketID AS _tticketID,
+                 now() AS _ts
+            FROM alarms a
+           WHERE a.severity &gt; 2 
+             AND a.alarmType = 1 
+             AND a.tticketState IS NOT NULL
+             AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
+      </statement>
+    </trigger>
+
+    <!-- Find Alarms that have cleared and have an open ticket state (Only works with PostgreSQL 8.1 or better) -->
+    <trigger name="selectClearedAlarmWithOpenTicketState" operator="&gt;=" row-count="1" >
+      <statement>
+          SELECT a.alarmid AS _alarmid, 
+                 a.eventuei AS _eventuei, 
+                 'admin' AS _user, 
+                 a.tticketID AS _tticketID,
+                 now() AS _ts
+            FROM alarms a
+           WHERE a.severity &gt; 2 
+             AND a.alarmType = 1 
+             AND a.tticketState &lt; 4
+             AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
+      </statement>
+    </trigger>    
+  
     <trigger name="selectSuspectAlarms" operator="&gt;=" row-count="1" >
       <statement>
-          SELECT a.alarmid as _alarmid, 
-                 a.eventuei as _eventuei, 
-                 a.nodeid as _nodeid, 
-                 a.ipaddr as _ipaddr, 
-                 a.serviceid as _serviceid,
-                 s.servicename as _servicename,
-                 now() as _ts
+          SELECT a.alarmid AS _alarmid, 
+                 a.eventuei AS _eventuei, 
+                 a.nodeid AS _nodeid, 
+                 a.ipaddr AS _ipaddr, 
+                 a.serviceid AS _serviceid,
+                 s.servicename AS _servicename,
+                 now() AS _ts
             FROM alarms a
  LEFT OUTER JOIN service s
               ON s.serviceid = a.serviceid
@@ -58,9 +179,10 @@
       </statement>
     </trigger>
   
+    <!-- This finds problems that have reoccurred since the previoius clear -->
     <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT a.alarmid as _id, e.eventseverity AS _sev, now() as _ts
+        SELECT a.alarmid AS _id, e.eventseverity AS _sev, now() AS _ts
           FROM alarms a
           JOIN events e 
             ON e.eventid = a.lasteventid
@@ -69,10 +191,11 @@
            AND a.lasteventtime > a.lastautomationtime
       </statement>
     </trigger>
-  
+ 
+    <!-- Find all alarms that potentially clear problems --> 
     <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT *, now() as _ts 
+        SELECT *, now() AS _ts 
           FROM alarms 
          WHERE alarmType=2
       </statement>
@@ -80,11 +203,27 @@
   </triggers>
     
   <actions>
+
+    <action name="acknowledgeAlarm" >
+      <statement>
+        UPDATE alarms
+           SET alarmackuser = ${_user}, alarmacktime = ${_ts}, lastautomationtime = ${_ts}
+         WHERE alarmid = ${_alarmid}
+      </statement>
+    </action>
+  
+    <action name="updateAutomationTime" >
+      <statement>
+        UPDATE alarms
+           SET lastautomationtime = ${_ts}
+         WHERE alarmid = ${_alarmid}
+      </statement>
+    </action>
   
     <action name="escalateAlarm" >
       <statement>
         UPDATE alarms
-           SET severity = severity +1, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
+           SET alarmAckUser = null, alarmAckTime = null, severity = severity +1, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
          WHERE alarmid = ${_alarmid}
       </statement>
     </action>
@@ -133,20 +272,24 @@
     </action>
     -->
     
+    <!--  ticket state of 3 is closed -->
     <action name="deletePastClearedAlarms" >
       <statement>
-        DELETE from alarms
+        DELETE FROM alarms
          WHERE severity &lt;= 3
            AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '2 minutes'
-           AND alarmacktime IS NULL
+           AND (alarmacktime IS NULL OR tticketState = 3)
       </statement>
     </action>
 
+<!--  May need to add a check for Open ticket state and wait for the state to be closed based on
+      update ticket action-event -->
     <action name="deleteAllPastClearedAlarms" >
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
            AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
+           AND (alarmacktime IS NULL OR tticketState = 3)
       </statement>
     </action>
   
@@ -179,6 +322,15 @@
       </statement> 
     </action>
     
+    <!--  clear alarms that have a trouble ticket assigned as closed and alarm has not cleared-->
+    <action name="clearClosedTicketAlarms" >
+      <statement>
+        UPDATE alarms 
+           SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
+         WHERE alarmid = ${_alarmid}
+      </statement> 
+    </action>
+    
     <action name="deletePurgeableStatisticsReports" >
       <statement>
         DELETE from statisticsReport
@@ -197,6 +349,22 @@
 
   <!-- Note: action events that have ${} tokens require the for-each-result attribute to be set to true -->
   <action-events>
+  
+    <action-event name="createTicket" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/create" />
+      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
+      <assignment type="parameter" name="user" value="${_user}" />
+      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
+    </action-event>
+    
+    <action-event name="updateTicket" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/update" />
+      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
+      <assignment type="parameter" name="user" value="${_user}" />
+      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
+      <assignment type="parameter" name="troubleTicket" value="${_tticketID}" />
+    </action-event>
+    
     <action-event name="eventEscalated" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
       <assignment type="field" name="nodeid" value="${_nodeid}" />
