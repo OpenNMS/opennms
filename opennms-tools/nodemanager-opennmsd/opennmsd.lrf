@@ -10,4 +10,4 @@
 #   ovstart ovtrapd
 #
 opennmsd:/opt/OV/jre/jre1.4/bin/java:
-OVs_YES_START::-Djna.library.path=/opt/OV/lib,-jar,/export/home/brozow/svn/nodemanager-opennmsd/target/opennmsd-0.0.1-SNAPSHOT-jar-with-dependencies.jar:OVs_WELL_BEHAVED::
+OVs_YES_START::-Djava.library.path=/export/home/brozow/svn/ovapi\:/opt/OV/lib,-jar,/export/home/brozow/svn/nodemanager-opennmsd/target/opennmsd-0.0.1-SNAPSHOT-jar-with-dependencies.jar:OVs_WELL_BEHAVED::

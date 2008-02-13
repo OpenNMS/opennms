@@ -43,8 +43,8 @@
         <configuration>
           <systemProperties>
             <property>
-              <name>jna.library.path</name>
-              <value>/opt/OV/lib</value>
+              <name>nnm.jni.library</name>
+              <value>/export/home/brozow/svn/ovapi/libNNM.so</value>
             </property>
           </systemProperties>
         </configuration>
@@ -109,10 +109,17 @@ groovy.compiler.output.path=target/classes
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>nnm-api</artifactId>
+      <version>0.9-SNAPSHOT</version>
+    </dependency>
+<!-- 
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>mock-snmp-agent</artifactId>
       <version>1.3.10</version>
       <scope>test</scope>
     </dependency>
+--> 
     <dependency>
       <groupId>backport-util-concurrent</groupId>
       <artifactId>backport-util-concurrent</artifactId>
