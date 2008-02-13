@@ -158,7 +158,12 @@ public class HttpCollector implements ServiceCollector {
         
         @SuppressWarnings("unchecked")
         public void collect() {
-            HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(m_parameters.get("http-collection"));
+            String collectionName=m_parameters.get("collection");
+            if(collectionName==null) {
+                //Look for the old configuration style:
+                 collectionName=m_parameters.get("http-collection");               
+            }
+            HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
             List<Uri> uriDefs = collection.getUris().getUriCollection();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;

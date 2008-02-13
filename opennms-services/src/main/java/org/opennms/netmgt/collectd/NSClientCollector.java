@@ -194,8 +194,12 @@ public class NSClientCollector implements ServiceCollector {
     
     @SuppressWarnings("unchecked")
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
-        String collectionName = parameters.get("nsclient-collection");
-
+        
+        String collectionName=parameters.get("collection");
+        if(collectionName==null) {
+            //Look for the old configuration style:
+             collectionName=parameters.get("nsclient-collection");               
+        }
         // Find attributes to collect - check groups in configuration. For each,
         // check scheduled nodes to see if that group should be collected
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
