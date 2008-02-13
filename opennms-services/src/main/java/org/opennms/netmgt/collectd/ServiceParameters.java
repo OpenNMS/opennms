@@ -104,7 +104,20 @@ public class ServiceParameters {
     }
 
     String getCollectionName() {
-    	return ParameterMap.getKeyedString(m_parameters, "collection", "default");
+        //icky hard coded old names; we need to handle some old cases where configs might be not yet updated, but they should
+        // still work
+        if(m_parameters.containsKey("collection")) {
+            return m_parameters.get("collection");
+        } else if(m_parameters.containsKey("http-collection")) {
+            return m_parameters.get("http-collection");
+        } else if(m_parameters.containsKey("nsclient-collection")) {
+            return m_parameters.get("nsclient-collection");
+        } else {
+            return "default";
+        }
+        //Previous code:  we can return to this in time (maybe 1.6, or even 2.0) when all old
+        // configs should be long gone
+    	//return ParameterMap.getKeyedString(m_parameters, "collection", "default");
     }
 
     /**
