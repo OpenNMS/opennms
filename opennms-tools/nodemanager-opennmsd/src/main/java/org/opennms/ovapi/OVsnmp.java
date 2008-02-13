@@ -30,6 +30,8 @@
 package org.opennms.ovapi;
 
 import com.sun.jna.Callback;
+import com.sun.jna.FromNativeContext;
+import com.sun.jna.IntegerType;
 import com.sun.jna.Library;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
@@ -79,6 +81,22 @@ public interface OVsnmp extends Library {
             super(pointer);
         }
         
+        public Object fromNative(Object nativeValue, FromNativeContext context) {
+            System.err.println("Enter ObjectID.fromNative("+nativeValue+", "+context+")");
+            try {
+                return super.fromNative(nativeValue, context);
+            } finally {
+                System.err.println("Exit ObjectID.fromNative("+nativeValue+", "+context+")");
+            }
+        }
+        public Object toNative() {
+            System.err.println("Enter ObjectID.toNative");
+            try {
+                return super.toNative();
+            } finally {
+                System.err.println("Exit ObjectID.toNative");
+            }
+        }
         public String toString(int len) {
             if (this.getPointer() == Pointer.NULL) {
                 return null;
@@ -333,7 +351,9 @@ public interface OVsnmp extends Library {
     }
     
     public static class OVsnmpVarBind extends Structure {
-        public static class ByReference extends OVsnmpVarBind implements Structure.ByReference { }
+        public static class ByReference extends OVsnmpVarBind implements Structure.ByReference {
+            
+        }
         
         public OVsnmpVarBind.ByReference next_variable;
         
@@ -355,7 +375,15 @@ public interface OVsnmp extends Library {
         public short           sin_port;
         public in_addr         sin_addr;
         public byte[]          sin_zero = new byte[8];
+
         
+        
+        public void write() {
+            System.err.println("Enter SockAddr.write");
+            super.write();
+            System.err.println("Exit SockAddr.write");
+        }
+
         public String toString() {
             return getIpAddress(sin_addr.s_addr)+"/"+sin_port;
         }
@@ -385,7 +413,140 @@ public interface OVsnmp extends Library {
         }
     }
     
+    public static class DebugByteByReference extends ByteByReference {
+        public DebugByteByReference() {
+            super();
+        }
+        public DebugByteByReference(byte value) {
+            super(value);
+        }
+        
+        public Object fromNative(Object nativeValue, FromNativeContext context) {
+            System.err.println("Enter DebugByteByReference.fromNative("+nativeValue+", "+context+")");
+            try {
+                return super.fromNative(nativeValue, context);
+            } finally {
+                System.err.println("Exit DebugByteByReference.fromNative("+nativeValue+", "+context+")");
+            }
+        }
+        public Object toNative() {
+            System.err.println("Enter DebugByteByReference.toNative");
+            try {
+                return super.toNative();
+            } finally {
+                System.err.println("Exit DebugByteByReference.toNative");
+            }
+        }
+        
+    }
+    
+    
+    public static class DebugPointer extends PointerType {
+        
+        public DebugPointer() {
+            super();
+        }
+        
+        public DebugPointer(Pointer p) {
+            super(p);
+        }
+        
+        public Object fromNative(Object nativeValue, FromNativeContext context) {
+            System.err.println("Enter DebugPointer.fromNative("+nativeValue+", "+context+")");
+            try {
+                return super.fromNative(nativeValue, context);
+            } finally {
+                System.err.println("Exit DebugPointer.fromNative("+nativeValue+", "+context+")");
+            }
+        }
+        public Object toNative() {
+            System.err.println("Enter DebugPointer.toNative");
+            try {
+                return super.toNative();
+            } finally {
+                System.err.println("Exit DebugPointer.toNative");
+            }
+        }
+        
+    }
+    
+    
+    public static class DebugNativeLong extends NativeLong {
+        
+        public DebugNativeLong() {
+            super();
+        }
+        
+        public DebugNativeLong(long value) {
+            super(value);
+        }
+        
+        public Object fromNative(Object nativeValue, FromNativeContext context) {
+            System.err.println("Enter DebugNativeLong.fromNative("+nativeValue+", "+context+")");
+            try {
+                return super.fromNative(nativeValue, context);
+            } finally {
+                System.err.println("Exit DebugNativeLong.fromNative("+nativeValue+", "+context+")");
+            }
+        }
+        public Object toNative() {
+            System.err.println("Enter DebugNativeLong.toNative");
+            try {
+                return super.toNative();
+            } finally {
+                System.err.println("Exit DebugNativeLong.toNative");
+            }
+        }
+        
+    }
+    
+    
+    public static class DebugInteger extends IntegerType {
+        
+        public DebugInteger() {
+            super(4);
+        }
+        
+        public DebugInteger(int value) {
+            super(4, value);
+        }
+        
+        public Object fromNative(Object nativeValue, FromNativeContext context) {
+            System.err.println("Enter DebugInteger.fromNative("+nativeValue+", "+context+")");
+            try {
+                return super.fromNative(nativeValue, context);
+            } finally {
+                System.err.println("Exit DebugInteger.fromNative("+nativeValue+", "+context+")");
+            }
+        }
+        public Object toNative() {
+            System.err.println("Enter DebugInteger.toNative");
+            try {
+                return super.toNative();
+            } finally {
+                System.err.println("Exit DebugInteger.toNative");
+            }
+        }
+        
+    }
+    
+    
     public static class OVsnmpPdu extends Structure {
+
+        public void write() {
+            System.err.println("Enter OVsnmPdu write");
+            super.write();
+            System.err.println("Exit OVsnmPdu write");
+        }
+
+
+        public void writeField(String name) {
+            System.err.println("Enter OVsnmPdu writeField("+name+")");
+            super.writeField(name);
+            System.err.println("Exit OVsnmPdu writeField("+name+")");
+        }
+
+        
         public static final int ASN_CONTEXT     = 0x80;
         public static final int ASN_CONSTRUCTOR = 0x20;
         public static final int GET_REQ_MSG     = (ASN_CONTEXT | ASN_CONSTRUCTOR | 0x00);
@@ -400,13 +561,13 @@ public interface OVsnmp extends Library {
         
         
         public SockAddr address;
-        public int command;
-        public int request_id;
-        public int error_status;
-        public int error_index;
+        public DebugInteger command;
+        public DebugInteger request_id;
+        public DebugInteger error_status;
+        public DebugInteger error_index;
         
         // Trap Information for V1 traps
-        public ObjectID enterprise;
+        public DebugPointer enterprise;
         public int enterprise_length;
         public int agent_addr;
         
@@ -414,11 +575,11 @@ public interface OVsnmp extends Library {
         public int specific_type;
         public int time;
         
-        public OVsnmpVarBind.ByReference variables;
-        //public Pointer variables;
+        //public OVsnmpVarBind.ByReference variables;
+        public DebugPointer variables;
         
         
-        public ByteByReference community;
+        public DebugByteByReference community;
         public int community_len;
         
         public Pointer  internal;
@@ -426,7 +587,7 @@ public interface OVsnmp extends Library {
         public int protocol_version;
         
         // V2 Trap & Inform Fields
-        public ObjectID notify_oid;
+        public ObjectID notify_oid = new ObjectID();
         public int notify_oid_length;
         
         public String getCommunity() {
@@ -459,27 +620,38 @@ public interface OVsnmp extends Library {
             buf.append("OVsnmpPdu[");
             buf.append("address = "+address).append(", ");
             buf.append("command = "+pduTypeToString(command)).append(", ");
+            buf.append("request_id = "+request_id).append(", ");
             buf.append("error_stats = "+error_status).append(", ");
             buf.append("error_index = "+error_index).append(", ");
-            buf.append("enterprise = " + OVObjectId.get(enterprise, enterprise_length, false)).append(", ");
+            
+            buf.append("enterprise = " + (enterprise == null ? "NULL <directly>" : enterprise.toString(/*enterprise_length*/))).append(", ");
+            buf.append("enterprise_length = "+enterprise_length).append(", ");
             buf.append("agent_addr = " + SockAddr.getIpAddress(agent_addr)).append(", ");
+            
             buf.append("generic_type = " + generic_type).append(", ");
             buf.append("specific_type = " + specific_type).append(", ");
             buf.append("time = " + time).append(", ");
             
             buf.append("variables =  "+variables).append(", ");
             
+            buf.append("community = " + (community == null ? "NULL <directly>" : getCommunity())).append(", ");
             buf.append("community_len = " + community_len).append(", ");
-            buf.append("community = " + getCommunity()).append(", ");
+            
+            buf.append("internal = " + internal).append(", ");
           
-            buf.append("protocal_version = " + protocol_version).append(", ");
+            buf.append("protocol_version = " + protocol_version).append(", ");
             
-            buf.append("notify_oid = " + OVObjectId.get(notify_oid, notify_oid_length, false));
+            buf.append("notify_oid = " + (notify_oid == null ? "NULL <directly>" : notify_oid.toString(notify_oid_length))).append(", ");
+            buf.append("notify_oid_length = " + notify_oid_length).append(", ");
             
-            
+
             buf.append("]");
             
             return buf.toString();
+        }
+        
+        public static String pduTypeToString(IntegerType type) {
+            return pduTypeToString(type.intValue());
         }
         
         public static String pduTypeToString(int type) {
