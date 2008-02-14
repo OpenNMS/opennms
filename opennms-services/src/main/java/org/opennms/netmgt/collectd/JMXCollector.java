@@ -875,7 +875,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
         @Override
         public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId())+ m_resourceName);
+            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId())+ File.separator+ m_resourceName);
         }
         
         public String getResourceTypeName() {
