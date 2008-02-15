@@ -60,8 +60,12 @@ public class ReportController extends AbstractCommandController implements Initi
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
         StatisticsReportCommand command = (StatisticsReportCommand) cmd;
 
-        StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
-        return new ModelAndView(getSuccessView(), "model", report);
+        try {
+        	StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
+            return new ModelAndView(getSuccessView(), "model", report);
+        } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
+        	throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
+        }
     }
 
     public void afterPropertiesSet() throws Exception {

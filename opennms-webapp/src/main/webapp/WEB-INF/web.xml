@@ -1188,6 +1188,10 @@
     <location>/errors/sealingviolation.jsp</location>
   </error-page>
   <error-page>
+    <exception-type>org.opennms.web.controller.statisticsReports.StatisticsReportIdNotFoundException</exception-type>
+    <location>/errors/statisticsreportidnotfound.jsp</location>
+  </error-page>
+  <error-page>
     <exception-type>org.opennms.web.vulnerability.VulnerabilityIdNotFoundException</exception-type>
     <location>/errors/vulnerabilityidnotfound.jsp</location>
   </error-page>  
