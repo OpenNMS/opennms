@@ -83,11 +83,13 @@
         showExports="true" showStatusBar="true" 
         autoIncludeParameters="false"
         >
-      
-        <ec:exportPdf fileName="Statistics Report.pdf" tooltip="Export PDF"
-          headerColor="black" headerBackgroundColor="#b6c2da"
-          headerTitle="Statistics Report List" />
-        <ec:exportXls fileName="Statistics Report.xls" tooltip="Export Excel" />
+
+			<ec:exportPdf fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.pdf" tooltip="Export PDF"
+				headerColor="black" headerBackgroundColor="#b6c2da"
+				headerTitle="${model.report.description}, for period ${model.report.startDate} - ${model.report.endDate}" />
+			<ec:exportCsv fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.csv" tooltip="Export CSV" />
+			<ec:exportXls fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.xls" tooltip="Export Excel" />
+
       
         <ec:row highlightRow="false">
           <ec:column property="resourceParentsReversed" title="Parent resource" sortable="false"  interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
@@ -113,6 +115,11 @@
           </ec:column>
 
           <ec:column property="resource" sortable="false">
+            ${row.resource.label}
+          </ec:column>
+          
+          <%--
+          <ec:column property="resource" sortable="false">
             <c:choose>
               <c:when test="${!empty row.resourceThrowable}">
                 <span title="Exception: ${row.resourceThrowable}">Could not find resource: ${row.resourceThrowableId}</span>
@@ -130,6 +137,7 @@
               </c:otherwise>
             </c:choose>
           </ec:column>
+          --%>
       
           <ec:column property="value"/>
           
