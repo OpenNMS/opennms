@@ -35,6 +35,7 @@
  */
 package org.opennms.web.controller.statisticsReports;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +59,14 @@ public class ListController extends AbstractController implements InitializingBe
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<StatisticsReport> reports = m_statisticsReportService.getStatisticsReports();
-        return new ModelAndView("statisticsReports/index", "model", reports);
+        ArrayList<StatisticsReport> reportsSorted = new ArrayList<StatisticsReport>(reports.size());
+        // Reverse the list for intuitive presentation -- it should come out of the DAO
+        // in ascending order of ID, but users will expect newer reports to be at the top
+        for (int i = reports.size() - 1; i >= 0; i--) {
+        	reportsSorted.add(reports.get(i));
+        }
+        
+        return new ModelAndView("statisticsReports/index", "model", reportsSorted);
     }
 
     public void afterPropertiesSet() throws Exception {

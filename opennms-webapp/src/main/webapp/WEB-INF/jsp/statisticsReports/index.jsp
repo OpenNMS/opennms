@@ -86,6 +86,7 @@
         <ec:exportPdf fileName="Statistics Report List.pdf" tooltip="Export PDF"
           headerColor="black" headerBackgroundColor="#b6c2da"
           headerTitle="Statistics Report List" />
+        <ec:exportCsv fileName="Statistics Report List.csv" tooltip="Export CSV" />
         <ec:exportXls fileName="Statistics Report List.xls" tooltip="Export Excel" />
       
         <ec:row highlightRow="false">
@@ -93,30 +94,29 @@
           <ec:column property="name" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
           --%>
 
-          <ec:column property="description" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
+          <ec:column property="description" title="Report Description" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
+          	<c:url var="reportUrl" value="statisticsReports/report.htm">
+          		<c:param name="id" value="${row.id}" />
+          	</c:url>
+          	<a href="${reportUrl}">${row.description}</a>
+          </ec:column>
 
-          <ec:column property="startDate" title="Start" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-
-          <ec:column property="duration" title="Interval">
+          <ec:column property="startDate" title="Reporting Period Start" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          <ec:column property="endDate" title="Reporting Period End"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+		  <ec:column property="duration" title="Run Interval">
             ${row.durationString}
           </ec:column>
           
           
         <%--
-          <ec:column property="endDate" title="End"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          --%>
-          
-        <%--
           <ec:column property="jobStartedDate" title="Job Started"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          --%>
-          
           <ec:column property="jobCompletedDate" title="Job Completed"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-
           <ec:column property="jobDuration" title="Job Run Time">
             ${row.jobDurationString}
           </ec:column>
+        --%>
 
-          <ec:column property="purgeDate" title="Purge (no earlier than)" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          <ec:column property="purgeDate" title="Keep Until At Least" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
 
           <ec:column property="id" title="ID">
             <c:url var="reportUrl" value="statisticsReports/report.htm">
