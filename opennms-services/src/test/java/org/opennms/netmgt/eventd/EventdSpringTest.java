@@ -10,6 +10,10 @@
  *
  * Modifications:
  *
+ * 2008 Feb 16: Move testSendEventWithService to JdbcEventWriterTest and make
+ *              this test case just about starting up the daemon with default
+ *              bean wiring and configs so we can catch problems like bug #2273
+ *              in the future. - dj@opennms.org
  * 2008 Feb 10: Fix failing test testSendEventWithService. - dj@opennms.org
  * 2008 Feb 05: Load up a smaller EventConfDao and run one more test. - dj@opennms.org
  * 2008 Jan 27: Enable the service test and make it do something for real. - dj@opennms.org
@@ -39,10 +43,13 @@
 package org.opennms.netmgt.eventd;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.test.DaoTestConfigBean;
 
 /**
+ * Test the startup and shutdown of eventd with the default wiring and
+ * configuration files.  Don't override *any* beans so we can see if the
+ * daemon will work as it does in production (as possible).
+ * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
@@ -58,42 +65,27 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
 
     @Override
     protected String[] getConfigLocations() {
+        /**
+         * Don't put any bean override files in here.  We want to use the
+         * default bean files.
+         */
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:META-INF/opennms/applicationContext-eventDaemon.xml",
-                "classpath:META-INF/opennms/smallEventConfDao.xml"
+                "classpath:META-INF/opennms/applicationContext-eventDaemon.xml"
         };
     }
-    
+
+    /**
+     * Test the startup and shutdown of this daemon.  This is the only test in
+     * this file because having more seems to cause OutOfMemory errors within
+     * Eclipse when there are multiple tests due to the large number of events
+     * that are loaded by default.
+     */
     public void testDaemon() throws Exception {
         assertNotNull("daemon bean", m_daemon);
         
         m_daemon.onStart();
-        m_daemon.onStop();
-    }
-    
-    public void testSendEventWithService() throws Exception {
-        int serviceId = 1;
-        String serviceName = "some bogus service";
-
-        m_daemon.onStart();
-
-        getSimpleJdbcTemplate().update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
-        setComplete();
-        endTransaction();
-        startNewTransaction();
-        
-        EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
-        builder.setLogMessage("logndisplay");
-        builder.setService(serviceName);
-        m_eventIpcManager.sendNow(builder.getEvent());
-        
-        Thread.sleep(1000);
-        
-        assertEquals("event count", 1, getJdbcTemplate().queryForInt("select count(*) from events"));
-        assertEquals("event service ID", serviceId, getJdbcTemplate().queryForInt("select serviceID from events"));
-
         m_daemon.onStop();
     }
     

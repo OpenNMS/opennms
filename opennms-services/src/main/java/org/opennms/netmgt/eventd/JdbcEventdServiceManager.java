@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 16: Fix a log message. - dj@opennms.org
 // 2008 Jan 26: Created this file. - dj@opennms.org
 //
 // Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
@@ -87,7 +88,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
             
             m_serviceMap.put(serviceName, new Integer(serviceId));
             
-            log().debug("Found entry for '" + serviceName + "' (ID " + serviceId + " in database.  Adding to service name cache.");
+            log().debug("Found entry for '" + serviceName + "' (ID " + serviceId + ") in database.  Adding to service name cache.");
             
             return serviceId;
         }
