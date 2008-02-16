@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Feb 16: Fix a bug with auto-reloading where it would never auto reload
+//              because a compare was wrong in checkForUpdates(). - dj@opennms.org
 // 2008 Feb 15: Add a reloadCheckInterval to control how often we check if the
 //              file has changed (or disable the check altogether) and a reload()
 //              method to force a reload. - dj@opennms.org
@@ -180,7 +182,7 @@ public class FileReloadContainer<T> {
     
     private synchronized void checkForUpdates() throws DataAccessResourceFailureException {
         if (m_file == null || m_reloadCheckInterval < 0
-                || (m_lastReloadCheck + m_reloadCheckInterval) < System.currentTimeMillis()) {
+                || System.currentTimeMillis() < (m_lastReloadCheck + m_reloadCheckInterval)) {
             return;
         }
         
