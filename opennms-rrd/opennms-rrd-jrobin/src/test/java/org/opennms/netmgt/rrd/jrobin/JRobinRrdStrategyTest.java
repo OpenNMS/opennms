@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Feb 15: Add tests for bug #2272. - dj@opennms.org
  * 2007 Mar 19: Adjust for changes with exceptions and add test
  *              for a graph with only PRINT commands through the
  *              RrdStrategy interface with createGraphReturnDetails. - dj@opennms.org
@@ -38,14 +39,22 @@
 package org.opennms.netmgt.rrd.jrobin;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.jrobin.core.RrdDb;
+import org.jrobin.core.Sample;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.jrobin.graph.RrdGraphInfo;
+import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
+import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.util.StringUtils;
@@ -58,7 +67,8 @@ import org.springframework.util.StringUtils;
 public class JRobinRrdStrategyTest extends TestCase {
     
     private JRobinRrdStrategy m_strategy;
-
+    private FileAnticipator m_fileAnticipator;
+    
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -67,8 +77,26 @@ public class JRobinRrdStrategyTest extends TestCase {
         
         m_strategy = new JRobinRrdStrategy();
         m_strategy.initialize();
+
+        // Don't initialize by default since not all tests need it.
+        m_fileAnticipator = new FileAnticipator(false);
     }
-    
+
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
+        if (m_fileAnticipator.isInitialized()) {
+            m_fileAnticipator.deleteExpected();
+        }
+    }
+     
+    @Override
+    protected void tearDown() throws Exception {
+        m_fileAnticipator.tearDown();
+        
+        super.tearDown();
+    }
+
     public void testInitilize() {
        // Don't do anything... just check that setUp works 
     }
@@ -91,6 +119,84 @@ public class JRobinRrdStrategyTest extends TestCase {
             
             String suggestionText = "Does the command have any drawing commands";
             assertTrue("cause message should contain '" + suggestionText + "'", t.getMessage().contains(suggestionText));
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public void testCreate() throws Exception {
+        File rrdFile = createRrdFile();
+        
+        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        //m_strategy.updateFile(openedFile, "huh?", "N:1,234234");
+        
+        Sample sample = ((RrdDb) openedFile).createSample();
+        sample.set("N:1.234 eat my mom's ass");
+        System.err.println(sample.dump());
+
+        m_strategy.closeFile(openedFile);
+    }
+
+    public void testUpdate() throws Exception {
+        File rrdFile = createRrdFile();
+        
+        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        m_strategy.updateFile(openedFile, "huh?", "N:1.234234");
+        m_strategy.closeFile(openedFile);
+    }
+
+    public void testSampleSetFloatingPointValueGood() throws Exception {
+        File rrdFile = createRrdFile();
+        
+        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        
+        Sample sample = ((RrdDb) openedFile).createSample();
+        sample.set("N:1.234");
+        m_strategy.closeFile(openedFile);
+        
+        double[] values = sample.getValues();
+        assertEquals("values list size", 1, values.length);
+        assertEquals("values item 0", 1.234, values[0]);
+    }
+
+    /**
+     * This test fails because of
+     * <a href="http://bugzilla.opennms.org/show_bug.cgi?id=2272">bug #2272</a>
+     * in org.jrobin.core.Sample.
+     */
+    public void DISABLEDtestSampleSetFloatingPointValueWithComma() throws Exception {
+        File rrdFile = createRrdFile();
+        
+        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        
+        Sample sample = ((RrdDb) openedFile).createSample();
+        sample.set("N:1,234");
+        m_strategy.closeFile(openedFile);
+        
+        double[] values = sample.getValues();
+        assertEquals("values list size", 1, values.length);
+        assertEquals("values item 0", 1.234, values[0]);
+    }
+
+    /**
+     * This test fails because of
+     * <a href="http://bugzilla.opennms.org/show_bug.cgi?id=2272">bug #2272</a>
+     * in org.jrobin.core.Sample.
+     */
+    public void DISABLEDtestSampleSetFloatingPointValueWithExtraJunk() throws Exception {
+        File rrdFile = createRrdFile();
+        
+        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        
+        Sample sample = ((RrdDb) openedFile).createSample();
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Some exception that complains about bogus data"));
+        try {
+            sample.set("N:1.234 extra junk");
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        } finally {
+            m_strategy.closeFile(openedFile);
         }
         ta.verifyAnticipated();
     }
@@ -203,5 +309,26 @@ public class JRobinRrdStrategyTest extends TestCase {
         assertEquals("graph printLines item 0", "1.000000e+00", printLines[0]);
         double d = Double.parseDouble(printLines[0]);
         assertEquals("graph printLines item 0 as a double", 1.0, d);
+    }
+
+    public File createRrdFile() throws Exception {
+        String rrdFileBase = "foo";
+        String rrdExtension = ".jrb";
+
+        m_fileAnticipator.initialize();
+        
+        // This is so the RrdUtils.getExtension() call in the strategy works
+        Properties properties = new Properties();
+        properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
+        RrdConfig.setProperties(properties);
+        
+        List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
+        dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
+        List<String> rraList = new ArrayList<String>();
+        rraList.add("RRA:AVERAGE:0.5:1:2016");
+        Object def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
+        m_strategy.createFile(def);
+        
+        return m_fileAnticipator.expecting(rrdFileBase + rrdExtension);
     }
 }
