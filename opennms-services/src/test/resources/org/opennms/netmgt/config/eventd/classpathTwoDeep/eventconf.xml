@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <global>
+    <security>
+      <doNotOverride>logmsg</doNotOverride>
+      <doNotOverride>operaction</doNotOverride>
+      <doNotOverride>autoaction</doNotOverride>
+      <doNotOverride>tticket</doNotOverride>
+      <doNotOverride>script</doNotOverride>
+    </security>
+  </global>
+  
+  <event>
+    <uei>uei.opennms.org/troubleTicket/cancel</uei>
+    <event-label>A request has been made to cancel a trouble ticket</event-label>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for canceling an existing trouble ticket.
+    </descr>
+    <logmsg dest='logndisplay'>
+      A request has been generated to cancel a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  
+  <event-file>classpath:/org/opennms/netmgt/config/eventd/classpathTwoDeep/BGP4.events.xml</event-file>
+ </events>

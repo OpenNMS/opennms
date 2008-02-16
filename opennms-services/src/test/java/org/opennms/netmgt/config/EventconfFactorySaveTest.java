@@ -1,15 +1,15 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
 
+import junit.framework.TestCase;
+
+import org.apache.commons.io.FileUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.test.FileAnticipator;
-
-import junit.framework.TestCase;
+import org.springframework.core.io.FileSystemResource;
 
 public class EventconfFactorySaveTest extends TestCase {
     private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
@@ -23,26 +23,30 @@ public class EventconfFactorySaveTest extends TestCase {
     private static final String newSeverity="Warning";
     
     private FileAnticipator m_fa;
+    private DefaultEventConfDao m_eventConfDao;
     
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        
         m_fa = new FileAnticipator();
-
         
         //Create a temporary directory
-        String tempHome=m_fa.getTempDir().getAbsolutePath();
-        String origHome="src/test/resources";
-        m_fa.expecting(new File(tempHome), "etc");
-        m_fa.expecting(new File(tempHome), "etc/events");
-        createTempCopy(m_fa, origHome, tempHome, "etc/eventconf.xml");
-        createTempCopy(m_fa, origHome, tempHome, "etc/events/Standard.events.xml");
-        createTempCopy(m_fa, origHome, tempHome, "etc/events/Syslog.test.events.xml");
-
-        //Change the opennms.home and load the EventconfFactory from the new temporary copy
-        System.setProperty("opennms.home", tempHome);
-        EventconfFactory.reinit();
-
+        File origHome = new File("src/test/resources");
+        File origEtc = new File(origHome, "etc");
+        File origEvents = new File(origEtc, "events");
+        
+        File tempHome = m_fa.getTempDir();
+        File tempEtc = m_fa.expecting(tempHome, "etc");
+        File tempEvents = m_fa.expecting(tempEtc, "events");
+        
+        File eventConf = createTempCopy(m_fa, origEtc, tempEtc, "eventconf.xml");
+        createTempCopy(m_fa, origEvents, tempEvents, "Standard.events.xml");
+        createTempCopy(m_fa, origEvents, tempEvents, "Syslog.test.events.xml");
+        
+        m_eventConfDao = new DefaultEventConfDao();
+        m_eventConfDao.setConfigResource(new FileSystemResource(eventConf));
+        m_eventConfDao.afterPropertiesSet();
     }
 
     @Override
@@ -52,26 +56,6 @@ public class EventconfFactorySaveTest extends TestCase {
         super.tearDown();
     }
     
-    private void copyFile(File source, File dest) throws Exception {
-        File destDir=dest.getParentFile();
-        if(!destDir.exists()) {
-            destDir.mkdirs();
-        }
-        
-        FileInputStream input=new FileInputStream(source);
-        FileOutputStream output= new FileOutputStream(dest);
-        byte[] iobuff = new byte[1024];
-        int bytes;
-        while ( (bytes = input.read( iobuff )) != -1 ) {
-            output.write( iobuff, 0, bytes );
-        }
-        input.close();
-        output.close();
-    }
-    private void copyFile(String source, String dest) throws Exception {
-        copyFile(new File(source), new File(dest));
-    }
-   
     /**
      * Copys sourceDir/relativeFilePath to destDir/relativeFilePath
      * 
@@ -79,10 +63,9 @@ public class EventconfFactorySaveTest extends TestCase {
      * @param destDir
      * @param relativeFilePath
      */
-    private void createTempCopy(FileAnticipator fa, String sourceDir, String destDir, String relativeFilePath) throws Exception {
-        copyFile(sourceDir+File.separator+relativeFilePath, destDir+File.separator+relativeFilePath);
-        fa.expecting(new File(destDir), relativeFilePath);
-               
+    private File createTempCopy(FileAnticipator fa, File sourceDir, File destDir, String file) throws Exception {
+        FileUtils.copyFile(new File(sourceDir, file), new File(destDir, file));
+        return fa.expecting(destDir, file);
     }
     
     public void testSave() throws Exception {
@@ -91,20 +74,20 @@ public class EventconfFactorySaveTest extends TestCase {
         
         //Now do the test
         { 
-            EventconfFactory.getInstance().reload();
-            List<Event> events=EventconfFactory.getInstance().getEvents(knownUEI1);
+            m_eventConfDao.reload();
+            List<Event> events=m_eventConfDao.getEvents(knownUEI1);
             Event event=events.get(0);
             event.setUei(newUEI1);
         }
         
-        EventconfFactory.getInstance().saveCurrent();
+        m_eventConfDao.saveCurrent();
         
-        EventconfFactory.getInstance().reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
+        m_eventConfDao.reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
         { 
-            List<Event> events=EventconfFactory.getInstance().getEvents(knownUEI1);
+            List<Event> events=m_eventConfDao.getEvents(knownUEI1);
             assertNull("Shouldn't be any events by that uei", events);
             
-            events=EventconfFactory.getInstance().getEvents(newUEI1);
+            events=m_eventConfDao.getEvents(newUEI1);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event event=events.get(0);
@@ -113,19 +96,19 @@ public class EventconfFactorySaveTest extends TestCase {
        
         //Check that we can change and save a UEI in a sub file
         { 
-            List<Event> events=EventconfFactory.getInstance().getEvents(knownSubfileUEI1);
+            List<Event> events=m_eventConfDao.getEvents(knownSubfileUEI1);
             Event event=events.get(0);
             event.setUei(newUEI2);
         }
         
-        EventconfFactory.getInstance().saveCurrent();
+        m_eventConfDao.saveCurrent();
         
-        EventconfFactory.getInstance().reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
+        m_eventConfDao.reload(); //The reload might happen as part of the saveCurrent, but is not assured.  We do so here to be certain 
         { 
-            List<Event> events=EventconfFactory.getInstance().getEvents(knownSubfileUEI1);
+            List<Event> events=m_eventConfDao.getEvents(knownSubfileUEI1);
             assertNull("Shouldn't be any events by that uei", events);
             
-            events=EventconfFactory.getInstance().getEvents(newUEI2);
+            events=m_eventConfDao.getEvents(newUEI2);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event event=events.get(0);
@@ -160,27 +143,22 @@ public class EventconfFactorySaveTest extends TestCase {
         Event event=getAddableEvent();
         
         //The tested event
-        EventconfFactory.getInstance().addEvent(event);
+        m_eventConfDao.addEvent(event);
         
         {
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
             checkAddableEvent(fetchedEvent);
         }
         
-        try {
-            EventconfFactory.getInstance().saveCurrent();
-            EventconfFactory.getInstance().reload();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Shouldn't throw exception while saving  and reloading factory: "+e.getMessage());
-        }
+        m_eventConfDao.saveCurrent();
+        m_eventConfDao.reload();
         
         {
             //Check that the new Event is still there
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
@@ -195,11 +173,11 @@ public class EventconfFactorySaveTest extends TestCase {
     public void testAddEventToProgrammaticStore() {
         Event event=getAddableEvent();
         
-        EventconfFactory.getInstance().addEventToProgrammaticStore(event);
+        m_eventConfDao.addEventToProgrammaticStore(event);
         
         //Check that the new Event is still there
         {
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
   
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
@@ -207,35 +185,29 @@ public class EventconfFactorySaveTest extends TestCase {
             checkAddableEvent(fetchedEvent);
         }
         
-        try {
-            EventconfFactory.getInstance().saveCurrent();
-            EventconfFactory.getInstance().reload();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Saving/reloading should not have caused an execption ");
-        }
+        m_eventConfDao.saveCurrent();
+        m_eventConfDao.reload();
         
         //We are expecting this new file to be there - if it's not, that's an issue
         m_fa.expecting(new File(m_fa.getTempDir().getAbsolutePath()+File.separator+"etc"+File.separator+"events"),"programmatic.events.xml");
         //Check again after the reload
         {
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
   
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
             checkAddableEvent(fetchedEvent);
         }
-       
     }
     
     public void testRemoveEventToProgrammaticStore() {
         Event event=getAddableEvent();
         
-        EventconfFactory.getInstance().addEventToProgrammaticStore(event);
+        m_eventConfDao.addEventToProgrammaticStore(event);
         {
             //Check that the new Event is still there
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
             assertNotNull("Should be at least one event", events);
             assertEquals("Should be only one event", 1, events.size());
             Event fetchedEvent=events.get(0);
@@ -243,26 +215,21 @@ public class EventconfFactorySaveTest extends TestCase {
         }
         
         //Check before the save/reload
-        assertTrue("remove should have returned true", EventconfFactory.getInstance().removeEventFromProgrammaticStore(event));
+        assertTrue("remove should have returned true", m_eventConfDao.removeEventFromProgrammaticStore(event));
         {
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
             assertNull(events);
         }
 
-        try {
-            EventconfFactory.getInstance().saveCurrent();
-            EventconfFactory.getInstance().reload();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Saving/reloading should not have caused an execption ");
-        }
+        m_eventConfDao.saveCurrent();
+        m_eventConfDao.reload();
 
         //Should get a "false" when the event is already missing
-        assertFalse("remove should have returned false",EventconfFactory.getInstance().removeEventFromProgrammaticStore(event));
+        assertFalse("remove should have returned false",m_eventConfDao.removeEventFromProgrammaticStore(event));
         //Check again after save/reload
 
         {
-            List<Event> events=EventconfFactory.getInstance().getEvents(newUEI);
+            List<Event> events=m_eventConfDao.getEvents(newUEI);
             assertNull(events);
         }
 
