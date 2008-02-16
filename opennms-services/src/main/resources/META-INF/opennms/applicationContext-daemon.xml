@@ -18,7 +18,7 @@
   </bean>
   
   <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
-    <property name="configResource"><value>${opennms.home}/etc/eventconf.xml</value></property>
+    <property name="configResource"><value>file:${opennms.home}/etc/eventconf.xml</value></property>
     <property name="reloadCheckInterval" value="-1" />
   </bean>
 
