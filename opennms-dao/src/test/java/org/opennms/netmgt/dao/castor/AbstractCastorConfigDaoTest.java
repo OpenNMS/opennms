@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Feb 15: Pass the newly required description argument to AbstractCastorConfigDao's constructor. - dj@opennsm.org
  * 2007 Apr 10: Created this file based upon some of the tests in
  *              DefaultSurveillanceViewConfigDao that are common to
  *              AbstractCastorConfigDao. - dj@opennms.org
@@ -99,7 +100,7 @@ public class AbstractCastorConfigDaoTest extends TestCase {
 
     public static class TestCastorConfigDao extends AbstractCastorConfigDao<Userinfo, Userinfo> {
         public TestCastorConfigDao() {
-            super(Userinfo.class);
+            super(Userinfo.class, "user information configuration");
         }
 
         @Override
