@@ -337,6 +337,10 @@ public class PropertiesGraphDaoTest extends TestCase {
              *  so we need to wait at least that long before rewriting the
              *  file to ensure that we have crossed over into the next second.
              *  At least we're not crossing over with John Edward.
+             *  
+             *  This also happens to be long enough for 
+             *  FileReloadContainer.DEFAULT_RELOAD_CHECK_INTERVAL
+             *  to pass by.
              */
             Thread.sleep(1100);
 
@@ -384,6 +388,10 @@ public class PropertiesGraphDaoTest extends TestCase {
              *  so we need to wait at least that long before rewriting the
              *  file to ensure that we have crossed over into the next second.
              *  At least we're not crossing over with John Edward.
+             *  
+             *  This also happens to be long enough for 
+             *  FileReloadContainer.DEFAULT_RELOAD_CHECK_INTERVAL
+             *  to pass by.
              */
             Thread.sleep(1100);
 
@@ -440,6 +448,10 @@ public class PropertiesGraphDaoTest extends TestCase {
              *  so we need to wait at least that long before rewriting the
              *  file to ensure that we have crossed over into the next second.
              *  At least we're not crossing over with John Edward.
+             *  
+             *  This also happens to be long enough for 
+             *  FileReloadContainer.DEFAULT_RELOAD_CHECK_INTERVAL
+             *  to pass by.
              */
             Thread.sleep(1100);
 
