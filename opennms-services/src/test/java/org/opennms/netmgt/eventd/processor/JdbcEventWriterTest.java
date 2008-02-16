@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 16: Move testSendEventWithService here from EventdSpringTest. - dj@opennms.org
 // 2008 Feb 06: Add tests for bugs from bug #2247. - dj@opennms.org
 // 2008 Jan 28: Add a test for getHostName when there is no match in the DB. - dj@opennms.org
 // 2008 Jan 26: Change to use dependency injection for EventWriter and refactor
@@ -218,5 +219,22 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         } finally {
             connection.close();
         }
+    }
+
+    public void testSendEventWithService() throws Exception {
+        int serviceId = 1;
+        String serviceName = "some bogus service";
+
+        jdbcTemplate.update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
+        
+        EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
+        builder.setLogMessage("logndisplay");
+        builder.setService(serviceName);
+        
+
+        m_jdbcEventWriter.process(null, builder.getEvent());
+        
+        assertEquals("event count", 1, getJdbcTemplate().queryForInt("select count(*) from events"));
+        assertEquals("event service ID", serviceId, getJdbcTemplate().queryForInt("select serviceID from events"));
     }
 }
