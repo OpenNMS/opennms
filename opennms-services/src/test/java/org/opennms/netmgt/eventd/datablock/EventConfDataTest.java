@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 15: Work with updated dependency injected and Resource-based DAO. - dj@opennms.org
 // 2008 Jan 08: Use EventConfDao/EventconfFactory instead of EventConfigurationManager. - dj@opennms.org
 // 2007 Dec 25: Use the new EventConfigurationManager.loadConfiguration(File). - dj@opennms.org
 // 2007 Dec 24: Pull config file into an external file. - dj@opennms.org
@@ -58,14 +59,16 @@ import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.FileSystemResource;
 
 public class EventConfDataTest extends TestCase {
 
     protected void setUp() throws Exception {
         MockLogAppender.setupLogging(false);
 
-        DefaultEventConfDao eventConfDao = new DefaultEventConfDao(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml"));
-        eventConfDao.reload();
+        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+        eventConfDao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
+        eventConfDao.afterPropertiesSet();
         
         EventconfFactory.setInstance(eventConfDao);
     }

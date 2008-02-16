@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 15: Work with updated dependency injected and Resource-based DAO. - dj@opennms.org
 // 2008 Jan 08: Don't keep references to EventconfFactory around (since it
 //              returns EventConfDao, now)--use call EventconfFactory.getInstance()
 //              every time we need it. - dj@opennms.org
@@ -50,7 +51,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +69,9 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.StringUtils;
 
@@ -351,6 +355,17 @@ public class EventconfFactoryTest extends TestCase {
     }
 
     /**
+     * Test loading a configuration with relative included &lt;event-file&gt;
+     * entries but without passing a File object to loadConfiguration, which
+     * should fail because the relative path cannot be resolved.
+     * 
+     * @throws Exception
+     */
+    public void testLoadConfigurationWithClassPathInclude() throws Exception {
+        loadConfiguration("classpathTwoDeep/eventconf.xml", false);
+    }
+
+    /**
      * Test that every file included in eventconf.xml actually exists on disk
      * and that there are no files on disk that aren't included. 
      */
@@ -392,7 +407,8 @@ public class EventconfFactoryTest extends TestCase {
      */
     public void testLoadStandardConfiguration() throws Exception {
         DefaultEventConfDao dao = new DefaultEventConfDao();
-        dao.loadConfiguration(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml"));
+        dao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        dao.afterPropertiesSet();
     }
 
     private void loadConfiguration(String relativeResourcePath) throws DataAccessException, IOException {
@@ -400,22 +416,23 @@ public class EventconfFactoryTest extends TestCase {
     }
     
     private void loadConfiguration(String relativeResourcePath, boolean passFile) throws DataAccessException, IOException {
-        URL url = getUrlForRelativeResourcePath(relativeResourcePath);
         DefaultEventConfDao dao = new DefaultEventConfDao();
+        
         if (passFile) {
-            dao.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), new File(url.getFile()));
+            URL url = getUrlForRelativeResourcePath(relativeResourcePath);
+            dao.setConfigResource(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
         } else {
-            dao.loadConfiguration(getFilteredReaderForConfig(relativeResourcePath), null);
+            dao.setConfigResource(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
         }
-        EventconfFactory.setInstance(dao);
+        
+        dao.afterPropertiesSet();
     }
 
-    private Reader getFilteredReaderForConfig(String resourceSuffix) throws IOException {
+    private InputStream getFilteredInputStreamForConfig(String resourceSuffix) throws IOException {
         URL url = getUrlForRelativeResourcePath(resourceSuffix);
         
-        Reader reader = ConfigurationTestUtils.getReaderForResourceWithReplacements(this, getResourceForRelativePath(resourceSuffix),
+        return ConfigurationTestUtils.getInputStreamForResourceWithReplacements(this, getResourceForRelativePath(resourceSuffix),
                 new String[] { "@install.etc.dir@", new File(url.getFile()).getParent() });
-        return reader;
     }
 
     private URL getUrlForRelativeResourcePath(String resourceSuffix) {
@@ -426,5 +443,48 @@ public class EventconfFactoryTest extends TestCase {
 
     private String getResourceForRelativePath(String resourceSuffix) {
         return "/org/opennms/netmgt/config/eventd/" + resourceSuffix;
+    }
+    
+    private class MockFileSystemResourceWithInputStream implements Resource {
+        private Resource m_delegate;
+        private InputStream m_inputStream;
+
+        public MockFileSystemResourceWithInputStream(File file, InputStream inputStream) {
+            m_delegate = new FileSystemResource(file);
+            
+            m_inputStream = inputStream;
+        }
+        
+        public InputStream getInputStream() {
+            return m_inputStream;
+        }
+
+        public Resource createRelative(String relative) throws IOException {
+            return m_delegate.createRelative(relative);
+        }
+
+        public boolean exists() {
+            return m_delegate.exists();
+        }
+
+        public String getDescription() {
+            return m_delegate.getDescription();
+        }
+
+        public File getFile() throws IOException {
+            return m_delegate.getFile();
+        }
+
+        public String getFilename() {
+            return m_delegate.getFilename();
+        }
+
+        public URL getURL() throws IOException {
+            return m_delegate.getURL();
+        }
+
+        public boolean isOpen() {
+            return m_delegate.isOpen();
+        }
     }
 }

@@ -15,18 +15,8 @@
     <constructor-arg><value>10000</value></constructor-arg>
   </bean>
   
-  <bean id="eventConfDaoFile" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.test.ConfigurationTestUtils.getFileForResource</value></property>
-    <property name="arguments">
-      <list>
-        <bean class="org.opennms.netmgt.xml.event.Event"/>
-        <value>/org/opennms/netmgt/trapd/eventconf.xml</value>
-      </list>
-    </property>
-  </bean>
-  
   <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload">
-    <constructor-arg><ref local="eventConfDaoFile"/></constructor-arg>
+    <property name="configResource"><value>classpath:/org/opennms/netmgt/trapd/eventconf.xml</value></property>
   </bean>
 
   <!--  Make the tx:annotation-driven element in applicationContext-trapDaemon happy -->
