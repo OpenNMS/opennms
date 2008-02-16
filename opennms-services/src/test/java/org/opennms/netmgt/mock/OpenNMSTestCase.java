@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 15: Work with updated dependency injected and Resource-based DAO. - dj@opennms.org
 // 2008 Feb 02: Remove EventdConfigManager--we can directly inject the values we want. - dj@opennms.org
 // 2008 Jan 27: Move createStandardNetwork to MockNetwork.  Follow
 //              eventd changes. - dj@opennms.org
@@ -84,6 +85,7 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -178,8 +180,9 @@ public class OpenNMSTestCase extends TestCase {
                  * the unit test class, which is most likely in another package. 
                  */
                 File configFile = ConfigurationTestUtils.getFileForResource(this, "/org/opennms/netmgt/mock/eventconf.xml");
-                DefaultEventConfDao eventConfDao = new DefaultEventConfDao(configFile);
-                eventConfDao.reload();
+                DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
+                eventConfDao.setConfigResource(new FileSystemResource(configFile));
+                eventConfDao.afterPropertiesSet();
                 EventconfFactory.setInstance(eventConfDao);
                 
                 EventExpander eventExpander = new EventExpander();

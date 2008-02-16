@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Feb 15: Work with updated dependency injected and Resource-based DAO. - dj@opennms.org
 // 2008 Jan 06: Pull non-static code into DefaultEventConfDao. - dj@opennms.org
 // 2008 Jan 06: Duplicate all EventConfigurationManager functionality in
 //              EventconfFactory. - dj@opennms.org
@@ -44,7 +45,13 @@
 //
 package org.opennms.netmgt.config;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.opennms.netmgt.ConfigFileConstants;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  */
@@ -70,8 +77,11 @@ public class EventconfFactory {
             return;
         }
 
-        EventConfDao newInstance = new DefaultEventConfDao();
-        newInstance.reload();
+        File rootConfigFile = getDefaultRootConfigFile();
+
+        DefaultEventConfDao newInstance = new DefaultEventConfDao();
+        newInstance.setConfigResource(new FileSystemResource(rootConfigFile));
+        newInstance.afterPropertiesSet();
 
         setInstance(newInstance);
     }
@@ -105,6 +115,14 @@ public class EventconfFactory {
 
     private static boolean isInitialized() {
         return s_instance != null;
+    }
+    
+    private static File getDefaultRootConfigFile() throws DataAccessException {
+        try {
+            return ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+        } catch (IOException e) {
+            throw new ObjectRetrievalFailureException(String.class, ConfigFileConstants.getFileName(ConfigFileConstants.EVENT_CONF_FILE_NAME), "Could not get configuration file for " + ConfigFileConstants.getFileName(ConfigFileConstants.EVENT_CONF_FILE_NAME), e);
+        }
     }
 }
 

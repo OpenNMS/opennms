@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Feb 15: Convert to use dependency injection, Resources and use
+//              AbstractCastorConfigDao. - dj@opennms.org
 // 2008 Jan 06: Pull non-static code into DefaultEventConfDao. - dj@opennms.org
 // 2008 Jan 06: Duplicate all EventConfigurationManager functionality in
 //              EventconfFactory. - dj@opennms.org
@@ -45,65 +47,51 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
 import org.opennms.netmgt.dao.castor.CastorUtils;
-import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  */
-public class DefaultEventConfDao implements EventConfDao {
-    private static final String PROGRAMMATIC_STORE_RELATIVE_PATH = "events" + File.separator + "programmatic.events.xml";
+public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventConfiguration> implements EventConfDao, InitializingBean {
+    private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL = "events/programmatic.events.xml";
+
+    private final EventResourceLoader m_resourceLoader = new EventResourceLoader();
+    
+    /**
+     * Relative URL for the programatic store configuration, relative to the
+     * root configuration resource (which must be resolvable to a URL).
+     */
+    private String m_programmaticStoreRelativeUrl = DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL;
 
     /**
-     * The root configuration file 
+     * The programmatic store configuration resource.
      */
-    private File m_rootConfigFile;
-    
-    /**
-     * The programmatic store configuration file 
-     */
-    private File m_programmaticStoreFile;
-    
-    /**
-     * Map of configured event files and their events
-     */
-    private Map<File, Events> m_eventFiles;
-    
-    /**
-     * The mapping of all the event configuration objects for searching
-     */
-    private EventConfData m_eventConfData;
-    
-    /**
-     * The list of secure tags.
-     */
-    private Set<String> m_secureTags;
+    private Resource m_programmaticStoreConfigResource;
 
     private static class EventLabelComparator implements Comparator<Event> {
         public int compare(Event e1, Event e2) {
@@ -111,151 +99,93 @@ public class DefaultEventConfDao implements EventConfDao {
         }
     }
 
-    /**
-     * 
-     */
     public DefaultEventConfDao() {
-        this(getDefaultRootConfigFile());
-    }
-    
-    /**
-     * 
-     */
-    public DefaultEventConfDao(File rootConfigFile) {
-        this(rootConfigFile, getDefaultProgrammaticStoreConfigFile(rootConfigFile));
-    }
-    
-    /**
-     * 
-     */
-    public DefaultEventConfDao(File rootConfigFile, File programmaticStoreFile) {
-        m_rootConfigFile = rootConfigFile;
-        m_programmaticStoreFile = programmaticStoreFile;
+        super(Events.class, "event configuration");
     }
 
-    private static File getDefaultRootConfigFile() throws DataAccessException {
-        try {
-            return ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-        } catch (IOException e) {
-            throw new ObjectRetrievalFailureException(String.class, ConfigFileConstants.getFileName(ConfigFileConstants.EVENT_CONF_FILE_NAME), "Could not get configuration file for " + ConfigFileConstants.getFileName(ConfigFileConstants.EVENT_CONF_FILE_NAME), e);
-        }
-    }
-
-    private static File getDefaultProgrammaticStoreConfigFile(File rootConfigFile) {
-        return new File(rootConfigFile.getParent() + File.separator + PROGRAMMATIC_STORE_RELATIVE_PATH);
+    @Override
+    protected String createLoadedLogMessage(EventConfiguration translatedConfig, long diffTime) {
+        return "Loaded " + getDescription() + " with " + translatedConfig.getEventCount() + " events from " + translatedConfig.getEventFiles().size() + " files in " + diffTime + "ms";
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#reload()
      */
-    public synchronized void reload() throws DataAccessException {
-        loadConfiguration(m_rootConfigFile);
+    public void reload() throws DataAccessException {
+        getContainer().reload();
     }
     
-    /**
-     * This method is used to load the passed configuration into the currently
-     * managed configuration instance. Any events that previously existed are
-     * cleared.
-     * 
-     * @param file
-     *            The file to load.
-     * 
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @exception java.lang.IOException
-     *                Thrown if the file cannot be opened for reading.
-     */
-    public void loadConfiguration(File file) throws DataAccessException {
-        Reader rdr;
-        try {
-            rdr = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            throw new DataAccessResourceFailureException("Event file '" + file + "' does not exist.  Nested exception: " + e, e);
-        }
-
-        try {
-            loadConfiguration(rdr, file);
-        } finally {
-            IOUtils.closeQuietly(rdr);
-        }
+    public void afterPropertiesSet() throws DataAccessException {
+        /**
+         * It sucks to duplicate this first test from AbstractCastorConfigDao,
+         * but we need to do so to ensure we don't get an NPE while initializing
+         * programmaticStoreConfigResource (if needed).
+         */
+        Assert.state(getConfigResource() != null, "property configResource must be set and be non-null");
+        
+        super.afterPropertiesSet();
     }
+    
+    public EventConfiguration translateConfig(Events events) throws DataAccessException {
+        EventConfiguration eventConfiguration = new EventConfiguration();
 
-    protected void loadConfiguration(Reader rdr, File rootConfigFile) throws DataAccessException {
-        Map<File, Events> eventFiles = new HashMap<File, Events>();
-        EventConfData eventConfData = new EventConfData();
-        Set<String> secureTags = new HashSet<String>();
-        
-        long startTime = System.currentTimeMillis();
+        processEvents(events, getConfigResource(), eventConfiguration, "root", false);
 
-        if (log().isDebugEnabled()) {
-            log().debug("DefaultEventConfDao: Loading root event configuration file: " + rootConfigFile);
+        if (events.getGlobal() != null && events.getGlobal().getSecurity() != null) {
+            eventConfiguration.getSecureTags().addAll(events.getGlobal().getSecurity().getDoNotOverrideCollection());
         }
-        Events events = CastorUtils.unmarshalWithTranslatedExceptions(Events.class, rdr);
-        IOUtils.closeQuietly(rdr);
-        
-        int count = 0;
-        
-        count += processEvents(eventFiles, eventConfData, rootConfigFile, events);
-        log().info("DefaultEventConfDao: Loaded " + events.getEventCollection().size() + " events from root event configuration file: " + rootConfigFile);
-
-        secureTags.addAll(events.getGlobal().getSecurity().getDoNotOverrideCollection());
 
         for (String eventFilePath : events.getEventFileCollection()) {
-            File eventFile = new File(eventFilePath);
+            Resource childResource = m_resourceLoader.getResource(eventFilePath);
             
-            if (!eventFile.isAbsolute()) {
-                if (rootConfigFile == null) {
-                    throw new ObjectRetrievalFailureException(File.class, eventFile, "Event configuration file contains an eventFile element with a relative path, however loadConfiguration was called without a rootConfigFile parameter, so the relative path cannot be resolved.  The event-file entry is: " + eventFilePath, null);
-                }
-                
-                eventFile = new File(rootConfigFile.getParentFile(), eventFilePath);
-                // XXX Should we do getCanonicalFile()???
-            }
-
-            FileReader fileIn;
-            
-            try {
-                fileIn = new FileReader(eventFile);
-            } catch (FileNotFoundException e) {
-                throw new DataAccessResourceFailureException("Event file '" + eventFile + "' does not exist.  Nested exception: " + e, e);
-            }
-
-            if (log().isDebugEnabled()) {
-                log().debug("DefaultEventConfDao: Loading included event configuration file: " + eventFile);
-            }
-            Events filelevel = CastorUtils.unmarshalWithTranslatedExceptions(Events.class, fileIn);
-            IOUtils.closeQuietly(fileIn);
-            
-            if (filelevel.getGlobal() != null) {
-                throw new ObjectRetrievalFailureException(File.class, eventFile, "The event file " + eventFile + " included from the top-level event configuration file cannot have a 'global' element", null);
-            }
-            if (filelevel.getEventFileCollection().size() > 0) {
-                throw new ObjectRetrievalFailureException(File.class, eventFile, "The event file " + eventFile + " included from the top-level event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(filelevel.getEventFileCollection()), null);
-            }
-            
-            count += processEvents(eventFiles, eventConfData, eventFile, filelevel);
-            
-            log().info("DefaultEventConfDao: Loaded " + filelevel.getEventCollection().size() + " events from included event configuration file: " + eventFile);
+            loadAndProcessEvents(childResource, eventConfiguration, "included", true);
         }
         
-        long endTime = System.currentTimeMillis();
-
-        log().info("DefaultEventConfDao: Loaded a total of " + count + " events in " + (endTime - startTime) + "ms");
-
-        m_eventFiles = eventFiles;
-        m_eventConfData = eventConfData;
-        m_secureTags = secureTags;
+        return eventConfiguration;
     }
 
-    private static int processEvents(Map<File, Events> eventFileMap, EventConfData eventConfData, File file, Events events) {
-        eventFileMap.put(file, events);
-        for (Event event : events.getEventCollection()) {
-            eventConfData.put(event);
+    private Events loadAndProcessEvents(Resource rootResource, EventConfiguration eventConfiguration, String resourceDescription, boolean denyIncludes) {
+        if (log().isDebugEnabled()) {
+            log().debug("DefaultEventConfDao: Loading " + resourceDescription + " event configuration from " + rootResource);
         }
         
-        return events.getEventCount();
+        InputStream in;
+        try {
+            in = rootResource.getInputStream();
+        } catch (IOException e) {
+            throw new DataAccessResourceFailureException("Could not get an input stream for resource '" + rootResource + "'; nested exception: " + e, e);
+        }
+        
+        Events events;
+        try {
+            events =  CastorUtils.unmarshalWithTranslatedExceptions(Events.class, new InputStreamReader(in));
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+
+        processEvents(events, rootResource, eventConfiguration, resourceDescription, denyIncludes);
+        
+        return events;
+    }
+
+    private void processEvents(Events events, Resource resource, EventConfiguration eventConfiguration, String resourceDescription, boolean denyIncludes) {
+        if (denyIncludes) {
+            if (events.getGlobal() != null) {
+                throw new ObjectRetrievalFailureException(Resource.class, resource, "The event resource " + resource + " included from the root event configuration file cannot have a 'global' element", null);
+            }
+            if (events.getEventFileCollection().size() > 0) {
+                throw new ObjectRetrievalFailureException(Resource.class, resource, "The event resource " + resource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFileCollection()), null);
+            }
+        }
+
+        eventConfiguration.getEventFiles().put(resource, events);
+        for (Event event : events.getEventCollection()) {
+            eventConfiguration.getEventConfData().put(event);
+        }
+        
+        log().info("DefaultEventConfDao: Loaded " + events.getEventCollection().size() + " events from " + resourceDescription + " event configuration resource: " + resource);
+        
+        eventConfiguration.incrementEventCount(events.getEventCount());
     }
 
     /* (non-Javadoc)
@@ -264,7 +194,7 @@ public class DefaultEventConfDao implements EventConfDao {
     public List<Event> getEvents(String uei) {
         List<Event> events = new ArrayList<Event>();
 
-        for (Events fileEvents : m_eventFiles.values()) {
+        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (Event event : fileEvents.getEventCollection()) {
                 if (event.getUei().equals(uei)) {
                     events.add(event);
@@ -284,7 +214,7 @@ public class DefaultEventConfDao implements EventConfDao {
      */
     public List<String> getEventUEIs() {
         List<String> eventUEIs = new ArrayList<String>();
-        for (Events fileEvents : m_eventFiles.values()) {
+        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (Event event : fileEvents.getEventCollection()) {
                 eventUEIs.add(event.getUei());
             }
@@ -297,7 +227,7 @@ public class DefaultEventConfDao implements EventConfDao {
      */
     public Map<String, String> getEventLabels() {
         Map<String, String> eventLabels = new TreeMap<String, String>();
-        for (Events fileEvents : m_eventFiles.values()) {
+        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (Event event : fileEvents.getEventCollection()) {
                 eventLabels.put(event.getUei(), event.getEventLabel());
             }
@@ -310,7 +240,7 @@ public class DefaultEventConfDao implements EventConfDao {
      * @see org.opennms.netmgt.config.EventConfDao#getEventLabel(java.lang.String)
      */
     public String getEventLabel(String uei) {
-        for (Events fileEvents : m_eventFiles.values()) {
+        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (Event event : fileEvents.getEventCollection()) {
                 if (event.getUei().equals(uei)) {
                     return event.getEventLabel();
@@ -324,14 +254,25 @@ public class DefaultEventConfDao implements EventConfDao {
      * @see org.opennms.netmgt.config.EventConfDao#saveCurrent()
      */
     public synchronized void saveCurrent() {
-        for (Entry<File, Events> entry : m_eventFiles.entrySet()) {
-            File file = entry.getKey();
+        for (Entry<Resource, Events> entry : getEventConfiguration().getEventFiles().entrySet()) {
+            Resource resource = entry.getKey();
             Events fileEvents = entry.getValue();
             
             StringWriter stringWriter = new StringWriter();
-            CastorUtils.marshalWithTranslatedExceptions(fileEvents, stringWriter);
+            try {
+                CastorUtils.marshalWithTranslatedExceptions(fileEvents, stringWriter);
+            } catch (DataAccessException e) {
+                throw new DataAccessResourceFailureException("Could not marshal configuration file for " + resource + ": " + e, e);
+            }
             
             if (stringWriter.toString() != null) {
+                File file;
+                try {
+                    file = resource.getFile();
+                } catch (IOException e) {
+                    throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
+                }
+                
                 FileWriter fileWriter;
                 try {
                     fileWriter = new FileWriter(file);
@@ -353,9 +294,20 @@ public class DefaultEventConfDao implements EventConfDao {
             }
         }
         
-        // Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
-        if (m_programmaticStoreFile.exists() && (!m_eventFiles.containsKey(m_programmaticStoreFile))) {
-            m_programmaticStoreFile.delete(); 
+        File programmaticStoreFile;
+        try {
+            programmaticStoreFile = getProgrammaticStoreConfigResource().getFile();
+        } catch (IOException e) {
+            log().info("Programmatic store resource '" + getProgrammaticStoreConfigResource() + "'; not attempting to delete an unused programmatic store file if it exists (since we can't test for it).");
+            programmaticStoreFile = null;
+        }
+        
+        if (programmaticStoreFile != null) {
+            // Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
+            if (programmaticStoreFile.exists() && (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource()))) {
+                log().info("Deleting programmatic store configuration file because it is no longer referenced in the root config file " + getConfigResource());
+                programmaticStoreFile.delete(); 
+            }
         }
         
         /*
@@ -370,7 +322,7 @@ public class DefaultEventConfDao implements EventConfDao {
      */
     public List<Event> getEventsByLabel() {
         List<Event> list = new ArrayList<Event>();
-        for (Events fileEvents : m_eventFiles.values()) {
+        for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             list.addAll(fileEvents.getEventCollection());
         }
         Collections.sort(list, new EventLabelComparator());
@@ -381,7 +333,7 @@ public class DefaultEventConfDao implements EventConfDao {
      * @see org.opennms.netmgt.config.EventConfDao#addEvent(org.opennms.netmgt.xml.eventconf.Event)
      */
     public void addEvent(Event event) {
-        Events events = m_eventFiles.get(m_rootConfigFile);
+        Events events = getRootEvents();
         events.addEvent(event);
     }
 
@@ -390,38 +342,42 @@ public class DefaultEventConfDao implements EventConfDao {
      */
     public void addEventToProgrammaticStore(Event event) {
         // Check for, and possibly add the programmatic store to the in-memory structure
-        if (!m_eventFiles.containsKey(m_programmaticStoreFile)) {
+        if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
             // Programmatic store did not already exist.  Add an empty Events object for that file
-            m_eventFiles.put(m_programmaticStoreFile, new Events());
+            getEventConfiguration().getEventFiles().put(getProgrammaticStoreConfigResource(), new Events());
         }
         
         // Check for, and possibly add, the programmatic store event-file entry to the in-memory structure of the root config file
-        Events root = m_eventFiles.get(m_rootConfigFile);
-        String programmaticStorePath = m_programmaticStoreFile.getAbsolutePath();
-        if (!root.getEventFileCollection().contains(programmaticStorePath)) {
-            root.addEventFile(programmaticStorePath);
+        Events root = getRootEvents();
+        if (!root.getEventFileCollection().contains(getProgrammaticStoreRelativeUrl())) {
+            root.addEventFile(getProgrammaticStoreRelativeUrl());
         }
         
-        Events events = m_eventFiles.get(m_programmaticStoreFile);
-        events.addEvent(event);
+        // Finally, do what we came here to do
+        getProgrammaticStoreEvents().addEvent(event);
     }
 
+    private Events getRootEvents() {
+        return getEventConfiguration().getEventFiles().get(getConfigResource());
+    }
+
+    private Events getProgrammaticStoreEvents() {
+        return getEventConfiguration().getEventFiles().get(getProgrammaticStoreConfigResource());
+    }
+    
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */   
     public boolean removeEventFromProgrammaticStore(Event event) {
-        if (!m_eventFiles.containsKey(m_programmaticStoreFile)) {
+        if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
             return false; // Oops, doesn't exist
         }
         
-        Events events = m_eventFiles.get(m_programmaticStoreFile);
+        Events events = getProgrammaticStoreEvents();
         boolean result = events.removeEvent(event);
         if (events.getEventCount() == 0) {
-            // No more events in the programmatic store.  We must remove that file entry.
-            m_eventFiles.remove(m_programmaticStoreFile);
-            Events root = m_eventFiles.get(m_rootConfigFile);
-            root.removeEventFile(m_programmaticStoreFile.getAbsolutePath());
-            // The file will be deleted by saveCurrent, not here
+            getEventConfiguration().getEventFiles().remove(getProgrammaticStoreConfigResource());
+            getRootEvents().removeEventFile(getProgrammaticStoreRelativeUrl());
         }
         return result;
     }
@@ -430,25 +386,66 @@ public class DefaultEventConfDao implements EventConfDao {
      * @see org.opennms.netmgt.config.EventConfDao#isSecureTag(java.lang.String)
      */
     public boolean isSecureTag(String tag) {
-        return m_secureTags.contains(tag);
+        return getEventConfiguration().getSecureTags().contains(tag);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#findByUei(java.lang.String)
      */
     public Event findByUei(String uei) {
-        return m_eventConfData.getEventByUEI(uei);
+        return getEventConfiguration().getEventConfData().getEventByUEI(uei);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#findByEvent(org.opennms.netmgt.xml.event.Event)
      */
     public Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
-        return m_eventConfData.getEvent(matchingEvent);
+        return getEventConfiguration().getEventConfData().getEvent(matchingEvent);
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    private Resource getProgrammaticStoreConfigResource() {
+        if (m_programmaticStoreConfigResource == null) {
+            try {
+                m_programmaticStoreConfigResource = getConfigResource().createRelative(getProgrammaticStoreRelativeUrl());
+            } catch (IOException e) {
+                log().warn("Could not get a relative resource for the programmatic store configuration file using relative URL '" + getProgrammaticStoreRelativeUrl() + "': " + e, e);
+                throw new DataAccessResourceFailureException("Could not get a relative resource for the programmatic store configuration file using relative URL '" + getProgrammaticStoreRelativeUrl() + "': " + e, e);
+            }
+        }
+        
+        return m_programmaticStoreConfigResource;
+    }
+
+    public String getProgrammaticStoreRelativeUrl() {
+        return m_programmaticStoreRelativeUrl;
+    }
+
+    public void setProgrammaticStoreRelativeUrl(String programmaticStoreRelativeUrl) {
+        m_programmaticStoreRelativeUrl = programmaticStoreRelativeUrl;
+    }
+
+    private EventConfiguration getEventConfiguration() {
+        return getContainer().getObject();
+    }
+
+    private class EventResourceLoader extends DefaultResourceLoader {
+        @Override
+        public Resource getResource(String location) {
+            if (location.contains(":")) {
+                return super.getResource(location);
+            } else {
+                File file = new File(location);
+                if (file.isAbsolute()) {
+                    return new FileSystemResource(file);
+                } else {
+                    try {
+                        return getConfigResource().createRelative(location);
+                    } catch (IOException e) {
+                        throw new ObjectRetrievalFailureException(Resource.class, location, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + location, null);
+                    }
+                }
+            }
+        }
     }
 }
 

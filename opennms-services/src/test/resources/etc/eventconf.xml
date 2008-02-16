@@ -24,7 +24,7 @@
 		<severity>Warning</severity>
 	</event>
 
-    <event-file>./events/Standard.events.xml</event-file>
-    <event-file>./events/Syslog.test.events.xml</event-file>
+    <event-file>events/Standard.events.xml</event-file>
+    <event-file>events/Syslog.test.events.xml</event-file>
  
 </events>
