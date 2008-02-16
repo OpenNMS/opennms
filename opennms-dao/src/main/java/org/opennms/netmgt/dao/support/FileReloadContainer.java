@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Feb 15: Add a reloadCheckInterval to control how often we check if the
+//              file has changed (or disable the check altogether) and a reload()
+//              method to force a reload. - dj@opennms.org
 // 2007 Apr 08: Use a Spring Resource instead of a File. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -101,16 +104,25 @@ import org.springframework.util.Assert;
  * @param <T> the class of the inner object that is stored in this container
  */
 public class FileReloadContainer<T> {
+    private static final long DEFAULT_RELOAD_CHECK_INTERVAL = 1000;
+    
     private T m_object;
     private Resource m_resource;
     private File m_file;
     private long m_lastModified;
     private FileReloadCallback<T> m_callback;
+    private long m_reloadCheckInterval = DEFAULT_RELOAD_CHECK_INTERVAL;
+    private long m_lastReloadCheck;
     
     /**
      * Creates a new container with an object and a file underlying that
-     * object.  The {@link FileReloadCallback#reload(Object, File) reload}
-     * on the callback will be called when the file is modified.
+     * object.  If reloadCheckInterval is set to a non-negative value
+     * (default is 1000 milliseconds), the last modified timestamp on
+     * the file will be checked and the
+     * {@link FileReloadCallback#reload(Object, File) reload}
+     * on the callback will be called when the file is modified.  The
+     * check will be performed when {@link #getObject()} is called and
+     * at least reloadCheckInterval milliseconds have passed. 
      *  
      * @param object object to be stored in this container
      * @param file file underlying the object
@@ -135,6 +147,8 @@ public class FileReloadContainer<T> {
             // Do nothing... we'll fall back to using the InputStream
             log().info("Resource '" + resource + "' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource");
         }
+        
+        m_lastReloadCheck = System.currentTimeMillis();
     }
     
     /**
@@ -165,23 +179,31 @@ public class FileReloadContainer<T> {
     }
     
     private synchronized void checkForUpdates() throws DataAccessResourceFailureException {
-        if (m_file == null) {
+        if (m_file == null || m_reloadCheckInterval < 0
+                || (m_lastReloadCheck + m_reloadCheckInterval) < System.currentTimeMillis()) {
             return;
         }
         
-        long lastModified = m_file.lastModified();
+        m_lastReloadCheck = System.currentTimeMillis();
         
-        if (lastModified <= m_lastModified) {
+        if (m_file.lastModified() <= m_lastModified) {
             return;
         }
         
+        reload();
+    }
+
+    /**
+     * Force a reload of the configuration.
+     */
+    public synchronized void reload() {
         /*
          * Always update the timestamp, even if we have an error. 
          * XXX What if someone is writing the file while we are reading it,
          * we get an error, and the (correct) file is written completely
          * within the same second, so lastModified doesn't get updated.
          */
-        m_lastModified = lastModified;
+        m_lastModified = m_file.lastModified();
             
         T object;
         try {
@@ -213,6 +235,28 @@ public class FileReloadContainer<T> {
      */
     public File getFile() {
         return m_file;
+    }
+
+    /**
+     * Get the reload check interval.
+     *
+     * @return reload check interval in milliseconds.  A negative value
+     * indicates that automatic reload checks are not performed and the
+     * file will only be reloaded if {@link #reload()} is explicitly called.
+     */
+    public long getReloadCheckInterval() {
+        return m_reloadCheckInterval;
+    }
+
+    /**
+     * Set the reload check interval.
+     *
+     * @param reloadCheckInterval reload check interval in milliseconds.  A negative value
+     * indicates that automatic reload checks are not performed and the
+     * file will only be reloaded if {@link #reload()} is explicitly called.
+     */
+    public void setReloadCheckInterval(long reloadCheckInterval) {
+        m_reloadCheckInterval = reloadCheckInterval;
     }
     
     private Category log() {

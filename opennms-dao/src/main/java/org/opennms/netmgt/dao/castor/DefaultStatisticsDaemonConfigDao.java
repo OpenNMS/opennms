@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Feb 15: Pass the newly required description argument to our super's constructor. - dj@opennms.org
  * 2007 Apr 10: Created this file.
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -54,7 +55,7 @@ import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
  */
 public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<StatisticsDaemonConfiguration, StatsdConfig> implements StatisticsDaemonConfigDao {
     public DefaultStatisticsDaemonConfigDao() {
-        super(StatisticsDaemonConfiguration.class);
+        super(StatisticsDaemonConfiguration.class, "statistics daemon configuration");
     }
     
     @Override

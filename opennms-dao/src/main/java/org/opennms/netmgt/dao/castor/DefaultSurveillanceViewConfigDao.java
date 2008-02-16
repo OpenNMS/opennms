@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Feb 15: Pass the newly required description argument to our super's constructor. - dj@opennms.org
  * 2007 Apr 08: Switch to use Spring Resources instead of File for the
  *              configuration files, since this is what FileReloadContainer
  *              now uses. - dj@opennms.org
@@ -48,7 +49,7 @@ import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 
 public class DefaultSurveillanceViewConfigDao extends AbstractCastorConfigDao<SurveillanceViewConfiguration, SurveillanceViewConfig> implements SurveillanceViewConfigDao {
     public DefaultSurveillanceViewConfigDao() {
-        super(SurveillanceViewConfiguration.class);
+        super(SurveillanceViewConfiguration.class, "surveillance view configuration");
     }
     
     @Override
