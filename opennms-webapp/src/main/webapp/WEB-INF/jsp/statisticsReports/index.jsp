@@ -117,13 +117,6 @@
         --%>
 
           <ec:column property="purgeDate" title="Keep Until At Least" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-
-          <ec:column property="id" title="ID">
-            <c:url var="reportUrl" value="statisticsReports/report.htm">
-              <c:param name="id" value="${row.id}"/>
-            </c:url>
-            <a href="${reportUrl}">${row.id}</a>
-          </ec:column>
         </ec:row>
       </ec:table>
     </form>
