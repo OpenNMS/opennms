@@ -62,7 +62,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.opennms.ovapi.OVsDaemon</mainClass>
+              <mainClass>org.opennms.opennmsd.Main</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -96,6 +96,11 @@ groovy.compiler.output.path=target/classes
   </build>
   <dependencies>
     <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.2</version>
@@ -127,11 +132,6 @@ groovy.compiler.output.path=target/classes
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>1.5.2</version>
-    </dependency>
-    <dependency>
-      <groupId>jna</groupId>
-      <artifactId>jna</artifactId>
-      <version>3.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <repositories>
