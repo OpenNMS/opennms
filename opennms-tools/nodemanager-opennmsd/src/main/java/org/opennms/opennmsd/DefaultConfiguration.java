@@ -52,7 +52,10 @@ public class DefaultConfiguration implements Configuration {
     }
 
     public FilterChain getFilterChain() {
-        throw new UnsupportedOperationException("DefaultConfiguration.getFilterChain is not yet implemented");
+        FilterChainBuilder bldr = new FilterChainBuilder();
+        bldr.newFilter();
+        bldr.setAction(Filter.ACCEPT);
+        return bldr.getChain();
     }
     
 	
