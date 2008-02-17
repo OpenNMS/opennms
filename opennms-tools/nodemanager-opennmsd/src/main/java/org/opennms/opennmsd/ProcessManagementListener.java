@@ -31,8 +31,8 @@ package org.opennms.opennmsd;
 
 public interface ProcessManagementListener {
 	
-	public void onInit();
+	public String onInit();
 	
-	public void onStop();
+	public String onStop();
 
 }
