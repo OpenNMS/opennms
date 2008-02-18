@@ -3,7 +3,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -12,6 +12,10 @@
  *
  * Modifications:
  *
+ * 2008 Feb 16: Remove CSV export since eXtremeTable does not handle embedded commas
+ 				at all gracefully. Remove custom column interceptor as it is unneeded
+ 				and causes the bottom cell to lack a bottom border. - jeffg@opennms.org
+ * 2008 Feb 15: Remove lots of nerd info from the report list, add CSV export. - jeffg@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -86,7 +90,6 @@
         <ec:exportPdf fileName="Statistics Report List.pdf" tooltip="Export PDF"
           headerColor="black" headerBackgroundColor="#b6c2da"
           headerTitle="Statistics Report List" />
-        <ec:exportCsv fileName="Statistics Report List.csv" tooltip="Export CSV" />
         <ec:exportXls fileName="Statistics Report List.xls" tooltip="Export Excel" />
       
         <ec:row highlightRow="false">
@@ -94,7 +97,7 @@
           <ec:column property="name" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
           --%>
 
-          <ec:column property="description" title="Report Description" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
+          <ec:column property="description" title="Report Description">
           	<c:url var="reportUrl" value="statisticsReports/report.htm">
           		<c:param name="id" value="${row.id}" />
           	</c:url>
