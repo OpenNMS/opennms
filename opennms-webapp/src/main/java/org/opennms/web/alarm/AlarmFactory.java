@@ -230,7 +230,7 @@ public class AlarmFactory extends Object {
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
-                select.append(" AND");
+                select.append(" AND ");
                 select.append(filters[i].getParamSql());
             }
 
@@ -278,7 +278,7 @@ public class AlarmFactory extends Object {
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
-                select.append(" AND");
+                select.append(" AND ");
                 select.append(filters[i].getParamSql());
             }
 
@@ -411,7 +411,7 @@ public class AlarmFactory extends Object {
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (int i = 0; i < filters.length; i++) {
-                select.append(" AND");
+                select.append(" AND ");
                 select.append(filters[i].getParamSql());
             }
 
@@ -830,7 +830,7 @@ public class AlarmFactory extends Object {
         update.append(getAcknowledgeTypeClause(AcknowledgeType.UNACKNOWLEDGED));
 
         for (int i = 0; i < filters.length; i++) {
-            update.append(" AND");
+            update.append(" AND ");
             update.append(filters[i].getParamSql());
         }
 
@@ -946,7 +946,7 @@ public class AlarmFactory extends Object {
         update.append(getAcknowledgeTypeClause(AcknowledgeType.ACKNOWLEDGED));
 
         for (int i = 0; i < filters.length; i++) {
-            update.append(" AND");
+            update.append(" AND ");
             update.append(filters[i].getParamSql());
         }
 
