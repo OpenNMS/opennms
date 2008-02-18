@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2007 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -10,6 +10,9 @@
  *
  * Modifications:
  *
+ * 2008 Feb 16: Make OnmsResource objects returned by Datum.getResource() and
+ *              Datum.getResourceParentsReversed() actually PrettyOnmsResource
+ *              objects (whose toString method output is human-readable)   
  * 2007 Sep 09: Add support to store a Throwable instead of an OnmsResource. - dj@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
@@ -43,6 +46,7 @@ import java.util.TreeSet;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
+import org.opennms.web.controller.statisticsReports.PrettyOnmsResource;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
@@ -63,7 +67,7 @@ public class StatisticsReportModel {
         }
     
         public OnmsResource getResource() {
-            return m_resource;
+            return new PrettyOnmsResource(m_resource);
         }
     
         public void setResource(OnmsResource resource) {
@@ -97,9 +101,9 @@ public class StatisticsReportModel {
             
             List<OnmsResource> resources = new ArrayList<OnmsResource>();
             
-            OnmsResource parent = m_resource.getParent();
+            OnmsResource parent = new PrettyOnmsResource(m_resource.getParent());
             while (parent != null) {
-                resources.add(0, parent);
+                resources.add(0, new PrettyOnmsResource(parent));
                 parent = parent.getParent();
             }
             

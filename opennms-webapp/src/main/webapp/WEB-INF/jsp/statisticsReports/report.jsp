@@ -3,7 +3,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -12,6 +12,11 @@
  *
  * Modifications:
  *
+ * 2008 Feb 16: Remove CSV export since eXtremeTable does not handle embedded commas
+ 				at all gracefully.  Exclude "Resource Graphs" column in exported views.
+ 				Add checks for exported views. Remove custom column interceptor as it is unneeded
+ 				and causes the bottom cell to lack a bottom border - jeffg@opennms.org
+ * 2008 Feb 15: Add CSV export. - jeffg@opennms.org
  * 2007 Sep 09: Added support for cases where the resource couldn't be find. - dj@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
@@ -87,35 +92,38 @@
 			<ec:exportPdf fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.pdf" tooltip="Export PDF"
 				headerColor="black" headerBackgroundColor="#b6c2da"
 				headerTitle="${model.report.description}, for period ${model.report.startDate} - ${model.report.endDate}" />
-			<ec:exportCsv fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.csv" tooltip="Export CSV" />
 			<ec:exportXls fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.xls" tooltip="Export Excel" />
 
       
         <ec:row highlightRow="false">
-          <ec:column property="resourceParentsReversed" title="Parent resource" sortable="false"  interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor">
-            <c:set var="count" value="0"/>
-            <c:forEach var="parentResource" items="${row.resourceParentsReversed}">
-              <c:if test="${count > 0}">
-                <br/>
-              </c:if>
-              ${parentResource.resourceType.label}:
-              <c:choose>
-                <c:when test="${!empty parentResource.link}">
-                  <c:url var="resourceLink" value="${parentResource.link}"/>
-                  <a href="${resourceLink}">${parentResource.label}</a>
-                </c:when>
-                
-                <c:otherwise>
-                  ${parentResource.label}
-                </c:otherwise>
-              </c:choose>
-              <c:set var="count" value="${count + 1}"/>
-            </c:forEach>
-            &nbsp;
+          <ec:column property="resourceParentsReversed" title="Parent Resource(s)" sortable="false">
+            <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view --%>
+	            <c:set var="count" value="0"/>
+	            <c:forEach var="parentResource" items="${row.resourceParentsReversed}">
+	              <c:if test="${count > 0}">
+	                <br/>
+	              </c:if>
+	              ${parentResource.resourceType.label}:
+	              <c:choose>
+	                <c:when test="${!empty parentResource.link}">
+	                  <c:url var="resourceLink" value="${parentResource.link}"/>
+	                  <a href="${resourceLink}">${parentResource.label}</a>
+	                </c:when>
+	                
+	                <c:otherwise>
+	                  ${parentResource.label}
+	                </c:otherwise>
+	              </c:choose>
+	              <c:set var="count" value="${count + 1}"/>
+	            </c:forEach>
+	            &nbsp;
+            </c:if>
           </ec:column>
 
           <ec:column property="resource" sortable="false">
-            ${row.resource.label}
+            <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view --%>
+            	${row.resource.label}
+            </c:if>
           </ec:column>
           
           <%--
@@ -141,23 +149,25 @@
       
           <ec:column property="value"/>
           
-          <ec:column property="resource.id" title="Graphs" sortable="false">
-            <c:choose>
-              <c:when test="${!empty row.resource}">
-                <c:url var="graphUrl" value="graph/results.htm">
-                  <c:param name="resourceId" value="${row.resource.id}"/>
-                  <c:param name="start" value="${model.report.startDate.time}"/>
-                  <c:param name="end" value="${model.report.endDate.time}"/>
-                  <c:param name="reports" value="all"/>
-                </c:url>
-                <a href="${graphUrl}">Resource graphs</a>
-              </c:when>
-              
-              <c:otherwise>
-                -
-              </c:otherwise>
-            </c:choose>
-          </ec:column>
+          <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view (exclude the Graphs column from PDF and XLS exports) --%>
+	          <ec:column property="resource.id" title="Graphs" sortable="false">
+	            <c:choose>
+	              <c:when test="${!empty row.resource}">
+	                <c:url var="graphUrl" value="graph/results.htm">
+	                  <c:param name="resourceId" value="${row.resource.id}"/>
+	                  <c:param name="start" value="${model.report.startDate.time}"/>
+	                  <c:param name="end" value="${model.report.endDate.time}"/>
+	                  <c:param name="reports" value="all"/>
+	                </c:url>
+	                <a href="${graphUrl}">Resource graphs</a>
+	              </c:when>
+	              
+	              <c:otherwise>
+	                -
+	              </c:otherwise>
+	            </c:choose>
+	          </ec:column>
+          </c:if>
         </ec:row>
       </ec:table>
     </form>
