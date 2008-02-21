@@ -27,7 +27,7 @@
         <module>jira-troubleticketer</module>
         <module>mib2events</module>
         <module>quickbase-troubleticketer</module>
-	<module>spike-hunter</module>
+        <module>jrobin-spike-hunter</module>
       </modules>
     </profile>
   </profiles>
