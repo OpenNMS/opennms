@@ -275,7 +275,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{instprefix}/lib
 			%{sharedir}
 			%{logdir}
-			%{logdir}/{controller,daemon,webapp}
+			%{logdir}/controller
+			%{logdir}/daemon
+			%{logdir}/webapp
 
 %if %{with_docs}
 %files docs
