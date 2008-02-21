@@ -1169,6 +1169,11 @@ opennms.home = ${opennms.home}
         <version>1.4</version>
       </dependency>
       <dependency>
+        <groupId>jarsync</groupId>
+        <artifactId>jarsync</artifactId>
+        <version>0.3</version>
+      </dependency>
+      <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
         <version>1.1</version>

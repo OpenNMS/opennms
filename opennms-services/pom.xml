@@ -132,6 +132,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jarsync</groupId>
+      <artifactId>jarsync</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>jivesoftware</groupId>
       <artifactId>smack</artifactId>
       <scope>compile</scope>
@@ -265,4 +270,17 @@
       <artifactId>jep</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+  </repositories>
 </project>
