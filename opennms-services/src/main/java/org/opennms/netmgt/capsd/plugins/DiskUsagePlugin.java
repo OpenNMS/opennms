@@ -42,6 +42,7 @@ package org.opennms.netmgt.capsd.plugins;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.regex.Pattern;
 //import java.util.regex.Pattern;
 //import org.apache.log4j.Level;
 import org.apache.log4j.Category;
@@ -80,6 +81,14 @@ public final class DiskUsagePlugin extends AbstractPlugin {
 
     
     private static final String hrStorageDescr = ".1.3.6.1.2.1.25.2.3.1.3";
+    
+    /**
+     * The available match-types for this plugin
+     */
+    private static final int MATCH_TYPE_EXACT = 0;
+    private static final int MATCH_TYPE_STARTSWITH = 1;
+    private static final int MATCH_TYPE_ENDSWITH = 2;
+    private static final int MATCH_TYPE_REGEX = 3;
     
     /**
      * Returns the name of the protocol that this plugin checks on the target
@@ -131,7 +140,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
-        Category log = ThreadCategory.getInstance(getClass());
+        int matchType = MATCH_TYPE_EXACT;
 
         try {
 
@@ -176,6 +185,23 @@ public final class DiskUsagePlugin extends AbstractPlugin {
                         agentConfig.setVersion(SnmpAgentConfig.VERSION3);
                 }
                 
+                // "match-type" parm
+                //
+                if (qualifiers.get("match-type") != null) {
+                    String matchTypeStr = ParameterMap.getKeyedString(qualifiers, "match-type", "exact");
+                    if (matchTypeStr.equalsIgnoreCase("exact")) {
+                        matchType = MATCH_TYPE_EXACT; 
+                    } else if (matchTypeStr.equalsIgnoreCase("startswith")) {
+                        matchType = MATCH_TYPE_STARTSWITH;
+                    } else if (matchTypeStr.equalsIgnoreCase("endswith")) {
+                        matchType = MATCH_TYPE_ENDSWITH;
+                    } else if (matchTypeStr.equalsIgnoreCase("regex")) {
+                        matchType = MATCH_TYPE_REGEX;
+                    } else {
+                        throw new RuntimeException("Unknown value '" + matchTypeStr + "' for parameter 'match-type'");
+                    }
+                }
+                
                 
             }
                 
@@ -188,10 +214,10 @@ public final class DiskUsagePlugin extends AbstractPlugin {
                 }
 
                 for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                    log.debug("capsd: SNMPwalk succeeded, addr=" + address.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                    log().debug("capsd: SNMPwalk succeeded, addr=" + address.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                   
-                    if (e.getValue().toString().equals(disk)) {
-                    	log.debug("DiskUsageplugin :: found disk=" + disk);
+                    if (isMatch(e.getValue().toString(), disk, matchType)) {
+                    	log().debug("Found disk '" + disk + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");
                     	return true;
                     		
                     }
@@ -204,5 +230,29 @@ public final class DiskUsagePlugin extends AbstractPlugin {
             throw new UndeclaredThrowableException(t);
         }
         
+    }
+    
+    private boolean isMatch(String candidate, String target, int matchType) {
+        boolean matches = false;
+        log().debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        if (matchType == MATCH_TYPE_EXACT) {
+            log().debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            matches = candidate.equals(target);
+        } else if (matchType == MATCH_TYPE_STARTSWITH) {
+            log().debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            matches = candidate.startsWith(target);
+        } else if (matchType == MATCH_TYPE_ENDSWITH) {
+            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            matches = candidate.endsWith(target);
+        } else if (matchType == MATCH_TYPE_REGEX) {
+            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            matches = Pattern.compile(target).matcher(candidate).find();
+        }
+        log().debug("isMatch: Match is positive");
+        return matches;
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }
