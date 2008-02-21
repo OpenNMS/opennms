@@ -2712,7 +2712,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;HP Event: Connection to Remote SI up.&lt;/p&gt;</logmsg>
- <severity>Nomral</severity>
+ <severity>Normal</severity>
 </event>
 
 <event>
