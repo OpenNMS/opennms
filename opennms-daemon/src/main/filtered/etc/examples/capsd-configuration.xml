@@ -223,11 +223,25 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
         <property key="disk" value="/" />
+        <property key="match-type" value="exact" /><!-- This is the default if "match-type" is omitted -->
     </protocol-plugin>
     <protocol-plugin protocol="DiskUsage-home" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on" user-defined="false">
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
-        <property key="disk" value="/home" />
+        <property key="disk" value="/home" /><!-- Would catch either "/home" or "/export/home" -->
+        <property key="match-type" value="endsWith" />
+    </protocol-plugin>
+    <protocol-plugin protocol="DiskUsage-CDrive" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on" user-defined="false">
+        <property key="timeout" value="3000" />
+        <property key="retry" value="1" />
+        <property key="disk" value="C:" />
+        <property key="match-type" value="startsWith" /><!-- Needed for Windows SNMP service, which appends label and serial number -->
+    </protocol-plugin>
+    <protocol-plugin protocol="DiskUsage-BootDisk" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on" user-defined="false">
+        <property key="timeout" value="3000" />
+        <property key="retry" value="1" />
+        <property key="disk" value="Label:Boot Disk" /><!-- For finding a Windows drive with a given label regardless of letter -->
+        <property key="match-type" value="regex" />
     </protocol-plugin>
     <!--
     Use the LoopPlugin to force a service for use with PassiveStatusMonitor or the LoopMonitor
