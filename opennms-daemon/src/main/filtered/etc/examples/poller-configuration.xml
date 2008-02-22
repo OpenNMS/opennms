@@ -252,13 +252,29 @@
              		<parameter key="timeout" value="3000"/>
              		<parameter key="retry" value="2"/>
              		<parameter key="disk" value="/"/>
-             		<parameter key="free" value="15"/>
+             		<parameter key="match-type" value="exact"/><!-- This is the default if "match-type" is omitted -->
+             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
 		</service>
 		<service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
              		<parameter key="timeout" value="3000"/>
              		<parameter key="retry" value="2"/>
              		<parameter key="disk" value="/home"/>
-             		<parameter key="free" value="15"/>
+             		<parameter key="match-type" value="/home" /><!-- Would catch either "/home" or "/export/home" -->
+             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
+		</service>
+		<service name="DiskUsage-CDrive" interval="300000" user-defined="false" status="on">
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="retry" value="2"/>
+             		<parameter key="disk" value="C:"/>
+             		<parameter key="match-type" value="startsWith" /><!-- Needed for Windows SNMP service, which appends label and serial number -->
+             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
+		</service>
+		<service name="DiskUsage-BootDisk" interval="300000" user-defined="false" status="on">
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="retry" value="2"/>
+             		<parameter key="disk" value="Label:Boot Disk"/>
+             		<parameter key="match-type" value="regex" /><!-- For finding a Windows drive with a given label regardless of letter -->
+             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
 		</service>
 		<!--
 		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
