@@ -70,6 +70,10 @@ public class Graph implements Comparable<Graph> {
     public String getName() {
         return m_graph.getName();
     }
+    
+    public String getTitle() {
+        return m_graph.getTitle();
+    }
 
     public int compareTo(Graph other) {
         if (other == null) {
