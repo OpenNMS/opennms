@@ -438,8 +438,8 @@ TD {
 
 <script>
 function outageTypeChanged(selectElement) {
-	var isSpecific=selectElement.options(selectElement.selectedIndex0.value=="specific";
-	var isMonthly=selectElement.options(selectElement.selectedIndex).value=="monthly";
+	var isSpecific=selectElement.options[selectElement.selectedIndex].value=="specific";
+	var isMonthly=selectElement.options[selectElement.selectedIndex].value=="monthly";
 	document.getElementById("newSpecificTimeTR").style.display=((isSpecific)?'':'none');
 	document.getElementById("newDayTimeTR").style.display=((isSpecific)?'none':'');
 	document.getElementById("startNewDayTxt").style.display=((isMonthly)?'none':'');
