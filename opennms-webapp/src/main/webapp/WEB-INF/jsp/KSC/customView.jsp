@@ -174,7 +174,7 @@
                         </c:url>
                         
                         <a href="${zoomUrl}">
-                          <img src="${graphUrl}"/>
+                          <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title} (click to zoom)"/>
                         </a>
                         
                       </td>
