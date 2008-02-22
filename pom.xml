@@ -81,9 +81,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-testing</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-testing</developerConnection>
-    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-testing</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-feature-ackd-workflow</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-feature-ackd-workflow</developerConnection>
+    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-feature-ackd-workflow</url>
   </scm>
   <modules>
     <module>dependencies</module>
