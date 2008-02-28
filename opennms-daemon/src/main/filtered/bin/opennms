@@ -121,6 +121,26 @@ END
     return
 }
 
+checkXmlFiles(){
+	XMLLINT=`which xmllint 2>/dev/null || :`
+	FAILED_XML=0
+
+	if [ -n "$XMLLINT" ] && [ -x "$XMLLINT" ]; then
+		for FILE in `find "$OPENNMS_HOME/etc" -type f -name \*.xml`; do
+			if ! $XMLLINT "$FILE" >/dev/null 2>&1; then
+				echo "ERROR: XML validation failed: $FILE"
+				FAILED_XML=`expr $FAILED_XML + 1 2>/dev/null || echo 1`
+			fi
+		done
+	fi
+
+	if [ $FAILED_XML -gt 0 ]; then
+		echo "$FAILED_XML XML file(s) failed validation.  Exiting."
+		exit $FAILED_XML
+	fi
+	return 0
+}
+
 checkRpmFiles(){
     CHECKDIRS="$OPENNMS_HOME/etc"
 
@@ -152,6 +172,7 @@ END
 }
 
 doStart(){
+    checkXmlFiles || return $?
     checkRpmFiles || return $?
 
     doStatus
