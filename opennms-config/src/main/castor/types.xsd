@@ -35,7 +35,7 @@
 
       <simpleType>
         <restriction base="string">
-          <pattern value="(specific|weekly|monthly)"/>
+          <pattern value="(specific|daily|weekly|monthly)"/>
         </restriction>
       </simpleType>
     </attribute>

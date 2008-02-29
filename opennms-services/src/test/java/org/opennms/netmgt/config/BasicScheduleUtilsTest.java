@@ -32,7 +32,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -158,7 +160,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
     }
-    
+
     public void testGetIntervalsWeekly() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"weekly\">" +
@@ -203,7 +205,25 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         assertTimeIntervalSequence(expected, intervals);
     }
     
-    
+    public void testGetIntervalsDaily() throws Exception {
+        String schedSpec = 
+            "           <schedule name=\"simple\" type=\"daily\">" +
+            "               <time begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
+            "           </schedule>";
+        Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
+        
+        Owner owner = new Owner("unnamed", "simple", 0, 0);
+        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6, 1, 0, 7, 1, 0), simpleSchedule.getTime(0), owner);
+        assertNotNull(intervals);
+
+        List<TimeInterval> expected = new ArrayList<TimeInterval>();
+        for (int i = 1; i < 31; i++) {
+        	expected.add(owned(owner, jun(i, 11, i, 14)));
+        }
+        
+        System.err.println(expected);
+        assertTimeIntervalSequence(expected.toArray(new TimeInterval[]{}), intervals);
+    }
 
 }
  
