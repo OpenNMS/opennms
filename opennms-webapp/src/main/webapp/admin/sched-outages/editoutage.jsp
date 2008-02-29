@@ -2,17 +2,19 @@
         contentType="text/html"
         session="true"
         import="java.util.*,
-                org.opennms.netmgt.config.*,
-                org.opennms.netmgt.config.common.*,
-                org.opennms.netmgt.config.poller.*,
-                org.opennms.web.WebSecurityUtils,
-                org.opennms.web.element.*,
-                org.opennms.netmgt.EventConstants,
-                org.opennms.netmgt.xml.event.Event,
-                org.opennms.netmgt.utils.*,
-                org.opennms.web.Util,
-                java.net.*,
-                java.io.*
+        org.opennms.netmgt.config.*,
+        org.opennms.netmgt.config.common.*,
+        org.opennms.netmgt.config.poller.*,
+        org.opennms.web.WebSecurityUtils,
+        org.opennms.web.element.*,
+        org.opennms.netmgt.EventConstants,
+        org.opennms.netmgt.xml.event.Event,
+        org.opennms.netmgt.utils.*,
+        org.opennms.web.Util,
+        java.net.*,
+        java.io.*,
+        java.text.NumberFormat,
+        java.text.SimpleDateFormat
         "
 %>
 
@@ -23,6 +25,40 @@
 		matchAnyInterface.setAddress("match-any");
 	}
 
+	private static String getNumberSelectField(String name, int start, int end, int selected, int padding) {
+		NumberFormat nf = NumberFormat.getInstance();
+		nf.setMinimumIntegerDigits(padding);
+		nf.setGroupingUsed(false);
+		StringBuffer sb = new StringBuffer();
+		sb.append("<select name=\"" + name + "\">");
+		for (int i = start; i <= end; i++) {
+			sb.append("<option value=\"").append(nf.format(i)).append("\"");
+			if (i == selected) {
+				sb.append(" selected");
+			}
+			sb.append(">").append(nf.format(i)).append("</option>");
+		}
+		sb.append("</select>");
+
+		return sb.toString();
+	}
+	
+	private static String getMonthSelectField(String name, int month) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<select name=\"chooseStartMonth\">");
+		SimpleDateFormat shortDF = new SimpleDateFormat("MMM");
+		SimpleDateFormat longDF  = new SimpleDateFormat("MMMM");
+		for (int mon = 0; mon < 12; mon++) {
+			Date tempDate = new GregorianCalendar(0, mon, 1).getTime();
+			sb.append("<option value=\"").append(shortDF.format(tempDate)).append("\" ");
+			sb.append((month==(mon+1))?"selected":"");
+			sb.append(">").append(longDF.format(tempDate)).append("</option>");
+		}
+		sb.append("</select>");
+		
+		return sb.toString();
+	}
+	
 	public void sendOutagesChangedEvent() throws ServletException {
 		Event event = new Event();
 		event.setSource("Web UI");
@@ -39,17 +75,18 @@
 		} catch (Exception e) {
 			throw new ServletException("Could not send event " + event.getUei(), e);
 		}
-	}%>
-<%
+	}
+	
+	%><%
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	HashMap<String,String> shortDayNames = new HashMap<String,String>();
-	shortDayNames.put("sunday", "Sun");
-	shortDayNames.put("monday", "Mon");
-	shortDayNames.put("tuesday", "Tue");
-	shortDayNames.put("wednesday", "Wed");
-	shortDayNames.put("thursday", "Thu");
-	shortDayNames.put("friday", "Fri");
-	shortDayNames.put("saturday", "Sat");
+	HashMap<String, String> shortDayNames = new HashMap<String, String>();
+	shortDayNames.put("sunday", "Sunday");
+	shortDayNames.put("monday", "Monday");
+	shortDayNames.put("tuesday", "Tuesday");
+	shortDayNames.put("wednesday", "Wednesday");
+	shortDayNames.put("thursday", "Thursday");
+	shortDayNames.put("friday", "Friday");
+	shortDayNames.put("saturday", "Saturday");
 	shortDayNames.put("1", "1st");
 	shortDayNames.put("2", "2nd");
 	shortDayNames.put("3", "3rd");
@@ -82,10 +119,21 @@
 	shortDayNames.put("30", "30th");
 	shortDayNames.put("31", "31st");
 
+	GregorianCalendar today = new GregorianCalendar();
+	int date = today.get(Calendar.DATE);
+	int month = today.get(Calendar.MONTH) + 1;
+	int year = today.get(Calendar.YEAR);
+
 	PollOutagesConfigFactory.init(); //Only init - do *not* reload
 	PollOutagesConfigFactory pollFactory = PollOutagesConfigFactory.getInstance();
 	Outage theOutage;
 	String nameParam = request.getParameter("name");
+	
+	if ("Cancel".equals(request.getParameter("cancelButton"))) {
+		response.sendRedirect("index.jsp");
+		return;
+	}
+
 	if (nameParam != null) {
 		//first time in - name is passed as a param.  Find the outage, copy it, and shove it in the session
 		//Also keep a copy of the name, for later saving (replacing the original with the edited copy)
@@ -99,7 +147,6 @@
 		theOutage = new Outage();
 		//Nuke whitespace - it messes with all sorts of things
 		theOutage.setName(request.getParameter("newName").trim());
-		theOutage.setType("specific");
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().removeAttribute("opennms.editoutage.origname");
 	} else {
@@ -132,9 +179,8 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 
 	// ******* Threshd outages config *********
 	ThreshdConfigFactory.init();
-	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages =
-		new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
-	for ( org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackage() ) {
+	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
+	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
 		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
 			enabledOutages.add("threshold-" + thisPackage.getName());
@@ -144,7 +190,7 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 	// ******* Polling outages config *********
 	PollerConfigFactory.init();
 	Map<org.opennms.netmgt.config.poller.Package, List<String>> pollingOutages = new HashMap<org.opennms.netmgt.config.poller.Package, List<String>>();
-	for ( org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackage() ) {
+	for (org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getConfiguration().getPackage()) {
 		pollingOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
 		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
 			enabledOutages.add("polling-" + thisPackage.getName());
@@ -154,21 +200,27 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 	// ******* Collectd outages config *********
 	CollectdConfigFactory.init();
 	Map<org.opennms.netmgt.config.collectd.Package, List<String>> collectionOutages = new HashMap<org.opennms.netmgt.config.collectd.Package, List<String>>();
-	for ( CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages() ) {
-		org.opennms.netmgt.config.collectd.Package thisPackage=pkg.getPackage();
+	for (CollectdPackage pkg : CollectdConfigFactory.getInstance().getCollectdConfig().getPackages()) {
+		org.opennms.netmgt.config.collectd.Package thisPackage = pkg.getPackage();
 		collectionOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
 		if (thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
 			enabledOutages.add("collect-" + thisPackage.getName());
 		}
 	}
 
+	if (request.getParameter("deleteOutageType") != null) {
+		theOutage.setType(null);
+		theOutage.removeAllTime();
+	} else {
+		theOutage.setType(request.getParameter("outageType"));
+	}
+	
 	String isFormSubmission = request.getParameter("formSubmission");
 	if ("true".equals(isFormSubmission)) {
 
 		//Process the form submission - yeah, this should be a servlet, but this is a quick and dirty hack for now
-		//It can be tidied up later
+		//It can be tidied up later -- of course, it's been what, almost 3 years?  "later" means 2.0 + rewrite  ;)
 		//First, process any changes to the editable inputs
-		theOutage.setType(request.getParameter("outageType"));
 
 		//Process the notifications status.  NB: we keep an in-memory copy initially, and only save when the save button is clicked
 		if ("on".equals(request.getParameter("notifications"))) {
@@ -179,7 +231,7 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			enabledOutages.remove("notifications");
 		}
 
-		for ( org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet() ) {
+		for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
 			String name = "polling-" + thisKey.getName();
 			System.out.println("Checking " + name);
 			if ("on".equals(request.getParameter(name))) {
@@ -189,8 +241,8 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 				enabledOutages.remove(name);
 			}
 		}
-		
-		for ( org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet() ) {
+
+		for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
 			String name = "threshold-" + thisKey.getName();
 			System.out.println("Checking " + name);
 			if ("on".equals(request.getParameter(name))) {
@@ -200,7 +252,7 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			}
 		}
 
-		for ( org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet() ) {
+		for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
 			String name = "collect-" + thisKey.getName();
 			System.out.println("Checking " + name);
 			if ("on".equals(request.getParameter(name))) {
@@ -236,7 +288,7 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 				}
 			}
 
-			for ( org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet() ) {
+			for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
 				Collection<String> pollingPackage = pollingOutages.get(thisKey);
 				String name = "polling-" + thisKey.getName();
 				if (enabledOutages.contains(name)) {
@@ -250,7 +302,7 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 				}
 			}
 
-			for ( org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet() ) {
+			for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
 				Collection<String> thresholdPackage = thresholdOutages.get(thisKey);
 				String name = "threshold-" + thisKey.getName();
 				if (enabledOutages.contains(name)) {
@@ -264,7 +316,7 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 				}
 			}
 
-			for ( org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet() ) {
+			for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
 				Collection<String> collectPackage = collectionOutages.get(thisKey);
 				String name = "collect-" + thisKey.getName();
 				if (enabledOutages.contains(name)) {
@@ -287,8 +339,10 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			sendOutagesChangedEvent();
 
 			//forward the request for proper display
-			RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/sched-outages/index.jsp");
-			dispatcher.forward(request, response);
+			// RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/sched-outages/index.jsp");
+			response.sendRedirect("index.jsp");
+			// dispatcher.forward(request, response);
+			return;
 		} else if (request.getParameter("addNodeButton") != null) {
 			try {
 				int newNodeId = WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
@@ -300,74 +354,85 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 				}
 			} catch (NumberFormatException e) {
 				//Just ignore it - we can't add the node, why should we care?
+			} catch (IndexOutOfBoundsException ioob) {
+				// same here
 			}
 		} else if (request.getParameter("addInterfaceButton") != null) {
 			org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
 			newInterface.setAddress(request.getParameter("newInterface"));
 			if (!theOutage.getInterfaceCollection().contains(newInterface)) {
 				theOutage.addInterface(newInterface);
-				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
+				try {
+					theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
+				} catch (IndexOutOfBoundsException ioob) {
+					// ok if it fails
+				}
 			}
 		} else if (request.getParameter("matchAny") != null) {
 			//To turn on matchAny, all normal nodes and interfaces are removed
 			theOutage.removeAllInterface();
 			theOutage.removeAllNode();
 			theOutage.addInterface(matchAnyInterface);
-		} else if (request.getParameter("addSpecificTime") != null) {
-			Time newTime = new Time();
-			StringBuffer beginsTime = new StringBuffer(17);
-			beginsTime.append(request.getParameter("startNewDate"));
-			beginsTime.append("-");
-			beginsTime.append(request.getParameter("startNewMonth"));
-			beginsTime.append("-");
-			beginsTime.append(request.getParameter("startNewYear"));
-			beginsTime.append(" ");
-			beginsTime.append(request.getParameter("startNewSpecificHour"));
-			beginsTime.append(":");
-			beginsTime.append(request.getParameter("startNewSpecificMinute"));
-			beginsTime.append(":");
-			beginsTime.append(request.getParameter("startNewSpecificSecond"));
-			newTime.setBegins(beginsTime.toString());
-			StringBuffer endsTime = new StringBuffer(17);
-			endsTime.append(request.getParameter("endNewDate"));
-			endsTime.append("-");
-			endsTime.append(request.getParameter("endNewMonth"));
-			endsTime.append("-");
-			endsTime.append(request.getParameter("endNewYear"));
-			endsTime.append(" ");
-			endsTime.append(request.getParameter("endNewSpecificHour"));
-			endsTime.append(":");
-			endsTime.append(request.getParameter("endNewSpecificMinute"));
-			endsTime.append(":");
-			endsTime.append(request.getParameter("endNewSpecificSecond"));
-			newTime.setEnds(endsTime.toString());
-			theOutage.addTime(newTime);
-		} else if (request.getParameter("addDayTime") != null) {
-			Time newTime = new Time();
-			String dayValue = "1"; //Default to something vaguely acceptable 
-			if ("monthly".compareToIgnoreCase(theOutage.getType()) == 0) {
-				dayValue = request.getParameter("startNewDayNum");
-			} else if ("weekly".compareToIgnoreCase(theOutage.getType()) == 0) {
-				dayValue = request.getParameter("startNewDayTxt");
+		} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
+			if (theOutage.getType().equalsIgnoreCase("specific")) {
+				Time newTime = new Time();
+
+				StringBuffer timeBuffer = new StringBuffer(17);
+				timeBuffer.append(request.getParameter("chooseStartDay"));
+				timeBuffer.append("-");
+				timeBuffer.append(request.getParameter("chooseStartMonth"));
+				timeBuffer.append("-");
+				timeBuffer.append(request.getParameter("chooseStartYear"));
+				timeBuffer.append(" ");
+				timeBuffer.append(request.getParameter("chooseStartHour"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseStartMinute"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseStartSecond"));
+				newTime.setBegins(timeBuffer.toString());
+
+				timeBuffer = new StringBuffer(17);
+				timeBuffer.append(request.getParameter("chooseFinishDay"));
+				timeBuffer.append("-");
+				timeBuffer.append(request.getParameter("chooseFinishMonth"));
+				timeBuffer.append("-");
+				timeBuffer.append(request.getParameter("chooseFinishYear"));
+				timeBuffer.append(" ");
+				timeBuffer.append(request.getParameter("chooseFinishHour"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseFinishMinute"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseFinishSecond"));
+				newTime.setEnds(timeBuffer.toString());
+
+				theOutage.addTime(newTime);
+			} else {
+				Time newTime = new Time();
+
+				if (theOutage.getType().equalsIgnoreCase("monthly")) {
+					newTime.setDay(request.getParameter("chooseDayOfMonth"));
+				} else if (theOutage.getType().equalsIgnoreCase("weekly")) {
+					newTime.setDay(request.getParameter("chooseDayOfWeek"));
+				}
+
+				StringBuffer timeBuffer = new StringBuffer(8);
+				timeBuffer.append(request.getParameter("chooseStartHour"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseStartMinute"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseStartSecond"));
+				newTime.setBegins(timeBuffer.toString());
+				
+				timeBuffer = new StringBuffer(8);
+				timeBuffer.append(request.getParameter("chooseFinishHour"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseFinishMinute"));
+				timeBuffer.append(":");
+				timeBuffer.append(request.getParameter("chooseFinishSecond"));
+				newTime.setEnds(timeBuffer.toString());
+				
+				theOutage.addTime(newTime);
 			}
-			newTime.setDay(dayValue);
-			StringBuffer beginsTime = new StringBuffer(8);
-			beginsTime.append(request.getParameter("startNewHour"));
-			beginsTime.append(":");
-			beginsTime.append(request.getParameter("startNewMinute"));
-			beginsTime.append(":");
-			beginsTime.append(request.getParameter("startNewSecond"));
-			newTime.setBegins(beginsTime.toString());
-
-			StringBuffer endsTime = new StringBuffer(8);
-			endsTime.append(request.getParameter("endNewHour"));
-			endsTime.append(":");
-			endsTime.append(request.getParameter("endNewMinute"));
-			endsTime.append(":");
-			endsTime.append(request.getParameter("endNewSecond"));
-			newTime.setEnds(endsTime.toString());
-
-			theOutage.addTime(newTime);
 		} else {
 			//Look for deleteNode or deleteInterface or deleteTime prefix
 			Enumeration paramEnum = request.getParameterNames();
@@ -379,19 +444,22 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 					String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
-						theOutage.removeNode(theOutage.getNode(index));
+						theOutage.removeNodeAt(index);
 					} catch (NumberFormatException e) {
-
 						//Ignore - nothing we can do
+					} catch (IndexOutOfBoundsException ioob) {
+						//Ignore - it's already removed
 					}
 				} else if (paramName.startsWith("deleteInterface")) {
 					found = true;
 					String indexStr = paramName.substring("deleteInterface".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
-						theOutage.removeInterface(theOutage.getInterface(index));
+						theOutage.removeInterfaceAt(index);
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+					} catch (IndexOutOfBoundsException ioob) {
+						//Ignore - it's already removed
 					}
 				} else if (paramName.startsWith("deleteTime")) {
 					found = true;
@@ -408,13 +476,6 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 
 	} //end if form submission
 	boolean hasMatchAny = theOutage.getInterfaceCollection().contains(matchAnyInterface);
-	//for(int i=0; i<theOutage.getInterfaceCount(); i++) {
-	//	if(theOutage.getInterface(i).getAddress().equals("match-any")) {
-	//		hasMatchAny=true;
-	//		break; //out of for loop
-	//	}
-	//}
-	theOutage.getInterfaceCollection().contains("match-any");
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
@@ -437,16 +498,42 @@ TD {
 </style>
 
 <script>
-function outageTypeChanged(selectElement) {
+var enabledIds = new Array();
+var disabledIds = new Array();
+
+function updateOutageTypeDisplay(selectElement) {
+	if (selectElement == null) {
+		selectElement = document.getElementById("outageTypeSelector");
+	}
+
 	var isSpecific=selectElement.options[selectElement.selectedIndex].value=="specific";
+	var isDaily=selectElement.options[selectElement.selectedIndex].value=="daily";
+	var isWeekly=selectElement.options[selectElement.selectedIndex].value=="weekly";
 	var isMonthly=selectElement.options[selectElement.selectedIndex].value=="monthly";
-	document.getElementById("newSpecificTimeTR").style.display=((isSpecific)?'':'none');
-	document.getElementById("newDayTimeTR").style.display=((isSpecific)?'none':'');
-	document.getElementById("startNewDayTxt").style.display=((isMonthly)?'none':'');
-	document.getElementById("startNewDayNum").style.display=((isMonthly)?'':'none');
+	
+	if (isDaily) {
+		enabledIds = new Array("chooseStartSpan", "chooseStartTime", "chooseFinishSpan", "chooseFinishTime");
+		disabledIds = new Array("chooseStartDate", "chooseFinishDate", "chooseDay", "chooseDayOfMonth", "chooseDayOfWeek");
+	} else if (isWeekly) {
+		enabledIds = new Array("chooseStartSpan", "chooseStartTime", "chooseFinishSpan", "chooseFinishTime", "chooseDay", "chooseDayOfWeek");
+		disabledIds = new Array("chooseStartDate", "chooseFinishDate", "chooseDayOfMonth");
+	} else if (isMonthly) {
+		enabledIds = new Array("chooseStartSpan", "chooseStartTime", "chooseFinishSpan", "chooseFinishTime", "chooseDay", "chooseDayOfMonth");
+		disabledIds = new Array("chooseStartDate", "chooseFinishDate", "chooseDayOfWeek");
+	} else {
+		// isSpecific, or nothing's selected
+		enabledIds = new Array("chooseStartSpan", "chooseStartDate", "chooseStartTime", "chooseFinishSpan", "chooseFinishDate", "chooseFinishTime");
+		disabledIds = new Array("chooseDay", "chooseDayOfMonth", "chooseDayOfWeek");
+	}
+
+	for (value in enabledIds) {
+		document.getElementById(enabledIds[value]).style.display="";
+	}
+	for (value in disabledIds) {
+		document.getElementById(disabledIds[value]).style.display="none";
+	}
 }
 </script>
-
 
 <%
 	Enumeration enumList = request.getParameterNames();
@@ -457,437 +544,320 @@ function outageTypeChanged(selectElement) {
 <%
 	}
 %>
-<form id="editForm" action="admin/sched-outages/editoutage.jsp"
-	method="post"><input type="hidden" name="formSubmission"
-	value="<%=true%>" />
-<table border="0">
-	<tr>
-		<td><b>Name:</b></td>
-		<td><%=theOutage.getName()%></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td><b>Type:</b></td>
-		<td><select name="outageType" onChange="outageTypeChanged(this);">
-			<option value="specific"
-				<%=("specific".compareToIgnoreCase(theOutage.getType())==0)?"selected":""%>>Specific</option>
-			<option value="weekly"
-				<%=("weekly".compareToIgnoreCase(theOutage.getType())==0)?"selected":""%>>Weekly</option>
-			<option value="monthly"
-				<%=("monthly".compareToIgnoreCase(theOutage.getType())==0)?"selected":""%>>Monthly</option>
-		</select></td>
-		<td colspan="2"></td>
-	</tr>
-	<tr>
-		<td colspan=6>
-		<hr>
-		</td>
-	</tr>
-	<tr>
-		<td colspan=3 valign="top"><b>Nodes:</b><BR>
-		<select name="newNode">
-			<%
-				org.opennms.web.element.Node[] allNodes = NetworkElementFactory.getAllNodes();
-				for (int j = 0; j < allNodes.length; j++) {
-			%>
-			<option value="<%=allNodes[j].getNodeId()%>"><%=allNodes[j].getLabel()%></option>
-			<%
-				}
-			%>
-		</select><input type="submit" value="Add" name="addNodeButton" />
-		<table border=1>
-			<%
-				org.opennms.netmgt.config.poller.Node[] nodeList = theOutage.getNode();
-				for (int i = 0; i < nodeList.length; i++) {
-					int nodeId = nodeList[i].getId();
-					org.opennms.web.element.Node thisNode = NetworkElementFactory.getNode(nodeId);
-			%><tr>
-				<%
-					if (thisNode != null) {
-				%>
-				<td><%=thisNode.getLabel()%></td>
-				<%
-					} else {
-				%>
-				<td>Can't find node with id:<%=nodeId%></td>
-				<%
-					}
-				%>
-				<td><input type="image" src="images/redcross.gif"
-					name="deleteNode<%=i%>" /></td>
-			</tr>
-			<%
-				}
-			%>
+<form id="editForm" action="admin/sched-outages/editoutage.jsp" method="post">
 
-		</table>
-		</td>
-		<td valign="top"><b>Interfaces:</b><BR>
-		<select name="newInterface">
-			<%
-				org.opennms.web.element.Interface[] allInterfaces = NetworkElementFactory.getAllInterfaces(false);
-				Arrays.sort(allInterfaces, new Comparator<org.opennms.web.element.Interface>() {
-					public int compare(org.opennms.web.element.Interface i1, org.opennms.web.element.Interface i2) {
-						String h1 = i1.getHostname();
-						String h2 = i2.getHostname();
-						if (h1 == null) {
-							if (h2 == null) {
-								return 0; //two nulls - the same
-							} else {
-								return -1; //null is less than something
+<input type="hidden" name="formSubmission" value="<%=true%>" />
+
+<h1>Editing Outage: <%= theOutage.getName() %></h1>
+
+<table class="normal" border="0">
+	<tr>
+		<td valign="top">Nodes and Interfaces:</td>
+		<td valign="top">
+			<table class="normal" border="0">
+				<tr>
+					<th valign="top">Nodes</th>
+					<th valign="top">Interfaces</th>
+				</tr>
+				<tr>
+					<td valign="top">
+						<%
+						Collection<org.opennms.web.element.Node> allNodes = Arrays.asList(NetworkElementFactory.getAllNodes());
+						TreeMap<Integer,org.opennms.web.element.Node> nodeMap = new TreeMap<Integer,org.opennms.web.element.Node>();
+						for ( org.opennms.web.element.Node element : allNodes ) {
+							nodeMap.put(element.getNodeId(), element);
+						}
+						allNodes = null;
+
+						if (hasMatchAny) {
+							out.println("&lt;All Nodes&gt;<br>");
+						} else {
+							org.opennms.netmgt.config.poller.Node[] outageNodes = theOutage.getNode();
+							for (int i = 0; i < outageNodes.length; i++) {
+								org.opennms.netmgt.config.poller.Node node = outageNodes[i];
+								if (node != null && nodeMap.containsKey(node.getId())) {
+									org.opennms.web.element.Node thisNode = nodeMap.get(node.getId());
+									nodeMap.remove(node.getId());
+									if (thisNode != null) {
+										out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
+										out.println(thisNode.getLabel());
+										out.println("<br>");
+									}
+								}
 							}
-						} else if (h2 == null) {
-							//h1 is not null, by definition
-							return 1; //h2 is null, h1 is not, so return a positive number
 						}
-						return h1.compareTo(h2);
-					}
-				});
-				for ( org.opennms.web.element.Interface thisInterface : allInterfaces ) {
-					String ipaddress = thisInterface.getIpAddress();
-					if (!"0.0.0.0".equals(ipaddress) && thisInterface.isManaged()) {
-			%>
-			<option value="<%=ipaddress%>"><%=thisInterface.getHostname()%></option>
-			<%
-					}
-				}
-			%>
-		</select><input type="submit" value="Add" name="addInterfaceButton"> <%
- 			if (!hasMatchAny) {
- %>
-		<table border=1>
-			<%
-				org.opennms.netmgt.config.poller.Interface[] interfaceList = theOutage.getInterface();
-				for (int i = 0; i < interfaceList.length; i++) {
-					org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(interfaceList[i].getAddress());
-					for (int j = 0; j < interfaces.length; j++) {
-						org.opennms.web.element.Interface thisInterface = interfaces[j];
-						if (thisInterface.isManaged()) {
-			%>
-			<tr>
-				<td><%=thisInterface.getHostname()%></td>
-				<td><input type="image" src="images/redcross.gif"
-					name="deleteInterface<%=i%>" /></td>
-			</tr>
-			<%
+						if (nodeMap.size() > 0) {
+							out.println("<select name=\"newNode\">");
+							for ( Integer nodeId : nodeMap.keySet() ) {
+								out.println("<option value=\"" + nodeId + "\">" + nodeMap.get(nodeId).getLabel() + "</option>");
+							}
+							out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
 						}
+						%>
+					</td>
+					<td valign="top">
+						<%
+						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllInterfaces());
+						TreeMap<String,org.opennms.web.element.Interface> interfaceMap = new TreeMap<String,org.opennms.web.element.Interface>();
+						for ( org.opennms.web.element.Interface element : allInterfaces ) {
+							String addr = element.getIpAddress();
+							if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManaged()) {
+								interfaceMap.put(element.getHostname(), element);
+							}
+						}
+						allInterfaces = null;
+
+						if (hasMatchAny) {
+							out.println("&lt;All Interfaces&gt;<br>");
+						} else {
+							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
+							for (int i = 0; i < outageInterfaces.length; i++) {
+								org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
+								if (iface != null && interfaceMap.containsKey(iface.getAddress())) {
+									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(iface.getAddress());
+									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
+										interfaceMap.remove(thisInterface.getHostname());
+										if (thisInterface.isManaged()) {
+											out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
+											out.println(thisInterface.getHostname());
+											out.println("<br>");
+										}
+									}
+								}
+							}
+						}
+
+						if (interfaceMap.size() > 0) {
+							out.println("<select name=\"newInterface\">");
+							for ( String hostname : interfaceMap.keySet() ) {
+								org.opennms.web.element.Interface iface = interfaceMap.get(hostname);
+								if (iface != null && interfaceMap.containsValue(iface)) {
+									out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getHostname() + "</option>");
+								}
+							}
+							out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
+						}
+						%>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">
+						<% if (!hasMatchAny) { %><input type="submit" name="matchAny" value="All nodes/interfaces" /><% } %>
+					</td>
+				</tr>
+				<% if (!hasMatchAny && theOutage.getInterfaceCount() == 0 && theOutage.getNodeCount() == 0) { %>
+					<tr>
+						<td><span style="color: #ff0000">You must have at least one node or interface defined.</span></td>
+					</tr>
+				<% } %>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">Outage Type:</td>
+		<td valign="top">
+			<table>
+				<tr>
+					<td>
+						<% if (theOutage.getType() != null) { %>
+							<input type="image" src="images/redcross.gif" name="deleteOutageType" value="true" /> <%= theOutage.getType() %>
+						<% } %>
+						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
+							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
+								<% String outageType = theOutage.getType(); if (outageType == null) { outageType = ""; } %>
+								<option value="specific" <%= outageType.equalsIgnoreCase("specific")? "selected":"" %>>Specific</option>
+								<option value="daily"    <%= outageType.equalsIgnoreCase("daily")?    "selected":"" %>>Daily</option>
+								<option value="weekly"   <%= outageType.equalsIgnoreCase("weekly")?   "selected":"" %>>Weekly</option>
+								<option value="monthly"  <%= outageType.equalsIgnoreCase("monthly")?  "selected":"" %>>Monthly</option>
+							</select>
+							<input type="submit" value="Set" name="setOutageType" />
+						</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">Time:</td>
+		<td>
+			<table>
+				<%
+					Time[] outageTimes = theOutage.getTime();
+					for (int i = 0; i < outageTimes.length; i++) {
+						Time thisTime = outageTimes[i];
+				%>
+				<tr>
+					<td> <input type="image" src="images/redcross.gif" name="deleteTime<%=i%>" /> </td>
+					<td>
+						<%
+							StringBuffer outputBuffer = new StringBuffer();
+							if (thisTime.getDay() != null) {
+								if (thisTime.getDay().contains("day")) {
+									// weekly
+									outputBuffer.append("Every&nbsp;").append(shortDayNames.get(thisTime.getDay())).append(",&nbsp;");
+								} else {
+									// monthly
+									outputBuffer.append("The&nbsp;").append(shortDayNames.get(thisTime.getDay())).append("&nbsp;of&nbsp;Each&nbsp;Month,&nbsp;");
+								}
+							} else {
+								if (thisTime.getBegins().contains("-")) {
+									// specific
+									outputBuffer.append("One-Time,&nbsp;");
+								} else {
+									// daily
+									outputBuffer.append("Daily,&nbsp;");
+								}
+							}
+							outputBuffer.append("From&nbsp;");
+							outputBuffer.append(thisTime.getBegins()).append("&nbsp;Through&nbsp;");
+							outputBuffer.append(thisTime.getEnds());
+							out.println(outputBuffer.toString());
+						%>
+					</td>
+				</tr>
+				<%
 					}
-
-				}
-			%>
-		</table>
-		<%
-			} //end if has match any
-		%>
+				%>
+			</table>
+			<table class="normal" border="0">
+				<tr id="chooseDay" style="display: none">
+					<td>
+						<span id="chooseDayOfMonth" style="display: none">
+							Day:
+							<select name="chooseDayOfMonth">
+								<% for (int i = 1; i < 32; i++) { %>
+								<option value="<%= i %>"><%= shortDayNames.get(Integer.toString(i)) %></option>
+								<% } %>
+							</select>
+						</span>
+						<span id="chooseDayOfWeek" style="display: none">
+							Day of the week:
+							<select name="chooseDayOfWeek">
+								<option value="sunday">Sunday</option>
+								<option value="monday">Monday</option>
+								<option value="tuesday">Tuesday</option>
+								<option value="wednesday">Wednesday</option>
+								<option value="thursday">Thursday</option>
+								<option value="friday">Friday</option>
+								<option value="saturday">Saturday</option>
+							</select>
+						</span>
+					</td>
+				</tr>
+				<tr id="chooseStartSpan" style="display: none">
+					<td>
+						<span id="chooseStartDate" style="display: none">
+							<%= getNumberSelectField("chooseStartDay", 1, 31, date, 0) %>
+							<%= getMonthSelectField("chooseStartMonth", month) %>
+							<%= getNumberSelectField("chooseStartYear", (year - 1), (year + 4), year, 4) %>
+						</span>
+						<span id="chooseStartTime" style="display: none">
+							<%=
+								getNumberSelectField("chooseStartHour", 0, 23, 0, 2)
+							%>:<%=
+								getNumberSelectField("chooseStartMinute", 0, 59, 0, 2)
+							%>:<%=
+								getNumberSelectField("chooseStartSecond", 0, 59, 0, 2)
+							%>
+						</span>
+					</td>
+				</tr>
+				<tr id="chooseFinishSpan" style="display: none">
+					<td>
+						<span id="chooseFinishDate" style="display: none">
+							<%= getNumberSelectField("chooseFinishDay", 1, 31, date, 0) %>
+							<%= getMonthSelectField("chooseFinishMonth", month) %>
+							<%= getNumberSelectField("chooseFinishYear", (year - 1), (year + 4), year, 4) %>
+						</span>
+						<span id="chooseFinishTime" style="display: none">
+							<%=
+								getNumberSelectField("chooseFinishHour", 0, 23, 23, 2)
+							%>:<%=
+								getNumberSelectField("chooseFinishMinute", 0, 59, 59, 2)
+							%>:<%=
+								getNumberSelectField("chooseFinishSecond", 0, 59, 59, 2)
+							%>
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="submit" value="Add Outage" name="addOutage" />
+					</td>
+				</tr>
+				<% if (theOutage.getTimeCount() == 0) { %>
+					<tr>
+						<td><span style="color: #ff0000">You must have at least one time span defined.</span></td>
+					</tr>
+				<% } %>
+			</table>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="4"><b>OR</b></td>
-	</tr>
-	<tr>
-		<td colspan="4">
-		<%
-			if (hasMatchAny) {
-		%> <b>Applies to ALL nodes/interfaces</b>
-		<%
-			} else {
-		%><input type="submit" name="matchAny" value="All nodes/interfaces" />
-		<%
-			}
-		%>
+		<td valign="top">Applies To:</td>
+		<td style="font-size: 100%" valign="top">
+			<ul class="treeview">
+				<li>
+					<p>Notifications</p>
+					<ul>
+						<li> <label><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked":""%> name="notifications" /> All Notifications</label> </li>
+					</ul>
+				</li>
+				<li>
+					<p>Status Polling</p>
+					<ul>
+						<%
+							for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+								String name = "polling-" + thisKey.getName();
+						%>
+						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+						<% } %>
+					</ul>
+				</li>
+				<li>
+					<p>Threshold Checking</p>
+					<ul>
+						<%
+							for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+								String name = "threshold-" + thisKey.getName();
+						%>
+						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+						<% } %>
+					</ul>
+				</li>
+				<li>
+					<p>Data Collection</p>
+					<ul>
+						<%
+							for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+								String name = "collect-" + thisKey.getName();
+						%>
+						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+						<% } %>
+					</ul>
+				</li>
+			</ul>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="4">
-		<hr>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="4"><b>Times:</b><BR>
-		</td>
-	</tr>
-
-	<tr id="newDayTimeTR"
-		style='display: <%=( "specific" . compareToIgnoreCase(theOutage . getType() ) == 0 ) ? "none" : "''" %>'>
-		<td valign="top">Add time</td>
-		<td><select
-			style='display: <%=( "weekly" . compareToIgnoreCase(theOutage . getType() ) == 0 ) ? "''" : "none" %>'
-			id="startNewDayTxt" name="startNewDayTxt">
-			<option value="sunday">Sun</option>
-			<option value="monday">Mon</option>
-			<option value="tuesday">Tue</option>
-			<option value="wednesday">Wed</option>
-			<option value="thursday">Thu</option>
-			<option value="friday">Fri</option>
-			<option value="saturday">Sat</option>
-		</select> <select name="startNewDayNum" id="startNewDayNum"
-			style='display: <%=( "monthly" . compareToIgnoreCase(theOutage . getType() ) == 0 ) ? "''" : "none" %>'>
+		<td></td>
+		<td>
 			<%
-				for (int i = 1; i < 32; i++) {
-			%>
-			<option value="<%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select> <BR>
-		<select name="startNewHour">
-			<%
-				for (int i = 0; i < 24; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="startNewMinute">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="startNewSecond">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select> -&gt; <BR>
-		<select name="endNewHour">
-			<%
-				for (int i = 0; i < 24; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="endNewMinute">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="endNewSecond">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select></td>
-		<td valign="bottom"><input type="submit" value="Add"
-			name="addDayTime" /></td>
-	</tr>
-	<tr id="newSpecificTimeTR"
-		style='display: <%=( "specific" . compareToIgnoreCase(theOutage . getType() ) == 0 ) ? "''" : "none" %>'>
-		<td valign="top">Add time</td>
-		<td><select name="startNewDate">
-			<%
-				GregorianCalendar today = new GregorianCalendar();
-				int date = today.get(Calendar.DATE);
-				int month = today.get(Calendar.MONTH) + 1;
-				int year = today.get(Calendar.YEAR);
-				for (int i = 1; i < 32; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>" <%=(date==i)?"selected":""%>><%=i%></option>
-			<%
-				}
-			%>
-		</select> <select name="startNewMonth">
-			<option value="Jan" <%=(month==1)?"selected":""%>>Jan</option>
-			<option value="Feb" <%=(month==2)?"selected":""%>>Feb</option>
-			<option value="Mar" <%=(month==3)?"selected":""%>>Mar</option>
-			<option value="Apr" <%=(month==4)?"selected":""%>>Apr</option>
-			<option value="May" <%=(month==5)?"selected":""%>>May</option>
-			<option value="Jun" <%=(month==6)?"selected":""%>>Jun</option>
-			<option value="Jul" <%=(month==7)?"selected":""%>>Jul</option>
-			<option value="Aug" <%=(month==8)?"selected":""%>>Aug</option>
-			<option value="Sep" <%=(month==9)?"selected":""%>>Sep</option>
-			<option value="Oct" <%=(month==10)?"selected":""%>>Oct</option>
-			<option value="Nov" <%=(month==11)?"selected":""%>>Nov</option>
-			<option value="Dec" <%=(month==12)?"selected":""%>>Dec</option>
-		</select> <select name="startNewYear">
-			<option value="2004" <%=(year==2004)?"selected":""%>>2004</option>
-			<option value="2005" <%=(year==2005)?"selected":""%>>2005</option>
-			<option value="2006" <%=(year==2006)?"selected":""%>>2006</option>
-			<option value="2007" <%=(year==2007)?"selected":""%>>2007</option>
-			<option value="2008" <%=(year==2008)?"selected":""%>>2008</option>
-			<option value="2009" <%=(year==2009)?"selected":""%>>2009</option>
-		</select> <select name="startNewSpecificHour">
-			<%
-				for (int i = 0; i < 24; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="startNewSpecificMinute">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="startNewSpecificSecond">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select> -&gt; <BR>
-		<select name="endNewDate">
-			<%
-				for (int i = 1; i < 32; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>" <%=(date==i)?"selected":""%>><%=i%></option>
-			<%
-				}
-			%>
-		</select> <select name="endNewMonth">
-			<option value="Jan" <%=(month==1)?"selected":""%>>Jan</option>
-			<option value="Feb" <%=(month==2)?"selected":""%>>Feb</option>
-			<option value="Mar" <%=(month==3)?"selected":""%>>Mar</option>
-			<option value="Apr" <%=(month==4)?"selected":""%>>Apr</option>
-			<option value="May" <%=(month==5)?"selected":""%>>May</option>
-			<option value="Jun" <%=(month==6)?"selected":""%>>Jun</option>
-			<option value="Jul" <%=(month==7)?"selected":""%>>Jul</option>
-			<option value="Aug" <%=(month==8)?"selected":""%>>Aug</option>
-			<option value="Sep" <%=(month==9)?"selected":""%>>Sep</option>
-			<option value="Oct" <%=(month==10)?"selected":""%>>Oct</option>
-			<option value="Nov" <%=(month==11)?"selected":""%>>Nov</option>
-			<option value="Dec" <%=(month==12)?"selected":""%>>Dec</option>
-		</select> <select name="endNewYear">
-			<option value="2004" <%=(year==2004)?"selected":""%>>2004</option>
-			<option value="2005" <%=(year==2005)?"selected":""%>>2005</option>
-			<option value="2006" <%=(year==2006)?"selected":""%>>2006</option>
-			<option value="2007" <%=(year==2007)?"selected":""%>>2007</option>
-			<option value="2008" <%=(year==2008)?"selected":""%>>2008</option>
-			<option value="2009" <%=(year==2009)?"selected":""%>>2009</option>
-		</select> <select name="endNewSpecificHour">
-			<%
-				for (int i = 0; i < 24; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="endNewSpecificMinute">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select>:<select name="endNewSpecificSecond">
-			<%
-				for (int i = 0; i < 60; i++) {
-			%>
-			<option value="<%=(i<10)?"0":""%><%=i%>"><%=i%></option>
-			<%
-				}
-			%>
-		</select></td>
-
-		<td valign="bottom"><input type="submit" value="Add"
-			name="addSpecificTime" /></td>
-	</tr>
-	<tr>
-		<td colspan="4">
-		<table border="1">
-			<%
-				Time[] outageTimes = theOutage.getTime();
-				for (int i = 0; i < outageTimes.length; i++) {
-					Time thisTime = outageTimes[i];
-			%>
-			<tr>
-				<td><%=(thisTime.getDay() != null) ? shortDayNames.get(thisTime.getDay()) + "&nbsp;" : ""%><%=thisTime.getBegins()%>
-				- <%=thisTime.getEnds()%></td>
-				<td><input type="image" src="images/redcross.gif"
-					name="deleteTime<%=i%>" /></td>
-			</tr>
-			<%
-				}
-			%>
-		</table>
-		</td>
-	</tr>
-
-	<tr>
-		<td colspan=4>
-		<hr>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="4"><b>Applies to:</b><br />
-		<table border="1">
-			<tr>
-				<td colspan="2">Notifications</td>
-				<td><input type="checkbox"
-					<%=(enabledOutages.contains("notifications"))?"checked":""%>
-					name="notifications"></td>
-			</tr>
-			<%
-				boolean doneTitle = false;
-				for ( org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet() ) {
-					Collection<String> pollingPackage = pollingOutages.get(thisKey);
-					String name = "polling-" + thisKey.getName();
-			%>
-			<tr>
-				<td><%=!doneTitle ? "Status polling" : ""%></td>
-				<td><%=thisKey.getName()%></td>
-				<td><input type="checkbox" name="<%=name%>"
-					<%=enabledOutages.contains(name)?"checked":""%>></td>
-			</tr>
-			<%
-					doneTitle = true;
-				}
-
-				doneTitle = false;
-				for ( org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet() ) {
-					Collection<String> thresholdPackage = thresholdOutages.get(thisKey);
-					String name = "threshold-" + thisKey.getName();
-			%>
-			<tr>
-				<td><%=!doneTitle ? "Threshold checking" : ""%></td>
-				<td><%=thisKey.getName()%></td>
-				<td><input type="checkbox" name="<%=name%>"
-					<%=enabledOutages.contains(name)?"checked":""%>></td>
-			</tr>
-			<%
-					doneTitle = true;
-				}
-				
-				doneTitle = false;
-				for ( org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet() ) {
-					Collection<String> collectPackage = collectionOutages.get(thisKey);
-					String name = "collect-" + thisKey.getName();
-			%>
-			<tr>
-				<td><%=!doneTitle ? "Data collection" : ""%></td>
-				<td><%=thisKey.getName()%></td>
-				<td><input type="checkbox" name="<%=name%>"
-					<%=enabledOutages.contains(name)?"checked":""%>></td>
-			</tr>
-			<%
-					doneTitle = true;
-				}
-			%>
-		</table>
+				if (theOutage != null
+						&& theOutage.getTimeCount() > 0
+						&& theOutage.getType() != null
+						&& (hasMatchAny || (theOutage.getInterfaceCount() > 0) || (theOutage.getNodeCount() > 0))
+						) {
+			%><input type="submit" value="Save" name="saveButton" /><% } %>
+			<input type="submit" value="Cancel" name="cancelButton" />
 		</td>
 	</tr>
 </table>
-<input type="submit" value="Save" name="saveButton" /></form>
-<form id="cancelForm" action="admin/sched-outages/index.jsp"
-	method="post"><input type="submit" value="Cancel"
-	name="cancelButton" /></form>
+
+</form>
+
+<script type="text/javascript">
+updateOutageTypeDisplay(null);
+</script>
 
 <jsp:include page="/includes/footer.jsp" flush="true" />
