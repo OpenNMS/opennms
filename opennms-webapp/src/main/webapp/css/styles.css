@@ -168,13 +168,27 @@ div.TwoColRAdmin {
         position: relative;
 }
 
+/* Treeview from UL/LI -- currently only in the scheduled outage page */
+
+.treeview
+{
+	list-style-type: none;
+	font-size: 120%;
+	padding-left: 0;
+}
+
+.treeview ul li
+{
+	list-style-type: none;
+	font-size: 100%;
+	margin-left: -2em;
+}
 
 /* Widget Box Body */
 .widget-box
 {
 	background: #cccccc;    
 }
-
 
 /*
  * value in a widget-box that serves as the fieldname for the value to its right 

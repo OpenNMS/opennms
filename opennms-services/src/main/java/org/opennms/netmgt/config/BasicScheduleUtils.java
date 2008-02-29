@@ -50,7 +50,7 @@ public class BasicScheduleUtils {
     /**
      * The day of the week values to name mapping
      */
-    protected static Map m_dayOfWeekMap;
+    protected static Map<String,Integer> m_dayOfWeekMap;
     public static String FORMAT1 = "dd-MMM-yyyy HH:mm:ss";
     public static String FORMAT2 = "HH:mm:ss";
 
@@ -64,7 +64,7 @@ public class BasicScheduleUtils {
         long curCalTime = cal.getTime().getTime();
         // check if day is part of outage
         boolean inOutage = false;
-        Enumeration e = sched.enumerateTime();
+        Enumeration<Time> e = sched.enumerateTime();
         while (e.hasMoreElements() && !inOutage) {
             Calendar outCalBegin = new GregorianCalendar();
             Calendar outCalEnd = new GregorianCalendar();
@@ -197,7 +197,7 @@ public class BasicScheduleUtils {
         cal.setTimeInMillis(curCalTime);
         // check if day is part of outage
         boolean inOutage = false;
-        Enumeration en = out.enumerateTime();
+        Enumeration<Time> en = out.enumerateTime();
         while (en.hasMoreElements() && !inOutage) {
             Calendar outCalBegin = new GregorianCalendar();
             Calendar outCalEnd = new GregorianCalendar();
@@ -252,7 +252,7 @@ public class BasicScheduleUtils {
      */
     private static void createDayOfWeekMapping() {
         if (BasicScheduleUtils.m_dayOfWeekMap == null) {
-            BasicScheduleUtils.m_dayOfWeekMap = new HashMap();
+            BasicScheduleUtils.m_dayOfWeekMap = new HashMap<String,Integer>();
             BasicScheduleUtils.m_dayOfWeekMap.put("sunday", new Integer(Calendar.SUNDAY));
             BasicScheduleUtils.m_dayOfWeekMap.put("monday", new Integer(Calendar.MONDAY));
             BasicScheduleUtils.m_dayOfWeekMap.put("tuesday", new Integer(Calendar.TUESDAY));
@@ -268,6 +268,10 @@ public class BasicScheduleUtils {
         cal.setTime(time);
         return isTimeInSchedule(cal, sched);
     }
+
+    public static boolean isDaily(Time time) {
+    	return time.getDay() == null && !time.getBegins().matches("\\d\\d\\d\\d-\\d\\d-\\d\\d");
+    }
     
     public static boolean isWeekly(Time time) {
         return time.getDay() != null && getDayOfWeekIndex(time.getDay()) != null;
@@ -278,7 +282,7 @@ public class BasicScheduleUtils {
     }
     
     public static boolean isSpecific(Time time) {
-        return time.getDay() == null;
+    	return time.getDay() == null && time.getBegins().matches("\\d\\d\\d\\d-\\d\\d-\\d\\d");
     }
     
     public static Date getSpecificTime(String specificString) {
@@ -303,15 +307,30 @@ public class BasicScheduleUtils {
         return ref.getTime();
     }
     
+    public static Date getDailyTime(Date referenceTime, String timeString) {
+    	Calendar ref = Calendar.getInstance();
+    	ref.setTime(referenceTime);
+    	setOutCalTime(ref, timeString);
+    	return ref.getTime();
+    }
+    
     public static OwnedInterval getInterval(Date ref, Time time, Owner owner) {
-        OwnedIntervalSequence seq = new OwnedIntervalSequence();
         if (isWeekly(time)) {
             return new OwnedInterval(owner, getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
         } else if (isMonthly(time)) {
             return new OwnedInterval(owner, getMonthlyTime(ref, time.getDay(), time.getBegins()), getMonthlyTime(ref, time.getDay(), time.getEnds()));
+        } else if (isDaily(time)) {
+            return new OwnedInterval(owner, getDailyTime(ref, time.getBegins()), getDailyTime(ref, time.getEnds()));
         } else {
             return new OwnedInterval(owner, getSpecificTime(time.getBegins()), getSpecificTime(time.getEnds()));
         }
+    }
+    
+    public static Date nextDay(Date date) {
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(date);
+    	cal.add(Calendar.DAY_OF_MONTH, 1);
+    	return cal.getTime();
     }
     
     public static Date nextWeek(Date date) {
@@ -344,6 +363,11 @@ public class BasicScheduleUtils {
             for(Date ref = start; done.after(ref); ref = nextMonth(ref)) {
                 seq.addInterval(getInterval(ref, time, owner));
             }
+        } else if (isDaily(time)) {
+        	Date done = nextDay(end);
+        	for(Date ref = start; done.after(ref); ref = nextDay(ref)) {
+        		seq.addInterval(getInterval(ref, time, owner));
+        	}
         } else {
             seq.addInterval(getInterval(start, time, owner));
         }
