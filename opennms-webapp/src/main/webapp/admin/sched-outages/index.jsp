@@ -70,6 +70,7 @@
 	<tr>
 		<th colspan="4">&nbsp;</th>
 		<th colspan="4">Affects...</th>
+		<th colspan="2"></th>
 	</tr>
 	<tr>
 		<th>Name</th>
@@ -80,6 +81,7 @@
 		<th>Polling</th>
 		<th>Thresholds</th>
 		<th>Data collection</th>
+		<th colspan="2"></th>
 	</tr>
 
 	<%
