@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Mar 03: Added new parameter for determining Host: HTTP 1.1 header command
+//              Encapsulated HTTP workings in new object
 // 2004 May 05: Switch from SocketChannel to Socket with connection timeout.
 // 2003 Jul 21: Explicitly closed socket.
 // 2003 Jul 18: Enabled retries for monitors.
@@ -61,6 +63,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -78,6 +81,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *  
  */
 @Distributable
@@ -120,361 +124,456 @@ public class HttpMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        //
-        // Get interface address from NetworkInterface
-        //
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
         }
 
-        
-        String cmd = buildCommand(iface, parameters);
-
         // Cycle through the port list
         //
-        int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-        String reason = null;
-        Double responseTime = null;
         int currentPort = -1;
+        HttpMonitorClient httpClient = new HttpMonitorClient(iface, new TreeMap<String, String>(parameters));
 
-        for (int portIndex = 0; portIndex < getPorts(parameters).length && serviceStatus != PollStatus.SERVICE_AVAILABLE; portIndex++) {
-            currentPort = getPorts(parameters)[portIndex];
+        for (int portIndex = 0; portIndex < determinePorts(httpClient.getParameters()).length && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; portIndex++) {
+            currentPort = determinePorts(httpClient.getParameters())[portIndex];
 
-            TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+            httpClient.setTimeoutTracker(new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT));
+            log().debug("Port = " + currentPort + ", Address = " + ((InetAddress) iface.getAddress()) + ", " + httpClient.getTimeoutTracker());
+            
+            httpClient.setCurrentPort(currentPort);
 
-            if (log().isDebugEnabled()) {
-                log().debug("Port = " + currentPort + ", Address = " + getIpv4Addr(iface) + ", " + tracker);
-            }
-
-            for(tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
-                Socket socket = null;
+            for(httpClient.getTimeoutTracker().reset();
+                httpClient.getTimeoutTracker().shouldRetry() && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; 
+                httpClient.getTimeoutTracker().nextAttempt()) {
+                
                 try {
-                    tracker.startAttempt();
+                    httpClient.getTimeoutTracker().startAttempt();                    
+                    httpClient.connect();
+                    log().debug("HttpMonitor: connected to host: " + ((InetAddress) iface.getAddress()) + " on port: " + currentPort);
+
+                    httpClient.sendHttpCommand();
                     
-                    socket = createSocket(iface, currentPort, tracker.getSoTimeout());
-                    socket.connect(new InetSocketAddress(getIpv4Addr(iface), currentPort), tracker.getConnectionTimeout());
-                    socket = wrapSocket(socket);
-                    log().debug("HttpMonitor: connected to host: " + getIpv4Addr(iface) + " on port: " + currentPort);
-
-                    // We're connected, so upgrade status to unresponsive
-                    serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
-
-                    //
-                    // Issue HTTP 'GET' command and check the return code in the response
-                    //
-                    socket.getOutputStream().write(cmd.getBytes());
-
-                    //
-                    // Get a buffered input stream that will read a line
-                    // at a time
-                    //
-                    BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String line = lineRdr.readLine();
-                    
-                    if (line == null) {
+                    if (httpClient.isEndOfStream()) {
                         continue;
                     }
 
-                    responseTime = tracker.elapsedTimeInMillis();
-                    
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: response= " + line);
-                        log().debug("poll: responseTime= " + responseTime + "ms");
-                    }
+                    httpClient.setResponseTime(httpClient.getTimeoutTracker().elapsedTimeInMillis());
+                    logResponseTimes(httpClient.getResponseTime(), httpClient.getCurrentLine());
 
-                    if (line.startsWith("HTTP/")) {
-                        StringTokenizer t = new StringTokenizer(line);
-                        t.nextToken();
-
-                        int serverResponseValue = -1;
-                        try {
-                            serverResponseValue = Integer.parseInt(t.nextToken());
-                        } catch (NumberFormatException nfE) {
-                            log().info("Error converting response code from host = " + getIpv4Addr(iface) + ", response = " + line);
-                        }
+                    if (httpClient.getPollStatus() == PollStatus.SERVICE_AVAILABLE && StringUtils.isNotBlank(httpClient.getResponseText())) {
+                        httpClient.setPollStatus(PollStatus.SERVICE_UNAVAILABLE);
+                        httpClient.readLinedMatching();
                         
-                        if (SnmpPeerFactory.matchNumericListOrRange(String.valueOf(serverResponseValue), getResponse(parameters))) {
-                            serviceStatus = PollStatus.SERVICE_AVAILABLE;
-                        } else {
-                            serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-                            StringBuffer sb = new StringBuffer();
-                            sb.append("HTTP response value: ");
-                            sb.append(serverResponseValue);
-                            sb.append(". Expecting: ");
-                            sb.append(getResponse(parameters));
-                            sb.append(".");
-                            reason = sb.toString();
-                        }
-                    }
-
-                    if (serviceStatus == PollStatus.SERVICE_AVAILABLE && getResponseText(parameters) != null && getResponseText(parameters).length() > 0) {
-                        // This loop will rip through the rest of the Response Header
-                        //
-                        do {
-                            line = lineRdr.readLine();
-                            
-                            if (isVerbose(parameters)) {
-                                log().debug("\theader: "+line);
-                            }
-
-                        } while (line != null && line.length() != 0);
-                        if (line == null) {
+                        if (httpClient.isEndOfStream()) {
                             continue;
                         }
 
-                        // Now lets rip through the Entity-Body (i.e., content) looking
-                        // for the required text.
-                        //
-                        boolean bResponseTextFound = false;
-                        int nullCount = 0;
-                        do {
-                            line = lineRdr.readLine();
-                            
-                            if (isVerbose(parameters)) {
-                                log().debug("\tbody: "+line);
-                            }
-                            
-                            if (line != null) {
-                                if (getResponseText(parameters).charAt(0) == '~') {
-                                    if (line.matches(getResponseText(parameters).substring(1))) {
-                                        bResponseTextFound = true;
-                                    }
-                                } else {
-                                    int responseIndex = line.indexOf(getResponseText(parameters));
-                                    if (responseIndex != -1) {
-                                        bResponseTextFound = true;
-                                    }
-                                }
-                            } else {
-                                nullCount++;
-                            }
-                            
-                        } while (nullCount < 2 && !bResponseTextFound);
+                        httpClient.read();
 
-                        // Set the status back to failed
-                        //
-                        if (!bResponseTextFound) {
-                            serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-                            reason = "Matching text: ["+getResponseText(parameters)+"] not found in body of HTTP response";
+                        if (!httpClient.isResponseTextFound()) {
+                            String message = "Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response";
+                            log().debug(message);
+                            httpClient.setReason("Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response");
                         }
                     }
-                } catch (NoRouteToHostException e) {
-                    log().warn("checkStatus: No route to host exception for address " + getIpv4Addr(iface) + ": " + e.getMessage());
-                    portIndex = getPorts(parameters).length; // Will cause outer for(;;) to terminate
-                    reason = "No route to host exception";
                     
-                    // don't break in case 'strict timeouts are enabled'
-                    //break; 
+                } catch (NoRouteToHostException e) {
+                    log().warn("checkStatus: No route to host exception for address " + ((InetAddress) iface.getAddress()) + ": " + e.getMessage());
+                    portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
+                    httpClient.setReason("No route to host exception");
                 } catch (InterruptedIOException e) {
-                    // Ignore
-                    log().info("checkStatus: did not connect to host with " + tracker);
-                    reason = "HTTP connection timeout";
+                    log().info("checkStatus: did not connect to host with " + httpClient.getTimeoutTracker().toString());
+                    httpClient.setReason("HTTP connection timeout");
                 } catch (ConnectException e) {
-                    // Connection Refused. Continue to retry.
-                    log().warn("Connection exception for " + getIpv4Addr(iface) + ":" + getPorts(parameters)[portIndex] + ":"+ e.getMessage());
-                    reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex]+": "+e.getMessage();
+                    log().warn("Connection exception for " + ((InetAddress) iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex] + ":"+ e.getMessage());
+                    httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
-                    // Ignore
-                    //
                     e.fillInStackTrace();
-                    log().warn("IOException while polling address " + getIpv4Addr(iface), e);
-                    reason = "IOException while polling address: "+getIpv4Addr(iface)+": "+e.getMessage();
+                    log().warn("IOException while polling address " + ((InetAddress) iface.getAddress()), e);
+                    httpClient.setReason("IOException while polling address: "+((InetAddress) iface.getAddress())+": "+e.getMessage());
                 } finally {
-                    try {
-                        // Close the socket
-                        if (socket != null) {
-                            socket.close();
-                        }
-                    } catch (IOException e) {
-                        e.fillInStackTrace();
-                        log().warn("Error closing socket connection", e);
-                    }
+                    httpClient.closeConnection();
                 }
 
             } // end for (attempts)
         } // end for (ports)
-
-        // Add the 'qualifier' parm to the parameter map. This parm will
-        // contain the port on which the service was found if AVAILABLE or
-        // will contain a comma delimited list of the port(s) which were
-        // tried if the service is UNAVAILABLE
-        //
-        if (serviceStatus == PollStatus.SERVICE_UNAVAILABLE) {
-            //
-            // Build port string
-            //
-            StringBuffer testedPorts = new StringBuffer();
-            for (int i = 0; i < getPorts(parameters).length; i++) {
-                if (i == 0) {
-                    testedPorts.append(getPorts(parameters)[0]);
-                } else {
-                    testedPorts.append(',').append(getPorts(parameters)[i]);
-                }
-            }
-
-            // Add to parameter map
-            parameters.put("qualifier", testedPorts.toString());
-            reason += "/Ports: "+testedPorts.toString();
-            log().debug("checkStatus: Reason: \""+reason+"\"");
-            return PollStatus.unavailable(reason);
-
-        } else if (serviceStatus == PollStatus.SERVICE_AVAILABLE) {
-            parameters.put("qualifier", Integer.toString(currentPort));
-            return PollStatus.available(responseTime);
-        } else {
-            return PollStatus.get(serviceStatus, reason);
-        }
+        return httpClient.determinePollStatusResponse();
 
     }
-    
-    
+
+    private void logResponseTimes(Double responseTime, String line) {
+        if (log().isDebugEnabled()) {
+            log().debug("poll: response= " + line);
+            log().debug("poll: responseTime= " + responseTime + "ms");
+        }
+    }
 
     protected Socket wrapSocket(final Socket socket) throws IOException {
         return socket;
     }
 
-    protected Socket createSocket(final NetworkInterface iface, final int currentPort, int soTimeout) throws IOException, SocketException {
-        Socket socket = new Socket();
-        socket.setSoTimeout(soTimeout);
-        return socket;
-    }
-
-    private boolean isVerbose(final Map<String, String> parameters) {
+    private boolean determineVerbosity(final Map<String, String> parameters) {
         final String verbose = ParameterMap.getKeyedString(parameters, "verbose", null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
     }
 
-    private String buildCommand(final NetworkInterface iface, final Map<String, String> parameters) {
-        
-        /*
-         * Sorting this map just in case the poller gets changed and the Map
-         * is no longer a TreeMap.
-         */
-        Map<String, String> sortedParameters = new TreeMap<String, String>(parameters);
-        // Following a successful poll 'currentPort' will contain the port on
-        // the remote host that was successfully queried
-        //
-        String cmd = "GET " + getUrl(parameters) + " HTTP/1.1\r\n";
-        cmd += "Connection: CLOSE \r\n";
-
-        if (getVirtualHost(parameters) != null) {
-            cmd = cmd + "Host: " + getVirtualHost(parameters) +"\r\n";
-        } else {
-            cmd += "Host: " + getIpv4Addr(iface).getHostName() +"\r\n";
-        }
-        
-        cmd += "User-Agent: "+getUserAgent(parameters) +"\r\n";
-        
-        if (getBasicAuthentication(parameters) != null) {
-            cmd += "Authorization: Basic "+getBasicAuthentication(parameters) +"\r\n";
-        }
-
-        for (Iterator<String> it = sortedParameters.keySet().iterator(); it.hasNext();) {
-            String parmKey = (String) it.next();
-            if (parmKey.matches("header[0-9]+$")) {
-                cmd += getHeader(parameters, parmKey)+"\r\n";
-            }
-        }
-        
-        cmd = cmd + "\r\n";
-        log().debug("checkStatus: cmd:\n" + cmd);
-        return cmd;
-    }
-
-    private String getUserAgent(final Map<String, String> parameters) {
+    private String determineUserAgent(final Map<String, String> parameters) {
         String agent = ParameterMap.getKeyedString(parameters, "user-agent", null);
-        if (agent == null || "".equals(agent)) {
+        if (isBlank(agent)) {
             return "OpenNMS HttpMonitor";
         }
         return agent;
     }
 
-    protected String getBasicAuthentication(final Map<String, String> parameters) {
+    String determineBasicAuthentication(final Map<String, String> parameters) {
         String credentials = ParameterMap.getKeyedString(parameters, "basic-authentication", null);
-        if (credentials != null && !"".equals(credentials)) {
-            return new String(Base64.encodeBase64(credentials.getBytes()));
+
+        if (isNotBlank(credentials)) {
+            credentials = new String(Base64.encodeBase64(credentials.getBytes()));
         } else {
+            
             String user = ParameterMap.getKeyedString(parameters, "user", null);
-            if (user == null || "".equals(user)) {
-                return null;
+            
+            if (isBlank(user)) {
+                credentials = null;
+            } else {
+                String passwd = ParameterMap.getKeyedString(parameters, "password", "");
+                credentials = new String(Base64.encodeBase64((user+":"+passwd).getBytes()));
             }
-            
-            String passwd = ParameterMap.getKeyedString(parameters, "password", "");
-            
-            return new String(Base64.encodeBase64((user+":"+passwd).getBytes()));
         }
+        
+        return credentials;
     }
 
-    private InetAddress getIpv4Addr(final NetworkInterface iface) {
-        return (InetAddress) iface.getAddress();
-    }
-
-    private String getHeader(final Map<String, String> parameters, String key) {
+    private String determineHttpHeader(final Map<String, String> parameters, String key) {
         return ParameterMap.getKeyedString(parameters, key, null);
     }
     
-/*    private String getHeader(Map parameters, int num) {
-        return ParameterMap.getKeyedString(parameters, "header"+String.valueOf(num), null);
-    }
-
-*/
-    private String getVirtualHost(final Map<String, String> parameters) {
+    private String determineVirtualHost(NetworkInterface iface, final Map<String, String> parameters) {
+        boolean res = ParameterMap.getKeyedBoolean(parameters, "resolve-ip", false);
         String virtualHost = ParameterMap.getKeyedString(parameters, "host-name", null);
-        if (virtualHost == null || "".equals(virtualHost)) {
-            //try deprecated parameter
-            virtualHost = ParameterMap.getKeyedString(parameters, "host name", null);
-        }
-        if (virtualHost == null || "".equals(virtualHost)) {
-            return null;
+
+        
+        if (isBlank(virtualHost)) {
+            if (res) {
+                virtualHost = ((InetAddress) iface.getAddress()).getCanonicalHostName();
+            } else {
+                virtualHost = ((InetAddress) iface.getAddress()).getHostAddress();
+            }
         }
         return virtualHost;
     }
 
-    private String getResponseText(final Map<String, String> parameters) {
-        String responseText = ParameterMap.getKeyedString(parameters, "response-text", null);
-        if (responseText == null) {
-            //try depricated parameter
-            responseText = ParameterMap.getKeyedString(parameters, "response text", null);
-        }
-        return responseText;
+
+    private String determineResponseText(final Map<String, String> parameters) {
+        return ParameterMap.getKeyedString(parameters, "response-text", null);
     }
 
-    private String getResponse(final Map<String, String> parameters) {
-        return ParameterMap.getKeyedString(parameters, "response", getDefaultResponseRange(getUrl(parameters)));
+    private String determineResponse(final Map<String, String> parameters) {
+        return ParameterMap.getKeyedString(parameters, "response", determineDefaultResponseRange(determineUrl(parameters)));
     }
 
-    private String getUrl(final Map<String, String> parameters) {
+    private String determineUrl(final Map<String, String> parameters) {
         return ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
     }
 
-    protected int[] getPorts(final Map<String, String> parameters) {
+    protected int[] determinePorts(final Map<String, String> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
-    private String getDefaultResponseRange(String url) {
+    private String determineDefaultResponseRange(String url) {
         if (url == null || url.equals(DEFAULT_URL)) {
             return "100-499";
         }
         return "100-399";
     }
-
-    /**
-     * Set to true if "response" property has a valid return code specified.
-       By default response will be deemed valid if the return code
-       falls in the range: 99 < rc < 500
-       This is based on the following information from RFC 1945 (HTTP 1.0)
-          HTTP 1.0 GET return codes:
-              1xx: Informational - Not used, future use
-              2xx: Success
-              3xx: Redirection
-              4xx: Client error
-              5xx: Server error
-
-     * @param response
-     * @return
-     */
-/*    private boolean isResponseParameterStrict(int response) {
-        return (response > 99 && response < 600);
+    
+    private boolean isNotBlank(String str) {
+        return org.apache.commons.lang.StringUtils.isNotBlank(str);
     }
-*/
+
+    private boolean isBlank(String str) {
+        return org.apache.commons.lang.StringUtils.isBlank(str);
+    }
+
+    final class HttpMonitorClient {
+        private double m_responseTime;
+        NetworkInterface m_iface;
+        Map<String, String> m_parameters;
+        String m_httpCmd;
+        Socket m_httpSocket;
+        private BufferedReader m_lineRdr;
+        private String m_currentLine;
+        private int m_serviceStatus;
+        private String m_reason;
+        private StringBuffer m_html = new StringBuffer();
+        private int m_serverResponseCode;
+        private TimeoutTracker m_timeoutTracker;
+        private int m_currentPort;
+        private String m_responseText;
+        private boolean m_responseTextFound = false;
+        
+        HttpMonitorClient(NetworkInterface iface, TreeMap<String, String>parameters) {
+            m_iface = iface;
+            m_parameters = parameters;
+            buildCommand();
+            m_serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
+            m_responseText = determineResponseText(parameters);
+        }
+        
+        public void read() throws IOException {
+            for (int nullCount = 0; nullCount < 2;) {
+                readLinedMatching();
+                if (isEndOfStream()) {
+                    nullCount++;
+                }
+            }
+        }
+
+        public int getCurrentPort() {
+            return m_currentPort;
+        }
+
+        public Map<String, String> getParameters() {
+            return m_parameters;
+        }
+
+        public boolean isResponseTextFound() {
+            return m_responseTextFound;
+        }
+        public void setResponseTextFound(boolean found) {
+            m_responseTextFound  = found;
+        }
+
+        public boolean checkCurrentLineMatchesResponseText() {
+            
+            if (m_responseText.charAt(0) == '~' && !m_responseTextFound) {
+                m_responseTextFound = m_currentLine.matches(m_responseText.substring(1));
+            } else {
+                m_responseTextFound = (m_currentLine.indexOf(m_responseText) != -1 ? true : false);
+            }
+            return m_responseTextFound;
+        }
+
+        public String getResponseText() {
+            return m_responseText;
+        }
+
+        public void setResponseText(String responseText) {
+            m_responseText = responseText;
+        }
+
+        public void setCurrentPort(int currentPort) {
+            m_currentPort = currentPort;
+        }
+
+        public TimeoutTracker getTimeoutTracker() {
+            return m_timeoutTracker;
+        }
+
+        public void setTimeoutTracker(TimeoutTracker tracker) {
+            m_timeoutTracker = tracker;
+        }
+
+        public Double getResponseTime() {
+            return m_responseTime;
+        }
+
+        public void setResponseTime(double elapsedTimeInMillis) {
+            m_responseTime = elapsedTimeInMillis;
+        }
+
+        private void connect() throws IOException, SocketException {
+            m_httpSocket = new Socket();
+            m_httpSocket.connect(new InetSocketAddress(((InetAddress) m_iface.getAddress()), m_currentPort), m_timeoutTracker.getConnectionTimeout());
+            m_serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
+            m_httpSocket.setSoTimeout(m_timeoutTracker.getSoTimeout());
+            m_httpSocket = wrapSocket(m_httpSocket);
+        }
+        
+        public void closeConnection() {
+            try {
+                if (m_httpSocket != null) {
+                    m_httpSocket.close();
+                    m_httpSocket = null;
+                }
+            } catch (IOException e) {
+                e.fillInStackTrace();
+                log().warn("Error closing socket connection", e);
+            }
+        }
+
+        public int getPollStatus() {
+            return m_serviceStatus;
+        }
+
+        public void setPollStatus(int serviceStatus) {
+            m_serviceStatus = serviceStatus;
+        }
+
+        public String getCurrentLine() {
+            return m_currentLine;
+        }
+        
+
+        public int getServerResponse() {
+            return m_serverResponseCode;
+        }
+
+        private void determineServerInitialResponse() {
+            int serverResponseValue = -1;
+            if (m_currentLine.startsWith("HTTP/")) {
+                serverResponseValue = parseHttpResponse();
+                
+                if (SnmpPeerFactory.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
+                    log().debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
+                    m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
+                } else {
+                    m_serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("HTTP response value: ");
+                    sb.append(serverResponseValue);
+                    sb.append(". Expecting: ");
+                    sb.append(determineResponse(m_parameters));
+                    sb.append(".");
+                    m_reason = sb.toString();
+                }
+            }
+            m_serverResponseCode = serverResponseValue;
+        }
+        
+        private int parseHttpResponse() {
+            StringTokenizer t = new StringTokenizer(m_currentLine);
+            t.nextToken();
+
+            int serverResponse = -1;
+            try {
+                serverResponse = Integer.parseInt(t.nextToken());
+            } catch (NumberFormatException nfE) {
+                log().info("Error converting response code from host = " + ((InetAddress) m_iface.getAddress()) + ", response = " + m_currentLine);
+            }
+            return serverResponse;
+        }
+
+        public boolean isEndOfStream() {
+            boolean eos = false;
+            if (m_currentLine == null) {
+                eos = true;
+            }
+            return eos;
+        }
+
+        public String readLinedMatching() throws IOException {
+            m_currentLine = m_lineRdr.readLine();
+            
+            if (determineVerbosity(m_parameters)) {
+                log().debug("\t<<: "+m_currentLine);
+            }
+            
+            m_html.append(m_currentLine);
+            
+            if (m_responseText != null && m_currentLine != null && !m_responseTextFound) {
+                if (checkCurrentLineMatchesResponseText()) {
+                    log().debug("response-text: "+m_responseText+": found.");
+                    m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
+                }
+            }
+            return m_currentLine;
+        }
+
+        public void sendHttpCommand() throws IOException {
+            if (determineVerbosity(m_parameters)) {
+                log().debug("Sending HTTP command: "+m_httpCmd);
+            }
+            m_httpSocket.getOutputStream().write(m_httpCmd.getBytes());
+            m_lineRdr = new BufferedReader(new InputStreamReader(m_httpSocket.getInputStream()));
+            readLinedMatching();
+            if (determineVerbosity(m_parameters)) {
+                log().debug("Server response: "+m_currentLine);
+            }
+            determineServerInitialResponse();
+        }
+
+        private void buildCommand() {
+            /*
+             * Sorting this map just in case the poller gets changed and the Map
+             * is no longer a TreeMap.
+             */
+            String cmd = "GET " + determineUrl(m_parameters) + " HTTP/1.1\r\n";
+            cmd += "Connection: CLOSE \r\n";
+            cmd = cmd + "Host: " + determineVirtualHost(m_iface, m_parameters) +"\r\n";
+            cmd += "User-Agent: "+determineUserAgent(m_parameters) +"\r\n";
+            
+            if (determineBasicAuthentication(m_parameters) != null) {
+                cmd += "Authorization: Basic "+determineBasicAuthentication(m_parameters) +"\r\n";
+            }
+
+            for (Iterator<String> it = m_parameters.keySet().iterator(); it.hasNext();) {
+                String parmKey = (String) it.next();
+                if (parmKey.matches("header[0-9]+$")) {
+                    cmd += determineHttpHeader(m_parameters, parmKey)+"\r\n";
+                }
+            }
+            
+            cmd = cmd + "\r\n";
+            log().debug("checkStatus: cmd:\n" + cmd);
+            m_httpCmd = cmd;
+        }
+
+        public void setReason(String reason) {
+            m_reason = reason;
+        }
+        
+        public String getReason() {
+            return m_reason;
+        }
+
+        public Socket getHttpSocket() {
+            return m_httpSocket;
+        }
+
+        public void setHttpSocket(Socket httpSocket) {
+            m_httpSocket = httpSocket;
+        }
+
+        protected PollStatus determinePollStatusResponse() {
+            /*
+             Add the 'qualifier' parm to the parameter map. This parm will
+             contain the port on which the service was found if AVAILABLE or
+             will contain a comma delimited list of the port(s) which were
+             tried if the service is UNAVAILABLE
+            */
+            
+            if (getPollStatus() == PollStatus.SERVICE_UNAVAILABLE) {
+                //
+                // Build port string
+                //
+                StringBuffer testedPorts = new StringBuffer();
+                for (int i = 0; i < determinePorts(getParameters()).length; i++) {
+                    if (i == 0) {
+                        testedPorts.append(determinePorts(getParameters())[0]);
+                    } else {
+                        testedPorts.append(',').append(determinePorts(getParameters())[i]);
+                    }
+                }
+        
+                // Add to parameter map
+                getParameters().put("qualifier", testedPorts.toString());
+                String reason = getReason();
+                reason += "/Ports: "+testedPorts.toString();
+                setReason(reason);
+                
+                log().debug("checkStatus: Reason: \""+getReason()+"\"");
+                return PollStatus.unavailable(getReason());
+        
+            } else if (getPollStatus() == PollStatus.SERVICE_AVAILABLE) {
+                getParameters().put("qualifier", Integer.toString(getCurrentPort()));
+                return PollStatus.available(getResponseTime());
+            } else {
+                return PollStatus.get(getPollStatus(), getReason());
+            }
+        }
+        
+    }
+
+    
 }
