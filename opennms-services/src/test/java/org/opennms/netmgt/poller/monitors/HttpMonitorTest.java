@@ -55,7 +55,7 @@ import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 public class HttpMonitorTest extends TestCase {
 
-    private boolean m_runTests = false;
+    private boolean m_runTests = true;
 
 
     protected void setUp() throws Exception {
@@ -138,7 +138,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
-        p.setValue("100-299");
+        p.setValue("100-199");
         m.put(p.getKey(), p.getValue());
         
         PollStatus status = monitor.poll(svc, m);        
@@ -166,40 +166,7 @@ public class HttpMonitorTest extends TestCase {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
     }
-    
-    public void testPollValidVirtualDomain() throws UnknownHostException {
-
-        if (m_runTests == false) return;
         
-        Map<String, String> m = Collections.synchronizedMap(new TreeMap<String, String>());
-        Parameter p = new Parameter();
-        
-        ServiceMonitor monitor = new HttpMonitor();
-        
-        p.setKey("port");
-        p.setValue("80");
-        m.put(p.getKey(), p.getValue());
-        
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-        
-        p.setKey("timeout");
-        p.setValue("1000");
-        m.put(p.getKey(), p.getValue());
-
-        //Try on opennms.org with vhost opennms.com
-        p.setKey("host-name");
-        p.setValue("www.opennms.com");
-        m.put(p.getKey(), p.getValue());
-                
-        m.put(p.getKey(), p.getValue());
-        
-        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
-        monitor.poll(svc, m);
-        
-    }
-    
     public void testMatchingTextInResponse() throws UnknownHostException {
         
         if (m_runTests == false) return;
@@ -209,14 +176,14 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "www.opennms.com", "HTTP");
 
         p.setKey("port");
         p.setValue("80");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
-        p.setValue("1");
+        p.setValue("0");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
@@ -226,16 +193,21 @@ public class HttpMonitorTest extends TestCase {
         p.setKey("response");
         p.setValue("100-499");
         m.put(p.getKey(), p.getValue());
-        
-        p.setKey("response-text");
-        p.setValue("surfing");
+                
+        p.setKey("verbose");
+        p.setValue("true");
         m.put(p.getKey(), p.getValue());
         
-        /*
-         * Adding this parameter because we get a redirect on www.opennms.org
-         */
         p.setKey("host-name");
-        p.setValue("www.opennms.com");
+        p.setValue("www.opennms.org");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("url");
+        p.setValue("/index.php/Main_Page");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("response-text");
+        p.setValue("opennmsrulz");
         m.put(p.getKey(), p.getValue());
 
         status = monitor.poll(svc, m);        
@@ -244,10 +216,10 @@ public class HttpMonitorTest extends TestCase {
         assertNotNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("consulting");
+        p.setValue("New and Noteworthy");
         m.put(p.getKey(), p.getValue());
-
-        MockUtil.println("\nliteral text check: \"consulting\"");
+        
+        MockUtil.println("\nliteral text check: \"New and Noteworthy\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -255,10 +227,10 @@ public class HttpMonitorTest extends TestCase {
         assertNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("~.*[Cc]onsulting.*");
+        p.setValue("~.*[Tt]ry [Oo]ut [Oo]penNMS.*");
         m.put(p.getKey(), p.getValue());
 
-        MockUtil.println("\nregex check: \".*[Cc]consulting.*\"");
+        MockUtil.println("\nregex check: \".*[Tt]ry [Oo]ut [Oo]penNMS.*\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -276,8 +248,8 @@ public class HttpMonitorTest extends TestCase {
         p.setKey("basic-authentication");
         p.setValue("Aladdin:open sesame");
         m.put(p.getKey(), p.getValue());
-        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", monitor.getBasicAuthentication(m));
-        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(monitor.getBasicAuthentication(m)));
+        assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", monitor.determineBasicAuthentication(m));
+        assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(monitor.determineBasicAuthentication(m)));
     }
     
     
@@ -294,14 +266,14 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(1, "localhost", "HTTP");
+        MonitoredService svc = getMonitoredService(1, "prism.library.cornell.edu", "HTTP");
         
         p.setKey("port");
-        p.setValue("8080");
+        p.setValue("80");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
-        p.setValue("1");
+        p.setValue("0");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
@@ -311,17 +283,17 @@ public class HttpMonitorTest extends TestCase {
         p.setKey("response");
         p.setValue("100-302");
         m.put(p.getKey(), p.getValue());
-                
+
         p.setKey("verbose");
         p.setValue("true");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/opennms/event/list");
+        p.setValue("/control/authBasic/authTest/");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("basic-authentication");
-        p.setValue("admin:admin");
+        p.setValue("test:this");
         m.put(p.getKey(), p.getValue());
         
         status = monitor.poll(svc, m);
@@ -329,9 +301,20 @@ public class HttpMonitorTest extends TestCase {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
         
+        
+        p.setKey("basic-authentication");
+        p.setValue("test:that");
+        m.put(p.getKey(), p.getValue());
+        
+        status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertNotNull(status.getReason());
+
+        
     }
     
-    public void testBasicAuthenticationWithHttps() throws UnknownHostException {
+    public void _testBasicAuthenticationWithHttps() throws UnknownHostException {
         
         if (m_runTests == false) return;
         
@@ -340,7 +323,7 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpsMonitor();
-        MonitoredService svc = getMonitoredService(1, "localhost", "HTTPS");
+        MonitoredService svc = getMonitoredService(1, "blah.opennms.com", "HTTP");
         
         p.setKey("port");
         p.setValue("443");
@@ -363,11 +346,11 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/opennms/event/list");
+        p.setValue("/index.php/Main_Page");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("basic-authentication");
-        p.setValue("admin:admin");
+        p.setValue("zzzz:zzzz");
         m.put(p.getKey(), p.getValue());
         
         status = monitor.poll(svc, m);
@@ -387,9 +370,12 @@ public class HttpMonitorTest extends TestCase {
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
         
+        p.setKey("host-name");
+        p.setValue("www.opennms.org");
+        m.put(p.getKey(), p.getValue());
+        
         p.setKey("url");
-        //found I needed the trailing "/" on this url
-        p.setValue("/wiki/");
+        p.setValue("/index.php/Enterprise_grade");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("port");
@@ -397,7 +383,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
-        p.setValue("1");
+        p.setValue("0");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
@@ -409,13 +395,12 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response-text");
-        p.setValue("OpenNMS");
+        p.setValue("thousands");
         m.put(p.getKey(), p.getValue());
         
-        //be sure to uncomment this when not running interactively
-//        p.setKey("verbose");
-//        p.setValue("true");
-//        m.put(p.getKey(), p.getValue());
+        p.setKey("verbose");
+        p.setValue("true");
+        m.put(p.getKey(), p.getValue());
         
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -456,11 +441,12 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
 
         p.setKey("response-text");
-        p.setValue("~.*[Cc]onsulting.*");
+        p.setValue("~.*[Cc]blahblah.*");
         m.put(p.getKey(), p.getValue());
 
         //Try on opennms.org
-        monitor.poll(svc, m);        
+        PollStatus status = monitor.poll(svc, m);
+        assertEquals("poll status not available", PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         
     }
 
