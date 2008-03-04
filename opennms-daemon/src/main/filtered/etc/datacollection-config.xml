@@ -213,7 +213,9 @@
       <!-- Asterisk (Digium) MIBs -->
       <group name="asterisk-scalars" ifType="ignore">
 	<mibObj oid=".1.3.6.1.4.1.22736.1.5.1" instance="0" alias="astNumChannels" type="gauge" />
-	<mibObj oid=".1.3.6.1.4.1.22736.1.5.5" instance="0" alias="astNumChanBridge" type="gauge" />
+	<mibObj oid=".1.3.6.1.4.1.22736.1.5.5.1" instance="0" alias="astNumChanBridge" type="gauge" />
+	<mibObj oid=".1.3.6.1.4.1.22736.1.2.5" instance="0" alias="astCfgCallsActive" type="gauge" />
+	<mibObj oid=".1.3.6.1.4.1.22736.1.2.6" instance="0" alias="astCfgCallsPrcessed" type="counter" />
       </group>
 
       <!-- Checkpoint MIBs -->
