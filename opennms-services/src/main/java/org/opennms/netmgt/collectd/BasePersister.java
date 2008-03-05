@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 04: Allow us to get the Builder object for tests. - dj@opennms.org
 // 2006 Aug 15: Format the code a little bit - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -209,5 +210,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 	public void setIgnorePersist(boolean ignore) {
 		m_ignorePersist = ignore;
 	}
+
+    public PersistOperationBuilder getBuilder() {
+        return m_builder;
+    }
 
 }
