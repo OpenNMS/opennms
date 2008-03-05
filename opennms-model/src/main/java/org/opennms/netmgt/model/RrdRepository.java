@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 04: Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +41,7 @@ import java.util.List;
 
 public class RrdRepository {
 
-    private List m_rraList;
+    private List<String> m_rraList;
     private int m_step;
     private int m_heartBeat;
     private File m_rrdBaseDir;
@@ -50,11 +54,11 @@ public class RrdRepository {
         m_rrdBaseDir = rrdBaseDir;
     }
 
-    public List getRraList() {
+    public List<String> getRraList() {
         return m_rraList;
     }
     
-    public void setRraList(List rraList) {
+    public void setRraList(List<String> rraList) {
         m_rraList = rraList;
     }
 
