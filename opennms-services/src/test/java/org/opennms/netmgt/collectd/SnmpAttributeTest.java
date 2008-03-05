@@ -82,15 +82,17 @@ public class SnmpAttributeTest extends TestCase {
         m_mocks.verifyAll();
     }
     
-    // FIXME: there are tests in this file other than the disabled one
-    public void testBogus() {
-        m_mocks.replayAll();
+    public void testNumericAttributeFloatValueInString() throws Exception {
+        String stringValue = "7.69";
+        testPersisting(stringValue, new Snmp4JValueFactory().getOctetString(stringValue.getBytes()));
     }
 
-    // FIXME: This test doesn't work because of bug #2018
-    public void FIXMEtestNumericAttributeFloatValue() throws Exception {
-        String stringValue = "7.69";
+    public void testNumericAttributeCounterValue() throws Exception {
+        int intValue = 769;
+        testPersisting(Integer.toString(intValue), new Snmp4JValueFactory().getCounter32(intValue));
+    }
 
+    private void testPersisting(String matchValue, SnmpValue snmpValue) throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(3);
         
@@ -101,11 +103,11 @@ public class SnmpAttributeTest extends TestCase {
         
         expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
 
-        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".mockRrdStrategy").anyTimes();
+        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
         m_rrdStrategy.createFile(isA(Object.class));
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
-        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + stringValue));
+        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
         m_rrdStrategy.closeFile(isA(Object.class));
         
         m_mocks.replayAll();
@@ -123,8 +125,7 @@ public class SnmpAttributeTest extends TestCase {
         
         NumericAttributeType attributeType = new NumericAttributeType(resourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("foo", "ignore"));
         
-        SnmpValue value = new Snmp4JValueFactory().getOctetString(stringValue.getBytes());
-        SnmpAttribute attr = new SnmpAttribute(nodeInfo, attributeType, value);
+        SnmpAttribute attr = new SnmpAttribute(nodeInfo, attributeType, snmpValue);
         
         RrdRepository repository = new RrdRepository();
         repository.setRraList(new ArrayList<String>(Collections.singleton("RRA:AVERAGE:0.5:1:2016")));
