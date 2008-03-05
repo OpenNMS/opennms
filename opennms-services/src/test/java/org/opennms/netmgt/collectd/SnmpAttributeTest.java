@@ -36,9 +36,9 @@
 package org.opennms.netmgt.collectd;
 
 import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.matches;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +47,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
@@ -67,7 +66,6 @@ public class SnmpAttributeTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private IpInterfaceDao m_ipInterfaceDao = m_mocks.createMock(IpInterfaceDao.class);
     private RrdStrategy m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-    private TimeKeeper m_timeKeeper = m_mocks.createMock(TimeKeeper.class);
     
     @Override
     protected void setUp() throws Exception {
@@ -91,7 +89,6 @@ public class SnmpAttributeTest extends TestCase {
 
     // FIXME: This test doesn't work because of bug #2018
     public void FIXMEtestNumericAttributeFloatValue() throws Exception {
-        long time = System.currentTimeMillis();
         String stringValue = "7.69";
 
         OnmsNode node = new OnmsNode();
@@ -104,14 +101,11 @@ public class SnmpAttributeTest extends TestCase {
         
         expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
 
-        expect(m_timeKeeper.getCurrentTime()).andReturn(time);
-
-        
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".mockRrdStrategy").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
         m_rrdStrategy.createFile(isA(Object.class));
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
-        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), eq((time / 1000) + ":" + stringValue));
+        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + stringValue));
         m_rrdStrategy.closeFile(isA(Object.class));
         
         m_mocks.replayAll();
@@ -137,7 +131,6 @@ public class SnmpAttributeTest extends TestCase {
         
         BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, String>()), repository);
         persister.createBuilder(nodeInfo, "baz", attributeType);
-        persister.getBuilder().setTimeKeeper(m_timeKeeper);
         
         attr.storeAttribute(persister);
         
