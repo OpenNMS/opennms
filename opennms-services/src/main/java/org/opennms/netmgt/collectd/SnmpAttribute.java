@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 04: Make getNumericValue() happy with floating point numbers.  This fixes bug #2018. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -107,21 +111,21 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     }
 
     public String getNumericValue() {
-    		String val = null;
-    		if (getValue() == null) {
-    			val = null;
-    		} else {
-    			try {
-    				val = Long.toString(getValue().toLong());
-    			} catch(NumberFormatException e) {
-    				log().warn("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
-    			}
-    		}
-    		if (val == null) {
-    			log().info("No data collected for attribute "+this+". Skipping");
-    		}
-    		return val;
+        if (getValue() == null) {
+            log().info("No data collected for attribute "+this+". Skipping");
+            return null;
+        } else if (getValue().isNumeric()) {
+            return Long.toString(getValue().toLong());
+        } else {
+            try {
+                return Double.valueOf(getValue().toString()).toString();
+            } catch(NumberFormatException e) {
+                log().warn("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+                return null;
+            }
+        }
     }
+    
     public String getStringValue() {
         SnmpValue value=getValue();
         return (value == null ? null : value.toString());
