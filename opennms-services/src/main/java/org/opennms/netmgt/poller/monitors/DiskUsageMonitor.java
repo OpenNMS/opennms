@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
@@ -63,7 +64,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <p>
- * Check for disks via UCD-SNMP-MIB.  This should be extended to
+ * Check for disks via HOST-RESOURCES-MIB.  This should be extended to
  * support BOTH UCD-SNMP-MIB and HOST-RESOURCES-MIB
  * </p>
  * 
@@ -81,7 +82,14 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     private static final String hrStorageSize  = ".1.3.6.1.2.1.25.2.3.1.5";
     private static final String hrStorageUsed  = ".1.3.6.1.2.1.25.2.3.1.6";
     
-    
+    /**
+     * The available match-types for this monitor
+     */
+    private static final int MATCH_TYPE_EXACT = 0;
+    private static final int MATCH_TYPE_STARTSWITH = 1;
+    private static final int MATCH_TYPE_ENDSWITH = 2;
+    private static final int MATCH_TYPE_REGEX = 3;
+
     /**
      * <P>
      * Returns the name of the service that the plug-in monitors ("DISK-USAGE").
@@ -179,9 +187,10 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      *                Thrown for any uncrecoverable errors.
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
+        int matchType = MATCH_TYPE_EXACT;
+        
         NetworkInterface iface = svc.getNetInterface();
 
-        
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
         
@@ -195,8 +204,22 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         String diskName = ParameterMap.getKeyedString(parameters, "disk", null);
         Integer percentFree = ParameterMap.getKeyedInteger(parameters, "free", 15);
         
+        String matchTypeStr = ParameterMap.getKeyedString(parameters, "match-type", "exact");
+        if (matchTypeStr.equalsIgnoreCase("exact")) {
+            matchType = MATCH_TYPE_EXACT; 
+        } else if (matchTypeStr.equalsIgnoreCase("startswith")) {
+            matchType = MATCH_TYPE_STARTSWITH;
+        } else if (matchTypeStr.equalsIgnoreCase("endswith")) {
+            matchType = MATCH_TYPE_ENDSWITH;
+        } else if (matchTypeStr.equalsIgnoreCase("regex")) {
+            matchType = MATCH_TYPE_REGEX;
+        } else {
+            throw new RuntimeException("Unknown value '" + matchTypeStr + "' for parameter 'match-type'");
+        }
+        
         log().debug("diskName=" + diskName);
         log().debug("percentfree=" + percentFree);
+        log().debug("matchType=" + matchTypeStr);
         
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
 
@@ -219,7 +242,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
                 log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                 
-                if (e.getValue().toString().equals(diskName)) {
+                if (isMatch(e.getValue().toString(), diskName, matchType)) {
                 	log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
                 	
                 	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
@@ -260,5 +283,24 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
 
         return status;
     }
-
+    
+    private boolean isMatch(String candidate, String target, int matchType) {
+        boolean matches = false;
+        log().debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        if (matchType == MATCH_TYPE_EXACT) {
+            log().debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            matches = candidate.equals(target);
+        } else if (matchType == MATCH_TYPE_STARTSWITH) {
+            log().debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            matches = candidate.startsWith(target);
+        } else if (matchType == MATCH_TYPE_ENDSWITH) {
+            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            matches = candidate.endsWith(target);
+        } else if (matchType == MATCH_TYPE_REGEX) {
+            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            matches = Pattern.compile(target).matcher(candidate).find();
+        }
+        log().debug("isMatch: Match is positive");
+        return matches;
+    }
 }
