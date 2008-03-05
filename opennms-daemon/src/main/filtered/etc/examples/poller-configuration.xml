@@ -259,7 +259,7 @@
              		<parameter key="timeout" value="3000"/>
              		<parameter key="retry" value="2"/>
              		<parameter key="disk" value="/home"/>
-             		<parameter key="match-type" value="/home" /><!-- Would catch either "/home" or "/export/home" -->
+             		<parameter key="match-type" value="endsWith" /><!-- Would catch either "/home" or "/export/home" -->
              		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
 		</service>
 		<service name="DiskUsage-CDrive" interval="300000" user-defined="false" status="on">
