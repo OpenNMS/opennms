@@ -10,6 +10,9 @@
 
 //Modifications:
 
+//2008 Mar 04: Use load() instead of get() to get the OnmsIpInterface from
+//             the DAO since it should be there and we should throw a sane
+//             error message, not NPEs if it isn't. - dj@opennms.org
 //2006 Aug 15: Javadoc. - dj@opennms.org
 
 //Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -96,7 +99,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     
 
     OnmsIpInterface getIpInterface() {
-        return m_ifaceDao.get(m_ifaceId);
+        return m_ifaceDao.load(m_ifaceId);
     }
 
     private OnmsNode getNode() {

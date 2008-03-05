@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 04: Use TimeKeeper to get the current time and let it be dependency
+//              injected for tests.  Java 5 generics. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +37,7 @@
 
 package org.opennms.netmgt.collectd;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.StringUtils;
+import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -51,6 +59,7 @@ public class PersistOperationBuilder {
     private String m_rrdName;
     private ResourceIdentifier m_resource;
     private Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
+    private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
     
     /**
      * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
@@ -95,8 +104,9 @@ public class PersistOperationBuilder {
      * @return RRD type string or NULL object type is not supported.
      */
     public static String mapType(String objectType) {
-        if (objectType.toLowerCase().startsWith("counter"))
+        if (objectType.toLowerCase().startsWith("counter")) {
             return PersistOperationBuilder.DST_COUNTER;
+        }
         
         return PersistOperationBuilder.DST_GAUGE;
     }
@@ -108,14 +118,14 @@ public class PersistOperationBuilder {
         }
         
         RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
-        RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, System.currentTimeMillis(), getValues());
+        RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
     }
 
     private String getValues() {
         boolean first = true;
         StringBuffer values = new StringBuffer();
-        for (Iterator iter = m_declarations.keySet().iterator(); iter.hasNext();) {
-            AttributeDefinition attrDef = (AttributeDefinition) iter.next();
+        for (Iterator<AttributeDefinition> iter = m_declarations.keySet().iterator(); iter.hasNext();) {
+            AttributeDefinition attrDef = iter.next();
             String value = m_declarations.get(attrDef);
             if (!first) {
                 values.append(':');
@@ -128,7 +138,7 @@ public class PersistOperationBuilder {
 
     }
 
-    private List getDataSources() {
+    private List<RrdDataSource> getDataSources() {
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>(m_declarations.size());
         for (AttributeDefinition attrDef : m_declarations.keySet()) {
             RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrDef.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), PersistOperationBuilder.mapType(attrDef.getType()), getRepository().getHeartBeat(), "U", "U");
@@ -139,6 +149,14 @@ public class PersistOperationBuilder {
 
     public String getName() {
         return m_rrdName;
+    }
+
+    public TimeKeeper getTimeKeeper() {
+        return m_timeKeeper;
+    }
+
+    public void setTimeKeeper(TimeKeeper timeKeeper) {
+        m_timeKeeper = timeKeeper;
     }
 
 }
