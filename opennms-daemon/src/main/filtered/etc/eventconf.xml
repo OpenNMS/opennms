@@ -1601,6 +1601,7 @@
   <event-file>events/Clarent.events.xml</event-file>
   <event-file>events/Clarinet.events.xml</event-file>
   <event-file>events/Cricket.events.xml</event-file>
+  <event-file>events/Crossbeam.events.xml</event-file>
   <event-file>events/DellArrayManager.events.xml</event-file>
   <event-file>events/Dell-DRAC2.events.xml</event-file>
   <event-file>events/DellOpenManage.events.xml</event-file>
