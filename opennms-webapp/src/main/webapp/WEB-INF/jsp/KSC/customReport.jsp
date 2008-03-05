@@ -157,7 +157,7 @@
                             <c:param name="zoom" value="true"/>
                           </c:url>
                         
-                          <img src="${graphUrl}"/>
+                          <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title}" />
                         </td>
                     </tr>
                   </c:forEach>

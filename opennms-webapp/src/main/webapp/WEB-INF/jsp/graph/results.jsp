@@ -205,7 +205,7 @@
       </script>
       
       <div align="center">
-        <img id="zoomImage" src="${graphUrl}" />
+        <img id="zoomImage" src="${graphUrl}" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
       </div>
     </c:when>
 
@@ -227,7 +227,7 @@
           <c:param name="end" value="${results.end.time}"/>
 		</c:url>
 		
-	    <a href="${zoomUrl}"><img src="${graphUrl}"/></a>
+	    <a href="${zoomUrl}"><img src="${graphUrl}" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
 		<br/>
       </c:forEach>
     </c:when>
