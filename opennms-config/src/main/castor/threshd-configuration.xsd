@@ -26,7 +26,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:thresholder">
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:thresholder">
           <annotation>
             <documentation>Service thresholders</documentation>
           </annotation>

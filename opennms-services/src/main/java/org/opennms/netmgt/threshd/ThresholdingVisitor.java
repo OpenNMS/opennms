@@ -50,6 +50,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
@@ -78,11 +80,12 @@ import org.springframework.dao.DataAccessException;
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     private static ThresholdsDao s_thresholdsDao;
+    private static ThreshdConfigManager s_threshdConfig;
     static {
         initThresholdsDao();
     }
     
-    private static void initThresholdsDao() {
+    protected static void initThresholdsDao() {
         DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
         
         try {
@@ -93,7 +96,14 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             ThreadCategory.getInstance(ThresholdingVisitor.class).error("initialize: Could not initialize DefaultThresholdsDao: " + t, t);
             throw new RuntimeException("Could not initialize DefaultThresholdsDao: " + t, t);
         }
-        s_thresholdsDao=defaultThresholdsDao;
+        try {
+            ThreshdConfigFactory.init();
+        } catch (Throwable t) {
+            ThreadCategory.getInstance(ThresholdingVisitor.class).error("initialize: Could not initialize ThreshdConfigFactory: " + t, t);
+            throw new RuntimeException("Could not initialize ThreshdConfigFactory: " + t, t);
+        }
+        s_thresholdsDao = defaultThresholdsDao;
+        s_threshdConfig = ThreshdConfigFactory.getInstance();            
     }
     
     public static void handleThresholdConfigChanged() {
@@ -103,7 +113,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     //DB node id of the node where thresholding
     private int m_nodeId;
     
-    private String m_groupName;
+    private List<String> m_groupNameList;
     
     //The address of the interface being thresholded; only used for display/events, not as an actual IP address
     private String m_hostAddress;
@@ -124,7 +134,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     private Map<String, String> m_stringAttributeValues;
 
     //The set of ThresholdEntity instances
-    private ThresholdGroup m_thresholdGroup;
+    private List<ThresholdGroup> m_thresholdGroupList;
     
     //Handy local reference to the rrd repository in use.  
     private RrdRepository m_repository;
@@ -134,23 +144,88 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     
     
     public static ThresholdingVisitor createThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map params) {
-        //Use the "thresholding-group" param to get the appropriate config from DefaultThresholdsDao.
-        String groupName=(String)params.get("thresholding-group");
+        Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
         
-        if(groupName==null) {
+        // Use the "thresholding-enable" to use Thresholds processing on Collectd
+        String enabled = (String)params.get("thresholding-enabled");
+        if (enabled == null || !enabled.equals("true")) {
+        	log.warn("createThresholdingVisitor: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
+        	return null;
+        }
+
+        // The next code was extracted from Threshd.scheduleService
+        //
+        //
+        // Searching for packages defined on threshd-configuration.xml
+        // Compare interface/service pair against each threshd package
+        // For each match, create new ThresholdableService object and
+        // schedule it for collection
+        //
+        List<String> groupNameList = new ArrayList<String>();
+        for (org.opennms.netmgt.config.threshd.Package pkg : s_threshdConfig.getConfiguration().getPackage()) {
+
+            // Make certain the the current service is in the package
+            // and enabled!
+            //
+            if (!s_threshdConfig.serviceInPackageAndEnabled(serviceName, pkg)) {
+                if (log.isDebugEnabled())
+                    log.debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+                continue;
+            }
+
+            // Is the interface in the package?
+            //
+            log.debug("createThresholdingVisitor: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
+            boolean foundInPkg = s_threshdConfig.interfaceInPackage(hostAddress, pkg);
+            if (!foundInPkg) {
+                // The interface might be a newly added one, rebuild the package
+                // to ipList mapping and again to verify if the interface is in
+                // the package.
+                //
+                s_threshdConfig.rebuildPackageIpListMap();
+                foundInPkg = s_threshdConfig.interfaceInPackage(hostAddress, pkg);
+            }
+            if (!foundInPkg) {
+                if (log.isDebugEnabled())
+                    log.debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                continue;
+            }
+
+            // Getting thresholding-group for selected service and adding to groupNameList
+            //
+            for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
+            	if (svc.getName().equals(serviceName)) {
+            		String groupName = null;
+            		for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
+            			if (parameter.getKey().equals("thresholding-group")) {
+            				groupName = parameter.getValue();
+            			}
+            		}
+            		if (groupName != null) {
+            			groupNameList.add(groupName);
+            			log.debug("createThresholdingVisitor:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+            		}
+            	}
+            }
+        }
+        
+        // Create ThresholdingVisitor is groupNameList is not empty
+        if (groupNameList.isEmpty()) {
+            log.warn("createThresholdingVisitor: Can't create ThreshdingVisitor for " + hostAddress + "/" + serviceName);
             return null;
         }
-        return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupName);
+        return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupNameList);
     }
     
-    private ThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, String groupName) { 
+    protected ThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, List<String> groupNameList) { 
 
-        m_groupName=groupName;
+        m_groupNameList=groupNameList;
         m_nodeId=nodeId;
         m_hostAddress=hostAddress;
         m_serviceName=serviceName;
         m_repository=repo;
         initThresholdState();
+        log().debug(this + " just created!");
     }
     
     /**
@@ -169,31 +244,35 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     public void visitResource(CollectionResource resource) {
         log().debug(this+" visiting resource "+resource);
         //Should only refresh our thresholds when we start checking a new collection; do the check now
-        if(m_needsRefresh) {
-            log().debug(this+" needs refresh of state; refreshing now");
-            m_thresholdGroup=s_thresholdsDao.get(m_groupName);
-            if(m_thresholdGroup==null) {
-                log().error("Could not get threshold group with name " + m_groupName);
-            }
-            m_needsRefresh=false;
-            if (log().isDebugEnabled()) {
-            	StringBuffer resDebugMsg = new StringBuffer("Resource types after refresh are [");
-            	resDebugMsg.append("node: { ");
-	            if (m_thresholdGroup.getNodeResourceType() != null) {
-	            	resDebugMsg.append(m_thresholdGroup.getNodeResourceType());
-	            }
-	            resDebugMsg.append(" }; iface: { ");
-	            if (m_thresholdGroup.getIfResourceType() != null) {
-	            	resDebugMsg.append(m_thresholdGroup.getIfResourceType());
-	            }
-	            resDebugMsg.append(" }; generic: { ");
-	            if (m_thresholdGroup.getGenericResourceTypeMap() != null) {
-	            	for (String rType : m_thresholdGroup.getGenericResourceTypeMap().keySet()) {
-	            		resDebugMsg.append(rType + " ");
-	            	}
-	            }
-	            resDebugMsg.append(" } ]");
-	            log().debug(resDebugMsg.toString());
+        if (m_needsRefresh) {
+            log().debug(this + " needs refresh of state; refreshing now");
+            m_thresholdGroupList = new ArrayList<ThresholdGroup>();
+            for (String groupName : m_groupNameList) {
+                ThresholdGroup thresholdGroup = s_thresholdsDao.get(groupName);
+                if (thresholdGroup == null) {
+                    log().error("Could not get threshold group with name " + groupName);
+                }
+                m_thresholdGroupList.add(thresholdGroup);
+                m_needsRefresh = false;
+                if (log().isDebugEnabled()) {
+                    StringBuffer resDebugMsg = new StringBuffer("Resource types after refresh are [");
+                    resDebugMsg.append("node: { ");
+                    if (thresholdGroup.getNodeResourceType() != null) {
+                        resDebugMsg.append(thresholdGroup.getNodeResourceType());
+                    }
+                    resDebugMsg.append(" }; iface: { ");
+                    if (thresholdGroup.getIfResourceType() != null) {
+                        resDebugMsg.append(thresholdGroup.getIfResourceType());
+                    }
+                    resDebugMsg.append(" }; generic: { ");
+                    if (thresholdGroup.getGenericResourceTypeMap() != null) {
+                        for (String rType : thresholdGroup.getGenericResourceTypeMap().keySet()) {
+                            resDebugMsg.append(rType + " ");
+                        }
+                    }
+                    resDebugMsg.append(" } ]");
+                    log().debug(resDebugMsg.toString());
+                }
             }
         }
         m_numericAttributeValues=new HashMap<String,Double>();
@@ -233,71 +312,73 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
         
         File resourceDir= resource.getResourceDir(m_repository); //used repeatedly; only obtain once
-        //Find the appropriate ThresholdEntity map to use based on the type of CollectionResource we're looking at
-        Map<String, ThresholdEntity> entityMap;
-        String resourceType=resource.getResourceTypeName();
-        String ifLabel=null;
-        if("node".equals(resourceType)) {
-            entityMap=m_thresholdGroup.getNodeResourceType().getThresholdMap();
-        } else if ("if".equals(resourceType)) {
-            entityMap=m_thresholdGroup.getIfResourceType().getThresholdMap();
-            ifLabel=resource.getResourceDir(m_repository).getName();
-            if(m_snmpIfIndex==null) {
-                m_snmpIfIndex=this.getIfInfo(m_nodeId, ifLabel, "snmpifindex");
-            }
-        } else {
-            Map <String, ThresholdResourceType> typeMap=m_thresholdGroup.getGenericResourceTypeMap();
-            if(typeMap==null) {
-                log().error("Generic Resource Type map was null (this shouldn't happen)");
-                return; //Cannot sensibly continue
-            }
-            ThresholdResourceType thisResourceType=typeMap.get(resourceType);
-            if(thisResourceType==null) {
-                log().warn("No thresholds configured for resource type " + resourceType +".  Not processing this collection ");
-                return; //Cannot sensibly continue; might be simply no thresholds configured, or maybe something deeper
-            }
-            entityMap=thisResourceType.getThresholdMap();
-        }
-
-
-        //Now look at each 
-        for(String key : entityMap.keySet()) {
-            ThresholdEntity threshold=entityMap.get(key);
-            if(passedThresholdFilters(resourceDir, m_thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
-                log().info("Processing threshold "+key);
-                Collection<String> requiredDatasources=threshold.getRequiredDatasources();
-                Map<String, Double> values=new HashMap<String,Double>();
-                boolean valueMissing=false;
-                for(String ds: requiredDatasources) {
-                    log().info("Looking for datasource "+ds);
-                    Double dsValue=m_numericAttributeValues.get(ds);;
-                    if(dsValue==null) {
-                        log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
-                        valueMissing=true;
-                    }
-                    values.put(ds,dsValue);
-                }
-                if(!valueMissing) {
-                    log().info("All values found, evaluating");
-                    List<Event> thresholdEvents=threshold.evaluateAndCreateEvents(resource.getInstance(), values, date);   
-                    
-                    //Check in the fetched values first; if the label isn't there, check on disk.
-                    //This is acceptable because the strings.properties files tend to be tiny, so the performance implications are minimal
-                    // whereas there is (IMHO) a reasonable chance that the labels users want to use may well not have been collected
-                    // in the same collection set being visited now
-                    String dsLabelValue=m_stringAttributeValues.get(threshold.getDatasourceLabel());
-                    if(dsLabelValue==null) {
-                        log().info("No datasource label found in CollectionSet, fetching from storage");
-                        dsLabelValue= getDataSourceLabelFromFile(resourceDir, threshold);
-                    }
-                    completeEventList(thresholdEvents, ifLabel, m_snmpIfIndex, dsLabelValue); //Finishes off events with details that a ThresholdEntity shouldn't know
-                    eventsList.addAll(thresholdEvents);
+        for (ThresholdGroup thresholdGroup : m_thresholdGroupList) {
+            // Find the appropriate ThresholdEntity map to use based on the type of
+            // CollectionResource we're looking at
+            Map<String, ThresholdEntity> entityMap;
+            String resourceType = resource.getResourceTypeName();
+            String ifLabel = null;
+            if ("node".equals(resourceType)) {
+                entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
+            } else if ("if".equals(resourceType)) {
+                entityMap = thresholdGroup.getIfResourceType().getThresholdMap();
+                ifLabel = resource.getResourceDir(m_repository).getName();
+                if (m_snmpIfIndex == null) {
+                    m_snmpIfIndex = this.getIfInfo(m_nodeId, ifLabel, "snmpifindex");
                 }
             } else {
-                log().info("Not processing threshold "+ key +" because no filters matched");
+                Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
+                if (typeMap == null) {
+                    log().error("Generic Resource Type map was null (this shouldn't happen)");
+                    return; // Cannot sensibly continue
+                }
+                ThresholdResourceType thisResourceType = typeMap.get(resourceType);
+                if (thisResourceType == null) {
+                    log().warn("No thresholds configured for resource type " + resourceType + ".  Not processing this collection ");
+                    return; // Cannot sensibly continue; might be simply no thresholds configured, or maybe something deeper
+                }
+                entityMap = thisResourceType.getThresholdMap();
             }
-        }
-        
+
+            // Now look at each
+            for(String key : entityMap.keySet()) {
+                ThresholdEntity threshold=entityMap.get(key);
+                if(passedThresholdFilters(resourceDir, thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
+                    log().info("Processing threshold "+key);
+                    Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+                    Map<String, Double> values=new HashMap<String,Double>();
+                    boolean valueMissing=false;
+                    for(String ds: requiredDatasources) {
+                        log().info("Looking for datasource "+ds);
+                        Double dsValue=m_numericAttributeValues.get(ds);
+                        if(dsValue==null) {
+                            log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
+                            valueMissing=true;
+                        }
+                        values.put(ds,dsValue);
+                    }
+                    if(!valueMissing) {
+                        log().info("All values found, evaluating");
+                        List<Event> thresholdEvents=threshold.evaluateAndCreateEvents(resource.getInstance(), values, date);   
+                    
+                        //Check in the fetched values first; if the label isn't there, check on disk.
+                        //This is acceptable because the strings.properties files tend to be tiny, so the performance implications are minimal
+                        // whereas there is (IMHO) a reasonable chance that the labels users want to use may well not have been collected
+                        // in the same collection set being visited now
+                        String dsLabelValue=m_stringAttributeValues.get(threshold.getDatasourceLabel());
+                        if(dsLabelValue==null) {
+                            log().info("No datasource label found in CollectionSet, fetching from storage");
+                            dsLabelValue= getDataSourceLabelFromFile(resourceDir, threshold);
+                        }
+                        completeEventList(thresholdEvents, ifLabel, m_snmpIfIndex, dsLabelValue); //Finishes off events with details that a ThresholdEntity shouldn't know
+                        eventsList.addAll(thresholdEvents);
+                    }
+                } else {
+                    log().info("Not processing threshold "+ key +" because no filters matched");
+                }
+            }
+    	}
+    	
         if (eventsList.size() > 0) {
             //Create the structure which can be passed around with events in it
             Events events=new Events();
@@ -502,6 +583,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
 
     public String toString() {
-        return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding group "+m_groupName+", "+m_serviceName;
+        return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding groupa "+m_groupNameList+", "+m_serviceName;
     }
+    
 }
