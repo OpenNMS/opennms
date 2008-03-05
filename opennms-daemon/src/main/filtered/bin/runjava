@@ -116,6 +116,10 @@ javaCheck() {
 	    tell "$JP is GNU gcj, which is not supported"
 	    return 1
 	fi
+	if $JP -version 2>&1 | egrep '^IcedTea Runtime Environment \(build 1.7.0' > /dev/null; then
+	    tell "$JP is IcedTea, which is not supported"
+	    return 1
+	fi
 	return 0
     else
 	tell "$JP is not Java 1.5 or newer"
