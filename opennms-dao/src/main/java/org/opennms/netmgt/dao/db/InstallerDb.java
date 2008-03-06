@@ -2160,7 +2160,7 @@ public class InstallerDb {
 				                        + "unique:\n"
 				                        + query);
 				}
-			} catch (org.postgresql.util.PSQLException e) {
+			} catch (Exception e) {
 				if (e.getMessage().contains("does not exist")) {
 					// we can ignore this, the column just hasn't been created yet
 				} else {
