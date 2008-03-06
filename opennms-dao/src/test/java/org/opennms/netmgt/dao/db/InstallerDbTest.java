@@ -1973,10 +1973,10 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         ta.verifyAnticipated();
     }
     
-    public void testCheckIndexUniquenessWithTableButMissingColumn() throws Exception {
-        getInstallerDb().getIndexDao().remove("node_foreign_unique_idx");
-        
+    public void testCheckIndexUniquenessWithTableButMissingColumnBug2325() throws Exception {
         addTableFromSQL("distpoller");
+        
+        getInstallerDb().getIndexDao().remove("node_foreign_unique_idx");
         addTableFromSQLWithReplacements("node", new String[][] { new String[] { "foreignSource\\s+varchar\\(\\d+\\),", "" } });
         
         getInstallerDb().readTables();
