@@ -153,6 +153,11 @@
         <artifactId>maven-jetty-jspc-plugin</artifactId>
         <version>6.1.5</version>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>tgz-maven-plugin</artifactId>
+        <version>1.0</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
