@@ -535,6 +535,8 @@ public class EventConstants {
        public static final String PARM_FAILURE_MESSAGE = "failureMessage";
 
        public static final String PARM_IMPORT_STATS = "importStats";
+       
+       public static final String PARM_IMPORT_RESOURCE = "importResource";
 
        public static final String PARM_ALARM_ID = "alarmId";
        public static final String PARM_ALARM_UEI = "alarmUei";
