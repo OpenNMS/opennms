@@ -57,6 +57,7 @@ import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
 import org.opennms.netmgt.importer.operations.ImportOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.operations.ImportStatistics;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -88,20 +89,20 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
     private void doImport(Event event) {
         Resource resource = null;
         try {
-        	sendImportStarted();
             m_stats = new ImporterStats();
             resource = ((event != null && getEventUrl(event) != null) ? new UrlResource(getEventUrl(event)) : m_importResource); 
+            sendImportStarted(resource);
 			importModelFromResource(resource, m_stats, event);
             log().info("Finished Importing: "+m_stats);
-            sendImportSuccessful(m_stats);
+            sendImportSuccessful(m_stats, resource);
         } catch (IOException e) {
             String msg = "IOException importing "+resource;
 			log().error(msg, e);
-            sendImportFailed(msg+": "+e.getMessage());
+            sendImportFailed(msg+": "+e.getMessage(), resource);
         } catch (ModelImportException e) {
             String msg = "Error parsing import data from "+resource;
 			log().error(msg, e);
-            sendImportFailed(msg+": "+e.getMessage());
+            sendImportFailed(msg+": "+e.getMessage(), resource);
         }
     }
 
@@ -111,46 +112,24 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
     
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
-    private void sendImportSuccessful(ImporterStats stats) {
-    	Event e = createEvent(EventConstants.IMPORT_SUCCESSFUL_UEI, EventConstants.PARM_IMPORT_STATS, stats.toString());
-		m_eventManager.sendNow(e);
+    private void sendImportSuccessful(ImporterStats stats, Resource resource) {
+        EventBuilder builder = new EventBuilder(EventConstants.IMPORT_SUCCESSFUL_UEI, NAME);
+        builder.addParam(EventConstants.PARM_IMPORT_RESOURCE, resource.toString());
+        builder.addParam(EventConstants.PARM_IMPORT_STATS, stats.toString());
+		m_eventManager.sendNow(builder.getEvent());
 	}
     
-    private Event createEvent(String uei) {
-    	Event e = new Event();
-    	e.setSource(NAME);
-    	e.setCreationTime(EventConstants.formatToString(new Date()));
-    	e.setTime(EventConstants.formatToString(new Date()));
-    	e.setUei(uei);
-    	
-    	return e;
-    }
-    
-    private Event createEvent(String uei, String parmName, String value) {
-		Event e = createEvent(uei);
-		Parms parms = new Parms();
-		e.setParms(parms);
-		
-		Parm parm = new Parm();
-		parm.setParmName(parmName);
-		parms.addParm(parm);
-		
-		Value val = new Value();
-		val.setContent(value);
-		parm.setValue(val);
-		
-		return e;
-    	
-    }
-
-	private void sendImportFailed(String msg) {
-		Event e = createEvent(EventConstants.IMPORT_FAILED_UEI, EventConstants.PARM_FAILURE_MESSAGE, msg);
-		m_eventManager.sendNow(e);
+	private void sendImportFailed(String msg, Resource resource) {
+        EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, NAME);
+        builder.addParam(EventConstants.PARM_IMPORT_RESOURCE, resource.toString());
+        builder.addParam(EventConstants.PARM_FAILURE_MESSAGE, msg);
+		m_eventManager.sendNow(builder.getEvent());
 	}
 
-	private void sendImportStarted() {
-		Event e = createEvent(EventConstants.IMPORT_STARTED_UEI);
-		m_eventManager.sendNow(e);
+	private void sendImportStarted(Resource resource) {
+        EventBuilder builder = new EventBuilder(EventConstants.IMPORT_STARTED_UEI, NAME);
+        builder.addParam(EventConstants.PARM_IMPORT_RESOURCE, resource.toString());
+		m_eventManager.sendNow(builder.getEvent());
 	}
 
     public void setImportResource(Resource resource) {
