@@ -253,7 +253,7 @@
         &lt;p&gt;This event indicates the model-importer process has started&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
-        &lt;p&gt;This event indicates the model-importer process has started&lt;/p&gt;
+        &lt;p&gt;This event indicates the model-importer process has started from resource: %parm[importResource]% &lt;/p&gt;
       </logmsg>
       <severity>Normal</severity>
     </event>
@@ -265,13 +265,18 @@
         is 1 parameter called importStats: %parm [importStats]%&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
-        &lt;p&gt;This event indicates the model-importer process has completed successfully&lt;/p&gt;
+        &lt;p&gt;This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%&lt;/p&gt;
       </logmsg>
       <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%parm[importResource]%" 
+                  alarm-type="2" 
+                  clear-uei="uei.opennms.org/internal/importer/importFailed" 
+                  clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" 
+                  auto-clean="true"/>
     </event>
     <event>
       <uei>uei.opennms.org/internal/importer/importFailed</uei>
-      <event-label>OpenNMS-defined internal event: importer process failed.</event-label>
+      <event-label>OpenNMS-defined internal event: importer process failed from resource: %parm[importResource]%.</event-label>
       <descr>
         &lt;p&gt;This event indicates the model-importer process has failed.  There is 1 parameter 
         called failureMessage: %parm [failureMessage]%&lt;/p&gt;
@@ -280,6 +285,7 @@
         &lt;p&gt;This event indicates the model-importer process has failed with reason: %parm [failureMessage]%&lt;/p&gt;
       </logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false" />
     </event>
 <!-- New Importer Service Events -->
         <event>
