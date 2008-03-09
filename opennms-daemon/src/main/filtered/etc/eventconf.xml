@@ -276,13 +276,13 @@
     </event>
     <event>
       <uei>uei.opennms.org/internal/importer/importFailed</uei>
-      <event-label>OpenNMS-defined internal event: importer process failed from resource: %parm[importResource]%.</event-label>
+      <event-label>OpenNMS-defined internal event: importer process failed.</event-label>
       <descr>
         &lt;p&gt;This event indicates the model-importer process has failed.  There is 1 parameter 
-        called failureMessage: %parm [failureMessage]%&lt;/p&gt;
+        called failureMessage: %parm[failureMessage]%&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
-        &lt;p&gt;This event indicates the model-importer process has failed with reason: %parm [failureMessage]%&lt;/p&gt;
+        &lt;p&gt;This event indicates the model-importer process has failed from resource: %parm[importResource]% with reason: %parm[failureMessage]%&lt;/p&gt;
       </logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false" />
