@@ -48,11 +48,11 @@ public class NegativeServiceFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" (SERVICEID<>" + this.serviceId + " OR SERVICEID IS NULL)");
+        return (" (EVENTS.SERVICEID<>" + this.serviceId + " OR EVENTS.SERVICEID IS NULL)");
     }
     
     public String getParamSql() {
-        return (" (SERVICEID<>? OR SERVICEID IS NULL)");
+        return (" (EVENTS.SERVICEID<>? OR EVENTS.SERVICEID IS NULL)");
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
