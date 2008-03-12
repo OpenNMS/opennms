@@ -83,12 +83,7 @@ public class Main {
     }
 
     private void registerShutDownHook() {
-        Thread shutdownHook = new Thread() {
-            public void run() {
-                m_context.close();
-            }
-        };
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
+        m_context.registerShutdownHook();
     }
 
     private void createAppContext() {
