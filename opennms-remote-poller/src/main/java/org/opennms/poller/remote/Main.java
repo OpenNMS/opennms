@@ -51,6 +51,7 @@ public class Main {
     PollerFrontEnd m_frontEnd;
     String m_url;
     String m_locationName;
+    boolean m_shuttingDown = false;;
     
     
     private Main(String[] args) {
@@ -83,7 +84,13 @@ public class Main {
     }
 
     private void registerShutDownHook() {
-        m_context.registerShutdownHook();
+        Thread shutdownHook = new Thread() {
+            public void run() {
+                m_shuttingDown = true;
+                m_context.close();
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
     private void createAppContext() {
@@ -112,8 +119,9 @@ public class Main {
 
             public void propertyChange(PropertyChangeEvent e) {
                 if ("started".equals(e.getPropertyName()) && Boolean.FALSE.equals(e.getNewValue())) {
-                    // when the state of the machine goes to not started then we need to exit
-                    System.exit(1);
+                    if (!m_shuttingDown) {
+                        System.exit(1);
+                    }
                 }
             }
             
