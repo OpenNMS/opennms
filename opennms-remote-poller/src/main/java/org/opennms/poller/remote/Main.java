@@ -124,12 +124,28 @@ public class Main {
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
         
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
+            
+            private boolean shouldExit(PropertyChangeEvent e) {
+                String propName = e.getPropertyName();
+                Object newValue = e.getNewValue();
+                
+                // if exitNecessary becomes true.. then return true
+                if ("exitNecssary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+                    return true;
+                }
+                
+                // if started becomes false the we should exit
+                if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
+                    return true;
+                }
+                
+                return false;
+                
+            }
 
             public void propertyChange(PropertyChangeEvent e) {
-                if ("started".equals(e.getPropertyName()) && Boolean.FALSE.equals(e.getNewValue())) {
-                    if (!m_shuttingDown) {
-                        System.exit(1);
-                    }
+                if (!m_shuttingDown && shouldExit(e)) {
+                    System.exit(1);
                 }
             }
             
