@@ -117,9 +117,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
                     doDelete();
                     setState(new Registering());
                 }
-            } catch(Exception e) {
-                log().fatal("Unexpected exception occurred loading the configs", e);
+            } catch(RuntimeException e) {
                 setState(new FatalExceptionOccurred());
+                
+                // rethrow the exceptoin on initialize so we exit if we fail to initialize
+                throw e;
             }
         }
         
