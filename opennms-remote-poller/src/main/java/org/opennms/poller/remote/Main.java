@@ -36,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -60,16 +61,23 @@ public class Main {
     
     private void run() {
         
-        parseArguments();
+        try {
         
-        createAppContext();
+            parseArguments();
         
-        registerShutDownHook();
+            createAppContext();
+        
+            registerShutDownHook();
 
-        if (!m_frontEnd.isRegistered()) {
-            m_frontEnd.register(m_locationName);
-        }    
-                
+            if (!m_frontEnd.isRegistered()) {
+                m_frontEnd.register(m_locationName);
+            }    
+            
+        } catch(Exception e) {
+            // a fatal exception occurred
+            ThreadCategory.getInstance(getClass()).fatal("Exception occurred during registration!", e);
+            System.exit(27);
+        }
         
     }
 

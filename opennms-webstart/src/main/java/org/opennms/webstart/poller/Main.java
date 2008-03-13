@@ -59,11 +59,18 @@ public class Main {
     
     private void run() {
         
-        parseArguments();
+        try {
         
-        createAppContext();
+            parseArguments();
         
-        registerShutDownHook();
+            createAppContext();
+        
+            registerShutDownHook();
+        
+        } catch(Exception e) {
+            System.err.println("Error occured starting!" + e);
+            System.exit(27);
+        }
 
     }
 
