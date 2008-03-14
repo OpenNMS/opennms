@@ -105,16 +105,23 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     public class Initial extends State {
         @Override
         public void initialize() {
-            Integer monitorId = doInitialize();
-            if (monitorId == null) {
-                setState(new Registering());
-            }
-            else if (doPollerStart()) {
-                setState(new Running());
-            } else {
-                // the poller has been deleted
-                doDelete();
-                setState(new Registering());
+            try {
+                Integer monitorId = doInitialize();
+                if (monitorId == null) {
+                    setState(new Registering());
+                }
+                else if (doPollerStart()) {
+                    setState(new Running());
+                } else {
+                    // the poller has been deleted
+                    doDelete();
+                    setState(new Registering());
+                }
+            } catch(RuntimeException e) {
+                setState(new FatalExceptionOccurred());
+                
+                // rethrow the exceptoin on initialize so we exit if we fail to initialize
+                throw e;
             }
         }
         
@@ -159,8 +166,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
         @Override
         public void register(String location) {
-            doRegister(location);
-            setState(new Running());
+            try {
+                doRegister(location);
+                setState(new Running());
+            } catch(Exception e) {
+                log().fatal("Unexpected exception occurred loading the configs", e);
+                setState(new FatalExceptionOccurred());
+            }
         }
     }
 
@@ -172,24 +184,29 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
         @Override
         public void checkIn() {
-            MonitorStatus status = doCheckIn();
-            switch (status) {
-            case CONFIG_CHANGED:
-                onConfigChanged();
-                break;
-            case DELETED:
-                onDeleted();
-                break;
-            case DISCONNECTED:
-                onDisconnected();
-                break;
-            case PAUSED:
-                onPaused();
-                break;
-            case STARTED:
-                onStarted();
-                break;
+            try {
+                MonitorStatus status = doCheckIn();
+                switch (status) {
+                case CONFIG_CHANGED:
+                    onConfigChanged();
+                    break;
+                case DELETED:
+                    onDeleted();
+                    break;
+                case DISCONNECTED:
+                    onDisconnected();
+                    break;
+                case PAUSED:
+                    onPaused();
+                    break;
+                case STARTED:
+                    onStarted();
+                    break;
 
+                }
+            } catch (Exception e) {
+                log().fatal("Unexpected exception occurred loading the configs", e);
+                setState(new FatalExceptionOccurred());
             }
         }
         
@@ -200,8 +217,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
         @Override
         public void stop() {
-            doStop();
-            setState(new Registering());
+            try {
+                doStop();
+                setState(new Registering());
+            } catch(Exception e) {
+                log().fatal("Unexpected exception occurred loading the configs", e);
+                setState(new FatalExceptionOccurred());
+            }
         }
 
         protected void onConfigChanged() {
@@ -231,7 +253,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
         @Override
         public void pollService(Integer polledServiceId) {
-            doPollService(polledServiceId);
+            try {
+                doPollService(polledServiceId);
+            } catch(Exception e) {
+                log().fatal("Unexpected exception occurred loading the configs", e);
+                setState(new FatalExceptionOccurred());
+            }
+                
         }
 
         @Override
@@ -253,6 +281,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         
 
 
+    }
+    
+    public class FatalExceptionOccurred extends State {
+        @Override
+        public boolean isExitNecessary() {
+            return true;
+        }
     }
 
     private abstract class State {
@@ -290,7 +325,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         public boolean isDisconnected() {
             return false;
         }
-
+        
+        public boolean isExitNecessary() {
+            return false;
+        }
+        
         public void pollService(Integer serviceId) {
             throw illegalState("Cannot poll from this state.");
         }
@@ -306,6 +345,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         public String toString() {
             return getClass().getSimpleName();
         }
+        
     }
     
 
@@ -637,7 +677,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         boolean registered = isRegistered();
         boolean paused = isPaused();
         boolean disconnected = isDisconnected();
+        boolean exitNecessary = isExitNecessary();
         m_state = newState;
+        firePropertyChange("exitNecessary", exitNecessary, isExitNecessary());
         firePropertyChange("started", started, isStarted());
         firePropertyChange("registered", registered, isRegistered());
         firePropertyChange("paused", paused, isPaused());
@@ -651,6 +693,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
     private boolean isPaused() {
         return m_state.isPaused();
+    }
+    
+    public boolean isExitNecessary() {
+        return m_state.isExitNecessary();
     }
 
     private void updateServicePollState(Integer polledServiceId, PollStatus result) {

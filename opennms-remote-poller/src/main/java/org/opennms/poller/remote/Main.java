@@ -36,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -51,6 +52,7 @@ public class Main {
     PollerFrontEnd m_frontEnd;
     String m_url;
     String m_locationName;
+    boolean m_shuttingDown = false;;
     
     
     private Main(String[] args) {
@@ -59,16 +61,23 @@ public class Main {
     
     private void run() {
         
-        parseArguments();
+        try {
         
-        createAppContext();
+            parseArguments();
         
-        registerShutDownHook();
+            createAppContext();
+        
+            registerShutDownHook();
 
-        if (!m_frontEnd.isRegistered()) {
-            m_frontEnd.register(m_locationName);
-        }    
-                
+            if (!m_frontEnd.isRegistered()) {
+                m_frontEnd.register(m_locationName);
+            }    
+            
+        } catch(Exception e) {
+            // a fatal exception occurred
+            ThreadCategory.getInstance(getClass()).fatal("Exception occurred during registration!", e);
+            System.exit(27);
+        }
         
     }
 
@@ -85,6 +94,7 @@ public class Main {
     private void registerShutDownHook() {
         Thread shutdownHook = new Thread() {
             public void run() {
+                m_shuttingDown = true;
                 m_context.close();
             }
         };
@@ -114,10 +124,27 @@ public class Main {
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
         
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
+            
+            private boolean shouldExit(PropertyChangeEvent e) {
+                String propName = e.getPropertyName();
+                Object newValue = e.getNewValue();
+                
+                // if exitNecessary becomes true.. then return true
+                if ("exitNecssary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+                    return true;
+                }
+                
+                // if started becomes false the we should exit
+                if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
+                    return true;
+                }
+                
+                return false;
+                
+            }
 
             public void propertyChange(PropertyChangeEvent e) {
-                if ("started".equals(e.getPropertyName()) && Boolean.FALSE.equals(e.getNewValue())) {
-                    // when the state of the machine goes to not started then we need to exit
+                if (!m_shuttingDown && shouldExit(e)) {
                     System.exit(1);
                 }
             }
