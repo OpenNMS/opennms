@@ -32,6 +32,8 @@
 
 package org.opennms.webstart.poller;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,6 +53,7 @@ public class Main {
     PollerFrontEnd m_frontEnd;
     String m_url;
     String m_locationName;
+    boolean m_shuttingDown = false;
     
     
     private Main(String[] args) {
@@ -59,11 +62,18 @@ public class Main {
     
     private void run() {
         
-        parseArguments();
+        try {
         
-        createAppContext();
+            parseArguments();
         
-        registerShutDownHook();
+            createAppContext();
+        
+            registerShutDownHook();
+        
+        } catch(Exception e) {
+            System.err.println("Error occured starting!" + e);
+            System.exit(27);
+        }
 
     }
 
@@ -90,7 +100,13 @@ public class Main {
     }
 
     private void registerShutDownHook() {
-        m_context.registerShutdownHook();
+        Thread shutdownHook = new Thread() {
+            public void run() {
+                m_shuttingDown = true;
+                m_context.close();
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
     private void createAppContext() {
@@ -114,6 +130,18 @@ public class Main {
         
         m_context = new ClassPathXmlApplicationContext(configs);
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
+        
+        m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+                if ("exitNecessary".equals(evt.getPropertyName()) && Boolean.TRUE.equals(evt.getNewValue())) {
+                    if (!m_shuttingDown) {
+                        System.exit(27);
+                    }
+                }
+            }
+            
+        });
     }
         
     private void usage() {
