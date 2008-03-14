@@ -49,6 +49,11 @@ if [ -z "$MAVEN_SKIP" ]; then
     MAVEN_SKIP=maven.test.skip.exec
 fi
 
+if [ -n "$JAVA_HOME" ]; then
+	PATH="$JAVA_HOME/bin:$PATH"
+	export PATH
+fi
+
 MAVEN_OPTS=-Xmx512m
 export MAVEN_OPTS
 [ -z "$MVN" ] && MVN="$PREFIX/maven/bin/mvn"

@@ -85,6 +85,11 @@ public interface PollerFrontEnd {
     public boolean isStarted();
     
     /**
+     * Returns whether some error occurred and an exit is necessary
+     */
+    public boolean isExitNecessary();
+    
+    /**
      * Stop polling.  This should be called before the system exits.
      *
      */
