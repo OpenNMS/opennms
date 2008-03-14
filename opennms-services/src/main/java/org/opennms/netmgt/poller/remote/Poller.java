@@ -79,6 +79,10 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	}
     
     private void unschedulePolls() throws Exception {
+        if (m_scheduler.isShutdown()) {
+            // no need to unschedule in this case
+            return;
+        }
         for (String jobName : m_scheduler.getJobNames(PollJobDetail.GROUP)) {
             m_scheduler.deleteJob(jobName, PollJobDetail.GROUP);
         }

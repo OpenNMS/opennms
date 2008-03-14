@@ -1602,6 +1602,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1632,6 +1633,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/batteryOverTemperature:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -5389,6 +5391,7 @@ variable is the probe name.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -5431,6 +5434,7 @@ is the probe number. The second variable is the probe name.&lt;/p&gt;&lt;table&g
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/iemHighTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>
 	<mask>
