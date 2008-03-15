@@ -185,6 +185,7 @@
                      when inheritAll="true" is used with <ant />.  -->
                 <ant target="compile.check">
                   <property name="java.vm.version" value="${java.vm.version}" />
+                  <property name="java.version" value="${java.version}" />
                   <property name="java.home" value="${java.home}" />
                   <property name="platform" value="${platform}" />
                   <property name="platform.jdk.include.dir" value="${platform.jdk.include.dir}" />
