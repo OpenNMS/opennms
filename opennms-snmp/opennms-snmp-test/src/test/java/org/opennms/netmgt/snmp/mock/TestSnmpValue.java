@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 16: Add Integer32, Gauge32, Counter32, and Counter64 objects
+//              and make StringSnmpValue.toLong try to parse the value. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -124,8 +129,42 @@ public class TestSnmpValue implements SnmpValue {
         public boolean isDisplayable() {
             return true;
         }
-
-
+    }
+    
+    public static class Integer32SnmpValue extends NumberSnmpValue {
+        public Integer32SnmpValue(int value) {
+            this(Integer.toString(value));
+        }
+        public Integer32SnmpValue(String value) {
+            super(SnmpValue.SNMP_INT32, value);
+        }
+    }
+    
+    public static class Gauge32SnmpValue extends NumberSnmpValue {
+        public Gauge32SnmpValue(int value) {
+            this(Integer.toString(value));
+        }
+        public Gauge32SnmpValue(String value) {
+            super(SnmpValue.SNMP_GAUGE32, value);
+        }
+    }
+   
+    public static class Counter32SnmpValue extends NumberSnmpValue {
+        public Counter32SnmpValue(int value) {
+            this(Integer.toString(value));
+        }
+        public Counter32SnmpValue(String value) {
+            super(SnmpValue.SNMP_COUNTER32, value);
+        }
+    }
+    
+    public static class Counter64SnmpValue extends NumberSnmpValue {
+        public Counter64SnmpValue(long value) {
+            this(Long.toString(value));
+        }
+        public Counter64SnmpValue(String value) {
+            super(SnmpValue.SNMP_COUNTER64, value);
+        }
     }
     
     public static class TimeticksSnmpValue extends NumberSnmpValue {
@@ -162,6 +201,11 @@ public class TestSnmpValue implements SnmpValue {
 
         public boolean isDisplayable() {
             return true;
+        }
+        
+        @Override
+        public long toLong() {
+            return Long.parseLong(toString());
         }
 
    }
