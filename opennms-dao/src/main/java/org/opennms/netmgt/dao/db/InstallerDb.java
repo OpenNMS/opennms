@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 05: Avoid catching a database exception in checkIndexUniqueness, do pre-query checks instead to make sure all columns exist. - dj@opennms.org
 // 2007 Jul 03: Remove non-functional (i.e.: empty) setupPgPlSqlIplike
 //              method and make setupPlPgsqlIplike public. - dj@opennms.org
 // 2007 Jun 10: Rearrange the iplike code a bit and add better error
@@ -2125,11 +2126,20 @@ public class InstallerDb {
 
         Statement st = getConnection().createStatement();
 
-        for (Index index: indexes) {
+        for (Index index : indexes) {
             if (!index.isUnique()) {
                 continue;
             }
             if (!tableExists(index.getTable())) {
+                continue;
+            }
+            boolean missingColumn = false;
+            for (String column : index.getColumns()) {
+                if (!tableColumnExists(index.getTable(), column)) {
+                    missingColumn = true;
+                }
+            }
+            if (missingColumn) {
                 continue;
             }
             
@@ -2140,33 +2150,25 @@ public class InstallerDb {
             
             String countQuery = query.replaceFirst("(?i)\\s(\\S+)\\s+FROM",
                 " count(\\1) FROM").replaceFirst("(?i)\\s*ORDER\\s+BY\\s+[^()]+$", "");
+            
+            ResultSet rs = st.executeQuery(countQuery);
 
-            try {
-				ResultSet rs = st.executeQuery(countQuery);
+            rs.next();
+            int count = rs.getInt(1);
+            rs.close();
 
-				rs.next();
-				int count = rs.getInt(1);
-				rs.close();
-
-				if (count > 0) {
-				    st.close();
-				    throw new Exception("Unique index '" +  index.getName() + "' "
-				                        + "cannot be added to table '" +
-				                        index.getTable() + "' because " + count
-				                        + " rows are not unique.  See the "
-				                        + "install guide for details on how to "
-				                        + "correct this problem.  You can use the "
-				                        + "following SQL to see which rows are not "
-				                        + "unique:\n"
-				                        + query);
-				}
-			} catch (Exception e) {
-				if (e.getMessage().contains("does not exist")) {
-					// we can ignore this, the column just hasn't been created yet
-				} else {
-					throw e;
-				}
-			}
+            if (count > 0) {
+                st.close();
+                throw new Exception("Unique index '" +  index.getName() + "' "
+                                    + "cannot be added to table '" +
+                                    index.getTable() + "' because " + count
+                                    + " rows are not unique.  See the "
+                                    + "install guide for details on how to "
+                                    + "correct this problem.  You can use the "
+                                    + "following SQL to see which rows are not "
+                                    + "unique:\n"
+                                    + query);
+            }
         }
         
         st.close();
