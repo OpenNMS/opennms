@@ -214,7 +214,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 log().debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
             }
         }
-        automaticAcknowledge(event);
+        automaticAcknowledge(event, notifsOn);
     }
 
     /**
@@ -283,10 +283,7 @@ public final class BroadcastEventProcessor implements EventListener {
         return ThreadCategory.getInstance(getClass());
     }
 
-    /**
-     * 
-     */
-    private void automaticAcknowledge(Event event) {
+    private void automaticAcknowledge(Event event, boolean notifsOn) {
         try {
             Collection<AutoAcknowledge> autoAcks = getNotifdConfigManager().getAutoAcknowledges();
 
@@ -300,7 +297,8 @@ public final class BroadcastEventProcessor implements EventListener {
                         
                         Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         try {
-                            if (curAck.getNotify()) {
+                            // only send resolution notifications if notifications are globally turned on
+                            if (curAck.getNotify() && notifsOn) {
                                 sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix());
                             }
                         } catch (Exception e) {
