@@ -113,7 +113,7 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
         return suite;
     }
 
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -126,6 +126,7 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
 
     }
 
+    @Override
     protected void tearDown() throws Exception {
         SnmpUtils.unregisterForTraps(m_trapListener, 9162);
         
@@ -152,12 +153,12 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
     }
 
 
-	private SnmpAgentConfig getAgentConfig() throws UnknownHostException {
-		SnmpAgentConfig snmpAgentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-		snmpAgentConfig.setPort(9161);
-		return snmpAgentConfig;
-	}
-    
+    private SnmpAgentConfig getAgentConfig() throws UnknownHostException {
+        SnmpAgentConfig snmpAgentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        snmpAgentConfig.setPort(9161);
+        return snmpAgentConfig;
+    }
+
     public void testBadGet() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2"));
@@ -235,6 +236,7 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
         Thread.sleep(1000);
         assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
+    
     public TrapProcessor createTrapProcessor() {
         return new TestTrapProcessor();
     }
