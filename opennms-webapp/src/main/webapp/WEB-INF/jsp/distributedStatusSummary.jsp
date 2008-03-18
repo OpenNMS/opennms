@@ -3,9 +3,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Distributed Status Summary" />
-	<jsp:param name="headTitle" value="Summary" />
-	<jsp:param name="breadcrumb" value="Distributed Status" />
+    <jsp:param name="title" value="Distributed Status Summary" />
+    <jsp:param name="headTitle" value="Summary" />
+    <jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
 <jsp:include page="/includes/key.jsp" flush="false" />
@@ -35,10 +35,10 @@
         <td class="<c:out value='${cell.styleClass}'/> divider">
           <c:choose>
             <c:when test="${! empty cell.link}">
-	            <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>
+                <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>
             </c:when>
             <c:otherwise>
- 				 <c:out value="${cell.content}"/>
+                 <c:out value="${cell.content}"/>
             </c:otherwise>
           </c:choose>
         </td>
