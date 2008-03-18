@@ -130,7 +130,7 @@ public class Main {
                 Object newValue = e.getNewValue();
                 
                 // if exitNecessary becomes true.. then return true
-                if ("exitNecssary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+                if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
                     return true;
                 }
                 

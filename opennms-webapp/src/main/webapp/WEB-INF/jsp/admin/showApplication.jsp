@@ -15,7 +15,7 @@
 <h3>Application ${model.application.name}</h3>
 
 <p>
-Application '${model.application.name}' has ${fn:length(model.memberServices)} services (<a href="admin/applications.htm?edit&applicationid=${model.application.id}">edit</a>)
+Application '${model.application.name}' has ${fn:length(model.memberServices)} services (<a href="admin/applications.htm?edit=edit&applicationid=${model.application.id}">edit</a>)
 </p>
 
 

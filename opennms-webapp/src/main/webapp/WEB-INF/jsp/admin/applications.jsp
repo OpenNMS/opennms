@@ -20,7 +20,7 @@
   <c:forEach items="${applications}" var="app">
 	  <tr>
 	    <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><img src="images/trash.gif" alt="Delete Application"/></a></td>
-	    <td><a href="admin/applications.htm?applicationid=${app.id}&edit"><img src="images/modify.gif" alt="Edit Application"/></a></td>
+	    <td><a href="admin/applications.htm?applicationid=${app.id}&edit=edit"><img src="images/modify.gif" alt="Edit Application"/></a></td>
 	    <td><a href="admin/applications.htm?applicationid=${app.id}">${app.name}</a></td> 
   	  </tr>
   </c:forEach>

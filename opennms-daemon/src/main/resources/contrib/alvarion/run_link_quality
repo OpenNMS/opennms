@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# copy this file and link_quality in /opt/opennms/contrib/alvarion, then schedule from crontab every 5m:
+# */5 * * * *     root  /opt/opennms/contrib/alvarion/run_link_quality >/dev/null 2>&1
+#
+
+ALVARIONS=`echo "select ipaddr from ipinterface where issnmpprimary='P' and nodeid in (select nodeid from node where nodesysoid like '.1.3.6.1.4.1.12394.%');" | psql -t -U opennms opennms `
+for ip in $ALVARIONS ; do
+        /opt/opennms/contrib/alvarion/link_quality $ip
+done 
+

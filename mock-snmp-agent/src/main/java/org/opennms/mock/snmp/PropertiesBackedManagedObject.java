@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.snmp4j.agent.DefaultMOScope;
+import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.request.SubRequest;
@@ -17,7 +18,7 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.springframework.core.io.Resource;
 
-public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOLoader, Updatable {
+public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOLoader, Updatable, MOAccess {
     
     private TreeMap<OID, Object> m_vars = null;
     
@@ -130,6 +131,22 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 
     public List<ManagedObject> loadMOs() {
         return Collections.singletonList((ManagedObject)this);
+    }
+
+    public boolean isAccessibleForCreate() {
+        return false;
+    }
+
+    public boolean isAccessibleForNotify() {
+        return false;
+    }
+
+    public boolean isAccessibleForRead() {
+        return true;
+    }
+
+    public boolean isAccessibleForWrite() {
+        return false;
     }
 
 }
