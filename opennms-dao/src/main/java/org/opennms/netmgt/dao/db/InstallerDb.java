@@ -341,7 +341,7 @@ public class InstallerDb {
                 m_out.print("    - creating sequence \"" + sequence + "\"... ");
                 st.execute("CREATE SEQUENCE " + sequence + " minvalue "
                            + minvalue);
-//                st.execute("GRANT ALL on " + sequence + " TO " + m_user);
+                st.execute("GRANT ALL on " + sequence + " TO " + m_user);
                 m_out.println("OK");
             }
         }
@@ -743,12 +743,9 @@ public class InstallerDb {
                 addIndexesForTable(tableName);
                 addTriggersForTable(tableName);
 
-                /*
-                m_out.print("  - giving \"" + m_user + "\" permissions on \""
-                        + tableName + "\"... ");
+                m_out.print("  - giving \"" + m_user + "\" permissions on \"" + tableName + "\"... ");
                 st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
                 m_out.println("GRANTED");
-                 */
             } else {
                 m_out.println("  - checking table \"" + tableName + "\"... ");
 
@@ -771,12 +768,8 @@ public class InstallerDb {
                         
                         addIndexesForTable(tableName);
                         addTriggersForTable(tableName);
-                        /*
-                        st.execute("GRANT ALL ON " + tableName + " TO "
-                                + m_user);
-                                */
-                        m_out.println("  - checking table \"" + tableName
-                                      + "\"... CREATED");
+                        st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
+                        m_out.println("  - checking table \"" + tableName + "\"... CREATED");
                     } else {
                         try {
                             changeTable(tableName, oldTable, newTable);
@@ -1272,7 +1265,7 @@ public class InstallerDb {
 
             transformData(table, tmpTable, columnChanges, oldColumnNames);
 
-//            st.execute("GRANT ALL ON " + table + " TO " + m_user);
+            st.execute("GRANT ALL ON " + table + " TO " + m_user);
 
             m_out.print("    - optimizing table " + table + "... ");
             st.execute("VACUUM ANALYZE " + table);
@@ -1931,8 +1924,7 @@ public class InstallerDb {
         Statement st = getAdminConnection().createStatement();
         st.execute("CREATE DATABASE " + m_databaseName
                    + " WITH ENCODING='UNICODE'");
-        st.execute("GRANT ALL ON DATABASE " + m_databaseName
-                   + " TO " + m_user);
+        st.execute("GRANT ALL ON DATABASE " + m_databaseName + " TO " + m_user);
         
         st.close();
     }
