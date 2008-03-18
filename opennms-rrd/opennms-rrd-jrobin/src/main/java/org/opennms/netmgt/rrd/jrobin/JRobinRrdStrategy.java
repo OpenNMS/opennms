@@ -545,7 +545,10 @@ public class JRobinRrdStrategy implements RrdStrategy {
                 String stack[] = tokenize(definition, ":", true);
                 String[] color = tokenize(stack[0], "#", true);
                 graphDef.stack(color[0], getColor(color[1]), (stack.length > 1 ? stack[1] : ""));
-            
+
+            } else if (arg.endsWith("/rrdtool") || arg.equals("graph") || arg.equals("-")) {
+            	// ignore, this is just a leftover from the rrdtool-specific options
+
             } else {
                 log().warn("JRobin: Unrecognized graph argument: " + arg);
             }
