@@ -34,6 +34,8 @@ package org.opennms.web.controller;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,6 +59,7 @@ public class DistributedStatusSummaryController extends AbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
         GregorianCalendar calendar = new GregorianCalendar();
         Date endDate = new Date(calendar.getTimeInMillis());
         
@@ -66,8 +69,19 @@ public class DistributedStatusSummaryController extends AbstractController {
         calendar.set(Calendar.MILLISECOND, 0); 
         Date startDate = new Date(calendar.getTimeInMillis());
         
+        if (m_distributedStatusService.getApplicationCount() <= 0) {
+            return new ModelAndView("distributedStatusSummaryError", "error", createError("No Applications Defined", "No have applications have been defined for this system so a summary of application status is impossbile to display."));
+        }
+        
         SimpleWebTable table = m_distributedStatusService.createFacilityStatusTable(startDate, endDate);
         return new ModelAndView("distributedStatusSummary", "webTable", table);
+    }
+
+    private Object createError(String shortDescr, String longDescr) {
+        Map<String, String> error = new HashMap<String, String>();
+        error.put("shortDescr", shortDescr);
+        error.put("longDescr", longDescr);
+        return error;
     }
 
 }
