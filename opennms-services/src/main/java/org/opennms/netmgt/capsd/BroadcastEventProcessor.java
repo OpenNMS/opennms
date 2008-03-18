@@ -671,6 +671,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
             eventsToSend.addAll(markInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
         }
+        deleteAlarmsForInterface(dbConn, nodeid, ipAddr);
         return eventsToSend;
     }
 
@@ -746,9 +747,67 @@ public class BroadcastEventProcessor implements InitializingBean {
         List<Event> eventsToSend = new LinkedList<Event>();
         eventsToSend.addAll(markInterfacesAndServicesDeleted(dbConn, source, nodeid, txNo));
         eventsToSend.addAll(markNodeDeleted(dbConn, source, nodeid, txNo));
+        deleteAlarmsForNode(dbConn, nodeid);
         return eventsToSend;
     }
 
+    private void deleteAlarmsForNode(Connection dbConn, long nodeId) throws SQLException {
+        PreparedStatement stmt = null;
+
+        try {
+            stmt = dbConn.prepareStatement("DELETE FROM alarms " +
+            		                        "WHERE nodeid = ?");
+            stmt.setLong(1, nodeId);
+            int count = stmt.executeUpdate();
+
+            log().debug("deleteAlarmsForNode: deleted: "+count+" alarms for node: "+nodeId);
+
+        } finally {
+            if (stmt != null) stmt.close();
+        }
+    }
+
+    private void deleteAlarmsForInterface(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
+        PreparedStatement stmt = null;
+
+        try {
+            stmt = dbConn.prepareStatement("DELETE FROM alarms " +
+                                            "WHERE nodeid = ? " +
+                                              "AND ipaddr = ?");
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            int count = stmt.executeUpdate();
+
+            log().debug("deleteAlarmsForInterace: deleted: "+count+" alarms for interface: "+ipAddr);
+
+        } finally {
+            if (stmt != null) stmt.close();
+        }
+    }
+    
+    private void deleteAlarmsForService(Connection dbConn, long nodeId, String ipAddr, String service) throws SQLException {
+        PreparedStatement stmt = null;
+
+        try {
+            stmt = dbConn.prepareStatement("DELETE FROM alarms " +
+                                            "WHERE nodeid = ? " +
+                                             " AND ipaddr = ? " +
+                                             " AND serviceid " +
+                                             "  IN (SELECT serviceid " +
+                                             "FROM service " +
+                                            "WHERE servicename = ?)");
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            stmt.setString(3, service);
+            int count = stmt.executeUpdate();
+
+            log().debug("deleteAlarmsForService: deleted: "+count+" alarms for service: "+service);
+
+        } finally {
+            if (stmt != null) stmt.close();
+        }
+    }
+    
     /**
      * Mark as deleted the specified service, if this is the only service on an
      * interface or node and deletePropagation is enabled, the interface or node
@@ -802,6 +861,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             // serviceDeleted event
             eventsToSend.addAll(markServiceDeleted(dbConn, source, nodeid, ipAddr, service, txNo));
         }
+        deleteAlarmsForService(dbConn, nodeid, ipAddr, service);
         return eventsToSend;
     }
 
