@@ -5,7 +5,7 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <section>
-    <title>Changes in OpenNMS 1.3.12</title>
+    <title>Changes in OpenNMS 1.5.90</title>
 	<section>
 		<title>Bug Fixes</title>
 		<para>
@@ -13,6 +13,14 @@
 			and "http-collection" parameter (respectively) in collectd-configuration.xml.
 			This is now supported, but deprecated, and the name changed to
 			"collection", as is the case for SNMP collection.
+		</para>
+		
+		<para>
+			Data collection from systems supporting the UCD-SNMP SYSSTAT MIB group now
+			includes the raw counters for context and interrupts.  The deprecated
+			one-minute gauge versions of these metrics are still collected if the
+			agent provides them, but their resource graphs are no longer in the default
+			list.
 		</para>
 	</section>
   </section>
