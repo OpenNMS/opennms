@@ -2037,87 +2037,11 @@ public class InstallerDb {
             return;
         }
 
-        m_out.println("NOT UNICODE, CONVERTING");
-
+        m_out.println("NOT UNICODE");
         closeConnection();
         closeAdminConnection();
-
-        String dumpFile = "/tmp/pg_dump-" + m_databaseName;
-        String logFile = "/tmp/unicode-convert.log";
-        PrintStream log = new PrintStream(new FileOutputStream(logFile, true));
-        ProcessExec e = new ProcessExec(log, log);
-
-        int exitVal;
-
-        log.println("------------------------------------------------------"
-                + "------------------------");
-
-        m_out.print("  - dumping data to " + dumpFile + "... ");
-        String[] cmd1 = { m_pg_bindir + File.separator + "pg_dump", "-U",
-                m_pg_user, "-a", m_databaseName, "-f", dumpFile };
-        if ((exitVal = e.exec(cmd1)) != 0) {
-            throw new Exception("Dumping database returned non-zero exit "
-                    + "value " + exitVal + " while executing " + "command '"
-                    + StringUtils.arrayToDelimitedString(cmd1, " ")
-                    + "', check " + logFile);
-        }
-        m_out.println("OK");
-
-        m_out.print("  - waiting 3s for PostgreSQL to notice "
-                + "that pg_dump has disconnected.");
-        Thread.sleep(1000);
-        m_out.print(".");
-        Thread.sleep(1000);
-        m_out.print(".");
-        Thread.sleep(1000);
-        m_out.println(" OK");
-
-        m_out.print("  - dropping old database... ");
-        String[] cmd2 = { m_pg_bindir + File.separator + "dropdb", "-U",
-                m_pg_user, m_databaseName };
-        if ((exitVal = e.exec(cmd2)) != 0) {
-            throw new Exception("Dropping database returned non-zero exit "
-                    + "value " + exitVal + " while executing " + "command '"
-                    + StringUtils.arrayToDelimitedString(cmd2, " ")
-                    + "', check " + logFile);
-        }
-        m_out.println("OK");
-
-        m_out.print("  - creating new unicode database... ");
-        String[] cmd3 = { m_pg_bindir + File.separator + "createdb", "-U",
-                m_pg_user, "-E", "UNICODE", m_databaseName };
-        if ((exitVal = e.exec(cmd3)) != 0) {
-            throw new Exception("Creating database returned non-zero exit "
-                    + "value " + exitVal + " while executing " + "command '"
-                    + StringUtils.arrayToDelimitedString(cmd3, " ")
-                    + "', check " + logFile);
-        }
-        m_out.println("OK");
-
-        m_out.print("  - recreating tables... ");
-        String[] cmd4 = { m_pg_bindir + File.separator + "psql", "-U",
-                m_pg_user, "-f", getCreateSqlLocation(),
-                m_databaseName };
-        if ((exitVal = e.exec(cmd4)) != 0) {
-            throw new Exception("Recreating tables returned non-zero exit "
-                    + "value " + exitVal + " while executing " + "command '"
-                    + StringUtils.arrayToDelimitedString(cmd4, " ")
-                    + "', check " + logFile);
-        }
-        m_out.println("OK");
-
-        m_out.print("  - restoring data... ");
-        String[] cmd5 = { m_pg_bindir + File.separator + "psql", "-U",
-                m_pg_user, "-f", dumpFile, m_databaseName };
-        if ((exitVal = e.exec(cmd5)) != 0) {
-            throw new Exception("Restoring data returned non-zero exit "
-                    + "value " + exitVal + " while executing " + "command '"
-                    + StringUtils.arrayToDelimitedString(cmd5, " ")
-                    + "', check " + logFile);
-        }
-        m_out.println("OK");
-
-        log.close();
+        
+        throw new Exception("OpenNMS requires a Unicode database.  Please delete and recreate your\ndatabase and try again.");
     }
 
 
