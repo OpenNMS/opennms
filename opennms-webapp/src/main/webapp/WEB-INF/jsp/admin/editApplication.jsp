@@ -20,7 +20,7 @@ Application '${model.application.name}' has ${fn:length(model.sortedMemberServic
 
 <form action="admin/applications.htm" method="get">
   <input type="hidden" name="applicationid" value="${model.application.id}"/>
-  <input type="hidden" name="edit" value=""/>
+  <input type="hidden" name="edit" value="edit"/>
   
   <table class="normal">
     <tr>

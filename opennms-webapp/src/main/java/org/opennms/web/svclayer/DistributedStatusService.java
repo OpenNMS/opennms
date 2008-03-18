@@ -47,4 +47,6 @@ public interface DistributedStatusService {
     public DistributedStatusHistoryModel createHistoryModel(String locationName,
             String monitorId, String applicationName, String timeSpan,
             String previousLocation);
+
+    public int getApplicationCount();
 }

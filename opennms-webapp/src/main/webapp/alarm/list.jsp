@@ -225,9 +225,9 @@
 
       <!-- hidden form for acknowledging the result set --> 
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <form method="POST" name="acknowledge_by_filter_form">    
+          <form method="POST" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
             <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-            <input type="hidden" name="actionCode" value="" />
+            <input type="hidden" name="actionCode" value="<%=action%>" />
             <%=org.opennms.web.Util.makeHiddenTags(request)%>
           </form>      
       <% } %>

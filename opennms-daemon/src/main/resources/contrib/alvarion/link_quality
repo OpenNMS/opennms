@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Check signal quality
+#
+
+ROUTER_IP=$1
+
+# start signal quality check routine (needs 10 secs to estimate it)
+/usr/bin/snmpset -v1 -c YOURPRIVATECOMMUNITYHERE $ROUTER_IP .1.3.6.1.4.1.12394.1.1.11.6.1.0 i 1 
+
