@@ -161,6 +161,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
     
+    
+    
+    public int getApplicationCount() {
+        return m_applicationDao.countAll();
+    }
+
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command, Errors errors) {
         SimpleWebTable table = new SimpleWebTable(); 
         table.setErrors(errors);
