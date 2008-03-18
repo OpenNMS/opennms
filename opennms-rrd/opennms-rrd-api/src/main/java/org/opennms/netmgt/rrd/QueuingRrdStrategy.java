@@ -156,31 +156,31 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     Set<String> reservedFiles = new HashSet<String>();
 
-    long totalOperationsPending = 0;
+    private long m_totalOperationsPending = 0;
 
-    long enqueuedOperations = 0;
+    private long m_enqueuedOperations = 0;
 
-    long dequeuedOperations = 0;
+    private long m_dequeuedOperations = 0;
 
-    long significantOpsEnqueued = 0;
+    private long m_significantOpsEnqueued = 0;
 
-    long significantOpsDequeued = 0;
+    private long m_significantOpsDequeued = 0;
 
-    long significantOpsCompleted = 0;
+    private long m_significantOpsCompleted = 0;
 
-    long dequeuedItems = 0;
+    private long m_dequeuedItems = 0;
 
-    long createsCompleted = 0;
+    private long m_createsCompleted = 0;
 
-    long updatesCompleted = 0;
+    private long m_updatesCompleted = 0;
 
-    long errors = 0;
+    private long m_errors = 0;
 
     int threadsRunning = 0;
 
-    long updateStart = 0;
+    private long m_startTime = 0;
 
-    long promotionCount = 0;
+    private long m_promotionCount = 0;
 
     long lastLap = System.currentTimeMillis();
 
@@ -268,7 +268,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             m_delegate.createFile(getData());
 
             // keep stats
-            ++createsCompleted;
+            setCreatesCompleted(getCreatesCompleted() + 1);
 
             // return the file
             return rrd;
@@ -305,7 +305,8 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             }
 
             // keep stats
-            if (++updatesCompleted % MODULUS == 0) {
+            setUpdatesCompleted(getUpdatesCompleted() + 1);
+            if (getUpdatesCompleted() % MODULUS == 0) {
                 logStats();
             }
             // return the open rrd for further processing
@@ -350,7 +351,8 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
                 ts += getInterval();
 
                 // keep stats
-                if (++updatesCompleted % MODULUS == 0) {
+                setUpdatesCompleted(getUpdatesCompleted() + 1);
+                if (getUpdatesCompleted() % MODULUS == 0) {
                     logStats();
                 }
             }
@@ -467,10 +469,10 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             
             storeAssignment(op);
 
-            totalOperationsPending++;
-            enqueuedOperations++;
+            setTotalOperationsPending(getTotalOperationsPending() + 1);
+            setEnqueuedOperations(getEnqueuedOperations() + 1);
             if (op.isSignificant())
-                significantOpsEnqueued++;
+                setSignificantOpsEnqueued(getSignificantOpsEnqueued() + 1);
             notifyAll();
             ensureThreadsStarted();
         }
@@ -485,21 +487,21 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         if (QUEUE_HIGH_WATER_MARK <= 0)
             return false;
         else
-            return totalOperationsPending >= QUEUE_HIGH_WATER_MARK;
+            return getTotalOperationsPending() >= QUEUE_HIGH_WATER_MARK;
     }
 
     private boolean sigQueueIsFull() {
         if (SIG_HIGH_WATER_MARK <= 0)
             return false;
         else
-            return totalOperationsPending >= SIG_HIGH_WATER_MARK;
+            return getTotalOperationsPending() >= SIG_HIGH_WATER_MARK;
     }
 
     private boolean inSigQueueIsFull() {
         if (INSIG_HIGH_WATER_MARK <= 0)
             return false;
         else
-            return totalOperationsPending >= INSIG_HIGH_WATER_MARK;
+            return getTotalOperationsPending() >= INSIG_HIGH_WATER_MARK;
     }
 
     /**
@@ -536,8 +538,8 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             }
 
             // initialize start time for stats
-            if (updateStart == 0)
-                updateStart = System.currentTimeMillis();
+            if (getStartTime() == 0)
+                setStartTime(System.currentTimeMillis());
 
             // reserve the assignment and take work items
             ops = takeAssignment(newAssignment);
@@ -545,13 +547,13 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             // keep stats
             if (ops != null) {
                 for(Operation op : ops) {
-                    totalOperationsPending -= op.getCount();
-                    dequeuedOperations += op.getCount();
+                    setTotalOperationsPending(getTotalOperationsPending()-op.getCount());
+                    setDequeuedOperations(getDequeuedOperations() + op.getCount());
                     if (op.isSignificant()) {
-                        significantOpsDequeued += op.getCount();
+                    	setSignificantOpsDequeued(getSignificantOpsDequeued() + op.getCount());
                     }
                 }
-                dequeuedItems++;
+                setDequeuedItems(getDequeuedItems() + 1);
             }
         }
 
@@ -610,7 +612,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
         // calculate the elapsed time we first queued updates
         long now = System.currentTimeMillis();
-        long elapsedMillis = Math.max(now - updateStart, 1);
+        long elapsedMillis = Math.max(now - getStartTime(), 1);
 
         // calculate the milliseconds between promotions necessary to age
         // insignificant files into
@@ -619,14 +621,14 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
         // calculate the number of millis since start until the next file needs
         // to be promotoed
-        long nextPromotionMillis = (long) (millisPerPromotion * promotionCount);
+        long nextPromotionMillis = (long) (millisPerPromotion * getPromotionCount());
 
         // if more time has elapsed than the next promotion time then promote a
         // file
         if (elapsedMillis > nextPromotionMillis) {
             String file = filesWithInsignificantWork.removeFirst();
             filesWithSignificantWork.addFirst(file);
-            promotionCount++;
+            setPromotionCount(getPromotionCount() + 1);
         }
 
     }
@@ -818,7 +820,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             long waitStart = -1L;
             long delayed = 0;
             while (delayed < WRITE_THREAD_EXIT_DELAY) {
-                if (totalOperationsPending > 0) {
+                if (getTotalOperationsPending() > 0) {
                     delayed = 0;
                     waitStart = -1L;
                     processPendingOperations();
@@ -859,7 +861,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             // while we are processing
             for(Operation op : ops) {
                 if (op.isSignificant()) {
-                    significantOpsCompleted++;
+                	setSignificantOpsCompleted(getSignificantOpsCompleted() + 1);
                 }
 
             }
@@ -869,7 +871,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
                 rrd = op.process(rrd);
             }
         } catch (Exception e) {
-            errors++;
+            setErrors(getErrors() + 1);
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
             log().debug("Error upading file " + fileName + ": " + e.getMessage(), e);
         } finally {
@@ -897,49 +899,65 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         long now = System.currentTimeMillis();
 
         long currentElapsedMillis = Math.max(now - lastStatsTime, 1);
-        long totalElapsedMillis = Math.max(now - updateStart, 1);
+        long totalElapsedMillis = Math.max(now - getStartTime(), 1);
 
-        long currentEnqueuedOps = (enqueuedOperations - lastEnqueued);
-        long currentDequeuedOps = (dequeuedOperations - lastDequeued);
-        long currentDequeuedItems = (dequeuedItems - lastDequeuedItems);
+        long currentEnqueuedOps = (getEnqueuedOperations() - lastEnqueued);
+        long currentDequeuedOps = (getDequeuedOperations() - lastDequeued);
+        long currentDequeuedItems = (getDequeuedItems() - lastDequeuedItems);
 
-        long currentSigOpsEnqueued = (significantOpsEnqueued - lastSignificantEnqueued);
-        long currentSigOpsDequeued = (significantOpsDequeued - lastSignificantDequeued);
+        long currentSigOpsEnqueued = (getSignificantOpsEnqueued() - lastSignificantEnqueued);
+        long currentSigOpsDequeued = (getSignificantOpsDequeued() - lastSignificantDequeued);
         //long currentSigOpsCompleted = (significantOpsCompleted - lastSignificantCompleted);
 
         long currentEnqueueRate = (long) (currentEnqueuedOps * 1000.0 / currentElapsedMillis);
         long currentSigEnqueueRate = (long) (currentSigOpsEnqueued * 1000.0 / currentElapsedMillis);
         long currentInsigEnqueueRate = (long) ((currentEnqueuedOps - currentSigOpsEnqueued) * 1000.0 / currentElapsedMillis);
-        long overallEnqueueRate = (long) (enqueuedOperations * 1000.0 / totalElapsedMillis);
-        long overallSigEnqueueRate = (long) (significantOpsEnqueued * 1000.0 / totalElapsedMillis);
-        long overallInsigEnqueueRate = (long) ((enqueuedOperations - significantOpsEnqueued) * 1000.0 / totalElapsedMillis);
+        long overallEnqueueRate = (long) (getEnqueuedOperations() * 1000.0 / totalElapsedMillis);
+        long overallSigEnqueueRate = (long) (getSignificantOpsEnqueued() * 1000.0 / totalElapsedMillis);
+        long overallInsigEnqueueRate = (long) ((getEnqueuedOperations() - getSignificantOpsEnqueued()) * 1000.0 / totalElapsedMillis);
 
         long currentDequeueRate = (long) (currentDequeuedOps * 1000.0 / currentElapsedMillis);
         long currentSigDequeueRate = (long) (currentSigOpsDequeued * 1000.0 / currentElapsedMillis);
         long currentInsigDequeueRate = (long) ((currentDequeuedOps - currentSigOpsDequeued) * 1000.0 / currentElapsedMillis);
-        long overallDequeueRate = (long) (dequeuedOperations * 1000.0 / totalElapsedMillis);
-        long overallSigDequeueRate = (long) (significantOpsDequeued * 1000.0 / totalElapsedMillis);
-        long overallInsigDequeueRate = (long) ((dequeuedOperations - significantOpsDequeued) * 1000.0 / totalElapsedMillis);
+        long overallDequeueRate = (long) (getDequeuedOperations() * 1000.0 / totalElapsedMillis);
+        long overallSigDequeueRate = (long) (getSignificantOpsDequeued() * 1000.0 / totalElapsedMillis);
+        long overallInsigDequeueRate = (long) ((getDequeuedOperations() - getSignificantOpsDequeued()) * 1000.0 / totalElapsedMillis);
 
         long currentItemDequeueRate = (long) (currentDequeuedItems * 1000.0 / currentElapsedMillis);
-        long overallItemDequeueRate = (long) (dequeuedItems * 1000.0 / totalElapsedMillis);
+        long overallItemDequeueRate = (long) (getDequeuedItems() * 1000.0 / totalElapsedMillis);
 
-        String stats = "\nQS:\t" + "totalOperationsPending=" + totalOperationsPending + ", significantOpsPending=" + (significantOpsEnqueued - significantOpsCompleted) + ", filesWithSignificantWork=" + filesWithSignificantWork.size() + ", filesWithInsignificantWork=" + filesWithInsignificantWork.size()
+        String stats = "\nQS:\t" + "totalOperationsPending=" + getTotalOperationsPending() + 
+        ", significantOpsPending=" + (getSignificantOpsEnqueued() - getSignificantOpsCompleted()) + 
+        ", filesWithSignificantWork=" + filesWithSignificantWork.size() + 
+        ", filesWithInsignificantWork=" + filesWithInsignificantWork.size()
 
-        + "\nQS:\t" + ", createsCompleted=" + createsCompleted + ", updatesCompleted=" + updatesCompleted + ", errors=" + errors + ", promotionRate=" + ((double) (promotionCount * 1000.0 / totalElapsedMillis)) + ", promotionCount=" + promotionCount
+        + "\nQS:\t" + ", createsCompleted=" + getCreatesCompleted() + 
+        ", updatesCompleted=" + getUpdatesCompleted() + 
+        ", errors=" + getErrors() + 
+        ", promotionRate=" + ((double) (getPromotionCount() * 1000.0 / totalElapsedMillis)) + 
+        ", promotionCount=" + getPromotionCount()
 
-        + "\nQS:\t" + ", currentEnqueueRates=(" + currentSigEnqueueRate + "/" + currentInsigEnqueueRate + "/" + currentEnqueueRate + ")" + ", currentDequeueRate=(" + currentSigDequeueRate + "/" + currentInsigDequeueRate + "/" + currentDequeueRate + ")" + ", currentItemDequeRate=" + currentItemDequeueRate + ", currentOpsPerUpdate=" + (currentDequeuedOps / Math.max(currentDequeuedItems, 1.0)) + ", currentPrcntSignificant=" + (currentSigOpsEnqueued * 100.0 / Math.max(currentEnqueuedOps, 1.0)) + "%" + ", elapsedTime=" + ((currentElapsedMillis + 500) / 1000)
+        + "\nQS:\t" + ", currentEnqueueRates=(" + currentSigEnqueueRate + "/" + currentInsigEnqueueRate + "/" + currentEnqueueRate + ")" + 
+        ", currentDequeueRate=(" + currentSigDequeueRate + "/" + currentInsigDequeueRate + "/" + currentDequeueRate + ")" + 
+        ", currentItemDequeRate=" + currentItemDequeueRate + 
+        ", currentOpsPerUpdate=" + (currentDequeuedOps / Math.max(currentDequeuedItems, 1.0)) + 
+        ", currentPrcntSignificant=" + (currentSigOpsEnqueued * 100.0 / Math.max(currentEnqueuedOps, 1.0)) + "%" + ", elapsedTime=" + ((currentElapsedMillis + 500) / 1000)
 
-        + "\nQS:\t" + ", overallEnqueueRate=(" + overallSigEnqueueRate + "/" + overallInsigEnqueueRate + "/" + overallEnqueueRate + ")" + ", overallDequeueRate=(" + overallSigDequeueRate + "/" + overallInsigDequeueRate + "/" + overallDequeueRate + ")" + ", overallItemDequeRate=" + overallItemDequeueRate + ", overallOpsPerUpdate=" + (dequeuedOperations / Math.max(dequeuedItems, 1.0)) + ", overallPrcntSignificant=" + (significantOpsEnqueued * 100.0 / Math.max(enqueuedOperations, 1.0)) + "%" + ", totalElapsedTime=" + ((totalElapsedMillis + 500) / 1000);
+        + "\nQS:\t" + ", overallEnqueueRate=(" + overallSigEnqueueRate + "/" + overallInsigEnqueueRate + "/" + overallEnqueueRate + ")" + 
+        ", overallDequeueRate=(" + overallSigDequeueRate + "/" + overallInsigDequeueRate + "/" + overallDequeueRate + ")" + 
+        ", overallItemDequeRate=" + overallItemDequeueRate + 
+        ", overallOpsPerUpdate=" + (getDequeuedOperations() / Math.max(getDequeuedItems(), 1.0)) + 
+        ", overallPrcntSignificant=" + (getSignificantOpsEnqueued() * 100.0 / Math.max(getEnqueuedOperations(), 1.0)) + "%" + 
+        ", totalElapsedTime=" + ((totalElapsedMillis + 500) / 1000);
 
         lastStatsTime = now;
-        lastEnqueued = enqueuedOperations;
-        lastDequeued = dequeuedOperations;
-        lastDequeuedItems = dequeuedItems;
-        lastSignificantEnqueued = significantOpsEnqueued;
-        lastSignificantDequeued = significantOpsDequeued;
-        lastSignificantCompleted = significantOpsCompleted;
-        lastOpsPending = totalOperationsPending;
+        lastEnqueued = getEnqueuedOperations();
+        lastDequeued = getDequeuedOperations();
+        lastDequeuedItems = getDequeuedItems();
+        lastSignificantEnqueued = getSignificantOpsEnqueued();
+        lastSignificantDequeued = getSignificantOpsDequeued();
+        lastSignificantCompleted = getSignificantOpsCompleted();
+        lastOpsPending = getTotalOperationsPending();
 
         return stats;
     }
@@ -982,6 +1000,102 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraphReturnDetails(command, workDir);
     }
+
+	public long getTotalOperationsPending() {
+		return m_totalOperationsPending;
+	}
+
+	public void setTotalOperationsPending(long totalOperationsPending) {
+		m_totalOperationsPending = totalOperationsPending;
+	}
+
+	public long getCreatesCompleted() {
+		return m_createsCompleted;
+	}
+
+	public void setCreatesCompleted(long createsCompleted) {
+		m_createsCompleted = createsCompleted;
+	}
+
+	public long getUpdatesCompleted() {
+		return m_updatesCompleted;
+	}
+
+	public void setUpdatesCompleted(long updatesCompleted) {
+		m_updatesCompleted = updatesCompleted;
+	}
+
+	public long getErrors() {
+		return m_errors;
+	}
+
+	public void setErrors(long errors) {
+		m_errors = errors;
+	}
+
+	public long getPromotionCount() {
+		return m_promotionCount;
+	}
+
+	public void setPromotionCount(long promotionCount) {
+		m_promotionCount = promotionCount;
+	}
+
+	public long getSignificantOpsEnqueued() {
+		return m_significantOpsEnqueued;
+	}
+
+	public void setSignificantOpsEnqueued(long significantOpsEnqueued) {
+		m_significantOpsEnqueued = significantOpsEnqueued;
+	}
+
+	public long getSignificantOpsDequeued() {
+		return m_significantOpsDequeued;
+	}
+
+	public void setSignificantOpsDequeued(long significantOpsDequeued) {
+		m_significantOpsDequeued = significantOpsDequeued;
+	}
+
+	public long getEnqueuedOperations() {
+		return m_enqueuedOperations;
+	}
+
+	public void setEnqueuedOperations(long enqueuedOperations) {
+		m_enqueuedOperations = enqueuedOperations;
+	}
+
+	public long getDequeuedOperations() {
+		return m_dequeuedOperations;
+	}
+
+	public void setDequeuedOperations(long dequeuedOperations) {
+		m_dequeuedOperations = dequeuedOperations;
+	}
+
+	public long getDequeuedItems() {
+		return m_dequeuedItems;
+	}
+
+	public void setDequeuedItems(long dequeuedItems) {
+		m_dequeuedItems = dequeuedItems;
+	}
+
+	public long getSignificantOpsCompleted() {
+		return m_significantOpsCompleted;
+	}
+
+	public void setSignificantOpsCompleted(long significantOpsCompleted) {
+		m_significantOpsCompleted = significantOpsCompleted;
+	}
+
+	public long getStartTime() {
+		return m_startTime;
+	}
+
+	public void setStartTime(long updateStart) {
+		m_startTime = updateStart;
+	}
 
 
 }
