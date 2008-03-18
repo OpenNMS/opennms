@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -71,7 +70,6 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.utils.ProcessExec;
 import org.springframework.util.StringUtils;
 
 public class InstallerDb {
@@ -108,8 +106,6 @@ public class InstallerDb {
     private String m_databaseName = null;
     
     private String m_pass = null;
-    
-    private String m_pg_bindir = null;
     
     private String m_pg_iplike = null;
     
@@ -2296,10 +2292,6 @@ public class InstallerDb {
 
     public String getPostgresOpennmsPassword() {
         return m_pass;
-    }
-
-    public void setPostgresBinaryDirectory(String directory) {
-        m_pg_bindir = directory;
     }
 
     public void setPostgresAdminUser(String postgresAdminUser) {
