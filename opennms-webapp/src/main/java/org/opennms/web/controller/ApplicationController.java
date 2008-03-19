@@ -104,7 +104,7 @@ public class ApplicationController extends AbstractController {
                 ModelAndView modelAndView = 
                     new ModelAndView(new RedirectView("/admin/applications.htm", true));
                 modelAndView.addObject("applicationid", applicationIdString);
-                modelAndView.addObject("edit", null);
+                modelAndView.addObject("edit", "edit");
                 return modelAndView;
             }
 
@@ -136,7 +136,7 @@ public class ApplicationController extends AbstractController {
                 ModelAndView modelAndView = 
                     new ModelAndView(new RedirectView("/admin/applications.htm", true));
                 modelAndView.addObject("ifserviceid", ifServiceIdString);
-                modelAndView.addObject("edit", null);
+                modelAndView.addObject("edit", "edit");
                 return modelAndView;
             }
 
