@@ -1629,6 +1629,7 @@
   <event-file>events/Intel.events.xml</event-file>
   <event-file>events/ISS.events.xml</event-file>
   <event-file>events/IPUnity-SES-MIB.events.xml</event-file>
+  <event-file>events/Juniper.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>
   <event-file>events/Liebert.events.xml</event-file>
   <event-file>events/Liebert.600SM.events.xml</event-file>
