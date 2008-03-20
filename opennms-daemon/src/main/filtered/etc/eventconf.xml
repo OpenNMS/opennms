@@ -1577,6 +1577,7 @@
   
   <event-file>events/ia.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
+  <event-file>events/AdaptecRaid.events.xml</event-file>
   <event-file>events/ADIC-v2.events.xml</event-file>
   <event-file>events/Adtran.events.xml</event-file>
   <event-file>events/Adtran.Atlas.events.xml</event-file>

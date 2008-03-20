@@ -1,0 +1,1424 @@
+<events>
+<!-- Start of auto generated data from MIB: DPT-SCSI-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptOtherTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptOtherTrap</event-label>
+	<descr>
+&lt;p&gt;Controller event generated with a value dptScsiEventInfo.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptOtherTrap trap received 
+			dptScsiEventInfo=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>100</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaVoltageNormalTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaVoltageNormalTrap</event-label>
+	<descr>
+&lt;p&gt;5V Voltage has returned to the normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaVoltageNormalTrap trap received 
+			dptScsiHbaVoltage=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>101</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaTemperatureNormalTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaTemperatureNormalTrap</event-label>
+	<descr>
+&lt;p&gt;Temperature on controller has returned to normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaTemperatureNormalTrap trap received 
+			dptScsiHbaTemperature=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>102</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaEccRAMErrorNotFoundTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaEccRAMErrorNotFoundTrap</event-label>
+	<descr>
+&lt;p&gt;Controller detected an ECC RAM Error but an ECC error was not
+found when correction was attempted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaBadMemoryAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaEccRAMErrorNotFoundTrap trap received 
+			dptScsiHbaBadMemoryAddress=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>103</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevStatusChangedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevStatusChangedTrap</event-label>
+	<descr>
+&lt;p&gt;Status of the device changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		optimal(2)
+		verifying(3)
+		failed(4)
+		warning(5)
+		formatting(6)
+		formatCertifying(7)
+		missing(8)
+		notCreated(9)
+		degraded(10)
+		building(11)
+		rebuilding(12)
+		verifyFixing(13)
+		abortActivity(14)
+		reserved(15)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevStatusChangedTrap trap received 
+			dptScsiDevStatus=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>104</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevReqSenseTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevReqSenseTrap</event-label>
+	<descr>
+&lt;p&gt;Request sense information received from controller.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLastReqSenseInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevReqSenseTrap trap received 
+			dptScsiDevLastReqSenseInfo=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>105</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptArrayChangeTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptArrayChangeTrap</event-label>
+	<descr>
+&lt;p&gt;The software has asked the FW to do an array change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptArrayChangeTrap trap received 
+			dptScsiHbaNumber=%parm[#1]% 
+			dptScsiBusNumber=%parm[#2]% 
+			dptScsiDevId=%parm[#3]% 
+			dptScsiDevLun=%parm[#4]% 
+			dptScsiDevLevel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>106</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptBatteryChangeTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptBatteryChangeTrap</event-label>
+	<descr>
+&lt;p&gt;The status of the recharchable battery has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaBatteryStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		none(3)
+		trickleCharge(4)
+		fastCharge(5)
+		discharge(6)
+		bad(7)
+		full(8)
+		initCharge(9)
+		initDischarge(10)
+		initRecharge(11)
+		maintenanceDischarge(12)
+		maintenanceCharge(13)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptBatteryChangeTrap trap received 
+			dptScsiHbaNumber=%parm[#1]% 
+			dptScsiHbaBatteryStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>107</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaAuxVoltageNormalTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaAuxVoltageNormalTrap</event-label>
+	<descr>
+&lt;p&gt;An auxiliary voltage has returned to the normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventAuxVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaAuxVoltageNormalTrap trap received 
+			dptScsiEventAuxVoltage=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>108</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaNoSparesTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaNoSparesTrap</event-label>
+	<descr>
+&lt;p&gt;No available hot spares detected during a scan.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaNoSparesTrap trap received 
+			dptScsiHbaNumber=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>109</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevStatusChanged2Trap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevStatusChanged2Trap</event-label>
+	<descr>
+&lt;p&gt;Status of the device changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		optimal(2)
+		verifying(3)
+		failed(4)
+		warning(5)
+		formatting(6)
+		formatCertifying(7)
+		missing(8)
+		notCreated(9)
+		degraded(10)
+		building(11)
+		rebuilding(12)
+		verifyFixing(13)
+		abortActivity(14)
+		reserved(15)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventStatusString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevStatusChanged2Trap trap received 
+			dptScsiDevStatus=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]% 
+			dptScsiEventStatusString=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>110</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptBatteryChange2Trap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptBatteryChange2Trap</event-label>
+	<descr>
+&lt;p&gt;The status of the recharchable battery has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaBatteryStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		none(3)
+		trickleCharge(4)
+		fastCharge(5)
+		discharge(6)
+		bad(7)
+		full(8)
+		initCharge(9)
+		initDischarge(10)
+		initRecharge(11)
+		maintenanceDischarge(12)
+		maintenanceCharge(13)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventStatusString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptBatteryChange2Trap trap received 
+			dptScsiHbaNumber=%parm[#1]% 
+			dptScsiHbaBatteryStatus=%parm[#2]% 
+			dptScsiEventStatusString=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>200</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaEccRAMErrorCorrectedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaEccRAMErrorCorrectedTrap</event-label>
+	<descr>
+&lt;p&gt;The controller detected and corrected an ECC RAM error.
+dptScsiHbaBadMemoryAddress contains the RAM address.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaBadMemoryAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaEccRAMErrorCorrectedTrap trap received 
+			dptScsiHbaBadMemoryAddress=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>201</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevBlockReassignedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevBlockReassignedTrap</event-label>
+	<descr>
+&lt;p&gt;Controller reassigned a block. dptScsiDevBadBlockNumber
+contains the reassigned block number.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevBadBlockNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevBlockReassignedTrap trap received 
+			dptScsiDevBadBlockNumber=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>202</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevReqSenseErrorTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevReqSenseErrorTrap</event-label>
+	<descr>
+&lt;p&gt;Warning: request sense information from controller.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLastReqSenseInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevReqSenseErrorTrap trap received 
+			dptScsiDevLastReqSenseInfo=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>300</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaVoltageChangeTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaVoltageChangeTrap</event-label>
+	<descr>
+&lt;p&gt;Controller detected 5V voltage is outside of the normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaVoltageChangeTrap trap received 
+			dptScsiHbaVoltage=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>301</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaTemperatureHighTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaTemperatureHighTrap</event-label>
+	<descr>
+&lt;p&gt;High temperature detected on controller.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaTemperatureHighTrap trap received 
+			dptScsiHbaTemperature=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>302</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaEccRAMErrorUncorrectableTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaEccRAMErrorUncorrectableTrap</event-label>
+	<descr>
+&lt;p&gt;The controller detected and uncorrectable ECC RAM error.
+dptScsiHbaBadMemoryAddress contains the RAM address.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaBadMemoryAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaEccRAMErrorUncorrectableTrap trap received 
+			dptScsiHbaBadMemoryAddress=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>303</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptArrayStatusChangeDegradedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptArrayStatusChangeDegradedTrap</event-label>
+	<descr>
+&lt;p&gt;Array Degraded due to drive failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		optimal(2)
+		verifying(3)
+		failed(4)
+		warning(5)
+		formatting(6)
+		formatCertifying(7)
+		missing(8)
+		notCreated(9)
+		degraded(10)
+		building(11)
+		rebuilding(12)
+		verifyFixing(13)
+		abortActivity(14)
+		reserved(15)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptArrayStatusChangeDegradedTrap trap received 
+			dptScsiDevStatus=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>304</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevReqSenseSeriousErrorTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevReqSenseSeriousErrorTrap</event-label>
+	<descr>
+&lt;p&gt;Serious: request sense information from controller.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLastReqSenseInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevReqSenseSeriousErrorTrap trap received 
+			dptScsiDevLastReqSenseInfo=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>305</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevArrayDataInconsistencyTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevArrayDataInconsistencyTrap</event-label>
+	<descr>
+&lt;p&gt;Array Data consistency error detected on controller.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevBadBlockNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevBadBlockCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevArrayDataInconsistencyTrap trap received 
+			dptScsiDevBadBlockNumber=%parm[#1]% 
+			dptScsiDevBadBlockCount=%parm[#2]% 
+			dptScsiHbaNumber=%parm[#3]% 
+			dptScsiBusNumber=%parm[#4]% 
+			dptScsiDevId=%parm[#5]% 
+			dptScsiDevLun=%parm[#6]% 
+			dptScsiDevLevel=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>306</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaErrorTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaErrorTrap</event-label>
+	<descr>
+&lt;p&gt;The controller has detected a non-SCSI related error, as defined in the I2O spec.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaErrorTrap trap received 
+			dptScsiHbaNumber=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>307</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevFailedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevFailedTrap</event-label>
+	<descr>
+&lt;p&gt;An unprotected drive has failed (visible to the OS).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevFailedTrap trap received 
+			dptScsiHbaNumber=%parm[#1]% 
+			dptScsiBusNumber=%parm[#2]% 
+			dptScsiDevId=%parm[#3]% 
+			dptScsiDevLun=%parm[#4]% 
+			dptScsiDevLevel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>308</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptDevSmartFailedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptDevSmartFailedTrap</event-label>
+	<descr>
+&lt;p&gt;A drive has reported a SMART failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptDevSmartFailedTrap trap received 
+			dptScsiHbaNumber=%parm[#1]% 
+			dptScsiBusNumber=%parm[#2]% 
+			dptScsiDevId=%parm[#3]% 
+			dptScsiDevLun=%parm[#4]% 
+			dptScsiDevLevel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>309</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaAuxVoltageChangeTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaAuxVoltageChangeTrap</event-label>
+	<descr>
+&lt;p&gt;Controller detected an auxiliary voltage is outside of the
+normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventAuxVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaAuxVoltageChangeTrap trap received 
+			dptScsiEventAuxVoltage=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>310</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaVoltageChange2Trap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaVoltageChange2Trap</event-label>
+	<descr>
+&lt;p&gt;Controller detected 5V voltage is outside of the normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventStatusString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaVoltageChange2Trap trap received 
+			dptScsiHbaVoltage=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiEventStatusString=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>311</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaAuxVoltageChange2Trap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaAuxVoltageChange2Trap</event-label>
+	<descr>
+&lt;p&gt;Controller detected an auxiliary voltage is outside of the
+normal range.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventAuxVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiEventStatusString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaAuxVoltageChange2Trap trap received 
+			dptScsiEventAuxVoltage=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiEventStatusString=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>400</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptHbaTemperatureVeryHighTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptHbaTemperatureVeryHighTrap</event-label>
+	<descr>
+&lt;p&gt;Very high temperature detected on controller.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		notApplicable(2)
+		notSupported(3)
+		low(4)
+		normal(5)
+		high(6)
+		veryHigh(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptHbaTemperatureVeryHighTrap trap received 
+			dptScsiHbaTemperature=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1597</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>401</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AdaptecRaid/traps/dptArrayStatusChangeFailedTrap</uei>
+	<event-label>DPT-SCSI-MIB defined trap event: dptArrayStatusChangeFailedTrap</event-label>
+	<descr>
+&lt;p&gt;Array Failed due to multiple drive failures.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		invalid(1)
+		optimal(2)
+		verifying(3)
+		failed(4)
+		warning(5)
+		formatting(6)
+		formatCertifying(7)
+		missing(8)
+		notCreated(9)
+		degraded(10)
+		building(11)
+		rebuilding(12)
+		verifyFixing(13)
+		abortActivity(14)
+		reserved(15)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiHbaNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiBusNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLun&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dptScsiDevLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dptArrayStatusChangeFailedTrap trap received 
+			dptScsiDevStatus=%parm[#1]% 
+			dptScsiHbaNumber=%parm[#2]% 
+			dptScsiBusNumber=%parm[#3]% 
+			dptScsiDevId=%parm[#4]% 
+			dptScsiDevLun=%parm[#5]% 
+			dptScsiDevLevel=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: DPT-SCSI-MIB -->
+</events>
