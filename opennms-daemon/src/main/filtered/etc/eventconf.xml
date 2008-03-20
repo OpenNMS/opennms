@@ -1586,6 +1586,7 @@
   <event-file>events/APC.events.xml</event-file>
   <event-file>events/APC.Best.events.xml</event-file>
   <event-file>events/APC.Exide.events.xml</event-file>
+  <event-file>events/Audiocodes.events.xml</event-file>
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
   <event-file>events/BGP4.events.xml</event-file>
