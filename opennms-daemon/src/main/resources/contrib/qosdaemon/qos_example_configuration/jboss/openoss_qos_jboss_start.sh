@@ -1,4 +1,4 @@
-
+#!/bin/sh
 # echo following commands to prompt
 set -x
 # openoss start up file Created by Craig Gallen 19th April 2005
