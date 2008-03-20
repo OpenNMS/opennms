@@ -11,6 +11,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: System.out.println -> log().info. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
 //
@@ -76,7 +80,7 @@ public class QueueManager {
                 wait();
             }// end while
         } catch (InterruptedException E) {
-            System.out.println("InterruptedException: " + E);
+            log.info("InterruptedException: " + E, E);
         }// end catch block
 
         // get the byte from the queue

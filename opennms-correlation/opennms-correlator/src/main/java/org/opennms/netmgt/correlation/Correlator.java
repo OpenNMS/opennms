@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: System.err.println -> log().info. - dj@opennms.org
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -33,6 +37,8 @@ package org.opennms.netmgt.correlation;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -75,10 +81,10 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		Assert.notNull(m_eventIpcManager, "property eventIpcManager must be set");
 		Assert.notNull(m_engines, "property engines must be set");
         
-        System.err.println("m_engines.size = " + m_engines.size());
+        log().info("m_engines.size = " + m_engines.size());
 		
 		for(CorrelationEngine engine : m_engines) {
-            System.err.println("Registering engine "+engine);
+            log().info("Registering engine "+engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
         
@@ -117,4 +123,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
         return m_engines;
     }
 
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

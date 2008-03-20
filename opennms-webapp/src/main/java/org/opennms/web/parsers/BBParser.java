@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: Remove commented-out System.err.println. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -207,8 +211,6 @@ public class BBParser {
             break;
 
         default:
-            // System.err.println( "Found a node of unknown type!!!!!!\n" +
-            // "Node " + node.getNodeName() + " not recognized");
             bRet = false;
         }
 
