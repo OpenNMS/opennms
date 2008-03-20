@@ -1,4 +1,4 @@
-#!@install.perl.bin@ -w
+#!/usr/bin/perl -w
 use strict;
 
 # mails a file to a user

@@ -1,3 +1,4 @@
+#!/bin/sh
 # opennms_IFOpenOSS2
 # ------------------
 # This script runs a client which connects to the jboss message queue which this OpenNMS is writing to and listens
