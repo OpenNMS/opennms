@@ -48,11 +48,15 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,9 +68,15 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ProcessExec;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.dao.db.InstallerDb;
-import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.ping.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.StringUtils;
@@ -100,13 +110,6 @@ public class Installer {
     boolean m_ignore_not_null = false;
     boolean m_do_not_revert = false;
 
-    String m_pg_driver = null;
-    String m_pg_url = null;
-    String m_pg_database_name = "opennms";
-    String m_pg_user = "postgres"; // postgres admin user
-    String m_pg_pass = ""; // postgres admin password
-    String m_user = "opennms"; // postgres runtime database user
-    String m_pass = "opennms"; // postgres runtime database password
     String m_etc_dir = "";
     String m_tomcat_conf = null;
     String m_webappdir = null;
@@ -130,6 +133,20 @@ public class Installer {
         setOutputStream(System.out);
     }
     
+    private Map<String,JdbcDataSource> getDataSourceConfiguration() throws IOException, MarshalException, ValidationException {
+    	Map<String,JdbcDataSource> dsHash = new HashMap<String,JdbcDataSource>();
+
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        FileInputStream fileInputStream = new FileInputStream(cfgFile);
+        final Reader rdr = new InputStreamReader(fileInputStream);
+        DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
+
+        for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
+        	dsHash.put(jdbcDs.getName(), jdbcDs);
+        }
+        return dsHash;
+    }
+
     public void install(String[] argv) throws Exception {
         printHeader();
         loadProperties();
@@ -138,26 +155,35 @@ public class Installer {
         m_installerDb.setForce(m_force);
         m_installerDb.setIgnoreNotNull(m_ignore_not_null);
         m_installerDb.setNoRevert(m_do_not_revert);
-        m_installerDb.setPostgresAdminUser(m_pg_user);
-        m_installerDb.setPostgresAdminPassword(m_pg_pass);
-        m_installerDb.setPostgresOpennmsUser(m_user);
-        m_installerDb.setPostgresOpennmsPassword(m_pass);
+
+        DataSourceFactory.init("opennms");
+        DataSourceFactory.init("opennms-admin");
+        Map<String,JdbcDataSource> dsc = getDataSourceConfiguration();
+
+        if (dsc.containsKey("opennms")) {
+        	m_installerDb.setPostgresOpennmsUser(dsc.get("opennms").getUserName());
+        	m_installerDb.setPostgresOpennmsPassword(dsc.get("opennms").getPassword());
+        	m_installerDb.setDatabaseName(dsc.get("opennms").getDatabaseName());
+        }
+        if (dsc.containsKey("opennms-admin")) {
+        	m_installerDb.setPostgresAdminUser(dsc.get("opennms-admin").getUserName());
+        	m_installerDb.setPostgresAdminPassword(dsc.get("opennms-admin").getPassword());
+        }
+        /*
         m_installerDb.setDatabaseName(m_pg_database_name);
+		*/
 
         if (!m_update_database && !m_do_inserts && !m_update_iplike
                 && !m_update_unicode && m_tomcat_conf == null
                 && !m_install_webapp && !m_fix_constraint) {
             usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
-            System.exit(0);
+            System.exit(1);
         }
-        
-        DataSource adminDataSource =
-            new SimpleDataSource(m_pg_driver, m_pg_url + "template1",
-                                    m_pg_user, m_pg_pass);
+
+        DataSource adminDataSource = DataSourceFactory.getDataSource("opennms-admin");
         m_installerDb.setAdminDataSource(adminDataSource);
-        DataSource opennmsDataSource =
-            new SimpleDataSource(m_pg_driver, m_pg_url + m_installerDb.getDatabaseName(),
-                                    m_pg_user, m_pg_pass);
+        
+        DataSource opennmsDataSource = DataSourceFactory.getDataSource("opennms");
         m_installerDb.setDataSource(opennmsDataSource);
 
         /*
@@ -305,16 +331,9 @@ public class Installer {
         m_properties.putAll(sys);
 
         m_opennms_home = fetchProperty("install.dir");
-        m_pg_database_name = fetchProperty("install.database.name");
-        m_user = fetchProperty("install.database.user");
-        m_pass = fetchProperty("install.database.password");
-        m_pg_driver = fetchProperty("install.database.driver");
-        m_pg_url = fetchProperty("install.database.url");
         m_etc_dir = fetchProperty("install.etc.dir");
         m_install_servletdir = fetchProperty("install.servlet.dir");
         
-        m_installerDb.setPostgresBinaryDirectory(fetchProperty("install.database.bindir"));
-
         String soext = fetchProperty("build.soext");
         String pg_iplike_dir = m_properties.getProperty("install.postgresql.dir");
 
@@ -382,24 +401,35 @@ public class Installer {
             System.exit(0);
         }
 
-        m_pg_user = m_commandLine.getOptionValue("a", m_pg_user);
-        m_pg_pass = m_commandLine.getOptionValue("A", m_pg_pass);
+        options.addOption("u", "username",         true, "username of the database account (default: 'opennms')");
+        options.addOption("p", "password",         true, "password of the database account (default: 'opennms')");
+        options.addOption("a", "admin-username",   true, "username of the database administrator (default: 'postgres')");
+        options.addOption("A", "admin-password",   true, "password of the database administrator (default: '')");
+        options.addOption("D", "database-url",     true, "JDBC database URL (default: jdbc:postgresql://localhost:5432/");
+        options.addOption("P", "database-name",    true, "name of the PostgreSQL database (default: opennms)");
+
+        if (m_commandLine.hasOption("u")
+        		|| m_commandLine.hasOption("p")
+        		|| m_commandLine.hasOption("a")
+        		|| m_commandLine.hasOption("A")
+        		|| m_commandLine.hasOption("D")
+        		|| m_commandLine.hasOption("P")) {
+            usage(options, m_commandLine, "The 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.", null);
+            System.exit(1);
+        }
+        
         m_force = m_commandLine.hasOption("c");
         m_fix_constraint = m_commandLine.hasOption("C");
         m_fix_constraint_name = m_commandLine.getOptionValue("C");
         m_update_database = m_commandLine.hasOption("d");
-        m_pg_url = m_commandLine.getOptionValue("D", m_pg_url);
         m_do_full_vacuum = m_commandLine.hasOption("f");
         m_do_inserts = m_commandLine.hasOption("i");
         m_library_search_path = m_commandLine.getOptionValue("l", m_library_search_path);
         m_skip_constraints = m_commandLine.hasOption("n");
         m_ignore_not_null = m_commandLine.hasOption("N");
-        m_pass = m_commandLine.getOptionValue("p", m_pass);
-        m_pg_database_name = m_commandLine.getOptionValue("P", m_pg_database_name);
         m_do_not_revert = m_commandLine.hasOption("R");
         m_update_iplike = m_commandLine.hasOption("s");
         m_tomcat_conf = m_commandLine.getOptionValue("T", m_tomcat_conf);
-        m_user = m_commandLine.getOptionValue("u", m_user);
         m_update_unicode = m_commandLine.hasOption("U");
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
@@ -671,8 +701,6 @@ public class Installer {
         }
         
         pw.close();
-        
-        System.exit(0);
     }
 
     public static void main(String[] argv) throws Exception {

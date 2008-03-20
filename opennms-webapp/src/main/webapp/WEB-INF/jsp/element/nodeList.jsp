@@ -44,6 +44,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="element" tagdir="/WEB-INF/tags/element" %>
 
+<c:if test="${model.nodeCount == 1}">
+  <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
+</c:if>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node List" />
   <jsp:param name="headTitle" value="Node List" />
