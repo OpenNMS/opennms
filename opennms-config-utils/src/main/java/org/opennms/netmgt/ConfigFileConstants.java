@@ -763,8 +763,8 @@ public final class ConfigFileConstants {
     public static final String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
-            log().warn("getConfigFileByName: The \"opennms.home\" property was not set, falling back to /opt/OpenNMS");
-            home = File.separator + "opt" + File.separator + "OpenNMS";
+            log().warn("getConfigFileByName: The \"opennms.home\" property was not set, falling back to /opt/opennms");
+            home = File.separator + "opt" + File.separator + "opennms";
         }
         // Remove the trailing slash if necessary
         //

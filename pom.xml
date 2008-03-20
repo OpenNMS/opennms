@@ -120,6 +120,11 @@
         <version>2.1</version>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>${maven.eclipse.plugin.version}</version>
@@ -550,11 +555,9 @@ opennms.home = ${opennms.home}
     <install.database.name>opennms</install.database.name>
     <install.database.user>opennms</install.database.user>
     <install.database.password>opennms</install.database.password>
+    <install.database.admin.user>postgres</install.database.admin.user>
+    <install.database.admin.password></install.database.admin.password>
     <install.database.driver>org.postgresql.Driver</install.database.driver> 
-    <!-- XXX why is compatible=7.1 being used?
-         It's not added here... see etc/opennms-database.xml and
-         src/web/etc/web.xml where @install.database.driver@ is used. -->
-    <install.database.url>jdbc:postgresql://localhost:5432/</install.database.url>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
     <install.perl.bin>/usr/bin/perl</install.perl.bin>

@@ -32,6 +32,7 @@
         </element>
       </sequence>
       <attribute name="name" type="string" use="required" />
+      <attribute name="database-name" type="string" use="optional" default="opennms" />
       <attribute name="url" type="string" use="required" />
       <attribute name="class-name" type="string" use="required" />
       <attribute name="user-name" type="string" use="optional" />

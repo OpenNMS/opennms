@@ -178,6 +178,14 @@
          </tr>
          <tr>
           <td width="10%" valign="top" align="left">
+            Short Message:
+          </td>
+          <td valign="top" align="left">
+            <textarea rows="1" cols="100" name="numMsg"><%=(newNotice.getNumericMessage()!=null ? newNotice.getNumericMessage() : "")%></textarea>
+          </td>
+         </tr>
+         <tr>
+          <td width="10%" valign="top" align="left">
             Email Subject:
           </td>
           <td valign="top" align="left">
