@@ -15,7 +15,7 @@
                 <mevalue xmlns="">1001</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscTestTrapEvent</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscTestTrapEvent</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscTestTrapEvent</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC generated a test trap event in response to a user request.&lt;/p&gt;&lt;table&gt;
@@ -84,7 +84,7 @@
                 <mevalue xmlns="">1002</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscAuthError</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscAuthError</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscAuthError</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC Authentication Failures during a time period have Exceeded a Threshold.&lt;/p&gt;&lt;table&gt;
@@ -153,7 +153,7 @@
                 <mevalue xmlns="">1003</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscLostESM</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscLostESM</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscLostESM</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC cannot communicate with the baseboard management controller (ESM).&lt;/p&gt;&lt;table&gt;
@@ -222,7 +222,7 @@
                 <mevalue xmlns="">1004</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscFoundESM</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscFoundESM</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscFoundESM</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC is communicating normally with the baseboard management controller (ESM).&lt;/p&gt;&lt;table&gt;
@@ -291,7 +291,7 @@
                 <mevalue xmlns="">1005</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscPowerOff</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscPowerOff</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscPowerOff</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected a System power state change to powered-off.&lt;/p&gt;&lt;table&gt;
@@ -360,7 +360,7 @@
                 <mevalue xmlns="">1006</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscPowerOn</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscPowerOn</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscPowerOn</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected a system power state change to powered-on.&lt;/p&gt;&lt;table&gt;
@@ -429,7 +429,7 @@
                 <mevalue xmlns="">1007</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscWatchdogExpired</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscWatchdogExpired</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscWatchdogExpired</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected that the system watchdog has expired indicating a system hang.&lt;/p&gt;&lt;table&gt;
@@ -498,7 +498,7 @@
                 <mevalue xmlns="">1008</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscBattLow</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscBattLow</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscBattLow</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC Battery charge is below 25% indicating that the battery may only be able to power the DRSC for 8-10 minutes.&lt;/p&gt;&lt;table&gt;
@@ -567,7 +567,7 @@
                 <mevalue xmlns="">1009</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscTempNormal</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscTempNormal</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscTempNormal</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC Temperature probe has retured to a normal value.&lt;/p&gt;&lt;table&gt;
@@ -636,7 +636,7 @@
                 <mevalue xmlns="">1010</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscTempWarning</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscTempWarning</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscTempWarning</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC Temperature probe has detected a Warning value.&lt;/p&gt;&lt;table&gt;
@@ -705,7 +705,7 @@
                 <mevalue xmlns="">1011</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscTempCritical</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscTempCritical</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscTempCritical</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC Temperature probe has detected a failure (or critical) value.&lt;/p&gt;&lt;table&gt;
@@ -774,7 +774,7 @@
                 <mevalue xmlns="">1012</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscVoltNormal</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscVoltNormal</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscVoltNormal</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC voltage has returned to a normal value.&lt;/p&gt;&lt;table&gt;
@@ -843,7 +843,7 @@
                 <mevalue xmlns="">1013</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscVoltWarning</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscVoltWarning</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscVoltWarning</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC voltage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
@@ -912,7 +912,7 @@
                 <mevalue xmlns="">1014</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscVoltCritical</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscVoltCritical</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscVoltCritical</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC voltage probe has detected a failure (or critical) value.&lt;/p&gt;&lt;table&gt;
@@ -981,7 +981,7 @@
                 <mevalue xmlns="">1015</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscSELWarning</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscSELWarning</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscSELWarning</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Warning.&lt;/p&gt;&lt;table&gt;
@@ -1050,7 +1050,7 @@
                 <mevalue xmlns="">1016</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscSELCritical</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscSELCritical</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscSELCritical</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Critical.&lt;/p&gt;&lt;table&gt;
@@ -1119,7 +1119,7 @@
                 <mevalue xmlns="">1017</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscSEL80percentFull</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscSEL80percentFull</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscSEL80percentFull</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected that the System Event Log is 80% full.&lt;/p&gt;&lt;table&gt;
@@ -1188,7 +1188,7 @@
                 <mevalue xmlns="">1018</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscSEL90percentFull</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscSEL90percentFull</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscSEL90percentFull</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected that the System Event Log is 90% full.&lt;/p&gt;&lt;table&gt;
@@ -1257,7 +1257,7 @@
                 <mevalue xmlns="">1019</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscSEL100percentFull</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscSEL100percentFull</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscSEL100percentFull</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected that the System Event Log is 100% full.&lt;/p&gt;&lt;table&gt;
@@ -1326,7 +1326,7 @@
                 <mevalue xmlns="">1020</mevalue>
             </maskelement>
         </mask>
-        <uei xmlns="">uei.opennms.org/mib2opennms/alertDrscSELNormal</uei>
+        <uei xmlns="">uei.opennms.org/vendor/Dell/traps/alertDrscSELNormal</uei>
         <event-label xmlns="">DELL-RAC-MIB defined trap event: alertDrscSELNormal</event-label>
         <descr xmlns="">
 &lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Normal.&lt;/p&gt;&lt;table&gt;
