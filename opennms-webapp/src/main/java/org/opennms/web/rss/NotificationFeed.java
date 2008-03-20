@@ -24,7 +24,7 @@ public class NotificationFeed extends AbstractFeed {
 
         try {
             NotificationModel model = new NotificationModel();
-            Notification[] notifications = model.allNotifications();
+            Notification[] notifications = model.allNotifications("desc");
 
             SyndEntry entry;
             

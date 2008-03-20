@@ -82,7 +82,7 @@ public class NotificationModel extends Object {
 
     private final String EVENTID = "eventid";
 
-    private final String SELECT = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS;";
+    private final String SELECT = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS";
 
     private final String NOTICE_ID = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS where NOTIFYID = ?";
 
@@ -195,17 +195,33 @@ public class NotificationModel extends Object {
         return nbean;
     }
 
+    public Notification[] allNotifications() throws SQLException {
+    	return this.allNotifications(null);
+    }
+    
     /**
      * Return all notifications, both outstanding and acknowledged.
      */
-    public Notification[] allNotifications() throws SQLException {
+    public Notification[] allNotifications(String order) throws SQLException {
         Notification[] notices = null;
 
         Connection conn = Vault.getDbConnection();
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(SELECT);
+
+            // oh man this is lame, but it'll be a DAO soon right?  right?  :P
+            String query = SELECT;
+            if (order != null) {
+            	if (order.equalsIgnoreCase("asc")) {
+            		query += " ORDER BY pagetime ASC";
+            	} else if (order.equalsIgnoreCase("desc")) {
+            		query += " ORDER BY pagetime DESC";
+            	}
+            }
+            query += ";";
+            
+            ResultSet rs = stmt.executeQuery(query);
             notices = rs2NotifyBean(conn, rs);
 
             rs.close();
