@@ -1,4 +1,4 @@
-                  
+#!/bin/sh
 # OpenNMS OSSJ Test Traps Generator
      
 # OSSJ_TEST_ALARM_1 clear

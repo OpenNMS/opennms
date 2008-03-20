@@ -1,3 +1,4 @@
+#!/bin/sh
 date
 $ANT_HOME/bin/ant -DMIBS="RFC1213-MIB APPLICATION-MIB"  testmibs
 $ANT_HOME/bin/ant -DMIBS="RFC1213-MIB ATM-MIB"  testmibs

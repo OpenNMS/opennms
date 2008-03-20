@@ -62,13 +62,12 @@ public class AfterFirstEventTimeFilter extends Object implements Filter {
     }
     
     public String getParamSql() {
-        return (" FIRSTEVENTTIME > to_timestamp(?, ?)");
+        return (" FIRSTEVENTTIME > ?");
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.date.toString());
-    	ps.setString(parameterIndex+1, EventConstants.POSTGRES_DATE_FORMAT);
-    	return 2;
+    	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
+    	return 1;
     }
 
     public String getDescription() {
