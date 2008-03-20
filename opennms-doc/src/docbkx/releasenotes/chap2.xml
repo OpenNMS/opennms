@@ -24,6 +24,11 @@
 
       <para>A full list of bugs fixed in the release can be found in <ulink
       url="???">bugzilla</ulink>. There were over 70 of them.</para>
+
+      <para>In addition, a number of new event definitions were added. Note
+      that the UEIs for Foundry Networks now all read "foundry" whereas before
+      some read "foundry" and others read "FoundryNetworks". This will affect
+      any notifications based on those UEIs.</para>
     </section>
   </section>
 
