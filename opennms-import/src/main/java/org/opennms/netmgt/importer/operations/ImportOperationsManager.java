@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: System.err.println -> log().info. - dj@opennms.org
 // 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -217,7 +218,7 @@ public class ImportOperationsManager {
     				preprocessOperation(oper, template, dao, dbPool);
     			}
     		};
-    		try { threadPool.execute(r); } catch (InterruptedException e) { System.err.println("Interrupted!"); e.printStackTrace(); }
+    		try { threadPool.execute(r); } catch (InterruptedException e) { log().info("Interrupted: " + e, e); }
     		it.remove();
     	}
 		threadPool.shutdownAfterProcessingCurrentlyQueuedTasks();

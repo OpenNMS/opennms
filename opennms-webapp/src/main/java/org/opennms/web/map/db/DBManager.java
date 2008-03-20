@@ -1014,7 +1014,6 @@ public class DBManager extends Manager {
 			Statement statement = m_dbConnection.createStatement();
 			ResultSet rs = statement.executeQuery(sqlQuery);
 			Vector<Map> maps = rs2MapVector(rs);
-			// System.out.println(maps);
 
 			Map[] el = null;
 			if (maps != null) {
@@ -1130,7 +1129,6 @@ public class DBManager extends Manager {
 			Statement statement = m_dbConnection.createStatement();
 			ResultSet rs = statement.executeQuery(sqlQuery);
 			Vector<VMapInfo> maps = rs2MapMenuVector(rs);
-			// System.out.println(maps);
 
 			VMapInfo[] el = null;
 			if (maps != null) {
@@ -1160,7 +1158,6 @@ public class DBManager extends Manager {
 			statement.setInt(1, mapId);
 			ResultSet rs = statement.executeQuery();
 			VMapInfo mm = rs2MapMenu(rs);
-			// System.out.println(maps);
 
 			rs.close();
 			statement.close();

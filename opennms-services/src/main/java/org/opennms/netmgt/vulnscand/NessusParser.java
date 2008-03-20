@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: System.out.println/printStackTrace -> log().error. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -158,8 +162,7 @@ public class NessusParser {
             greaterThanToken = new RE(GREATER_THAN_TOKEN);
             lessThanToken = new RE(LESS_THAN_TOKEN);
         } catch (org.apache.regexp.RESyntaxException ex) {
-            System.out.println("FATAL ERROR in regex in NessusScan.java. Correct this error and rebuild.");
-            ex.printStackTrace();
+            log().error("Regex syntax error in NessusScan.java. Correct this error and rebuild: " + ex, ex);
         }
     }
 
@@ -179,8 +182,6 @@ public class NessusParser {
     }
 
     public PortValues parsePort(String portString) throws IllegalArgumentException {
-        Category log = ThreadCategory.getInstance(getClass());
-
         PortValues retval = new PortValues();
 
         // If the portString has port and protocol info...
@@ -188,7 +189,7 @@ public class NessusParser {
             try {
                 retval.port = Integer.parseInt(protocolWithPort.getParen(1).trim());
             } catch (NumberFormatException ex) {
-                log.error("Cannot parse port into an integer: " + portString, ex);
+                log().error("Cannot parse port into an integer: " + portString, ex);
             }
             retval.protocol = protocolWithPort.getParen(2).trim();
         }
@@ -197,7 +198,7 @@ public class NessusParser {
             retval.protocol = protocolWithoutPort.getParen(1).trim();
         } else {
             // Don't know what this is...
-            log.error("Invalid service/port/protocol marker in the message: " + portString);
+            log().error("Invalid service/port/protocol marker in the message: " + portString);
         }
 
         if (retval.isValid())
@@ -207,8 +208,6 @@ public class NessusParser {
     }
 
     public DescrValues parseDescr(String descr) throws IllegalArgumentException {
-        Category log = ThreadCategory.getInstance(getClass());
-
         // Specific fields to be parsed out of the descr
         // Descr construction helpers
         String risk;
@@ -225,8 +224,10 @@ public class NessusParser {
             risk = riskFactor.getParen(2).trim();
 	    String risk2 = descr;
 
-	    log.debug("Descr Parsed: " + risk);
-	    log.debug("Descr Parsed: " + risk2);
+            if (log().isDebugEnabled()) {
+  	        log().debug("Descr Parsed: " + risk);
+	        log().debug("Descr Parsed: " + risk2);
+            }
 	    
 	    if (informational.match(risk)) {
                 retval.severity = Constants.SEV_NORMAL;
@@ -353,4 +354,9 @@ public class NessusParser {
         retval.useDefaults();
         return retval;
     }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
 }

@@ -11,12 +11,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Category;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
 import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
@@ -31,19 +33,19 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     
     @Override
     public synchronized void correlate(Event e) {
-        System.err.println("Begin correlation for Event " + e.getDbid() + " uei: " + e.getUei());
+        log().info("Begin correlation for Event " + e.getDbid() + " uei: " + e.getUei());
         m_workingMemory.insert(e);
         m_workingMemory.fireAllRules();
-        System.err.println("End correlation for Event " + e.getDbid() + " uei: " + e.getUei());
+        log().info("End correlation for Event " + e.getDbid() + " uei: " + e.getUei());
     }
 
     @Override
     protected synchronized void timerExpired(Integer timerId) {
-        System.err.println("Begin processing for Timer " + timerId);
+        log().info("Begin processing for Timer " + timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_workingMemory.insert(expiration);
         m_workingMemory.fireAllRules();
-        System.err.println("End processing for Timer " + timerId);
+        log().info("End processing for Timer " + timerId);
     }
 
     @Override
@@ -125,4 +127,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         m_workingMemory.setGlobal(name, value);
     }
     
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

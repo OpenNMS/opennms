@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: Remove uncommented code (particularly System.out.println) and
+//              de-nest a block. - dj@opennms.org
 // 2007 May 12: Reorganize, use Java 5 generics and loops. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -212,65 +214,42 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // ServletConfig config = getServletConfig();
-        // ServletContext context = config.getServletContext();
-        // String user_id = request.getRemoteUser();
-        // Enumeration enum = context.getAttributeNames();
         reloadFiles();
 
-        // String query = request.getQueryString();
-        // System.out.println("query string = " + query);
-        // if(query != null)
-        {
-            List<String> checkedList = new ArrayList<String>();
-            List<String> deleteList = new ArrayList<String>();
+        List<String> checkedList = new ArrayList<String>();
+        List<String> deleteList = new ArrayList<String>();
 
-            m_props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
+        m_props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
 
-            String[] requestActivate = request.getParameterValues("activate");
-            String[] requestDelete = request.getParameterValues("delete");
+        String[] requestActivate = request.getParameterValues("activate");
+        String[] requestDelete = request.getParameterValues("delete");
 
-            if (requestActivate != null) {
-                for (int i = 0; i < requestActivate.length; i++) {
-                    modifyPollerInfo("on", requestActivate[i]);
-                    checkedList.add(requestActivate[i]);
-                }
+        if (requestActivate != null) {
+            for (int i = 0; i < requestActivate.length; i++) {
+                modifyPollerInfo("on", requestActivate[i]);
+                checkedList.add(requestActivate[i]);
             }
+        }
 
-            if (requestDelete != null) {
-                for (int j = 0; j < requestDelete.length; j++) {
-                    deleteList.add(requestDelete[j]);
-                }
+        if (requestDelete != null) {
+            for (int j = 0; j < requestDelete.length; j++) {
+                deleteList.add(requestDelete[j]);
             }
-            /*
-             * StringTokenizer strTok = new StringTokenizer(query, "&");
-             * while(strTok.hasMoreTokens()) { String token =
-             * strTok.nextToken(); if(token != null) { StringTokenizer keyTokens =
-             * new StringTokenizer(token, "="); String name = null;
-             * if(keyTokens.hasMoreTokens()) { name =
-             * (String)keyTokens.nextToken(); } if(keyTokens.hasMoreTokens()) {
-             * String checked = (String)keyTokens.nextToken(); if( name != null ) {
-             * if(name.indexOf("delete") == -1) // Not to be deleted {
-             * modifyPollerInfo(checked, name); checkedList.add(name); } else //
-             * Deleted { String deleteService = name.substring(0,
-             * name.indexOf("delete")); System.out.println("deleting " +
-             * deleteService); deleteList.add(deleteService); } } } } }
-             */
-            adjustNonChecked(checkedList);
-            deleteThese(deleteList);
+        }
+        adjustNonChecked(checkedList);
+        deleteThese(deleteList);
 
-            FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
-            FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
-            try {
-                Marshaller.marshal(m_pollerConfig, poller_fileWriter);
-                Marshaller.marshal(m_capsdConfig, capsd_fileWriter);
-            } catch (MarshalException e) {
-                log().error("Could not marshal config object when writing config file: " + e, e);
-                throw new ServletException(e);
-            } catch (ValidationException e) {
-                log().error("Could not validate config object when writing config file: " + e, e);
-                throw new ServletException(e);
-            }
+        FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
+        FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
+        try {
+            Marshaller.marshal(m_pollerConfig, poller_fileWriter);
+            Marshaller.marshal(m_capsdConfig, capsd_fileWriter);
+        } catch (MarshalException e) {
+            log().error("Could not marshal config object when writing config file: " + e, e);
+            throw new ServletException(e);
+        } catch (ValidationException e) {
+            log().error("Could not validate config object when writing config file: " + e, e);
+            throw new ServletException(e);
         }
 
         String redirectPage = request.getParameter("redirect");

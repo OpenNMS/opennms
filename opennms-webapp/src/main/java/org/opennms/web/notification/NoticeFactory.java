@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: Remove a System.out.println that printed the select query. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -642,7 +643,6 @@ public class NoticeFactory extends Object {
                 select.append(" OFFSET ?");
                 //select.append(offset);
             }
-            System.out.println(select.toString());
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
             
