@@ -34,16 +34,15 @@ package org.opennms.web.event.filter;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
 
 public class AfterDateFilter extends Object implements Filter {
     public static final String TYPE = "afterdate";
 
-    protected Date date;
+    protected java.util.Date date;
 
-    public AfterDateFilter(Date date) {
+    public AfterDateFilter(java.util.Date date) {
         if (date == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -52,7 +51,7 @@ public class AfterDateFilter extends Object implements Filter {
     }
 
     public AfterDateFilter(long epochTime) {
-        this(new Date(epochTime));
+        this(new java.util.Date(epochTime));
     }
 
     public String getSql() {
@@ -60,13 +59,12 @@ public class AfterDateFilter extends Object implements Filter {
     }
     
     public String getParamSql() {
-        return (" EVENTTIME > to_timestamp(?, ?)");
+        return (" EVENTTIME > ?");
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.date.toString());
-    	ps.setString(parameterIndex+1, EventConstants.POSTGRES_DATE_FORMAT);
-    	return 2;
+    	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
+    	return 1;
     }
 
     public String getDescription() {
@@ -81,7 +79,7 @@ public class AfterDateFilter extends Object implements Filter {
         return ("<AfterTimeFilter: " + this.getDescription() + ">");
     }
 
-    public Date getDate() {
+    public java.util.Date getDate() {
         return (this.date);
     }
 
