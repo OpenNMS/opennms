@@ -115,11 +115,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private SurveillanceData m_data;
 
     public SurveillanceData getSurveillanceData() {
-        
-        System.err.println("Request made!");
-        
         if (m_data == null) {
-            System.err.println("Creating new data");
             final SurveillanceData data = new SurveillanceData();
             m_data = data;
             
@@ -144,7 +140,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
                 @Override
                 public void run() {
                     
-                    System.err.println("Updating data");
                     data.setCell(m_count / data.getColumnCount(), m_count % data.getColumnCount(), ""+m_count);
                     
                     m_count++;

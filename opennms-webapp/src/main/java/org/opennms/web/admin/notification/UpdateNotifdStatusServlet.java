@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: System.out.println -> log().info and log who changed
+//              the notifd status. - dj@opennms.org
 // 2007 Jul 23: Add serialVersionUID. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -44,6 +46,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 
 /**
@@ -57,7 +61,7 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            System.out.println("status = " + request.getParameter("status"));
+            log().info("Setting notifd status to " + request.getParameter("status") + " for user " + request.getRemoteUser());
             if (request.getParameter("status").equals("on")) {
                 NotifdConfigFactory.getInstance().turnNotifdOn();
             } else {
@@ -71,4 +75,8 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/index.jsp");
         dispatcher.forward(request, response);
     }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+   }
 }

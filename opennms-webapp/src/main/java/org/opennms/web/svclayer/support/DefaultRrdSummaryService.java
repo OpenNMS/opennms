@@ -314,7 +314,6 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
                     try {
                         for(RrdGraphAttribute attr : attrs) {
                             if (attr.getName().matches(attributeSieve)) {
-                                //System.err.println("Getting values for attribute: "+attr);
                                 bldr.addAttribute(attr.getName());
                                 double[] values = getValues(attr);
                                 bldr.setMin(values[0]);
@@ -341,7 +340,6 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
             return bldr.getSummary();
         } finally {
             m_stats.end("getSummary");
-            System.err.println(m_stats);
         }
     }
 

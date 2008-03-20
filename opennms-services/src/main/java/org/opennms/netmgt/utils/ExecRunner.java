@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: Remove commented-out System.out.println. - dj@opennms.org
+//
 // For more information contact: 
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
@@ -267,14 +271,12 @@ public class ExecRunner {
             int token = 0;
             while (st.hasMoreTokens()) {
                 String tokenString = st.nextToken();
-                // System.out.println(tokenString);
                 cmd[token++] = tokenString;
             }
         }
 
         // Execute the command and start the two output gobblers
         if (cmd != null && cmd.length > 0) {
-            // System.out.println("**Checkpoint** :" + cmd.length);
             proc = rt.exec(cmd);
         } else {
             throw new IOException("Insufficient commands!");
