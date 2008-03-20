@@ -62,7 +62,7 @@
 	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
 	  	<input type="hidden" id="uei" name="uei" value="" /> <!-- Set by java script -->
-	  	<input type="hidden" name="returnPage" value="/opennms/admin/thresholds/index.htm?groupName=${group.name}&editGroup" />
+	  	<input type="hidden" name="returnPage" value="admin/thresholds/index.htm?groupName=${group.name}&editGroup" />
 	  </form>
 
 <h3>Edit group ${group.name}</h3>

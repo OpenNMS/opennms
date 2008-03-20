@@ -73,7 +73,7 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 
 	// renderize label
 	if (this.isNode()) {
-		this.label = new Label(labelText, Math.round(this.width/3), this.height + dimension*0.7, dimension/2, "/opennms/element/node.jsp?node="+this.getNodeId());
+		this.label = new Label(labelText, Math.round(this.width/3), this.height + dimension*0.7, dimension/2, "element/node.jsp?node="+this.getNodeId());
 	} else {
 		this.label = new Label(labelText, Math.round(this.width/3), this.height + dimension*0.7, dimension/2);
 	}
