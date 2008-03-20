@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 19: Changed outages select to be more efficient. Bug #2291
 // 2003 Feb 01: Correct some SQL syntax. Bug #681.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -82,7 +83,7 @@ public class OutageModel extends Object {
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select distinct outages.outageid, outages.nodeId, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId, outages.iflostservice, outages.svclosteventid, notifications.notifyId, notifications.answeredBy from outages " + "left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, ifservices, service " + "where ifregainedservice is null " + "and (node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and ifservices.serviceid=outages.serviceid) " + "and node.nodeType != 'D' and ipinterface.isManaged != 'D' and ifservices.status != 'D' " + "and outages.serviceid=service.serviceid " + " and (outages.suppresstime is null or outages.suppresstime < now()) " + "order by nodelabel, ipaddr, serviceName");
+            ResultSet rs = stmt.executeQuery("select o.outageid, o.nodeId, n.nodeLabel, o.ipaddr, ip.iphostname, s.servicename, o.serviceId, o.iflostservice, o.svclosteventid, no.notifyId, no.answeredBy from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and (o.suppresstime is null or o.suppresstime < now()) order by n.nodelabel, ip.ipaddr, s.serviceName");
 
             outages = rs2Outages(rs, false, true);
 
@@ -101,7 +102,7 @@ public class OutageModel extends Object {
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select distinct outages.outageid, outages.nodeId, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId, outages.iflostservice, outages.svclosteventid, notifications.notifyId, notifications.answeredBy from outages " + "left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, ifservices, service " + "where ifregainedservice is null " + "and (node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and ifservices.serviceid=outages.serviceid) " + "and node.nodeType != 'D' and ipinterface.isManaged != 'D' and ifservices.status != 'D' " + "and outages.serviceid=service.serviceid " + " and suppresstime > now() " + "order by nodelabel, ipaddr, serviceName");
+            ResultSet rs = stmt.executeQuery("select o.outageid, o.nodeId, n.nodeLabel, o.ipaddr, ip.iphostname, s.servicename, o.serviceId, o.iflostservice, o.svclosteventid, no.notifyId, no.answeredBy from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and o.suppresstime > now() order by n.nodelabel, ip.ipaddr, s.serviceName");
 
             outages = rs2Outages(rs, false, true);
 
@@ -120,7 +121,7 @@ public class OutageModel extends Object {
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where outages.ifregainedservice is null " + "and node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and (outages.suppresstime is null or outages.suppresstime < now()) ");
+            ResultSet rs = stmt.executeQuery("select count(o.outageid) from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and (o.suppresstime is null or o.suppresstime < now()) ");
 
             if (rs.next()) {
                 count = rs.getInt("count");
@@ -141,7 +142,7 @@ public class OutageModel extends Object {
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where outages.ifregainedservice is null " + "and node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and suppresstime > now() ");
+            ResultSet rs = stmt.executeQuery("select count(o.outageid) from outages o left outer join notifications no on (o.svclosteventid = no.eventid) join ifservices if on (if.id = o.ifserviceid) join ipinterface ip on (ip.id = if.ipinterfaceid) join node n on (n.nodeid = ip.nodeid) join service s on (s.serviceid = if.serviceid) where ifregainedservice is null and n.nodeType != 'D' and ip.isManaged != 'D' and if.status != 'D' and o.serviceid=s.serviceid and o.suppresstime > now() ");
 
             if (rs.next()) {
                 count = rs.getInt("count");

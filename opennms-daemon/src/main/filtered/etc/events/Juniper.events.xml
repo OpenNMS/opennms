@@ -1,0 +1,562 @@
+<events>
+<!-- Start of auto generated data from MIB: Juniper-System-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemHighMemUtil</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemHighMemUtil</event-label>
+	<descr>
+&lt;p&gt;Report system memory utilization has met the conditions of
+juniSystemHighMemUtilThreshold.  If the memory capacity is greater than
+2147483647, a -1 value is returned in juniSystemMemCapacity, and the
+actual memory capacity in units of 1024 bytes is returned in
+juniSystemMemKBytesCapacity.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemMemCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemMemUtilPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemAbatedMemUtilThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemHighMemUtilThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemMemKBytesCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemHighMemUtil trap received 
+			juniSystemMemCapacity=%parm[#1]% 
+			juniSystemMemUtilPct=%parm[#2]% 
+			juniSystemAbatedMemUtilThreshold=%parm[#3]% 
+			juniSystemHighMemUtilThreshold=%parm[#4]% 
+			juniSystemMemKBytesCapacity=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemAbatedMemUtil</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemAbatedMemUtil</event-label>
+	<descr>
+&lt;p&gt;Reports system memory utilization has met the conditions of
+juniSystemAbatedMemUtilThreshold.  If the memory capacity is greater
+than 2147483647, a -1 value is returned in juniSystemMemCapacity, and
+the actual memory capacity in units of 1024 bytes is returned in
+juniSystemMemKBytesCapacity.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemMemCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemMemUtilPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemAbatedMemUtilThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemHighMemUtilThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemMemKBytesCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemAbatedMemUtil trap received 
+			juniSystemMemCapacity=%parm[#1]% 
+			juniSystemMemUtilPct=%parm[#2]% 
+			juniSystemAbatedMemUtilThreshold=%parm[#3]% 
+			juniSystemHighMemUtilThreshold=%parm[#4]% 
+			juniSystemMemKBytesCapacity=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemModuleOperStatusChange</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemModuleOperStatusChange</event-label>
+	<descr>
+&lt;p&gt;Reports a status change for a module.  This trap is generated on a
+transition into a stable state (online or disabled) or on a transition
+out of online.  If redundancy is supported for the module
+(juniSystemModuleRedundancySupported is true(1)), then the
+juniSystemModuleSpareServer and juniSystemModuleAssociatedSlot objects
+are also included in the notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemModuleCurrentType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		erxSrp(1)
+		erxCt3(2)
+		erxOc3(3)
+		erxUt3Atm(4)
+		erxUt3Frame(5)
+		erxUe3Atm(6)
+		erxUe3Frame(7)
+		erxCe1(8)
+		erxCt1(9)
+		erxDpfe(10)
+		erxOc12Pos(11)
+		erxOc12Atm(12)
+		erxOc3Pos(13)
+		erxOc3Atm(14)
+		erxGe(15)
+		erxFe8(16)
+		erxOc3oc12Pos(17)
+		erxOc3oc12Atm(18)
+		erxCoc3oc12(19)
+		erxCoc3(20)
+		erxCoc12(21)
+		erxOc12Server(22)
+		erxHssi(23)
+		erxGeFe(24)
+		erxCt3P12(25)
+		erxV35(26)
+		erxUt3f12(27)
+		erxUe3f12(28)
+		erxCoc12F3(29)
+		erxCoc3F3(30)
+		erxCocxF3(31)
+		erxVts(32)
+		erxOc48(33)
+		erxUt3Atm4(34)
+		erxHybrid(35)
+		erxOc3AtmGe(36)
+		erxOc3AtmPos(37)
+		erxGe2(38)
+		erxGeHde(39)
+		erxSrpIoa(1024)
+		erxCt1Ioa(1025)
+		erxCe1Ioa(1026)
+		erxCe1TIoa(1027)
+		erxCt3Ioa(1028)
+		erxE3Ioa(1029)
+		erxOc3Mm2Ioa(1030)
+		erxOc3Sm2Ioa(1031)
+		erxOc3Mm4Ioa(1032)
+		erxOc3SmIr4Ioa(1033)
+		erxOc3SmLr4Ioa(1034)
+		erxCOc3Mm4Ioa(1035)
+		erxCOc3SmIr4Ioa(1036)
+		erxCOc3SmLr4Ioa(1037)
+		erxOc12Mm1Ioa(1038)
+		erxOc12SmIr1Ioa(1039)
+		erxOc12SmLr1Ioa(1040)
+		erxCOc12Mm1Ioa(1041)
+		erxCOc12SmIr1Ioa(1042)
+		erxCOc12SmLr1Ioa(1043)
+		erxFe2Ioa(1044)
+		erxFe8Ioa(1045)
+		erxGeMm1Ioa(1046)
+		erxGeSm1Ioa(1047)
+		erxHssiIoa(1048)
+		erxCt3P12Ioa(1049)
+		erxV35Ioa(1050)
+		erxGeSfpIoa(1051)
+		erxUe3P12Ioa(1052)
+		erxT3Atm4Ioa(1053)
+		erxCOc12Mm1ApsIoa(1054)
+		erxCOc12SmIr1ApsIoa(1055)
+		erxCOc12SmLr1ApsIoa(1056)
+		erxOc12Mm1ApsIoa(1057)
+		erxOc12SmIr1ApsIoa(1058)
+		erxOc12SmLr1ApsIoa(1059)
+		erxCOc12AtmPosMm1Ioa(1060)
+		erxCOc12AtmPosSmIr1Ioa(1061)
+		erxCOc12AtmPosSmLr1Ioa(1062)
+		erxCOc12AtmPosMm1ApsIoa(1063)
+		erxCOc12AtmPosSmIr1ApsIoa(1064)
+		erxCOc12AtmPosSmLr1ApsIoa(1065)
+		erxT1E1RedundantIoa(1066)
+		erxT3E3RedundantIoa(1067)
+		erxCt3RedundantIoa(1068)
+		erxOcxRedundantIoa(1069)
+		erxCOcxRedundantIoa(1070)
+		erxOc3Mm4ApsIoa(1071)
+		erxOc3SmIr4ApsIoa(1072)
+		erxOc3SmLr4ApsIoa(1073)
+		erxOc48Ioa(1074)
+		erxOc3Atm2Ge1Ioa(1075)
+		erxOc3Atm2Pos2Ioa(1076)
+		erxGe2Ioa(1077)
+		erxFe8FxIoa(1078)
+		erxGe8Ioa(1079)
+		e320Srp100(2048)
+		e320Sfm100(2049)
+		es2Lm4(2050)
+		es2Lm10Uplink(2051)
+		es2Lm10(2052)
+		e320Srp320(2053)
+		e320Sfm320(2054)
+		e320SrpIoa(3072)
+		es2Ge4S1Ioa(3073)
+		es2Oc48Stm16PosS1Ioa(3074)
+		es2ServiceS1Ioa(3075)
+		es2Oc3Stm1x8AtmS1Ioa(3076)
+		es2RedundancyS1Ioa(3077)
+		es2Oc12Stm4x2PosS1Ioa(3078)
+		es2Oc12Stm4x2AtmS1Ioa(3079)
+		es2dash10GeS1Ioa(3080)
+		es2Ge8S1Ioa(3081)
+		es2dash10GePrS2Ioa(3082)
+		e120Srp120(4096)
+		e120Sfm120(4097)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemModuleAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		disable(0)
+		enable(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemModuleOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		notPresent(1)
+		disabled(2)
+		hardwareError(3)
+		booting(4)
+		initializing(5)
+		online(6)
+		standby(7)
+		inactive(8)
+		notResponding(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemModuleDisableReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		unknown(1)
+		assessing(2)
+		admin(3)
+		typeMismatch(4)
+		fabricLimit(5)
+		imageError(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemModuleDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemModuleOperStatusChange trap received 
+			juniSystemModuleCurrentType=%parm[#1]% 
+			juniSystemModuleAdminStatus=%parm[#2]% 
+			juniSystemModuleOperStatus=%parm[#3]% 
+			juniSystemModuleDisableReason=%parm[#4]% 
+			juniSystemModuleDescr=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemPowerStatusChange</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemPowerStatusChange</event-label>
+	<descr>
+&lt;p&gt;Reports a change in the status of a power element.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemPowerStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		notPresent(0)
+		inactive(1)
+		good(2)
+		failed(3)
+		sensorFailed(4)
+		unknown(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemPowerStatusChange trap received 
+			entPhysicalDescr=%parm[#1]% 
+			juniSystemPowerStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemFanStatusChange</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemFanStatusChange</event-label>
+	<descr>
+&lt;p&gt;Reports a transition between the three states of the fan subsystem.
+When the fan subsystem transitions to the failed state the Thermal
+Protection hold off time begins.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		failed(0)
+		ok(1)
+		warning(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemFanStatusChange trap received 
+			entPhysicalDescr=%parm[#1]% 
+			juniSystemFanStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemTempStatusChange</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+	<descr>
+&lt;p&gt;Reports a change in the temperature status.  When the status
+transitions to the tooHigh state the system enters Thermal Protection
+mode.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		failed(1)
+		tooLow(2)
+		nominal(3)
+		tooHigh(4)
+		tooLowWarning(5)
+		tooHighWarning(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemTempStatusChange trap received 
+			juniSystemTempStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemTempProtectionStatusChange</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+	<descr>
+&lt;p&gt;Notification about changes in the state of Thermal Protection.  This
+notification is sent when the tempProtectionStatus changes.  It is also
+sent when the holdOffTimeRemaining is 50% of the holdOffTime.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemTempProtectionStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		off(0)
+		monitoring(1)
+		inHoldOff(2)
+		activatedHoldOffExpired(3)
+		activatedTempTooHigh(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemTempProtectionStatusChange trap received 
+			juniSystemTempProtectionStatus=%parm[#1]% 
+			juniSystemTempProtectionHoldOffTimeRemaining=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemReloadCommand</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemReloadCommand</event-label>
+	<descr>
+&lt;p&gt;Notification indicating that a slot or the entire system is about to
+restart due to a system console reload command.  If the reload is only
+on an individual slot then the following object is included in the
+notification:
+    juniSystemReloadSlotNumber &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemReloadCommand trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/juniSystemUtilizationThreshold</uei>
+	<event-label>Juniper-System-MIB defined trap event: juniSystemUtilizationThreshold</event-label>
+	<descr>
+&lt;p&gt;Notification indicating that a system resource's utilization has met
+the conditions of juniSystemUtilizationThresholdDirection.  See the
+DESCRIPTIONs for the juniSystemUtilizationTable elements for details on
+what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemUtilizationThresholdDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		rising(1)
+		falling(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemUtilizationMaxCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemUtilizationCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemUtilizationThresholdRising&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemUtilizationThresholdFalling&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniSystemUtilizationHoldDownTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Juniper Event: juniSystemUtilizationThreshold trap received 
+			juniSystemUtilizationThresholdDirection=%parm[#1]% 
+			juniSystemUtilizationMaxCapacity=%parm[#2]% 
+			juniSystemUtilizationCurrentValue=%parm[#3]% 
+			juniSystemUtilizationThresholdRising=%parm[#4]% 
+			juniSystemUtilizationThresholdFalling=%parm[#5]% 
+			juniSystemUtilizationHoldDownTime=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: Juniper-System-MIB -->
+</events>

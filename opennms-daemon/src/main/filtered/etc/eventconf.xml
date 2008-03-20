@@ -1592,11 +1592,13 @@
   <event-file>events/APC.events.xml</event-file>
   <event-file>events/APC.Best.events.xml</event-file>
   <event-file>events/APC.Exide.events.xml</event-file>
+  <event-file>events/Audiocodes.events.xml</event-file>
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
   <event-file>events/BGP4.events.xml</event-file>
   <event-file>events/BlackBerryServer.events.xml</event-file>
   <event-file>events/Brocade.events.xml</event-file>
+  <event-file>events/CA.ArcServe.events.xml</event-file>
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.5300dchan.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
@@ -1626,8 +1628,10 @@
   <event-file>events/IBMRSA2.events.xml</event-file>
   <event-file>events/IEEE802dot11.events.xml</event-file>
   <event-file>events/Intel.events.xml</event-file>
+  <event-file>events/IronPort.events.xml</event-file>
   <event-file>events/ISS.events.xml</event-file>
   <event-file>events/IPUnity-SES-MIB.events.xml</event-file>
+  <event-file>events/Juniper.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>
   <event-file>events/Liebert.events.xml</event-file>
   <event-file>events/Liebert.600SM.events.xml</event-file>

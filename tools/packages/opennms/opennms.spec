@@ -322,7 +322,7 @@ fi
 if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
 	if [ -e "$RPM_INSTALL_PREFIX0/logs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/logs" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX2."
+		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory or file, but it should be a symlink to $RPM_INSTALL_PREFIX2."
 		echo "Your OpenNMS install may not function properly."
 	else
 		rm -rf "$RPM_INSTALL_PREFIX0/logs"
@@ -332,8 +332,12 @@ if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 fi
 
 for dir in controller daemon webapp; do
-	if [ ! -d "$RPM_INSTALL_PREFIX2/$dir" ]; then
-		mkdir -p "$RPM_INSTALL_PREFIX2/$dir"
+	if [ -f "$RPM_INSTALL_PREFIX2/$dir" ]; then
+		printf -- "ERROR: not sure what to do... $RPM_INSTALL_PREFIX2/$dir is a file, but it should be a directory or symlink.  Expect problems.  :)"
+	else
+		if [ ! -d "$RPM_INSTALL_PREFIX2/$dir" ]; then
+			mkdir -p "$RPM_INSTALL_PREFIX2/$dir"
+		fi
 	fi
 done
 
