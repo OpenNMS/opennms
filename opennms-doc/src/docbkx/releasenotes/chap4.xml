@@ -55,7 +55,7 @@
     </formalpara>
 
     <formalpara>
-      <title>MacOSX 10.4 (Tiger)</title>
+      <title>MacOSX 10.4 (Tiger), 10.5 (Leopard)</title>
 
       <para>On MacOSX, the Fink distribution packages of OpenNMS are
       supported. See <ulink url="http://www.finkproject.org/">the Fink web

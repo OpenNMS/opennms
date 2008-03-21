@@ -124,8 +124,7 @@ public class Installer {
 
     Properties m_properties = null;
 
-    String m_required_options = "At least one of -d, -i, -s, -U, -y, "
-            + "-C, or -T is required.";
+    String m_required_options = "At least one of -d, -i, -s, -y, -C, or -T is required.";
     
     private InstallerDb m_installerDb = new InstallerDb();
     
@@ -156,6 +155,8 @@ public class Installer {
         m_installerDb.setIgnoreNotNull(m_ignore_not_null);
         m_installerDb.setNoRevert(m_do_not_revert);
 
+        m_out.println("* checking database connection pool limits");
+
         DataSourceFactory.init("opennms");
         DataSourceFactory.init("opennms-admin");
         Map<String,JdbcDataSource> dsc = getDataSourceConfiguration();
@@ -169,9 +170,6 @@ public class Installer {
         	m_installerDb.setPostgresAdminUser(dsc.get("opennms-admin").getUserName());
         	m_installerDb.setPostgresAdminPassword(dsc.get("opennms-admin").getPassword());
         }
-        /*
-        m_installerDb.setDatabaseName(m_pg_database_name);
-		*/
 
         if (!m_update_database && !m_do_inserts && !m_update_iplike
                 && !m_update_unicode && m_tomcat_conf == null
@@ -233,6 +231,8 @@ public class Installer {
             }
         }
         
+        m_installerDb.checkUnicode();
+
         // We can now use the opennms database
 
         if (m_fix_constraint) {
@@ -271,7 +271,7 @@ public class Installer {
         }
 
         if (m_update_unicode) {
-            m_installerDb.checkUnicode();
+        	m_out.println("WARNING: the -U option is deprecated, it does nothing now");
         }
 
         if (m_do_vacuum) {

@@ -15,7 +15,7 @@
 			<mevalue>100</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/upsCritical</uei>
+	<uei>uei.opennms.org/vendor/tripplite/traps/upsCritical</uei>
 	<event-label>TRIPPUPS-MIB defined trap event: upsCritical</event-label>
 	<descr>
 &lt;p&gt;UPS Critical Alarm.&lt;/p&gt;&lt;table&gt;
@@ -50,7 +50,7 @@
 			<mevalue>101</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/upsWarning</uei>
+	<uei>uei.opennms.org/vendor/tripplite/traps/upsWarning</uei>
 	<event-label>TRIPPUPS-MIB defined trap event: upsWarning</event-label>
 	<descr>
 &lt;p&gt;UPS Warning.&lt;/p&gt;&lt;table&gt;
@@ -85,7 +85,7 @@
 			<mevalue>102</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/upsInformation</uei>
+	<uei>uei.opennms.org/vendor/tripplite/traps/upsInformation</uei>
 	<event-label>TRIPPUPS-MIB defined trap event: upsInformation</event-label>
 	<descr>
 &lt;p&gt;UPS Information.&lt;/p&gt;&lt;table&gt;
@@ -120,7 +120,7 @@
 			<mevalue>103</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/upsAlarmCleared</uei>
+	<uei>uei.opennms.org/vendor/tripplite/traps/upsAlarmCleared</uei>
 	<event-label>TRIPPUPS-MIB defined trap event: upsAlarmCleared</event-label>
 	<descr>
 &lt;p&gt;UPS Alarm Cleared.&lt;/p&gt;&lt;table&gt;
@@ -155,7 +155,7 @@
 			<mevalue>104</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/upsAgentStarted</uei>
+	<uei>uei.opennms.org/vendor/tripplite/traps/upsAgentStarted</uei>
 	<event-label>TRIPPUPS-MIB defined trap event: upsAgentStarted</event-label>
 	<descr>
 &lt;p&gt;Agent started.&lt;/p&gt;&lt;table&gt;
@@ -190,7 +190,7 @@
 			<mevalue>105</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/upsAgentStopped</uei>
+	<uei>uei.opennms.org/vendor/tripplite/traps/upsAgentStopped</uei>
 	<event-label>TRIPPUPS-MIB defined trap event: upsAgentStopped</event-label>
 	<descr>
 &lt;p&gt;Agent stopped.&lt;/p&gt;&lt;table&gt;

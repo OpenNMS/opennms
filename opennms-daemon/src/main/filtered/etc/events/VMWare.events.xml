@@ -15,7 +15,7 @@
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmPoweredOn</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmPoweredOn</uei>
 	<event-label>VMWARE-TRAPS-MIB defined trap event: vmPoweredOn</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when a virtual machine is powered ON from a suspended 
@@ -51,7 +51,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmPoweredOff</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmPoweredOff</uei>
 	<event-label>VMWARE-TRAPS-MIB defined trap event: vmPoweredOff</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when a virtual machine is powered OFF.&lt;/p&gt;&lt;table&gt;
@@ -86,7 +86,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmHBLost</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmHBLost</uei>
 	<event-label>VMWARE-TRAPS-MIB defined trap event: vmHBLost</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when a virtual machine detects a loss in guest heartbeat.&lt;/p&gt;&lt;table&gt;
@@ -121,7 +121,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmHBDetected</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmHBDetected</uei>
 	<event-label>VMWARE-TRAPS-MIB defined trap event: vmHBDetected</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when a virtual machine detects or regains the guest heartbeat.&lt;/p&gt;&lt;table&gt;
@@ -156,7 +156,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vmSuspended</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vmSuspended</uei>
 	<event-label>VMWARE-TRAPS-MIB defined trap event: vmSuspended</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when a virtual machine is suspended.&lt;/p&gt;&lt;table&gt;
@@ -191,7 +191,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 			<mevalue>201</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/vpxdTrap</uei>
+	<uei>uei.opennms.org/vendor/vmware/traps/vpxdTrap</uei>
 	<event-label>VMWARE-TRAPS-MIB defined trap event: vpxdTrap</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when entity status changed.&lt;/p&gt;&lt;table&gt;

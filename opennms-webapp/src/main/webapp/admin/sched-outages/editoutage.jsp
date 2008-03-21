@@ -660,7 +660,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr>
 					<td>
 						<% if (theOutage.getType() != null) { %>
-							<input type="image" src="images/redcross.gif" name="deleteOutageType" value="true" /> <%= theOutage.getType() %>
+							<input type="image" src="images/modify.gif" name="deleteOutageType" value="true" /> <%= theOutage.getType() %>
 						<% } %>
 						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
 							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
