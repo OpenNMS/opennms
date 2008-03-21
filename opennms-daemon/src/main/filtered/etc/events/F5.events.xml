@@ -417,7 +417,7 @@
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipAgentStart</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipAgentStart</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAgentStart</event-label>
 	<descr>
 &lt;p&gt;An indication that the agent has started running.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -426,7 +426,7 @@
 			bigipAgentStart trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipAgentShutdown" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipAgentShutdown:%dpname%:%nodeid%:%interface%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/F5/traps/bigipAgentShutdown" auto-clean="false" clear-key="uei.opennms.org/vendor/F5/traps/bigipAgentShutdown:%dpname%:%nodeid%:%interface%" />
 </event>
 <event>
 	<mask>
@@ -443,7 +443,7 @@
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipAgentShutdown</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipAgentShutdown</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAgentShutdown</event-label>
 	<descr>
 &lt;p&gt;An indication that the agent is in the process of being shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -469,7 +469,7 @@
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipAgentRestart</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipAgentRestart</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAgentRestart</event-label>
 	<descr>
 &lt;p&gt;An indication that the agent has been restarted.
@@ -497,7 +497,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipCpuTempHigh</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipCpuTempHigh</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipCpuTempHigh</event-label>
 	<descr>
 &lt;p&gt;CPU temperature is too high.&lt;/p&gt;&lt;table&gt;
@@ -528,7 +528,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipCpuFanSpeedLow</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipCpuFanSpeedLow</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipCpuFanSpeedLow</event-label>
 	<descr>
 &lt;p&gt;CPU fan speed is too low.&lt;/p&gt;&lt;table&gt;
@@ -559,7 +559,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>6</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipCpuFanSpeedBad</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipCpuFanSpeedBad</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipCpuFanSpeedBad</event-label>
 	<descr>
 &lt;p&gt;CPU fan speed signal not received.&lt;/p&gt;&lt;table&gt;
@@ -590,7 +590,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>7</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipChassisTempHigh</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipChassisTempHigh</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipChassisTempHigh</event-label>
 	<descr>
 &lt;p&gt;Chassis temperature is too high.&lt;/p&gt;&lt;table&gt;
@@ -621,7 +621,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>8</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipChassisFanBad</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipChassisFanBad</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipChassisFanBad</event-label>
 	<descr>
 &lt;p&gt;Chassis fan status is bad.&lt;/p&gt;&lt;table&gt;
@@ -652,7 +652,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>9</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipChassisPowerSupplyBad</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipChassisPowerSupplyBad</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipChassisPowerSupplyBad</event-label>
 	<descr>
 &lt;p&gt;Chassis power supply status is bad.&lt;/p&gt;&lt;table&gt;
@@ -683,7 +683,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>10</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipServiceDown</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipServiceDown</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipServiceDown</event-label>
 	<descr>
 &lt;p&gt;A service is detected DOWN.&lt;/p&gt;&lt;table&gt;
@@ -724,7 +724,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>11</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipServiceUp</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipServiceUp</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipServiceUp</event-label>
 	<descr>
 &lt;p&gt;A service is detected UP.&lt;/p&gt;&lt;table&gt;
@@ -748,7 +748,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjPort=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipServiceDown" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipServiceDown:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/F5/traps/bigipServiceDown" auto-clean="false" clear-key="uei.opennms.org/vendor/F5/traps/bigipServiceDown:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" />
 </event>
 <event>
 	<mask>
@@ -765,7 +765,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>12</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipNodeDown</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipNodeDown</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipNodeDown</event-label>
 	<descr>
 &lt;p&gt;A node is detected DOWN.&lt;/p&gt;&lt;table&gt;
@@ -801,7 +801,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>13</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipNodeUp</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipNodeUp</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipNodeUp</event-label>
 	<descr>
 &lt;p&gt;A node is detected UP.&lt;/p&gt;&lt;table&gt;
@@ -820,7 +820,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjNode=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipNodeDown" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipNodeDown:%dpname%:%nodeid%:%interface%:%parm[#2]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/F5/traps/bigipNodeDown" auto-clean="false" clear-key="uei.opennms.org/vendor/F5/traps/bigipNodeDown:%dpname%:%nodeid%:%interface%:%parm[#2]%" />
 </event>
 <event>
 	<mask>
@@ -837,7 +837,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>14</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipStandby</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipStandby</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipStandby</event-label>
 	<descr>
 &lt;p&gt;The system is going into standby mode.&lt;/p&gt;&lt;table&gt;
@@ -868,7 +868,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>15</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipActive</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipActive</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipActive</event-label>
 	<descr>
 &lt;p&gt;The system is going into active mode.&lt;/p&gt;&lt;table&gt;
@@ -899,7 +899,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>16</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipActiveActive</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipActiveActive</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipActiveActive</event-label>
 	<descr>
 &lt;p&gt;The system is going into active-active mode.&lt;/p&gt;&lt;table&gt;
@@ -930,7 +930,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>17</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipFeatureFailed</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipFeatureFailed</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipFeatureFailed</event-label>
 	<descr>
 &lt;p&gt;A high availability feature triggered action failed.&lt;/p&gt;&lt;table&gt;
@@ -961,7 +961,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>18</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipFeatureOnline</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipFeatureOnline</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipFeatureOnline</event-label>
 	<descr>
 &lt;p&gt;A high availability feature is now responding.&lt;/p&gt;&lt;table&gt;
@@ -975,7 +975,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/mib2opennms/bigipFeatureFailed" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/bigipFeatureFailed:%dpname%:%nodeid%:%interface%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/vendor/F5/traps/bigipFeatureFailed" auto-clean="false" clear-key="uei.opennms.org/vendor/F5/traps/bigipFeatureFailed:%dpname%:%nodeid%:%interface%" />
 </event>
 <event>
 	<mask>
@@ -992,7 +992,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>19</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLicenseFailed</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLicenseFailed</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLicenseFailed</event-label>
 	<descr>
 &lt;p&gt;The license validation failed.&lt;/p&gt;&lt;table&gt;
@@ -1023,7 +1023,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>20</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLicenseExpired</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLicenseExpired</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLicenseExpired</event-label>
 	<descr>
 &lt;p&gt;The license has expired.&lt;/p&gt;&lt;table&gt;
@@ -1054,7 +1054,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>21</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipTamdAlert</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipTamdAlert</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipTamdAlert</event-label>
 	<descr>
 &lt;p&gt;Too many authentication failures (> 60) in 1 second.&lt;/p&gt;&lt;table&gt;
@@ -1085,7 +1085,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt
 			<mevalue>22</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipAggrReaperStateChange</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipAggrReaperStateChange</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAggrReaperStateChange</event-label>
 	<descr>
 &lt;p&gt;The aggressive reaper state changed. Aggressive reaper 
@@ -1118,7 +1118,7 @@ for DOS prevention.&lt;/p&gt;&lt;table&gt;
 			<mevalue>23</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipARPConflict</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipARPConflict</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipARPConflict</event-label>
 	<descr>
 &lt;p&gt;There is an ARP conflict.&lt;/p&gt;&lt;table&gt;
@@ -1149,7 +1149,7 @@ for DOS prevention.&lt;/p&gt;&lt;table&gt;
 			<mevalue>24</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipNetLinkDown</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipNetLinkDown</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipNetLinkDown</event-label>
 	<descr>
 &lt;p&gt;An internal interface link is down. This is for L1 and L2. 
@@ -1183,7 +1183,7 @@ If they do, it indicates a serious problem.&lt;/p&gt;&lt;table&gt;
 			<mevalue>25</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipDiskPartitionWarn</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipDiskPartitionWarn</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipDiskPartitionWarn</event-label>
 	<descr>
 &lt;p&gt;The disk partition has very limited free space.&lt;/p&gt;&lt;table&gt;
@@ -1214,7 +1214,7 @@ If they do, it indicates a serious problem.&lt;/p&gt;&lt;table&gt;
 			<mevalue>26</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipDiskPartitionGrowth</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipDiskPartitionGrowth</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipDiskPartitionGrowth</event-label>
 	<descr>
 &lt;p&gt;The disk partition exceeds the growth limit.&lt;/p&gt;&lt;table&gt;
@@ -1245,7 +1245,7 @@ If they do, it indicates a serious problem.&lt;/p&gt;&lt;table&gt;
 			<mevalue>27</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipAuthFailed</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipAuthFailed</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipAuthFailed</event-label>
 	<descr>
 &lt;p&gt;The login/sshd authentication has failed.&lt;/p&gt;&lt;table&gt;
@@ -1276,7 +1276,7 @@ If they do, it indicates a serious problem.&lt;/p&gt;&lt;table&gt;
 			<mevalue>28</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipConfigLoaded</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipConfigLoaded</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipConfigLoaded</event-label>
 	<descr>
 &lt;p&gt;The configuration was loaded.&lt;/p&gt;&lt;table&gt;
@@ -1307,7 +1307,7 @@ If they do, it indicates a serious problem.&lt;/p&gt;&lt;table&gt;
 			<mevalue>29</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLogEmerg</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLogEmerg</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLogEmerg</event-label>
 	<descr>
 &lt;p&gt;The system is in an unusable situation.&lt;/p&gt;&lt;table&gt;
@@ -1338,7 +1338,7 @@ If they do, it indicates a serious problem.&lt;/p&gt;&lt;table&gt;
 			<mevalue>30</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLogAlert</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLogAlert</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLogAlert</event-label>
 	<descr>
 &lt;p&gt;Action must be taken immediately for the system to work
@@ -1370,7 +1370,7 @@ properly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>31</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLogCrit</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLogCrit</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLogCrit</event-label>
 	<descr>
 &lt;p&gt;The system is in a critical condition.&lt;/p&gt;&lt;table&gt;
@@ -1401,7 +1401,7 @@ properly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>32</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLogErr</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLogErr</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLogErr</event-label>
 	<descr>
 &lt;p&gt;The system has some error conditions.&lt;/p&gt;&lt;table&gt;
@@ -1432,7 +1432,7 @@ properly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>33</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipLogWarning</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipLogWarning</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipLogWarning</event-label>
 	<descr>
 &lt;p&gt;The system is experiencing some warning conditions.&lt;/p&gt;&lt;table&gt;
@@ -1463,7 +1463,7 @@ properly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>34</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipPacketRejected</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipPacketRejected</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipPacketRejected</event-label>
 	<descr>
 &lt;p&gt;The packets are rejected.&lt;/p&gt;&lt;table&gt;
@@ -1494,7 +1494,7 @@ properly.&lt;/p&gt;&lt;table&gt;
 			<mevalue>35</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/bigipCompLimitExceeded</uei>
+	<uei>uei.opennms.org/vendor/F5/traps/bigipCompLimitExceeded</uei>
 	<event-label>F5-BIGIP-COMMON-MIB defined trap event: bigipCompLimitExceeded</event-label>
 	<descr>
 &lt;p&gt;The compression license limit is exceeded.&lt;/p&gt;&lt;table&gt;

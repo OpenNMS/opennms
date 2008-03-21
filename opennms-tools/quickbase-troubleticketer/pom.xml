@@ -24,14 +24,29 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>com.intuit</groupId>
-      <artifactId>quickbase-api</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <!-- this jar is not yet released so we disable it during tagging -->
+  <profiles>
+    <profile>
+      <id>not-tagging</id>
+      <activation>
+        <property>
+          <name>!tagging</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+            <groupId>com.intuit</groupId>
+            <artifactId>quickbase-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+
 </project>
