@@ -124,8 +124,7 @@ public class Installer {
 
     Properties m_properties = null;
 
-    String m_required_options = "At least one of -d, -i, -s, -U, -y, "
-            + "-C, or -T is required.";
+    String m_required_options = "At least one of -d, -i, -s, -y, -C, or -T is required.";
     
     private InstallerDb m_installerDb = new InstallerDb();
     
@@ -232,6 +231,8 @@ public class Installer {
             }
         }
         
+        m_installerDb.checkUnicode();
+
         // We can now use the opennms database
 
         if (m_fix_constraint) {
@@ -270,7 +271,7 @@ public class Installer {
         }
 
         if (m_update_unicode) {
-            m_installerDb.checkUnicode();
+        	m_out.println("WARNING: the -U option is deprecated, it does nothing now");
         }
 
         if (m_do_vacuum) {
