@@ -23,7 +23,7 @@
       longer in the default list.</para>
 
       <para>A full list of bugs fixed in the release can be found in <ulink
-      url="???">bugzilla</ulink>. There were over 70 of them.</para>
+      url="http://bugzilla.opennms.org/showdependencytree.cgi?id=2237&amp;hide_resolved=0">bugzilla</ulink>. There were over 70 of them.</para>
 
       <para>In addition, a number of new event definitions were added. Note
       that the UEIs for Foundry Networks now all read "foundry" whereas before
