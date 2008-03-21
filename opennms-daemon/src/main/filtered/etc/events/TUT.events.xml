@@ -15,7 +15,7 @@
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tutTemperatureAlarm</uei>
+	<uei>uei.opennms.org/vendor/TUT/traps/tutTemperatureAlarm</uei>
 	<event-label>TUT-T2-MIB defined trap event: tutTemperatureAlarm</event-label>
 	<descr>
 &lt;p&gt;A temperature alarm has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -40,7 +40,7 @@
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tutTemperatureAlarmClear</uei>
+	<uei>uei.opennms.org/vendor/TUT/traps/tutTemperatureAlarmClear</uei>
 	<event-label>TUT-T2-MIB defined trap event: tutTemperatureAlarmClear</event-label>
 	<descr>
 &lt;p&gt;A temperature alarm has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -65,7 +65,7 @@
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tutFanAlarm</uei>
+	<uei>uei.opennms.org/vendor/TUT/traps/tutFanAlarm</uei>
 	<event-label>TUT-T2-MIB defined trap event: tutFanAlarm</event-label>
 	<descr>
 &lt;p&gt;A fan has gone into alarm.&lt;/p&gt;&lt;table&gt;
@@ -95,7 +95,7 @@
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/tutFanAlarmClear</uei>
+	<uei>uei.opennms.org/vendor/TUT/traps/tutFanAlarmClear</uei>
 	<event-label>TUT-T2-MIB defined trap event: tutFanAlarmClear</event-label>
 	<descr>
 &lt;p&gt;A fan has cleared.&lt;/p&gt;&lt;table&gt;
