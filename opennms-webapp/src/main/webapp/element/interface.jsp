@@ -89,9 +89,9 @@
     Interface intf_db = ElementUtil.getInterfaceByParams(request);
     int nodeId = intf_db.getNodeId();
     String ipAddr = intf_db.getIpAddress();
-    String ifindexString = "";
+	int ifIndex = -1;    
 	if (intf_db.getIfIndex() > 0) {
-	    ifindexString = Integer.toString(intf_db.getIfIndex());
+		ifIndex = intf_db.getIfIndex();
 	}
     
     AtInterface atif_db = NetworkElementFactory.getAtInterface(nodeId, ipAddr);
@@ -159,7 +159,7 @@ function doDelete() {
         %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
-      <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>"/>
+      <input type="hidden" name="ifindex" value="<%=(ifIndex != -1 ? "" : ifIndex)%>"/>
       <input type="hidden" name="intf" value="<%=ipAddr%>"/>
       <%
       }
@@ -193,8 +193,8 @@ function doDelete() {
 
       <%
                           String ifLabel;
-                          if (ifindexString != null) {
-                              ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString);
+                          if (ifIndex != -1) {
+                              ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifIndex);
                           } else {
                               ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
                           }
@@ -263,8 +263,7 @@ function doDelete() {
               <tr>
                 <th>Interface Index</th>
                 <td>
-                  <% int ifIndex = intf_db.getIfIndex(); %>
-                  <% if( ifIndex > 0 ) {  %>
+                  <% if( ifIndex != -1 ) {  %>
                     <%=ifIndex%>
                   <% } else { %>
                     &nbsp;

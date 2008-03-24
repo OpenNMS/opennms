@@ -254,19 +254,24 @@ public class IfLabel extends Object {
         return label;
     }
 
-    public static String getIfLabelfromIfIndex(int nodeId, String ipAddr, String ifIndex) throws SQLException {
+    public static String getIfLabelfromIfIndex(int nodeId, String ipAddr, int ifIndex) throws SQLException, NumberFormatException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        if (ifIndex == -1) {
+        	return getIfLabel(nodeId, ipAddr);
+        }
+        
         String label = null;
         Connection conn = Vault.getDbConnection();
 
         try {
+        	Integer intIfIndex = Integer.valueOf(ifIndex);
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=? AND ipinterface.ifindex=?");
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
-            stmt.setString(3, ifIndex);
+            stmt.setInt(3, intIfIndex);
 
             ResultSet rs = stmt.executeQuery();
 
