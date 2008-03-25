@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 25: Use template1 for the administrative database name and not postgres.
+//              The latter only exists in recent versions of PostgreSQL (>= 8.1, I think). - dj@opennms.org
 // 2008 Jan 27: Do a thread dump to stderr if we exhaust our database drop attempts. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -136,7 +140,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         
         setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(),
                                            m_adminUser, m_adminPassword));
-        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "postgres",
+        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1",
                                            m_adminUser, m_adminPassword));
 
         createTestDatabase();

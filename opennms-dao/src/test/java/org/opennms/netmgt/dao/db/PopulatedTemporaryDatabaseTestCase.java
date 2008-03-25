@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Mar 25: Fix a bug where a failure in initializeDatabase could cause
+//              us to leave an open Connection and keep us from beign able to
+//              remove the database in tearDown.  Also, remove a few sets on
+//              InstallerDb. - dj@opennms.org
 // 2007 Aug 24: Use ConfigurationTestUtils.getFileForConfigFile to find configuration files. - dj@opennms.org
 // 2007 Apr 05: Use ConfigurationFileUtils.getTopProjectDirectory() to get the top-level project directory and merge two regular expressions for matching iplike.{so,dylib} that were nearly identical. - dj@opennms.org
 //
@@ -47,34 +51,36 @@ import org.springframework.util.StringUtils;
 public class PopulatedTemporaryDatabaseTestCase extends
         TemporaryDatabaseTestCase {
     
-    private InstallerDb m_installerDb;
+    private InstallerDb m_installerDb = new InstallerDb();
     
     private ByteArrayOutputStream m_outputStream;
 
     private boolean m_setupIpLike = false;
     
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
-        initializeDatabase();
+        try {
+            initializeDatabase();
+        } finally {
+            m_installerDb.closeConnection();
+        }
     }
 
     protected void initializeDatabase() throws Exception {
         if (!isEnabled()) {
             return;
         }
-        
-        m_installerDb = new InstallerDb();
 
         // Create a ByteArrayOutputSteam to effectively throw away output.
         resetOutputStream();
         m_installerDb.setDatabaseName(getTestDatabase());
         m_installerDb.setDataSource(getDataSource());
+
         m_installerDb.setAdminDataSource(getAdminDataSource());
-        m_installerDb.setPostgresAdminUser(getAdminUser());
-        m_installerDb.setPostgresAdminPassword(getAdminPassword());
         m_installerDb.setPostgresOpennmsUser(getAdminUser());
-        m_installerDb.setPostgresOpennmsPassword(getAdminPassword());
+
         m_installerDb.setCreateSqlLocation(ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath());
         m_installerDb.setStoredProcedureDirectory(ConfigurationTestUtils.getFileForConfigFile("getPercentAvailabilityInWindow.sql").getParentFile().getAbsolutePath());
 
@@ -100,8 +106,6 @@ public class PopulatedTemporaryDatabaseTestCase extends
         }
 
         m_installerDb.createTables();
-
-        m_installerDb.closeConnection();
     }
 
     protected File findIpLikeLibrary() {
