@@ -70,7 +70,11 @@ public class PopulatedTemporaryDatabaseTestCase extends
         resetOutputStream();
         m_installerDb.setDatabaseName(getTestDatabase());
         m_installerDb.setDataSource(getDataSource());
-        
+        m_installerDb.setAdminDataSource(getAdminDataSource());
+        m_installerDb.setPostgresAdminUser(getAdminUser());
+        m_installerDb.setPostgresAdminPassword(getAdminPassword());
+        m_installerDb.setPostgresOpennmsUser(getAdminUser());
+        m_installerDb.setPostgresOpennmsPassword(getAdminPassword());
         m_installerDb.setCreateSqlLocation(ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath());
         m_installerDb.setStoredProcedureDirectory(ConfigurationTestUtils.getFileForConfigFile("getPercentAvailabilityInWindow.sql").getParentFile().getAbsolutePath());
 
