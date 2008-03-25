@@ -13,6 +13,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 25: Removed unneeded code for admin database user name and password
+//              due to its removal in InstallerDb. - dj@opennms.org
+//
 // The code in this file is Copyright (C) 2004 DJ Gregor.
 //
 // Based on install.pl which was Copyright (C) 1999-2001 Oculan Corp. All
@@ -79,6 +84,7 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.ping.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /*
@@ -127,13 +133,17 @@ public class Installer {
     String m_required_options = "At least one of -d, -i, -s, -y, -C, or -T is required.";
     
     private InstallerDb m_installerDb = new InstallerDb();
+
+    private static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
+
+    private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
     
     public Installer() {
         setOutputStream(System.out);
     }
     
     private Map<String,JdbcDataSource> getDataSourceConfiguration() throws IOException, MarshalException, ValidationException {
-    	Map<String,JdbcDataSource> dsHash = new HashMap<String,JdbcDataSource>();
+        Map<String, JdbcDataSource> dsHash = new HashMap<String, JdbcDataSource>();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
         FileInputStream fileInputStream = new FileInputStream(cfgFile);
@@ -141,7 +151,7 @@ public class Installer {
         DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
 
         for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
-        	dsHash.put(jdbcDs.getName(), jdbcDs);
+            dsHash.put(jdbcDs.getName(), jdbcDs);
         }
         return dsHash;
     }
@@ -151,26 +161,6 @@ public class Installer {
         loadProperties();
         parseArguments(argv);
 
-        m_installerDb.setForce(m_force);
-        m_installerDb.setIgnoreNotNull(m_ignore_not_null);
-        m_installerDb.setNoRevert(m_do_not_revert);
-
-        m_out.println("* checking database connection pool limits");
-
-        DataSourceFactory.init("opennms");
-        DataSourceFactory.init("opennms-admin");
-        Map<String,JdbcDataSource> dsc = getDataSourceConfiguration();
-
-        if (dsc.containsKey("opennms")) {
-        	m_installerDb.setPostgresOpennmsUser(dsc.get("opennms").getUserName());
-        	m_installerDb.setPostgresOpennmsPassword(dsc.get("opennms").getPassword());
-        	m_installerDb.setDatabaseName(dsc.get("opennms").getDatabaseName());
-        }
-        if (dsc.containsKey("opennms-admin")) {
-        	m_installerDb.setPostgresAdminUser(dsc.get("opennms-admin").getUserName());
-        	m_installerDb.setPostgresAdminPassword(dsc.get("opennms-admin").getPassword());
-        }
-
         if (!m_update_database && !m_do_inserts && !m_update_iplike
                 && !m_update_unicode && m_tomcat_conf == null
                 && !m_install_webapp && !m_fix_constraint) {
@@ -178,11 +168,26 @@ public class Installer {
             System.exit(1);
         }
 
-        DataSource adminDataSource = DataSourceFactory.getDataSource("opennms-admin");
+        m_installerDb.setForce(m_force);
+        m_installerDb.setIgnoreNotNull(m_ignore_not_null);
+        m_installerDb.setNoRevert(m_do_not_revert);
+
+        DataSourceFactory.init(OPENNMS_DATA_SOURCE_NAME);
+        DataSourceFactory.init(ADMIN_DATA_SOURCE_NAME);
+
+        DataSource adminDataSource = DataSourceFactory.getDataSource(ADMIN_DATA_SOURCE_NAME);
+        Assert.notNull(adminDataSource, "Could not find administrative data source '" + ADMIN_DATA_SOURCE_NAME + "' in data source configuration file");
         m_installerDb.setAdminDataSource(adminDataSource);
         
-        DataSource opennmsDataSource = DataSourceFactory.getDataSource("opennms");
+        DataSource opennmsDataSource = DataSourceFactory.getDataSource(OPENNMS_DATA_SOURCE_NAME);
+        Assert.notNull(opennmsDataSource, "Could not find OpenNMS data source '" + OPENNMS_DATA_SOURCE_NAME + "' in data source configuration file");
         m_installerDb.setDataSource(opennmsDataSource);
+
+        JdbcDataSource opennmsJdbcDataSource = getDataSourceConfiguration().get(OPENNMS_DATA_SOURCE_NAME);
+        Assert.notNull(opennmsJdbcDataSource, "Could not find JDBC configuration for OpenNMS data source '" + OPENNMS_DATA_SOURCE_NAME + "' in data source configuration file");
+        m_installerDb.setPostgresOpennmsUser(opennmsJdbcDataSource.getUserName());
+        m_installerDb.setPostgresOpennmsPassword(opennmsJdbcDataSource.getPassword());
+        m_installerDb.setDatabaseName(opennmsJdbcDataSource.getDatabaseName());
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -444,10 +449,6 @@ public class Installer {
     }
 
     public void printDiagnostics() {
-        m_out.println("* using '" + m_installerDb.getPostgresAdminUser()
-                + "' as the PostgreSQL administrative user for OpenNMS");
-        m_out.println("* using '" + m_installerDb.getPostgresAdminPassword()
-                + "' as the PostgreSQL administrative password for OpenNMS");
         m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser()
                       + "' as the PostgreSQL user for OpenNMS");
         m_out.println("* using '" + m_installerDb.getPostgresOpennmsPassword()

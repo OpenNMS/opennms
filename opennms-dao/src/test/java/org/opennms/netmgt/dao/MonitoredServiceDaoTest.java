@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,7 +40,7 @@ import java.util.Collection;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 
-public class MonitoredServiceDaoTest extends AbstractDaoTestCase {
+public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
 
     public void testLazy() {
     	

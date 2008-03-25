@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
 // 2007 Jul 03: Eliminate a warning. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -52,13 +53,7 @@ import org.opennms.netmgt.model.ServiceSelector;
  * @author mhuot
  *
  */
-public class OutageDaoTest extends AbstractDaoTestCase {
-
-    public void setUp() throws Exception {
-        //setPopulate(false);
-        super.setUp();
-    }
-    
+public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     public void testBogus() {
         // empty test so that JUnit doesn't complain
     }
