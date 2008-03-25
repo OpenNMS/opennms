@@ -341,8 +341,8 @@ public class InstallerDb {
                 m_out.print("    - creating sequence \"" + sequence + "\"... ");
                 st.execute("CREATE SEQUENCE " + sequence + " minvalue "
                            + minvalue);
-                st.execute("GRANT ALL on " + sequence + " TO " + m_user);
                 m_out.println("OK");
+                grantAccessToObject(sequence, 4);
             }
         }
 
@@ -742,10 +742,7 @@ public class InstallerDb {
 
                 addIndexesForTable(tableName);
                 addTriggersForTable(tableName);
-
-                m_out.print("  - giving \"" + m_user + "\" permissions on \"" + tableName + "\"... ");
-                st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
-                m_out.println("GRANTED");
+                grantAccessToObject(tableName, 2);
             } else {
                 m_out.println("  - checking table \"" + tableName + "\"... ");
 
@@ -757,19 +754,18 @@ public class InstallerDb {
                 if (newTable.equals(oldTable)) {
                     addIndexesForTable(tableName);
                     addTriggersForTable(tableName);
-                    m_out.println("  - checking table \"" + tableName
-                                  + "\"... UPTODATE");
+                    m_out.println("  - checking table \"" + tableName  + "\"... UPTODATE");
                 } else {
                     if (oldTable == null) {
                         String create = getTableCreateFromSQL(tableName);
-                        String createSql = "CREATE TABLE " + tableName + " ("
-                            + create + ")"; 
+                        String createSql = "CREATE TABLE " + tableName + " (" + create + ")"; 
+                        m_out.print("  - checking table \"" + tableName + "\"... ");
                         st.execute(createSql);
-                        
+                        m_out.println("CREATED");
+
                         addIndexesForTable(tableName);
                         addTriggersForTable(tableName);
-                        st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
-                        m_out.println("  - checking table \"" + tableName + "\"... CREATED");
+                        grantAccessToObject(tableName, 2);
                     } else {
                         try {
                             changeTable(tableName, oldTable, newTable);
@@ -1265,7 +1261,7 @@ public class InstallerDb {
 
             transformData(table, tmpTable, columnChanges, oldColumnNames);
 
-            st.execute("GRANT ALL ON " + table + " TO " + m_user);
+            grantAccessToObject(table, 4);
 
             m_out.print("    - optimizing table " + table + "... ");
             st.execute("VACUUM ANALYZE " + table);
@@ -1922,9 +1918,10 @@ public class InstallerDb {
         assertUserSet();
 
         Statement st = getAdminConnection().createStatement();
-        st.execute("CREATE DATABASE " + m_databaseName
-                   + " WITH ENCODING='UNICODE'");
-        st.execute("GRANT ALL ON DATABASE " + m_databaseName + " TO " + m_user);
+        st.execute("CREATE DATABASE " + m_databaseName + " WITH ENCODING='UNICODE'");
+        if (m_user != null) {
+        	st.execute("GRANT ALL ON DATABASE " + m_databaseName + " TO " + m_user);
+        }
         
         st.close();
     }
@@ -1941,6 +1938,20 @@ public class InstallerDb {
             m_out.println("DONE");
         }
 
+    }
+
+    public void grantAccessToObject(String object, Integer indent) throws SQLException {
+		for (int i = 0; i < indent; i++) {
+			m_out.print(" ");
+		}
+        m_out.print("- granting access to '" + object + "' for user '" + m_user + "'... ");
+    	if (m_user != null) {
+    		Statement st = getAdminConnection().createStatement();
+    		st.execute("GRANT ALL ON " + object + " TO " + m_user);
+            m_out.println("DONE");
+    	} else {
+    		m_out.println("SKIPPED (no user)");
+    	}
     }
 
     /*
