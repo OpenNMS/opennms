@@ -55,7 +55,7 @@ public class DefaultPollerService implements PollerService {
 		demandPollEvent.setUei(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
 		demandPollEvent.setNodeid(monSvc.getNodeId());
 		demandPollEvent.setInterface(monSvc.getIpAddress());
-		demandPollEvent.setIfIndex(Integer.toString(monSvc.getIfIndex()));
+		demandPollEvent.setIfIndex(monSvc.getIfIndex());
 		demandPollEvent.setService(monSvc.getServiceType().getName());
         demandPollEvent.setCreationTime(EventConstants.formatToString(new Date()));
         demandPollEvent.setTime(demandPollEvent.getCreationTime());
