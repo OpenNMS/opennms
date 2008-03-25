@@ -136,7 +136,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         
         setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(),
                                            m_adminUser, m_adminPassword));
-        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1",
+        setAdminDataSource(new SimpleDataSource(m_driver, m_url + "postgres",
                                            m_adminUser, m_adminPassword));
 
         createTestDatabase();
@@ -215,7 +215,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         m_adminDataSource = dataSource;
     }
 
-    private DataSource getAdminDataSource() {
+    protected DataSource getAdminDataSource() {
         return m_adminDataSource;
     }
     
