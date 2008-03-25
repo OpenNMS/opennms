@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Mar 25: Remove admin database username and password--they are not
+//              used anymore.  Use Spring's Assert class where possible and
+//              clean up granting code.  Also assert that the OpenNMS databae
+//              user is set before we use it. - dj@opennms.org
 // 2008 Mar 05: Avoid catching a database exception in checkIndexUniqueness, do pre-query checks instead to make sure all columns exist. - dj@opennms.org
 // 2007 Jul 03: Remove non-functional (i.e.: empty) setupPgPlSqlIplike
 //              method and make setupPlPgsqlIplike public. - dj@opennms.org
@@ -70,6 +74,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 public class InstallerDb {
@@ -93,6 +98,7 @@ public class InstallerDb {
     private TriggerDao m_triggerDao = new TriggerDao();
 
     private DataSource m_dataSource = null;
+    
     private DataSource m_adminDataSource = null;
     
     private PrintStream m_out = System.out;
@@ -144,9 +150,6 @@ public class InstallerDb {
     
     private boolean m_no_revert = false;
 
-    private String m_pg_user = "postgres";
-    private String m_pg_pass = "";
-    
     public InstallerDb() {
         
     }
@@ -313,6 +316,8 @@ public class InstallerDb {
     
 
     public void createSequences() throws Exception {
+        assertUserSet();
+        
         Statement st = getConnection().createStatement();
         ResultSet rs;
 
@@ -710,6 +715,8 @@ public class InstallerDb {
     }
 
     public void createTables() throws Exception {
+        assertUserSet();
+        
         Statement st = getConnection().createStatement();
         ResultSet rs;
 
@@ -818,11 +825,8 @@ public class InstallerDb {
                         throw new Exception("Could not parse constraint for table '" + tableName + "'.  Nested exception: " + e.getMessage(), e);
                     }
                     List<String> constraintColumns = constraint.getColumns();
-                    if (constraint.getType()!=Constraint.CHECK) {
-                    	if(constraintColumns.size() == 0) {
-                    		throw new IllegalStateException(
-                                                        "constraint with no constrained columns");
-                    	}
+                    if (constraint.getType() != Constraint.CHECK) {
+                        Assert.state(constraintColumns.size() > 0, "constraint '" + constraint.getName() + "' has no constrained columns");
 
                     	for (String constrainedName : constraintColumns) {
                     		Column constrained = findColumn(columns,
@@ -1129,6 +1133,8 @@ public class InstallerDb {
 
     public void changeTable(String table, Table oldTable, Table newTable)
             throws Exception {
+        assertUserSet();
+        
         List<Column> oldColumns = oldTable.getColumns();
         List<Column> newColumns = newTable.getColumns();
 
@@ -1919,9 +1925,7 @@ public class InstallerDb {
 
         Statement st = getAdminConnection().createStatement();
         st.execute("CREATE DATABASE " + m_databaseName + " WITH ENCODING='UNICODE'");
-        if (m_user != null) {
-        	st.execute("GRANT ALL ON DATABASE " + m_databaseName + " TO " + m_user);
-        }
+        st.execute("GRANT ALL ON DATABASE " + m_databaseName + " TO " + m_user);
         
         st.close();
     }
@@ -1940,18 +1944,24 @@ public class InstallerDb {
 
     }
 
-    public void grantAccessToObject(String object, Integer indent) throws SQLException {
-		for (int i = 0; i < indent; i++) {
-			m_out.print(" ");
-		}
+    public void grantAccessToObject(String object, int indent) throws SQLException {
+        assertUserSet();
+        
+        for (int i = 0; i < indent; i++) {
+            m_out.print(" ");
+        }
+        
         m_out.print("- granting access to '" + object + "' for user '" + m_user + "'... ");
-    	if (m_user != null) {
-    		Statement st = getAdminConnection().createStatement();
-    		st.execute("GRANT ALL ON " + object + " TO " + m_user);
-            m_out.println("DONE");
-    	} else {
-    		m_out.println("SKIPPED (no user)");
-    	}
+        
+        Statement st = getConnection().createStatement();
+        
+        try {
+            st.execute("GRANT ALL ON " + object + " TO " + m_user);
+        } finally {
+            st.close();
+        }
+        
+        m_out.println("DONE");
     }
 
     /*
@@ -2128,10 +2138,7 @@ public class InstallerDb {
 
 
     private void assertUserSet() {
-        if (m_user == null) {
-            throw new IllegalStateException("user has not been set");
-        }
-        
+        Assert.state(m_user != null, "postgresOpennmsUser property has not been set");
     }
 
     private Connection getConnection() throws SQLException {
@@ -2142,6 +2149,8 @@ public class InstallerDb {
     }
 
     private void initializeConnection() throws SQLException {
+        Assert.state(m_dataSource != null, "dataSource property has not been set");
+        
         m_connection = getDataSource().getConnection();
     }
     
@@ -2161,6 +2170,8 @@ public class InstallerDb {
     }
 
     private void initializeAdminConnection() throws SQLException {
+        Assert.state(m_adminDataSource != null, "adminDataSource property has not been set");
+
         m_adminConnection = getAdminDataSource().getConnection();
     }
     
@@ -2296,31 +2307,15 @@ public class InstallerDb {
     public String getPostgresOpennmsPassword() {
         return m_pass;
     }
-
-    public void setPostgresAdminUser(String postgresAdminUser) {
-        m_pg_user  = postgresAdminUser;
-    }
-    
-    public String getPostgresAdminUser() {
-        return m_pg_user;
-    }
-
-    public void setPostgresAdminPassword(String pass) {
-        m_pg_pass = pass;
-    }
-    
-    public String getPostgresAdminPassword() {
-        return m_pg_pass;
-    }
     
     public void setPostgresIpLikeLocation(String location) {
-    	if (location != null) {
-    		File iplike = new File(location);
-    		if (!iplike.exists()) {
-    			m_out.println("WARNING: missing " + location + ": OpenNMS will use a slower stored procedure if the native library is not available");
-    		}
-    	}
-    	
+        if (location != null) {
+            File iplike = new File(location);
+            if (!iplike.exists()) {
+                m_out.println("WARNING: missing " + location + ": OpenNMS will use a slower stored procedure if the native library is not available");
+            }
+        }
+
         m_pg_iplike = location;
     }
 
@@ -2470,9 +2465,7 @@ public class InstallerDb {
             MultiColumnKey key = getKeyForColumns(rs, columnChanges, columns);
 
             Integer oldInteger = m_idMap.get(key);
-            if (oldInteger == null && !noMatchOkay) {
-                throw new IllegalArgumentException("No entry in the map for " + key);
-            }
+            Assert.isTrue(oldInteger != null || noMatchOkay, "No entry in the map for " + key);
             
             return oldInteger;
         }
@@ -2483,14 +2476,10 @@ public class InstallerDb {
                 String indexColumn = columns[i];
                 
                 ColumnChange columnChange = columnChanges.get(indexColumn);
-                if (columnChange == null) {
-                    throw new IllegalArgumentException("No ColumnChange entry for '" + indexColumn + "'");
-                }
+                Assert.notNull(columnChange, "No ColumnChange entry for '" + indexColumn + "'");
                 
                 int index = columnChange.getSelectIndex();
-                if (index == 0) {
-                    throw new IllegalArgumentException("ColumnChange entry for '" + indexColumn + "' has no select index");
-                }
+                Assert.isTrue(index > 0, "ColumnChange entry for '" + indexColumn + "' has no select index");
                 
                 objects[i] = rs.getObject(index);
             }
