@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
 // 2007 Jul 03: Organize imports. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -43,13 +44,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 
-public class NotificationDaoTest extends AbstractDaoTestCase {
-
-    public void setUp() throws Exception {
-        //setPopulate(false);
-        super.setUp();
-    }
-
+public class NotificationDaoTest extends AbstractTransactionalDaoTestCase {
     public void testNotificationSave() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getDistPollerDao().load("localhost"));
