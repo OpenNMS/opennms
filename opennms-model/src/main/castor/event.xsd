@@ -242,7 +242,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="0" name="ifIndex" type="string">
+        <element maxOccurs="1" minOccurs="0" name="ifIndex" type="int">
           <annotation>
             <documentation>The ifIndex to which this event is
             pertinent</documentation>

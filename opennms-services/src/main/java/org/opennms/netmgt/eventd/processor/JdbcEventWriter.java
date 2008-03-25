@@ -226,7 +226,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 11, parametersString);
 
             // grab the ifIndex out of the parms if it is defined   
-            if (event.getIfIndex() != null) {
+            if (event.hasIfIndex()) {
                 if (event.getParms() != null) {
                     Parameter.format(event.getParms());
                 }
