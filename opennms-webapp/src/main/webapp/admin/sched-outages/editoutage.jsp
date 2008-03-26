@@ -586,13 +586,13 @@ function updateOutageTypeDisplay(selectElement) {
 								}
 							}
 						}
+						out.println("<select name=\"newNode\">");
 						if (nodeMap.size() > 0) {
-							out.println("<select name=\"newNode\">");
 							for ( Integer nodeId : nodeMap.keySet() ) {
 								out.println("<option value=\"" + nodeId + "\">" + nodeMap.get(nodeId).getLabel() + "</option>");
 							}
-							out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
 						}
+						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
 						%>
 					</td>
 					<td valign="top">
@@ -627,16 +627,16 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						}
 
+						out.println("<select name=\"newInterface\">");
 						if (interfaceMap.size() > 0) {
-							out.println("<select name=\"newInterface\">");
 							for ( String hostname : interfaceMap.keySet() ) {
 								org.opennms.web.element.Interface iface = interfaceMap.get(hostname);
 								if (iface != null && interfaceMap.containsValue(iface)) {
 									out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getHostname() + "</option>");
 								}
 							}
-							out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
 						}
+						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
 						%>
 					</td>
 				</tr>

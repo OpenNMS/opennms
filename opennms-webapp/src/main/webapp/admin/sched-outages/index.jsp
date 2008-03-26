@@ -167,6 +167,8 @@
 					Time thisOutageTime = outageTimes[j];
 					String rawDay = thisOutageTime.getDay();
 					String day = rawDay;
+					if ("daily".equals(pollFactory.getOutageType(outageName)))
+						day = "";
 					if ("weekly".equals(pollFactory.getOutageType(outageName)))
 						day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
 					if ("specific".equals(pollFactory.getOutageType(outageName)))
