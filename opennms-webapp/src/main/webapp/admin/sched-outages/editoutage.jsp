@@ -599,6 +599,7 @@ function updateOutageTypeDisplay(selectElement) {
 						}
 						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
 						}
+						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
 						%>
 					</td>
 					<td valign="top">
@@ -644,7 +645,6 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						}
 						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
-						}
 						%>
 					</td>
 				</tr>
