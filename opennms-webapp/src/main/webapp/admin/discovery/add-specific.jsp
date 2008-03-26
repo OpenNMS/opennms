@@ -49,12 +49,14 @@
 		response.setHeader("Cache-Control", "no-cache");
 	}
 %>
+<html>
 <head>
   <title>Add Specific | Admin | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
+<body>
 <script language="javascript">
 function checkIpAddr(ip){
 	var ipArr = ip.split(".");
@@ -112,9 +114,10 @@ function addSpecific(){
  </tr>
 </table>
 
-<input type="button" name="addSpecific" id="addSpecific" value="Add" onclick="addSpecific();">
-<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();">
+<input type="button" name="addSpecific" id="addSpecific" value="Add" onclick="addSpecific();" />
+<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
   <hr />
 
-
+</body>
+</html>
