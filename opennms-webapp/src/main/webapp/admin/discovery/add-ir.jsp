@@ -50,6 +50,7 @@
 	}
 
 %>
+<html>
 <head>
   <title>Add Include Range | Admin | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
@@ -57,7 +58,8 @@
 
 </head>
 
-<script language="javascript">
+<body>
+<script type="text/javascript">
 function checkIpAddr(ip){
 	var ipArr = ip.split(".");
 	if(ipArr.length!=4)
@@ -109,29 +111,30 @@ function addIncludeRange(){
 
 </script>
 
-
-<!-- Body -->
-
-<h3>Add Include Range to discover</h3>
+<h3>Add Include Range to Discovery</h3>
 <div class="boxWrapper">
-		  <p>Enter your network's characteristics.<br>
-	      Begin and End network's IP address are required.<br>
+		  <p>Add a range of IP addresses to include in discovery.<br/>
+	      Begin and End IP addresses are required.<br>
 	      <br>
 	      You can set the number of <i>Retries</i> and <i>Timeout</i>.
-	      If these parameters are not setted, default values will be used.
+	      If these parameters are not set, default values will be used.
 	      </p>
 </div>
 
 <table class="standard">
  <tr>
-  <td class="standard" align="center" width="30%">Network Begin Address:<input type="text" id="base" name="base" size="10" value=''/></td>
-  <td class="standard" align="center" width="30%">Network End Address:<input type="text" id="end" name="end" size="10"  value=''/></td>
+  <td class="standard" align="center" width="30%">Begin IP Address:<input type="text" id="base" name="base" size="15" value=''/></td>
+  <td class="standard" align="center" width="30%">End IP Address:<input type="text" id="end" name="end" size="15"  value=''/></td>
   <td class="standard" align="center" width="20%">Retries:<input type="text" id="retries" name="retries" value='3' size="2" /></td>
-  <td class="standard" align="center" width="20%">Timeout (ms.):<input type="text" id="timeout" name="timeout" value='800' size="2" /></td>
+  <td class="standard" align="center" width="20%">Timeout (ms):<input type="text" id="timeout" name="timeout" value='800' size="5" /></td>
  </tr>
 </table>
 	
 
-<input type="button" name="addIncludeRange" id="addIncludeRange" value="Add" onclick="addIncludeRange();">
-<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();">
+<input type="button" name="addIncludeRange" id="addIncludeRange" value="Add" onclick="addIncludeRange();" />
+<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 <hr />
+
+</body>
+
+</html>
