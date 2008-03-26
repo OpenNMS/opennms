@@ -51,6 +51,8 @@
 
 %>
 
+<html>
+
 <head>
   <title>Add Exclude Range | Admin | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
@@ -58,7 +60,8 @@
 
 </head>
 
-<script language="javascript">
+<body>
+<script type="text/javascript">
 function checkIpAddr(ip){
 	var ipArr = ip.split(".");
 	if(ipArr.length!=4)
@@ -146,21 +149,25 @@ function addExcludeRange(){
 
 </script>
 
-<h3>Add Include Range to discover</h3>
+<h3>Add Range to Exclude from Discovery</h3>
 <div class="boxWrapper">
-		  <p>Add a range of IP addresses to exclude from discovery.<br>
-			 Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to do that.
+		  <p>Add a range of IP addresses to exclude from discovery.<br/>
+			 Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to confirm.
 	      </p>
 </div>
 <table class="standard">
 <tr>
- <td class="standard" align="center" width="35%">Begin IP Address:<input type="text" id="begin" name="begin" size="10" value=''/></td>
- <td class="standard" align="center" width="35%">End IP Address:<input type="text" id="end" name="end" size="10"  value=''/></td>
+ <td class="standard" align="center" width="35%">Begin IP Address:<input type="text" id="begin" name="begin" size="15" value=''/></td>
+ <td class="standard" align="center" width="35%">End IP Address:<input type="text" id="end" name="end" size="15"  value=''/></td>
 </tr>
 </table>
 
 
-<input type="button" name="addExcludeRange" id="addExcludeRange" value="Add" onclick="addExcludeRange();">
-<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();">
+<input type="button" name="addExcludeRange" id="addExcludeRange" value="Add" onclick="addExcludeRange();" />
+<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
-<hr />
+<hr/>
+
+</body>
+
+</html>

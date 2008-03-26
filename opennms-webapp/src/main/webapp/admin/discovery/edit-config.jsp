@@ -70,15 +70,15 @@
 
 
 function addSpecific(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-specific.jsp', 'AddSpecific', 'toolbar,width=700 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-specific.jsp', 'AddSpecific', 'toolbar=0,width=700 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 function addIncludeRange(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-ir.jsp', 'AddIncludeRange', 'toolbar,width=750 ,height=230, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-ir.jsp', 'AddIncludeRange', 'toolbar=0,width=750 ,height=230, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 function addExcludeRange(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-er.jsp', 'AddExcludeRange', 'toolbar,width=600 ,height=200, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-er.jsp', 'AddExcludeRange', 'toolbar=0,width=600 ,height=200, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 
