@@ -66,8 +66,8 @@ import org.opennms.netmgt.utils.ParameterMap;
  * plug-ins by the service poller framework.
  * </P>
  * 
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * 
  */
 
@@ -96,8 +96,8 @@ final public class IcmpMonitor extends IPv4Monitor {
      *            this poll.
      * @param iface
      *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
+     * @return The availability of the interface and if a transition event
+     *         should be suppressed.
      * 
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
@@ -109,8 +109,7 @@ final public class IcmpMonitor extends IPv4Monitor {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
         Category log = ThreadCategory.getInstance(this.getClass());
-        PollStatus serviceStatus = PollStatus.unavailable();
-        Double rtt = null;
+        Long rtt = null;
         InetAddress host = (InetAddress) iface.getAddress();
 
         try {
@@ -120,13 +119,13 @@ final public class IcmpMonitor extends IPv4Monitor {
             int retries = ParameterMap.getKeyedInteger(parameters, "retry", Pinger.DEFAULT_RETRIES);
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", Pinger.DEFAULT_TIMEOUT);
             
-            rtt = (double)Pinger.ping(host, timeout, retries);
+            rtt = Pinger.ping(host, timeout, retries);
         } catch (Exception e) {
             log.debug("failed to ping " + host, e);
         }
         
         if (rtt != null) {
-            return PollStatus.available(rtt);
+            return PollStatus.available(rtt.doubleValue());
         } else {
             // TODO add a reason code for unavailability
             return PollStatus.unavailable();
