@@ -64,7 +64,7 @@ import org.opennms.netmgt.xml.rtc.Node;
  */
 public class EuiLevelMapper extends Object {
     /**
-     * The header to be sent out for the availabilty xml(rtceui.xsd)
+     * The header to be sent out for the availability xml(rtceui.xsd)
      */
     private Header m_header;
 

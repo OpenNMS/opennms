@@ -168,7 +168,7 @@ public class AvailabilityCalculator {
         org.opennms.report.availability.Categories categories = new org.opennms.report.availability.Categories();
         m_report.setCategories(categories);
         try {
-            log.debug("Populating datastructures and calculating availabilty");
+            log.debug("Populating datastructures and calculating availability");
             log.debug("category:     " + m_categoryName);
             log.debug("monthFormat:  " + m_monthFormat);
             log.debug("reportFormat: " + m_reportFormat);
