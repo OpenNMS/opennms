@@ -58,6 +58,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.DatagramPacket;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -86,6 +87,8 @@ import org.opennms.netmgt.ping.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import com.sun.media.jai.codec.FileSeekableStream;
 
 /*
  * Big To-dos:
@@ -579,12 +582,47 @@ public class Installer {
     public void installWebApp() throws Exception {
         m_out.println("- Install OpenNMS webapp... ");
 
-        installLink(m_install_servletdir + File.separator + "META-INF"
+        copyFile(m_install_servletdir + File.separator + "META-INF"
                 + File.separator + "context.xml", m_webappdir
                 + File.separator + "opennms.xml", "web application context",
                     false);
 
         m_out.println("- Installing OpenNMS webapp... DONE");
+    }
+    
+    public void copyFile(String source, String destination, String description, boolean recursive) throws Exception {
+    	File sourceFile = new File(source);
+    	File destinationFile = new File(destination);
+    	
+    	if (!sourceFile.exists())  { throw new Exception("source file (" + source + ") does not exist!"); }
+    	if (!sourceFile.isFile())  { throw new Exception("source file (" + source + ") is not a file!"); }
+    	if (!sourceFile.canRead()) { throw new Exception("source file (" + source + ") is not readable!"); }
+    	if (destinationFile.exists()) {
+    		m_out.print("  - " + destination + " exists, removing... ");
+    		destinationFile.delete();
+    		m_out.println("REMOVED");
+    	}
+    	
+    	m_out.print("  - copying " + source + " to " + destination + "... ");
+		if (!destinationFile.getParentFile().exists()) {
+			destinationFile.getParentFile().mkdirs();
+		}
+		destinationFile.createNewFile();
+		FileChannel from = null;
+		FileChannel to = null;
+		try {
+			from = new FileInputStream(sourceFile).getChannel();
+			to = new FileOutputStream(destinationFile).getChannel();
+			to.transferFrom(from, 0, from.size());
+		} finally {
+			if (from != null) {
+				from.close();
+			}
+			if (to != null) {
+				to.close();
+			}
+		}
+		m_out.println("DONE");
     }
 
     public void installLink(String source, String destination,
