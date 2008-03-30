@@ -88,8 +88,6 @@ import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.sun.media.jai.codec.FileSeekableStream;
-
 /*
  * Big To-dos:
  * - Fix all of the XXX items (some coding, some discussion)
