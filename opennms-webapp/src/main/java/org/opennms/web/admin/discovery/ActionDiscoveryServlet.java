@@ -48,11 +48,8 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
-
-
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.web.WebSecurityUtils;
 
 /**
