@@ -32,9 +32,9 @@
 // Tab Size = 8
 
 package org.opennms.netmgt.charts;
+
 /**
- * @author david
- *
+ * @author <a href="david@opennms.org">David Hustace</a>
  */
 public class Chart {
 
