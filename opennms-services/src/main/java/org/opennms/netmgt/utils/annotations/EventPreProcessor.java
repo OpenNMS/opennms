@@ -8,7 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ * Modifications:
+ * 
+ * Created: October 11, 2007
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +28,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  */
 package org.opennms.netmgt.utils.annotations;
 
@@ -39,7 +42,7 @@ import java.lang.annotation.Target;
 /**
  * EventPreProcessor
  *
- * @author brozow
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
