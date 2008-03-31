@@ -36,6 +36,7 @@
 package org.opennms.netmgt.correlation.drools;
 
 import org.springframework.core.style.ToStringCreator;
+import java.util.Date;
 
 /**
  * 
