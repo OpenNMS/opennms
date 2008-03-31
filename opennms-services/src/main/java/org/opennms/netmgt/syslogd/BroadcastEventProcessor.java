@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
