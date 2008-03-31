@@ -45,7 +45,13 @@ import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 
-public class QueueManager {
+/**
+ * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ */public class QueueManager {
 
     FifoQueue m_backlogQ = new FifoQueueImpl();
 
