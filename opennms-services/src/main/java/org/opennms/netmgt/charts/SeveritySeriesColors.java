@@ -40,8 +40,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * @author david
- *
+ * @author <a href="david@opennms.org">David Hustace</a>
  */
 public class SeveritySeriesColors implements CustomSeriesColors {
 

@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -14,7 +14,7 @@
 //              mockEventIpcManager.xml Spring context, and move
 //              DaoTestConfigBean setup into a constructor. - dj@opennms.org
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Create: January 26, 2007
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,6 +43,10 @@ import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
 
+/**
+ * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ */
 public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
     private MockEventIpcManager m_eventIpcMgr;
