@@ -747,7 +747,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr id="chooseStartSpan" style="display: none">
 					<td>
 						<span id="chooseStartDate" style="display: none">
-							<%= getNumberSelectField("chooseStartDay", 1, 31, date, 0) %>
+							<%= getNumberSelectField("chooseStartDay", 1, 31, date, 2) %>
 							<%= getMonthSelectField("chooseStartMonth", month) %>
 							<%= getNumberSelectField("chooseStartYear", (year - 1), (year + 4), year, 4) %>
 						</span>
@@ -765,7 +765,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr id="chooseFinishSpan" style="display: none">
 					<td>
 						<span id="chooseFinishDate" style="display: none">
-							<%= getNumberSelectField("chooseFinishDay", 1, 31, date, 0) %>
+							<%= getNumberSelectField("chooseFinishDay", 1, 31, date, 2) %>
 							<%= getMonthSelectField("chooseFinishMonth", month) %>
 							<%= getNumberSelectField("chooseFinishYear", (year - 1), (year + 4), year, 4) %>
 						</span>
