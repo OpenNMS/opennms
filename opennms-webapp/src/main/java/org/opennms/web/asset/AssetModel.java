@@ -55,7 +55,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.web.WebSecurityUtils;
