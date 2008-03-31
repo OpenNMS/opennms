@@ -56,7 +56,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * This class encapsulates the execution context for processing events
+ * This class encapsulates the execution context for processing syslog messsages
  * received via UDP from remote agents. This is a separate event context to
  * allow the event receiver to do minimum work to avoid dropping packets from
  * the agents.

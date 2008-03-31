@@ -57,6 +57,7 @@ import java.net.DatagramSocket;
  * and then add the UUIDs to the internal list. If the event is successfully
  * processed then an event-receipt is returned to the caller.
  *
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */

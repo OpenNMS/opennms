@@ -39,6 +39,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
 /**
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
