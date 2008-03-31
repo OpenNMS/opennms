@@ -72,8 +72,7 @@ import org.opennms.netmgt.config.charts.SubTitle;
 import org.opennms.netmgt.config.charts.Title;
 
 /**
- * @author david
- *
+ * @author <a href="david@opennms.org">David Hustace</a>
  */
 public class ChartUtils {
     

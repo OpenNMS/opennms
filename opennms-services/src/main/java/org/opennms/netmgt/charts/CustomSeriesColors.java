@@ -36,8 +36,7 @@ package org.opennms.netmgt.charts;
 import java.awt.Paint;
 
 /**
- * @author david
- *
+ * @author <a href="david@opennms.org">David Hustace</a>
  */
 public interface CustomSeriesColors {
 
