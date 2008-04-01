@@ -12,7 +12,8 @@
  *
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * 
+ * Created: April 10, 2007
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
