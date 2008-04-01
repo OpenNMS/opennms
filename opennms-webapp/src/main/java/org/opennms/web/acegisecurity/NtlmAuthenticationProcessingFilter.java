@@ -16,72 +16,58 @@
 package org.opennms.web.acegisecurity;
 
 
-import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import jcifs.Config;
+import jcifs.UniAddress;
+import jcifs.http.NtlmSsp;
+import jcifs.smb.NtlmChallenge;
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbSession;
+import jcifs.util.Base64;
+import jcifs.util.LogStream;
 
+import org.acegisecurity.AcegiMessageSource;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.event.authentication.InteractiveAuthenticationSuccessEvent;
 import org.acegisecurity.ldap.InitialDirContextFactory;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.providers.ldap.LdapAuthenticationProvider;
 import org.acegisecurity.providers.ldap.LdapAuthoritiesPopulator;
 import org.acegisecurity.providers.ldap.authenticator.BindAuthenticator;
+import org.acegisecurity.ui.AbstractProcessingFilter;
 import org.acegisecurity.ui.AuthenticationDetailsSource;
 import org.acegisecurity.ui.AuthenticationDetailsSourceImpl;
-
-import org.acegisecurity.ui.AbstractProcessingFilter;
-import org.acegisecurity.AcegiMessageSource;
-
-import org.acegisecurity.context.SecurityContextHolder;
-
-import org.acegisecurity.event.authentication.InteractiveAuthenticationSuccessEvent;
-
 import org.acegisecurity.ui.rememberme.NullRememberMeServices;
 import org.acegisecurity.ui.rememberme.RememberMeServices;
 import org.acegisecurity.userdetails.ldap.LdapUserDetails;
-
 import org.apache.log4j.Category;
-
 import org.opennms.core.utils.ThreadCategory;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
-
 import org.springframework.util.Assert;
-
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-
-//import jcifs.*;
-import jcifs.Config;
-import jcifs.UniAddress;
-import jcifs.smb.SmbSession;
-import jcifs.smb.NtlmChallenge;
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbAuthException;
-import jcifs.util.Base64;
-import jcifs.util.LogStream;
-import jcifs.http.NtlmSsp;
 
 /**
  * Processes an authentication form.<p>Login forms must present two parameters to this filter: a username and
