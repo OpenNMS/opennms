@@ -39,7 +39,6 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

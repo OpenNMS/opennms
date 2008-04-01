@@ -34,8 +34,8 @@ package org.opennms.secret.web;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.config.rrd.Datasources;
-import org.opennms.netmgt.config.rrd.Rrd_graph_def;
+import junit.framework.TestCase;
+
 import org.opennms.secret.dao.DataSourceDao;
 import org.opennms.secret.dao.impl.DataSourceDaoSimple;
 import org.opennms.secret.model.DataSource;
@@ -48,8 +48,6 @@ import org.opennms.secret.service.impl.DataSourceServiceImpl;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-
-import junit.framework.TestCase;
 
 public class GraphCartTileContollerTest extends TestCase {
 

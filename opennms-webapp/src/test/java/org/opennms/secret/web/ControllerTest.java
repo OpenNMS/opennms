@@ -36,8 +36,6 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.opennms.secret.dao.DataSourceDao;
-import org.opennms.secret.dao.NodeInterfaceDao;
 import org.opennms.secret.dao.impl.DataSourceDaoSimple;
 import org.opennms.secret.dao.impl.NodeDaoSimple;
 import org.opennms.secret.dao.impl.NodeInterfaceDaoSimple;
@@ -52,8 +50,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.servlet.ModelAndView;
-
-import sun.print.resources.serviceui;
 
 public class ControllerTest extends TestCase {
 
