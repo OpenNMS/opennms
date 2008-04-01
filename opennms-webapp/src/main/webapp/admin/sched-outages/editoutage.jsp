@@ -30,7 +30,7 @@
 		nf.setMinimumIntegerDigits(padding);
 		nf.setGroupingUsed(false);
 		StringBuffer sb = new StringBuffer();
-		sb.append("<select name=\"" + name + "\">");
+		sb.append("<select name=\"").append(name).append("\">");
 		for (int i = start; i <= end; i++) {
 			sb.append("<option value=\"").append(nf.format(i)).append("\"");
 			if (i == selected) {
@@ -45,7 +45,7 @@
 	
 	private static String getMonthSelectField(String name, int month) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<select name=\"chooseStartMonth\">");
+		sb.append("<select name=\"").append(name).append("\">");
 		SimpleDateFormat shortDF = new SimpleDateFormat("MMM");
 		SimpleDateFormat longDF  = new SimpleDateFormat("MMMM");
 		for (int mon = 0; mon < 12; mon++) {
@@ -747,7 +747,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr id="chooseStartSpan" style="display: none">
 					<td>
 						<span id="chooseStartDate" style="display: none">
-							<%= getNumberSelectField("chooseStartDay", 1, 31, date, 0) %>
+							<%= getNumberSelectField("chooseStartDay", 1, 31, date, 2) %>
 							<%= getMonthSelectField("chooseStartMonth", month) %>
 							<%= getNumberSelectField("chooseStartYear", (year - 1), (year + 4), year, 4) %>
 						</span>
@@ -765,7 +765,7 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr id="chooseFinishSpan" style="display: none">
 					<td>
 						<span id="chooseFinishDate" style="display: none">
-							<%= getNumberSelectField("chooseFinishDay", 1, 31, date, 0) %>
+							<%= getNumberSelectField("chooseFinishDay", 1, 31, date, 2) %>
 							<%= getMonthSelectField("chooseFinishMonth", month) %>
 							<%= getNumberSelectField("chooseFinishYear", (year - 1), (year + 4), year, 4) %>
 						</span>
