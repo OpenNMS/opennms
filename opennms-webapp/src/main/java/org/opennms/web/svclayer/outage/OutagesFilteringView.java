@@ -1,6 +1,7 @@
-
 /*
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -14,9 +15,10 @@
  * 2007 Dec 09: Add abililty to filter on one or two sets of
  *              categories, like in the node list. - dj@opennms.org
  * 2007 Feb 01: Indent and add buildCriteria method. - dj@opennms.org
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  * 
+ * Created: August 23, 2006
+ *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -37,6 +39,7 @@
  *      http://www.opennms.com/
  */
 
+
 package org.opennms.web.svclayer.outage;
 
 import java.sql.Date;
@@ -53,6 +56,12 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.WebSecurityUtils;
 
+/**
+ * 
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ */
 public class OutagesFilteringView {
 
     private CategoryDao m_categoryDao;
