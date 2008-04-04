@@ -77,6 +77,13 @@
   <jsp:param name="breadcrumb" value="Asset List" />
 </jsp:include>
 
+ <% if (request.getParameter("showMessage") != null && request.getParameter("showMessage").equalsIgnoreCase("true")) { %>
+ <br />
+ <p>
+ <span style="font-size: larger;"><%= request.getSession(false).getAttribute("message") %></span>
+ </p>
+ <% } %>
+
 <h3>Assets</h3>
 
   <% if( assets.length > 0 ) { %>
