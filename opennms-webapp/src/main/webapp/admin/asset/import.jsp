@@ -56,7 +56,7 @@
 <h3>Assets</h3>
 
 <p>
-  Paste your comma-seperated values into this text field to import
+  Paste your comma-separated values into this text field to import
   them into the assets database.  There is one line per record, and 
   the fields are delimited by commas.
 </p>
@@ -64,10 +64,18 @@
 <form action="admin/asset/import" method="post">
   <textarea name="assetsText" cols="80" rows="25" wrap="off" ></textarea>
 
-  <br/>
+ <% if (request.getParameter("showMessage") != null && request.getParameter("showMessage").equalsIgnoreCase("true")) { %>
+ <p>
+ <span class="error"><%= request.getSession(false).getAttribute("message") %></span>
+ </p>
+ <% } %>
 
+ <p>
   <input type="submit" value="Import"/>
+ </p>
 </form>
+
+<br />
 
 <p>
   The asset fields are (in order):
