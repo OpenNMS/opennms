@@ -1,35 +1,38 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//    
-// For more information contact: 
-//   OpenNMS Licensing       <license@opennms.org>
-//   http://www.opennms.org/
-//   http://www.opennms.com/
-//
-// Tab Size = 8
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * Created: December 6, 2004
+ *
+ * Copyright (C) 2004-2008 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 
 package org.opennms.netmgt.config;
 
@@ -43,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -62,13 +64,15 @@ import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
 
 /**
- * @author david hustace <david@opennms.org>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
+
 public abstract class UserManager {
 
     protected GroupManager m_groupManager;
     /**
-     * A mapping of user ids to the User objects
+     * A mapping of user IDs to the User objects
      */
     protected HashMap<String, User> m_users;
     /**
@@ -89,12 +93,10 @@ public abstract class UserManager {
         Userinfo userinfo = (Userinfo) Unmarshaller.unmarshal(Userinfo.class, reader);
         Users users = userinfo.getUsers();
         oldHeader = userinfo.getHeader();
-        Collection usersList = users.getUserCollection();
+        Collection<User> usersList = users.getUserCollection();
         m_users = new HashMap<String, User>();
-    
-        Iterator i = usersList.iterator();
-        while (i.hasNext()) {
-            User curUser = (User) i.next();
+
+        for (User curUser : usersList) {
             m_users.put(curUser.getUserId(), curUser);
         }
     
@@ -115,25 +117,23 @@ public abstract class UserManager {
     }
 
     /**
-     * Builds a mapping between user ids and duty schedules. These are used by
+     * Builds a mapping between user IDs and duty schedules. These are used by
      * Notifd when determining to send a notice to a given user. This helps
      * speed up the decision process.
      * 
      * @param users
-     *            the map of users parsed from the xml config file
+     *            the map of users parsed from the XML configuration file
      */
     private void buildDutySchedules(Map<String, User> users) {
         m_dutySchedules = new HashMap<String, List<DutySchedule>>();
         
         for (String key : users.keySet()) {
-            User curUser = (User) users.get(key);
+            User curUser = users.get(key);
     
             if (curUser.getDutyScheduleCount() > 0) {
                 List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
-                Enumeration duties = curUser.enumerateDutySchedule();
-    
-                while (duties.hasMoreElements()) {
-                    dutyList.add(new DutySchedule((String) duties.nextElement()));
+                for (String duty : curUser.getDutyScheduleCollection()) {
+                	dutyList.add(new DutySchedule(duty));
                 }
     
                 m_dutySchedules.put(key, dutyList);
@@ -143,7 +143,7 @@ public abstract class UserManager {
 
     /**
      * Determines if a user is on duty at a given time. If a user has no duty
-     * schedules listed in the config file, that user is assumed to always be on
+     * schedules listed in the configuration file, that user is assumed to always be on
      * duty.
      * 
      * @param user
@@ -159,21 +159,14 @@ public abstract class UserManager {
         // if the user has no duty schedules then he is on duty
         if (!m_dutySchedules.containsKey(user))
             return true;
-    
-        boolean result = false;
-        List dutySchedules = (List) m_dutySchedules.get(user);
-    
-        for (int i = 0; i < dutySchedules.size(); i++) {
-            DutySchedule curSchedule = (DutySchedule) dutySchedules.get(i);
-    
-            result = curSchedule.isInSchedule(time);
-    
-            // don't continue if the time is in this schedule
-            if (result)
-                break;
+
+        for (DutySchedule curSchedule : m_dutySchedules.get(user)) {
+        	if (curSchedule.isInSchedule(time)) {
+        		return true;
+        	}
         }
-    
-        return result;
+        
+        return false;
     }
 
     /**
@@ -187,9 +180,9 @@ public abstract class UserManager {
     }
 
     /**
-     * Returns a boolean indicating if the user name appears in the xml file
+     * Returns a boolean indicating if the user name appears in the XML file
      * 
-     * @return true if the user exists in the xml file, false otherwise
+     * @return true if the user exists in the XML file, false otherwise
      */
     public boolean hasUser(String userName) throws IOException, MarshalException, ValidationException {
     
@@ -224,7 +217,7 @@ public abstract class UserManager {
     
         update();
     
-        return (User) m_users.get(name);
+        return m_users.get(name);
     }
 
     /**
@@ -239,7 +232,7 @@ public abstract class UserManager {
     public String getContactInfo(String userID, String command) throws IOException, MarshalException, ValidationException {
         update();
         
-        User user = (User) m_users.get(userID);
+        User user = m_users.get(userID);
         return getContactInfo(user, command);
     }
     
@@ -248,18 +241,14 @@ public abstract class UserManager {
         
         if (user == null)
             return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals(command)) {
-                    value = contact.getInfo();
-                    break;
-                }
-            }
+        
+        for (Contact contact : user.getContactCollection()) {
+        	if (contact != null && contact.getType().equals(command)) {
+        		return contact.getInfo();
+        	}
         }
-        return value;
+        
+        return "";
     }
 
     /**
@@ -274,7 +263,7 @@ public abstract class UserManager {
     public String getContactServiceProvider(String userID, String command) throws IOException, MarshalException, ValidationException {
         update();
     
-        User user = (User) m_users.get(userID);
+        User user = m_users.get(userID);
         return getContactServiceProvider(user, command);
     }
     
@@ -283,128 +272,116 @@ public abstract class UserManager {
         
         if (user == null)
             return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals(command)) {
-                    value = contact.getServiceProvider();
-                    break;
-                }
-            }
+
+        for (Contact contact : user.getContactCollection()) {
+        	if (contact != null && contact.getType().equals(command)) {
+        		return contact.getServiceProvider();
+        	}
         }
-        return value;
+        
+        return "";
     }
 
     /**
      * Get a email by name
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the email specified by name
      */
-    public String getEmail(String userid) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userid, "email");
+    public String getEmail(String userID) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(userID, "email");
     }
 
     /**
      * Get a pager email by name
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the pager email
      */
-    public String getPagerEmail(String userid) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userid, "pagerEmail");
+    public String getPagerEmail(String userID) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(userID, "pagerEmail");
     }
 
     /**
      * Get a numeric pin
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the numeric pin
      */
-    public String getNumericPin(String userid) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userid, "numericPage");
+    public String getNumericPin(String userID) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(userID, "numericPage");
     }
 
     /**
      * Get an XMPP address by name
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the XMPP address
      */
 
-    public String getXMPPAddress(String userid) throws IOException, MarshalException, ValidationException {
+    public String getXMPPAddress(String userID) throws IOException, MarshalException, ValidationException {
 
         update();
         
-        User user = (User) m_users.get(userid);
+        User user = m_users.get(userID);
         if (user == null)
             return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-            	if (contact.getType().equals("xmppAddress")) {
-            		value = contact.getInfo();
-            		break;
-            	}
-            }
+        
+        for (Contact contact : user.getContactCollection()) {
+        	if (contact != null && contact.getType().equals("xmppAddress")) {
+        		return contact.getInfo();
+        	}
         }
-        return value;
-
+        
+        return "";
     }
 
     /**
      * Get a numeric service provider
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the service provider
      */
-    public String getNumericPage(String userid) throws IOException, MarshalException, ValidationException {
-        return getContactServiceProvider(userid, "numericPage");
+    public String getNumericPage(String userID) throws IOException, MarshalException, ValidationException {
+        return getContactServiceProvider(userID, "numericPage");
     }
 
     /**
      * Get a text pin
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the text pin
      */
-    public String getTextPin(String userid) throws IOException, MarshalException, ValidationException {
-        return getContactInfo(userid, "textPage");
+    public String getTextPin(String userID) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(userID, "textPage");
     }
 
     /**
      * Get a Text Page Service Provider
      * 
-     * @param userid
-     *            the userid of the user to return
+     * @param userID
+     *            the user ID of the user to return
      * @return String the text page service provider.
      */
-    public String getTextPage(String userid) throws IOException, MarshalException, ValidationException {
-        return getContactServiceProvider(userid, "textPage");
+    public String getTextPage(String userID) throws IOException, MarshalException, ValidationException {
+        return getContactServiceProvider(userID, "textPage");
     }
 
     /**
      */
-    public synchronized void saveUsers(Collection usersList) throws Exception {
-        // clear out the interanal structure and reload it
+    public synchronized void saveUsers(Collection<User> usersList) throws Exception {
+        // clear out the internal structure and reload it
         m_users.clear();
     
-        Iterator i = usersList.iterator();
-        while (i.hasNext()) {
-            User curUser = (User) i.next();
-            m_users.put(curUser.getUserId(), curUser);
+        for (User curUser : usersList) {
+        	m_users.put(curUser.getUserId(), curUser);
         }
-    
     }
 
     /**
@@ -438,10 +415,10 @@ public abstract class UserManager {
         header.setCreated(EventConstants.formatToString(new Date()));
     
         Users users = new Users();
-        Collection collUsers = (Collection) m_users.values();
-        Iterator iter = collUsers.iterator();
+        Collection<User> collUsers = m_users.values();
+        Iterator<User> iter = collUsers.iterator();
         while (iter != null && iter.hasNext()) {
-            User tmpUser = (User) iter.next();
+            User tmpUser = iter.next();
             users.addUser(tmpUser);
         }
     
@@ -451,9 +428,9 @@ public abstract class UserManager {
     
         oldHeader = header;
     
-        // marshall to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // marshal to a string first, then write the string to the file. This
+        // way the original configuration
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(userinfo, stringWriter);
         String writerString = stringWriter.toString();
@@ -473,7 +450,7 @@ public abstract class UserManager {
     public synchronized void renameUser(String oldName, String newName) throws Exception {
         // Get the old data
         if (m_users.containsKey(oldName)) {
-            User data = (User) m_users.get(oldName);
+            User data = m_users.get(oldName);
             if (data == null) {
                 m_users.remove(oldName);
                 throw new Exception("UserFactory:rename the data contained for old user " + oldName + " is null");
@@ -501,12 +478,12 @@ public abstract class UserManager {
      * already encrypted properly
      * 
      * @param userID
-     *            the user ID to change the pasword for
+     *            the user ID to change the password for
      * @param aPassword
      *            the encrypted password
      */
     public void setEncryptedPassword(String userID, String aPassword) throws Exception {
-        User user = (User) m_users.get(userID);
+        User user = m_users.get(userID);
         if (user != null) {
             user.setPassword(aPassword);
         }
@@ -518,12 +495,12 @@ public abstract class UserManager {
      * Sets the password for this user, first encrypting it
      * 
      * @param userID
-     *            the user ID to change the pasword for
+     *            the user ID to change the password for
      * @param aPassword
      *            the password
      */
     public void setUnencryptedPassword(String userID, String aPassword) throws Exception {
-        User user = (User) m_users.get(userID);
+        User user =  m_users.get(userID);
         if (user != null) {
             user.setPassword(encryptedPassword(aPassword));
         }
@@ -586,7 +563,7 @@ public abstract class UserManager {
      *         otherwise
      */
     public boolean comparePasswords(String userID, String aPassword) {
-        User user = (User) m_users.get(userID);
+        User user = m_users.get(userID);
         if (user == null)
             return false;
     
@@ -606,10 +583,10 @@ public abstract class UserManager {
         
         List<String> usersWithRole = new ArrayList<String>();
         
-        Iterator i = m_users.values().iterator();
+        Iterator<User> i = m_users.values().iterator();
         
         while (i.hasNext()) {
-            User user = (User)i.next();
+            User user = i.next();
             if (userHasRole(user, roleid)) {
                 usersWithRole.add(user.getUserId());
             }
@@ -641,10 +618,10 @@ public abstract class UserManager {
         
         List<String> usersScheduledForRole = new ArrayList<String>();
         
-        Iterator i = m_users.values().iterator();
+        Iterator<User> i = m_users.values().iterator();
         
         while (i.hasNext()) {
-            User user = (User)i.next();
+            User user = i.next();
             if (isUserScheduledForRole(user, roleid, time)) {
                 usersScheduledForRole.add(user.getUserId());
             }
