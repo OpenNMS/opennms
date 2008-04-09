@@ -177,7 +177,7 @@ EXTRA_TARGETS="$EXTRA_TARGETS docs"
 
 echo "=== RUNNING INSTALL ==="
 
-sh ./build.sh -Ddist.name=$RPM_BUILD_ROOT \
+sh ./build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
     -Dopennms.home=%{instprefix} install assembly:attached
 
 echo "=== INSTALL COMPLETED ==="
