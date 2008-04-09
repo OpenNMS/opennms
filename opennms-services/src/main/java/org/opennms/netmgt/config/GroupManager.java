@@ -1,35 +1,38 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//    
-// For more information contact: 
-//   OpenNMS Licensing       <license@opennms.org>
-//   http://www.opennms.org/
-//   http://www.opennms.com/
-//
-// Tab Size = 8
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * Created: December 2, 2004
+ *
+ * Copyright (C) 2004-2008 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 
 package org.opennms.netmgt.config;
 
@@ -40,13 +43,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -66,10 +67,10 @@ import org.opennms.netmgt.config.users.DutySchedule;
 
 
 /**
- * @author david
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * @author <a href="mailto:ayres@net.orst.edu">Bill Ayres</a>
+ * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
  */
 public abstract class GroupManager {
 
@@ -94,11 +95,8 @@ public abstract class GroupManager {
         Groupinfo groupinfo = (Groupinfo) Unmarshaller.unmarshal(Groupinfo.class, reader);
         Groups groups = groupinfo.getGroups();
         m_groups = new LinkedHashMap<String, Group>();
-        Collection groupList = groups.getGroupCollection();
         m_oldHeader = groupinfo.getHeader();
-        Iterator i = groupList.iterator();
-        while (i.hasNext()) {
-            Group curGroup = (Group) i.next();
+        for (Group curGroup : groups.getGroupCollection()) {
             m_groups.put(curGroup.getName(), curGroup);
         }
         buildDutySchedules(m_groups);
@@ -106,9 +104,7 @@ public abstract class GroupManager {
         Roles roles = groupinfo.getRoles();
         m_roles = new LinkedHashMap<String, Role>();
         if (roles != null) {
-            Iterator it = roles.getRoleCollection().iterator();
-            while(it.hasNext()) {
-                Role role = (Role)it.next();
+        	for (Role role : roles.getRoleCollection()) {
                 m_roles.put(role.getName(), role);
             }
         }
@@ -180,18 +176,13 @@ public abstract class GroupManager {
         header.setCreated(EventConstants.formatToString(new Date()));
     
         Groups groups = new Groups();
-        Collection collgroups = (Collection) m_groups.values();
-        Iterator iter = collgroups.iterator();
-        while (iter != null && iter.hasNext()) {
-            Group grp = (Group) iter.next();
+        for (Group grp : m_groups.values()) {
             groups.addGroup(grp);
         }
         
         
         Roles roles = new Roles();
-        Iterator it = m_roles.values().iterator();
-        while(it.hasNext()) {
-            Role role = (Role)it.next();
+        for (Role role : m_roles.values()) {
             roles.addRole(role);
         }
     
@@ -203,9 +194,9 @@ public abstract class GroupManager {
     
         m_oldHeader = header;
     
-        // marshall to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // marshal to a string first, then write the string to the file. This
+        // way the original configuration
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(groupinfo, stringWriter);
         String data = stringWriter.toString();
@@ -215,19 +206,18 @@ public abstract class GroupManager {
     /**
      * Builds a mapping between groups and duty schedules. These are used when
      * determining to send a notice to a given group. This helps speed up the decision process.
-     * @param groups the map of groups parsed from the xml config file
+     * @param groups the map of groups parsed from the XML configuration file
      */
-    private static void buildDutySchedules(Map groups) {
+    private static void buildDutySchedules(Map<String, Group> groups) {
         m_dutySchedules = new HashMap<String, List<DutySchedule>>();
-        Iterator i = groups.keySet().iterator();
+        Iterator<String> i = groups.keySet().iterator();
         while(i.hasNext()) {
-            String key = (String)i.next();
-            Group curGroup = (Group)groups.get(key);
+            String key = i.next();
+            Group curGroup = groups.get(key);
             if (curGroup.getDutyScheduleCount() > 0) {
                 List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
-                Enumeration duties = curGroup.enumerateDutySchedule();
-                while(duties.hasMoreElements()) {
-                    dutyList.add(new DutySchedule( (String)duties.nextElement() ));
+                for (String duty : curGroup.getDutyScheduleCollection()) {
+                	dutyList.add(new DutySchedule(duty));
                 }
                 m_dutySchedules.put(key, dutyList);
             }
@@ -236,7 +226,7 @@ public abstract class GroupManager {
 
     /**
      * Determines if a group is on duty at a given time. If a group has no duty schedules
-     * listed in the config file, that group is assumed to always be on duty.
+     * listed in the configuration file, that group is assumed to always be on duty.
      * @param group the group whose duty schedule we want
      * @param time the time to check for a duty schedule
      * @return boolean, true if the group is on duty, false otherwise.
@@ -247,25 +237,21 @@ public abstract class GroupManager {
         if (!m_dutySchedules.containsKey(group)) {
             return true;
         }
-        boolean result = false;
-        List dutySchedules = (List)m_dutySchedules.get(group);
-        for (int i = 0; i < dutySchedules.size(); i++) {
-            DutySchedule curSchedule = (DutySchedule)dutySchedules.get(i);
-            result = curSchedule.isInSchedule(time);
-            //don't continue if the time is in this schedule
-            if (result) {
-                break;
-            }
+        List<DutySchedule> dutySchedules = m_dutySchedules.get(group);
+        for (DutySchedule curSchedule : dutySchedules) {
+        	if (curSchedule.isInSchedule(time)) {
+        		return true;
+        	}
         }
-        return result;
+        return false;
     }
   
     /**
      * Determines when a group is next on duty. If a group has no duty schedules
-     * listed in the config file, that group is assumed to always be on duty.
+     * listed in the configuration file, that group is assumed to always be on duty.
      * @param group the group whose duty schedule we want
      * @param time the time to check for a duty schedule
-     * @return long, the time in millisec until the group is next on duty
+     * @return long, the time in milliseconds until the group is next on duty
      */
     public long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
         Category log = ThreadCategory.getInstance(this.getClass());
@@ -275,9 +261,9 @@ public abstract class GroupManager {
         if (!m_dutySchedules.containsKey(group)) {
             return 0;
         }
-        List dutySchedules = (List)m_dutySchedules.get(group);
+        List<DutySchedule> dutySchedules = m_dutySchedules.get(group);
         for (int i = 0; i < dutySchedules.size(); i++) {
-            DutySchedule curSchedule = (DutySchedule)dutySchedules.get(i);
+            DutySchedule curSchedule = dutySchedules.get(i);
             long tempnext =  curSchedule.nextInSchedule(time);
             if( tempnext < next || next == -1 ) {
                 if (log.isDebugEnabled()) {
@@ -320,24 +306,18 @@ public abstract class GroupManager {
      */
     public synchronized void deleteUser(String name) throws Exception {
         // Check if the user exists
-        if (name != null || !name.equals("")) {
+        if (name != null && !name.equals("")) {
             // Remove the user in the group.
-            Set grps = (Set) m_groups.keySet();
-            Iterator iterator = (Iterator) grps.iterator();
-            while (iterator.hasNext()) {
-                Group group;
-                group = (Group) m_groups.get((String) iterator.next());
-                group.removeUser(name);
-            }
-            
-            Iterator it = m_roles.values().iterator();
-            while(it.hasNext()) {
-                Role role = (Role)it.next();
-                Iterator j = role.getScheduleCollection().iterator();
-                while(j.hasNext()) {
-                    Schedule sched = (Schedule)j.next();
+        	for (Group group : m_groups.values()) {
+        		group.removeUser(name);
+        	}
+
+        	for (Role role : m_roles.values()) {
+                Iterator<Schedule> s = role.getScheduleCollection().iterator();
+                while(s.hasNext()) {
+                    Schedule sched = s.next();
                     if (name.equals(sched.getName())) {
-                        j.remove();
+                        s.remove();
                     }
                 }
             }
@@ -356,11 +336,10 @@ public abstract class GroupManager {
      */
     public synchronized void deleteGroup(String name) throws Exception {
         // Check if the group exists
-        if (name != null || !name.equals("")) {
+        if (name != null && !name.equals("")) {
             if (m_groups.containsKey(name)) {
                 // Remove the group.
                 m_groups.remove(name);
-    
             } else
                 throw new Exception("GroupFactory:delete Group doesnt exist:" + name);
         } else {
@@ -390,9 +369,9 @@ public abstract class GroupManager {
      * "groups.xml"
      */
     public synchronized void renameGroup(String oldName, String newName) throws Exception {
-    	if (oldName != null || !oldName.equals("")) {
+    	if (oldName != null && !oldName.equals("")) {
     		if (m_groups.containsKey(oldName)) {
-    			Group grp = (Group)m_groups.get(oldName);
+    			Group grp = m_groups.get(oldName);
     			grp.setName(newName);
     			m_groups.put(newName, grp);
     		} else {
@@ -405,23 +384,17 @@ public abstract class GroupManager {
 
     /**
      * When this method is called group name is changed, so also is the
-     * groupname belonging to the view. Also overwrites the "groups.xml" file
+     * group name belonging to the view. Also overwrites the "groups.xml" file
      */
     public synchronized void renameUser(String oldName, String newName) throws Exception {
         // Get the old data
         if (oldName == null || newName == null || oldName == "" || newName == "") {
             throw new Exception("Group Factory: Rename user.. no value ");
         } else {
-            Collection coll = (Collection) m_groups.values();
-            Iterator iter = (Iterator) coll.iterator();
             Map<String, Group> map = new LinkedHashMap<String, Group>();
-    
-            while (iter.hasNext()) {
-                Group group = (Group) iter.next();
-                Enumeration en = group.enumerateUser();
-                String name = "";
-                while (en.hasMoreElements()) {
-                    name = (String) en.nextElement();
+            
+        	for (Group group : m_groups.values()) {
+        		for (String name : group.getUserCollection()) {
                     if (name.equals(oldName)) {
                         group.removeUser(oldName);
                         group.addUser(newName);
@@ -430,14 +403,10 @@ public abstract class GroupManager {
                 map.put(group.getName(), group);
             }
             m_groups.clear();
-            m_groups = map;
-            
-            Iterator it = m_roles.values().iterator();
-            while(it.hasNext()) {
-                Role role = (Role)it.next();
-                Iterator j = role.getScheduleCollection().iterator();
-                while(j.hasNext()) {
-                    Schedule sched = (Schedule)j.next();
+            m_groups.putAll(map);
+
+            for (Role role : m_roles.values()) {
+            	for (Schedule sched : role.getScheduleCollection()) {
                     if (oldName.equals(sched.getName())) {
                         sched.setName(newName);
                     }
@@ -452,7 +421,7 @@ public abstract class GroupManager {
         return (String[]) m_roles.keySet().toArray(new String[m_roles.keySet().size()]);
     }
     
-    public Collection getRoles() {
+    public Collection<Role> getRoles() {
         return m_roles.values();
     }
     
@@ -463,10 +432,7 @@ public abstract class GroupManager {
     public boolean userHasRole(String userId, String roleid) throws MarshalException, ValidationException, IOException {
         update();
 
-        Role role = getRole(roleid);
-        Iterator j = role.getScheduleCollection().iterator();
-        while(j.hasNext()) {
-            Schedule sched = (Schedule)j.next();
+        for (Schedule sched : getRole(roleid).getScheduleCollection()) {
             if (userId.equals(sched.getName())) {
                 return true;
             }
@@ -477,10 +443,8 @@ public abstract class GroupManager {
     public List<Schedule> getSchedulesForRoleAt(String roleId, Date time) throws MarshalException, ValidationException, IOException {
         update();
 
-        Role role = getRole(roleId);
         List<Schedule> schedules = new ArrayList<Schedule>();
-        for (Iterator it = role.getScheduleCollection().iterator(); it.hasNext();) {
-            Schedule sched = (Schedule) it.next();
+        for (Schedule sched : getRole(roleId).getScheduleCollection()) {
             if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
                 schedules.add(sched);
             }
@@ -488,14 +452,11 @@ public abstract class GroupManager {
         return schedules;
     }
     
-    public List getUserSchedulesForRole(String userId, String roleid) throws MarshalException, ValidationException, IOException {
+    public List<Schedule> getUserSchedulesForRole(String userId, String roleId) throws MarshalException, ValidationException, IOException {
         update();
 
         List<Schedule> scheds = new ArrayList<Schedule>();
-        Role role = getRole(roleid);
-        Iterator it = role.getScheduleCollection().iterator();
-        while(it.hasNext()) {
-            Schedule sched = (Schedule)it.next();
+        for (Schedule sched : getRole(roleId).getScheduleCollection()) {
             if (userId.equals(sched.getName())) {
                 scheds.add(sched);
             }
@@ -504,22 +465,19 @@ public abstract class GroupManager {
         
     }
 
-    public boolean isUserScheduledForRole(String userId, String roleid, Date time) throws MarshalException, ValidationException, IOException {
+    public boolean isUserScheduledForRole(String userId, String roleId, Date time) throws MarshalException, ValidationException, IOException {
         update();
 
-        List scheds = getUserSchedulesForRole(userId, roleid);
-        for (Iterator it = scheds.iterator(); it.hasNext();) {
-            Schedule sched = (Schedule) it.next();
+        for (Schedule sched : getUserSchedulesForRole(userId, roleId)) {
             if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
                 return true;
             }
         }
         
         // if no user is scheduled then the supervisor is schedule by default 
-        Role role = getRole(roleid);
+        Role role = getRole(roleId);
         if (userId.equals(role.getSupervisor())) {
-            for (Iterator it = role.getScheduleCollection().iterator(); it.hasNext();) {
-                Schedule sched = (Schedule) it.next();
+        	for (Schedule sched : role.getScheduleCollection()) {
                 if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
                     // we found another scheduled user
                     return false;
@@ -536,7 +494,7 @@ public abstract class GroupManager {
         OwnedIntervalSequence schedEntries = new OwnedIntervalSequence();
         Role role = getRole(roleid);
         for (int i = 0; i < role.getScheduleCount(); i++) {
-            Schedule sched = (Schedule) role.getSchedule(i);
+            Schedule sched = role.getSchedule(i);
             Owner owner = new Owner(roleid, sched.getName(), i);
             schedEntries.addAll(BasicScheduleUtils.getIntervalsCovering(start, end, sched, owner));
         }
@@ -544,8 +502,8 @@ public abstract class GroupManager {
         OwnedIntervalSequence defaultEntries = new OwnedIntervalSequence(new OwnedInterval(start, end));
         defaultEntries.removeAll(schedEntries);
         Owner supervisor = new Owner(roleid, role.getSupervisor());
-        for (Iterator it = defaultEntries.iterator(); it.hasNext();) {
-            OwnedInterval interval = (OwnedInterval) it.next();
+        for (Iterator<TimeInterval> it = defaultEntries.iterator(); it.hasNext();) {
+        	OwnedInterval interval = new OwnedInterval(it.next());
             interval.addOwner(supervisor);
         }
         
