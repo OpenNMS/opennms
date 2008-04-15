@@ -59,7 +59,8 @@ public interface ResourceService {
     public List<OnmsResource> findNodeChildResources(int nodeId);
     public List<OnmsResource> findDomainChildResources(String domain);
     public List<OnmsResource> findChildResources(OnmsResource resource, String... resourceTypeMatches);
-    public OnmsResource getResourceById(String id);
+/*    public OnmsResource getResourceById(String id); */
+    public OnmsResource getResourceById(String id, boolean ignoreErrors);
     public PrefabGraph[] findPrefabGraphsForResource(OnmsResource resource);
     public PrefabGraph getPrefabGraph(String name);
     public PrefabGraph[] findPrefabGraphsForChildResources(OnmsResource resource, String... resourceTypeMatches);
