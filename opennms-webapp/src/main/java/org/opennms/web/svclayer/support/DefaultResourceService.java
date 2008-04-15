@@ -148,9 +148,12 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         return matchingChildResources;
     }
 
-
     public OnmsResource getResourceById(String id) {
         return m_resourceDao.getResourceById(id);
+    }
+    
+    public OnmsResource getResourceById(String id, boolean ignoreErrors) {
+        return m_resourceDao.getResourceById(id, ignoreErrors);
     }
     
     public PrefabGraph[] findPrefabGraphsForResource(OnmsResource resource) {

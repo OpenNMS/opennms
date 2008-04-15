@@ -51,6 +51,8 @@ public interface ResourceDao {
     
     public OnmsResource getResourceById(String id);
     
+    public OnmsResource getResourceById(String id, boolean ignoreErrors);
+    
     public List<OnmsResource> findNodeResources();
 
     public List<OnmsResource> findDomainResources();

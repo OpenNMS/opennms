@@ -75,6 +75,10 @@ function checkIpAddr(ip){
 function checkIpRange(ip1, ip2){
 	var ipArr1 = ip1.split(".");	
 	var ipArr2 = ip2.split(".");
+	for (var i = 0; i < 4; i++) {
+		ipArr1[i] = parseInt(ipArr1[i]);
+		ipArr2[i] = parseInt(ipArr2[i]);
+	}
 	if(ipArr1[0]<ipArr2[0]){
 		return true;
 	}else{

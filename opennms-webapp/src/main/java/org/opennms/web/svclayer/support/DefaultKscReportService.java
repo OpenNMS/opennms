@@ -62,13 +62,13 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
-        OnmsResource node = getResourceService().getResourceById(resourceId);
+        OnmsResource node = getResourceService().getResourceById(resourceId, true);
         return buildResourceReport(node, "Domain Report for Domain " + domain);
     }
 
     public Report buildNodeReport(int node_id) {
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
-        OnmsResource node = getResourceService().getResourceById(resourceId);
+        OnmsResource node = getResourceService().getResourceById(resourceId, true);
         return buildResourceReport(node, "Node Report for Node Number " + node_id);
     }
     
@@ -131,7 +131,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
         }
         
-        return getResourceService().getResourceById(resourceId);
+        return getResourceService().getResourceById(resourceId, true);
     }
     
 
