@@ -66,7 +66,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         String selectedResourceId = request.getParameter("selectedResourceId");
         if (selectedResourceId != null) {
             try {
-                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
+                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId, true);
 
                 Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
                 OnmsResource r = selectedResource;
@@ -81,7 +81,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
             }
         }
         
-        OnmsResource resource = getResourceService().getResourceById(resourceId);
+        OnmsResource resource = getResourceService().getResourceById(resourceId, true);
         modelAndView.addObject("parentResource", resource);
         
         modelAndView.addObject("parentResourcePrefabGraphs", m_resourceService.findPrefabGraphsForResource(resource));
