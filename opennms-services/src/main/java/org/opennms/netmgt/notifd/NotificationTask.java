@@ -38,7 +38,6 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -111,7 +110,7 @@ public class NotificationTask extends Thread {
      * @param someParams the parameters from
      * Notify
      */
-    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List siblings, String autoNotify) throws SQLException {
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List siblings, String autoNotify) {
         m_notificationManager = notificationManager;
         m_userManager = userManager;
         m_sendTime = sendTime;
