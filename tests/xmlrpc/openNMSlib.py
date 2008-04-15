@@ -230,7 +230,7 @@ if __name__ == '__main__':
     tx_base = int(time.time())
     c = OpenNMSConnection()
     c.setDebug(1)
-    c.setSendHost('core.rackspace.com')
+    c.setSendHost('core.example.com')
     c.setSource('CORE')
     c.connect('onms1.sortova.com')
     #c.addNode('10.1.8.10', '21730', tx_base)
