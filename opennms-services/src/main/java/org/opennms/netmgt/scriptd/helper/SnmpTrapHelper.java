@@ -907,7 +907,19 @@ public class SnmpTrapHelper {
             }
         } else if ("v2".equals(version)) {
 
-            Parm[] parms = event.getParms().getParm();
+            addVarBinding(packet, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, Long.toString(snmpInfo.getTimeStamp()));
+            
+            String oid;
+
+            if (snmpInfo.getGeneric() == ENTERPRISE_SPECIFIC) {
+                oid = snmpInfo.getId() + "." + snmpInfo.getSpecific();
+            } else {
+                oid = SNMP_TRAPS + '.' + (snmpInfo.getGeneric() + 1);
+            }
+
+            addVarBinding(packet, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, oid);
+            
+        	Parm[] parms = event.getParms().getParm();
 
             for (int i = 0; i < parms.length; i++) {
                 Parm parm = parms[i];
