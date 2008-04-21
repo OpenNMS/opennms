@@ -81,6 +81,7 @@ import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.ping.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /*
@@ -213,6 +214,16 @@ public class Installer {
             m_installerDb.setDatabaseName(ds.getDatabaseName());
             
         }
+
+        JdbcDataSource opennmsJdbcDataSource = getDataSourceConfiguration().get(
+                                                                                OPENNMS_DATA_SOURCE_NAME);
+        Assert.notNull(opennmsJdbcDataSource,
+                       "Could not find JDBC configuration for OpenNMS data source '"
+                               + OPENNMS_DATA_SOURCE_NAME
+                               + "' in data source configuration file");
+        m_installerDb.setPostgresOpennmsUser(opennmsJdbcDataSource.getUserName());
+        m_installerDb.setPostgresOpennmsPassword(opennmsJdbcDataSource.getPassword());
+        m_installerDb.setDatabaseName(opennmsJdbcDataSource.getDatabaseName());
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -525,7 +536,8 @@ public class Installer {
         m_remove_database = m_commandLine.hasOption("Z");
         m_do_full_vacuum = m_commandLine.hasOption("f");
         m_do_inserts = m_commandLine.hasOption("i");
-        m_library_search_path = m_commandLine.getOptionValue("l", m_library_search_path);
+        m_library_search_path = m_commandLine.getOptionValue("l",
+                                                             m_library_search_path);
         m_skip_constraints = m_commandLine.hasOption("n");
         m_ignore_not_null = m_commandLine.hasOption("N");
         m_ignore_database_version = m_commandLine.hasOption("Q");
@@ -922,7 +934,8 @@ public class Installer {
         }
 
         if (System.getProperty("java.library.path") != null) {
-            for (String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
+            for (String entry : System.getProperty("java.library.path").split(
+                                                                              File.pathSeparator)) {
                 searchPaths.add(entry);
             }
         }
