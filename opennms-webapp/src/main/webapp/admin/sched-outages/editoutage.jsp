@@ -30,7 +30,7 @@
 		nf.setMinimumIntegerDigits(padding);
 		nf.setGroupingUsed(false);
 		StringBuffer sb = new StringBuffer();
-		sb.append("<select name=\"" + name + "\">");
+		sb.append("<select name=\"").append(name).append("\">");
 		for (int i = start; i <= end; i++) {
 			sb.append("<option value=\"").append(nf.format(i)).append("\"");
 			if (i == selected) {
@@ -45,7 +45,7 @@
 	
 	private static String getMonthSelectField(String name, int month) {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<select name=\"chooseStartMonth\">");
+		sb.append("<select name=\"").append(name).append("\">");
 		SimpleDateFormat shortDF = new SimpleDateFormat("MMM");
 		SimpleDateFormat longDF  = new SimpleDateFormat("MMMM");
 		for (int mon = 0; mon < 12; mon++) {
