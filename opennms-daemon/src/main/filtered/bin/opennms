@@ -129,6 +129,7 @@ checkXmlFiles(){
 		for FILE in `find "$OPENNMS_HOME/etc" -type f -name \*.xml`; do
 			if ! $XMLLINT "$FILE" >/dev/null 2>&1; then
 				echo "ERROR: XML validation failed: $FILE"
+				echo "       run '$XMLLINT $FILE' for details"
 				FAILED_XML=`expr $FAILED_XML + 1 2>/dev/null || echo 1`
 			fi
 		done
