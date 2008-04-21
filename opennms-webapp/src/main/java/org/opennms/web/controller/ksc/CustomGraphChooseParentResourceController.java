@@ -71,7 +71,7 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
         String selectedResourceId = request.getParameter("selectedResourceId");
         if (selectedResourceId != null) {
             try {
-                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
+                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId, true);
 
                 Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
                 OnmsResource r = selectedResource;
