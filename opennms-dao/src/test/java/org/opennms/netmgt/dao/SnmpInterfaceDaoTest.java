@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,16 +40,7 @@ import java.util.Iterator;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
-public class SnmpInterfaceDaoTest extends AbstractDaoTestCase {
-
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
+public class SnmpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
 	public void testGet() throws Exception {
 		Collection snmpIfs = getSnmpInterfaceDao().findAll();
 		assertEquals(3, snmpIfs.size());

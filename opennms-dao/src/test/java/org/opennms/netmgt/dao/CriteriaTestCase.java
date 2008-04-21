@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +41,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class CriteriaTestCase extends AbstractDaoTestCase {
+public class CriteriaTestCase extends AbstractTransactionalDaoTestCase {
 
     public void testSimple() {
         OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);

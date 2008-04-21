@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,12 +39,8 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
-public class AvailabilityReportLocatorDaoTest extends AbstractDaoTestCase {
+public class AvailabilityReportLocatorDaoTest extends AbstractTransactionalDaoTestCase {
 
-    public void setUp() throws Exception {
-        //setPopulate(false);
-        super.setUp();
-    }
     
 	/*private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
         
@@ -56,10 +56,6 @@ public class AvailabilityReportLocatorDaoTest extends AbstractDaoTestCase {
 		m_availabilityReportLocatorDao = availabilityReportLocatorDao;
 	}*/
 	
-	public void testBogus() {
-		// do nothing... we're here so JUnit doesn't complain
-	}
-
 	public void testFindAll() {
 		
 		System.out.println("going for the report locator");

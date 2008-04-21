@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 05: Add a test for checking indexes where the table exists but one of the columns for the index does not exist. - dj@opennms.org
 // 2007 Jun 10: Add a test for adding the PL/pgSQL version of iplike. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -1970,6 +1971,17 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
+    }
+    
+    public void testCheckIndexUniquenessWithTableButMissingColumnBug2325() throws Exception {
+        addTableFromSQL("distpoller");
+        
+        getInstallerDb().getIndexDao().remove("node_foreign_unique_idx");
+        addTableFromSQLWithReplacements("node", new String[][] { new String[] { "foreignSource\\s+varchar\\(\\d+\\),", "" } });
+        
+        getInstallerDb().readTables();
+        
+        getInstallerDb().checkIndexUniqueness();
     }
     
     public void testBug1574() throws Exception {
