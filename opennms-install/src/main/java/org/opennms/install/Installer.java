@@ -597,15 +597,21 @@ public class Installer {
     	if (!sourceFile.canRead()) { throw new Exception("source file (" + source + ") is not readable!"); }
     	if (destinationFile.exists()) {
     		m_out.print("  - " + destination + " exists, removing... ");
-    		destinationFile.delete();
-    		m_out.println("REMOVED");
+    		if (destinationFile.delete()) {
+    			m_out.println("REMOVED");
+    		} else {
+    			m_out.println("FAILED");
+    			throw new Exception("unable to delete existing file: " + sourceFile);
+    		}
     	}
     	
     	m_out.print("  - copying " + source + " to " + destination + "... ");
 		if (!destinationFile.getParentFile().exists()) {
 			destinationFile.getParentFile().mkdirs();
 		}
-		destinationFile.createNewFile();
+		if (!destinationFile.createNewFile()) {
+			throw new Exception("unable to create file: " + destinationFile);
+		}
 		FileChannel from = null;
 		FileChannel to = null;
 		try {
