@@ -1599,7 +1599,7 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Cisco Routers">
+      <systemDef name="Cisco CallManager">
         <sysoid>.1.3.6.1.4.1.9.1.583</sysoid>
         <collect>
           <includeGroup>cisco-ccm</includeGroup>
