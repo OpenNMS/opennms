@@ -212,7 +212,9 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 		theOutage.setType(null);
 		theOutage.removeAllTime();
 	} else {
-		theOutage.setType(request.getParameter("outageType"));
+	    if (request.getParameter("outageType") != null) {
+			theOutage.setType(request.getParameter("outageType"));
+	    }
 	}
 	
 	String isFormSubmission = request.getParameter("formSubmission");
