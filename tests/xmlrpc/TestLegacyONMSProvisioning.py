@@ -52,7 +52,7 @@ class ONMSTest(unittest.TestCase):
         # Set up the ONMS connection
         self.connection = OpenNMSConnection()
         #self.connection.setDebug(1)  # Do we want this?
-        self.connection.setSendHost('core.rackspace.com')
+        self.connection.setSendHost('core.example.com')
         self.connection.setSource('CORE')
         self.connection.connect(TEST_SERVER)        
         # Set up the XMLRPC Server
