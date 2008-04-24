@@ -45,8 +45,8 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * @author brozow
  * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class MockService extends MockElement implements MonitoredService {
 

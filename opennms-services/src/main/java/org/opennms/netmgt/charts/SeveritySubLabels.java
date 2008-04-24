@@ -38,8 +38,7 @@ import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * @author david
- *
+ * @author <a href="david@opennms.org">David Hustace</a>
  */
 public class SeveritySubLabels extends ExtendedCategoryAxis {
 

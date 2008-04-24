@@ -39,6 +39,10 @@ package org.opennms.netmgt.syslogd;
 import java.text.ParseException;
 import java.util.Hashtable;
 
+/**
+ * 
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ */
 public class SyslogDefs {
     public static final String RCS_ID = "$Id: SyslogDefs-OLD.java,v 1.1.1.1 1998/02/22 05:47:54 time Exp $";
 
