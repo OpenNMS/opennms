@@ -877,30 +877,26 @@ public final class BroadcastEventProcessor implements EventListener {
     NotificationTask makeUserTask(long sendTime, Map<String, String> parameters, int noticeId, String targetName, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
-        try {
-            task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
+        task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
 
-            User user = getUserManager().getUser(targetName);
+        User user = getUserManager().getUser(targetName);
 
-            Command commands[] = new Command[commandList.length];
-            for (int i = 0; i < commandList.length; i++) {
-                commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
-            }
-
-            // if either piece of information is missing don't add the task to
-            // the notifier
-            if (user == null) {
-                log().error("user " + targetName + " is not a valid user, not adding this user to escalation thread");
-                return null;
-            }
-
-            task.setUser(user);
-            task.setCommands(commands);
-            task.setNoticeId(noticeId);
-            task.setAutoNotify(autoNotify);
-        } catch (SQLException e) {
-            log().error("Couldn't create user notification task", e);
+        Command commands[] = new Command[commandList.length];
+        for (int i = 0; i < commandList.length; i++) {
+            commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
         }
+
+        // if either piece of information is missing don't add the task to
+        // the notifier
+        if (user == null) {
+            log().error("user " + targetName + " is not a valid user, not adding this user to escalation thread");
+            return null;
+        }
+
+        task.setUser(user);
+        task.setCommands(commands);
+        task.setNoticeId(noticeId);
+        task.setAutoNotify(autoNotify);
 
         return task;
     }
@@ -911,31 +907,27 @@ public final class BroadcastEventProcessor implements EventListener {
     NotificationTask makeEmailTask(long sendTime, Map<String, String> parameters, int noticeId, String address, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
-        try {
-            task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
+        task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
 
-            User user = new User();
-            user.setUserId(address);
-            Contact contact = new Contact();
-            contact.setType("email");
-            if (log().isDebugEnabled()) {
-                log().debug("email address = " + address + ", using contact type " + contact.getType());
-            }
-            contact.setInfo(address);
-            user.addContact(contact);
-
-            Command commands[] = new Command[commandList.length];
-            for (int i = 0; i < commandList.length; i++) {
-                commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
-            }
-
-            task.setUser(user);
-            task.setCommands(commands);
-            task.setNoticeId(noticeId);
-            task.setAutoNotify(autoNotify);
-        } catch (SQLException e) {
-            log().error("Couldn't create email notification task", e);
+        User user = new User();
+        user.setUserId(address);
+        Contact contact = new Contact();
+        contact.setType("email");
+        if (log().isDebugEnabled()) {
+            log().debug("email address = " + address + ", using contact type " + contact.getType());
         }
+        contact.setInfo(address);
+        user.addContact(contact);
+
+        Command commands[] = new Command[commandList.length];
+        for (int i = 0; i < commandList.length; i++) {
+            commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
+        }
+
+        task.setUser(user);
+        task.setCommands(commands);
+        task.setNoticeId(noticeId);
+        task.setAutoNotify(autoNotify);
 
         return task;
     }
