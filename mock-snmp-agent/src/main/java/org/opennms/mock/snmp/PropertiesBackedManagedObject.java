@@ -43,6 +43,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.snmp4j.agent.DefaultMOScope;
+import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.request.SubRequest;
@@ -169,6 +170,22 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 
     public List<ManagedObject> loadMOs() {
         return Collections.singletonList((ManagedObject)this);
+    }
+
+    public boolean isAccessibleForCreate() {
+        return false;
+    }
+
+    public boolean isAccessibleForNotify() {
+        return false;
+    }
+
+    public boolean isAccessibleForRead() {
+        return true;
+    }
+
+    public boolean isAccessibleForWrite() {
+        return false;
     }
 
 }
