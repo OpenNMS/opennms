@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -315,7 +316,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         for (ThresholdGroup thresholdGroup : m_thresholdGroupList) {
             // Find the appropriate ThresholdEntity map to use based on the type of
             // CollectionResource we're looking at
-            Map<String, ThresholdEntity> entityMap;
+            Map<String, Set<ThresholdEntity>> entityMap;
             String resourceType = resource.getResourceTypeName();
             String ifLabel = null;
             if ("node".equals(resourceType)) {
@@ -342,40 +343,41 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
             // Now look at each
             for(String key : entityMap.keySet()) {
-                ThresholdEntity threshold=entityMap.get(key);
-                if(passedThresholdFilters(resourceDir, thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
-                    log().info("Processing threshold "+key);
-                    Collection<String> requiredDatasources=threshold.getRequiredDatasources();
-                    Map<String, Double> values=new HashMap<String,Double>();
-                    boolean valueMissing=false;
-                    for(String ds: requiredDatasources) {
-                        log().info("Looking for datasource "+ds);
-                        Double dsValue=m_numericAttributeValues.get(ds);
-                        if(dsValue==null) {
-                            log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
-                            valueMissing=true;
-                        }
-                        values.put(ds,dsValue);
-                    }
-                    if(!valueMissing) {
-                        log().info("All values found, evaluating");
-                        List<Event> thresholdEvents=threshold.evaluateAndCreateEvents(resource.getInstance(), values, date);   
-                    
-                        //Check in the fetched values first; if the label isn't there, check on disk.
-                        //This is acceptable because the strings.properties files tend to be tiny, so the performance implications are minimal
-                        // whereas there is (IMHO) a reasonable chance that the labels users want to use may well not have been collected
-                        // in the same collection set being visited now
-                        String dsLabelValue=m_stringAttributeValues.get(threshold.getDatasourceLabel());
-                        if(dsLabelValue==null) {
-                            log().info("No datasource label found in CollectionSet, fetching from storage");
-                            dsLabelValue= getDataSourceLabelFromFile(resourceDir, threshold);
-                        }
-                        completeEventList(thresholdEvents, ifLabel, m_snmpIfIndex, dsLabelValue); //Finishes off events with details that a ThresholdEntity shouldn't know
-                        eventsList.addAll(thresholdEvents);
-                    }
-                } else {
-                    log().info("Not processing threshold "+ key +" because no filters matched");
-                }
+            	for (ThresholdEntity threshold : entityMap.get(key)) {
+	                if(passedThresholdFilters(resourceDir, thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
+	                    log().info("Processing threshold "+key+ " : " +threshold);
+	                    Collection<String> requiredDatasources=threshold.getRequiredDatasources();
+	                    Map<String, Double> values=new HashMap<String,Double>();
+	                    boolean valueMissing=false;
+	                    for(String ds: requiredDatasources) {
+	                        log().info("Looking for datasource "+ds);
+	                        Double dsValue=m_numericAttributeValues.get(ds);
+	                        if(dsValue==null) {
+	                            log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
+	                            valueMissing=true;
+	                        }
+	                        values.put(ds,dsValue);
+	                    }
+	                    if(!valueMissing) {
+	                        log().info("All values found, evaluating");
+	                        List<Event> thresholdEvents=threshold.evaluateAndCreateEvents(resource.getInstance(), values, date);   
+	                    
+	                        //Check in the fetched values first; if the label isn't there, check on disk.
+	                        //This is acceptable because the strings.properties files tend to be tiny, so the performance implications are minimal
+	                        // whereas there is (IMHO) a reasonable chance that the labels users want to use may well not have been collected
+	                        // in the same collection set being visited now
+	                        String dsLabelValue=m_stringAttributeValues.get(threshold.getDatasourceLabel());
+	                        if(dsLabelValue==null) {
+	                            log().info("No datasource label found in CollectionSet, fetching from storage");
+	                            dsLabelValue= getDataSourceLabelFromFile(resourceDir, threshold);
+	                        }
+	                        completeEventList(thresholdEvents, ifLabel, m_snmpIfIndex, dsLabelValue); //Finishes off events with details that a ThresholdEntity shouldn't know
+	                        eventsList.addAll(thresholdEvents);
+	                    }
+	                } else {
+	                    log().info("Not processing threshold "+ key + " : " + threshold +" because no filters matched");
+	                }
+            	}
             }
     	}
     	
@@ -583,7 +585,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
 
     public String toString() {
-        return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding groupa "+m_groupNameList+", "+m_serviceName;
+        return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding group "+m_groupNameList+", "+m_serviceName;
     }
     
 }
