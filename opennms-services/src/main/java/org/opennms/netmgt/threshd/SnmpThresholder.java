@@ -46,10 +46,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -190,19 +192,25 @@ public final class SnmpThresholder implements ServiceThresholder {
 
         if (log().isDebugEnabled()) {
             log().debug("initialize: dumping node thresholds defined for " + snmpThresholdNetworkInterface + ":");
-            for (ThresholdEntity entity : config.getNodeResourceType().getThresholdMap().values()) {
-                log().debug("    " + entity);
+            for (Set<ThresholdEntity> entitySet : config.getNodeResourceType().getThresholdMap().values()) {
+                for (ThresholdEntity entity : entitySet) { 
+                	log().debug("    " + entity);
+                }
             }
 
             log().debug("initialize: dumping interface thresholds defined for " + snmpThresholdNetworkInterface + ":");
-            for (ThresholdEntity entity : config.getIfResourceType().getThresholdMap().values()) {
-                log().debug("    " + entity);
+            for (Set<ThresholdEntity> entitySet : config.getIfResourceType().getThresholdMap().values()) {
+            	for (ThresholdEntity entity : entitySet) {
+            		log().debug("    " + entity);
+            	}
             }
             
             log().debug("initialize: dumping generic resources thresholds defined for " + snmpThresholdNetworkInterface + ":");
             for (String resourceType : config.getGenericResourceTypeMap().keySet()) {
-                for (ThresholdEntity entity : config.getGenericResourceTypeMap().get(resourceType).getThresholdMap().values()) {
-                    log().debug("    " + resourceType + "." + entity);
+                for (Set<ThresholdEntity> entitySet : config.getGenericResourceTypeMap().get(resourceType).getThresholdMap().values()) {
+                	for (ThresholdEntity entity : entitySet) {
+                		log().debug("    " + resourceType + "." + entity);
+                	}
                 }
             }
         }
@@ -395,10 +403,12 @@ public final class SnmpThresholder implements ServiceThresholder {
             log().debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
         }
         
-        Map<String, ThresholdEntity> thresholdMap = thresholdNetworkInterface.getNodeThresholdMap();
+        Map<String, Set<ThresholdEntity>> thresholdMap = thresholdNetworkInterface.getNodeThresholdMap();
         
         for(String threshKey  :thresholdMap.keySet()) {
-            processThresholdForNode(directory, thresholdNetworkInterface, date, events, thresholdMap.get(threshKey));
+        	for (ThresholdEntity thresholdEntity : thresholdMap.get(threshKey)) {
+        		processThresholdForNode(directory, thresholdNetworkInterface, date, events, thresholdEntity);
+        	}
         }
     }
     
@@ -504,11 +514,13 @@ public final class SnmpThresholder implements ServiceThresholder {
             log().debug("checkIfDir: ifLabel=" + ifLabel);
         }
 
-        Map<String, ThresholdEntity> thresholdMap = snmpIface.getInterfaceThresholdMap(ifLabel);
+        Map<String, Set<ThresholdEntity>> thresholdMap = snmpIface.getInterfaceThresholdMap(ifLabel);
         
         Map<String, String> ifDataMap = new HashMap<String, String>();
         for(String threshKey  :thresholdMap.keySet()) {
-            processThresholdForInterface(directory, snmpIface, date, events, thresholdMap.get(threshKey), ifLabel, ifDataMap);
+        	for (ThresholdEntity thresholdEntity : thresholdMap.get(threshKey)) {
+        		processThresholdForInterface(directory, snmpIface, date, events, thresholdEntity, ifLabel, ifDataMap);
+        	}
         }
     }
 
@@ -541,7 +553,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             log().info("No generic resources for group " + config.getGroupName());
             return;
         }
-        Map<String, ThresholdEntity> thresholdMap = thresholdResourceType.getThresholdMap();
+        Map<String, Set<ThresholdEntity>> thresholdMap = thresholdResourceType.getThresholdMap();
         
         File[] files = directory.listFiles();
         for (File file : files) {
@@ -550,8 +562,10 @@ public final class SnmpThresholder implements ServiceThresholder {
                 if (log().isDebugEnabled()) {
                     log().debug("checkResourceDir: resource=" + resource);
                 }
-                String dsLabelValue = getDataSourceLabel(file, snmpIface, thresholdMap.get(threshKey));
-                processThresholdForResource(file, snmpIface, date, events, thresholdMap.get(threshKey), dsLabelValue);
+                for (ThresholdEntity thresholdEntity : thresholdMap.get(threshKey)) {
+	                String dsLabelValue = getDataSourceLabel(file, snmpIface, thresholdEntity);
+	                processThresholdForResource(file, snmpIface, date, events, thresholdEntity, dsLabelValue);
+                }
             }
         }
     }
@@ -808,16 +822,21 @@ public final class SnmpThresholder implements ServiceThresholder {
         ifDataMap.put("iflabel", ifLabel);
     }
 
-    protected static Map<String, ThresholdEntity> getAttributeMap(ThresholdResourceType resourceType) {
-        Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
+    protected static Map<String, Set<ThresholdEntity>> getAttributeMap(ThresholdResourceType resourceType) {
+        Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
 
         /*
          * Iterate over base interface threshold map and clone each
          * ThresholdEntity object and add it to the threshold map.
          * for this interface.
          */ 
-        for (ThresholdEntity entity : resourceType.getThresholdMap().values()) {
-            thresholdMap.put(entity.getDataSourceExpression(), entity.clone());
+        for (Set<ThresholdEntity> entitySet : resourceType.getThresholdMap().values()) {
+        	for (ThresholdEntity entity : entitySet) {
+        		if (!thresholdMap.containsKey(entity.getDataSourceExpression())) {
+        			thresholdMap.put(entity.getDataSourceExpression(), new LinkedHashSet<ThresholdEntity>());
+        		}
+        		thresholdMap.get(entity.getDataSourceExpression()).add(entity.clone());
+        	}
         }
         return thresholdMap;
     }
