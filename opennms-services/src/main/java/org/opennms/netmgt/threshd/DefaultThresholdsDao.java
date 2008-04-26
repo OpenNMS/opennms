@@ -37,7 +37,10 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -79,8 +82,8 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
 	return group;
     }
 
-    private Map<String, ThresholdEntity> createThresholdStateMap(String type, String groupName) {
-        Map<String, ThresholdEntity> thresholdMap = new HashMap<String, ThresholdEntity>();
+    private Map<String, Set<ThresholdEntity>> createThresholdStateMap(String type, String groupName) {
+        Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
         
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
             // See if map entry already exists for this datasource
@@ -88,17 +91,20 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
             if (thresh.getDsType().equals(type)) {
                 try {
                     BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
-                    ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
+                    //ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
+                    Set<ThresholdEntity> thresholdEntitySet = thresholdMap.get(wrapper.getDatasourceExpression());
             
-                    // Found entry?
-                    if (thresholdEntity == null) {
-                        // Nope, create a new one
-                        thresholdEntity = new ThresholdEntity();
-                        thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
+                    // Found set for this DS type?
+                    if (thresholdEntitySet == null) {
+                        // Nope, create a new set
+                        thresholdEntitySet = new LinkedHashSet<ThresholdEntity>();
+                        thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntitySet);
                     }
             
                     try {
-                        thresholdEntity.addThreshold(wrapper);
+                    	ThresholdEntity thresholdEntity = new ThresholdEntity();
+                    	thresholdEntity.addThreshold(wrapper);
+                    	thresholdMap.get(wrapper.getDatasourceExpression()).add(thresholdEntity);
                     } catch (IllegalStateException e) {
                         log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
                     } 

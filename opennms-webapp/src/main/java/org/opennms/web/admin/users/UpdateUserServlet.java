@@ -59,8 +59,8 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * A servlet that handles saving a user
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class UpdateUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -79,6 +79,10 @@ public class UpdateUserServlet extends HttpServlet {
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
+            newUser.setReadOnly(false);
+            if (request.getParameter("readOnly") != null && (request.getParameter("readOnly").equalsIgnoreCase("true") || request.getParameter("readOnly").equalsIgnoreCase("on"))) {
+                newUser.setReadOnly(true);
+            }
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
@@ -156,7 +160,6 @@ public class UpdateUserServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getDutySchedulesForUser(User newUser) {
         return newUser.getDutyScheduleCollection();
     }

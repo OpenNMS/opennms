@@ -79,7 +79,7 @@
     				</c:forEach>
     			</select>
     		</td>
-    		<td class="standard"><input type="text" name="dsName" size=30" value="${threshold.dsName}"/></td>
+    		<td class="standard"><input type="text" name="dsName" size="30" maxlength="19" value="${threshold.dsName}"/></td>
     		<td class="standard">
     		   	<select name="dsType">
     				<c:forEach items="${dsTypes}" var="thisDsType">
