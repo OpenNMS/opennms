@@ -37,10 +37,28 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
-		java.util.*,
-		org.opennms.netmgt.config.users.*
-	"
+	import="org.opennms.netmgt.config.UserFactory,
+	org.opennms.netmgt.config.UserManager,
+	org.opennms.netmgt.config.users.User,
+	org.opennms.web.acegisecurity.Authentication"
+%>
+
+<%
+	boolean canEdit = false;
+    String userid = request.getRemoteUser();
+    if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+        canEdit = true;
+    } else {
+	    try {
+       		UserManager userFactory = UserFactory.getInstance();
+       		User user = userFactory.getUser(userid);
+       		if (!user.isReadOnly()) {
+       		    canEdit = true;
+       		}
+	    } catch (Exception e) {
+	    	throw new ServletException("Couldn't initialize UserFactory", e);
+	    }
+	}
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -51,8 +69,12 @@
 
 <script type="text/javascript">
   function changePassword() {
+	  <% if (canEdit) { %>
     document.selfServiceForm.action = "account/selfService/newPasswordEntry";
     document.selfServiceForm.submit();
+<% } else { %>
+	alert("The <%= userid %> user is read-only!  Please have an administrator change your password.");
+<% } %>
   }
 </script>
 
@@ -83,4 +105,3 @@
 <form name="selfServiceForm" method="post"></form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-

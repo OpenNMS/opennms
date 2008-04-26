@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Apr 25: Don't save if user is read-only - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -48,12 +49,13 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.acegisecurity.Authentication;
 
 /**
- * A servlet that handles saving the user stored in the web users http session.
+ * A servlet that handles saving the user stored in the web user's HTTP session.
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class SaveUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -63,8 +65,11 @@ public class SaveUserServlet extends HttpServlet {
 
         if (user != null) {
             User newUser = (User) user.getAttribute("user.modifyUser.jsp");
+            if (newUser.isReadOnly() && !request.isUserInRole(Authentication.ADMIN_ROLE)) {
+                throw new ServletException("Error: user " + newUser.getUserId() + " is read-only!");
+            }
 
-            // now save to the xml file
+            // now save to the XML file
             try {
                 UserManager userFactory = UserFactory.getInstance();
                 userFactory.saveUser(newUser.getUserId(), newUser);
