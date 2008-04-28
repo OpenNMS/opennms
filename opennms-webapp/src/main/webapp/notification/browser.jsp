@@ -360,13 +360,15 @@
       return( buffer.toString() );
     }
 
-
-    public String makeLink( NoticeFactory.SortStyle sortStyle, NoticeFactory.AcknowledgeType ackType, List filters ) {
+    public String makeLink( NoticeFactory.SortStyle sortStyle, NoticeFactory.AcknowledgeType ackType, int limit, List filters ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( NoticeUtil.getSortStyleString(sortStyle) );
       buffer.append( "&acktype=" );
       buffer.append( NoticeUtil.getAcknowledgeTypeString(ackType) );
+      if (limit > 0) {
+          buffer.append( "&limit=" ).append(limit);
+      }
 
       if( filters != null ) {
         for( int i=0; i < filters.size(); i++ ) {
@@ -381,22 +383,22 @@
 
 
     public String makeLink( NoticeQueryParms parms ) {
-      return( this.makeLink( parms.sortStyle, parms.ackType, parms.filters) );
+      return( this.makeLink( parms.sortStyle, parms.ackType, parms.limit, parms.filters) );
     }
 
 
     public String makeLink( NoticeQueryParms parms, NoticeFactory.SortStyle sortStyle ) {
-      return( this.makeLink( sortStyle, parms.ackType, parms.filters) );
+      return( this.makeLink( sortStyle, parms.ackType, parms.limit, parms.filters) );
     }
 
 
     public String makeLink( NoticeQueryParms parms, NoticeFactory.AcknowledgeType ackType ) {
-      return( this.makeLink( parms.sortStyle, ackType, parms.filters) );
+      return( this.makeLink( parms.sortStyle, ackType, parms.limit, parms.filters) );
     }
 
 
     public String makeLink( NoticeQueryParms parms, List filters ) {
-      return( this.makeLink( parms.sortStyle, parms.ackType, filters) );
+      return( this.makeLink( parms.sortStyle, parms.ackType, parms.limit, filters) );
     }
 
 
@@ -409,7 +411,7 @@
         newList.remove( filter );
       }
 
-      return( this.makeLink( parms.sortStyle, parms.ackType, newList ));
+      return( this.makeLink( parms.sortStyle, parms.ackType, parms.limit, newList ));
     }
 
 

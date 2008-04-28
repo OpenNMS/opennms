@@ -526,6 +526,9 @@
       buffer.append( AlarmUtil.getSortStyleString(sortStyle) );
       buffer.append( "&acktype=" );
       buffer.append( AlarmUtil.getAcknowledgeTypeString(ackType) );
+      if (limit > 0) {
+          buffer.append( "&limit=" ).append(limit);
+      }
       buffer.append( this.getFiltersAsString(filters) );
 
       return( buffer.toString() );

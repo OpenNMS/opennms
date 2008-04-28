@@ -480,6 +480,9 @@
       buffer.append( EventUtil.getSortStyleString(sortStyle) );
       buffer.append( "&acktype=" );
       buffer.append( EventUtil.getAcknowledgeTypeString(ackType) );
+      if (limit > 0) {
+          buffer.append( "&limit=" ).append(limit);
+      }
       buffer.append( this.getFiltersAsString(filters) );
 
       return( buffer.toString() );
