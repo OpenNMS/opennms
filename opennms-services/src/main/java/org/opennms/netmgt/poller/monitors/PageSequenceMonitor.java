@@ -52,14 +52,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.auth.AuthState;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -164,6 +170,30 @@ public class PageSequenceMonitor extends IPv4Monitor {
             }
         }
     }
+    
+    public interface PageSequenceHttpMethod extends HttpMethod {
+        public void setParameters(NameValuePair[] parms);
+    }
+    
+    public static class PageSequenceHttpPostMethod extends PostMethod implements PageSequenceHttpMethod {
+
+        public void setParameters(NameValuePair[] parms) {
+            setRequestBody(parms);
+        }
+        @Override
+        public boolean getFollowRedirects() {
+            return true;
+        }
+
+    }
+    
+    public static class PageSequenceHttpGetMethod extends GetMethod implements PageSequenceHttpMethod {
+
+        public void setParameters(NameValuePair[] parms) {
+            setQueryString(parms);
+        }
+        
+    }
 
     public static class HttpPage {
         private Page m_page;
@@ -191,7 +221,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
         void execute(HttpClient client, MonitoredService svc) {
             try {
                 URI uri = getURI(svc);
-                HttpMethod method = getMethod();
+                PageSequenceHttpMethod method = getMethod();
                 method.setURI(uri);
 
                 if (getVirtualHost() != null) {
@@ -203,7 +233,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
                 }
 
                 if (m_parms.length > 0) {
-                    method.setQueryString(m_parms);
+                    method.setParameters(m_parms);
                 }
 
                 if (m_page.getUserInfo() != null) {
@@ -316,16 +346,9 @@ public class PageSequenceMonitor extends IPv4Monitor {
             return m_page.getScheme();
         }
 
-        private HttpMethod getMethod() {
+        private PageSequenceHttpMethod getMethod() {
             String method = m_page.getMethod();
-            return ("GET".equalsIgnoreCase(method) ? new GetMethod() : new PostMethod() {
-
-                @Override
-                public boolean getFollowRedirects() {
-                    return true;
-                }
-
-            });
+            return ("GET".equalsIgnoreCase(method) ? new PageSequenceHttpGetMethod() : new PageSequenceHttpPostMethod());
         }
 
         private HttpResponseRange getRange() {
