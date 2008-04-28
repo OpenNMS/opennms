@@ -447,7 +447,7 @@ public class OutageModel extends Object {
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel " + "from outages, node, ipinterface, ifservices " + "where ifregainedservice is null " + "and node.nodeid=outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid=outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + "group by outages.nodeid, node.nodelabel " + "order by timeDown desc;");
+            ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel, now() as timeNow " + "from outages, node, ipinterface, ifservices " + "where ifregainedservice is null " + "and node.nodeid=outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid=outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + "group by outages.nodeid, node.nodelabel " + "order by timeDown desc;");
 
             List<OutageSummary> list = new ArrayList<OutageSummary>();
 
@@ -457,8 +457,9 @@ public class OutageModel extends Object {
                 long timeDown = timeDownTS.getTime();
                 Date downDate = new Date(timeDown);
                 String nodeLabel = rs.getString("nodelabel");
+                Date now = new Date(rs.getTimestamp("timeNow").getTime());
 
-                list.add(new OutageSummary(nodeId, nodeLabel, downDate));
+                list.add(new OutageSummary(nodeId, nodeLabel, downDate, null, now));
             }
 
             rs.close();
