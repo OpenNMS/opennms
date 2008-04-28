@@ -35,65 +35,24 @@
  */
 package org.opennms.netmgt.snmp.snmp4j;
 
-import java.net.InetAddress;
-
-import junit.framework.TestCase;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.mock.TestSnmpValue.StringSnmpValue;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 import org.snmp4j.PDU;
 import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.VariableBinding;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * Tests for the SNMP4J strategy.
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class Snmp4JStrategyTest extends TestCase {
+public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
+    private Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 
-    private InetAddress m_agentAddress;
-    private int m_agentPort;
-    private MockSnmpAgent m_agent;
-    private Snmp4JStrategy m_strategy;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
-        MockLogAppender.setupLogging();
-        m_strategy = new Snmp4JStrategy();
-        
-        m_agentAddress = InetAddress.getByName("127.0.0.1");
-        m_agentPort = 1691;
-
-        initializeAgent("loadSnmpDataTest.properties");
-}
-
-    @Override
-    public void runTest() throws Throwable {
-        super.runTest();
-        MockLogAppender.assertNoWarningsOrGreater();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        if (m_agent != null) {
-            m_agent.shutDownAndWait();
-        }
-
-        MockUtil.println("------------ End Test " + getName() + " --------------------------");
-        super.tearDown();
-    }
-    
     public void testNothing() throws Exception {
         // Just test our setUp()/tearDown()
     }
@@ -337,19 +296,6 @@ public class Snmp4JStrategyTest extends TestCase {
         
         MockLogAppender.resetEvents();
         MockLogAppender.resetLogLevel();
-    }
-    
-    private SnmpAgentConfig getAgentConfig() {
-        SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(m_agentAddress);
-        config.setPort(m_agentPort);
-        config.setVersion(SnmpAgentConfig.VERSION1);
-        return config;
-    }
-    
-    private void initializeAgent(String testData) throws InterruptedException {
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource(testData),
-                                                  m_agentAddress.getHostAddress() + "/" + m_agentPort);
     }
     
     private void assertSnmpValueEquals(String message, int expectedType, int expectedValue, SnmpValue value) {

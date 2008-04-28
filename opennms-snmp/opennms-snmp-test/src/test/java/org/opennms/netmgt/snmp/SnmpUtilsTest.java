@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 16: Extend MockSnmpAgentTestCase. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,18 +39,15 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.test.PropertySettingTestSuite;
-import org.opennms.test.mock.MockLogAppender;
-import org.springframework.core.io.ClassPathResource;
-
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
+import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;
+import org.opennms.test.PropertySettingTestSuite;
+import org.springframework.core.io.ClassPathResource;
+
+public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcessorFactory {
     
     private TestTrapListener m_trapListener;
-    private MockSnmpAgent m_mockAgent;
 
     private final class TestTrapProcessor implements TrapProcessor {
         public void setCommunity(String community) {
@@ -113,23 +114,19 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
         return suite;
     }
 
-
+    @Override
     protected void setUp() throws Exception {
+        setPropertiesResource(new ClassPathResource("snmpTestData1.properties"));
+        
         super.setUp();
-        
-        MockLogAppender.setupLogging();
-        
-        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("snmpTestData1.properties"), InetAddress.getLocalHost().getHostAddress()+"/9161");
         
         m_trapListener = new TestTrapListener();
         SnmpUtils.registerForTraps(m_trapListener, this, 9162);
-
     }
 
+    @Override
     protected void tearDown() throws Exception {
         SnmpUtils.unregisterForTraps(m_trapListener, 9162);
-        
-        m_mockAgent.shutDownAndWait();
         
         super.tearDown();
     }
@@ -151,13 +148,6 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
         assertNotNull(val);
     }
 
-
-	private SnmpAgentConfig getAgentConfig() throws UnknownHostException {
-		SnmpAgentConfig snmpAgentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
-		snmpAgentConfig.setPort(9161);
-		return snmpAgentConfig;
-	}
-    
     public void testBadGet() throws UnknownHostException {
         SnmpAgentConfig agentConfig = getAgentConfig();
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.1.2"));
@@ -235,6 +225,7 @@ public class SnmpUtilsTest extends TestCase implements TrapProcessorFactory {
         Thread.sleep(1000);
         assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
+    
     public TrapProcessor createTrapProcessor() {
         return new TestTrapProcessor();
     }
