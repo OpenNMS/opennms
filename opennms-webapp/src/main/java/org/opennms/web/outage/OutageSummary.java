@@ -47,8 +47,9 @@ public class OutageSummary extends Object {
     protected final String nodeLabel;
     protected final Date timeDown;
     protected final Date timeUp;
+    protected final Date timeNow;
 
-    public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp) {
+    public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp, Date timeNow) {
         if (nodeLabel == null || timeDown == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -57,9 +58,15 @@ public class OutageSummary extends Object {
         this.nodeLabel = nodeLabel;
         this.timeDown = timeDown;
         this.timeUp = timeUp;
+        this.timeNow = timeNow;
     }
+    
+    public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp) {
+        this(nodeId, nodeLabel, timeDown, timeUp, new Date());
+    }
+    
     public OutageSummary(int nodeId, String nodeLabel, Date timeDown) {
-        this(nodeId, nodeLabel, timeDown, null);
+        this(nodeId, nodeLabel, timeDown, null, new Date());
     }
 
     public int getNodeId() {
