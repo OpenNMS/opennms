@@ -1580,6 +1580,19 @@
     </logmsg>
     <severity>Normal</severity>
   </event> 
+
+  <event> 
+    <uei>uei.opennms.org/internal/authentication/successfulLogin</uei>
+    <event-label>OpenNMS-defined internal event: a user has successfully authentication to the web UI</event-label>
+    <descr>
+      This event is sent by the WebUI when a user has successfully authenticated
+    </descr>
+    <logmsg dest='logndisplay'>
+      OpenNMS user %parm[user]% has logged in from %parm[ip]%.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="1" auto-clean="true"/>
+  </event> 
   
   <event-file>events/ia.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
