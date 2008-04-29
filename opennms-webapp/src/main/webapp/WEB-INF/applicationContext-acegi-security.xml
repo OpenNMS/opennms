@@ -255,4 +255,8 @@
   <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
     <property name="key"><value>foobar</value></property>
   </bean>
+  
+  <bean class="org.opennms.web.acegisecurity.AcegiAuthenticationEventOnmsEventBuilder">
+    <property name="eventProxy" ref="eventProxy"/>
+  </bean>
 </beans>

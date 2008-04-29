@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Apr 29: Add eventsMatchDeep. - dj@opennms.org
 // 2008 Feb 09: Indent, organize imports, use Java 5 generics and loops. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,6 +41,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -239,6 +243,54 @@ public class MockEventUtil {
         }
 
         return true;
+    }
+    
+    public static boolean eventsMatchDeep(Event e1, Event e2) {
+        if (e1.getTime() != null || e2.getTime() != null) {
+            if (e1.getTime() == null || e2.getTime() == null) {
+                return false;
+            }
+            
+            if (!e1.getTime().equals(e2.getTime())) {
+                return false;
+            }
+        }
+        
+        if (!eventsMatch(e1, e2)) {
+            return false;
+        }
+        
+        if (e1.getParms() != null || e2.getParms() != null) {
+            if (e1.getParms() == null || e2.getParms() == null) {
+                return false;
+            }
+            
+            Parms p1 = e1.getParms();
+            Parms p2 = e2.getParms();
+            
+            if (p1.getParmCount() != p2.getParmCount()) {
+                return false;
+            }
+            
+            Map<String, String> m1 = convertParmsToMap(p1.getParmCollection());
+            Map<String, String> m2 = convertParmsToMap(p2.getParmCollection());
+
+            if (!m1.equals(m2)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    private static Map<String, String> convertParmsToMap(List<Parm> parms) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (Parm p : parms) {
+            // XXX not doing encoding or type!
+            map.put(p.getParmName(), p.getValue().getContent());
+        }
+        
+        return map;
     }
 
     public static void printEvent(String prefix, Event event) {
