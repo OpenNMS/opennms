@@ -10,13 +10,15 @@
  *
  * Modifications:
  *
+ * 2008 Apr 28: Create separate methods for getting pretty resource objects
+ * 				(addresses bug 2406) - jeffg@opennms.org
  * 2008 Feb 16: Make OnmsResource objects returned by Datum.getResource() and
  *              Datum.getResourceParentsReversed() actually PrettyOnmsResource
  *              objects (whose toString method output is human-readable)   
  * 2007 Sep 09: Add support to store a Throwable instead of an OnmsResource. - dj@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
  * 
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +69,11 @@ public class StatisticsReportModel {
         }
     
         public OnmsResource getResource() {
-            return new PrettyOnmsResource(m_resource);
+            return m_resource;
+        }
+        
+        public OnmsResource getPrettyResource() {
+        	return new PrettyOnmsResource(m_resource);
         }
     
         public void setResource(OnmsResource resource) {
@@ -95,6 +101,22 @@ public class StatisticsReportModel {
         }
         
         public List<OnmsResource> getResourceParentsReversed() {
+            if (m_resource == null) {
+                return new ArrayList<OnmsResource>(0);
+            }
+            
+            List<OnmsResource> resources = new ArrayList<OnmsResource>();
+            
+            OnmsResource parent = m_resource.getParent();
+            while (parent != null) {
+                resources.add(0, parent);
+                parent = parent.getParent();
+            }
+            
+            return resources;
+        }
+        
+        public List<OnmsResource> getPrettyResourceParentsReversed() {
             if (m_resource == null) {
                 return new ArrayList<OnmsResource>(0);
             }
