@@ -979,8 +979,8 @@ public class SnmpSession extends Object {
 
             m_stopRun = true;
             m_timer.cancel();
-            m_portal.close();
         }
+        m_portal.close();
 
         //
         // remove all items from the list
