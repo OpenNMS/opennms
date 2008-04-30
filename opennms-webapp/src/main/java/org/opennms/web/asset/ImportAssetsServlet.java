@@ -38,6 +38,8 @@
 package org.opennms.web.asset;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,6 +49,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.mail.Session;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -61,20 +64,28 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class ImportAssetsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    private class AssetException extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		public AssetException(String message) {
+    		super(message);
+    	}
+    }
+    
     /** The URL to redirect the client to in case of success. */
     protected String redirectSuccess;
 
     protected AssetModel model;
 
     /**
-     * Looks up the <code>dispath.success</code> parameter in the servlet's
-     * config. If not present, this servlet will throw an exception so it will
+     * Looks up the <code>redirect.success</code> parameter in the servlet's
+     * configuration. If not present, this servlet will throw an exception so it will
      * be marked unavailable.
      */
     public void init() throws ServletException {
@@ -101,8 +112,8 @@ public class ImportAssetsServlet extends HttpServlet {
         }
 
         try {
-            List assets = this.decodeAssetsText(assetsText);
-            List nodesWithAssets = this.getCurrentAssetNodesList();
+            List<Asset> assets = this.decodeAssetsText(assetsText);
+            List<Integer> nodesWithAssets = this.getCurrentAssetNodesList();
 
             int assetCount = assets.size();
 
@@ -120,17 +131,35 @@ public class ImportAssetsServlet extends HttpServlet {
                 }
             }
 
-            response.sendRedirect(this.redirectSuccess);
+            request.getSession().setAttribute("message", "Successfully imported " + assets.size() + " asset" + (assets.size() == 1? "" : "s") + ".");
+            response.sendRedirect(response.encodeRedirectURL(this.redirectSuccess + "&showMessage=true"));
+//            response.sendRedirect(response.encodeRedirectURL(this.redirectSuccess + "&message=Import%20complete."));
+        } catch (AssetException e) {
+        	String message = "Error importing assets: " + e.getMessage();
+        	redirectWithErrorMessage(request, response, e, message);
         } catch (SQLException e) {
-            throw new ServletException("Database exception", e);
+        	String message ="Database exception importing assets: " + e.getMessage();
+        	redirectWithErrorMessage(request, response, e, message);
         }
     }
 
-    public List<Asset> decodeAssetsText(String text) {
+	private void redirectWithErrorMessage(HttpServletRequest request, HttpServletResponse response,
+			Exception e, String message) throws IOException, UnsupportedEncodingException {
+		this.log(message, e);
+		request.getSession().setAttribute("message", message);
+//		response.sendRedirect(response.encodeRedirectURL("import.jsp?errorMessage=" + URLEncoder.encode(message, "ISO-8859-1")));
+		response.sendRedirect(response.encodeRedirectURL("import.jsp?showMessage=true"));
+	}
+
+    public List<Asset> decodeAssetsText(String text) throws AssetException {
         List<Asset> list = new ArrayList<Asset>();
 
         List<String> lines = this.splitfields(text, "\r\n", -1);
         int lineCount = lines.size();
+
+        if (lineCount == 0) {
+        	throw new AssetException("No asset information was found.");
+        }
 
         for (int i = 0; i < lineCount; i++) {
             String line = lines.get(i);
@@ -185,9 +214,9 @@ public class ImportAssetsServlet extends HttpServlet {
 
                 list.add(asset);
             } catch (NoSuchElementException e) {
-                this.log("Ignoring malformed import on line " + i + ", not enough values");
+            	throw new AssetException("Ignoring malformed import on line " + i + ", not enough values.");
             } catch (NumberFormatException e) {
-                this.log("Ignoring malformed import on line " + i + ", node id not a number");
+                throw new AssetException("Ignoring malformed import on line " + i + ", node id not a number.");
             }
         }
 
