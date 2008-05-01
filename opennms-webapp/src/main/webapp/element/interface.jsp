@@ -152,7 +152,10 @@ function doDelete() {
 %>
 
 
-      <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
+      <h2>Interface: <%=intf_db.getIpAddress()%>
+      <% if (intf_db.getHostname() != null && !intf_db.getIpAddress().equals(intf_db.getHostname())) { %>
+      	<%= intf_db.getHostname() %>
+      <% } %>
 
         <%
         if (request.isUserInRole( Authentication.ADMIN_ROLE )) {
