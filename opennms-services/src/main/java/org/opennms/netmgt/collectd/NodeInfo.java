@@ -68,7 +68,7 @@ final class NodeInfo extends SnmpCollectionResource {
     }
 
     public String toString() {
-        return "Node["+m_nodeId+']';
+        return "node["+m_nodeId+']';
     }
 
     public void setEntry(SNMPCollectorEntry nodeEntry) {
