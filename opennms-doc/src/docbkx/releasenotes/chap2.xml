@@ -5,6 +5,35 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <section>
+    <title>Changes in OpenNMS 1.5.91</title>
+
+    <section>
+      <title>New Features</title>
+      
+      <para>The scheduled outage web UI improvements that were partially
+      implemented in 1.5.91 are finished.  You can now create daily
+      scheduled outages.</para>
+
+      <para>OpenNMS XML configuration files will now be validated if xmllint
+      is available at startup.</para>
+
+     </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>A number of exceptions and other code errors have been fixed.</para>
+
+      <para>A few issues relating to thresholding and data collection have been resolved.</para>
+
+      <para>A full list of bugs fixed in the release can be found in <ulink
+      url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.91+%281.6+beta+2%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+
+    </section>
+    
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.5.90</title>
 
     <section>

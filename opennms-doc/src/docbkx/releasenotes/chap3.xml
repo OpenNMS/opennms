@@ -7,9 +7,15 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
-    <title>OpenNMS 1.5.90 Known Issues</title>
+    <title>OpenNMS 1.5.91 Known Issues</title>
 
     <para>No known issues.</para>
+  </section>
+
+  <section>
+    <title>OpenNMS 1.5.90 Known Issues</title>
+
+    <para>Editing scheduled outages in the web UI has a number of bugs.</para>
   </section>
 
   <section>
