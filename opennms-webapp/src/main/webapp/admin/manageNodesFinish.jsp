@@ -57,7 +57,7 @@
 <h3>Finished updating the database for the manage/unmanaged changes</h3>
 
 <p>
-  OpenNMS will need to be restarted for the changes to take effect.
+  OpenNMS should not need to be restarted for the changes to take effect.
 </p>
 
 <p>
