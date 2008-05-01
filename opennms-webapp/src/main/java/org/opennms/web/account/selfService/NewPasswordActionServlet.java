@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Apr 25: Don't save a user if they're read-only and you're not admin - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -48,12 +49,13 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.acegisecurity.Authentication;
 
 /**
  * A servlet that handles changing a user's password
  * 
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class NewPasswordActionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -70,6 +72,10 @@ public class NewPasswordActionServlet extends HttpServlet {
         User user = (User) userSession.getAttribute("user.newPassword.jsp");
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
+
+        if (!request.isUserInRole(Authentication.ADMIN_ROLE) && user.isReadOnly()) {
+            throw new ServletException("User " + user.getUserId() + " is read-only");
+        }
 
         if (! userFactory.comparePasswords(user.getUserId(), currentPassword)) {
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/newPassword.jsp?action=redo");

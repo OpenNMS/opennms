@@ -200,6 +200,7 @@
         String textPin = null;
         String fullName = null;
         String comments = null;
+        Boolean isReadOnly = false;
         try {
             email = userFactory.getEmail(userid);
             pagerEmail = userFactory.getPagerEmail(userid);
@@ -210,6 +211,7 @@
             textPin = userFactory.getTextPin(userid);
             fullName = user.getFullName();
             comments = user.getUserComments();
+            isReadOnly = user.isReadOnly();
         } catch (org.exolab.castor.xml.MarshalException e) {
             throw new ServletException("An Error occurred reading the users file", e);
         } catch (org.exolab.castor.xml.ValidationException e) {
@@ -217,6 +219,14 @@
         }
 
         %>
+            <tr>
+              <td valign="top">
+                <label id="readOnlyLabel" for="readOnly">Read-Only:</label>
+              </td>
+              <td align="left" valign="top">
+                <input id="readOnly" type="checkbox" name="readOnly"<%=  isReadOnly? " checked=\"true\"":"" %> />
+              </td>
+            </tr>
             <tr>
               <td valign="top">
                 <label id="fullNameLabel" for="fullName">Full Name:</label>
