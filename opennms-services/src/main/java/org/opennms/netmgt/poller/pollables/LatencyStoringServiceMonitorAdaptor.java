@@ -10,6 +10,11 @@
  *
  * Modifications:
  * 
+ * 2008 Apr 30: Fix for bug #2445,  Also make all fields private, add the
+ *              exception cause to rethrown exception messages, specify initial
+ *              array size when we have an idea of what the size will end up
+ *              being, and use generics to eliminate warnings. - dj@opennms.org 
+ * 
  * Created August 22, 2006
  *
  * Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -43,6 +48,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -67,9 +73,9 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     public static final String DEFAULT_BASENAME = "response-time";
 
-    ServiceMonitor m_serviceMonitor;
-    PollerConfig m_pollerConfig;
-    Package m_pkg;
+    private ServiceMonitor m_serviceMonitor;
+    private PollerConfig m_pollerConfig;
+    private Package m_pkg;
 
     public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg) {
         m_serviceMonitor = monitor;
@@ -82,7 +88,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             RrdUtils.initialize();
             m_serviceMonitor.initialize(parameters);
         } catch (RrdException e){
-            throw new IllegalStateException("Unable to initialize RrdUtils", e);
+            throw new IllegalStateException("Unable to initialize RrdUtils: " + e, e);
         }
     }
 
@@ -91,7 +97,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             RrdUtils.initialize();
             m_serviceMonitor.initialize(svc);
         } catch (RrdException e){
-            throw new IllegalStateException("Unable to initialize RrdUtils", e);
+            throw new IllegalStateException("Unable to initialize RrdUtils: " + e, e);
         }
     }
 
@@ -167,7 +173,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     public void updateRRD(String repository, InetAddress addr, String rrdBaseName, LinkedHashMap<String, Number> entries) {
         try {
             // Create RRD if it doesn't already exist
-            List<RrdDataSource> dsList = new ArrayList<RrdDataSource>();
+            List<RrdDataSource> dsList = new ArrayList<RrdDataSource>(entries.size());
             for (String dsName : entries.keySet()) {
                 dsList.add(new RrdDataSource(dsName, "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U"));
             }
@@ -183,7 +189,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                 if (num == null || Double.isNaN(num.doubleValue())) {
                     value.append("U");
                 } else {
-                    NumberFormat nf = NumberFormat.getInstance();
+                    NumberFormat nf = NumberFormat.getInstance(Locale.US);
                     nf.setGroupingUsed(false);
                     nf.setMinimumFractionDigits(0);
                     nf.setMaximumFractionDigits(Integer.MAX_VALUE);
@@ -242,7 +248,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      */
     public boolean createRRD(String repository, InetAddress addr, String rrdBaseName, List<RrdDataSource> dsList) throws RrdException {
 
-        List rraList = m_pollerConfig.getRRAList(m_pkg);
+        List<String> rraList = m_pollerConfig.getRRAList(m_pkg);
 
         // add interface address to RRD repository path
         String path = repository + File.separator + addr.getHostAddress();
