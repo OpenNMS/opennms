@@ -3,9 +3,9 @@
 	<title>Chapter 2</title>
 	<subtitle>Main page</subtitle>
 	<para>
-	The web interface is accessed, using a web browser on port 8080 in the opennms sub-directory.
+	The web interface is accessed, using a web browser on port 8980 in the opennms sub-directory.
 	<programlisting>
-	http://127.0.0.1:8080/opennms/
+	http://127.0.0.1:8980/opennms/
 	</programlisting>
 	From this centralized view, a quick overview of the current health of the network can be found.  
 	Notice in the upper right hand corner is information about the time and date on 
