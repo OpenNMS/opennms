@@ -2670,6 +2670,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Critical Call Manager failure.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 
 <event>
@@ -2703,6 +2704,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Phone failed to communicate with Call Manager.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
 </event>
 
 <event>
@@ -2736,6 +2738,55 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Phone successfully registered with Call Manager.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.9.9.156.2</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>4</mevalue>
+  </maskelement>
+  <varbind>
+   <vbnumber>5</vbnumber>
+   <vbvalue>0</vbvalue>
+  </varbind>
+ </mask>
+ <uei>uei.opennms.org/vendor/Cisco/traps/ccmGatewayFailedClear</uei>
+ <event-label>CISCO-CCM-MIB defined trap event: ccmGatewayFailed</event-label>
+ <descr>&lt;p&gt;This Notification indicates that at least one gateway has
+ attempted to register or communicate with the CallManager
+ and failed.&lt;/p&gt;&lt;table&gt;
+ &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmAlarmSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) informational(7)&lt;/p&gt;
+ &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ unknown(0) ipv4(1) ipv6(2) dns(16)&lt;/p&gt;
+ &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayFailCauseCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ unknown(1) noEntryInDatabase(2) databaseConfigurationError(3) deviceNameUnresolveable(4) maxDevRegReached(5) 
+ connectivityError(6) initializationError(7)&lt;/p&gt;
+ &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+ </descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Gateway has failed to communicate with Call Manager.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/traps/ccmGatewayFailed:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
 </event>
 
 <event>
@@ -2779,6 +2830,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Gateway has failed to communicate with Call Manager.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 
 <event>
@@ -2814,6 +2866,7 @@
  </descr>
  <logmsg dest='logndisplay'>Cisco Event: Call Manager Resource Out Error.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 
 <event>
@@ -2845,6 +2898,56 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Call Manager: No Route.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.9.9.156.2</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>7</mevalue>
+  </maskelement>
+  <varbind>
+   <vbnumber>5</vbnumber>
+   <vbvalue>2</vbvalue>
+  </varbind>
+ </mask>
+ <uei>uei.opennms.org/vendor/Cisco/traps/ccmGatewayLayer2ChangeUp</uei>
+ <event-label>CISCO-CCM-MIB defined trap event: ccmGatewayLayer2Change</event-label>
+ <descr>&lt;p&gt;This Notification is sent when the D-Channel/Layer 2 of an
+ interface in a skinny gateway that has registered with the
+ CallManager changes state.&lt;/p&gt;&lt;table&gt;
+ &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmAlarmSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) informational(7)&lt;/p&gt;
+ &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ unknown(0) ipv4(1) ipv6(2) dns(16)&lt;/p&gt;
+ &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayPhysIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ ccmGatewayPhysIfL2Status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ unknown(1) up(2) down(3)&lt;/p&gt;
+ &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+ </descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Call Manager Skinny Gateway has changed state,&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Cisco/traps/ccmGatewayLayer2Change:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false" />
 </event>
 
 <event>
@@ -2889,6 +2992,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Call Manager Skinny Gateway has changed state,&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of Cisco MIB: CISCO-CCM-MIB -->
 <!-- Start of Cisco MIB: CISCO-CHANNEL-MIB -->
