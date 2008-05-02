@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.5.91</version>
+  <version>1.5.92-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -81,9 +81,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags/opennms-1.5.91</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags/opennms-1.5.91</developerConnection>
-    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags/opennms-1.5.91</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6</developerConnection>
+    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6</url>
   </scm>
   <modules>
     <module>dependencies</module>
