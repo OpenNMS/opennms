@@ -12,6 +12,8 @@
  *
  * Modifications:
  *
+ * 2008 Apr 28: Request pretty resources except for making the Graphs link in web views
+ *              (addresses bug 2406) - jeffg@opennms.org
  * 2008 Feb 16: Remove CSV export since eXtremeTable does not handle embedded commas
  				at all gracefully.  Exclude "Resource Graphs" column in exported views.
  				Add checks for exported views. Remove custom column interceptor as it is unneeded
@@ -96,10 +98,10 @@
 
       
         <ec:row highlightRow="false">
-          <ec:column property="resourceParentsReversed" title="Parent Resource(s)" sortable="false">
+          <ec:column property="prettyResourceParentsReversed" title="Parent Resource(s)" sortable="false">
             <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view --%>
 	            <c:set var="count" value="0"/>
-	            <c:forEach var="parentResource" items="${row.resourceParentsReversed}">
+	            <c:forEach var="parentResource" items="${row.prettyResourceParentsReversed}">
 	              <c:if test="${count > 0}">
 	                <br/>
 	              </c:if>
@@ -120,9 +122,9 @@
             </c:if>
           </ec:column>
 
-          <ec:column property="resource" sortable="false">
+          <ec:column property="prettyResource" sortable="false" title="Resource">
             <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view --%>
-            	${row.resource.label}
+            	${row.prettyResource.label}
             </c:if>
           </ec:column>
           
