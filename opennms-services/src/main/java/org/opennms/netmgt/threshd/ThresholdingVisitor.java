@@ -127,9 +127,12 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     
     //The last success status of thresholding; used to know if status has changed and events should be generated
     private boolean m_success = true; //Default to true at the start (we assume thresholding was working when OpenNMS starts up) 
-    
+
+    //The primary cache for numeric values pulled out of the collection Set;
+    private Map<String, Double> m_cache = new HashMap<String,Double>();
+
     //The primary store of numeric values pulled out of the collection Set; flushed every run
-    private Map<String, Double> m_numericAttributeValues;
+    private Map<String, CollectionAttribute> m_numericAttributeValues;
     
     //The primary store of string values pulled out of the collection Set; flushed every run
     private Map<String, String> m_stringAttributeValues;
@@ -276,7 +279,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 }
             }
         }
-        m_numericAttributeValues=new HashMap<String,Double>();
+        m_numericAttributeValues=new HashMap<String,CollectionAttribute>();
         m_stringAttributeValues=new HashMap<String, String>();
     }
 
@@ -289,9 +292,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         String numValue=attribute.getNumericValue();
         String attribName=attribute.getName();
         if(numValue!=null) {
-            double doubleValue=Double.parseDouble(numValue);
-            m_numericAttributeValues.put(attribName, doubleValue);
-            log().debug("visitAttribute storing value "+doubleValue +" for attribute named "+attribName);
+            m_numericAttributeValues.put(attribName, attribute);
+            log().debug("visitAttribute storing value "+numValue +" for attribute named "+attribName);
         } else {
           //No numeric value available; storing as a string
           String stringValue=attribute.getStringValue();  
@@ -351,7 +353,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 	                    boolean valueMissing=false;
 	                    for(String ds: requiredDatasources) {
 	                        log().info("Looking for datasource "+ds);
-	                        Double dsValue=m_numericAttributeValues.get(ds);
+	                        Double dsValue=getValue(resource, ds);
 	                        if(dsValue==null) {
 	                            log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
 	                            valueMissing=true;
@@ -403,12 +405,37 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         thresholdingFinished(true);
     }
     
+    private Double getValue(CollectionResource resource, String ds) {
+        if (m_numericAttributeValues.get(ds) == null) {
+            log().warn("getValue: can't find attribute called " + ds + " on " + resource);
+            return null;
+        }
+        String numValue = m_numericAttributeValues.get(ds).getNumericValue();
+        if (numValue == null) {
+            log().warn("getValue: can't find numeric value for " + ds + " on " + resource);
+            return null;
+        }
+        String id = resource.toString() + "." + ds;
+        Double current = Double.parseDouble(numValue);
+        if (m_numericAttributeValues.get(ds).getType().toLowerCase().startsWith("counter") == false) {
+            log().debug("getValue: " + id + "(gauge) value= " + current);
+            return current;
+        }
+        Double last = m_cache.get(id);
+        log().debug("getValue: " + id + "(counter) last=" + last + ", current=" + current);
+        m_cache.put(id, current);
+        if (last == null) {
+            return Double.NaN;
+        }
+        return current - last;
+    }
+
     private void thresholdingFinished(boolean success) {
         if (success != m_success) {
             // Generate transition events
             if (log().isDebugEnabled())
                 log().debug("run: change in thresholding status, generating event.");
-    
+
             // Send the appropriate event
             if(success) {
                 sendEvent(EventConstants.THRESHOLDING_SUCCEEDED_EVENT_UEI);
@@ -566,7 +593,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 //Check in the current set of collected string vars first, then check numeric vars; only then check on disk (in string properties)
                 value=m_stringAttributeValues.get(attribute);
                 if(value==null) {
-                    value=m_numericAttributeValues.get(attribute).toString();
+                    value=m_numericAttributeValues.get(attribute).getNumericValue();
                     if(value==null) {
                         log().debug("Value not found in collection set, getting from " + resourceDirectory);
                         value = ResourceTypeUtils.getStringProperty(resourceDirectory, attribute);
@@ -585,7 +612,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
 
     public String toString() {
-        return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding group "+m_groupNameList+", "+m_serviceName;
+        return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding groups: "+m_groupNameList+", on service "+m_serviceName;
     }
     
 }

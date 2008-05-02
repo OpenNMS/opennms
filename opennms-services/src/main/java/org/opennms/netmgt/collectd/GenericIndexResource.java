@@ -59,7 +59,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     }
 
     public String toString() {
-        return "Node["+getCollectionAgent().getNodeId() + "]/type[" + m_name + "]/instance[" + m_inst + "]";
+        return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + m_inst + "]";
     }
 
 

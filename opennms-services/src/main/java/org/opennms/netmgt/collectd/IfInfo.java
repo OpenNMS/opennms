@@ -187,7 +187,7 @@ final class IfInfo extends SnmpCollectionResource {
     }
 
     public String toString() {
-        return "Node["+ getNodeId() + "]/ifIndex[" + getIndex() + ']';
+        return "node["+ getNodeId() + "].interfaceSnmp[" + getLabel() + ']';
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {

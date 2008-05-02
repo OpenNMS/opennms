@@ -14,7 +14,7 @@
   <para>The following are the systems that support or are known to run
   OpenNMS.</para>
 
-  <para>Windows 2000/XP/Vista are to be supported with 1.3.8.</para>
+  <para>Windows 2000/XP/Vista are supported as of 1.3.8.</para>
 
   <section id="chap4sect1">
     <title>Fully Supported</title>
