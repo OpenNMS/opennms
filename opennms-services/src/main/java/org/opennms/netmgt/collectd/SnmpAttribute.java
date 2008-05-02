@@ -55,7 +55,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     public boolean equals(Object obj) {
         if (obj instanceof SnmpAttribute) {
             SnmpAttribute attr = (SnmpAttribute) obj;
-            return (m_resource.equals(attr.m_resource) && m_type.equals(m_type));
+            return (m_resource.equals(attr.m_resource) && m_type.equals(attr.m_type));
         }
         return false;
     }
