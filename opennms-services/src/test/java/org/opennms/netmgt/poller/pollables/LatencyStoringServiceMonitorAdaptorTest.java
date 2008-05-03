@@ -10,6 +10,8 @@
  *
  * Modifications:
  * 
+ * 2008 Mar 03: Quiet test with MockLogAppender. - dj@opennms.org
+ * 
  * Created April 30, 2008
  *
  * Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
@@ -49,6 +51,7 @@ import java.util.Locale;
 
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.test.mock.EasyMockUtils;
+import org.opennms.test.mock.MockLogAppender;
 
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
@@ -66,9 +69,18 @@ public class LatencyStoringServiceMonitorAdaptorTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
+        MockLogAppender.setupLogging();
+
         RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
+    }
+
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
+
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
