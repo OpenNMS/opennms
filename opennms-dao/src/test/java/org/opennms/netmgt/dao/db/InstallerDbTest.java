@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 02: Add test to ensure date doesn't change when migrating a "time stamp without time zone" column to "time stamp with time zone" as part of the change for bug #2400. - dj@opennms.org
 // 2008 Mar 05: Add a test for checking indexes where the table exists but one of the columns for the index does not exist. - dj@opennms.org
 // 2007 Jun 10: Add a test for adding the PL/pgSQL version of iplike. - dj@opennms.org
 //
@@ -54,6 +55,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -234,7 +236,11 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                    + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.6', now(), 1 )");
 //        executeSQL("INSERT INTO outages ( outageId, nodeId, ipAddr, ifLostService, serviceID ) "
 //                   + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.6', now(), 2 )");
-
+        executeSQL("INSERT INTO events (eventID, eventUei, eventTime, eventSource, eventDpName, eventCreateTime, eventSeverity, eventLog, eventDisplay) "
+                + "VALUES ( nextval('eventsNxtId'), 'uei.opennms.org/foo', now(), 'somewhere', 'rainbow', now(), 0, 'Y', 'Y')");
+        
+        int eventId = jdbcTemplate.queryForInt("select eventId from events");
+        Date eventTime = jdbcTemplate.queryForObject("select eventTime from events where eventId = ?", Date.class, eventId);
 
         getInstallerDb().setCreateSqlLocation(newCreate);
         getInstallerDb().readTables();
@@ -245,6 +251,16 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().addStoredProcedures();
 
         getInstallerDb().createTables();
+
+        Date newEventTime = jdbcTemplate.queryForObject("select eventTime from events where eventId = ?", Date.class, eventId);
+        String localFailureMessage = "time for eventId " + eventId + " does not match between old and new (in local time zone): " + eventTime + " (" + new Date(eventTime.getTime()) + ") -> " + newEventTime + " (" + new Date(newEventTime.getTime())+ ")";
+        assertEquals(localFailureMessage, eventTime, newEventTime);
+
+        jdbcTemplate.getJdbcOperations().execute("SET TIME ZONE 'UTC'");
+        
+        Date utcEventTime = jdbcTemplate.queryForObject("select eventTime from events where eventId = ?", Date.class, eventId);
+        String utcFailureMessage = "time for eventId " + eventId + " does not match between old and new (in UTC): " + eventTime + " (" + new Date(eventTime.getTime()) + ") -> " + utcEventTime + " (" + new Date(utcEventTime.getTime())+ ")";
+        assertEquals(utcFailureMessage, eventTime, utcEventTime);
     }
 
     public void testUpgradeColumnAddNotNullConstraint() throws Exception {
