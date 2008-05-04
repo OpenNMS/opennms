@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 04: Add toHexString for StringSnmpValue. - dj@opennms.org
 // 2008 Mar 16: Add Integer32, Gauge32, Counter32, and Counter64 objects
 //              and make StringSnmpValue.toLong try to parse the value. - dj@opennms.org
 //
@@ -185,7 +186,6 @@ public class TestSnmpValue implements SnmpValue {
 
 
     public static class StringSnmpValue extends TestSnmpValue {
-
         public StringSnmpValue(String value) {
             super(SnmpValue.SNMP_OCTET_STRING, value);
         }
@@ -208,7 +208,17 @@ public class TestSnmpValue implements SnmpValue {
             return Long.parseLong(toString());
         }
 
-   }
+        @Override
+        public String toHexString() {
+            StringBuffer buff = new StringBuffer();
+
+            for (byte b : toString().getBytes()) {
+                buff.append(Integer.toHexString(b));
+            }
+            
+            return buff.toString();
+        }
+    }
 
     public static class OidSnmpValue extends TestSnmpValue {
 
