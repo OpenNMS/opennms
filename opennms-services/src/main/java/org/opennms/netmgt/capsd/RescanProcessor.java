@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Mar 04: Reuse a few less local variables, expose updateSpeed
+//              for a unit test, Java 5 loops, and some other formatting
+//              cleanup. - dj@opennms.org
 // 2008 Mar 03: Create log() method and use it everywhere instead of
 //              a local variable in each method.  Also move most of the
 //              IfTableEntry/IfSnmpCollector to DbSnmpInterfaceEntry
@@ -197,7 +200,7 @@ public final class RescanProcessor implements Runnable {
      * added to the event list. The last thing the rescan process does is send
      * the events out.
      */
-    private List<Event> m_eventList;
+    private List<Event> m_eventList = new ArrayList<Event>();
 
     /**
      * Set during the rescan to true if any of the ifIndex values associated
@@ -237,9 +240,6 @@ public final class RescanProcessor implements Runnable {
         m_forceRescan = forceRescan;
         m_capsdDbSyncer = capsdDbSyncer;
         m_pluginManager = pluginManager;
-
-        m_eventList = new ArrayList<Event>();
-
     }
 
     /**
@@ -268,8 +268,9 @@ public final class RescanProcessor implements Runnable {
      *             if there is a problem updating the node table.
      */
     private DbNodeEntry updateNode(Connection dbc, Date now, DbNodeEntry dbNodeEntry, InetAddress currPrimarySnmpIf, DbIpInterfaceEntry[] dbIpInterfaces, Map<String, IfCollector> collectorMap) throws SQLException {
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("updateNode: updating node id " + dbNodeEntry.getNodeId());
+        }
 
         /*
          * Clone the existing dbNodeEntry so we have all the original
@@ -301,12 +302,11 @@ public final class RescanProcessor implements Runnable {
              */
             IfCollector primaryIfc = collectorMap.get(currPrimarySnmpIf.getHostAddress());
             if (primaryIfc == null) {
-                Collection<IfCollector> collectors = collectorMap.values();
-                Iterator<IfCollector> iter = collectors.iterator();
-                while (iter.hasNext()) {
-                    primaryIfc = iter.next();
-                    if (primaryIfc.getSnmpCollector() != null)
+                for (IfCollector tmp : collectorMap.values()) {
+                    if (tmp.getSnmpCollector() != null) {
+                        primaryIfc = tmp;
                         break;
+                    }
                 }
             }
 
@@ -320,7 +320,6 @@ public final class RescanProcessor implements Runnable {
             }
 
             IfSnmpCollector snmpc = primaryIfc.getSnmpCollector();
-
             if (snmpc != null && snmpc.hasSystemGroup()) {
                 SystemGroup sysgrp = snmpc.getSystemGroup();
 
@@ -328,24 +327,28 @@ public final class RescanProcessor implements Runnable {
                 currNodeEntry.setSystemOID(sysgrp.getSysObjectID());
 
                 // sysName
-                String str = sysgrp.getSysName();
-                if (str != null && str.length() > 0)
-                    currNodeEntry.setSystemName(str);
+                String sysName = sysgrp.getSysName();
+                if (sysName != null && sysName.length() > 0) {
+                    currNodeEntry.setSystemName(sysName);
+                }
 
                 // sysDescription
-                str = sysgrp.getSysDescr();
-                if (str != null && str.length() > 0)
-                    currNodeEntry.setSystemDescription(str);
+                String sysDescr = sysgrp.getSysDescr();
+                if (sysDescr != null && sysDescr.length() > 0) {
+                    currNodeEntry.setSystemDescription(sysDescr);
+                }
 
                 // sysLocation
-                str = sysgrp.getSysLocation();
-                if (str != null && str.length() > 0)
-                    currNodeEntry.setSystemLocation(str);
+                String sysLocation = sysgrp.getSysLocation();
+                if (sysLocation != null && sysLocation.length() > 0) {
+                    currNodeEntry.setSystemLocation(sysLocation);
+                }
 
                 // sysContact
-                str = sysgrp.getSysContact();
-                if (str != null && str.length() > 0)
-                    currNodeEntry.setSystemContact(str);
+                String sysContact = sysgrp.getSysContact();
+                if (sysContact != null && sysContact.length() > 0) {
+                    currNodeEntry.setSystemContact(sysContact);
+                }
             }
         }
 
@@ -601,8 +604,7 @@ public final class RescanProcessor implements Runnable {
             DbNodeEntry node, int ifIndex, IfSnmpCollector snmpc,
             InetAddress ifAddr) throws SQLException {
         // Attempt to load IP Interface entry from the database
-        DbIpInterfaceEntry dbIpIfEntry =
-            DbIpInterfaceEntry.get(dbc,node.getNodeId(), ifAddr, ifIndex);
+        DbIpInterfaceEntry dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifAddr, ifIndex);
         if (dbIpIfEntry == null) {
             // Create a new entry
             if (log().isDebugEnabled()) {
@@ -615,6 +617,7 @@ public final class RescanProcessor implements Runnable {
 
         // Update any IpInterface table fields which have changed
         dbIpIfEntry.setLastPoll(now);
+        
         /*
          * XXX If m_useIfIndexAsKey is set in the DbIpInterfaceEntry,
          * no entries (or at least not the right entry) will be updated
@@ -797,8 +800,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updateSpeed(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
-        // speed
+    void updateSpeed(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         Long uint;
         try {
             uint = ifte.getIfSpeed();   
@@ -1228,6 +1230,7 @@ public final class RescanProcessor implements Runnable {
         dbIpIfEntry.updateManagedState(currIpIfEntry.getManagedState());
         dbIpIfEntry.updateStatus(currIpIfEntry.getStatus());
         dbIpIfEntry.updatePrimaryState(currIpIfEntry.getPrimaryState());
+        
         /*
          * XXX Note: the ifIndex will not be updated if updateIfIndex(-1)
          * is called.  In other words, an ifIndex of a value other than -1
@@ -2734,16 +2737,16 @@ public final class RescanProcessor implements Runnable {
          * Loop through the interface table entries until there are no more
          * entries or we've found a match
          */
-        for (int i = 0; i < dbInterfaces.length; i++) {
-            InetAddress ipaddr = dbInterfaces[i].getIfAddress();
+        for (DbIpInterfaceEntry dbInterface : dbInterfaces) {
+            InetAddress ipaddr = dbInterface.getIfAddress();
+            
             // Skip non-IP or loopback interfaces
             if (ipaddr.getHostAddress().equals("0.0.0.0") || ipaddr.getHostAddress().startsWith("127.")) {
                 continue;
             }
 
             boolean found = false;
-            for(InetAddress addr : ipAddrList) {
-
+            for (InetAddress addr : ipAddrList) {
                 // Skip non-IP or loopback interfaces
                 if (addr.getHostAddress().equals("0.0.0.0") || addr.getHostAddress().startsWith("127.")) {
                     continue;
@@ -2757,6 +2760,7 @@ public final class RescanProcessor implements Runnable {
                     break;
                 }
             }
+            
             if (!found) {
                 if (log().isDebugEnabled()) {
                     log().debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddr.getHostAddress() + " not in the snmp collection. Snmp collection may not be usable.");
