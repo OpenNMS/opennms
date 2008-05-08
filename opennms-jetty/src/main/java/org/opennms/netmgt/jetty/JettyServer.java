@@ -113,7 +113,12 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         if (webappsDir.exists()) {
             for (File file: webappsDir.listFiles()) {
                 if (file.isDirectory()) {
-                    String contextPath = "/" + file.getName();
+                    String contextPath;
+                    if ("ROOT".equals(file.getName())) {
+                        contextPath = "/";
+                    } else {
+                        contextPath = "/" + file.getName();
+                    }
                     addContext(handlers, file, contextPath);
                     registerService(port, contextPath);
                 }
