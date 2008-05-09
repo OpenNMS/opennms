@@ -618,7 +618,7 @@ public class InstallerDb {
                     t.removeFromDatabase(getConnection());
                     
                 }
-                st.execute("DROP FUNCTION " + function + "(" + columns + ")");
+                st.execute("DROP FUNCTION " + function + " (" + columns + ")");
                 st.execute(createSql);
                 m_out.print("OK (dropped and re-added)");
             } else {
@@ -1258,7 +1258,7 @@ public class InstallerDb {
             st.execute("DROP TABLE " + table + " CASCADE");
 
             m_out.print("    - creating new '" + table + "' table... ");
-            st.execute("CREATE TABLE " + table + "("
+            st.execute("CREATE TABLE " + table + " ("
                     + getTableCreateFromSQL(table) + ")");
             m_out.println("done");
             
@@ -1924,8 +1924,8 @@ public class InstallerDb {
         assertUserSet();
 
         Statement st = getAdminConnection().createStatement();
-        st.execute("CREATE DATABASE " + m_databaseName + " WITH ENCODING='UNICODE'");
-        st.execute("GRANT ALL ON DATABASE " + m_databaseName + " TO " + m_user);
+        st.execute("CREATE DATABASE \"" + m_databaseName + "\" WITH ENCODING='UNICODE'");
+        st.execute("GRANT ALL ON DATABASE \"" + m_databaseName + "\" TO \"" + m_user + "\"");
         
         st.close();
     }
