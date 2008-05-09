@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 May 09: Check that we can call getAttributesAtRelativePath with a bogus directory. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -64,6 +65,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         
         m_fileAnticipator = new FileAnticipator();
         
+        RrdTestUtils.initializeNullStrategy();
     }
     
     @Override
@@ -124,6 +126,12 @@ public class ResourceTypeUtilsTest extends TestCase {
 
         Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
         assertNull("no properties file was created, so the properties object should be null", p);
+    }
+    
+    public void testGetAttributesAtRelativePathWithBogusDirectory() {
+        File bogusRrdDirectory = new File("/foo/bogus/blam/cheese/this/really/should/never/exist");
+        assertFalse("bogus RRD directory " + bogusRrdDirectory + " should not exist", bogusRrdDirectory.exists());
+        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist");
     }
 
 
