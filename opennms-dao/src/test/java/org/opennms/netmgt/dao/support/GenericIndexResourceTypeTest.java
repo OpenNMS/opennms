@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 09: Make the sub index functionality look like a function. - dj@opennms.org
 // 2008 May 09: Created this file. - dj@opennms.org
 //
 // Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
@@ -126,7 +127,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
     }
 
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexNumber() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:3}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(3, 1)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -138,8 +139,8 @@ public class GenericIndexResourceTypeTest extends TestCase {
         assertEquals("resource label", "4", resource.getLabel());
     }
     
-    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexBogus() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:foo}", m_storageStrategy);
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexBogusArguments() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(absolutely bogus)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -148,11 +149,24 @@ public class GenericIndexResourceTypeTest extends TestCase {
         m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
-        assertEquals("resource label", "${index:foo}", resource.getLabel());
+        assertEquals("resource label", "${subIndex(absolutely bogus)}", resource.getLabel());
+    }
+    
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexBogusOffset() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(foo, 1)}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "1.2.3.4");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "${subIndex(foo, 1)}", resource.getLabel());
     }
     
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexBadNumber() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:4}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(4, 1)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -161,12 +175,12 @@ public class GenericIndexResourceTypeTest extends TestCase {
         m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
-        assertEquals("resource label", "${index:4}", resource.getLabel());
+        assertEquals("resource label", "${subIndex(4, 1)}", resource.getLabel());
     }
     
     
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexBeginning() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:1-}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(1)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -179,7 +193,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
     }
     
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexEnding() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:-2}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(0, 3)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -192,8 +206,8 @@ public class GenericIndexResourceTypeTest extends TestCase {
     }
     
 
-    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexEmptyRange() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:-}", m_storageStrategy);
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexNoArguments() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex()}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -202,12 +216,12 @@ public class GenericIndexResourceTypeTest extends TestCase {
         m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
-        assertEquals("resource label", "${index:-}", resource.getLabel());
+        assertEquals("resource label", "${subIndex()}", resource.getLabel());
     }
     
 
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexStartOutOfBounds() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:4-}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(4)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -216,12 +230,12 @@ public class GenericIndexResourceTypeTest extends TestCase {
         m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
-        assertEquals("resource label", "${index:4-}", resource.getLabel());
+        assertEquals("resource label", "${subIndex(4)}", resource.getLabel());
     }
     
 
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubIndexEndOutOfBounds() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${index:-4}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "${subIndex(0, 5)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         
@@ -230,7 +244,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
         m_mocks.verifyAll();
         
         assertNotNull("resource", resource);
-        assertEquals("resource label", "${index:-4}", resource.getLabel());
+        assertEquals("resource label", "${subIndex(0, 5)}", resource.getLabel());
     }
 
     public void testGetResourceByNodeAndIndexGetLabelIndexWithHexConversion() {
@@ -263,7 +277,7 @@ public class GenericIndexResourceTypeTest extends TestCase {
      * Test for enhancement in bug #2467.
      */
     public void testGetResourceByNodeAndIndexGetLabelIndexWithSubStringAndHexConversion() {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "MAC Address ${hex(index:0-5)} on interface ${index:6}", m_storageStrategy);
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "MAC Address ${hex(subIndex(0, 6))} on interface ${subIndex(6, 1)}", m_storageStrategy);
         
         expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
         

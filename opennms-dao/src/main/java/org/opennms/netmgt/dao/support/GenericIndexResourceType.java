@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 09: Make the sub index functionality look like a function. - dj@opennms.org
 // 2008 May 09: Add support for sub-indexes in the reosurce label as well as
 //              conversion from dotted integer strings to hex.  Enhancement bug
 //              #2467. - dj@opennms.org
@@ -62,8 +63,8 @@ import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericIndexResourceType implements OnmsResourceType {
-    private static final Pattern INTEGER_PATTERN = Pattern.compile("^(\\d+)$");
-    private static final Pattern RANGE_PATTERN = Pattern.compile("^(\\d*)-(\\d*)$");
+    private static final Pattern SUB_INDEX_PATTERN = Pattern.compile("^subIndex\\((.*)\\)$");
+    private static final Pattern SUB_INDEX_ARGUMENTS_PATTERN = Pattern.compile("^(-?\\d+)(?:,\\s*(\\d+))?$");
     private static final Pattern HEX_PATTERN = Pattern.compile("^hex\\((.*)\\)$");
 
     private String m_name;
@@ -154,52 +155,44 @@ public class GenericIndexResourceType implements OnmsResourceType {
                     if (symbol.equals("index")) {
                         return index;
                     }
-                    
-                    if (symbol.startsWith("index:")) {
-                        String partsStr = symbol.substring("index:".length());
-                        
-                        int start = -1;
-                        int end = -1;
-                        
-                        if (INTEGER_PATTERN.matcher(partsStr).matches()) {
-                            start = end = Integer.parseInt(partsStr);
-                        } else {
-                            Matcher m = RANGE_PATTERN.matcher(partsStr);
-                            if (m.matches()) {
-                                //m.find();
-                                if (m.group(1).length() > 0) {
-                                    start = Integer.parseInt(m.group(1));
-                                }
-                                if (m.group(2).length() > 0) {
-                                    end = Integer.parseInt(m.group(2));
-                                }
-                                
-                                if (start == -1 && end == -1) {
-                                    // Bogus format
-                                    return null;
-                                }
-                            } else {
-                                // Bogus format
-                                return null;
-                            }
+ 
+                    Matcher subIndexMatcher = SUB_INDEX_PATTERN.matcher(symbol);
+                    if (subIndexMatcher.matches()) {
+                        Matcher subIndexArgumentsMatcher = SUB_INDEX_ARGUMENTS_PATTERN.matcher(subIndexMatcher.group(1));
+                        if (!subIndexArgumentsMatcher.matches()) {
+                            // Invalid arguments
+                            return null;
                         }
                         
                         List<String> indexElements = tokenizeIndex(index);
                         
-                        if (start >= indexElements.size() || end >= indexElements.size()) {
-                            // Bogus index start or end size
+                        int start;
+                        int offset = Integer.parseInt(subIndexArgumentsMatcher.group(1));
+                        if (offset < 0) {
+                            start = indexElements.size() + offset;
+                        } else {
+                            start = offset;
+                        }
+                        
+                        int end;
+                        if (subIndexArgumentsMatcher.group(2) == null) {
+                            end = indexElements.size();
+                        } else {                            
+                            end = start + Integer.parseInt(subIndexArgumentsMatcher.group(2));
+                        }
+                        
+                        if (start < 0 || start >= indexElements.size()) {
+                            // Bogus index start
                             return null;
                         }
                         
-                        if (start == -1) {
-                            start = 0;
+                        if (end < 0 || end > indexElements.size()) {
+                            // Bogus index end
+                            return null;
                         }
-                        if (end == -1) {
-                            end = indexElements.size() - 1;
-                        }
-                        
+
                         StringBuffer indexSubString = new StringBuffer();
-                        for (int i = start; i <= end; i++) {
+                        for (int i = start; i < end; i++) {
                             if (indexSubString.length() != 0) {
                                 indexSubString.append(".");
                             }
