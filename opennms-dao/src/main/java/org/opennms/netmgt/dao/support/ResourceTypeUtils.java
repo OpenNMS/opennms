@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 09: Add a check in loadRrdAttributes in case listFiles returns null. - dj@opennms.org
 // 2007 Apr 05: Move string property loading here from RrdGraphService. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -56,11 +57,11 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 public class ResourceTypeUtils {
-	
-	public static String DS_PROPERTIES_FILE = "ds.properties";
-	
-	private static PropertiesCache s_cache = new PropertiesCache();
-	
+
+    public static String DS_PROPERTIES_FILE = "ds.properties";
+
+    private static PropertiesCache s_cache = new PropertiesCache();
+
     /**
      * This class has only static methods.
      */
@@ -93,6 +94,10 @@ public class ResourceTypeUtils {
         int suffixLength = RrdFileConstants.getRrdSuffix().length();
         File resourceDir = new File(rrdDirectory, relativePath);
         File[] files = resourceDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+        
+        if (files == null) {
+            return;
+        }
         
         for (File file : files) {
             String fileName = file.getName();
