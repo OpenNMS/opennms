@@ -244,6 +244,10 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+  
+  <listener>
+    <listener-class>>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
+  </listener>
 
   <!--  servlet that gwt rpc requests get mapped to -->
    <servlet>

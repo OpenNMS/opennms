@@ -1583,12 +1583,56 @@
 
   <event> 
     <uei>uei.opennms.org/internal/authentication/successfulLogin</uei>
-    <event-label>OpenNMS-defined internal event: a user has successfully authentication to the web UI</event-label>
+    <event-label>OpenNMS-defined internal event: a user has successfully authentication to the WebUI</event-label>
     <descr>
       This event is sent by the WebUI when a user has successfully authenticated
     </descr>
     <logmsg dest='logndisplay'>
       OpenNMS user %parm[user]% has logged in from %parm[ip]%.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="1" auto-clean="true"/>
+  </event> 
+
+  <event> 
+    <uei>uei.opennms.org/internal/authentication/failure</uei>
+    <event-label>OpenNMS-defined internal event: an authentication failure has occurred in WebUI</event-label>
+    <descr>
+      This event is sent by the WebUI when an authentication failure occurs.
+    </descr>
+    <logmsg dest='logndisplay'>
+      OpenNMS user '%parm[user]%' (may be blank) has failed to login
+      from %parm[ip]%.  The failure event is %parm[exceptionName]% with
+      the message '%parm[exceptionMessage]%'.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%parm[exceptionName]%:%parm[user]%" alarm-type="1" auto-clean="true"/>
+  </event>
+  
+  <event> 
+    <uei>uei.opennms.org/internal/authentication/loggedOut</uei>
+    <event-label>OpenNMS-defined internal event: a user logged out of the web UI</event-label>
+    <descr>
+      This event is sent by the WebUI when a user logs out of the WebUI.
+    </descr>
+    <logmsg dest='logndisplay'>
+      OpenNMS user '%parm[user]%' logged out of the WebUI.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="1" auto-clean="true"/>
+  </event> 
+  
+  <event> 
+    <uei>uei.opennms.org/internal/authentication/sessionRemoved</uei>
+    <event-label>OpenNMS-defined internal event: a user's session was removed from the WebUI</event-label>
+    <descr>
+      This event is sent by the WebUI when a user's session is removed for any
+      reason other than a user-initiated logout.  This generally means that
+      the session timed out due to inactivity.
+    </descr>
+    <logmsg dest='logndisplay'>
+      OpenNMS user '%parm[user]%' has been logged out of the WebUI, most likely
+      due to a session timeout.
     </logmsg>
     <severity>Normal</severity>
     <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="1" auto-clean="true"/>
