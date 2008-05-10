@@ -14,6 +14,7 @@
 //
 // Modifications:
 //
+// 2008 May 10: Eliminate the need for the ServletContext. - dj@opennms.org
 // 2008 May 10: Use log4j for logging, not the servlet context. - dj@opennms.org
 // 2007 Jul 24: Suppress warnings on unused code. - dj@opennms.org
 // 2004 Oct 16: Created CategoryList class with most of guts of the code
@@ -59,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
@@ -75,8 +75,6 @@ public class CategoryList {
 
     protected CategoryModel m_model;
 
-    protected ServletContext m_context;
-
     /**
      * Display rules from viewsdisplay.xml. If null, then just show all known
      * categories under the header "Category". (See the getSections method.)
@@ -85,9 +83,7 @@ public class CategoryList {
 
     private int m_disconnectTimeout;
 
-    public CategoryList(ServletContext context) throws ServletException {
-        m_context = context;
-
+    public CategoryList() throws ServletException {
         try {
             m_model = CategoryModel.getInstance();
         } catch (Exception e) {
