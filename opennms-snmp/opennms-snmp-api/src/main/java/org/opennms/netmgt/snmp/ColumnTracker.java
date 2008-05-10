@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 May 10: In processErrors, when we throw exceptions or notify of errors,
+//              state that the OID shown is the *previous* OID. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -58,8 +63,9 @@ public class ColumnTracker extends CollectionTracker {
     }
 
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
-        if (pduBuilder.getMaxVarsPerPdu() < 1)
+        if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
+        }
         
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
@@ -68,14 +74,16 @@ public class ColumnTracker extends CollectionTracker {
         ResponseProcessor rp = new ResponseProcessor() {
 
             public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
-                if (val.isEndOfMib())
+                if (val.isEndOfMib()) {
                     receivedEndOfMib();
+                }
 
                 m_last = responseObjId;
                 if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
                     SnmpInstId inst = responseObjId.getInstance(m_base);
-                    if (inst != null)
+                    if (inst != null) {
                         storeResult(m_base, inst, val);
+                    }
                 }
             }
 
@@ -83,17 +91,17 @@ public class ColumnTracker extends CollectionTracker {
                 if (errorStatus == NO_ERR) {
                     return false;
                 } else if (errorStatus == TOO_BIG_ERR) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError for oid request "+m_last);
+                    throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_last);
                 } else if (errorStatus == GEN_ERR) {
-                    reportGenErr("Received genErr reqeusting oid "+m_last+". Marking column is finished.");
+                    reportGenErr("Received genErr reqeusting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                    reportNoSuchNameErr("Received noSuchName reqeusting oid "+m_last+". Marking column is finished.");
+                    reportNoSuchNameErr("Received noSuchName reqeusting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else {
-                    throw new IllegalArgumentException("Unexpected error processing oid "+m_last+". Aborting!");
+                    throw new IllegalArgumentException("Unexpected error processing next oid after "+m_last+". Aborting!");
                 }
             }
         };
