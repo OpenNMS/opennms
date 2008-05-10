@@ -133,7 +133,7 @@ public class InitializerServletContextListener implements ServletContextListener
                     return;
                 }
             } catch (Exception e) {
-                log().error("[RTCPostSubscriberTimerTask] Error checking if OpenNMS is disconnected: " + e, e);
+                log().error("Error checking if OpenNMS is disconnected: " + e, e);
                 return;
             }
 
