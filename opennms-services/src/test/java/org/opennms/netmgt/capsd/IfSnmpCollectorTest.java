@@ -11,6 +11,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 May 10: Add testIfSpeed and enable testGetIfAlias now that
+//              storeResults in SnmpStore won't store endOfMib. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
 //
@@ -221,9 +226,14 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         assertNotNull("ifName should not be null", ifName);
         assertEquals("ifName", "There's no place like 127.0.0.1", ifName);
     }
+    
+    public final void testGetIfSpeed() {
+        Long ifSpeed = m_ifSnmpc.getIfSpeed(4);
+        assertNotNull("ifSpeed should not be null", ifSpeed);
+        assertEquals("ifSpeed", new Long(10000000), ifSpeed);
+    }
 
-    // FIXME this reliably fails with JoeSNMP v2c and SNMP4J v2c and v3
-    public final void FIXMEtestGetIfAlias() {
+    public final void testGetIfAlias() {
         String ifAlias = m_ifSnmpc.getIfAlias(1);
         assertNotNull("ifAlias should not be null", ifAlias);
         assertEquals("ifAlias", "We don't need no stinkin' ifAlias!", ifAlias);

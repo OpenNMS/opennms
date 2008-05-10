@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 10: Improve logging in getIfAlias. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -293,13 +294,18 @@ public final class IfSnmpCollector implements Runnable {
 
         if (hasIfXTable()) {
             snmpIfAlias = m_ifXTable.getIfAlias(ifIndex);
-        }
 
-        // Debug
-        if (snmpIfAlias != null) {
-            log().debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
+            if (log().isDebugEnabled()) {
+                if (snmpIfAlias != null) {
+                    log().debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
+                } else {
+                    log().debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
+                }
+            }
         } else {
-            log().debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
+            if (log().isDebugEnabled()) {
+                log().debug("getIfAlias: no ifXTable retrieved from " + m_address);
+            }
         }
 
         return snmpIfAlias;
