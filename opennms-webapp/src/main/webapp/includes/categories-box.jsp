@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 May 10: No longer need to pass the ServletContext to CategoryList. - dj@opennms.org
 // 2004 Oct 01: Added a color change when disconnected from OpenNMS.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Oct 24: Added a mouse over for last update times. Bug #517.
@@ -62,7 +63,7 @@
     CategoryList m_category_list;
 
     public void init() throws ServletException {
-	m_category_list = new CategoryList(getServletContext());
+	m_category_list = new CategoryList();
     }
 
 %>
