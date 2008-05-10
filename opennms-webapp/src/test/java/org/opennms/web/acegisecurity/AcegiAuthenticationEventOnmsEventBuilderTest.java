@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 May 10: Add support for failed events. - dj@opennms.org
+//
 // Copyright (C) 2008 Daniel J. Gregor, Jr..  All Rights Reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -42,7 +46,9 @@ import javax.servlet.http.HttpSession;
 import junit.framework.TestCase;
 
 import org.acegisecurity.Authentication;
+import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
+import org.acegisecurity.event.authentication.AuthenticationFailureBadCredentialsEvent;
 import org.acegisecurity.event.authentication.AuthenticationSuccessEvent;
 import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.acegisecurity.ui.WebAuthenticationDetails;
@@ -54,6 +60,7 @@ import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.context.ApplicationEvent;
 
 public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -89,6 +96,54 @@ public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
         
         m_mocks.replayAll();
         builder.onApplicationEvent(acegiEvent);
+        m_mocks.verifyAll();
+    }
+    
+    public void testAuthenticationFailureEvent() throws Exception {
+        String userName = "bar";
+        String ip = "1.2.3.4";
+        String sessionId = "it tastes just like our regular coffee";
+        
+        HttpServletRequest request = createMock(HttpServletRequest.class);
+        HttpSession session = createMock(HttpSession.class);
+        expect(request.getRemoteAddr()).andReturn(ip);
+        expect(request.getSession(false)).andReturn(session);
+        expect(session.getId()).andReturn(sessionId);
+        
+        replay(request, session);
+        WebAuthenticationDetails details = new WebAuthenticationDetails(request);
+        verify(request, session);
+        
+        Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
+        AuthenticationFailureBadCredentialsEvent acegiEvent = new AuthenticationFailureBadCredentialsEvent(authentication, new BadCredentialsException("you are bad!"));
+        
+        AcegiAuthenticationEventOnmsEventBuilder builder = new AcegiAuthenticationEventOnmsEventBuilder();
+        builder.setEventProxy(m_eventProxy);
+        builder.afterPropertiesSet();
+        
+        EventBuilder eventBuilder = new EventBuilder(AcegiAuthenticationEventOnmsEventBuilder.FAILURE_UEI, "OpenNMS.WebUI");
+        eventBuilder.addParam("user", userName);
+        eventBuilder.addParam("ip", ip);
+        eventBuilder.addParam("exceptionName", acegiEvent.getException().getClass().getSimpleName());
+        eventBuilder.addParam("exceptionMessage", acegiEvent.getException().getMessage());
+        
+        m_eventProxy.send(EventEquals.eqEvent(eventBuilder.getEvent()));
+        
+        m_mocks.replayAll();
+        builder.onApplicationEvent(acegiEvent);
+        m_mocks.verifyAll();
+    }
+
+    /**
+     * This shouldn't trigger an OpenNMS event.
+     */
+    public void testRandomEvent() throws Exception {
+        AcegiAuthenticationEventOnmsEventBuilder builder = new AcegiAuthenticationEventOnmsEventBuilder();
+        builder.setEventProxy(m_eventProxy);
+        builder.afterPropertiesSet();
+        
+        m_mocks.replayAll();
+        builder.onApplicationEvent(new TestApplicationEvent("Hello!"));
         m_mocks.verifyAll();
     }
     
@@ -132,6 +187,14 @@ public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
         @Override
         public Object getDetails() {
             return m_details;
+        }
+    }
+    
+    public static class TestApplicationEvent extends ApplicationEvent {
+        private static final long serialVersionUID = 1L;
+
+        public TestApplicationEvent(Object obj) {
+            super(obj);
         }
     }
 }

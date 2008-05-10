@@ -23,6 +23,7 @@
     <constructor-arg value="/logoff.jsp"/> <!-- URL redirected to after logout -->
     <constructor-arg>
       <list>
+        <bean class="org.opennms.web.acegisecurity.SessionNotatingLogoutHandler"/>
         <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
       </list>
     </constructor-arg>
