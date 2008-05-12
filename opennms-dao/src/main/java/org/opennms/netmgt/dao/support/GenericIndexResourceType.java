@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 May 09: Add support for sub-indexes in the reosurce label as well as
+//              conversion from dotted integer strings to hex.  Enhancement bug
+//              #2467. - dj@opennms.org
 // 2007 Apr 05: Remove getRelativePathForAttribute and move attribute loading to
 //              ResourceTypeUtils.getAttributesAtRelativePath. - dj@opennms.org
 //
@@ -42,6 +45,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.PropertiesUtils;
@@ -56,6 +62,10 @@ import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericIndexResourceType implements OnmsResourceType {
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("^(\\d+)$");
+    private static final Pattern RANGE_PATTERN = Pattern.compile("^(\\d*)-(\\d*)$");
+    private static final Pattern HEX_PATTERN = Pattern.compile("^hex\\((.*)\\)$");
+
     private String m_name;
     private String m_label;
     private String m_resourceLabelExpression;
@@ -145,6 +155,81 @@ public class GenericIndexResourceType implements OnmsResourceType {
                         return index;
                     }
                     
+                    if (symbol.startsWith("index:")) {
+                        String partsStr = symbol.substring("index:".length());
+                        
+                        int start = -1;
+                        int end = -1;
+                        
+                        if (INTEGER_PATTERN.matcher(partsStr).matches()) {
+                            start = end = Integer.parseInt(partsStr);
+                        } else {
+                            Matcher m = RANGE_PATTERN.matcher(partsStr);
+                            if (m.matches()) {
+                                //m.find();
+                                if (m.group(1).length() > 0) {
+                                    start = Integer.parseInt(m.group(1));
+                                }
+                                if (m.group(2).length() > 0) {
+                                    end = Integer.parseInt(m.group(2));
+                                }
+                                
+                                if (start == -1 && end == -1) {
+                                    // Bogus format
+                                    return null;
+                                }
+                            } else {
+                                // Bogus format
+                                return null;
+                            }
+                        }
+                        
+                        List<String> indexElements = tokenizeIndex(index);
+                        
+                        if (start >= indexElements.size() || end >= indexElements.size()) {
+                            // Bogus index start or end size
+                            return null;
+                        }
+                        
+                        if (start == -1) {
+                            start = 0;
+                        }
+                        if (end == -1) {
+                            end = indexElements.size() - 1;
+                        }
+                        
+                        StringBuffer indexSubString = new StringBuffer();
+                        for (int i = start; i <= end; i++) {
+                            if (indexSubString.length() != 0) {
+                                indexSubString.append(".");
+                            }
+                            
+                            indexSubString.append(indexElements.get(i));
+                        }
+                        
+                        return indexSubString.toString();
+                    }
+                    
+                    Matcher hexMatcher = HEX_PATTERN.matcher(symbol);
+                    if (hexMatcher.matches()) {
+                        String subSymbol = getSymbolValue(hexMatcher.group(1));
+                        List<String> indexElements = tokenizeIndex(subSymbol);
+                        
+                        StringBuffer hexString = new StringBuffer();
+                        for (String indexElement : indexElements) {
+                            if (hexString.length() > 0) {
+                                hexString.append(":");
+                            }
+                            try {
+                                hexString.append(String.format("%02X", Integer.parseInt(indexElement)));
+                            } catch (NumberFormatException e) {
+                                return null;
+                            }
+                        }
+                        
+                        return hexString.toString();
+                    }
+                    
                     for (OnmsAttribute attr : set) {
                         if (symbol.equals(attr.getName())) {
                             if (StringPropertyAttribute.class.isAssignableFrom(attr.getClass())) {
@@ -159,6 +244,15 @@ public class GenericIndexResourceType implements OnmsResourceType {
                     }
                     
                     return null;
+                }
+
+                private List<String> tokenizeIndex(final String index) {
+                    List<String> indexElements = new ArrayList<String>();
+                    StringTokenizer t = new StringTokenizer(index, ".");
+                    while (t.hasMoreTokens()) {
+                        indexElements.add(t.nextToken());
+                    }
+                    return indexElements;
                 }
             };
             
