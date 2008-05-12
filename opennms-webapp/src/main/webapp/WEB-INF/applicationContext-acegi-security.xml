@@ -23,6 +23,7 @@
     <constructor-arg value="/logoff.jsp"/> <!-- URL redirected to after logout -->
     <constructor-arg>
       <list>
+        <bean class="org.opennms.web.acegisecurity.SessionNotatingLogoutHandler"/>
         <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
       </list>
     </constructor-arg>
@@ -254,5 +255,9 @@
 
   <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
     <property name="key"><value>foobar</value></property>
+  </bean>
+  
+  <bean class="org.opennms.web.acegisecurity.AcegiAuthenticationEventOnmsEventBuilder">
+    <property name="eventProxy" ref="eventProxy"/>
   </bean>
 </beans>
