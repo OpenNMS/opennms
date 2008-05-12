@@ -10,6 +10,8 @@
  *
  * Modifications:
  * 
+ * 2008 May 10: Make unit tests using this class work again. - dj@opennms.org
+ * 
  * Created: June 27, 2007
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -137,6 +139,9 @@ public class TemporaryDatabase implements DataSource {
             resetOutputStream();
             m_installerDb.setDatabaseName(getTestDatabase());
             m_installerDb.setDataSource(getDataSource());
+            
+            m_installerDb.setAdminDataSource(getAdminDataSource());
+            m_installerDb.setPostgresOpennmsUser(m_adminUser);
 
             m_installerDb.setCreateSqlLocation(getCreateSqlLocation());
 
