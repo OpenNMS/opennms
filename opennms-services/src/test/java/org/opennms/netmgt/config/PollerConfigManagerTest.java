@@ -10,8 +10,6 @@
  *
  * Modifications:
  * 
- * 2008 Mar 03: Quiet test with MockLogAppender. - dj@opennms.org
- * 
  * Created April 30, 2008
  *
  * Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
@@ -35,82 +33,141 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.poller.pollables;
+package org.opennms.netmgt.config;
 
 import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.endsWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.replay;
 
-import java.net.InetAddress;
+import java.io.IOException;
+import java.io.Reader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
+import junit.framework.TestCase;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.Rrd;
+import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.EasyMockUtils;
+import org.opennms.test.mock.MockLogAppender;
 
-import junit.framework.TestCase;
-
-public class LatencyStoringServiceMonitorAdaptorTest extends TestCase {
+public class PollerConfigManagerTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
-    private PollerConfig m_pollerConfig = m_mocks.createMock(PollerConfig.class);
     private RrdStrategy m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         MockLogAppender.setupLogging();
-
+        
+        FilterDao filterDao = createMock(FilterDao.class);
+        expect(filterDao.getIPList(isA(String.class))).andReturn(new ArrayList<String>(0)).anyTimes();
+        replay(filterDao);
+        FilterDaoFactory.setInstance(filterDao);
+        
         RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
+        
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getReaderForConfigFile("snmp-config.xml")));
     }
 
     @Override
     protected void runTest() throws Throwable {
         super.runTest();
-
+        
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    public void testUpdateRrdWithLocaleThatUsesCommasForDecimals() throws Exception {
+    public void testSaveResponseTimeDataWithLocaleThatUsesCommasForDecimals() throws Exception {
         Locale.setDefault(Locale.FRENCH);
         
         // Make sure we actually have a valid test
         NumberFormat nf = NumberFormat.getInstance();
         assertEquals("ensure that the newly set default locale (" + Locale.getDefault() + ") uses ',' as the decimal marker", "1,5", nf.format(1.5));
         
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package());
-        LinkedHashMap<String, Number> map = new LinkedHashMap<String, Number>();
-        map.put("cheese", 1.5);
+        PollerConfigManager mgr = new TestPollerConfigManager();
         
-        expect(m_pollerConfig.getStep(isA(Package.class))).andReturn(0).anyTimes();
-        expect(m_pollerConfig.getRRAList(isA(Package.class))).andReturn(new ArrayList<String>(0));
+        OnmsMonitoredService svc = new OnmsMonitoredService();
+        OnmsServiceType svcType = new OnmsServiceType();
+        svcType.setName("HTTP");
+        svc.setServiceType(svcType);
+        OnmsIpInterface intf = new OnmsIpInterface();
+        intf.setIpAddress("1.2.3.4");
+        svc.setIpInterface(intf);
         
+        Package pkg = new Package();
+        Service pkgService = new Service();
+        pkgService.setName("HTTP");
+        addParameterToService(pkgService, "ds-name", "http");
+        addParameterToService(pkgService, "rrd-repository", "/foo");
+        pkg.addService(pkgService);
+        Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        rrd.addRra("bogusRRA");
+        pkg.setRrd(rrd);
+        
+        m_rrdStrategy.initialize();
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
         m_rrdStrategy.createFile(isA(Object.class));
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":1.5"));
         m_rrdStrategy.closeFile(isA(Object.class));
-        
+
         m_mocks.replayAll();
-        adaptor.updateRRD("foo", InetAddress.getLocalHost(), "baz", map);
+        mgr.saveResponseTimeData("Tuvalu", svc, 1.5, pkg);
         m_mocks.verifyAll();
     }
 
+    private void addParameterToService(Service pkgService, String key, String value) {
+        Parameter param = new Parameter();
+        param.setKey(key);
+        param.setValue(value);
+        pkgService.addParameter(param);
+    }
+    
     @SuppressWarnings("unchecked")
     private static <T> List<T> isAList(Class<T> clazz) {
         return isA(List.class);
+    }
+    
+    public static class TestPollerConfigManager extends PollerConfigManager {
+        public TestPollerConfigManager() throws MarshalException, ValidationException, IOException {
+            super(ConfigurationTestUtils.getReaderForConfigFile("poller-configuration.xml"), "foo", false);
+        }
+        
+        public TestPollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+            super(reader, localServer, verifyServer);
+        }
+
+        @Override
+        protected void saveXml(String xml) throws IOException {
+            throw new UnsupportedOperationException("dude, where's my car?  Oh, yeah, this method isn't supported");
+        }
+
+        @Override
+        public void update() throws IOException, MarshalException, ValidationException {
+            throw new UnsupportedOperationException("dude, where's my car?  Oh, yeah, this method isn't supported");
+        }
     }
 }
