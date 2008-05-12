@@ -75,46 +75,46 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-     <resourceType name="umOrgIndex" label="Unified Messaging Organization"
-                   resourceLabel="${umOrgName}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
+    <resourceType name="umOrgIndex" label="Unified Messaging Organization"
+                  resourceLabel="${umOrgName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
-     <!-- SNMP Informant Resource Types -->
-     <resourceType name="sinfCpuInstance" label="SNMP Informant CPU"
-                   resourceLabel="CPU${sinfCpuInstance}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
-     <resourceType name="sinfLDskInstance" label="SNMP Informant Logical Disk"
-                   resourceLabel="${sinfLDskInstance}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
-     <resourceType name="sinfNetInstance" label="SNMP Informant Network Interface"
-                   resourceLabel="${sinfNetInstance}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
+    <!-- SNMP Informant Resource Types -->
+    <resourceType name="sinfCpuInstance" label="SNMP Informant CPU"
+                  resourceLabel="CPU${sinfCpuInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType name="sinfLDskInstance" label="SNMP Informant Logical Disk"
+                  resourceLabel="${sinfLDskInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType name="sinfNetInstance" label="SNMP Informant Network Interface"
+                  resourceLabel="${sinfNetInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
      
-     <resourceType name="ltmPoolStatName" label="ltm Pool Stats (F5 BigIP MIB)"
-                   resourceLabel="${ltmPoolStatName}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
+    <resourceType name="ltmPoolStatName" label="ltm Pool Stats (F5 BigIP MIB)"
+                  resourceLabel="${ltmPoolStatName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
      
-     <resourceType name="ltmVSStatName" label="ltm Virtual Server Stats (F5 BigIP MIB)"
-                   resourceLabel="${ltmVSStatName}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
+    <resourceType name="ltmVSStatName" label="ltm Virtual Server Stats (F5 BigIP MIB)"
+                  resourceLabel="${ltmVSStatName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
      
-     <resourceType name="f5ifName" label="F5 Interface Name (F5 BigIP MIB)"
-                   resourceLabel="${f5ifName}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-     </resourceType>
+    <resourceType name="f5ifName" label="F5 Interface Name (F5 BigIP MIB)"
+                  resourceLabel="${f5ifName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
     <groups>
       <!-- data from standard (mib-2) sources -->
