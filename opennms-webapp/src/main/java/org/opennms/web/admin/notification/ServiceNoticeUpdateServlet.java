@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: Remove System.out.println. - dj@opennms.org
 // 2007 Jul 23: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -72,7 +73,6 @@ public class ServiceNoticeUpdateServlet extends HttpServlet {
 
         if (checkedServices != null) {
             for (int i = 0; i < checkedServices.length; i++) {
-                System.out.println(checkedServices[i]);
                 servicesCheckedMap.put(checkedServices[i], "Y");
             }
         }

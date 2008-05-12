@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: System.out.println -> log().error. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -42,6 +43,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This is a class to store and execute a console command
@@ -288,8 +292,6 @@ public class Command {
             }
         }
 
-        // System.out.println("Sending: " + args);
-
         try {
             // set up the process
             String[] arguments = args.toArray(new String[args.size()]);
@@ -325,13 +327,14 @@ public class Command {
 
             returnCode = command.waitFor();
         } catch (IOException e) {
-            System.out.println(e);
+            log().error("Command failed with IOExceptoin: " + e, e);
         } catch (InterruptedException e) {
-            System.out.println(e);
+            log().error("Command failed with InterruptedExceptoin: " + e, e);
         }
 
-        return returnCode; // System.out.println("command complete with return
-                            // code " + returnCode);
+        log().debug("command complete with return code " + returnCode);
+
+        return returnCode;
     }
 
     /**
@@ -427,4 +430,7 @@ public class Command {
         return list;
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

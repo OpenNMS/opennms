@@ -41,6 +41,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
@@ -77,12 +79,12 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         Map<String, CorrelationEngine> beans = getBeans();
         
         // put them in a set to deduplicate the beans
-        //System.err.println("Deduplicating engines");
+        log().debug("Deduplicating engines");
         HashSet<CorrelationEngine> engineSet = new HashSet<CorrelationEngine>(beans.values()); 
         
         m_correlationEngines = new LinkedList<CorrelationEngine>(engineSet);
         
-        //System.err.println("Found "+m_correlationEngines.size()+" engines");
+        log().debug("Found "+m_correlationEngines.size()+" engines");
     }
 
     @SuppressWarnings("unchecked")
@@ -94,4 +96,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         m_applicationContext = applicationContext;
     }
 
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

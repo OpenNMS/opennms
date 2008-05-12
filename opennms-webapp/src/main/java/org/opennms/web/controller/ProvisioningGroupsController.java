@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: Remove System.err.println. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -78,8 +82,6 @@ public class ProvisioningGroupsController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
         GroupAction command = (GroupAction)cmd;
         String action = command.getAction();
-        
-        System.err.println("Action is "+action);
         
         if (action == null || "show".equalsIgnoreCase(action)) {
             return doShow(request, response, command, errors);
