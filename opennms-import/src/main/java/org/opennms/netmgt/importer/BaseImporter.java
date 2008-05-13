@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 20: Remove System.err.println. - dj@opennms.org
 // 2007 Jun 24: Organize imports, use Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -329,7 +330,6 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     private OnmsDistPoller createDistPollerIfNecessary() {
-        System.err.println("Locating DistPoller");
         return (OnmsDistPoller)m_transTemplate.execute(new TransactionCallback() {
     
             public Object doInTransaction(TransactionStatus status) {

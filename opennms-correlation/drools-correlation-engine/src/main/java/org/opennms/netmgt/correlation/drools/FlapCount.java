@@ -35,14 +35,16 @@
  */
 package org.opennms.netmgt.correlation.drools;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.style.ToStringCreator;
-import java.util.Date;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
+
 public class FlapCount {
     Long m_nodeid;
     String m_ipAddr;
@@ -60,17 +62,17 @@ public class FlapCount {
         m_count = 1;
         m_alerted = false;
         
-        System.err.println(new Date()+" FlapCount.created : "+this);
+        log().info("FlapCount.created : "+this);
     }
     
     public void increment() {
         m_count += 1;
-        System.err.println(new Date()+" FlapCount.increment : "+this);
+        log().info("FlapCount.increment : "+this);
     }
     
     public void decrement() {
         m_count -= 1;
-        System.err.println(new Date()+" FlapCount.decrement : "+this);
+        log().info("FlapCount.decrement : "+this);
     }
 
     public Integer getCount() {
@@ -131,4 +133,7 @@ public class FlapCount {
         return creator.toString();
     }
 
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

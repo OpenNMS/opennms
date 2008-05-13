@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Mar 20: Remove System.out.println. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -306,7 +310,6 @@ public class PollerConfigServlet extends HttpServlet {
                     }
                     if (flag) {
                         pkg.removeService(svc);
-                        System.out.println("Package removed " + svc.getName());
                         removeMonitor(svc.getName());
                         deleteCapsdInfo(svc.getName());
                         props.remove("service." + svc.getName() + ".protocol");

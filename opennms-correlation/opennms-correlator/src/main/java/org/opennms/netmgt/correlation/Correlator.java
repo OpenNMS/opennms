@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Mar 20: System.err.println -> log().info. - dj@opennms.org
  * Created January 26, 2007
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -39,6 +40,8 @@ package org.opennms.netmgt.correlation;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -85,10 +88,10 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		Assert.notNull(m_eventIpcManager, "property eventIpcManager must be set");
 		Assert.notNull(m_engines, "property engines must be set");
         
-        System.err.println("m_engines.size = " + m_engines.size());
+        log().info("m_engines.size = " + m_engines.size());
 		
 		for(CorrelationEngine engine : m_engines) {
-            System.err.println("Registering engine "+engine);
+            log().info("Registering engine "+engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
         
@@ -127,4 +130,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
         return m_engines;
     }
 
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }
