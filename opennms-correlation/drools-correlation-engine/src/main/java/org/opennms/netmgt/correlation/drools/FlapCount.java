@@ -38,13 +38,13 @@ package org.opennms.netmgt.correlation.drools;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.style.ToStringCreator;
-import java.util.Date;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
+
 public class FlapCount {
     Long m_nodeid;
     String m_ipAddr;
