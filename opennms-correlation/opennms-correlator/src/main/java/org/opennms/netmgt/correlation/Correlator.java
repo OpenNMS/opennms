@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Mar 20: System.err.println -> log().info. - dj@opennms.org
  * Created January 26, 2007
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
