@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 13: Change expectation on IpInterfaceDao from get to load. - dj@opennms.org
 // 2008 Feb 09: Eliminate warnings. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -485,7 +486,7 @@ public class SnmpCollectorTest extends TestCase {
 
     private CollectionAgent createCollectionAgent(OnmsIpInterface iface) {
         IpInterfaceDao ifDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(ifDao.get(iface.getId())).andReturn(iface).anyTimes();
+        EasyMock.expect(ifDao.load(iface.getId())).andReturn(iface).anyTimes();
         EasyMock.replay(ifDao);
         CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
         return agent;
