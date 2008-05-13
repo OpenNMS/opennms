@@ -573,10 +573,20 @@ public abstract class NotificationManager {
                     "eventuei, subject, queueID, notifConfigName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
             // notifications textMsg field
-            statement.setString(1, (String) params.get(NotificationManager.PARAM_TEXT_MSG));
+            String textMsg = (String) params.get(NotificationManager.PARAM_TEXT_MSG);
+            if (textMsg != null && textMsg.length() > 4000) {
+                log().warn("textmsg too long, it will be truncated");
+                textMsg = textMsg.substring(0, 4000);
+            }
+            statement.setString(1, textMsg);
     
             // notifications numericMsg field
-            statement.setString(2, (String) params.get(NotificationManager.PARAM_NUM_MSG));
+            String numMsg = (String) params.get(NotificationManager.PARAM_NUM_MSG);
+            if (numMsg != null && numMsg.length() > 256) {
+                log().warn("numericmsg too long, it will be truncated");
+                numMsg = numMsg.substring(0, 256);
+            }
+            statement.setString(2, numMsg);
     
             // notifications notifyID field
             statement.setInt(3, notifyId);
