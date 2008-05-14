@@ -71,12 +71,12 @@
 
 <p>
   The selected node has no interfaces that are included in an OpenNMS polling package. Therefore no interfaces or services on this node can be
-  managed or unmanaged.</p>
+  managed or unmanaged. Your OpenNMS administrator can add interfaces to a polling package.</p>
 
   <% if (nmie.getNodeListUri() != null) { %>
   <p>
   To select a different node, you can browse the
-  browse the <a href="<%=nmie.getNodeListUri()%>">node list</a>.
+  <a href="<%=nmie.getNodeListUri()%>">node list</a>.
   </p>
   <% } %>
 </p>
