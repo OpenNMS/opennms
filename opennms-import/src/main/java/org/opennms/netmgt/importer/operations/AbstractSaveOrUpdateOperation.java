@@ -130,10 +130,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 		
 		updateSnmpDataForNode();
 		
-		for (Iterator it = m_node.getIpInterfaces().iterator(); it.hasNext();) {
-			OnmsIpInterface ipIf = (OnmsIpInterface) it.next();
-			resolveIpHostname(ipIf);
-			updateSnmpDataForInterface(ipIf);
+		for (OnmsIpInterface ipIf : m_node.getIpInterfaces()) {
+            resolveIpHostname(ipIf);
+            updateSnmpDataForInterface(ipIf);
 		}
 	}
 

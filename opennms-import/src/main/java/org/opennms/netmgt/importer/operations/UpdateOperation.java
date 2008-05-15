@@ -67,8 +67,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 
         private void createSvcTypeToSvcMap(OnmsIpInterface imported) {
             m_svcTypToSvcMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
-            for (Iterator it = imported.getMonitoredServices().iterator(); it.hasNext();) {
-                OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+            for (OnmsMonitoredService svc : imported.getMonitoredServices()) {
                 m_svcTypToSvcMap.put(svc.getServiceType(), svc);
             }
         }
@@ -107,7 +106,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             m_svcTypToSvcMap.remove(svc.getServiceType());
         }
 
-        private void update(OnmsMonitoredService svc, List events) {
+        private void update(OnmsMonitoredService svc, List<Event> events) {
             // nothing to do here
         }
 
@@ -132,8 +131,8 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         public void execute(List<Event> events) {
-            for (Iterator it = getExistingInterfaces().iterator(); it.hasNext();) {
-                OnmsIpInterface iface = (OnmsIpInterface) it.next();
+            for (Iterator<OnmsIpInterface> it = getExistingInterfaces().iterator(); it.hasNext();) {
+                OnmsIpInterface iface = it.next();
                 OnmsIpInterface imported = getImportedVersion(iface);
                 
                 if (imported == null) {
@@ -218,7 +217,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             new ServiceUpdater(iface, imported).execute(events);
         }
 
-        private Set getExistingInterfaces() {
+        private Set<OnmsIpInterface> getExistingInterfaces() {
             return m_node.getIpInterfaces();
         }
 
