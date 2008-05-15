@@ -169,7 +169,7 @@ public abstract class AlarmUtil extends Object {
         ackTypes.put(AlarmFactory.AcknowledgeType.BOTH, "both");
     }
 
-    public static List getSeverityList() {
+    public static List<Integer> getSeverityList() {
         return severities;
     }
 

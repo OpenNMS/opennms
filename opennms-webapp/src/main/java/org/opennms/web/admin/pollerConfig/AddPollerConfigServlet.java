@@ -183,7 +183,6 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<ProtocolPlugin> getProtocolPlugins() {
         return capsdConfig.getProtocolPluginCollection();
     }
@@ -206,12 +205,10 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<Service> getServicesForPackage() {
         return pkg.getServiceCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<org.opennms.netmgt.config.poller.Package> getPackages() {
         return pollerConfig.getPackageCollection();
     }
@@ -262,6 +259,7 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
+    @SuppressWarnings("null")
     public void addCapsdInfo(String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
@@ -271,7 +269,7 @@ public class AddPollerConfigServlet extends HttpServlet {
         while (iter.hasNext()) {
             ProtocolPlugin svc = iter.next();
             if (svc.getProtocol().equals(name)) {
-                // delete from the poller config.
+                // delete from the poller configuration.
                 Collection<Service> tmpPollers = getServicesForPackage();
                 Iterator<Service> polleriter = tmpPollers.iterator();
                 boolean removePoller = false;
@@ -475,7 +473,6 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<Monitor> getMonitors() {
         return pollerConfig.getMonitorCollection();
     }
