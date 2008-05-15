@@ -85,6 +85,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
                     "where monSvc.serviceType.name = ?", svcName);
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Integer> getInterfacesForNodes() {
         Map<String, Integer> map = new HashMap<String, Integer>();
         

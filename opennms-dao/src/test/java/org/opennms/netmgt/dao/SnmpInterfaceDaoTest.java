@@ -36,16 +36,14 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class SnmpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
 	public void testGet() throws Exception {
-		Collection snmpIfs = getSnmpInterfaceDao().findAll();
+		Collection<OnmsSnmpInterface> snmpIfs = getSnmpInterfaceDao().findAll();
 		assertEquals(3, snmpIfs.size());
-		for (Iterator it = snmpIfs.iterator(); it.hasNext();) {
-			OnmsSnmpInterface snmpIf = (OnmsSnmpInterface) it.next();
+		for (OnmsSnmpInterface snmpIf : snmpIfs) {
 			assertEquals(10000000, snmpIf.getIfSpeed().intValue());
 			assertNotNull(snmpIf.getNode());
 			assertEquals(1, snmpIf.getNode().getId().intValue());

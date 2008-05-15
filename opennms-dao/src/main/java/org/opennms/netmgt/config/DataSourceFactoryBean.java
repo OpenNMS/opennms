@@ -45,7 +45,7 @@ public class DataSourceFactoryBean implements FactoryBean, InitializingBean, Dis
         return DataSourceFactory.getDataSource();
     }
 
-    public Class getObjectType() {
+    public Class<? extends DataSource> getObjectType() {
         return (DataSourceFactory.getDataSource() == null ? DataSource.class : DataSourceFactory.getDataSource().getClass());
     }
 
