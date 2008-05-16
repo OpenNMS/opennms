@@ -683,7 +683,7 @@
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.12" instance="0" alias="umOutCallsCompleted" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.14" instance="0" alias="umAACallsCompleted" type="counter" />
       </group>
-      <group name="ipunity-um-org-stats" ifType="ignore">
+      <group name="ipunity-um-org-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.2" instance="umOrgIndex" alias="umOrgName" type="string" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.3" instance="umOrgIndex" alias="umOrgMsgsDiskUsage" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.4" instance="umOrgIndex" alias="umOrgMsgsSize" type="gauge" />
@@ -732,7 +732,7 @@
         <mibObj oid=".1.3.6.1.4.1.789.1.2.1.5" instance="0" alias="cpuIdleTimePct" type="INTEGER" />
       </group>
 
-      <group name="network-services-appl" ifType="ignore">
+      <group name="network-services-appl" ifType="all">
         <mibObj oid=".1.3.6.1.2.1.27.1.1.2" instance="applIndex" alias="applName" type="string" />
         <mibObj oid=".1.3.6.1.2.1.27.1.1.16" instance="applIndex" alias="applDescription" type="string" />
       </group>
