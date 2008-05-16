@@ -1733,6 +1733,7 @@
           <includeGroup>snmpinformant-sqlserver</includeGroup>
           <includeGroup>snmpinformant-network</includeGroup>
           <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>windows-host</includeGroup>
         </collect>
       </systemDef>
