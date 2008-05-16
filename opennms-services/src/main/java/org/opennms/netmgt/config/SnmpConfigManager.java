@@ -34,8 +34,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.Enumeration;
-
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 
@@ -89,9 +87,7 @@ public class SnmpConfigManager {
         
         synchronized (m_config) {
             MergeableDefinition matchingDef = null;
-            Enumeration defEnum = getConfig().enumerateDefinition();
-            while (defEnum.hasMoreElements()) {
-                Definition def = (Definition) defEnum.nextElement();
+            for (Definition def : getConfig().getDefinitionCollection()) {
                 MergeableDefinition definition = new MergeableDefinition(def);
 
                 if (definition.equals(eventDef)) {
@@ -105,7 +101,7 @@ public class SnmpConfigManager {
     
     /**
      * This method purges specifics and ranges from definitions that don't
-     * match the attributes specfified in the event (the updateDef)
+     * match the attributes specified in the event (the updateDef)
      * 
      * @param updatedDef
      * @param eventDef

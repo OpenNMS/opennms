@@ -44,12 +44,15 @@ public class OnmsSnmpAgent extends OnmsAgent {
 	private String m_sysContact;
 	
 	private SnmpAgentConfig m_config;
-	private Set m_attributes;
+	@SuppressWarnings("unchecked")
+    private Set m_attributes;
 	
-	public Set getAttributes() {
+	@SuppressWarnings("unchecked")
+    public Set getAttributes() {
 		return m_attributes;
 	}
-	public void setAttributes(Set attributes) {
+	@SuppressWarnings("unchecked")
+    public void setAttributes(Set attributes) {
 		m_attributes = attributes;
 	}
 	public SnmpAgentConfig getConfig() {

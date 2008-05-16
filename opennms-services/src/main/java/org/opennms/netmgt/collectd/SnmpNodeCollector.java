@@ -89,7 +89,7 @@ public class SnmpNodeCollector extends AggregateTracker {
      *            The list of object id's to be collected.
      * @param collectionSet TODO
      */
-    public SnmpNodeCollector(InetAddress address, Collection objList, SnmpCollectionSet collectionSet) {
+    public SnmpNodeCollector(InetAddress address, Collection<SnmpAttributeType> objList, SnmpCollectionSet collectionSet) {
         super(SnmpAttributeType.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();

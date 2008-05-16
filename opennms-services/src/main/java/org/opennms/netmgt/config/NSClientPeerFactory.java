@@ -24,7 +24,6 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
 
@@ -42,7 +41,7 @@ import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
 
 /**
- * This class is the main respository for NSCLient configuration information used by
+ * This class is the main repository for NSCLient configuration information used by
  * the capabilities daemon. When this class is loaded it reads the nsclient
  * configuration into memory, and uses the configuration to find the
  * {@link org.opennms.netmgt.nsclient.NSClientAgentConfig NSClientAgentConfig} objects for specific
@@ -176,11 +175,10 @@ public final class NSClientPeerFactory extends PeerFactory {
         Category log = log();
 
         // First pass: Remove empty definition elements
-        for (Iterator definitionsIterator =
+        for (Iterator<Definition> definitionsIterator =
                  m_config.getDefinitionCollection().iterator();
              definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
+            Definition definition = definitionsIterator.next();
             if (definition.getSpecificCount() == 0
                 && definition.getRangeCount() == 0) {
                 if (log.isDebugEnabled())
@@ -190,15 +188,11 @@ public final class NSClientPeerFactory extends PeerFactory {
         }
 
         // Second pass: Replace single IP range elements with specific elements
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
-            for (Iterator rangesIterator =
+        for (Definition definition : m_config.getDefinitionCollection()) {
+            for (Iterator<Range> rangesIterator =
                      definition.getRangeCollection().iterator();
                  rangesIterator.hasNext();) {
-                Range range = (Range) rangesIterator.next();
+                Range range = rangesIterator.next();
                 if (range.getBegin().equals(range.getEnd())) {
                     definition.addSpecific(range.getBegin());
                     rangesIterator.remove();
@@ -208,28 +202,17 @@ public final class NSClientPeerFactory extends PeerFactory {
 
         // Third pass: Sort specific and range elements for improved XML
         // readability and then combine them into fewer elements where possible
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
-
+        for (Definition definition : m_config.getDefinitionCollection()) {
             // Sort specifics
-            TreeMap specificsMap = new TreeMap();
-            for (Iterator specificsIterator =
-                     definition.getSpecificCollection().iterator();
-                 specificsIterator.hasNext();) {
-                String specific = ((String) specificsIterator.next()).trim();
+            TreeMap<Integer, String> specificsMap = new TreeMap<Integer, String>();
+            for (String specific : definition.getSpecificCollection()) {
                 specificsMap.put(new Integer(new IPv4Address(specific).getAddress()),
-                                 specific);
+                                 specific.trim());
             }
 
             // Sort ranges
-            TreeMap rangesMap = new TreeMap();
-            for (Iterator rangesIterator =
-                     definition.getRangeCollection().iterator();
-                 rangesIterator.hasNext();) {
-                Range range = (Range) rangesIterator.next();
+            TreeMap<Integer, Range> rangesMap = new TreeMap<Integer, Range>();
+            for (Range range : definition.getRangeCollection()) {
                 rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()),
                               range);
             }
@@ -237,11 +220,7 @@ public final class NSClientPeerFactory extends PeerFactory {
             // Combine consecutive specifics into ranges
             Integer priorSpecific = null;
             Range addedRange = null;
-            for (Iterator specificsIterator =
-                     new ArrayList(specificsMap.keySet()).iterator();
-                 specificsIterator.hasNext();) {
-                Integer specific = (Integer) specificsIterator.next();
-
+            for (Integer specific : specificsMap.keySet()) {
                 if (priorSpecific == null) {
                     priorSpecific = specific;
                     continue;
@@ -270,21 +249,15 @@ public final class NSClientPeerFactory extends PeerFactory {
             }
 
             // Move specifics to ranges
-            for (Iterator specificsIterator =
-                     new ArrayList(specificsMap.keySet()).iterator();
-                 specificsIterator.hasNext();) {
-                Integer specific = (Integer) specificsIterator.next();
+            for (Integer specific : specificsMap.keySet()) {
                 int specificInt = specific.intValue();
-                for (Iterator rangesIterator =
-                         new ArrayList(rangesMap.keySet()).iterator();
-                     rangesIterator.hasNext();) {
-                    Integer begin = (Integer) rangesIterator.next();
+                for (Integer begin : rangesMap.keySet()) {
                     int beginInt = begin.intValue();
 
                     if (specificInt < beginInt - 1)
                         continue;
 
-                    Range range = (Range) rangesMap.get(begin);
+                    Range range = rangesMap.get(begin);
 
                     int endInt = new IPv4Address(range.getEnd()).getAddress();
 
@@ -316,12 +289,11 @@ public final class NSClientPeerFactory extends PeerFactory {
             Range priorRange = null;
             int priorBegin = 0;
             int priorEnd = 0;
-            for (Iterator rangesIterator =
-                     rangesMap.keySet().iterator();
+            for (Iterator<Integer> rangesIterator = rangesMap.keySet().iterator();
                  rangesIterator.hasNext();) {
-                Integer rangeKey = (Integer) rangesIterator.next();
+                Integer rangeKey = rangesIterator.next();
 
-                Range range = (Range) rangesMap.get(rangeKey);
+                Range range = rangesMap.get(rangeKey);
 
                 int begin = rangeKey.intValue();
                 int end = new IPv4Address(range.getEnd()).getAddress();
@@ -344,8 +316,8 @@ public final class NSClientPeerFactory extends PeerFactory {
             }
 
             // Update changes made to sorted maps
-            definition.setSpecificCollection(new ArrayList(specificsMap.values()));
-            definition.setRangeCollection(new ArrayList(rangesMap.values()));
+            definition.setSpecific(new ArrayList<String>(specificsMap.values()));
+            definition.setRange(new ArrayList<Range>(rangesMap.values()));
         }
     }
 
@@ -382,16 +354,16 @@ public final class NSClientPeerFactory extends PeerFactory {
 
         // Copy the current definitions so that elements can be added and
         // removed
-        ArrayList definitions =
-            new ArrayList(m_config.getDefinitionCollection());
+        ArrayList<Definition> definitions =
+            new ArrayList<Definition>(m_config.getDefinitionCollection());
 
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Iterator definitionsIterator = definitions.iterator();
+        for (Iterator<Definition> definitionsIterator = definitions.iterator();
              definitionsIterator.hasNext();) {
             Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+                definitionsIterator.next();
 
             if ((currentDefinition.getPassword() != null
                  && currentDefinition.getPassword().equals(password))
@@ -418,10 +390,10 @@ public final class NSClientPeerFactory extends PeerFactory {
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Iterator definitionsIterator = definitions.iterator();
+        for (Iterator<Definition> definitionsIterator = definitions.iterator();
              definitionsIterator.hasNext();) {
             Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+                definitionsIterator.next();
 
             // Ignore this definition if it was the one identified by the first
             // step
@@ -436,8 +408,8 @@ public final class NSClientPeerFactory extends PeerFactory {
             }
 
             // Split and replace any range elements that contain IP
-            ArrayList ranges =
-                new ArrayList(currentDefinition.getRangeCollection());
+            ArrayList<Range> ranges =
+                new ArrayList<Range>(currentDefinition.getRangeCollection());
             Range[] rangesArray = currentDefinition.getRange();
             for (int rangesArrayIndex = 0;
                  rangesArrayIndex < rangesArray.length;
@@ -479,11 +451,11 @@ public final class NSClientPeerFactory extends PeerFactory {
                     ranges.add(tail);
                 }
             }
-            currentDefinition.setRangeCollection(ranges);
+            currentDefinition.setRange(ranges);
         }
 
         // Store the altered list of definitions
-        m_config.setDefinitionCollection(definitions);
+        m_config.setDefinition(definitions);
     }
     
     public synchronized NSClientAgentConfig getAgentConfig(InetAddress agentInetAddress) {
@@ -499,16 +471,10 @@ public final class NSClientPeerFactory extends PeerFactory {
         setNSClientAgentConfig(agentConfig, new Definition());
 
         // Attempt to locate the node
-        //
-        Enumeration edef = m_config.enumerateDefinition();
-        DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = (Definition) edef.nextElement();
-
+        DEFLOOP: for (Definition def : m_config.getDefinitionCollection()) {
             // check the specifics first
-            //
-            Enumeration espec = def.enumerateSpecific();
-            while (espec.hasMoreElements()) {
-                String saddr = ((String) espec.nextElement()).trim();
+
+            for (String saddr : def.getSpecificCollection()) {
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
@@ -524,9 +490,7 @@ public final class NSClientPeerFactory extends PeerFactory {
             // check the ranges
             //
             long lhost = toLong(agentConfig.getAddress());
-            Enumeration erange = def.enumerateRange();
-            while (erange.hasMoreElements()) {
-                Range rng = (Range) erange.nextElement();
+            for (Range rng : def.getRangeCollection()) {
                 try {
                     InetAddress begin = InetAddress.getByName(rng.getBegin());
                     InetAddress end = InetAddress.getByName(rng.getEnd());
@@ -544,11 +508,8 @@ public final class NSClientPeerFactory extends PeerFactory {
                 }
             }
             
-            // check the matching ip expressions
-            //
-            Enumeration eMatch = def.enumerateIpMatch();
-            while (eMatch.hasMoreElements()) {
-                String ipMatch = (String)eMatch.nextElement();
+            // check the matching IP expressions
+            for (String ipMatch : def.getIpMatchCollection()) {
                 if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
                     setNSClientAgentConfig(agentConfig, def);
                     break DEFLOOP;
@@ -586,7 +547,7 @@ public final class NSClientPeerFactory extends PeerFactory {
     }
 
      /**
-     * Helper method to search the nsclient-config for the appropriate password
+     * Helper method to search the nsclient configuration for the appropriate password
      * @param def
      * @return
      */
@@ -595,7 +556,7 @@ public final class NSClientPeerFactory extends PeerFactory {
     }
 
     /**
-     * Helper method to search the nsclient-config for a port
+     * Helper method to search the nsclient configuration for a port
      * @param def
      * @return
      */
@@ -605,7 +566,7 @@ public final class NSClientPeerFactory extends PeerFactory {
     }
 
     /**
-     * Helper method to search the nsclient-config 
+     * Helper method to search the nsclient configuration 
      * @param def
      * @return
      */

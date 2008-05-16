@@ -195,6 +195,7 @@ public class EventsArchiver {
      *                thrown if a required property is not specified or is
      *                incorrect
      */
+    @SuppressWarnings("deprecation")
     private void init() throws ArchiverException {
         // The general logs from the events archiver go to this category
         ThreadCategory.setPrefix("OpenNMS.Archiver.Events");
@@ -461,6 +462,7 @@ public class EventsArchiver {
      * Close the database statements and the connection and close log4j
      * Appenders and categories
      */
+    @SuppressWarnings("deprecation")
     private void close() {
         // database related
         try {

@@ -73,14 +73,14 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * 
  */
 public class SnmpIfCollector extends AggregateTracker {
-    private Map m_results = new TreeMap();
+    private Map<SnmpInstId, SNMPCollectorEntry> m_results = new TreeMap<SnmpInstId, SNMPCollectorEntry>();
     
     /**
      * Holds the IP Address of the primary SNMP iterface.
      */
     private String m_primaryIf;
 
-    private List m_objList;
+    private List<SnmpAttributeType> m_objList;
 
     private SnmpCollectionSet m_collectionSet;
     
@@ -116,7 +116,7 @@ public class SnmpIfCollector extends AggregateTracker {
 	 * @param ifMap
      *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
      */
-    public SnmpIfCollector(InetAddress address, List objList, SnmpCollectionSet collectionSet) {
+    public SnmpIfCollector(InetAddress address, List<SnmpAttributeType> objList, SnmpCollectionSet collectionSet) {
         super(SnmpAttributeType.getCollectionTrackers(objList));
         
         log().debug("COLLECTING on list of "+objList.size()+" items");
@@ -137,8 +137,8 @@ public class SnmpIfCollector extends AggregateTracker {
      * information from the service polling.
      */
 
-    public List getEntries() {
-        return new ArrayList(m_results.values());
+    public List<SNMPCollectorEntry> getEntries() {
+        return new ArrayList<SNMPCollectorEntry>(m_results.values());
     }
     
 	protected void reportGenErr(String msg) {

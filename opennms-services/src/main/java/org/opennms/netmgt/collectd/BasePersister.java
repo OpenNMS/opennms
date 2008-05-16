@@ -94,6 +94,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         createBuilder(resource, name, Collections.singleton(attributeType));
     }
 
+    @SuppressWarnings("unchecked")
     protected void createBuilder(CollectionResource resource, String name, Set attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
         for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
