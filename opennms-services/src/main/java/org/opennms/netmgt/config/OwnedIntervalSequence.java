@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class OwnedIntervalSequence extends TimeIntervalSequence {
@@ -50,7 +51,7 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
     public OwnedIntervalSequence(OwnedInterval interval) {
         super(interval);
     }
-    
+
     protected Collection<OwnedInterval> combineIntervals(TimeInterval currInt, TimeInterval newInt) {
         OwnedInterval currInterval = (OwnedInterval) currInt;
         OwnedInterval newInterval = (OwnedInterval) newInt;
@@ -133,12 +134,12 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
         List<Owner> reducedOwners = new ArrayList<Owner>(origInterval.getOwners());
         reducedOwners.removeAll(removedInterval.getOwners());
         if (origInterval.isOwned() && removedInterval.isOwned() && reducedOwners.equals(origInterval.getOwners())) {
-            // the removedInterval did not have any owners in common with the orignal interval 
+            // the removedInterval did not have any owners in common with the original interval 
             // so leave the interval intact
             return Collections.singletonList(origInterval);
         }
         
-        // if we got here then there is some onwership change in the original interval
+        // if we got here then there is some ownership change in the original interval
         
         // there are potentially three new intervals
         OwnedInterval firstSeg = null;

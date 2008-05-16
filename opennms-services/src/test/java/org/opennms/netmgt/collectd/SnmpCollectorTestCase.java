@@ -286,7 +286,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     	m_node.addIpInterface(m_iface);
         
 
-    	EasyMock.expect(m_ifaceDao.get(m_iface.getId())).andReturn(m_iface).anyTimes();
+    	EasyMock.expect(m_ifaceDao.load(m_iface.getId())).andReturn(m_iface).anyTimes();
         
         m_easyMockUtils.replayAll();
         

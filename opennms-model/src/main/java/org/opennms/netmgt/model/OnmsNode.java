@@ -518,13 +518,13 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 	public void visit(EntityVisitor visitor) {
 		visitor.visitNode(this);
 		
-		for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {
-			OnmsIpInterface iface = (OnmsIpInterface) it.next();
+		for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
+			OnmsIpInterface iface = it.next();
 			iface.visit(visitor);
 		}
 		
-		for (Iterator it = getSnmpInterfaces().iterator(); it.hasNext();) {
-			OnmsSnmpInterface snmpIface = (OnmsSnmpInterface) it.next();
+		for (Iterator<OnmsSnmpInterface> it = getSnmpInterfaces().iterator(); it.hasNext();) {
+			OnmsSnmpInterface snmpIface = it.next();
 			snmpIface.visit(visitor);
 		}
 		
@@ -539,8 +539,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 	@Transient
     public boolean isDown() {
         boolean down = true;
-        for (Iterator it = m_ipInterfaces.iterator(); it.hasNext();) {
-            OnmsIpInterface ipIf = (OnmsIpInterface) it.next();
+        for (Iterator<OnmsIpInterface> it = m_ipInterfaces.iterator(); it.hasNext();) {
+            OnmsIpInterface ipIf = it.next();
             if (!ipIf.isDown()) {
                 return !down;
             }
