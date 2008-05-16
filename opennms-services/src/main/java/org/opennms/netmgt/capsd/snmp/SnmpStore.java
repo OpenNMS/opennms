@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 May 10: Don't store a value in storeResult if it is an error or
+//              signals end of MIB.  Also display the value type in logs. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,6 +45,7 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpValueType;
 
 public class SnmpStore extends AbstractSnmpStore {
     
@@ -80,8 +86,15 @@ public class SnmpStore extends AbstractSnmpStore {
         for(int i = 0; i < ms_elemList.length; i++) {
             NamedSnmpVar var = ms_elemList[i];
             if (base.equals(var.getSnmpObjId())) {
-                log().debug("Storing Result: alias: "+var.getAlias()+" ["+base+"].["+inst+"] = "+toLogString(val));
-                putValue(var.getAlias(), val);
+                if (val.isError()) {
+                    log().error("storeResult: got an error for alias "+var.getAlias()+" ["+base+"].["+inst+"], but we should only be getting non-errors: " + val);
+                } else if (val.isEndOfMib()) {
+                    log().debug("storeResult: got endOfMib for alias "+var.getAlias()+" ["+base+"].["+inst+"], not storing");
+                } else {
+                    SnmpValueType type = SnmpValueType.valueOf(val.getType());
+                    log().debug("Storing Result: alias: "+var.getAlias()+" ["+base+"].["+inst+"] = " + (type == null ? "Unknown" : type.getDisplayString()) + ": "+toLogString(val));
+                    putValue(var.getAlias(), val);
+                }
             }
         }
     }

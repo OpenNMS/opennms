@@ -14,6 +14,8 @@
 //
 // Modifications:
 //
+// 2008 May 10: Eliminate the need for the ServletContext. - dj@opennms.org
+// 2008 May 10: Use log4j for logging, not the servlet context. - dj@opennms.org
 // 2007 Jul 24: Suppress warnings on unused code. - dj@opennms.org
 // 2004 Oct 16: Created CategoryList class with most of guts of the code
 //              from category-box.jsp.
@@ -58,13 +60,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
@@ -72,8 +74,6 @@ import org.opennms.netmgt.config.viewsdisplay.View;
 public class CategoryList {
 
     protected CategoryModel m_model;
-
-    protected ServletContext m_context;
 
     /**
      * Display rules from viewsdisplay.xml. If null, then just show all known
@@ -83,14 +83,12 @@ public class CategoryList {
 
     private int m_disconnectTimeout;
 
-    public CategoryList(ServletContext context) throws ServletException {
-        m_context = context;
-
+    public CategoryList() throws ServletException {
         try {
             m_model = CategoryModel.getInstance();
         } catch (Exception e) {
-            m_context.log("failed to instantiate the category model", e);
-            throw new ServletException("failed to instantiate the category " + "model", e);
+            log().error("failed to instantiate the category model: " + e, e);
+            throw new ServletException("failed to instantiate the category model: " + e, e);
         }
 
         try {
@@ -102,13 +100,17 @@ public class CategoryList {
             if (view != null) {
                 m_sections = view.getSection();
                 m_disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
-                m_context.log("DEBUG: found display rules from " + "viewsdisplay.xml");
+                log().debug("found display rules from viewsdisplay.xml");
             } else {
-                m_context.log("DEBUG: did not find display rules " + "from viewsdisplay.xml");
+                log().debug("did not find display rules from viewsdisplay.xml");
             }
         } catch (Exception e) {
-            m_context.log("Couldn't open viewsdisplay factory on " + "categories box.", e);
+            log().error("Couldn't open viewsdisplay factory on categories box: " + e, e);
         }
+    }
+
+    private org.apache.log4j.Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
