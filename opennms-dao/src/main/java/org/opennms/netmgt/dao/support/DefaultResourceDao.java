@@ -214,7 +214,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             m_dataCollectionConfig.getConfiguredResourceTypes();
         for (org.opennms.netmgt.config.datacollection.ResourceType resourceType : configuredResourceTypes.values()) {
             String className = resourceType.getStorageStrategy().getClazz();
-            Class cinst;
+            Class<?> cinst;
             try {
                 cinst = Class.forName(className);
             } catch (ClassNotFoundException e) {

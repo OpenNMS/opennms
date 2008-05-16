@@ -847,6 +847,7 @@ public class Installer {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public String findLibrary(String libname, String path, boolean isRequired)
             throws Exception {
         String fullname = System.mapLibraryName(libname);

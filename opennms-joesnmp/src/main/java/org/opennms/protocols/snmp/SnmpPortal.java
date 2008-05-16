@@ -136,6 +136,7 @@ public class SnmpPortal extends Object {
      * @exception java.lang.UnsupportedOperationException
      *                Always thrown!
      */
+    @SuppressWarnings("unused")
     private SnmpPortal() throws java.lang.UnsupportedOperationException {
         throw new java.lang.UnsupportedOperationException("Illegal constructor call");
     }
@@ -305,9 +306,9 @@ public class SnmpPortal extends Object {
                             if (!m_isClosing) {
                                 boolean handled = true;
                                 try {
-                                    Class loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
+                                    Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
 
-                                    Class[] methodParmList = { Class.class };
+                                    Class<?>[] methodParmList = { Class.class };
                                     Method loggerM = loggerC.getMethod("getInstance", methodParmList);
 
                                     Object[] parmList = { this.getClass() };
@@ -355,9 +356,9 @@ public class SnmpPortal extends Object {
                 } catch (SnmpPduEncodingException err) {
                     boolean handled = true;
                     try {
-                        Class loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
+                        Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
 
-                        Class[] methodParmList = { Class.class };
+                        Class<?>[] methodParmList = { Class.class };
                         Method loggerM = loggerC.getMethod("getInstance", methodParmList);
 
                         Object[] parmList = { this.getClass() };
@@ -397,9 +398,9 @@ public class SnmpPortal extends Object {
                 } catch (AsnDecodingException err) {
                     boolean handled = true;
                     try {
-                        Class loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
+                        Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
 
-                        Class[] methodParmList = { Class.class };
+                        Class<?>[] methodParmList = { Class.class };
                         Method loggerM = loggerC.getMethod("getInstance", methodParmList);
 
                         Object[] parmList = { this.getClass() };
@@ -440,9 +441,9 @@ public class SnmpPortal extends Object {
                     if (!m_isClosing) {
                         boolean handled = true;
                         try {
-                            Class loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
+                            Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
 
-                            Class[] methodParmList = { Class.class };
+                            Class<?>[] methodParmList = { Class.class };
                             Method loggerM = loggerC.getMethod("getInstance", methodParmList);
 
                             Object[] parmList = { this.getClass() };

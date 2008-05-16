@@ -60,6 +60,7 @@ public class OnmsArpInterface implements Serializable {
         private static final char[] s_order = {'A', 'N', 'D', 'K' };
         private char m_statusType;
 
+        @SuppressWarnings("unused")
         private StatusType() {
         }
 

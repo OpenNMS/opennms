@@ -114,27 +114,22 @@ public class StatsdConfig {
         throw new ObjectRetrievalFailureException("There is no report definition named '" + name + "'", name);
     }
 
-    @SuppressWarnings("unchecked")
     private List<Parameter> getParametersForReport(org.opennms.netmgt.config.statsd.Report report) {
         return report.getParameterCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<org.opennms.netmgt.config.statsd.Report> getCastorReports() {
         return m_castorConfig.getReportCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<org.opennms.netmgt.config.statsd.Package> getCastorPackages() {
         return m_castorConfig.getPackageCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<org.opennms.netmgt.config.statsd.PackageReport> getPackageReportForPackage(org.opennms.netmgt.config.statsd.Package pkg) {
         return pkg.getPackageReportCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<Parameter> getParametersForPackageReport(org.opennms.netmgt.config.statsd.PackageReport packageReport) {
         return packageReport.getParameterCollection();
     }

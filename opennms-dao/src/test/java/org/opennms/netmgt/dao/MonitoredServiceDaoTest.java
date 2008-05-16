@@ -35,7 +35,7 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -44,10 +44,10 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
 
     public void testLazy() {
     	
-    	Collection allSvcs = getMonitoredServiceDao().findAll();
+    	List<OnmsMonitoredService> allSvcs = getMonitoredServiceDao().findAll();
     	assertTrue(allSvcs.size() > 1);
     	
-    	OnmsMonitoredService svc = (OnmsMonitoredService)allSvcs.iterator().next();
+    	OnmsMonitoredService svc = allSvcs.iterator().next();
     	assertEquals("192.168.1.1", svc.getIpAddress());
     	assertEquals(1, svc.getIfIndex().intValue());
     	assertEquals(1, svc.getIpInterface().getNode().getId().intValue());

@@ -41,16 +41,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -60,8 +58,6 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -71,6 +67,7 @@ import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.poller.Monitor;
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 
@@ -82,21 +79,23 @@ import org.opennms.netmgt.config.poller.Service;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AddPollerConfigServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
     PollerConfiguration pollerConfig = null;
 
     CapsdConfiguration capsdConfig = null;
 
     protected String redirectSuccess;
 
-    HashMap pollerServices = new HashMap();
+    HashMap<String, Service> pollerServices = new HashMap<String, Service>();
 
-    HashMap capsdProtocols = new HashMap();
+    HashMap<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
 
-    java.util.List capsdColl = new ArrayList();
+    java.util.List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
 
     org.opennms.netmgt.config.poller.Package pkg = null;
 
-    Collection pluginColl = null;
+    Collection<ProtocolPlugin> pluginColl = null;
 
     Properties props = new Properties();
 
@@ -107,13 +106,9 @@ public class AddPollerConfigServlet extends HttpServlet {
     boolean errorflag = false;
 
     public void init() throws ServletException {
-        String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -144,13 +139,9 @@ public class AddPollerConfigServlet extends HttpServlet {
     }
 
     public void reloadFiles() throws ServletException {
-        String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -183,9 +174,9 @@ public class AddPollerConfigServlet extends HttpServlet {
     public void initCapsdProtocols() {
         pluginColl = capsdConfig.getProtocolPluginCollection();
         if (pluginColl != null) {
-            Iterator pluginiter = pluginColl.iterator();
+            Iterator<ProtocolPlugin> pluginiter = pluginColl.iterator();
             while (pluginiter.hasNext()) {
-                ProtocolPlugin plugin = (ProtocolPlugin) pluginiter.next();
+                ProtocolPlugin plugin = pluginiter.next();
                 capsdColl.add(plugin);
                 capsdProtocols.put(plugin.getProtocol(), plugin);
             }
@@ -193,16 +184,12 @@ public class AddPollerConfigServlet extends HttpServlet {
     }
 
     public void initPollerServices() {
-        Collection packageColl = pollerConfig.getPackageCollection();
+        List<Package> packageColl = pollerConfig.getPackageCollection();
         if (packageColl != null) {
-            Iterator pkgiter = packageColl.iterator();
+            Iterator<Package> pkgiter = packageColl.iterator();
             if (pkgiter.hasNext()) {
-                pkg = (org.opennms.netmgt.config.poller.Package) pkgiter.next();
-                Collection svcColl = pkg.getServiceCollection();
-                Iterator svcIter = svcColl.iterator();
-                Service svcProp = null;
-                while (svcIter.hasNext()) {
-                    svcProp = (Service) svcIter.next();
+                pkg = pkgiter.next();
+                for (Service svcProp : pkg.getServiceCollection()) {
                     pollerServices.put(svcProp.getName(), svcProp);
                 }
             }
@@ -210,11 +197,7 @@ public class AddPollerConfigServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
         String user_id = request.getRemoteUser();
-        Enumeration en = context.getAttributeNames();
-
         errorflag = false;
         reloadFiles();
         String query = request.getQueryString();
@@ -224,8 +207,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             String protoArray1 = request.getParameter("protArray1");
             String port1 = request.getParameter("port1");
 
-            java.util.List checkedList = new ArrayList();
-            java.util.List deleteList = new ArrayList();
+            java.util.List<String> checkedList = new ArrayList<String>();
             if (name1 != null && !name1.equals("")) {
                 addPollerInfo(check1, name1, port1, user_id, protoArray1, response);
                 if (errorflag)
@@ -241,7 +223,6 @@ public class AddPollerConfigServlet extends HttpServlet {
 
             log().debug("b4 writing to files");
             props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
-            StringWriter stringWriter = new StringWriter();
             FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
             FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
             try {
@@ -265,25 +246,22 @@ public class AddPollerConfigServlet extends HttpServlet {
         // Check to see if the name is duplicate of the already specified names
         // first.
         log().debug("Adding " + name + "to capsd");
-        Collection tmpCapsd = capsdConfig.getProtocolPluginCollection();
-        Iterator iter = tmpCapsd.iterator();
-        while (iter.hasNext()) {
-            ProtocolPlugin svc = (ProtocolPlugin) iter.next();
+        for (ProtocolPlugin svc : capsdConfig.getProtocolPluginCollection()) {
             if (svc.getProtocol().equals(name)) {
-                // delete from the poller config.
-                Collection tmpPollers = pkg.getServiceCollection();
-                Iterator polleriter = tmpPollers.iterator();
+                // delete from the poller configuration.
+                List<Service> tmpPollers = pkg.getServiceCollection();
+                Iterator<Service> polleriter = tmpPollers.iterator();
                 boolean removePoller = false;
                 Service pollersvc = null;
                 while (polleriter.hasNext()) {
-                    pollersvc = (Service) polleriter.next();
+                    pollersvc = polleriter.next();
                     if (pollersvc.getName().equals(name)) {
                         removePoller = true;
                         break;
                     }
                 }
                 if (removePoller) {
-                    Collection tmpPoller = pkg.getServiceCollection();
+                    List<Service> tmpPoller = pkg.getServiceCollection();
                     if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
                         errorflag = true;
                         log().debug("Removed from poller-config");
@@ -371,10 +349,7 @@ public class AddPollerConfigServlet extends HttpServlet {
     public void addPollerInfo(String bPolled, String name, String port, String user, String protocol, HttpServletResponse response) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        Collection tmpPollers = pkg.getServiceCollection();
-        Iterator iter = tmpPollers.iterator();
-        while (iter.hasNext()) {
-            Service svc = (Service) iter.next();
+        for (Service svc : pkg.getServiceCollection()) {
             if (svc.getName().equals(name)) {
                 errorflag = true;
                 response.sendRedirect("error.jsp?error=1&name=" + name);
@@ -395,7 +370,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             newService.setName(name);
             newService.setUserDefined("true");
 
-            Collection monitorColl = pollerConfig.getMonitorCollection();
+            Collection<Monitor> monitorColl = pollerConfig.getMonitorCollection();
             Monitor newMonitor = new Monitor();
             String monitor = (String) props.get("service." + protocol + ".monitor");
             if (monitor != null) {

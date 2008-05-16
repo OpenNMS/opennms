@@ -297,9 +297,9 @@ public class BaseImporter implements ImportOperationFactory {
 		}
 
 		private OnmsNode findNodeByNodeLabel(String label) {
-			Collection nodes = getNodeDao().findByLabel(label);
+			Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
 			if (nodes.size() == 1)
-				return (OnmsNode)nodes.iterator().next();
+				return nodes.iterator().next();
 			
 			log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
 			return null;

@@ -266,6 +266,7 @@ public final class SnmpTrapSession extends Object {
      *                Thrown if the constructor is called.
      * 
      */
+    @SuppressWarnings("unused")
     private SnmpTrapSession() throws java.lang.UnsupportedOperationException {
         throw new java.lang.UnsupportedOperationException("Illegal constructor call");
     }

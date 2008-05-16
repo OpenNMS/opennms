@@ -157,12 +157,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     	m_configuredResourceTypes = map;
     }
 
-    @SuppressWarnings("unchecked")
     private List<ResourceType> getResourceTypesForCollection(SnmpCollection collection) {
         return (List<ResourceType>) collection.getResourceTypeCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<SnmpCollection> getSnmpCollections() {
         return (List<SnmpCollection>) m_config.getSnmpCollectionCollection();
     }
@@ -219,12 +217,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 		}
 	}
 
-    @SuppressWarnings("unchecked")
     private List<MibObj> getMibObjsForGroup(Group group) {
         return (List<MibObj>) group.getMibObjCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<Group> getGroupsForCollection(SnmpCollection collection) {
         return (List<Group>) collection.getGroups().getGroupCollection();
     }

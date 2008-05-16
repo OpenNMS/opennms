@@ -45,7 +45,7 @@ public class AttributeGroupType {
     private String m_name;
     private String m_ifType;
     
-    private SortedSet m_attributeTypes = new TreeSet(new ByNameComparator());
+    private SortedSet<AttributeDefinition> m_attributeTypes = new TreeSet<AttributeDefinition>(new ByNameComparator());
 
     public AttributeGroupType(String groupName, String groupIfType) {
         if (groupName == null) {
@@ -83,7 +83,7 @@ public class AttributeGroupType {
         m_attributeTypes.add(attrType);
     }
     
-    public SortedSet getAttributeTypes() {
+    public SortedSet<AttributeDefinition> getAttributeTypes() {
         return Collections.unmodifiableSortedSet(m_attributeTypes);
     }
 
