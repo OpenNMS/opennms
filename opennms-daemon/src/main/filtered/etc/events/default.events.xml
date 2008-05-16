@@ -114,6 +114,25 @@
             &lt;p&gt;This is the default event format used when an enterprise specific event (trap) is received for which no format has been configured
             (i.e. no event definition exists).&lt;/p&gt; &lt;p&gt;The total number of arguments received with the trap: %parm[##]%.&lt;/p&gt;
             &lt;p&gt;They were:&lt;p&gt; &lt;p&gt;%parm[all]%&lt;p&gt;
+            &lt;p&gt;Here is a "mask" element definition that matches this
+            event, for use in event configuration files:&lt;br/&gt;
+            &lt;blockquote&gt;
+            &amp;lt;mask&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mename&amp;gt;id&amp;lt;/mename&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mevalue&amp;gt;%id%&amp;lt;/mevalue&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;/maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mename&amp;gt;generic&amp;lt;/mename&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mevalue&amp;gt;%generic%&amp;lt;/mevalue&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;/maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mename&amp;gt;specific&amp;lt;/mename&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mevalue&amp;gt;%specific%&amp;lt;/mevalue&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;/maskelement&amp;gt;&lt;br/&gt;
+            &amp;lt;/mask&amp;gt;
+            &lt;/blockquote&gt;
+            &lt;p&gt;
         </descr>
         <logmsg dest='logndisplay'>
             Received unformatted enterprise event (enterprise:%id% generic:%generic% specific:%specific%). %parm[##]% args: %parm[all]%
