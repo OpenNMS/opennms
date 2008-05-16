@@ -933,6 +933,10 @@
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="dskIndex" alias="ns-dskUsed" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="dskIndex" alias="ns-dskPercent" type="gauge" />
       </group>
+      <group name="net-snmp-disk-more" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.3" instance="dskIndex" alias="ns-dskDevice" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.10" instance="dskIndex" alias="ns-dskPercentNode" type="gauge" />
+      </group>
 
       <group name="ucd-loadavg" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1" type="integer" />
