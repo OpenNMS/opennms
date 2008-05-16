@@ -87,7 +87,7 @@ public class PersistOperationBuilderTest extends TestCase {
         m_intf.setId(27);
         
         m_ifDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(m_ifDao.get(m_intf.getId())).andReturn(m_intf).anyTimes();
+        EasyMock.expect(m_ifDao.load(m_intf.getId())).andReturn(m_intf).anyTimes();
         
         EasyMock.replay(m_ifDao);
         

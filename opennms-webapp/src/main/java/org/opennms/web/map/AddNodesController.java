@@ -126,7 +126,7 @@ public class AddNodesController implements Controller {
 				CategoryFactory.init();
 				CatFactory cf = CategoryFactory.getInstance();
 				String rule = cf.getEffectiveRule(categoryName);
-				List nodeIPs = FilterDaoFactory.getInstance().getIPList(rule);
+				List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(rule);
 				log.debug("ips found: "+nodeIPs.toString());
 				nodeids = new Integer[nodeIPs.size()];
 				for (int i = 0; i<nodeIPs.size();i++) {

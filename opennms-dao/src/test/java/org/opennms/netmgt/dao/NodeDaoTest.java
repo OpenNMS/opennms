@@ -106,8 +106,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
         assertEquals(7, nodes.size());
         System.out.println("AFTER GETNODES");
-        for (Iterator it = nodes.iterator(); it.hasNext();) {
-            OnmsNode retrieved = (OnmsNode) it.next();
+        for (OnmsNode retrieved : nodes) {
             System.out.println("category for "+retrieved.getId()+" = "+retrieved.getAssetRecord().getDisplayCategory());
             if (node.getId().intValue() == 5) {
                 assertEquals("MyFirstNode", retrieved.getLabel());
@@ -132,7 +131,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
         
         OnmsNode n = getNodeDao().get(1);
-        Iterator it = n.getIpInterfaces().iterator();
+        Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
         it.next();
         it.remove();
         getNodeDao().saveOrUpdate(n);
@@ -220,7 +219,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         assertNodeEquals(getNode1(), n);
     }
     
-    private class PropertyComparator implements Comparator {
+    private class PropertyComparator implements Comparator<Object> {
     	
     	String m_propertyName;
     	
@@ -292,7 +291,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
     	assertServicesEquals(expected.getMonitoredServices(), actual.getMonitoredServices());
 	}
 
-	private void assertServicesEquals(Set expectedSet, Set actualSet) throws Exception {
+	@SuppressWarnings("unchecked")
+    private void assertServicesEquals(Set expectedSet, Set actualSet) throws Exception {
     	assertSetsEqual(expectedSet, actualSet, "serviceId" , new AssertEquals() {
 
 			public void assertEqual(Object expected, Object actual) throws Exception {

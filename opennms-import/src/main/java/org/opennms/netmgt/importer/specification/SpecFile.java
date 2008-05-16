@@ -36,7 +36,6 @@ package org.opennms.netmgt.importer.specification;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -84,9 +83,7 @@ public class SpecFile {
 
     private void doVisitImport(ImportVisitor visitor) {
         visitor.visitModelImport(m_mi);
-        Enumeration nodes = m_mi.enumerateNode();
-        while (nodes.hasMoreElements()) {
-            Node node = (Node) nodes.nextElement();
+        for (Node node : m_mi.getNodeCollection()) {
             visitNode(visitor, node);
         }
         visitor.completeModelImport(m_mi);
@@ -98,14 +95,10 @@ public class SpecFile {
 
     private void doVisitNode(ImportVisitor visitor, Node node) {
         visitor.visitNode(node);
-        Enumeration categories = node.enumerateCategory();
-        while (categories.hasMoreElements()) {
-            Category category = (Category) categories.nextElement();
+        for (Category category : node.getCategoryCollection()) {
             visitCategory(visitor, category);
         }
-        Enumeration ifaces = node.enumerateInterface();
-        while (ifaces.hasMoreElements()) {
-            Interface iface = (Interface) ifaces.nextElement();
+        for (Interface iface : node.getInterfaceCollection()) {
             visitInterface(visitor, iface);
         }
         visitor.completeNode(node);
@@ -126,9 +119,7 @@ public class SpecFile {
 
     private void doVisitInterface(ImportVisitor visitor, Interface iface) {
         visitor.visitInterface(iface);
-        Enumeration svcs = iface.enumerateMonitoredService();
-        while (svcs.hasMoreElements()) {
-            MonitoredService svc = (MonitoredService) svcs.nextElement();
+        for (MonitoredService svc : iface.getMonitoredServiceCollection()) {
             visitMonitoredService(visitor, svc);
         }
         visitor.completeInterface(iface);

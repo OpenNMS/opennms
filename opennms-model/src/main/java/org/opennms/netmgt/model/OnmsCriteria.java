@@ -65,11 +65,11 @@ public class OnmsCriteria {
         this(entityName, OnmsDetachedCriteria.forEntityName(entityName, alias));
     }
     
-    public OnmsCriteria(Class clazz) {
+    public OnmsCriteria(Class<?> clazz) {
         this(clazz.getName(), OnmsDetachedCriteria.forClass(clazz));
     }
     
-    public OnmsCriteria(Class clazz, String alias) {
+    public OnmsCriteria(Class<?> clazz, String alias) {
         this(clazz.getName(), OnmsDetachedCriteria.forClass(clazz, alias));
     }
     
@@ -129,7 +129,7 @@ public class OnmsCriteria {
         return m_criteria;
     }
 
-    public boolean resultsOfType(Class clazz) {
+    public boolean resultsOfType(Class<?> clazz) {
         if (m_entityName == null) {
             return true;
         } else {
@@ -195,11 +195,11 @@ public class OnmsCriteria {
             return new OnmsDetachedCriteria(entityName, alias);
         }
         
-        public static OnmsDetachedCriteria forClass(Class clazz) {
+        public static OnmsDetachedCriteria forClass(Class<?> clazz) {
             return new OnmsDetachedCriteria(clazz.getName());
         }
         
-        public static OnmsDetachedCriteria forClass(Class clazz, String alias) {
+        public static OnmsDetachedCriteria forClass(Class<?> clazz, String alias) {
             return new OnmsDetachedCriteria(clazz.getName() , alias);
         }
         

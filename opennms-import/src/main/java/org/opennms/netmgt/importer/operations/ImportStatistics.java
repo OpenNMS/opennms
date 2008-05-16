@@ -33,6 +33,7 @@ package org.opennms.netmgt.importer.operations;
 
 import java.util.List;
 
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
 public interface ImportStatistics {
@@ -53,9 +54,9 @@ public interface ImportStatistics {
 
 	void finishPersisting(ImportOperation oper);
 
-	void beginSendingEvents(ImportOperation oper, List events);
+	void beginSendingEvents(ImportOperation oper, List<Event> events);
 
-	void finishSendingEvents(ImportOperation oper, List events);
+	void finishSendingEvents(ImportOperation oper, List<Event> events);
 
 	void beginLoadingResource(Resource resource);
 

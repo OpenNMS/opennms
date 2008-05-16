@@ -87,11 +87,9 @@ public class AutomationProcessor implements ReadyRunnable {
     private ActionEventProcessor m_actionEvent;
     
     static class TriggerProcessor {
-        private String m_automationName;
         private Trigger m_trigger;
 
         public TriggerProcessor(String automationName, Trigger trigger) {
-            m_automationName = automationName;
             m_trigger = trigger;
         }
 

@@ -176,7 +176,7 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.opennms.com", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
 
         p.setKey("port");
         p.setValue("80");

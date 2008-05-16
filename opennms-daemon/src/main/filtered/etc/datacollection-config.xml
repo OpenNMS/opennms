@@ -696,7 +696,7 @@
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.12" instance="0" alias="umOutCallsCompleted" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.14" instance="0" alias="umAACallsCompleted" type="counter" />
       </group>
-      <group name="ipunity-um-org-stats" ifType="ignore">
+      <group name="ipunity-um-org-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.2" instance="umOrgIndex" alias="umOrgName" type="string" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.3" instance="umOrgIndex" alias="umOrgMsgsDiskUsage" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.4" instance="umOrgIndex" alias="umOrgMsgsSize" type="gauge" />
@@ -745,7 +745,7 @@
         <mibObj oid=".1.3.6.1.4.1.789.1.2.1.5" instance="0" alias="cpuIdleTimePct" type="INTEGER" />
       </group>
 
-      <group name="network-services-appl" ifType="ignore">
+      <group name="network-services-appl" ifType="all">
         <mibObj oid=".1.3.6.1.2.1.27.1.1.2" instance="applIndex" alias="applName" type="string" />
         <mibObj oid=".1.3.6.1.2.1.27.1.1.16" instance="applIndex" alias="applDescription" type="string" />
       </group>
@@ -974,6 +974,10 @@
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="dskIndex" alias="ns-dskAvail" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="dskIndex" alias="ns-dskUsed" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="dskIndex" alias="ns-dskPercent" type="gauge" />
+      </group>
+      <group name="net-snmp-disk-more" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.3" instance="dskIndex" alias="ns-dskDevice" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.10" instance="dskIndex" alias="ns-dskPercentNode" type="gauge" />
       </group>
 
       <group name="ucd-loadavg" ifType="ignore">

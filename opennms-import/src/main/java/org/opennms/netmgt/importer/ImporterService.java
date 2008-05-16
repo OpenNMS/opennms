@@ -43,7 +43,6 @@
 package org.opennms.netmgt.importer;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +58,6 @@ import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.operations.ImportStatistics;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -226,12 +222,12 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 			m_processingEffort.end();
 		}
 
-		public void beginSendingEvents(ImportOperation oper, List events) {
+		public void beginSendingEvents(ImportOperation oper, List<Event> events) {
 			if (events != null) m_eventCount += events.size();
 			m_eventEffort.begin();
 		}
 
-		public void finishSendingEvents(ImportOperation oper, List events) {
+		public void finishSendingEvents(ImportOperation oper, List<Event> events) {
 			m_eventEffort.end();
 		}
 

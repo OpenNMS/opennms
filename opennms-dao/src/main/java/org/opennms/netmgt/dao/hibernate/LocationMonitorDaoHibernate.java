@@ -115,7 +115,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /**
      * Don't call this for now.
      */
-    @SuppressWarnings("unchecked")
     public void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> onmsDefs) {
         Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
         for (OnmsMonitoringLocationDefinition onmsDef : onmsDefs) {
@@ -129,7 +128,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         saveMonitoringConfig();
     }
 
-    @SuppressWarnings("unchecked")
     public void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition onmsDef) {
         Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
         for (LocationDef def : defs) {
@@ -180,7 +178,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * @param definitionName
      * @return
      */
-    @SuppressWarnings("unchecked")
     private LocationDef getLocationDef(final String definitionName) {
         Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
         LocationDef matchingDef = null;
@@ -234,7 +231,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         }
     }
     
-    @SuppressWarnings("unchecked")
     public Collection<OnmsMonitoringLocationDefinition> findAllLocationDefinitions() {
         assertPropertiesSet();
         List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();

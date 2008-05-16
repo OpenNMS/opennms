@@ -114,6 +114,9 @@ public class CollectdIntegrationTest extends TestCase {
         InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
 
+        File homeDir = resource.getFile().getParentFile().getParentFile();
+        System.setProperty("opennms.home", homeDir.getAbsolutePath());
+
         resource = new ClassPathResource("/test-thresholds.xml"); 
         InputStreamReader thresholdsRdr = new InputStreamReader(resource.getInputStream());
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(thresholdsRdr));
@@ -191,11 +194,11 @@ public class CollectdIntegrationTest extends TestCase {
         
         m_collectorConfigDao.rebuildPackageIpListMap();
         
-        EasyMock.expect(m_nodeDao.get(1)).andReturn(nodeBuilder.getNode()).anyTimes();
+        EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
         
         createGetPackagesExpectation(svc);
         
-        EasyMock.expect(m_ifaceDao.get(2)).andReturn(ifaceBlder.getInterface()).anyTimes();
+        EasyMock.expect(m_ifaceDao.load(2)).andReturn(ifaceBlder.getInterface()).anyTimes();
         
         m_mockUtils.replayAll();
         
@@ -285,6 +288,7 @@ public class CollectdIntegrationTest extends TestCase {
             return m_collectCount;
         }
 
+        @SuppressWarnings("unchecked")
         public void initialize(Map parameters) {
             // This fails because collectd does NOT actually passed in configured monitor parameters
             // since no collectors actually use them (except this one)
@@ -293,6 +297,7 @@ public class CollectdIntegrationTest extends TestCase {
 //            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
 
+        @SuppressWarnings("unchecked")
         public void initialize(CollectionAgent agent, Map parameters) {
             String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
             assertNotNull(testKey);

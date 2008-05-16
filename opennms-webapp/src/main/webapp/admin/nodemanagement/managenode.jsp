@@ -67,6 +67,9 @@
     }
 
     interfaces = (List) userSession.getAttribute("interfaces.nodemanagement");
+    if (interfaces.size() < 1) {
+    	throw new NoManagedInterfacesException("element/nodeList.htm");
+    }
     if (interfaces == null) {
 	throw new ServletException("Session attribute "
 				   + "interfaces.nodemanagement is null");

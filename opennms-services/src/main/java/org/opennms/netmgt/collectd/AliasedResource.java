@@ -103,7 +103,7 @@ public class AliasedResource extends SnmpCollectionResource {
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
 	
-	for (Iterator it = getGroups().iterator(); it.hasNext();) {
+	for (Iterator<AttributeGroup> it = getGroups().iterator(); it.hasNext();) {
 	    AttributeGroup group = (AttributeGroup) it.next();
 	    AttributeGroup aliased = new AliasedGroup(this, group);
 	    aliased.visit(visitor);
@@ -112,7 +112,7 @@ public class AliasedResource extends SnmpCollectionResource {
 	visitor.completeResource(this);
     }
 
-    public Collection getGroups() {
+    public Collection<AttributeGroup> getGroups() {
     	return getIfInfo().getGroups();
     }
 

@@ -270,7 +270,7 @@ public class BasicScheduleUtils {
     }
 
     public static boolean isDaily(Time time) {
-    	return time.getDay() == null && !time.getBegins().matches("\\d\\d\\d\\d-\\d\\d-\\d\\d");
+    	return time.getDay() == null && !isSpecific(time);
     }
     
     public static boolean isWeekly(Time time) {
@@ -282,9 +282,16 @@ public class BasicScheduleUtils {
     }
     
     public static boolean isSpecific(Time time) {
-    	return time.getDay() == null && time.getBegins().matches("\\d\\d\\d\\d-\\d\\d-\\d\\d");
+        if (time.getDay() == null) {
+            if (time.getBegins().matches("^\\d\\d\\d\\d-\\d\\d-\\d\\d .*$")) {
+                return true;
+            } else if (time.getBegins().matches("^\\d\\d-...-\\d\\d\\d\\d .*$")) {
+                return true;
+            }
+        }
+        return false;
     }
-    
+
     public static Date getSpecificTime(String specificString) {
         Calendar cal = Calendar.getInstance();
         setOutCalTime(cal, specificString);

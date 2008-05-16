@@ -40,8 +40,6 @@ package org.opennms.netmgt.importer;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -233,9 +231,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         ModelImporter mi = m_importer;        
         String specFile = "/tec_dump.xml.smalltest";
         mi.importModelFromResource(new ClassPathResource(specFile));
-        Collection c = m_importer.getAssetRecordDao().findAll();
-        for (Iterator it = c.iterator(); it.hasNext();) {
-            OnmsAssetRecord assetRecord = (OnmsAssetRecord) it.next();
+        for (OnmsAssetRecord assetRecord : m_importer.getAssetRecordDao().findAll()) {
             System.err.println(assetRecord.getAssetNumber());
         }
     }

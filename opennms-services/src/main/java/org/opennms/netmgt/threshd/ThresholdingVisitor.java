@@ -215,7 +215,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         
         // Create ThresholdingVisitor is groupNameList is not empty
         if (groupNameList.isEmpty()) {
-            log.warn("createThresholdingVisitor: Can't create ThreshdingVisitor for " + hostAddress + "/" + serviceName);
+            log.warn("createThresholdingVisitor: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
             return null;
         }
         return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupNameList);

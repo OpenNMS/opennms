@@ -139,7 +139,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
         iface.setId(2);
         
         IpInterfaceDao ifDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(ifDao.get(iface.getId())).andReturn(iface).anyTimes();
+        EasyMock.expect(ifDao.load(iface.getId())).andReturn(iface).anyTimes();
         EasyMock.replay(ifDao);
         
         CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
