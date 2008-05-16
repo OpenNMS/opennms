@@ -60,6 +60,9 @@ import org.opennms.web.WebSecurityUtils;
  */
 public class ActionDiscoveryServlet extends HttpServlet {
  
+    private static final long serialVersionUID = 1L;
+
+
     protected static Category log = ThreadCategory.getInstance("WEB");
     
     

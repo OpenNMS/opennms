@@ -255,7 +255,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         
         testDoubleImport(new ClassPathResource("/tec_dump.xml"));
         
-        Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.201");
+        Collection<OnmsIpInterface> c = getIpInterfaceDao().findByIpAddress("172.20.1.201");
         assertEquals(1, c.size());
         
 

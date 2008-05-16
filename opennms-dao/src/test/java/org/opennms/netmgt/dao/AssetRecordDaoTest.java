@@ -54,7 +54,7 @@ public class AssetRecordDaoTest extends AbstractTransactionalDaoTestCase {
         getAssetRecordDao().flush();
 
         //Test findAll method
-        Collection assetRecords = getAssetRecordDao().findAll();
+        Collection<OnmsAssetRecord> assetRecords = getAssetRecordDao().findAll();
         assertEquals(7, assetRecords.size());
         
         //Test countAll method

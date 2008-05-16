@@ -406,7 +406,7 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
 	private OnmsIpInterface getIpInterface(int nodeId, String ipAddress) {
-		OnmsNode node = m_nodeDao.get(nodeId);
+		OnmsNode node = m_nodeDao.load(nodeId);
         OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
 		return iface;
 	}

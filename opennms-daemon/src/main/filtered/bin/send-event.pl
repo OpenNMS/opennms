@@ -1,7 +1,7 @@
 #!@install.perl.bin@
 
 use strict;
-use Getopt::Mixed "nextOption";
+use Getopt::Long;
 use IO::Socket;
 use POSIX qw(strftime);
 use vars qw(
@@ -26,30 +26,31 @@ use vars qw(
 	$PORT_TO
 );
 
-$VERSION = '0.2';
+$VERSION = '0.3';
 $VERBOSE = 0;
 $ZONE    = 'GMT';
 
 @SEVERITIES = ( undef, 'Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical' );
 	
-Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s  u=s uei>u U=s uuid>U V version>V v verbose>v x=s severity>x o=s operinstr>o');
-while (my ($option, $value) = nextOption()) {
+my $help = 0;
+my $version = 0;
+my $result = GetOptions("help|h" => \$help,
+                        "descr|d=s"     => \$DESCR,
+                        "interface|i=s" => \$INTERFACE,
+                        "nodeid|n=i"    => \$NODEID,
+                        "parm|p=s"      => \@PARMS,
+                        "service|s=s"   => \$SERVICE,
+                        "uuid|U=i"      => \$UUID,
+                        "version|V"     => \$version,
+                        "verbose|v"     => \$VERBOSE,
+                        "severity|x=i"  => \$SEVERITY,
+                        "operinstr|o=s" => \$OPERINSTR);
+if (! $result) { print get_help(); exit; }
+if ($version)  { print "$0 version $VERSION\n"; exit; }
+if ($help)     { print get_help(); exit; }
 
-        $SERVICE   = $value if ($option eq "s");
-        $NODEID    = $value if ($option eq "n");
-	$INTERFACE = $value if ($option eq "i");
-        $DESCR     = $value if ($option eq "d");
-        $SEVERITY  = $value if ($option eq "x");
-	$VERBOSE   = 1      if ($option eq "v");
-	$OPERINSTR = $value if ($option eq "o");
-	$UUID      = $value if ($option eq "U");
-	push(@PARMS, parse_parm($value)) if ($option eq "p");
-
-	if ($option eq "V") { print "$0 version $VERSION\n"; exit; }
-	if ($option eq "h") { print get_help(); exit; }
-
-}
-Getopt::Mixed::cleanup();
+# parm array is numerically referenced in OpenNMS' templates
+@PARMS = reverse map { parse_parm($_) } @PARMS;
 
 chomp (my $hostname = `hostname`);
 my @addr = gethostbyname($hostname);

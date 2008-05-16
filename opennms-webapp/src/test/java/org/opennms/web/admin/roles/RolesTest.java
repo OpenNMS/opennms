@@ -43,6 +43,7 @@ import org.opennms.netmgt.config.IntervalTestCase;
 import org.opennms.netmgt.config.OwnedIntervalSequence;
 import org.opennms.netmgt.config.Owner;
 import org.opennms.netmgt.config.TimeInterval;
+import org.opennms.netmgt.config.TimeIntervalSequence;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -209,15 +210,13 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
             assertRole(role, webRole);
         }
         
-        for (Iterator it = m_groupManager.getGroupNames().iterator(); it.hasNext();) {
-            String groupName = (String) it.next();
+        for (String groupName : m_groupManager.getGroupNames()) {
             Group group = m_groupManager.getGroup(groupName);
             WebGroup webGroup = m_groupMgr.getGroup(groupName);
             assertGroup(group, webGroup);
         }
         
-        for (Iterator it = m_userManager.getUserNames().iterator(); it.hasNext();) {
-            String userName = (String) it.next();
+        for (String userName : m_userManager.getUserNames()) {
             User user = m_userManager.getUser(userName);
             WebUser webUser = m_userMgr.getUser(userName);
             assertUser(user, webUser);
@@ -260,11 +259,17 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         Owner brozow = new Owner("oncall", "brozow", 1, 1);
         Owner admin = new Owner("oncall", "admin", 1, 1);
         Owner david = new Owner("oncall", "david", 1, 1);
+        TimeIntervalSequence before = new TimeIntervalSequence();
+        before.addInterval(owned(david, aug(18, 0, 9)));
+        before.addInterval(owned(admin, aug(18, 9, 17)));
+        before.addInterval(owned(david, aug(18, 17, 23)));
+        before.addInterval(owned(brozow, aug(18, 23, 24)));
+
         TimeInterval[] expected = {
                 owned(david, aug(18, 0, 9)),
                 owned(admin, aug(18, 9, 17)),
                 owned(david, aug(18, 17, 23)),
-                owned(brozow, aug(18, 23, 24)), // brozow is the supervisor and this period is unschedule
+                owned(brozow, aug(18, 23, 24)), // brozow is the supervisor and this period is unscheduled
         };
         
         assertTimeIntervalSequence(expected, intervals);
@@ -276,18 +281,20 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         assertEquals(user.getUserId(), webUser.getName());
     }
 
+    @SuppressWarnings("unchecked")
     private void assertGroup(Group group, WebGroup webGroup) throws Exception {
         assertEquals(group.getName(), webGroup.getName());
-        Collection userNames = group.getUserCollection();
+        Collection<String> userNames = group.getUserCollection();
         assertEquals(userNames.size(), webGroup.getUsers().size());
-        for (Iterator it = webGroup.getUsers().iterator(); it.hasNext();) {
-            WebUser user = (WebUser) it.next();
+        for (Iterator<WebUser> it = webGroup.getUsers().iterator(); it.hasNext();) {
+            WebUser user = it.next();
             assertTrue(userNames.contains(user.getName()));
             assertUser(m_userManager.getUser(user.getName()), user);
             
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void assertRole(Role role, WebRole webRole) throws Exception {
         assertEquals(role.getName(), webRole.getName());
         assertEquals(role.getDescription(), webRole.getDescription());
@@ -295,9 +302,9 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         assertEquals(role.getMembershipGroup(), webRole.getMembershipGroup().getName());
         assertNotNull(webRole.getDefaultUser());
         assertEquals(role.getSupervisor(), webRole.getDefaultUser().getName());
-        Collection scheduledUsers = webRole.getCurrentUsers();
-        for (Iterator it = scheduledUsers.iterator(); it.hasNext();) {
-            WebUser currentUser = (WebUser) it.next();
+        Collection<WebUser> scheduledUsers = webRole.getCurrentUsers();
+        for (Iterator<WebUser> it = scheduledUsers.iterator(); it.hasNext();) {
+            WebUser currentUser = it.next();
             assertTrue(m_groupManager.isUserScheduledForRole(currentUser.getName(), webRole.getName(), new Date()));
         }
     }

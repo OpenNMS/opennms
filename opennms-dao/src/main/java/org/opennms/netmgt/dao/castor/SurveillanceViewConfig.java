@@ -63,7 +63,6 @@ public class SurveillanceViewConfig {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<View> getViewList() {
         return m_config.getViews().getViewCollection();
     }

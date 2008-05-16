@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,7 +10,7 @@
 //
 // Modifications:
 //
-// 2008 Mar 25: Convert to use AbstractTransactionalDaoTestCase. - dj@opennms.org
+// 2008 May 13: Created. - jeffg@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -29,28 +29,22 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
 //
-package org.opennms.netmgt.dao;
 
-import java.util.Collection;
+package org.opennms.web.admin.nodeManagement;
 
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-
-public class SnmpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
-	public void testGet() throws Exception {
-		Collection<OnmsSnmpInterface> snmpIfs = getSnmpInterfaceDao().findAll();
-		assertEquals(3, snmpIfs.size());
-		for (OnmsSnmpInterface snmpIf : snmpIfs) {
-			assertEquals(10000000, snmpIf.getIfSpeed().intValue());
-			assertNotNull(snmpIf.getNode());
-			assertEquals(1, snmpIf.getNode().getId().intValue());
-			assertEquals("node1", snmpIf.getNode().getLabel());
-			
-		}
-		
+public class NoManagedInterfacesException extends RuntimeException {
+	private String m_nodeListUri;
+	
+	public NoManagedInterfacesException(String nodeListUri) {
+		super();
+		m_nodeListUri = nodeListUri;
 	}
-
+	
+	public String getNodeListUri() {
+		return m_nodeListUri;
+	}
 }

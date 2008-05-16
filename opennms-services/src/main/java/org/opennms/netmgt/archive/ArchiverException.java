@@ -44,6 +44,8 @@ package org.opennms.netmgt.archive;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class ArchiverException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     public ArchiverException() {
         super();
     }

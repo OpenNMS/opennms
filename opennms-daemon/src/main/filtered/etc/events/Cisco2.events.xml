@@ -32039,4 +32039,1048 @@ be found otherwise.&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of MIB: DISMAN-EVENT-MIB -->
+<!-- Start of MIB: CISCO-NETWORK-REGISTRAR-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegFreeAddressLow</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegFreeAddressLow</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the number
+of available IP addresses for a particular scope
+has fallen below the value of
+cnrDHCPScopeFreeAddrLowThreshold for that scope.
+
+This notification has been replaced by the 
+ciscoNetRegFreeAddrLowThreshold notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrDHCPScopeFreeAddrLowThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrDHCPScopeFreeAddrValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrDHCPScopeFreeAddrUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		value(1)
+		percent(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegFreeAddressLow trap received 
+			cnrDHCPScopeFreeAddrLowThreshold=%parm[#1]% 
+			cnrDHCPScopeFreeAddrValue=%parm[#2]% 
+			cnrDHCPScopeFreeAddrUnits=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegFreeAddressHigh</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegFreeAddressHigh</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the number
+of available IP addresses for a particular scope
+has risen above the value of
+cnrDHCPScopeFreeAddrHighThreshold for that scope.
+
+This notification has been replaced by the 
+ciscoNetRegFreeAddrHighThreshold notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrDHCPScopeFreeAddrHighThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrDHCPScopeFreeAddrValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrDHCPScopeFreeAddrUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		value(1)
+		percent(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegFreeAddressHigh trap received 
+			cnrDHCPScopeFreeAddrHighThreshold=%parm[#1]% 
+			cnrDHCPScopeFreeAddrValue=%parm[#2]% 
+			cnrDHCPScopeFreeAddrUnits=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegServerStart</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegServerStart</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the server
+of the specified type has started on the
+host from which this notification has been sent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dns(1)
+		dhcp(2)
+		ldap(3)
+		tftp(4)
+		ccm(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegServerStart trap received 
+			cnrNotifServerType=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegServerStop:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegServerStop</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegServerStop</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the server
+of the specified type has stopped normally on the
+host from which this notification has been sent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dns(1)
+		dhcp(2)
+		ldap(3)
+		tftp(4)
+		ccm(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegServerStop trap received 
+			cnrNotifServerType=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegDNSQueueTooBig</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegDNSQueueTooBig</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that the number of pending
+DNS updates has reached its limit.  Successive updates
+may be dropped, and DHCP may stop responding to client
+requests until this problem has cleared.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegDNSQueueTooBig trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegOtherServerNotResponding</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegOtherServerNotResponding</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that a server is not
+responding to updates from the DHCP server.  The 
+identity of the server is given by the cnrNotifServer
+object.  The type of the server is given by the
+cnrNotifServerType object.
+
+This notification has been replaced by the 
+ciscoNetRegOtherServerNotResp notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dns(1)
+		dhcp(2)
+		ldap(3)
+		tftp(4)
+		ccm(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegOtherServerNotResponding trap received 
+			cnrNotifServer=%parm[#1]% 
+			cnrNotifServerType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegDuplicateAddress</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegDuplicateAddress</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that a duplicate IP address
+has been detected.  The DHCP server can detect this
+condition through the ping-before-offer mechanism.
+Alternatively, the client may have sent a DHCPDECLINE 
+back to the server; this is assumed to be the result of
+the client detecting that the address was in use.  In
+either case, the DHCP server marks the IP address as
+unavailable for leasing to clients.  The
+cnrNotifDupIpAddressDetectedBy object indicates whether
+the client or server detected this condition.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDupIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifMACAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDupIpAddressDetectedBy&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dhcpClient(1)
+		dhcpServer(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegDuplicateAddress trap received 
+			cnrNotifDupIpAddress=%parm[#1]% 
+			cnrNotifMACAddress=%parm[#2]% 
+			cnrNotifDupIpAddressDetectedBy=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegAddressConflict</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegAddressConflict</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that the DHCP server on this
+host, and a DHCP server on another host, have claimed
+ownership for the same IP address.  The
+cnrNotifContestedIpAddress object indicates which address
+is under contention.  The cnrNotifServer object indicates
+with which other server a conflict was detected.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifContestedIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegAddressConflict trap received 
+			cnrNotifContestedIpAddress=%parm[#1]% 
+			cnrNotifServer=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegOtherServerResponding</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegOtherServerResponding</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that a server which had formerly
+been in a 'not responding' state is now responding to
+updates from the CNR protocol server.  The identity of the
+server is given by the cnrNotifServer object.  The type of
+the server is given by the cnrNotifServerType object.
+
+NOTE: One should not rely on recieving this notification
+as an indication that all is well with the network.
+Several conditions, including restart of the CNR
+protocol server, could result in either multiple
+ciscoNetRegOtherServerNotResponding notifications being sent,
+or in a ciscoNetRegOtherServerResponding notification NOT
+being sent.
+
+This notification has been replaced by the 
+ciscoNetRegOtherServerResp notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dns(1)
+		dhcp(2)
+		ldap(3)
+		tftp(4)
+		ccm(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegOtherServerResponding trap received 
+			cnrNotifServer=%parm[#1]% 
+			cnrNotifServerType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegOtherServerNotResponding:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegFailoverConfigMismatch</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegFailoverConfigMismatch</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that a server has detected
+via the failover protocol that its configuration does
+not match that of its failover peer, and that reliable 
+DHCP operation in the event of a server failure may not
+be possible.  The identity of the peer server is given
+by the cnrNotifServer object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegFailoverConfigMismatch trap received 
+			cnrNotifServer=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegFreeAddrLowThreshold</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegFreeAddrLowThreshold</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the number
+of available IP addresses for a particular scope
+has fallen below the value of
+cnrNotifDHCPScopeFreeAddrLow for that scope. 
+
+This notification signals a shortage of addresses.
+The shortage will continue until the number of free 
+addresses has reached or exceeded the number 
+specified by the cnrNotifDHCPScopeFreeAddrHigh object. 
+This notification will only be generated when the 
+shortages of IP addresses in first encountered.   
+
+If the threshold type is scope or subnet, then the value is 
+the primary or secondary subnet number, and if the type is  
+selection-tag, then the value is the selection tag list.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPScopeFreeAddrLow&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPScopeFreeAddrValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPScopeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifPrimarySubnetNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPThresholdType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		scope(1)
+		network(2)
+		selectionTags(3)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegFreeAddrLowThreshold trap received 
+			cnrNotifDHCPScopeFreeAddrLow=%parm[#1]% 
+			cnrNotifDHCPScopeFreeAddrValue=%parm[#2]% 
+			cnrNotifDHCPScopeName=%parm[#3]% 
+			cnrNotifPrimarySubnetNumber=%parm[#4]% 
+			cnrNotifDHCPThresholdType=%parm[#5]% 
+			cnrNotifDHCPThresholdValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegFreeAddrHighThreshold</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegFreeAddrHighThreshold</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the shortage of
+available IP addresses for a particular scope is over and
+generated when the number of free addresses for that scope
+reaches or exceed value specified  by the 
+cnrNotifDHCPScopeFreeAddrHigh.
+
+This notification will only be generated when crossing the
+threshold specified by the cnrNotifDHCPScopeFreeAddrHigh 
+object indicates the end of IP address shortage.
+
+If the threshold type is scope or subnet, then the value is 
+the primary or secondary subnet number, and if the type is  
+selection-tag, then the value is the selection tag list.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPScopeFreeAddrHigh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPScopeFreeAddrValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPScopeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifPrimarySubnetNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPThresholdType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		scope(1)
+		network(2)
+		selectionTags(3)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDHCPThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegFreeAddrHighThreshold trap received 
+			cnrNotifDHCPScopeFreeAddrHigh=%parm[#1]% 
+			cnrNotifDHCPScopeFreeAddrValue=%parm[#2]% 
+			cnrNotifDHCPScopeName=%parm[#3]% 
+			cnrNotifPrimarySubnetNumber=%parm[#4]% 
+			cnrNotifDHCPThresholdType=%parm[#5]% 
+			cnrNotifDHCPThresholdValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegFreeAddrLowThreshold:%dpname%:%nodeid%:%interface%:%parm[#3]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegOtherServerNotResp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegOtherServerNotResp</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that a server is not
+responding to updates from the DHCP server.  This 
+notification will be generated when this error 
+is first encountered and suppressed until the 
+the normal reponse from server has been established
+as indicated by the ciscoNetRegOtherServerResp.
+notification.
+
+The identity of the server is given by the cnrNotifServer
+object. The type of the server is indicated by the 
+cnrNotifRelatedServerType object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifRelatedServerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dnsPrimary(1)
+		ldap(2)
+		failoverPartner(3)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegOtherServerNotResp trap received 
+			cnrNotifServer=%parm[#1]% 
+			cnrNotifRelatedServerType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegOtherServerResp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegOtherServerResp</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that a server is now 
+responding to updates from the DHCP server.  This 
+notification will be generated when normal operation
+is resumed after generation of the 
+ciscoNetRegOtherServerNotResp notification.
+
+The identity of the server is given by the cnrNotifServer
+object. The type of the server is indicated by the 
+cnrNotifRelatedServerType object.
+
+NOTE: One should not rely on recieving this notification
+as an indication that all is well with the network.
+Several conditions, including restart of the CNR
+protocol server, could result in either multiple
+ciscoNetRegOtherServerNotResp notifications being sent,
+or in a ciscoNetRegOtherServerResp notification NOT
+being sent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifRelatedServerType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		dnsPrimary(1)
+		ldap(2)
+		failoverPartner(3)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegOtherServerResp trap received 
+			cnrNotifServer=%parm[#1]% 
+			cnrNotifRelatedServerType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegOtherServerNotResp:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegHaDnsPartnerDown</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegHaDnsPartnerDown</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that communication with a 
+HA-DNS (High Availability DNS) server's partner has been 
+interrupted. The identity of the HA-DNS partner server is 
+given by the cnrNotifServer object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegHaDnsPartnerDown trap received 
+			cnrNotifServer=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegHaDnsPartnerUp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegHaDnsPartnerUp</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that communication with a 
+HA-DNS server's partner has been restored. The identity 
+of the HA-DNS partner server is given by the cnrNotifServer 
+object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegHaDnsPartnerUp trap received 
+			cnrNotifServer=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegHaDnsPartnerDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegMastersNotResp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegMastersNotResp</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that a DNS secondary server 
+cannot reach any of its configured masters to obtain 
+a zone transfer. Once this situation is encountered 
+generation of this notification will be suppressed until
+a complete zone transfer has completed as indicated by 
+the ciscoNetRegMastersResp notification.
+
+The identity of the secondary server is given by 
+cnrNotifDnsServerIpAddress; the identity of the master
+servers is given by the cnrNotifDnsRemoteServersList; and 
+the zone is given by cnrNotifZoneName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsRemoteServersList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegMastersNotResp trap received 
+			cnrNotifDnsServerIpAddress=%parm[#1]% 
+			cnrNotifZoneName=%parm[#2]% 
+			cnrNotifDnsRemoteServersList=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegMastersResp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegMastersResp</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that a DNS secondary server 
+reached at least one of its configured masters and obtained
+a zone transfer. This notification is generated the first 
+time sucessful zone transfer completed after a prior request 
+for zone transfer failed because master server could not
+reached.
+
+The identity of the secondary server is given by 
+cnrNotifDnsServerIpAddress; the identity of the master 
+servers is given by the cnrNotifDnsRemoteServersList; and 
+the zone is given by cnrNotifZoneName object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsRemoteServersList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegMastersResp trap received 
+			cnrNotifDnsServerIpAddress=%parm[#1]% 
+			cnrNotifZoneName=%parm[#2]% 
+			cnrNotifDnsRemoteServersList=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegMastersNotResp:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]:%parm[#3]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegSecondaryZonesExpired</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegSecondaryZonesExpired</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that a DNS secondary server was
+unable to reach any primaries, and that a zone has expired
+because the TTL has passed. 
+
+The identity of the DNS secondary server is given by 
+cnrNotifDnsServerIpAddress; the identity of the master
+servers is given by the cnrNotifDnsRemoteServersList; and  
+the zone is given by cnrNotifZoneName object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsRemoteServersList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegSecondaryZonesExpired trap received 
+			cnrNotifDnsServerIpAddress=%parm[#1]% 
+			cnrNotifZoneName=%parm[#2]% 
+			cnrNotifDnsRemoteServersList=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegDnsForwardersNotResp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegDnsForwardersNotResp</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that a DNS recursive resolver was
+not able to reach any of its configured forwarders. Once this
+situation is encountered generation of this notification will 
+be suppressed until normal operation is resumed as indicated by 
+the ciscoNetRegDnsForwardersResp notification.
+
+The identity of the affected DNS resolving server is given by 
+cnrNotifDnsServerIpAddress and the identity of the 
+forwarders is given by the cnrRemoteServersList object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsRemoteServersList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegDnsForwardersNotResp trap received 
+			cnrNotifDnsServerIpAddress=%parm[#1]% 
+			cnrNotifDnsRemoteServersList=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegDnsForwardersResp</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegDnsForwardersResp</event-label>
+	<descr>
+&lt;p&gt;This notification indicates that a DNS recursive resolver was 
+able to reach at least one of its configured forwarders and 
+indicates start of normal operation. This notification is 
+generated the  first time normal operation is established after 
+a DNS recursive resolver was not able to reach any of its 
+configured forwarders.
+
+The identity of the affected DNS resolving server is given by 
+cnrNotifDnsServerIpAddress and the identity of the 
+forwarders is given by the cnrRemoteServersList object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifDnsRemoteServersList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegDnsForwardersResp trap received 
+			cnrNotifDnsServerIpAddress=%parm[#1]% 
+			cnrNotifDnsRemoteServersList=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoNetRegDnsForwardersNotResp:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.120.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoNetRegHaDnsConfigErr</uei>
+	<event-label>CISCO-NETWORK-REGISTRAR-MIB defined trap event: ciscoNetRegHaDnsConfigErr</event-label>
+	<descr>
+&lt;p&gt;This notification indicates a configuration mismatch between
+two HA-DNS partners. The first zone that has a mismatch will
+be reported and is denoted by cnrNotifZoneName and the 
+server with the configuration error is denoted by 
+cnrNotifServer object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cnrNotifZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoNetRegHaDnsConfigErr trap received 
+			cnrNotifServer=%parm[#1]% 
+			cnrNotifZoneName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<!-- End of MIB: CISCO-NETWORK-REGISTRAR-MIB -->
 </events>
