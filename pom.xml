@@ -1243,7 +1243,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>jfree</groupId>
         <artifactId>jfreechart</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.9</version>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>
