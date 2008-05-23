@@ -78,6 +78,7 @@ import org.opennms.netmgt.eventd.processor.EventProcessor;
 import org.opennms.netmgt.eventd.processor.JdbcAlarmWriter;
 import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -129,7 +130,7 @@ public class OpenNMSTestCase extends TestCase {
         return "127.0.0.1";
     }
     
-    private String myVersion() {
+    protected String myVersion() {
         switch (m_version) {
         case SnmpAgentConfig.VERSION1 :
             return "v1";
@@ -154,7 +155,7 @@ public class OpenNMSTestCase extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
+        MockUtil.println("------------ Begin Test "+this+" --------------------------");
         MockLogAppender.setupLogging();
         
         if (m_runSupers) {
@@ -282,7 +283,7 @@ public class OpenNMSTestCase extends TestCase {
             super.runTest();
             MockLogAppender.assertNoWarningsOrGreater();
         } finally {
-            MockUtil.println("------------ End Test "+getName()+" --------------------------");
+            MockUtil.println("------------ End Test "+this+" --------------------------");
         }
     }
 
@@ -321,6 +322,14 @@ public class OpenNMSTestCase extends TestCase {
 
     public SimpleJdbcTemplate getJdbcTemplate() {
         return m_db.getJdbcTemplate();
+    }
+
+    public String toString() {
+        return super.toString() + " - " + getSnmpImplementation() + " " + myVersion();
+    }
+    
+    private String getSnmpImplementation() {
+        return SnmpUtils.getStrategy().getClass().getSimpleName();
     }
 
 }
