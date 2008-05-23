@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -53,6 +53,7 @@ import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.IncludeRange;
+import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -71,14 +72,14 @@ public abstract class ThreshdConfigManager {
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
      */
-    private Map m_urlIPMap;
+    private Map<String, List<String>> m_urlIPMap;
     /**
      * A mapping of the configured package to a list of IPs selected via filter
-     * rules, so as to avoid repetetive database access.
+     * rules, so as to avoid repetitive database access.
      */
-    private Map m_pkgIpMap;
+    private Map<Package, List<String>> m_pkgIpMap;
     /**
-     * A boolean flag to indicate If a filter rule agaist the local OpenNMS
+     * A boolean flag to indicate If a filter rule against the local OpenNMS
      * server has to be used.
      */
     protected boolean m_verifyServer;
@@ -106,17 +107,11 @@ public abstract class ThreshdConfigManager {
      * repeated file reads can be avoided
      */
     protected void createUrlIpMap() {
-        m_urlIPMap = new HashMap();
+        m_urlIPMap = new HashMap<String, List<String>>();
     
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.threshd.Package pkg = (org.opennms.netmgt.config.threshd.Package) pkgEnum.nextElement();
-    
-            Enumeration urlEnum = pkg.enumerateIncludeUrl();
-            while (urlEnum.hasMoreElements()) {
-                String urlname = (String) urlEnum.nextElement();
-    
-                java.util.List iplist = IpListFromUrl.parse(urlname);
+        for (Package pkg : m_config.getPackageCollection()) {
+            for (String urlname : pkg.getIncludeUrlCollection()) {
+                java.util.List<String> iplist = IpListFromUrl.parse(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
                 }
@@ -125,18 +120,18 @@ public abstract class ThreshdConfigManager {
     }
 
     /**
-     * This method is used to establish package agaist an iplist iplist mapping,
+     * This method is used to establish package against an iplist iplist mapping,
      * with which, the iplist is selected per package via the configured filter
      * rules from the database.
      */
     protected void createPackageIpListMap() {
         Category log = ThreadCategory.getInstance(this.getClass());
     
-        m_pkgIpMap = new HashMap();
+        m_pkgIpMap = new HashMap<Package, List<String>>();
     
-        Enumeration pkgEnum = m_config.enumeratePackage();
+        Enumeration<org.opennms.netmgt.config.threshd.Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.threshd.Package pkg = (org.opennms.netmgt.config.threshd.Package) pkgEnum.nextElement();
+            org.opennms.netmgt.config.threshd.Package pkg = pkgEnum.nextElement();
     
             //
             // Get a list of ipaddress per package agaist the filter rules from
@@ -156,12 +151,12 @@ public abstract class ThreshdConfigManager {
                 if (log.isDebugEnabled())
                     log.debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
     
-                List ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+                List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
                 if (ipList.size() > 0) {
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.ERROR)) {
+                if (log.isEnabledFor(Level.ERROR)) {
                     log.error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List", t);
                 }
             }
@@ -210,14 +205,12 @@ public abstract class ThreshdConfigManager {
     }
 
     public synchronized org.opennms.netmgt.config.threshd.Package getPackage(String name) {
-             Enumeration packageEnum=m_config.enumeratePackage();
-             while(packageEnum.hasMoreElements()) {
-                     org.opennms.netmgt.config.threshd.Package thisPackage=( org.opennms.netmgt.config.threshd.Package)packageEnum.nextElement();
-                     if(thisPackage.getName().equals(name)) {
-                             return thisPackage;
-                     }
-             }
-             return null;
+        for (org.opennms.netmgt.config.threshd.Package thisPackage : m_config.getPackageCollection()) {
+            if(thisPackage.getName().equals(name)) {
+                return thisPackage;
+            }
+        }
+        return null;
      }
 
     /**
@@ -250,7 +243,7 @@ public abstract class ThreshdConfigManager {
         boolean bRet = false;
     
         // get list of IPs in this URL
-        java.util.List iplist = (java.util.List) m_urlIPMap.get(url);
+        java.util.List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
             bRet = iplist.contains(addr);
         }
@@ -281,7 +274,7 @@ public abstract class ThreshdConfigManager {
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
+        java.util.List<String> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
             filterPassed = ipList.contains(iface);
         }
@@ -303,7 +296,7 @@ public abstract class ThreshdConfigManager {
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
     
         long addr = IPSorter.convertToLong(iface);
-        Enumeration eincs = pkg.enumerateIncludeRange();
+        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
             IncludeRange rng = (IncludeRange) eincs.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
@@ -316,22 +309,22 @@ public abstract class ThreshdConfigManager {
                 has_range_include = true;
             }
         }
-    
-        Enumeration espec = pkg.enumerateSpecific();
+
+        Enumeration<String> espec = pkg.enumerateSpecific();
         while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement().toString());
+            long speca = IPSorter.convertToLong(espec.nextElement());
             if (speca == addr)
                 has_specific = true;
         }
-    
-        Enumeration eurl = pkg.enumerateIncludeUrl();
+
+        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
         while (!has_specific && eurl.hasMoreElements()) {
             has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
         }
     
-        Enumeration eex = pkg.enumerateExcludeRange();
+        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
         while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = (ExcludeRange) eex.nextElement();
+            ExcludeRange rng = eex.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
             if (addr > start) {
                 long end = IPSorter.convertToLong(rng.getEnd());
@@ -358,16 +351,16 @@ public abstract class ThreshdConfigManager {
      */
     public synchronized boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
         boolean result = false;
-    
-        Enumeration esvcs = pkg.enumerateService();
-        while (result == false && esvcs.hasMoreElements()) {
-            Service tsvc = (Service) esvcs.nextElement();
+
+        for (Service tsvc : pkg.getServiceCollection()) {
             if (tsvc.getName().equalsIgnoreCase(svcName)) {
                 // Ok its in the package. Now check the
                 // status of the service
                 String status = tsvc.getStatus();
-                if (status.equals("on"))
+                if (status.equals("on")) {
                     result = true;
+                    break;
+                }
             }
         }
         return result;

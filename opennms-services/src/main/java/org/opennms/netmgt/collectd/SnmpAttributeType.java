@@ -82,8 +82,8 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     // than MibObject.
     public static List<Collectable> getCollectionTrackers(Collection<SnmpAttributeType> objList) {
         ArrayList<Collectable> trackers = new ArrayList<Collectable>(objList.size());
-        for (Iterator iter = objList.iterator(); iter.hasNext();) {
-            SnmpAttributeType attrType = (SnmpAttributeType) iter.next();
+        for (Iterator<SnmpAttributeType> iter = objList.iterator(); iter.hasNext();) {
+            SnmpAttributeType attrType = iter.next();
             trackers.add(attrType.getMibObj().getCollectionTracker());
         }
         

@@ -47,13 +47,10 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -130,9 +127,7 @@ public abstract class NotificationManager {
     public boolean hasUei(String uei) throws IOException, MarshalException, ValidationException {
         update();
     
-        for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
-            Notification notif = (Notification) e.nextElement();
-  
+        for (Notification notif : m_notifications.getNotificationCollection()) {
             if (uei.equals(notif.getUei()) || "MATCH-ANY-UEI".equals(notif.getUei())) {
                  return true;
             } else if (notif.getUei().charAt(0) == '~') {
@@ -153,9 +148,7 @@ public abstract class NotificationManager {
         boolean matchAll = getConfigManager().getNotificationMatch();
         Category log = ThreadCategory.getInstance(getClass());
     
-        for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
-            Notification curNotif = (Notification) e.nextElement();
-    
+        for (Notification curNotif : m_notifications.getNotificationCollection()) {
             boolean curHasUei = false;
             boolean curHasSeverity = false;
 
@@ -457,7 +450,7 @@ public abstract class NotificationManager {
     }
     /**
      */
-    public List getActiveNodes() throws SQLException {
+    public List<Integer> getActiveNodes() throws SQLException {
         String NODE_QUERY = "SELECT   n.nodeid " + "FROM     node n " + "WHERE    n.nodetype != 'D' " + "ORDER BY n.nodelabel";
     
         java.sql.Connection connection = null;
@@ -564,7 +557,7 @@ public abstract class NotificationManager {
      * @param queueID
      * @param notification TODO
      */
-    public void insertNotice(int notifyId, Map params, String queueID, Notification notification) throws SQLException {
+    public void insertNotice(int notifyId, Map<String, String> params, String queueID, Notification notification) throws SQLException {
         Connection connection = null;
         try {
             connection = getConnection();
@@ -697,7 +690,7 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    public List getServiceNames() throws SQLException {
+    public List<String> getServiceNames() throws SQLException {
         Connection connection = null;
         List<String> services = new ArrayList<String>();
         try {
@@ -731,13 +724,12 @@ public abstract class NotificationManager {
     }
     /**
      */
-    public List getNotificationNames() throws IOException, MarshalException, ValidationException {
+    public List<String> getNotificationNames() throws IOException, MarshalException, ValidationException {
         update();
     
         List<String> notificationNames = new ArrayList<String>();
     
-        for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
-            Notification curNotif = (Notification) e.nextElement();
+        for (Notification curNotif : m_notifications.getNotificationCollection()) {
             notificationNames.add(curNotif.getName());
         }
     
@@ -900,7 +892,6 @@ public abstract class NotificationManager {
      * @param paramMap
      * @param notification
      */
-    @SuppressWarnings("unchecked")
     public static void addNotificationParams(final Map<String, String> paramMap, final Notification notification) {
         Collection<Parameter> parameters = notification.getParameterCollection();
         
@@ -929,22 +920,19 @@ public abstract class NotificationManager {
     }
     
     public static void expandMapValues(Map<String, String> map, final Event event) {
-        Set keySet = map.keySet();
-    
-        for (Iterator it = keySet.iterator(); it.hasNext();) {
-            String key = (String) it.next();
-            String mapValue = (String)map.get(key);
+        for (String key : map.keySet()) {
+            String mapValue = map.get(key);
             if (mapValue == null) {
                 continue;
             }
-            String expandedValue = EventUtil.expandParms((String)map.get(key), event);
+            String expandedValue = EventUtil.expandParms(map.get(key), event);
             map.put(key, (expandedValue != null ? expandedValue : map.get(key)));
         }
         
     }
 
     /**
-     * In the absense of DAOs and ORMs this creates an Event object from the persisted
+     * In the absence of DAOs and ORMs this creates an Event object from the persisted
      * record.
      * 
      * @param eventid

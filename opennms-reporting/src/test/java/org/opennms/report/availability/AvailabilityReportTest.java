@@ -157,6 +157,7 @@ public class AvailabilityReportTest extends TestCase {
         return (Math.round(number * 10000.0)) / 10000.0;
     }
 
+    /*
     private int numRowsWithValue(Section section, String title, String data){
 
         int rowMatched = 0;
@@ -183,7 +184,8 @@ public class AvailabilityReportTest extends TestCase {
         }			
         return rowMatched; 
     }
-
+    */
+    
     private Report buildReport(Calendar calendar, String calFormat){
 
 
@@ -192,9 +194,12 @@ public class AvailabilityReportTest extends TestCase {
         ViewInfo viewInfo = new ViewInfo();
         report.setViewInfo(viewInfo);
         report.setCategories(m_categories);
-        AvailabilityData availData = null;
+        // AvailabilityData availData = null;
         try {
-            availData = new AvailabilityData("Network Interfaces", report, "HTML", calFormat, calendar, "4", "18", "2005");
+            /* it seems we just initialize this to make sure it works
+             * availData =
+             */
+            new AvailabilityData("Network Interfaces", report, "HTML", calFormat, calendar, "4", "18", "2005");
         } catch (Exception e) {
             throw new UndeclaredThrowableException(e); 
         }
@@ -253,7 +258,7 @@ public class AvailabilityReportTest extends TestCase {
         assertEquals("category ip address count", 3,category.getIpaddrCount());
         assertEquals("category service count", 3,category.getServiceCount());
 
-        Section calSection = getSectionByName(category,"LastMonthsDailyAvailability");
+        // Section calSection = getSectionByName(category,"LastMonthsDailyAvailability");
 
         // First four days in month are invisible for US...
 

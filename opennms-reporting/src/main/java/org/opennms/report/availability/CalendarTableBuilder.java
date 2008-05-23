@@ -109,8 +109,6 @@ public class CalendarTableBuilder {
 		   	
 			String dayNames[] = new DateFormatSymbols(m_locale).getShortWeekdays();
 		   	DaysOfWeek titleDays = new DaysOfWeek();
-		    		    
-		    int dayIndex;
 			
 		    int dayOfWeek;
 		
@@ -182,13 +180,9 @@ public class CalendarTableBuilder {
 	        
 	    public void print () {
 	    	
-	    	int pDay;
-	    	String	pValue;
-	    	
 	    	for (int y = 0; y < 6; y++) {
 	    		for (int x = 0; x < 7; x++) {
 	    			int index = x + (7 * y);
-	                pDay = m_days[index].getDate();
 	    			System.out.println("index: " + index + "visible: " +
 							m_days[index].getVisible() + "date: " + 
 							m_days[index].getDate() + " value " + 

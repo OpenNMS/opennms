@@ -296,8 +296,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @Transient
     public CollectionType getCollectionType() {
         CollectionType maxCollType = CollectionType.NO_COLLECT;
-        for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {
-            OnmsIpInterface ipIface = (OnmsIpInterface) it.next();
+        for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
+            OnmsIpInterface ipIface = it.next();
             if (ipIface.getIsSnmpPrimary() != null) {
                 maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
             }
