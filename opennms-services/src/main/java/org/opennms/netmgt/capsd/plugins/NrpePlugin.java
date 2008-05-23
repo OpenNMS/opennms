@@ -60,7 +60,6 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.capsd.ConnectionConfig;
 import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
 import org.opennms.netmgt.utils.ParameterMap;

@@ -34,7 +34,6 @@
 
 package org.opennms.report.datablock;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -145,9 +144,8 @@ public class Outage extends Object {
      */
     public long getDownTime(long curTime, long rollingWindow) {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(this.getClass());
+        // Category log = ThreadCategory.getInstance(this.getClass());
         long downTime = 0;
-        boolean flag = false;
 
         // make sure the losttime is greater than current time.
         if (curTime < m_svcLostTime) {

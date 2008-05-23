@@ -40,7 +40,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,10 +72,10 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
      * The list of MIBObjects that will used for associating the the data within
      * the map.
      */
-    private Collection m_attrList;
+    private Collection<SnmpAttributeType> m_attrList;
     private SnmpCollectionSet m_collectionSet;
 
-    public SNMPCollectorEntry(Collection attrList, SnmpCollectionSet collectionSet) {
+    public SNMPCollectorEntry(Collection<SnmpAttributeType> attrList, SnmpCollectionSet collectionSet) {
         if (attrList == null) throw new NullPointerException("attrList is null!");
         m_attrList = attrList;
         m_collectionSet = collectionSet;
@@ -87,10 +86,9 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         return ThreadCategory.getInstance(getClass());
     }
     
-    private List findAttributeTypeForOid(SnmpObjId base, SnmpInstId inst) {
-        List matching = new LinkedList();
-        for (Iterator it = m_attrList.iterator(); it.hasNext();) {
-            SnmpAttributeType attrType = (SnmpAttributeType)it.next();
+    private List<SnmpAttributeType> findAttributeTypeForOid(SnmpObjId base, SnmpInstId inst) {
+        List<SnmpAttributeType> matching = new LinkedList<SnmpAttributeType>();
+        for (SnmpAttributeType attrType : m_attrList) {
             if (attrType.matches(base, inst)) {
                 matching.add(attrType);
             }
@@ -102,15 +100,12 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
         putValue(key, val);
-        List attrTypes = findAttributeTypeForOid(base, inst);
+        List<SnmpAttributeType> attrTypes = findAttributeTypeForOid(base, inst);
         if (attrTypes.isEmpty()) {
         	throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
         }
         
-
-        for (Iterator iter = attrTypes.iterator(); iter.hasNext();) {
-            SnmpAttributeType attrType = (SnmpAttributeType) iter.next();
-
+        for (SnmpAttributeType attrType : attrTypes) {
             if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX)) {
                 putIfIndex(inst.toInt());
             }

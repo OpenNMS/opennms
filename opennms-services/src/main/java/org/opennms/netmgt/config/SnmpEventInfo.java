@@ -40,14 +40,13 @@ package org.opennms.netmgt.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -98,10 +97,7 @@ public class SnmpEventInfo {
             throw new IllegalArgumentException("Event not an a configure snmp event: "+event.toString());
         }
         
-        Enumeration parmEnum = parms.enumerateParm();
-        
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+        for (Parm parm : parms.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             

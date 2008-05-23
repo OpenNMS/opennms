@@ -54,7 +54,7 @@ if [ -n "$JAVA_HOME" ]; then
 	export PATH
 fi
 
-MAVEN_OPTS=-Xmx512m
+[ -z "$MAVEN_OPTS" ] && MAVEN_OPTS=-Xmx512m
 export MAVEN_OPTS
 [ -z "$MVN" ] && MVN="$PREFIX/maven/bin/mvn"
 "$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "$@"

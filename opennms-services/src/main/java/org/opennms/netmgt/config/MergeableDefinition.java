@@ -36,16 +36,14 @@ package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.snmp.Definition;
 
 /**
  * This is a wrapper class for the Definition class from the config pacakge.  Has the logic for 
@@ -210,11 +208,7 @@ final class MergeableDefinition {
      */
     public boolean hasMatchingSpecific(final String specific) {
         boolean specificMatches = false;
-        Enumeration specEnum = getConfigDef().enumerateSpecific();
-        
-        while (specEnum.hasMoreElements()) {
-            String defSpecific = (String) specEnum.nextElement();
-            
+        for (String defSpecific : getConfigDef().getSpecificCollection()) {
             if (defSpecific.equals(specific)) {
                 specificMatches = true;
                 break;
@@ -227,7 +221,7 @@ final class MergeableDefinition {
      * Simple method to add readability
      * 
      * @param specific IP address
-     * @return true if the definintion has a range covering
+     * @return true if the definition has a range covering
      *  the specified specific IP address
      */
     public boolean hasRangeMatchingSpecific(final String specific) {
@@ -235,7 +229,7 @@ final class MergeableDefinition {
     }
     
     /**
-     * Analyses the definition to determine if one of its ranges
+     * Analyzes the definition to determine if one of its ranges
      * matches the specified specific IP address
      * 
      * @param specific
@@ -243,9 +237,8 @@ final class MergeableDefinition {
      */
     public Range findRangeMatchingSpecific(final String specific) {
         Range matchingRange = null;
-        Enumeration erange = getConfigDef().enumerateRange();
-        while (erange.hasMoreElements()) {
-            MergeableRange range = new MergeableRange(((Range) erange.nextElement()));
+        for (Range erange : getConfigDef().getRangeCollection()) {
+            MergeableRange range = new MergeableRange(erange);
             if (range.coversSpecific(specific)) {
                 matchingRange = range.getRange();
                 break;
@@ -255,7 +248,7 @@ final class MergeableDefinition {
     }
     
     /**
-     * Repsonsible for merging new ranges in to this definition.
+     * Responsible for merging new ranges in to this definition.
      * 
      * @param newRange
      */
@@ -330,6 +323,7 @@ final class MergeableDefinition {
      * Sorts the specifics in the current wrapped definition.
      *
      */
+    @SuppressWarnings("unchecked")
     public void sortSpecifics() {
         String[] specifics = getConfigDef().getSpecific();
         Arrays.sort(specifics, new SpecificComparator());
@@ -339,6 +333,7 @@ final class MergeableDefinition {
     /**
      * Sorts ranges with the current wrapped definition.
      */
+    @SuppressWarnings("unchecked")
     public void sortRanges() {
         Range[] ranges = getConfigDef().getRange();
         Arrays.sort(ranges, new RangeComparator());
@@ -359,10 +354,7 @@ final class MergeableDefinition {
      */
     public String findSpecificMatchingNewRange(final Range eventRange) {
         String matchingSpecific = null;
-        Enumeration specEnum = getConfigDef().enumerateSpecific();
-        while (specEnum.hasMoreElements()) {
-            String spec = (String) specEnum.nextElement();
-            
+        for (String spec : getConfigDef().getSpecificCollection()) {
             MergeableRange range = new MergeableRange(eventRange);
             
             if (range.coversSpecific(spec)) {
@@ -437,10 +429,7 @@ final class MergeableDefinition {
         
         for (int i = 0; i < specifics.length; i++) {
             MergeableSpecific specific = new MergeableSpecific(specifics[i]);
-            
-            for (Iterator it = getConfigDef().getRangeCollection().iterator(); it.hasNext();) {
-                Range range = (Range) it.next();
-                
+            for (Range range : getConfigDef().getRangeCollection()) {
                 if (specific.compareTo(range.getBegin()) == -1) {
                     getConfigDef().removeSpecific(specific.getSpecific());
                     range.setBegin(specific.getSpecific());
@@ -475,14 +464,13 @@ final class MergeableDefinition {
      */
     private void convertAdjacentSpecficsIntoRange() {
         sortSpecifics();
-        List specificList = new ArrayList(new LinkedHashSet(getConfigDef().getSpecificCollection()));
-        List definedRanges = Arrays.asList(getConfigDef().getRange());
-        ArrayList newRanges = new ArrayList();
+        List<String> specificList = new ArrayList<String>(new LinkedHashSet<String>(getConfigDef().getSpecificCollection()));
+        List<Range> definedRanges = Arrays.asList(getConfigDef().getRange());
+        ArrayList<Range> newRanges = new ArrayList<Range>();
         
         if (specificList.size() > 1) {
-
-            for (ListIterator it = specificList.listIterator(); it.hasNext();) {
-                final MergeableSpecific specific = new MergeableSpecific((String)it.next());
+            for (ListIterator<String> it = specificList.listIterator(); it.hasNext();) {
+                final MergeableSpecific specific = new MergeableSpecific(it.next());
                 final Range newRange = new Range();
                 newRange.setBegin(specific.getSpecific());
                 while (it.hasNext()) {
@@ -503,7 +491,7 @@ final class MergeableDefinition {
                 }
             }
             newRanges.addAll(definedRanges);
-            getConfigDef().setRangeCollection(newRanges);
+            getConfigDef().setRange(newRanges);
             sortRanges();
         }
     }

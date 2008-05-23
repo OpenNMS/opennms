@@ -42,38 +42,34 @@
 
 package org.openoss.opennms.spring.qosd;
 
-import org.opennms.core.fiber.PausableFiber;
-import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.core.utils.ThreadCategory;
-import org.apache.log4j.Logger;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.rmi.RMISecurityManager;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
+import javax.oss.fm.monitor.AlarmKey;
+import javax.oss.fm.monitor.AlarmValue;
+
+import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.rmi.RMISecurityManager;
-
-
-import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
-import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
-import java.util.Hashtable;
-import javax.oss.fm.monitor.AlarmValue;
-import org.openoss.ossj.jvt.fm.monitor.OOSSAlarmValue;
-import javax.oss.fm.monitor.AlarmKey;
-
-
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.xml.event.Event;
+import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
+import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
+import org.openoss.ossj.jvt.fm.monitor.OOSSAlarmValue;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
@@ -715,18 +711,15 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 			// debug code prints out alarm list to be sent if enabled
 			if (log.isDebugEnabled()) {
 				log.debug("QosD sendAlarms() - Alarm list built:");
-				Enumeration test = ossjAlarmUpdateList.keys();
 				log.debug("QosD sendAlarms() - ******* Alarm List to be sent : primary keys");
-				while(test.hasMoreElements())
-				{
-					AlarmKey key = (AlarmKey)test.nextElement();
-					AlarmValue a = (AlarmValue)ossjAlarmUpdateList.get(key);
+				for (AlarmKey key : ossjAlarmUpdateList.keySet()) {
+					AlarmValue a = ossjAlarmUpdateList.get(key);
 					log.debug("QosD sendAlarms() key : " + key.getPrimaryKey() +"  AlarmValue.getAlarmChangedTime: " + a.getAlarmChangedTime()); 
 				}
 				log.debug("QosD sendAlarms() - ******* END OF LIST");
 				log.debug("QosD sendAlarms() Sending alarm list to bean");
 			}		
-			//send the alarmList to Ossbeans ejb or local runner via the connection manager thread.
+			//send the alarmList to Ossbeans EJB or local runner via the connection manager thread.
 
 			alarmListConnectionManager.send(ossjAlarmUpdateList);
 		}
@@ -738,7 +731,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 
 	
 	/**
-	 * not used but needed for initialisation 
+	 * not used but needed for initialization 
 	 * @return stats
 	 */
 	public String getStats() { 
