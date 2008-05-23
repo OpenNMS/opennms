@@ -108,6 +108,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        setStartEventd(false);
         super.setUp();
 
         String hostName = System.getProperty(HOST_PROPERTY, DEFAULT_HOST);
