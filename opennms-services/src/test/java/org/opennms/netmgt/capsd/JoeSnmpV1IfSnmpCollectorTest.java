@@ -35,7 +35,7 @@ import org.opennms.netmgt.capsd.IfSnmpCollectorTestCase.JoeSnmpIfSnmpCollectorTe
 
 public class  JoeSnmpV1IfSnmpCollectorTest extends JoeSnmpIfSnmpCollectorTestCase {
     public void setUp() throws Exception {
-        m_ifSnmpCollectorTestCase.setVersion(1);
+        setVersion(1);
         super.setUp();
     }
 }
