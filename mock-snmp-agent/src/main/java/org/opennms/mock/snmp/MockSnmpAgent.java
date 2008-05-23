@@ -121,7 +121,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID())));
         m_address = bindAddress;
         m_moFile = moFile;
-        agent.setThreadPool(ThreadPool.create("RequestPool", 4));
+        agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
     
     public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {

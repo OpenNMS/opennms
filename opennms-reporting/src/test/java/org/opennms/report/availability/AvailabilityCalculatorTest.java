@@ -40,7 +40,6 @@ package org.opennms.report.availability;
 import java.io.Reader;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -168,6 +167,7 @@ public class AvailabilityCalculatorTest extends TestCase {
         return (Math.round(number * 10000.0)) / 10000.0;
     }
 
+    /*
     private int numRowsWithValue(Section section, String title, String data) {
 
         int rowMatched = 0;
@@ -194,12 +194,13 @@ public class AvailabilityCalculatorTest extends TestCase {
         }
         return rowMatched;
     }
+    */
 
     private Report buildReport(Calendar calendar, String calFormat) {
 
         Report report = null;
 
-        Date periodEndDate = m_calendar.getTime();
+        // Date periodEndDate = m_calendar.getTime();
 
         /*
          * report.setLogo("wherever"); ViewInfo viewInfo = new ViewInfo();
@@ -290,8 +291,7 @@ public class AvailabilityCalculatorTest extends TestCase {
                      category.getIpaddrCount());
         assertEquals("category service count", 3, category.getServiceCount());
 
-        Section calSection = getSectionByName(category,
-                                              "LastMonthsDailyAvailability");
+        // Section calSection = getSectionByName(category, "LastMonthsDailyAvailability");
 
         // First four days in month are invisible for US...
 

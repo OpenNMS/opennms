@@ -54,9 +54,6 @@ import org.opennms.netmgt.capsd.snmp.IfXTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.PropertySettingTestSuite;
-import org.opennms.test.VersionSettingTestSuite;
 import org.springframework.core.io.ClassPathResource;
 
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
@@ -71,43 +68,70 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     private IfSnmpCollector m_ifSnmpc;
 
     private boolean m_hasRun = false;
+    
+    public static class JoeSnmpTests extends IfSnmpCollectorTest {
+        public void setUp() throws Exception {
+            System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
+            super.setUp();
+        }
+    }
+
+    public static class SNMP4JTests extends IfSnmpCollectorTest {
+        public void setUp() throws Exception {
+            System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
+            super.setUp();
+        }
+    }
+
+    public static class  JoeSnmpV1 extends JoeSnmpTests {
+        public void setUp() throws Exception {
+            setVersion(1);
+            super.setUp();
+        }
+    }
+
+    public static class  JoeSnmpV2 extends JoeSnmpTests {
+        public void setUp() throws Exception {
+            setVersion(2);
+            super.setUp();
+        }
+    }
+
+    public static class  SNMP4JV1 extends SNMP4JTests {
+        public void setUp() throws Exception {
+            setVersion(1);
+            super.setUp();
+        }
+    }
+
+    public static class  SNMP4JV2 extends SNMP4JTests {
+        public void setUp() throws Exception {
+            setVersion(2);
+            super.setUp();
+        }
+    }
+
+    public static class  SNMP4JV3 extends SNMP4JTests {
+        public void setUp() throws Exception {
+            setVersion(3);
+            super.setUp();
+        }
+    }
 
     public static TestSuite suite() {
         Class testClass = IfSnmpCollectorTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
-        TestSuite joeSuite = new PropertySettingTestSuite("JoeSnmp Tests",
-                                                          "org.opennms.snmp.strategyClass",
-                                                          "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
-        joeSuite.addTest(new VersionSettingTestSuite(testClass,
-                                                     "SNMPv1 Tests",
-                                                     SnmpAgentConfig.VERSION1));
-        joeSuite.addTest(new VersionSettingTestSuite(testClass,
-                                                     "SNMPv2 Tests",
-                                                     SnmpAgentConfig.VERSION2C));
-        joeSuite.addTest(new VersionSettingTestSuite(testClass,
-                                                     "SNMPv3 Tests",
-                                                     SnmpAgentConfig.VERSION3));
-        suite.addTest(joeSuite);
-
-        TestSuite snmp4jSuite = new PropertySettingTestSuite("SNMP4J Tests",
-                                                             "org.opennms.snmp.strategyClass",
-                                                             "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
-        snmp4jSuite.addTest(new VersionSettingTestSuite(testClass,
-                                                        "SNMPv1 Tests",
-                                                        SnmpAgentConfig.VERSION1));
-        snmp4jSuite.addTest(new VersionSettingTestSuite(testClass,
-                                                        "SNMPv2 Tests",
-                                                        SnmpAgentConfig.VERSION2C));
-        snmp4jSuite.addTest(new VersionSettingTestSuite(testClass,
-                                                        "SNMPv3 Tests",
-                                                        SnmpAgentConfig.VERSION3));
-        suite.addTest(snmp4jSuite);
-
+        suite.addTestSuite(JoeSnmpV1.class);
+        suite.addTestSuite(JoeSnmpV2.class);
+        suite.addTestSuite(SNMP4JV1.class);
+        suite.addTestSuite(SNMP4JV2.class);
+        suite.addTestSuite(SNMP4JV3.class);
         return suite;
     }
 
     @Override
     protected void setUp() throws Exception {
+        setStartEventd(false);
         super.setUp();
 
         String hostName = System.getProperty(HOST_PROPERTY, DEFAULT_HOST);

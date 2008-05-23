@@ -33,7 +33,6 @@
 package org.opennms.report.datablock;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -59,6 +58,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
     /**
      * The time from which the current outtime 'm_outTime' is calculated
      */
+    @SuppressWarnings("unused")
     private long m_outTimeSince;
 
     /**
@@ -69,6 +69,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
     /**
      * The outage time computed during business hours.
      */
+    @SuppressWarnings("unused")
     private long m_busOutTime;
 
     /**

@@ -42,7 +42,8 @@ public class PropertiesLoader {
 	private static PropertiesLoader instance = null;
 	private final HashMap<String,String> properties = new HashMap<String,String>();
 
-	private PropertiesLoader() throws FileNotFoundException, IOException{
+	@SuppressWarnings("unchecked")
+    private PropertiesLoader() throws FileNotFoundException, IOException{
 
 		// Load the properties file using the filename given as the VM startup parameter (-DpropertiesFile)
 		Properties props = new Properties();
@@ -86,7 +87,8 @@ public class PropertiesLoader {
 		return _out;
 	}
 
-	public Set getPropertyNames()
+	@SuppressWarnings("unchecked")
+    public Set getPropertyNames()
 	{
 		return properties.keySet();
 	}

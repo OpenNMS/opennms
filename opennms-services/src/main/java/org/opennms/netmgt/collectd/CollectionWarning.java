@@ -32,6 +32,7 @@
 package org.opennms.netmgt.collectd;
 
 public class CollectionWarning extends CollectionError {
+    private static final long serialVersionUID = 1L;
 
     public CollectionWarning() {
         super();

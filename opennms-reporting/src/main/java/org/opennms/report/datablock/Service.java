@@ -45,11 +45,6 @@ package org.opennms.report.datablock;
  */
 public class Service extends StandardNamedObject {
     /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-
-    /**
      * List of outages.
      */
     private OutageSvcTimesList m_outageList;

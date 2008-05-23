@@ -67,7 +67,7 @@ final class CollectorUpdates {
     /**
      * Holds new/modified network interface attributes
      */
-    private Map m_properties;
+    private Map<String, Object> m_properties;
 
     /**
      * Set to true if the interface has been marked for deletion and should no
@@ -120,7 +120,7 @@ final class CollectorUpdates {
      */
     void setAttribute(String property, Object value) {
         if (m_properties == null)
-            m_properties = new HashMap();
+            m_properties = new HashMap<String, Object>();
 
         m_properties.put(property, value);
 

@@ -37,9 +37,9 @@ import org.opennms.netmgt.model.AvailabilityReportLocator;
 
 public interface ReportLocatorService {
 	
-	Collection locateReports();
+	Collection<?> locateReports();
 
-	Collection locateReports(String categoryName);
+	Collection<?> locateReports(String categoryName);
 	
 	void deleteReport(int id);
 	

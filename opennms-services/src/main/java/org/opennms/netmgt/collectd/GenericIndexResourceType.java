@@ -67,7 +67,7 @@ public class GenericIndexResourceType extends ResourceType {
     }
 
     private void instantiateStorageStrategy(String className) {
-        Class cinst;
+        Class<?> cinst;
         try {
             cinst = Class.forName(className);
         } catch (ClassNotFoundException e) {

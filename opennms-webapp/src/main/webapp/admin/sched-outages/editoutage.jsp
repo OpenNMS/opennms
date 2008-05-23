@@ -437,10 +437,10 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			}
 		} else {
 			//Look for deleteNode or deleteInterface or deleteTime prefix
-			Enumeration paramEnum = request.getParameterNames();
+			Enumeration<String> paramEnum = request.getParameterNames();
 			boolean found = false;
 			while (paramEnum.hasMoreElements() && !found) {
-				String paramName = (String) paramEnum.nextElement();
+				String paramName = paramEnum.nextElement();
 				if (paramName.startsWith("deleteNode")) {
 					found = true;
 					String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
@@ -538,9 +538,9 @@ function updateOutageTypeDisplay(selectElement) {
 </script>
 
 <%
-	Enumeration enumList = request.getParameterNames();
+	Enumeration<String> enumList = request.getParameterNames();
 	while (enumList.hasMoreElements()) {
-		String paramName = (String) enumList.nextElement();
+		String paramName = enumList.nextElement();
 %>
 <!--	<%=paramName%>=<%=request.getParameter(paramName)%><BR>  -->
 <%
@@ -563,13 +563,14 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 				<tr>
 					<td valign="top">
-						<%
-						Collection<org.opennms.web.element.Node> allNodes = Arrays.asList(NetworkElementFactory.getAllNodes());
+						<% {
+						List<org.opennms.web.element.Node> allNodes = Arrays.asList(NetworkElementFactory.getAllNodes());
+						Collections.sort(allNodes);
+						
 						TreeMap<Integer,org.opennms.web.element.Node> nodeMap = new TreeMap<Integer,org.opennms.web.element.Node>();
 						for ( org.opennms.web.element.Node element : allNodes ) {
 							nodeMap.put(element.getNodeId(), element);
 						}
-						allNodes = null;
 
 						if (hasMatchAny) {
 							out.println("&lt;All Nodes&gt;<br>");
@@ -590,15 +591,19 @@ function updateOutageTypeDisplay(selectElement) {
 						}
 						out.println("<select name=\"newNode\">");
 						if (nodeMap.size() > 0) {
-							for ( Integer nodeId : nodeMap.keySet() ) {
-								out.println("<option value=\"" + nodeId + "\">" + nodeMap.get(nodeId).getLabel() + "</option>");
-							}
+						    for ( org.opennms.web.element.Node node : allNodes ) {
+						        if ( nodeMap.containsKey(node.getNodeId()) ) {
+									out.println("<option value=\"" + node.getNodeId() + "\">" + node.getLabel() + "</option>");
+						        }
+						    }
 						}
 						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
+						}
 						%>
 					</td>
 					<td valign="top">
 						<%
+						{
 						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllInterfaces());
 						TreeMap<String,org.opennms.web.element.Interface> interfaceMap = new TreeMap<String,org.opennms.web.element.Interface>();
 						for ( org.opennms.web.element.Interface element : allInterfaces ) {
@@ -639,6 +644,7 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						}
 						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
+						}
 						%>
 					</td>
 				</tr>

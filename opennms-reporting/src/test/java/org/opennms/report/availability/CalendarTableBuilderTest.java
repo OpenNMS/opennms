@@ -78,7 +78,8 @@ public class CalendarTableBuilderTest extends TestCase {
 		int firstWeekDay = getDayOfWeek(locale, year, month, dayOfMonth);
 		int daysInMonth = getDaysInMonth(locale, year, month);
 		int numWeeks = (firstWeekDay + daysInMonth + 6) / 7 ;
-		int displayDays = numWeeks * 7;
+		@SuppressWarnings("unused")
+        int displayDays = numWeeks * 7;
 
 	}
 	
