@@ -34,7 +34,7 @@ package org.opennms.web.element;
 
 import org.opennms.web.Util;
 
-public class Node {
+public class Node implements Comparable<Node> {
     int m_nodeId;
 
     int m_nodeParent;
@@ -140,5 +140,21 @@ public class Node {
         str.append("Node Sys Type = " + m_nodeType + "\n");
         str.append("Operating System = " + m_operatingSystem + "\n");
         return str.toString();
+    }
+
+    public int compareTo(Node o) {
+        String compareLabel = "";
+        Integer compareId = 0;
+
+        if (o != null) {
+            compareLabel = o.getLabel();
+            compareId = o.getNodeId();
+        }
+
+        int returnval = this.getLabel().compareToIgnoreCase(compareLabel);
+        if (returnval == 0) {
+            return (new Integer(this.getNodeId())).compareTo(compareId);
+        }
+        return returnval;
     }
 }
