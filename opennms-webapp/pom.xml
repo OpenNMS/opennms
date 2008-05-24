@@ -73,6 +73,7 @@
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
+          <archiveClasses>true</archiveClasses>
           <webResources>
             <resource>
               <filtering>true</filtering>
