@@ -889,7 +889,7 @@ public class Installer {
 
         if (!System.getProperty("os.name").contains("Windows")) {
             String[] defaults = { "/usr/lib/jni", "/usr/lib",
-                    "/usr/local/lib" };
+                    "/usr/local/lib", "/opt/NMSjicmp/lib" };
             for (String entry : defaults) {
                 searchPaths.add(entry);
             }
