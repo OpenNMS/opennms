@@ -51,6 +51,9 @@ import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Properties;
+import java.net.URL;
+import java.net.MalformedURLException;
+
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for Jira
@@ -94,15 +97,25 @@ public class JiraTicketerPlugin implements TicketerPlugin {
     JiraConnection getConnection() {
         JiraConnection jira = new JiraConnection();
         JiraSoapServiceService jiraSoapServiceGetter = new JiraSoapServiceServiceLocator();
+
+
+        URL jiraUrl = null;
+
         try {
-            jira.setJira(jiraSoapServiceGetter.getJirasoapserviceV2());
-        } catch (ServiceException e) {
-            log().error("Failed initialzing JiraConnection" + e);
+            jiraUrl = new URL(getProperties().getProperty("jira.host"));
+        } catch (MalformedURLException e) {
+            log().error("Failed to parse url " + jiraUrl);
         }
 
         try {
+            jira.setJira(jiraSoapServiceGetter.getJirasoapserviceV2(jiraUrl));
+        } catch (Exception e) {
+            log().error("Failed initialzing JiraConnection" + e);
+        }
+	log().debug("Jira factory: " + jiraSoapServiceGetter.getJirasoapserviceV2Address());
+        try {
             jira.setToken(jira.getJira().login(getProperties().getProperty("jira.username"), getProperties().getProperty("jira.password")));
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             log().error("Login failure: " + e);
         }
 
@@ -227,6 +240,9 @@ public class JiraTicketerPlugin implements TicketerPlugin {
         } finally {
             IOUtils.closeQuietly(in);
         }
+
+	log().debug("Loaded user: " + props.getProperty("jira.username"));
+	log().debug("Loaded type: " + props.getProperty("jira.type"));
 
         return props;
 

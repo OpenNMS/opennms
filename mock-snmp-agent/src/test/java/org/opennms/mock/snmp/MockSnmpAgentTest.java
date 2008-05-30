@@ -41,10 +41,16 @@ import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.PrivDES;
+import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -85,9 +91,11 @@ public class MockSnmpAgentTest extends TestCase {
 
 	/**
 	 * Make sure that we can setUp() and tearDown() the agent.
+	 * @throws InterruptedException 
 	 */
-	public void testAgentSetup() {
+	public void testAgentSetup() throws InterruptedException {
 		assertNotNull("agent should be non-null", agt);
+		Thread.sleep(60000);
 	}
 	
 	/**
@@ -127,41 +135,139 @@ public class MockSnmpAgentTest extends TestCase {
         assertResult(PDU.GETNEXT, oidStr, expectedOid, expectedSyntax, expected);
     }
 
-    private void assertResult(int pduType, String oidStr, String expectedOid, int expectedSyntax,
-            Integer32 expected) throws UnknownHostException, IOException {
+    private void assertResult(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
+        assertV3Result(pduType, oidStr, expectedOid, expectedSyntax, expected);
+    }
+
+    private void assertV1Result(int pduType, String oidStr, String expectedOid,
+            int expectedSyntax, Integer32 expected)
+            throws UnknownHostException, IOException {
         PDU pdu = new PDU();
-		OID oid = new OID(oidStr);
+        OID oid = new OID(oidStr);
         pdu.add(new VariableBinding(oid));
         pdu.setType(pduType);
-		
-		CommunityTarget target = new CommunityTarget();
-		target.setCommunity(new OctetString("public"));
-		target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
-		target.setVersion(SnmpConstants.version1);
-		
-		TransportMapping transport = null;
-		try {
-			transport = new DefaultUdpTransportMapping();
-			Snmp snmp = new Snmp(transport);
-			transport.listen();
+        
+        CommunityTarget target = new CommunityTarget();
+        target.setCommunity(new OctetString("public"));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setVersion(SnmpConstants.version1);
+        
+        TransportMapping transport = null;
+        try {
+            transport = new DefaultUdpTransportMapping();
+            Snmp snmp = new Snmp(transport);
+            transport.listen();
 
-			ResponseEvent e = snmp.send(pdu, target);
-			PDU response = e.getResponse();
-			assertNotNull("request timed out", response);
-			
-			VariableBinding vb = response.get(0);
-			assertNotNull(vb);
-			assertNotNull(vb.getVariable());
-			assertEquals(new OID(expectedOid), vb.getOid());
-			assertEquals(expectedSyntax, vb.getSyntax());
-			Variable val = vb.getVariable();
-			assertNotNull(val);
-			assertEquals(expected, val);
+            ResponseEvent e = snmp.send(pdu, target);
+            PDU response = e.getResponse();
+            assertNotNull("request timed out", response);
+            
+            VariableBinding vb = response.get(0);
+            assertNotNull(vb);
+            assertNotNull(vb.getVariable());
+            assertEquals(new OID(expectedOid), vb.getOid());
+            assertEquals(expectedSyntax, vb.getSyntax());
+            Variable val = vb.getVariable();
+            assertNotNull(val);
+            assertEquals(expected, val);
 
-		} finally {	
-			if (transport != null) {
-				transport.close();
-			}
-		}
+        } finally { 
+            if (transport != null) {
+                transport.close();
+            }
+        }
     }
+
+    private void assertV2Result(int pduType, String oidStr, String expectedOid,
+            int expectedSyntax, Integer32 expected)
+            throws UnknownHostException, IOException {
+        PDU pdu = new PDU();
+        OID oid = new OID(oidStr);
+        pdu.add(new VariableBinding(oid));
+        pdu.setType(pduType);
+        
+        CommunityTarget target = new CommunityTarget();
+        target.setCommunity(new OctetString("public"));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setVersion(SnmpConstants.version2c);
+        
+        TransportMapping transport = null;
+        try {
+            transport = new DefaultUdpTransportMapping();
+            Snmp snmp = new Snmp(transport);
+            transport.listen();
+
+            ResponseEvent e = snmp.send(pdu, target);
+            PDU response = e.getResponse();
+            assertNotNull("request timed out", response);
+            
+            VariableBinding vb = response.get(0);
+            assertNotNull(vb);
+            assertNotNull(vb.getVariable());
+            assertEquals(new OID(expectedOid), vb.getOid());
+            assertEquals(expectedSyntax, vb.getSyntax());
+            Variable val = vb.getVariable();
+            assertNotNull(val);
+            assertEquals(expected, val);
+
+        } finally { 
+            if (transport != null) {
+                transport.close();
+            }
+        }
+    }
+    
+    private void assertV3Result(int pduType, String oidStr, String expectedOid,
+            int expectedSyntax, Integer32 expected)
+            throws UnknownHostException, IOException {
+        PDU pdu = new ScopedPDU();
+        OID oid = new OID(oidStr);
+        pdu.add(new VariableBinding(oid));
+        pdu.setType(pduType);
+        
+        OctetString userId = new OctetString("opennmsUser");
+        OctetString pw = new OctetString("0p3nNMSv3");
+
+        UserTarget target = new UserTarget();
+        target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
+        target.setSecurityName(userId);
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setVersion(SnmpConstants.version3);
+        
+        TransportMapping transport = null;
+        try {
+            transport = new DefaultUdpTransportMapping();
+            Snmp snmp = new Snmp(transport);
+            
+            UsmUser user = new UsmUser(userId, AuthMD5.ID, pw, PrivDES.ID, pw);
+            snmp.getUSM().addUser(userId, user);
+            
+     
+            transport.listen();
+
+            ResponseEvent e = snmp.send(pdu, target);
+            PDU response = e.getResponse();
+            assertNotNull("request timed out", response);
+            MockUtil.println("Response is: "+response);
+            assertTrue("unexpected report pdu", response.getType() != PDU.REPORT);
+            
+            VariableBinding vb = response.get(0);
+            assertNotNull(vb);
+            assertNotNull(vb.getVariable());
+            assertEquals(new OID(expectedOid), vb.getOid());
+            assertEquals(expectedSyntax, vb.getSyntax());
+            Variable val = vb.getVariable();
+            assertNotNull(val);
+            assertEquals(expected, val);
+
+        } finally { 
+            if (transport != null) {
+                transport.close();
+            }
+        }
+    }
+
+
+    
+    
 }
