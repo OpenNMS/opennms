@@ -46,8 +46,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import junit.framework.TestSuite;
-
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
@@ -56,7 +54,7 @@ import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.springframework.core.io.ClassPathResource;
 
-public class IfSnmpCollectorTest extends OpenNMSTestCase {
+public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
     private static final String HOST_PROPERTY = "mock.snmpHost";
     private static final String DEFAULT_HOST = "127.0.0.1";
     private static final int PORT = 9161;
@@ -69,64 +67,18 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
 
     private boolean m_hasRun = false;
     
-    public static class JoeSnmpTests extends IfSnmpCollectorTest {
+    public static class JoeSnmpIfSnmpCollectorTestCase extends IfSnmpCollectorTestCase {
         public void setUp() throws Exception {
             System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
             super.setUp();
         }
     }
 
-    public static class SNMP4JTests extends IfSnmpCollectorTest {
+    public static class SNMP4JIfSnmpCollectorTestCase extends IfSnmpCollectorTestCase {
         public void setUp() throws Exception {
             System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
             super.setUp();
         }
-    }
-
-    public static class  JoeSnmpV1 extends JoeSnmpTests {
-        public void setUp() throws Exception {
-            setVersion(1);
-            super.setUp();
-        }
-    }
-
-    public static class  JoeSnmpV2 extends JoeSnmpTests {
-        public void setUp() throws Exception {
-            setVersion(2);
-            super.setUp();
-        }
-    }
-
-    public static class  SNMP4JV1 extends SNMP4JTests {
-        public void setUp() throws Exception {
-            setVersion(1);
-            super.setUp();
-        }
-    }
-
-    public static class  SNMP4JV2 extends SNMP4JTests {
-        public void setUp() throws Exception {
-            setVersion(2);
-            super.setUp();
-        }
-    }
-
-    public static class  SNMP4JV3 extends SNMP4JTests {
-        public void setUp() throws Exception {
-            setVersion(3);
-            super.setUp();
-        }
-    }
-
-    public static TestSuite suite() {
-        Class testClass = IfSnmpCollectorTest.class;
-        TestSuite suite = new TestSuite(testClass.getName());
-        suite.addTestSuite(JoeSnmpV1.class);
-        suite.addTestSuite(JoeSnmpV2.class);
-        suite.addTestSuite(SNMP4JV1.class);
-        suite.addTestSuite(SNMP4JV2.class);
-        suite.addTestSuite(SNMP4JV3.class);
-        return suite;
     }
 
     @Override
