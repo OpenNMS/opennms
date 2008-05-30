@@ -183,9 +183,11 @@ public class MailTransportMonitor extends IPv4Monitor {
                     mailFolder.open(Folder.READ_WRITE);
                 } catch (MessagingException e) {
                     if (tracker.shouldRetry()) {
+                        log().warn("readTestMessage: error reading inbox: " +e);
                         closeStore(mailStore, mailFolder);
                         continue;  //try again to get mail Folder from Store
                     } else {
+                        log().warn("readTestMessage: error reading inbox: " +e);
                         return PollStatus.down(e.getLocalizedMessage());
                     }
                 }
