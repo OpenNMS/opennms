@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 May 31: Fix for part of bug #2369, don't use C3P0 data sources
+//              for the installer.  Also clean up some JNI library log
+//              and exception messages and cleanup imports. - dj@opennms.org
 // 2008 Mar 25: Removed unneeded code for admin database user name and
 //              password due to its removal in InstallerDb. - dj@opennms.org
 //
@@ -48,39 +51,32 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.DatagramPacket;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.sql.DataSource;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.dao.db.InstallerDb;
+import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.ping.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /*
@@ -136,23 +132,6 @@ public class Installer {
         setOutputStream(System.out);
     }
 
-    private Map<String, JdbcDataSource> getDataSourceConfiguration()
-            throws IOException, MarshalException, ValidationException {
-        Map<String, JdbcDataSource> dsHash = new HashMap<String, JdbcDataSource>();
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-        FileInputStream fileInputStream = new FileInputStream(cfgFile);
-        final Reader rdr = new InputStreamReader(fileInputStream);
-        DataSourceConfiguration dsc = CastorUtils.unmarshal(
-                                                            DataSourceConfiguration.class,
-                                                            rdr);
-
-        for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
-            dsHash.put(jdbcDs.getName(), jdbcDs);
-        }
-        return dsHash;
-    }
-
     public void install(String[] argv) throws Exception {
         printHeader();
         loadProperties();
@@ -170,32 +149,17 @@ public class Installer {
         m_installerDb.setIgnoreNotNull(m_ignore_not_null);
         m_installerDb.setNoRevert(m_do_not_revert);
 
-        DataSourceFactory.init(OPENNMS_DATA_SOURCE_NAME);
-        DataSourceFactory.init(ADMIN_DATA_SOURCE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        
+        JdbcDataSource adminDs = C3P0ConnectionFactory.marshalDataSourceFromConfig(new FileReader(cfgFile), ADMIN_DATA_SOURCE_NAME);
+        m_installerDb.setAdminDataSource(new SimpleDataSource(adminDs));
 
-        DataSource adminDataSource = DataSourceFactory.getDataSource(ADMIN_DATA_SOURCE_NAME);
-        Assert.notNull(adminDataSource,
-                       "Could not find administrative data source '"
-                               + ADMIN_DATA_SOURCE_NAME
-                               + "' in data source configuration file");
-        m_installerDb.setAdminDataSource(adminDataSource);
-
-        DataSource opennmsDataSource = DataSourceFactory.getDataSource(OPENNMS_DATA_SOURCE_NAME);
-        Assert.notNull(opennmsDataSource,
-                       "Could not find OpenNMS data source '"
-                               + OPENNMS_DATA_SOURCE_NAME
-                               + "' in data source configuration file");
-        m_installerDb.setDataSource(opennmsDataSource);
-
-        JdbcDataSource opennmsJdbcDataSource = getDataSourceConfiguration().get(
-                                                                                OPENNMS_DATA_SOURCE_NAME);
-        Assert.notNull(opennmsJdbcDataSource,
-                       "Could not find JDBC configuration for OpenNMS data source '"
-                               + OPENNMS_DATA_SOURCE_NAME
-                               + "' in data source configuration file");
-        m_installerDb.setPostgresOpennmsUser(opennmsJdbcDataSource.getUserName());
-        m_installerDb.setPostgresOpennmsPassword(opennmsJdbcDataSource.getPassword());
-        m_installerDb.setDatabaseName(opennmsJdbcDataSource.getDatabaseName());
+        JdbcDataSource ds = C3P0ConnectionFactory.marshalDataSourceFromConfig(new FileReader(cfgFile), OPENNMS_DATA_SOURCE_NAME);
+        m_installerDb.setDataSource(new SimpleDataSource(ds));
+        
+        m_installerDb.setPostgresOpennmsUser(ds.getUserName());
+        m_installerDb.setPostgresOpennmsPassword(ds.getPassword());
+        m_installerDb.setDatabaseName(ds.getDatabaseName());
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -803,6 +767,9 @@ public class Installer {
     }
 
     public static void main(String[] argv) throws Exception {
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.WARN);
+        
         new Installer().install(argv);
     }
 
@@ -911,22 +878,18 @@ public class Installer {
             }
         }
 
-        m_out.println("Failed to load the " + libname + " library.");
-
         if (isRequired) {
-            m_out.println("It is required at runtime.  By default, we search the java library path:");
-            for (String pathEntry : System.getProperty("java.library.path").split(
-                                                                                  File.pathSeparator)) {
-                m_out.println("  " + pathEntry);
+            StringBuffer buf = new StringBuffer();
+            for (String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
+                buf.append(" ");
+                buf.append(pathEntry);
             }
-            m_out.println("\nFor more information, see http://www.opennms.org/index.php/"
-                    + libname + "\n");
-            throw new Exception("A fatal error occurred, exiting installer.");
+
+            throw new Exception("Failed to load the required " + libname + " library that is required at runtime.  By default, we search the Java library path:" + buf.toString() + ".  For more information, see http://www.opennms.org/index.php/" + libname);
         } else {
-            m_out.println("This error is not fatal, since " + libname
-                    + " is only required for optional features.");
-            m_out.println("For more information, see http://www.opennms.org/index.php/"
-                    + libname + "\n");
+            m_out.println("- Failed to load the optional " + libname + " library.");
+            m_out.println("  - This error is not fatal, since " + libname + " is only required for optional features.");
+            m_out.println("  - For more information, see http://www.opennms.org/index.php/" + libname);
         }
 
         return null;

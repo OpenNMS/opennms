@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 May 31: Catch and rethrow SQLExceptions with more data when trying to
+//              connect to the database. - dj@opennms.org
 // 2008 Mar 25: Remove admin database username and password--they are not
 //              used anymore.  Use Spring's Assert class where possible and
 //              clean up granting code.  Also assert that the OpenNMS databae
@@ -2150,8 +2152,12 @@ public class InstallerDb {
 
     private void initializeConnection() throws SQLException {
         Assert.state(m_dataSource != null, "dataSource property has not been set");
-        
-        m_connection = getDataSource().getConnection();
+
+        try {
+            m_connection = getDataSource().getConnection();
+        } catch (SQLException e) {
+            rethrowDatabaseConnectionException(getDataSource(), e, "Could not get a connection to the OpenNMS database.");
+        }
     }
     
     public void closeConnection() throws SQLException {
@@ -2172,7 +2178,11 @@ public class InstallerDb {
     private void initializeAdminConnection() throws SQLException {
         Assert.state(m_adminDataSource != null, "adminDataSource property has not been set");
 
-        m_adminConnection = getAdminDataSource().getConnection();
+        try {
+            m_adminConnection = getAdminDataSource().getConnection();
+        } catch (SQLException e) {
+            rethrowDatabaseConnectionException(getAdminDataSource(), e, "Could not get an administrative connection to the database.");
+        }
     }
     
     public void closeAdminConnection() throws SQLException {
@@ -2183,9 +2193,14 @@ public class InstallerDb {
         m_adminConnection = null;
     }
 
+    private void rethrowDatabaseConnectionException(DataSource ds, SQLException e, String msg) throws SQLException {
+        SQLException newE = new SQLException(msg + "  Is the database running, listening for TCP connections, and allowing us to connect and authenticate from localhost?  Tried connecting to database specified by data source " + ds.toString() + ".  Original error: " + e);
+        newE.initCause(e);
+        throw newE;
+    }
+
     public void setCreateSqlLocation(String createSqlLocation) {
         m_createSqlLocation = createSqlLocation;
-        
     }
 
     public String getCreateSqlLocation() {
