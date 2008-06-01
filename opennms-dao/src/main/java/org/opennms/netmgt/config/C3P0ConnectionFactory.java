@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 May 31: Make marshalDataSourceFromConfig public and static and inline
+//              a few one-line methods that don't need to be there since
+//              Castor classes are now genericized. - dj@opennms.org 
 // 2007 Aug 02: Prepare for Castor 1.0.5, Java 5 generics and loops. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -45,7 +48,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -119,26 +121,16 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         }
     }
 
-    protected JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
 
-        JdbcDataSource ds = null;
-
-        for (JdbcDataSource jdbcDs : getJdbcDataSources(dsc)) {
-            log().debug("marshalDataSource: comparing collection entry:"+jdbcDs.getName()+" with requested ds:"+dsName);
+        for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
             if (jdbcDs.getName().equals(dsName)) {
-                ds = jdbcDs;
-                break;
+                return jdbcDs;
             }
         }
-        if (ds == null) {
-            throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
-        }
-        return ds;
-    }
-
-    private List<JdbcDataSource> getJdbcDataSources(DataSourceConfiguration dsc) {
-        return dsc.getJdbcDataSourceCollection();
+        
+        throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
     }
 
     private Category log() {
@@ -153,16 +145,12 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         m_pool.setDriverClass(ds.getClassName());
 
         Properties props = new Properties();
-        for (Param p : getParamsForJdbcDataSource(ds)) {
+        for (Param p : ds.getParamCollection()) {
             props.put(p.getName(), p.getValue());
         }
         if (!props.isEmpty()) {
             m_pool.setProperties(props);
         }
-    }
-
-    private List<Param> getParamsForJdbcDataSource(JdbcDataSource ds) {
-        return ds.getParamCollection();
     }
 
     public Connection getConnection() throws SQLException {

@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 May 31: Allow properties to be set, as well, and use this for the
+//              user name and password.  Also add toString() and a
+//              constructor where we pass a JdbcDataSource. - dj@opennms.org
 // 2007 Jun 10: Support login timeout (in hopefully a not-too-hackish way). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -39,33 +42,45 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.Map.Entry;
 
 import javax.sql.DataSource;
+
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.netmgt.config.opennmsDataSources.Param;
 
 public class SimpleDataSource implements DataSource {
     private String m_driver;
     private String m_url;
-    private String m_user;
-    private String m_password;
+    private Properties m_properties = new Properties();
     private Integer m_timeout = null;
 
-    public SimpleDataSource(String driver, String url,
-                               String user, String password) throws ClassNotFoundException {
+    public SimpleDataSource(String driver, String url, String user, String password) throws ClassNotFoundException {
         m_driver = driver;
         m_url = url;
-        m_user = user;
-        m_password = password;
+        
+        m_properties.put("user", user);
+        m_properties.put("password", password);
         
         Class.forName(m_driver);
+    }
+    
+    public SimpleDataSource(JdbcDataSource ds) throws ClassNotFoundException {
+        this(ds.getClassName(), ds.getUrl(), ds.getUserName(), ds.getPassword());
+        
+        for (Param param : ds.getParamCollection()) {
+            m_properties.put(param.getName(), param.getValue());
+        }
     }
 
     public Connection getConnection() throws SQLException {
         if (m_timeout == null) {
-            return DriverManager.getConnection(m_url, m_user, m_password);
+            return DriverManager.getConnection(m_url, m_properties);
         } else {
             int oldTimeout = DriverManager.getLoginTimeout();
             DriverManager.setLoginTimeout(m_timeout);
-            Connection conn = DriverManager.getConnection(m_url, m_user, m_password);
+            Connection conn = DriverManager.getConnection(m_url, m_properties);
             DriverManager.setLoginTimeout(oldTimeout);
             return conn;
         }
@@ -97,5 +112,51 @@ public class SimpleDataSource implements DataSource {
 
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  //TODO
+    }
+
+    public String getDriver() {
+        return m_driver;
+    }
+
+    public String getPassword() {
+        return m_properties.getProperty("password");
+    }
+
+    public Integer getTimeout() {
+        return m_timeout;
+    }
+
+    public String getUrl() {
+        return m_url;
+    }
+
+    public String getUser() {
+        return m_properties.getProperty("user");
+    }
+    
+    public Properties getProperties() {
+        return m_properties;
+    }
+    
+    public String toString() {
+        StringBuffer props = new StringBuffer();
+        if (m_properties.isEmpty()) {
+            props.append(" none");
+        } else {
+            boolean first = true;
+            for (Entry<Object, Object> entry : m_properties.entrySet()) {
+                if (!first) {
+                    props.append(",");
+                }
+                props.append(" ");
+                props.append(entry.getKey());
+                props.append("='");
+                props.append(entry.getValue());
+                props.append("'");
+                
+                first = false;
+            }
+        }
+        return "SimpleDataSource[URL='" + getUrl() + "', driver class='" + getDriver() + "', properties:" + props + "]";
     }
 }
