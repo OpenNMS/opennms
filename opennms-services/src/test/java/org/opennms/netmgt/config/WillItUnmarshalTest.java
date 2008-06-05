@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jun 05: Add discovery-configuration.xml as an example. - dj@opennms.org
  * 2008 Jan 25: Add Hyperic tests and test for subdirectories in examples. - dj@opennms.org
  * 2007 Aug 03: Created this file. - dj@opennms.org
  *
@@ -231,6 +232,9 @@ public class WillItUnmarshalTest extends TestCase {
     }
     public void testDiscoveryConfiguration() throws Exception {
         unmarshal("discovery-configuration.xml", DiscoveryConfiguration.class);
+    }
+    public void testExampleDiscoveryConfiguration() throws Exception {
+        unmarshalExample("discovery-configuration.xml", DiscoveryConfiguration.class);
     }
     public void testEventconf() throws Exception {
         unmarshal("eventconf.xml", Events.class);
