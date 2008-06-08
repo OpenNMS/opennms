@@ -16,7 +16,87 @@
     <property name="receiver" ref="broadcastEventProcessor"/>
   </bean>
   
-  <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy">
+  
+  <bean id="eventdConfigManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="eventdConfigManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventdConfigManager-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.getInstance</value></property>
+  </bean>
+
+  <bean id="eventconfFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventconfFactory.setInstance</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="eventConfDao"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventExpander" class="org.opennms.netmgt.eventd.processor.EventExpander">
+    <property name="eventConfDao" ref="eventConfDao"/>
+  </bean>
+
+  <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+    <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
+    <property name="eventHandler" ref="eventdEventHandler"/>
+    <property name="eventIpcManagerProxy" ref="eventIpcManager"/>
+  </bean>
+
+  <bean id="eventIpcManagerHandlerPoolSize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getReceivers"/>
+  </bean>
+  
+  <!-- 
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.JdbcEventdServiceManager">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+  -->
+
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.DaoEventdServiceManager">
+    <property name="serviceTypeDao" ref="serviceTypeDao"/>
+  </bean>
+  
+  <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+    <property name="eventProcessors">
+      <list>
+        <ref local="eventExpander"/>
+        <ref local="eventWriter"/>
+        <ref local="eventIpcBroadcastProcessor"/>
+        <ref local="alarmWriter"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.JdbcEventWriter">
+    <property name="getNextIdString" ref="getNextEventIdSql"/>
+    <property name="dataSource" ref="dataSource"/>
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
+  </bean>
+
+  <bean id="getNextEventIdSql" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getGetNextEventID"/>
+  </bean>
+  
+  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+    <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
+  </bean>
+
+  <bean id="alarmWriter" class="org.opennms.netmgt.eventd.processor.JdbcAlarmWriter">
+    <property name="getNextIdString" ref="getNextAlarmIdSql"/>
+    <property name="dataSource" ref="dataSource"/>
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
+  </bean>
+  
+  <bean id="getNextAlarmIdSql" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getGetNextAlarmID"/>
+  </bean>
+  
+  <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">
     <property name="eventIpcManager" ref="eventIpcManager"/>
   </bean>
   
@@ -60,7 +140,7 @@
     <property name="targetMethod" value="getUDPPort"/>
   </bean>
   
-  <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor">
+  <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor" depends-on="eventIpcManagerImpl">
     <constructor-arg><ref bean="eventIpcManager"/></constructor-arg>
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>

@@ -109,7 +109,7 @@
          <value>META-INF/opennms/applicationContext-eventDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="commonContext" />
    </bean>
         
     <bean id="trapDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -118,6 +118,6 @@
          <value>META-INF/opennms/applicationContext-trapDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="commonContext" />
    </bean>
 </beans>

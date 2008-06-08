@@ -57,7 +57,9 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
-                "classpath:META-INF/opennms/applicationContext-capsd.xml"
+                "classpath:META-INF/opennms/applicationContext-capsd.xml",
+                "classpath:META-INF/opennms/smallEventConfDao.xml",
+                "classpath:META-INF/opennms/mockEventIpcManager.xml"
         };
     }
     

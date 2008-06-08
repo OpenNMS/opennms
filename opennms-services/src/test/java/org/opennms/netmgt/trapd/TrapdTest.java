@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Mar 10: Use MockEventIpcManager in synchronous mode to speed
+//              up tests and do the right verifications on events. - dj@opennms.org
 // 2008 Jan 26: Test startup of trapd with Spring. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,18 +42,18 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 
 public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private int m_port = 1162;
     private Trapd m_trapd = new Trapd();
+    private MockEventIpcManager m_mockEventIpcManager;
 
     public TrapdTest() throws Exception {
         super();
@@ -69,12 +71,16 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:META-INF/opennms/applicationContext-trapDaemon.xml"
+                "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
+                "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
+                "classpath:META-INF/opennms/mockEventIpcManager.xml",
+                "classpath:META-INF/opennms/smallEventConfDao.xml"
         };
     }
 
     @Override
     protected void onSetUpInTransactionIfEnabled() throws Exception {
+        getMockEventIpcManager().setSynchronous(true);
         m_trapd.onStart();
     }
 
@@ -102,25 +108,25 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
         pdu.setTimeStamp(666L);
         pdu.setAgentAddress(localAddr);
 
-        Event e = new Event();
-        e.setUei("uei.opennms.org/default/trap");
-        e.setSource("trapd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        e.setLogmsg(logmsg);
-
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
+        EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        defaultTrapBuilder.setInterface(localhost);
+        getMockEventIpcManager().getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+        
+        EventBuilder newSuspectBuilder = new EventBuilder("uei.opennms.org/internal/discovery/newSuspect", "trapd");
+        newSuspectBuilder.setInterface(localhost);
+        getMockEventIpcManager().getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
         pdu.send(localhost, m_port, "public");
-        pdu.send(localhost, m_port, "public");
-        pdu.send(localhost, m_port, "public");
-        pdu.send(localhost, m_port, "public");
+        
+        getMockEventIpcManager().getEventAnticipator().verifyAnticipated(100, 0, 0, 0, 0);
+    }
 
-        assertEquals("number of anticipated events", 1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals("number of unanticipated events", 0, ea.unanticipatedEvents().size());
+    public MockEventIpcManager getMockEventIpcManager() {
+        return m_mockEventIpcManager;
+    }
+
+    public void setMockEventIpcManager(MockEventIpcManager mockEventIpcManager) {
+        m_mockEventIpcManager = mockEventIpcManager;
     }
 }
 
