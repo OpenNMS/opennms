@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Mar 10: Make it easy to set this class as the delegate for an
+//              EventIpcManagerProxy object when afterPropertiesSet() is called. - dj@opennms.org
 // 2008 Feb 02: Refactor out common code and pull code closer to the objects
 //              it manipulates.  Fix bug where the same event could be sent
 //              to the same listener multiple times. - dj@opennms.org
@@ -100,6 +102,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     private EventHandler m_eventHandler;
 
     private Integer m_handlerPoolSize;
+    
+    private EventIpcManagerProxy m_eventIpcManagerProxy;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -485,6 +489,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         
         m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, m_handlerPoolSize);
         m_eventHandlerPool.start();
+        
+        // If the proxy is set, make this class its delegate.
+        if (m_eventIpcManagerProxy != null) {
+            m_eventIpcManagerProxy.setDelegate(this);
+        }
     }
 
     public EventHandler getEventHandler() {
@@ -503,5 +512,13 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
         
         m_handlerPoolSize = handlerPoolSize;
+    }
+
+    public EventIpcManagerProxy getEventIpcManagerProxy() {
+        return m_eventIpcManagerProxy;
+    }
+
+    public void setEventIpcManagerProxy(EventIpcManagerProxy eventIpcManagerProxy) {
+        m_eventIpcManagerProxy = eventIpcManagerProxy;
     }
 }

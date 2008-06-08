@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2008 Mar 10: Need to autowire by name now that we have two EventIpcManagers
+ *              (the real one and the proxy). - dj@opennms.org
  * 2008 Feb 16: Move testSendEventWithService to JdbcEventWriterTest and make
  *              this test case just about starting up the daemon with default
  *              bean wiring and configs so we can catch problems like bug #2273
@@ -61,6 +63,8 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
 
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
+        
+        super.setAutowireMode(AUTOWIRE_BY_NAME);
     }
 
     @Override
@@ -72,6 +76,7 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
+                "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
                 "classpath:META-INF/opennms/applicationContext-eventDaemon.xml"
         };
     }

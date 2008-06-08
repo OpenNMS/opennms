@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Mar 10: Make ueiList have the same capitalization everywhere. - dj@opennms.org
 // 2008 Feb 02: Pull broadcastNow out into EventIpcBroadcaster. - dj@opennms.org
 // 2008 Jan 27: Remove EventdConfigManager getter and setter. - dj@opennms.org
 //
@@ -71,7 +72,7 @@ public interface EventIpcManager {
     /**
      * Registers an event listener interested in the UEIs in the passed list
      */
-    public void addEventListener(EventListener listener, List<String> ueilist);
+    public void addEventListener(EventListener listener, List<String> ueiList);
 
     /**
      * Registers an event listener interested in the passed UEI
