@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
-    <property name="configResource"><value>classpath:/etc/eventconf.xml</value></property>
+  <bean id="eventConfResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
+    <property name="location" value="classpath:/etc/eventconf.xml" />
   </bean>
 </beans>
