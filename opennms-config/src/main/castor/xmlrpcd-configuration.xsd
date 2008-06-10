@@ -19,7 +19,7 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:subscribing-servers">
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:external-servers">
           <annotation>
             <documentation>Configuration of external XMLRPC
             servers</documentation>
@@ -55,7 +55,7 @@
     </complexType>
   </element>
 
-  <element name="subscribing-servers">
+  <element name="external-servers">
     <annotation>
       <documentation>Defines a primary XMLRPC server (and optional 
       backup servers) and the sets of events to which it subscribes 
