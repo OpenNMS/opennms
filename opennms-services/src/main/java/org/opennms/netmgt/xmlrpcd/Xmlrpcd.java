@@ -48,6 +48,7 @@ import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.xml.event.Event;
 
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
@@ -66,25 +67,25 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 public class Xmlrpcd extends AbstractServiceDaemon {
 
 	/**
-     * The singlton instance.
+     * The singleton instance.
      */
     private static final AbstractServiceDaemon m_singleton = new Xmlrpcd();
 
     /**
      * The communication queues -- ArrayList of FifoQueues
      */
-    private ArrayList m_eventlogQs = new ArrayList();
+    private ArrayList<FifoQueue<Event>> m_eventlogQs = new ArrayList<FifoQueue<Event>>();
 
     /**
      * The queue processing threads -- ArrayList of EventQueueProcessors
      */
-    private ArrayList m_processors = new ArrayList();
+    private ArrayList<EventQueueProcessor> m_processors = new ArrayList<EventQueueProcessor>();
 
     /**
-     * The class instance used to recieve new events from for the system.
+     * The class instance used to receive new events from for the system.
      *  -- ArrayList of BroadcastEventProcessors
      */
-    private ArrayList m_eventReceivers = new ArrayList();
+    private ArrayList<BroadcastEventProcessor> m_eventReceivers = new ArrayList<BroadcastEventProcessor>();
 
     /**
      * <P>
@@ -118,13 +119,12 @@ public class Xmlrpcd extends AbstractServiceDaemon {
                 localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
             // create a BroadcastEventProcessor per server 
-            Enumeration servers = xFactory.getExternalServerEnumeration();
+            Enumeration<ExternalServers> servers = xFactory.getExternalServerEnumeration();
             int i = 0;
             while (servers.hasMoreElements()) {
-                ExternalServers server = 
-                                    (ExternalServers) servers.nextElement();
+                ExternalServers server = servers.nextElement();
                 XmlrpcServer[] xServers = server.getXmlrpcServer();
-                FifoQueue q = new FifoQueueImpl();
+                FifoQueue<Event> q = new FifoQueueImpl<Event>();
                 m_eventlogQs.add(q);
                 m_eventReceivers.add(new BroadcastEventProcessor(
                             Integer.toString(i), q, xFactory.getMaxQueueSize(), 
@@ -155,7 +155,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
 
         
         for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            EventQueueProcessor proc = m_processors.get(i);
             proc.start();
         }
 
@@ -168,7 +168,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             log().debug("Calling pause on processor");
 
         for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            EventQueueProcessor proc = m_processors.get(i);
             proc.pause();
         }
 
@@ -181,7 +181,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             log().debug("Calling resume on processor");
 
         for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            EventQueueProcessor proc = m_processors.get(i);
             proc.resume();
         }
 
@@ -199,7 +199,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
 
         // interrupt the processor daemon thread
         for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            EventQueueProcessor proc = m_processors.get(i);
             proc.stop();
         }
 	}
