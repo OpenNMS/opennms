@@ -26,6 +26,8 @@
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
 
+%{!?jdk:%define jdk jdk >= 1:1.5}
+
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
@@ -53,7 +55,8 @@ Requires:		opennms-core      = %{version}-%{release}
 Requires:		postgresql-server >= 7.4
 Requires:		iplike
 
-BuildRequires:		jdk               >= 1.5
+# don't worry about buildrequires, the shell script will bomb quick  =)
+BuildRequires:		%{jdk}
 
 Prefix: %{instprefix}
 Prefix: %{sharedir}
@@ -85,7 +88,7 @@ web UI:
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
 Requires:	jicmp
-Requires:	jdk >= 1.5
+Requires:	%{jdk}
 Obsoletes:	opennms < %{version}-%{release}
 
 %description core
@@ -115,6 +118,15 @@ Group:		Applications/System
 This package contains the API and user documentation
 for OpenNMS.
 %endif
+
+%package remote-poller
+Summary:	Remote (Distributed) Poller for OpenNMS
+Group:		Applications/System
+Requires:	%{jdk}
+
+%description remote-poller
+The OpenNMS distributed monitor.  For details, see:
+  http://www.opennms.org/index.php/Distributed_Monitoring
 
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
@@ -180,6 +192,11 @@ echo "=== RUNNING INSTALL ==="
 sh ./build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
     -Dopennms.home=%{instprefix} install assembly:attached
 
+pushd opennms-remote-poller
+    sh ../build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+        -Dopennms.home=%{instprefix} package
+popd
+
 echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
@@ -206,6 +223,10 @@ export OPENNMS_HOME PATH
 
 END
 
+### install the remote poller jar
+
+install -c -m 644 opennms-remote-poller/target/opennms-remote-poller*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/lib/opennms-remote-poller.jar
+
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
@@ -219,7 +240,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 install -d -m 755 $RPM_BUILD_ROOT%{logdir}
 mv $RPM_BUILD_ROOT%{instprefix}/logs/* $RPM_BUILD_ROOT%{logdir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
-install -d -m 755 $RPM_BUILD_ROOT %{logdir}/{controller,daemon,webapp}
+install -d -m 755 $RPM_BUILD_ROOT%{logdir}/{controller,daemon,webapp}
 
 install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
 mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
@@ -284,6 +305,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644 root root 755)
 %{_docdir}/%{name}-%{version}
 %endif
+
+%files remote-poller
+%{instprefix}/lib/opennms-remote-poller.jar
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
