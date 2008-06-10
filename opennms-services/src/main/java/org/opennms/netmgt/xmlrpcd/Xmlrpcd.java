@@ -39,6 +39,7 @@ package org.opennms.netmgt.xmlrpcd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Enumeration;
+import java.util.ArrayList;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
+import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
+import org.opennms.netmgt.config.xmlrpcd.SubscribingServers;
 /**
  * <p>
  * The Xmlrpcd receives events selectively and sends notification to an external
@@ -68,19 +71,20 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     private static final AbstractServiceDaemon m_singleton = new Xmlrpcd();
 
     /**
-     * The communication queue
+     * The communication queues -- ArrayList of FifoQueues
      */
-    private FifoQueue m_eventlogQ;
+    private ArrayList m_eventlogQs = new ArrayList();
 
     /**
-     * The queue processing thread
+     * The queue processing threads -- ArrayList of EventQueueProcessors
      */
-    private EventQueueProcessor m_processor;
+    private ArrayList m_processors = new ArrayList();
 
     /**
      * The class instance used to recieve new events from for the system.
+     *  -- ArrayList of BroadcastEventProcessors
      */
-    private BroadcastEventProcessor m_eventReceiver;
+    private ArrayList m_eventReceivers = new ArrayList();
 
     /**
      * <P>
@@ -99,8 +103,6 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             log().debug("start: Creating the xmlrpc event queue processor");
 
         // set up the event queue processor
-        m_eventlogQ = new FifoQueueImpl();
-
         try {
             if (log().isDebugEnabled())
                 log().debug("start: Initializing the xmlrpcd config factory");
@@ -115,10 +117,23 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             if (verifyServer)
                 localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
-            Enumeration eventEnum = xFactory.getEventEnumeration();
-            m_eventReceiver = new BroadcastEventProcessor(m_eventlogQ, xFactory.getMaxQueueSize(), eventEnum);
+            // create a BroadcastEventProcessor per server 
+            Enumeration servers = xFactory.getSubscribingServerEnumeration();
+            int i = 0;
+            while (servers.hasMoreElements()) {
+                SubscribingServers server = 
+                                    (SubscribingServers) servers.nextElement();
+                XmlrpcServer[] xServers = server.getXmlrpcServer();
+                FifoQueue q = new FifoQueueImpl();
+                m_eventlogQs.add(q);
+                m_eventReceivers.add(new BroadcastEventProcessor(
+                            Integer.toString(i), q, xFactory.getMaxQueueSize(), 
+                                    xFactory.getEventList(server)));
 
-            m_processor = new EventQueueProcessor(m_eventlogQ, xFactory.getXmlrpcServer(), xFactory.getRetries(), xFactory.getElapseTime(), verifyServer, localServer, xFactory.getMaxQueueSize());
+                // create an EventQueueProcessor per server 
+                m_processors.add( new EventQueueProcessor(q, xServers, server.getRetries(), server.getElapseTime(), verifyServer, localServer, xFactory.getMaxQueueSize()) );
+                i++;
+            }
 
         } catch (MarshalException e) {
             log().error("Failed to load configuration", e);
@@ -138,7 +153,11 @@ public class Xmlrpcd extends AbstractServiceDaemon {
 		if (log().isDebugEnabled())
             log().debug("start: Initializing the xmlrpcd config factory");
 
-        m_processor.start();
+        
+        for (int i = 0; i < m_processors.size(); i++) {
+            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            proc.start();
+        }
 
         if (log().isDebugEnabled())
             log().debug("start: xmlrpcd ready to process events");
@@ -148,7 +167,10 @@ public class Xmlrpcd extends AbstractServiceDaemon {
 		if (log().isDebugEnabled())
             log().debug("Calling pause on processor");
 
-        m_processor.pause(); 
+        for (int i = 0; i < m_processors.size(); i++) {
+            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            proc.pause();
+        }
 
         if (log().isDebugEnabled())
             log().debug("Processor paused");
@@ -158,7 +180,10 @@ public class Xmlrpcd extends AbstractServiceDaemon {
 		if (log().isDebugEnabled())
             log().debug("Calling resume on processor");
 
-        m_processor.resume();
+        for (int i = 0; i < m_processors.size(); i++) {
+            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            proc.resume();
+        }
 
         if (log().isDebugEnabled())
             log().debug("Processor resumed");
@@ -173,7 +198,10 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             log().debug("stop: Stopping queue processor.");
 
         // interrupt the processor daemon thread
-        m_processor.stop();
+        for (int i = 0; i < m_processors.size(); i++) {
+            EventQueueProcessor proc = (EventQueueProcessor)m_processors.get(i);
+            proc.stop();
+        }
 	}
 
     /**

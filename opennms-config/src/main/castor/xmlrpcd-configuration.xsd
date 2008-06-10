@@ -19,17 +19,17 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="1" minOccurs="1" ref="this:external-servers">
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:subscribing-servers">
           <annotation>
             <documentation>Configuration of external XMLRPC
             servers</documentation>
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="1" ref="this:subscription">
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:subscription">
           <annotation>
-            <documentation>Events subscribed by the external XMLRPC
-            servers</documentation>
+            <documentation>Group of events that can be subscribed by 
+                XMLRPC servers</documentation>
           </annotation>
         </element>
       </sequence>
@@ -45,20 +45,38 @@
           </restriction>
         </simpleType>      
       </attribute>
+
+      <attribute name="generic-msgs" type="boolean" default="false">
+        <annotation>
+          <documentation>True if using the generic message RPC instead of
+            the original 6 RPCs</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 
-  <element name="external-servers">
+  <element name="subscribing-servers">
     <annotation>
-      <documentation>Defines a main XMLRPC server and a set of backup XMLRPC
-      servers</documentation>
+      <documentation>Defines a primary XMLRPC server (and optional 
+      backup servers) and the sets of events to which it subscribes 
+      </documentation>
     </annotation>
 
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:xmlrpc-server">
           <annotation>
-            <documentation>Configuration of xmlrpc server</documentation>
+            <documentation>Configuration of xmlrpc servers -- these servers are
+            serially redundant -- ie. OpenNMS will connect to one, and if it 
+            goes down will connect to another</documentation>
+          </annotation>
+        </element>
+        <element name="serverSubscription" maxOccurs="unbounded" 
+                                                    minOccurs="1" type="string">
+          <annotation>
+            <documentation>
+                Name of a subscription for this server
+            </documentation>
           </annotation>
         </element>
       </sequence>
@@ -107,6 +125,11 @@
           </annotation>
         </element>
       </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name of subscription</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 
