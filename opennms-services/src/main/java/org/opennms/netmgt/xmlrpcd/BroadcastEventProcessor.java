@@ -38,6 +38,7 @@ package org.opennms.netmgt.xmlrpcd;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.HashSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
@@ -70,22 +71,36 @@ final class BroadcastEventProcessor implements EventListener {
     private int m_maxQSize;
 
     /**
+     * Subscribed events for this listener
+     */
+    private HashSet m_events;
+
+    /**
+     * Suffix used to create a unique name for event registration
+     */
+    private String m_nameSuffix;
+
+    /**
      * Create message selector to set to the subscription
      */
-    BroadcastEventProcessor(FifoQueue eventQ, int maxQSize, Enumeration eventEnum) {
+    BroadcastEventProcessor(String nameSuffix, FifoQueue eventQ, int maxQSize, ArrayList eventList) {
+        m_nameSuffix = nameSuffix;
+
         // Create the selector for the ueis this service is interested in
         //
         List ueiList = new ArrayList();
 
-        while (eventEnum.hasMoreElements()) {
-            SubscribedEvent sEvent = (SubscribedEvent) eventEnum.nextElement();
-            ueiList.add(sEvent.getUei());
+        for (int i = 0; i < eventList.size(); i++) {
+            ueiList.add(((SubscribedEvent)eventList.get(i)).getUei());
         }
 
         m_eventQ = eventQ;
         m_maxQSize = maxQSize;
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
+
+        m_events = new HashSet();
+        m_events.addAll(ueiList);
     }
 
     /**
@@ -115,7 +130,7 @@ final class BroadcastEventProcessor implements EventListener {
             log.debug("Received event: " + eventUei);
 
         try {
-            if (XmlrpcdConfigFactory.getInstance().eventSubscribed(eventUei)) {
+            if (m_events.contains(eventUei)) {
                 if (m_eventQ.size() >= m_maxQSize) {
                     m_eventQ.remove(1000);
 
@@ -144,6 +159,6 @@ final class BroadcastEventProcessor implements EventListener {
      * Return an id for this event listener
      */
     public String getName() {
-        return "Xmlrpcd:BroadcastEventProcessor";
+        return "Xmlrpcd:BroadcastEventProcessor_" + m_nameSuffix;
     }
 }
