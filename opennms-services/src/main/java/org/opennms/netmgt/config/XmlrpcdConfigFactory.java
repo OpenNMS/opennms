@@ -42,8 +42,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -51,11 +52,10 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
+import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
+import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -177,21 +177,21 @@ public final class XmlrpcdConfigFactory {
      * 
      * @return an enumeration of subscribed event ueis.
      */
-    public synchronized ArrayList getEventList(ExternalServers server) throws ValidationException {
+    public synchronized ArrayList<SubscribedEvent> getEventList(ExternalServers server) throws ValidationException {
         // get names of event subscriptions from server
-        ArrayList serverSubs = server.getServerSubscriptionCollection();
+        List<String> serverSubs = server.getServerSubscriptionCollection();
 
         // get event lists from names
-        ArrayList allEventsList = new ArrayList();
+        ArrayList<SubscribedEvent> allEventsList = new ArrayList<SubscribedEvent>();
         for (int i = 0; i < serverSubs.size(); i++) {
-            String name = (String)serverSubs.get(i);
+            String name = serverSubs.get(i);
 
-            ArrayList subscriptions = m_config.getSubscriptionCollection();
+            List<Subscription> subscriptions = m_config.getSubscriptionCollection();
 
             boolean foundSubscription = false;
 
             for (int j = 0; j < subscriptions.size(); j++) {
-                Subscription sub = (Subscription) subscriptions.get(j);
+                Subscription sub = subscriptions.get(j);
                 if (sub.getName().equals(name)) {
                     allEventsList.addAll(sub.getSubscribedEventCollection());
                     foundSubscription = true;
@@ -222,7 +222,7 @@ public final class XmlrpcdConfigFactory {
      * 
      * @return an enumeration of xmlrpc servers.
      */
-    public synchronized Enumeration getExternalServerEnumeration() {
+    public synchronized Enumeration<ExternalServers> getExternalServerEnumeration() {
         return m_config.enumerateExternalServers();
     }
 

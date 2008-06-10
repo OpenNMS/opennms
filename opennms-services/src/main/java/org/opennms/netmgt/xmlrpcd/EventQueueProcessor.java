@@ -64,7 +64,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     /**
      * The input queue
      */
-    private FifoQueue m_eventQ;
+    private FifoQueue<Event> m_eventQ;
 
     /**
      * The max size of the event queue
@@ -98,7 +98,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     /**
      * The constructor
      */
-    EventQueueProcessor(FifoQueue eventQ, XmlrpcServer[] rpcServers, int retries, int elapseTime, boolean verifyServer, String localServer, int maxQSize) {
+    EventQueueProcessor(FifoQueue<Event> eventQ, XmlrpcServer[] rpcServers, int retries, int elapseTime, boolean verifyServer, String localServer, int maxQSize) {
         m_eventQ = eventQ;
         m_maxQSize = maxQSize;
         m_notifier = new XmlRpcNotifier(rpcServers, retries, elapseTime, verifyServer, localServer);
@@ -196,7 +196,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             Value parmValue = null;
             String parmContent = null;
 
-            Enumeration parmEnum = parms.enumerateParm();
+            Enumeration<Parm> parmEnum = parms.enumerateParm();
             while (parmEnum.hasMoreElements()) {
                 Parm parm = (Parm) parmEnum.nextElement();
                 parmName = parm.getParmName();
