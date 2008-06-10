@@ -66,7 +66,9 @@ echo
 echo "=== Clean Up ==="
 
 if [ -z "$SKIP_SETUP" ]; then
-	./build.sh clean
+	if [ -z "$SKIP_CLEAN" ]; then
+		./build.sh clean
+	fi
 
 	echo "=== Creating Working Directories ==="
 	install -d -m 755 "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source"
