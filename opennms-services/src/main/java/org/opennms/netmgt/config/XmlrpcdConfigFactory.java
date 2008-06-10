@@ -54,7 +54,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
-import org.opennms.netmgt.config.xmlrpcd.SubscribingServers;
+import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
 
 /**
@@ -177,7 +177,7 @@ public final class XmlrpcdConfigFactory {
      * 
      * @return an enumeration of subscribed event ueis.
      */
-    public synchronized ArrayList getEventList(SubscribingServers server) throws ValidationException {
+    public synchronized ArrayList getEventList(ExternalServers server) throws ValidationException {
         // get names of event subscriptions from server
         ArrayList serverSubs = server.getServerSubscriptionCollection();
 
@@ -222,8 +222,8 @@ public final class XmlrpcdConfigFactory {
      * 
      * @return an enumeration of xmlrpc servers.
      */
-    public synchronized Enumeration getSubscribingServerEnumeration() {
-        return m_config.enumerateSubscribingServers();
+    public synchronized Enumeration getExternalServerEnumeration() {
+        return m_config.enumerateExternalServers();
     }
 
     /**

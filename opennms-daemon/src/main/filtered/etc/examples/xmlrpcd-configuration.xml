@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 
 <xmlrpcd-configuration max-event-queue-size="5000" generic-msgs="true">
-        <subscribing-servers retries="3" elapse-time="15000">
+        <external-servers retries="3" elapse-time="15000">
                 <xmlrpc-server url="http://localhost:9000" />
                 <xmlrpc-server url="http://localhost:10000" />
                 <serverSubscription>baseEvents</serverSubscription>
                 <serverSubscription>extraEvents</serverSubscription>
-        </subscribing-servers>
-        <subscribing-servers retries="3" elapse-time="15000">
+        </external-servers>
+        <external-servers retries="3" elapse-time="15000">
                 <xmlrpc-server url="http://localhost:7000" />
                 <serverSubscription>baseEvents</serverSubscription>
                 <serverSubscription>extraEvents</serverSubscription>
-        </subscribing-servers>
+        </external-servers>
         <subscription name="baseEvents">
                 <subscribed-event uei="uei.opennms.org/nodes/nodeLostService"/>
                 <subscribed-event uei="uei.opennms.org/nodes/nodeRegainedService"/>

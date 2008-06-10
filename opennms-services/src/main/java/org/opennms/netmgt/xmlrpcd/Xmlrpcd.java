@@ -50,7 +50,7 @@ import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
-import org.opennms.netmgt.config.xmlrpcd.SubscribingServers;
+import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 /**
  * <p>
  * The Xmlrpcd receives events selectively and sends notification to an external
@@ -118,11 +118,11 @@ public class Xmlrpcd extends AbstractServiceDaemon {
                 localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
             // create a BroadcastEventProcessor per server 
-            Enumeration servers = xFactory.getSubscribingServerEnumeration();
+            Enumeration servers = xFactory.getExternalServerEnumeration();
             int i = 0;
             while (servers.hasMoreElements()) {
-                SubscribingServers server = 
-                                    (SubscribingServers) servers.nextElement();
+                ExternalServers server = 
+                                    (ExternalServers) servers.nextElement();
                 XmlrpcServer[] xServers = server.getXmlrpcServer();
                 FifoQueue q = new FifoQueueImpl();
                 m_eventlogQs.add(q);
