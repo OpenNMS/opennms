@@ -47,6 +47,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 
 /**
  * The EventQueueProcessor processes the events recieved by xmlrpcd and sends
@@ -87,12 +88,21 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     private Thread m_worker;
 
     /**
+     * Use generic messages flag -- based on a setting in the config file,
+     *  if this flags is true, then we will send all events with the sendEvent
+     *  RPC call.  If it's false, we'll use the backward-compatible 6 specific
+     *  event RPC calls.
+     */
+    private boolean m_useGenericMessages;
+
+    /**
      * The constructor
      */
     EventQueueProcessor(FifoQueue eventQ, XmlrpcServer[] rpcServers, int retries, int elapseTime, boolean verifyServer, String localServer, int maxQSize) {
         m_eventQ = eventQ;
         m_maxQSize = maxQSize;
         m_notifier = new XmlRpcNotifier(rpcServers, retries, elapseTime, verifyServer, localServer);
+        m_useGenericMessages = XmlrpcdConfigFactory.getInstance().getConfiguration().getGenericMsgs();
     }
 
     private void processEvent(Event event) {
@@ -106,7 +116,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             return;
         }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) 
             log.debug("About to process event: " + event.getUei());
 
         // get eventid
@@ -126,31 +136,43 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         if (log.isDebugEnabled())
             log.debug("Event\nuei\t\t" + uei + "\neventid\t\t" + eventId + "\nnodeid\t\t" + nodeId + "\nipaddr\t\t" + ipAddr + "\nservice\t\t" + service + "\neventtime\t" + (eventTime != null ? eventTime : "<null>"));
 
-        if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
-            if (!m_notifier.sendServiceDownEvent(event)) {
+        if (m_useGenericMessages) {
+            // new single RPC for all events (subject to config uei filter)
+            if (!m_notifier.sendEvent(event)) {
                 pushBackEvent(event);
             }
-        } else if (uei.equals(EventConstants.INTERFACE_DOWN_EVENT_UEI)) {
-            if (!m_notifier.sendInterfaceDownEvent(event)) {
-                pushBackEvent(event);
-            }
-        } else if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
-            if (!m_notifier.sendNodeDownEvent(event)) {
-                pushBackEvent(event);
-            }
-        } else if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)) {
-            if (!m_notifier.sendNodeUpEvent(event)) {
-                pushBackEvent(event);
-            }
-        } else if (uei.equals(EventConstants.INTERFACE_UP_EVENT_UEI)) {
-            if (!m_notifier.sendInterfaceUpEvent(event)) {
-                pushBackEvent(event);
-            }
-        } else if (uei.equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)) {
-            if (!m_notifier.sendServiceUpEvent(event)) {
-                pushBackEvent(event);
-            }
-        } else if (uei.equals(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI)) {
+        }
+        else {
+            // original specific RPC calls -- limits us to exporting a max of
+            //  6 specific events
+            if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
+                if (!m_notifier.sendServiceDownEvent(event)) {
+                    pushBackEvent(event);
+                }
+            } else if (uei.equals(EventConstants.INTERFACE_DOWN_EVENT_UEI)) {
+                if (!m_notifier.sendInterfaceDownEvent(event)) {
+                    pushBackEvent(event);
+                }
+            } else if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+                if (!m_notifier.sendNodeDownEvent(event)) {
+                    pushBackEvent(event);
+                }
+            } else if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)) {
+                if (!m_notifier.sendNodeUpEvent(event)) {
+                    pushBackEvent(event);
+                }
+            } else if (uei.equals(EventConstants.INTERFACE_UP_EVENT_UEI)) {
+                if (!m_notifier.sendInterfaceUpEvent(event)) {
+                    pushBackEvent(event);
+                }
+            } else if (uei.equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)) {
+                if (!m_notifier.sendServiceUpEvent(event)) {
+                    pushBackEvent(event);
+                }
+            } 
+        }
+
+        if (uei.equals(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI)) {
             xmlrpcNotificationEventHandler(event);
         }
     }

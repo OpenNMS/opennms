@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.util.ArrayList;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -53,6 +54,8 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
+import org.opennms.netmgt.config.xmlrpcd.SubscribingServers;
+import org.opennms.netmgt.config.xmlrpcd.Subscription;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -166,80 +169,61 @@ public final class XmlrpcdConfigFactory {
     }
 
     /**
-     * This method is used to determine if an event of the named represented is
-     * subscribed by the external XMLRPC server.
-     * 
-     * @param uei
-     *            The uei to test against the subscribed events in the
-     *            configuration file.
-     * 
-     * @return True if named uei is subscribed in the subscribed event
-     *         collection of the configuration file.
-     */
-    public synchronized boolean eventSubscribed(String uei) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        Enumeration eventEnum = m_config.getSubscription().enumerateSubscribedEvent();
-        boolean isSubscribed = false;
-
-        while (eventEnum.hasMoreElements()) {
-            SubscribedEvent sEvent = (SubscribedEvent) eventEnum.nextElement();
-            if ((sEvent.getUei()).equals(uei)) {
-                isSubscribed = true;
-
-                if (log.isDebugEnabled())
-                    log.debug("eventSubscribed: Event " + uei + " is subscribed.");
-                break;
-            }
-        }
-
-        return isSubscribed;
-    }
-
-    /**
-     * Retrieves configured list of subscribed event uei.
+     * Retrieves configured list of subscribed event uei for the given
+     *  subscribing server.
+     *
+     * @throws org.exolab.castor.xml.ValidationException if a serverSubscription
+     *          element references a subscription name that doesn't exist
      * 
      * @return an enumeration of subscribed event ueis.
      */
-    public synchronized Enumeration getEventEnumeration() {
-        return m_config.getSubscription().enumerateSubscribedEvent();
+    public synchronized ArrayList getEventList(SubscribingServers server) throws ValidationException {
+        // get names of event subscriptions from server
+        ArrayList serverSubs = server.getServerSubscriptionCollection();
+
+        // get event lists from names
+        ArrayList allEventsList = new ArrayList();
+        for (int i = 0; i < serverSubs.size(); i++) {
+            String name = (String)serverSubs.get(i);
+
+            ArrayList subscriptions = m_config.getSubscriptionCollection();
+
+            boolean foundSubscription = false;
+
+            for (int j = 0; j < subscriptions.size(); j++) {
+                Subscription sub = (Subscription) subscriptions.get(j);
+                if (sub.getName().equals(name)) {
+                    allEventsList.addAll(sub.getSubscribedEventCollection());
+                    foundSubscription = true;
+                    break;
+                }
+            }
+
+            if (!foundSubscription) {
+                // oops -- a serverSubscription element referenced a 
+                //  subscription element that doesn't exist
+                
+                Category log = ThreadCategory.getInstance(getClass());
+                log.error("serverSubscription element " + name + 
+                            " references a subscription that does not exist");
+                throw new ValidationException("serverSubscription element " +
+                    name + " references a subscription that does not exist");
+            }
+        }
+
+        // return the merged list
+        return(allEventsList);
+
     }
 
     /**
-     * Retrieves configured list of external xmlrpc servers.
+     * Retrieves configured list of xmlrpc servers and the events to which
+     *  they subscribe.
      * 
      * @return an enumeration of xmlrpc servers.
      */
-    public synchronized Enumeration getXmlrpcServerEnumeration() {
-        return m_config.getExternalServers().enumerateXmlrpcServer();
-    }
-
-    /**
-     * Retrieves configured list of external xmlrpc servers.
-     * 
-     * @return an array of xmlrpc servers.
-     */
-    public synchronized XmlrpcServer[] getXmlrpcServer() {
-        return m_config.getExternalServers().getXmlrpcServer();
-    }
-
-    /**
-     * Retrieves configured retry number for xmlrpc communication.
-     * 
-     * @return the retry number.
-     */
-    public synchronized int getRetries() {
-        return m_config.getExternalServers().getRetries();
-    }
-
-    /**
-     * Retrieves configured elapse time between retries for xmlrpc
-     * communication.
-     * 
-     * @return the elapse time.
-     */
-    public synchronized int getElapseTime() {
-        return m_config.getExternalServers().getElapseTime();
+    public synchronized Enumeration getSubscribingServerEnumeration() {
+        return m_config.enumerateSubscribingServers();
     }
 
     /**

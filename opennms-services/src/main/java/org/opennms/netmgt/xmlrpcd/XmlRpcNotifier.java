@@ -48,6 +48,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.Hashtable;
 
 import org.apache.log4j.Category;
 import org.apache.xmlrpc.XmlRpcClient;
@@ -58,6 +59,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.xml.event.Snmp;
 
 /**
  * <p>
@@ -119,6 +124,17 @@ public final class XmlRpcNotifier {
      * The external xmlrpc server procedure to process an interfaceDown event.
      */
     private static final String XMLRPC_INTERFACE_DOWN_COMMAND = "sendInterfaceDownEvent";
+
+    /**
+     * The external xmlrpc server procedure to process a generic event
+     *  RPC (instead of making an RPC that's specific to the message)
+     */
+    private static final String XMLRPC_GENERIC_COMMAND = "sendEvent";
+
+    /**
+     * The external xmlrpc server procedure to process an SNMP trap event
+     */
+    private static final String XMLRPC_SNMP_TRAP_COMMAND = "sendSnmpTrapEvent";
 
     /**
      * The external xmlrpc servers.
@@ -352,6 +368,100 @@ public final class XmlRpcNotifier {
         return sendXmlrpcRequest(XMLRPC_NODE_UP_COMMAND, params);
     }
 
+    /**
+     * <p>
+     * Notify the external event xmlrpc server of the occurrence of a generic 
+     * event -- ie. an event that's been configured for XMLRPC forwarding, but 
+     * which does not correspond to one of the specific event methods of this 
+     * class
+     */
+    public boolean sendEvent(Event event) {
+        //Object o = m_recipient.sendNodeUpEvent(getLabelForEventNode3event), getEventHost(event), event.getTime());
+        // Create the request parameters list
+        Vector params = new Vector();
+        Hashtable<String, String> table = new Hashtable<String, String>();
+        params.addElement(table);
+
+        table.put( new String("source"), new String(event.getSource()) );
+        table.put( new String("nodeLabel"), 
+                                    new String(getLabelForEventNode(event)) );
+        table.put( new String("host"), getEventHost(event) );
+        table.put( new String("time"), new String(event.getTime()) );
+        table.put( new String("uei"), new String(event.getUei()) );
+        table.put( new String("nodeId"), 
+                                new String(Long.toString(event.getNodeid())) );
+
+        String interFace = event.getInterface();
+        if (interFace != null) {
+            table.put( new String("interface"), new String(interFace) );
+        }
+
+        String service = event.getService();
+        if (service != null) {
+            table.put( new String("service"), new String(service) );
+        }
+
+        String descr = event.getDescr();
+        if (descr != null) {
+            table.put( new String("description"), new String(descr) );
+        }
+        table.put( new String("severity"), new String(event.getSeverity()) );
+
+        // process event parameters (if any)
+        Parms eventParams = event.getParms();
+        if (eventParams != null)
+        {
+            int numParams = eventParams.getParmCount();
+            for (int i = 0; i < numParams; i++) {
+                Parm p = eventParams.getParm(i);
+                Value v = p.getValue();
+
+                table.put( 
+                    new String("param" + Integer.toString(i) + " name"),
+                                                new String(p.getParmName()) );
+                table.put( 
+                    new String("param" + Integer.toString(i) + " type"),
+                                                    new String(v.getType()) );
+                table.put( 
+                    new String("param" + Integer.toString(i) + " value"),
+                                                new String(v.getContent()) );
+            }
+        }
+
+        if (event.getSnmp() == null) {
+            return sendXmlrpcRequest(XMLRPC_GENERIC_COMMAND, params);
+        }
+        else {
+            // get trap-specific fields
+            Snmp trapInfo = event.getSnmp();
+
+            table.put( new String("communityString"), 
+                                        new String(trapInfo.getCommunity()) );
+
+            table.put( new String("genericTrapNumber"),
+                        new String(Integer.toString(trapInfo.getGeneric())) );
+
+            table.put( 
+                    new String("enterpriseId"), new String(trapInfo.getId()) );
+
+            if (trapInfo.getIdtext() != null) {
+                table.put( new String("enterpriseIdText"),
+                                            new String(trapInfo.getIdtext()) );
+            }
+
+            table.put( new String("specificTrapNumber"), 
+                        new String(Integer.toString(trapInfo.getSpecific())) );
+
+            table.put( new String("timeStamp"), 
+                        new String(Long.toString(trapInfo.getTimeStamp())) );
+
+            table.put( 
+                    new String("version"), new String(trapInfo.getVersion()) );
+
+            return sendXmlrpcRequest(XMLRPC_SNMP_TRAP_COMMAND, params);
+        }
+    }
+
 
     private String getLabelForEventNode(Event event) {
         return getNodeLabel(event.getNodeid());
@@ -467,10 +577,12 @@ public final class XmlRpcNotifier {
 
         for (int i = 0; i < m_rpcServers.length; i++) {
             XmlrpcServer xServer = m_rpcServers[i];
+
             String url = xServer.getUrl();
 
             if (log.isDebugEnabled())
-                log.debug("Start to set up communication to XMLRPC server: " + url);
+                log.debug("Start to set up communication to XMLRPC server: " 
+                                                                        + url);
 
             try {
                 m_xmlrpcClient = new SecureXmlRpcClient(url);
@@ -500,10 +612,9 @@ public final class XmlRpcNotifier {
                     Thread.sleep(m_elapseTime);
                 } catch (InterruptedException ie) {
                 }
-
             }
 
-            // break outer loop, a working xmlrpc client created.
+            // break outer loop -- a working xmlrpc client created.
             if (success)
                 break;
 
