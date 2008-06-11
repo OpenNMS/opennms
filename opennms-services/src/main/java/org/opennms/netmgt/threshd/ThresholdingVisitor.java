@@ -340,7 +340,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 ThresholdResourceType thisResourceType = typeMap.get(resourceType);
                 if (thisResourceType == null) {
                     log().warn("No thresholds configured for resource type " + resourceType + ".  Not processing this collection ");
-                    continue; // Cannot sensibly continue; might be simply no thresholds configured, or maybe something deeper
+                    continue;
                 }
                 entityMap = thisResourceType.getThresholdMap();
             }
