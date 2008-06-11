@@ -36,7 +36,8 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.admin.notification.noticeWizard.*"
+	import="org.opennms.web.admin.notification.noticeWizard.*,
+	org.opennms.web.Util"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -62,7 +63,7 @@
 	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
 	  	<input type="hidden" id="uei" name="uei" value="" /> <!-- Set by java script -->
-	  	<input type="hidden" name="returnPage" value="admin/thresholds/index.htm?groupName=${group.name}&editGroup" />
+	  	<input type="hidden" name="returnPage" value="<%=Util.calculateUrlBase(request)%>/admin/thresholds/index.htm?groupName=${group.name}&editGroup" />
 	  </form>
 
 <h3>Edit group ${group.name}</h3>
