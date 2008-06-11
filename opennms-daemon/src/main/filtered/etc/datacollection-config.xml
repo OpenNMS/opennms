@@ -145,6 +145,35 @@
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.10" instance="ifIndex" alias="ifHCOutOctets" type="counter" />
       </group>
 
+      <group name="mib2-icmp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.5.2" instance="0"  alias="icmpInErrors" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.3" instance="0"  alias="icmpInDestUnreachs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.4" instance="0"  alias="icmpInTimeExcds" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.6" instance="0"  alias="icmpInSrcQuenchs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.7" instance="0"  alias="icmpInRedirects" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.8" instance="0"  alias="icmpInEchos" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.15" instance="0" alias="icmpOutErrors" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.16" instance="0" alias="icmpOutDestUnreachs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.17" instance="0" alias="icmpOutTimeExcds" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.19" instance="0" alias="icmpOutSrcQuenchs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.20" instance="0" alias="icmpOutRedirects" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.21" instance="0" alias="icmpOutEchos" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.22" instance="0" alias="icmpOutEchoReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.1"  instance="0" alias="icmpInMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.5"  instance="0" alias="icmpInParmProbs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.9"  instance="0" alias="icmpInEchoReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.10" instance="0" alias="icmpInTimestamps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.11" instance="0" alias="icmpInTimestampReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.12" instance="0" alias="icmpInAddrMasks" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.13" instance="0" alias="icmpInAddrMaskReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.14" instance="0" alias="icmpOutMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.18" instance="0" alias="icmpOutParmProbs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.23" instance="0" alias="icmpOutTimestamps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.24" instance="0" alias="icmpOutTimestmpReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.25" instance="0" alias="icmpOutAddrMasks" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.26" instance="0" alias="icmpOutAddrMaskReps" type="counter" />
+      </group>
+
       <group name="mib2-host-resources-storage" ifType="all">
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageIndex" alias="hrStorageDescr" type="string" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageIndex" alias="hrStorageAllocUnits" type="gauge" />
@@ -1478,6 +1507,7 @@
         <collect>
           <includeGroup>mib2-interfaces</includeGroup>
           <includeGroup>mib2-tcp</includeGroup>
+          <includeGroup>mib2-icmp</includeGroup>
         </collect>
       </systemDef>
 
