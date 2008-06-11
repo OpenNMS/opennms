@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Jun 10: Clean up table layout.  - jeffg@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -117,7 +118,7 @@
 
 <h2>Existing Notifications for UEI <%=uei%></h2>
       <table width="50%" cellspacing="2" cellpadding="2" border="0">
-      	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th></tr>
+      	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
       <% for(Notification notif : notifsForUEI) { 
           	String varbindDescription="";
           	Varbind varbind=notif.getVarbind();
@@ -134,6 +135,6 @@
 	        	<td><a href="javascript: void submitEditForm('<%=notif.getName()%>');">Edit</a></td>
 			</tr>
 <% } %>
-		<tr><td colspan="5"><a href="javascript: document.newNotificationForm.submit()">Create a new notification</a></td></tr>
+		<tr><td colspan="6"><a href="javascript: document.newNotificationForm.submit()">Create a new notification</a></td></tr>
       </table>
 <jsp:include page="/includes/footer.jsp" flush="false" />
