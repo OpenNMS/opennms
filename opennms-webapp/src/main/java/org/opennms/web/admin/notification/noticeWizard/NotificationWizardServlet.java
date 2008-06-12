@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jun 10: Remove "noticeWizardReturnPage" user attribute after consuming
+//              its value.  - jeffg@opennms.org
 // 2007 Jul 24: Format code, use Java 5 generics, refactor work done in doPost
 //              method into individual per-action methods, eliminate the use
 //              of StringBuffer except in a few cases, and largely eliminate
@@ -341,7 +343,10 @@ public class NotificationWizardServlet extends HttpServlet {
 
         String suppliedReturnPage=(String)user.getAttribute("noticeWizardReturnPage");
         if (suppliedReturnPage != null && !suppliedReturnPage.equals("")) {
-            return suppliedReturnPage;
+            // Remove this attribute once we have consumed it, else the user may later
+        	// get returned to a potentially unexpected page here
+        	user.removeAttribute("noticeWizardReturnPage");
+        	return suppliedReturnPage;
         } else {
             return SOURCE_PAGE_NOTICES;
         }
