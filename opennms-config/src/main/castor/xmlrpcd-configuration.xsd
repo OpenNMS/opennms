@@ -72,7 +72,7 @@
           </annotation>
         </element>
         <element name="serverSubscription" maxOccurs="unbounded" 
-                                                    minOccurs="1" type="string">
+                                                    minOccurs="0" type="string">
           <annotation>
             <documentation>
                 Name of a subscription for this server
@@ -125,7 +125,7 @@
           </annotation>
         </element>
       </sequence>
-      <attribute name="name" type="string" use="required">
+      <attribute name="name" type="string" use="optional">
         <annotation>
           <documentation>Name of subscription</documentation>
         </annotation>
