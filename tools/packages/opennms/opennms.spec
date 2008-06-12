@@ -320,6 +320,24 @@ rm -rf $RPM_BUILD_ROOT
 %config %{webappsdir}/%{servletdir}/WEB-INF/web.xml
 %config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
 
+%post webapp-jetty
+printf -- "- making ROOT webapp if it doesn't exist... "
+if [ ! -e "$RPM_INSTALL_PREFIX0/jetty-webapps/ROOT" ]; then
+	mkdir -p "$RPM_INSTALL_PREFIX0/jetty-webapps/ROOT"
+	cat <<END >"$RPM_INSTALL_PREFIX0/jetty-webapps/ROOT/index.html"
+<html>
+ <head>
+  <title>OpenNMS: Redirecting to /opennms</title>
+  <meta http-equiv="Refresh" content="0;url=/opennms" />
+ </head>
+ <body>
+  <h2>You are being redirected to the OpenNMS web application.</h2>
+  <p>If you are not redirected in a few seconds, <a href="/opennms">click here</a>.</p>
+ </body>
+</html>
+END
+fi
+
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
 if [ -e "$RPM_INSTALL_PREFIX0/docs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/docs" ]; then
