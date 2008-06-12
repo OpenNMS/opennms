@@ -1367,7 +1367,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.snmp4j</groupId>
         <artifactId>snmp4j-agent</artifactId>
-        <version>1.2</version>
+        <version>1.2c</version>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
