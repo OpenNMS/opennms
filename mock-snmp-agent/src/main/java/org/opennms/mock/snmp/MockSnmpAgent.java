@@ -121,7 +121,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * 		utility <code>snmpwalk</code> with the <code>-One</code> option set.
      */
     public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
-        super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID())));
+        super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
         m_address = bindAddress;
         m_moFile = moFile;
         agent.setWorkerPool(ThreadPool.create("RequestPool", 4));

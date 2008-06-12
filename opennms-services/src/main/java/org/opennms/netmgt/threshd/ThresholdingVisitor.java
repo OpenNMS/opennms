@@ -8,7 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2008 June 11: Correct logic error when checking for generic resource types; update author - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -76,7 +78,7 @@ import org.springframework.dao.DataAccessException;
  * for this interface/service combination 
  * (so perhaps needs a better name than ThresholdingVisitor)
  * 
- * @author opennms
+ * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
  *
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
@@ -338,7 +340,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 ThresholdResourceType thisResourceType = typeMap.get(resourceType);
                 if (thisResourceType == null) {
                     log().warn("No thresholds configured for resource type " + resourceType + ".  Not processing this collection ");
-                    return; // Cannot sensibly continue; might be simply no thresholds configured, or maybe something deeper
+                    continue;
                 }
                 entityMap = thisResourceType.getThresholdMap();
             }
