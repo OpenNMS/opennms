@@ -42,7 +42,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -50,8 +53,9 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
+import org.opennms.netmgt.config.xmlrpcd.Subscription;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 
 /**
@@ -119,9 +123,79 @@ public final class XmlrpcdConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.XMLRPCD_CONFIG_FILE_NAME);
 
+        init(cfgFile);
+    }
+
+    /**
+     * Load the specified config file and create the singleton instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init(File cfgFile) throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
+
         ThreadCategory.getInstance(XmlrpcdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
         m_singleton = new XmlrpcdConfigFactory(cfgFile.getPath());
+        String generatedSubscriptionName = null;
+
+        /* Be backwards-compatible with old configurations.
+         * 
+         * The old style configuration did not have a <serverSubscription> field
+         * inside the <external-servers> tag, so create a default one.
+         */
+        Enumeration<ExternalServers> e = m_singleton.getExternalServerEnumeration();
+        while (e.hasMoreElements()) {
+        	ExternalServers es = e.nextElement();
+        	if (es.getServerSubscriptionCollection().size() == 0) {
+        		if (generatedSubscriptionName == null) {
+        			generatedSubscriptionName = "legacyServerSubscription-" + java.util.UUID.randomUUID().toString();
+        		}
+        		es.addServerSubscription(generatedSubscriptionName);
+        	}
+        }
+
+        if (generatedSubscriptionName != null) {
+        	boolean foundUnnamedSubscription = false;
+        	for (Subscription s : m_singleton.getConfiguration().getSubscriptionCollection()) {
+        		if (s.getName() == null) {
+        			s.setName(generatedSubscriptionName);
+        			foundUnnamedSubscription = true;
+        			break;
+        		}
+        	}
+        	if (! foundUnnamedSubscription) {
+        		String[] ueis = {
+        				"uei.opennms.org/nodes/nodeLostService",
+        				"uei.opennms.org/nodes/nodeRegainedService",
+        				"uei.opennms.org/nodes/nodeUp",
+        				"uei.opennms.org/nodes/nodeDown",
+        				"uei.opennms.org/nodes/interfaceUp",
+        				"uei.opennms.org/nodes/interfaceDown",
+        				"uei.opennms.org/internal/capsd/updateServer",
+        				"uei.opennms.org/internal/capsd/updateService",
+        				"uei.opennms.org/internal/capsd/xmlrpcNotification"
+        		};
+        		Subscription subscription = new Subscription();
+        		subscription.setName(generatedSubscriptionName);
+        		SubscribedEvent subscribedEvent = null;
+        		for (String uei : ueis) {
+        			subscribedEvent = new SubscribedEvent();
+        			subscribedEvent.setUei(uei);
+        			subscription.addSubscribedEvent(subscribedEvent);
+        		}
+        		m_singleton.getConfiguration().addSubscription(subscription);
+        	}
+        }
 
         m_loaded = true;
     }
@@ -166,82 +240,93 @@ public final class XmlrpcdConfigFactory {
     }
 
     /**
-     * This method is used to determine if an event of the named represented is
-     * subscribed by the external XMLRPC server.
-     * 
-     * @param uei
-     *            The uei to test against the subscribed events in the
-     *            configuration file.
-     * 
-     * @return True if named uei is subscribed in the subscribed event
-     *         collection of the configuration file.
-     */
-    public synchronized boolean eventSubscribed(String uei) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        Enumeration eventEnum = m_config.getSubscription().enumerateSubscribedEvent();
-        boolean isSubscribed = false;
-
-        while (eventEnum.hasMoreElements()) {
-            SubscribedEvent sEvent = (SubscribedEvent) eventEnum.nextElement();
-            if ((sEvent.getUei()).equals(uei)) {
-                isSubscribed = true;
-
-                if (log.isDebugEnabled())
-                    log.debug("eventSubscribed: Event " + uei + " is subscribed.");
-                break;
-            }
-        }
-
-        return isSubscribed;
-    }
-
-    /**
-     * Retrieves configured list of subscribed event uei.
+     * Retrieves configured list of subscribed event uei for the given
+     *  subscribing server.
+     *
+     * @throws org.exolab.castor.xml.ValidationException if a serverSubscription
+     *          element references a subscription name that doesn't exist
      * 
      * @return an enumeration of subscribed event ueis.
      */
-    public synchronized Enumeration getEventEnumeration() {
-        return m_config.getSubscription().enumerateSubscribedEvent();
+    public synchronized ArrayList<SubscribedEvent> getEventList(ExternalServers server) throws ValidationException {
+        // get names of event subscriptions from server
+        List<String> serverSubs = server.getServerSubscriptionCollection();
+
+        // get event lists from names
+        ArrayList<SubscribedEvent> allEventsList = new ArrayList<SubscribedEvent>();
+        for (int i = 0; i < serverSubs.size(); i++) {
+            String name = serverSubs.get(i);
+
+            List<Subscription> subscriptions = m_config.getSubscriptionCollection();
+
+            boolean foundSubscription = false;
+
+            for (int j = 0; j < subscriptions.size(); j++) {
+                Subscription sub = subscriptions.get(j);
+                if (sub.getName().equals(name)) {
+                    allEventsList.addAll(sub.getSubscribedEventCollection());
+                    foundSubscription = true;
+                    break;
+                }
+            }
+
+            if (!foundSubscription) {
+                // oops -- a serverSubscription element referenced a 
+                //  subscription element that doesn't exist
+                
+                Category log = ThreadCategory.getInstance(getClass());
+                log.error("serverSubscription element " + name + 
+                            " references a subscription that does not exist");
+                throw new ValidationException("serverSubscription element " +
+                    name + " references a subscription that does not exist");
+            }
+        }
+
+        // return the merged list
+        return(allEventsList);
+
     }
 
     /**
-     * Retrieves configured list of external xmlrpc servers.
+     * Retrieves configured list of xmlrpc servers and the events to which
+     *  they subscribe.
      * 
      * @return an enumeration of xmlrpc servers.
      */
-    public synchronized Enumeration getXmlrpcServerEnumeration() {
-        return m_config.getExternalServers().enumerateXmlrpcServer();
+    public synchronized Enumeration<ExternalServers> getExternalServerEnumeration() {
+        return m_config.enumerateExternalServers();
     }
 
     /**
-     * Retrieves configured list of external xmlrpc servers.
+     * Retrieves configured list of server subscriptions and the UEIs they
+     * are associated with.
      * 
-     * @return an array of xmlrpc servers.
+     * @return an enumeration of subscriptions.
      */
-    public synchronized XmlrpcServer[] getXmlrpcServer() {
-        return m_config.getExternalServers().getXmlrpcServer();
+    public synchronized Enumeration<Subscription> getSubscriptionEnumeration() {
+    	return m_config.enumerateSubscription();
+    }
+    
+    /**
+     * Retrieves configured list of xmlrpc servers and the events to which
+     *  they subscribe.
+     * 
+     * @return a collection of xmlrpc servers.
+     */
+    public synchronized Collection<ExternalServers> getExternalServerCollection() {
+    	return m_config.getExternalServersCollection();
     }
 
     /**
-     * Retrieves configured retry number for xmlrpc communication.
+     * Retrieves configured list of server subscriptions and the UEIs they
+     * are associated with.
      * 
-     * @return the retry number.
+     * @return a collection of subscriptions.
      */
-    public synchronized int getRetries() {
-        return m_config.getExternalServers().getRetries();
+    public synchronized Collection<Subscription> getSubscriptionCollection() {
+    	return m_config.getSubscriptionCollection();
     }
-
-    /**
-     * Retrieves configured elapse time between retries for xmlrpc
-     * communication.
-     * 
-     * @return the elapse time.
-     */
-    public synchronized int getElapseTime() {
-        return m_config.getExternalServers().getElapseTime();
-    }
-
+    
     /**
      * Retrieves the max event queue size from configuration.
      * 
