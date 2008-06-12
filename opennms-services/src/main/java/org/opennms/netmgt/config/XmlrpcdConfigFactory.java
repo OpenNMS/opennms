@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -122,9 +123,79 @@ public final class XmlrpcdConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.XMLRPCD_CONFIG_FILE_NAME);
 
+        init(cfgFile);
+    }
+
+    /**
+     * Load the specified config file and create the singleton instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init(File cfgFile) throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
+
         ThreadCategory.getInstance(XmlrpcdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
         m_singleton = new XmlrpcdConfigFactory(cfgFile.getPath());
+        String generatedSubscriptionName = null;
+
+        /* Be backwards-compatible with old configurations.
+         * 
+         * The old style configuration did not have a <serverSubscription> field
+         * inside the <external-servers> tag, so create a default one.
+         */
+        Enumeration<ExternalServers> e = m_singleton.getExternalServerEnumeration();
+        while (e.hasMoreElements()) {
+        	ExternalServers es = e.nextElement();
+        	if (es.getServerSubscriptionCollection().size() == 0) {
+        		if (generatedSubscriptionName == null) {
+        			generatedSubscriptionName = "legacyServerSubscription-" + java.util.UUID.randomUUID().toString();
+        		}
+        		es.addServerSubscription(generatedSubscriptionName);
+        	}
+        }
+
+        if (generatedSubscriptionName != null) {
+        	boolean foundUnnamedSubscription = false;
+        	for (Subscription s : m_singleton.getConfiguration().getSubscriptionCollection()) {
+        		if (s.getName() == null) {
+        			s.setName(generatedSubscriptionName);
+        			foundUnnamedSubscription = true;
+        			break;
+        		}
+        	}
+        	if (! foundUnnamedSubscription) {
+        		String[] ueis = {
+        				"uei.opennms.org/nodes/nodeLostService",
+        				"uei.opennms.org/nodes/nodeRegainedService",
+        				"uei.opennms.org/nodes/nodeUp",
+        				"uei.opennms.org/nodes/nodeDown",
+        				"uei.opennms.org/nodes/interfaceUp",
+        				"uei.opennms.org/nodes/interfaceDown",
+        				"uei.opennms.org/internal/capsd/updateServer",
+        				"uei.opennms.org/internal/capsd/updateService",
+        				"uei.opennms.org/internal/capsd/xmlrpcNotification"
+        		};
+        		Subscription subscription = new Subscription();
+        		subscription.setName(generatedSubscriptionName);
+        		SubscribedEvent subscribedEvent = null;
+        		for (String uei : ueis) {
+        			subscribedEvent = new SubscribedEvent();
+        			subscribedEvent.setUei(uei);
+        			subscription.addSubscribedEvent(subscribedEvent);
+        		}
+        		m_singleton.getConfiguration().addSubscription(subscription);
+        	}
+        }
 
         m_loaded = true;
     }
@@ -226,6 +297,36 @@ public final class XmlrpcdConfigFactory {
         return m_config.enumerateExternalServers();
     }
 
+    /**
+     * Retrieves configured list of server subscriptions and the UEIs they
+     * are associated with.
+     * 
+     * @return an enumeration of subscriptions.
+     */
+    public synchronized Enumeration<Subscription> getSubscriptionEnumeration() {
+    	return m_config.enumerateSubscription();
+    }
+    
+    /**
+     * Retrieves configured list of xmlrpc servers and the events to which
+     *  they subscribe.
+     * 
+     * @return a collection of xmlrpc servers.
+     */
+    public synchronized Collection<ExternalServers> getExternalServerCollection() {
+    	return m_config.getExternalServersCollection();
+    }
+
+    /**
+     * Retrieves configured list of server subscriptions and the UEIs they
+     * are associated with.
+     * 
+     * @return a collection of subscriptions.
+     */
+    public synchronized Collection<Subscription> getSubscriptionCollection() {
+    	return m_config.getSubscriptionCollection();
+    }
+    
     /**
      * Retrieves the max event queue size from configuration.
      * 
