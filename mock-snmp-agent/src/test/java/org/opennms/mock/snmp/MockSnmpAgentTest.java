@@ -95,7 +95,7 @@ public class MockSnmpAgentTest extends TestCase {
 	 */
 	public void testAgentSetup() throws InterruptedException {
 		assertNotNull("agent should be non-null", agt);
-		Thread.sleep(60000);
+		//Thread.sleep(60000);
 	}
 	
 	/**
