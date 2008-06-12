@@ -101,6 +101,25 @@ public class MockSnmpAgentTest extends TestCase {
     public void testAgentSetup() {
         assertNotNull("agent should be non-null", m_agent);
     }
+	
+	/**
+	 * Test that we can setUp() and tearDown() twice to ensure that the
+	 * MockSnmpAgent tears itself down properly. In particular, we want to make
+	 * sure that the UDP listener gets torn down so listening port is free for
+	 * later instances of the agent.
+	 * 
+	 * @throws Exception
+	 */
+	public void testSetUpTearDownTwice() throws Exception {
+		// don't need the first setUp(), since it's already been done by JUnit
+		tearDown();
+		setUp();
+		// don't need the second tearDown(), since it will be done by JUnit
+	}
+	
+	public void testGetNext() throws Exception {
+	    assertResultFromGetNext("1.3.5.1.1.3", "1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+	}
 
     /**
      * Test that we can setUp() and tearDown() twice to ensure that the

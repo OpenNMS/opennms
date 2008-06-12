@@ -128,6 +128,24 @@
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <!-- Asterisk Resource Types -->
+    <resourceType name="astChanType" label="Asterisk Channel Type"
+                 resourceLabel="${astChanTypeName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <!-- Juniper Resource Types -->
+    <resourceType name="juniSystemSlot" label="Juniper ERX System Slot" resourceLabel="${juniSystemModuleDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType name="juniSystemTempIndex" label="Juniper ERX Temperature Sensor" resourceLabel="Physical Index ${juniSTPhysicalIndex}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+
     <groups>
       <!-- data from standard (mib-2) sources -->
       <group name="mib2-interfaces" ifType="all">
@@ -143,6 +161,35 @@
         <mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors" type="counter" />
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.6" instance="ifIndex" alias="ifHCInOctets" type="counter" />
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.10" instance="ifIndex" alias="ifHCOutOctets" type="counter" />
+      </group>
+
+      <group name="mib2-icmp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.5.2" instance="0"  alias="icmpInErrors" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.3" instance="0"  alias="icmpInDestUnreachs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.4" instance="0"  alias="icmpInTimeExcds" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.6" instance="0"  alias="icmpInSrcQuenchs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.7" instance="0"  alias="icmpInRedirects" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.8" instance="0"  alias="icmpInEchos" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.15" instance="0" alias="icmpOutErrors" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.16" instance="0" alias="icmpOutDestUnreachs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.17" instance="0" alias="icmpOutTimeExcds" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.19" instance="0" alias="icmpOutSrcQuenchs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.20" instance="0" alias="icmpOutRedirects" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.21" instance="0" alias="icmpOutEchos" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.22" instance="0" alias="icmpOutEchoReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.1"  instance="0" alias="icmpInMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.5"  instance="0" alias="icmpInParmProbs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.9"  instance="0" alias="icmpInEchoReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.10" instance="0" alias="icmpInTimestamps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.11" instance="0" alias="icmpInTimestampReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.12" instance="0" alias="icmpInAddrMasks" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.13" instance="0" alias="icmpInAddrMaskReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.14" instance="0" alias="icmpOutMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.18" instance="0" alias="icmpOutParmProbs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.23" instance="0" alias="icmpOutTimestamps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.24" instance="0" alias="icmpOutTimestmpReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.25" instance="0" alias="icmpOutAddrMasks" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.26" instance="0" alias="icmpOutAddrMaskReps" type="counter" />
       </group>
 
       <group name="mib2-host-resources-storage" ifType="all">
@@ -236,10 +283,14 @@
 
       <!-- Asterisk (Digium) MIBs -->
       <group name="asterisk-scalars" ifType="ignore">
-	<mibObj oid=".1.3.6.1.4.1.22736.1.5.1" instance="0" alias="astNumChannels" type="gauge" />
-	<mibObj oid=".1.3.6.1.4.1.22736.1.5.5.1" instance="0" alias="astNumChanBridge" type="gauge" />
-	<mibObj oid=".1.3.6.1.4.1.22736.1.2.5" instance="0" alias="astCfgCallsActive" type="gauge" />
-	<mibObj oid=".1.3.6.1.4.1.22736.1.2.6" instance="0" alias="astCfgCallsPrcessed" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.22736.1.5.1" instance="0" alias="astNumChannels" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.22736.1.5.5.1" instance="0" alias="astNumChanBridge" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.22736.1.2.5" instance="0" alias="astCfgCallsActive" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.22736.1.2.6" instance="0" alias="astCfgCallsPrcessed" type="counter" />
+      </group>
+      <group name="asterisk-chantype" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.22736.1.5.4.1.2" instance="astChanType" alias="astChanTypeName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.22736.1.5.4.1.7" instance="astChanType" alias="astChanTypeChannels" type="gauge" />
       </group>
 
       <!-- Checkpoint MIBs -->
@@ -905,6 +956,20 @@
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.1.0" instance="0" alias="juniperBufferFpc0" type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.2.0" instance="0" alias="juniperBufferFpc1" type="gauge32" />
       </group>
+      <group name="juniper-erx-router" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.20.1.8.1" instance="0" alias="juniSubsMaxCount" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.20.1.8.2" instance="0" alias="juniSubsPeakCount" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.20.1.8.3" instance="0" alias="juniSubsCount" type="Gauge32" />
+      </group>
+      <group name="juniper-erx-systemslot" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.3.4.1.6" instance="juniSystemSlot" alias="juniSystemModuleDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.3.5.1.3" instance="juniSystemSlot" alias="juniSMCpuUtilPct" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.3.5.1.4" instance="juniSystemSlot" alias="juniSMMemUtilPct" type="integer" />
+      </group>
+      <group name="juniper-erx-temperature" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.3" instance="juniSystemTempIndex" alias="juniSTValue" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.4" instance="juniSystemTempIndex" alias="juniSTPhysicalIndex" type="string" />
+      </group>
 
       <!-- MGE UPS MIBs -->
       <group name="mge.max.stats.1" ifType="ignore">
@@ -1478,6 +1543,7 @@
         <collect>
           <includeGroup>mib2-interfaces</includeGroup>
           <includeGroup>mib2-tcp</includeGroup>
+          <includeGroup>mib2-icmp</includeGroup>
         </collect>
       </systemDef>
 
@@ -1575,6 +1641,7 @@
 	  <includeGroup>ucd-memory</includeGroup>
 	  <includeGroup>ucd-sysstat</includeGroup>
 	  <includeGroup>asterisk-scalars</includeGroup>
+	  <includeGroup>asterisk-chantype</includeGroup>
 	</collect>
       </systemDef>
 
@@ -1744,6 +1811,15 @@
         <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
         <collect>
           <includeGroup>juniper-router</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper ERX Routers">
+        <sysoidMask>.1.3.6.1.4.1.4874.1.1.1.1.</sysoidMask>
+        <collect>
+          <includeGroup>juniper-erx-router</includeGroup>
+          <includeGroup>juniper-erx-systemslot</includeGroup>
+          <includeGroup>juniper-erx-temperature</includeGroup>
         </collect>
       </systemDef>
 

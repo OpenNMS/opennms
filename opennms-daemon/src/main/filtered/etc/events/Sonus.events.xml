@@ -96,7 +96,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -192,7 +193,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-COMMON-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-TRUNK-GROUP-RESOURCES-MIB -->
@@ -263,7 +265,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusTrunkDisabledNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -332,7 +335,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -401,7 +405,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusTrunkOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -478,7 +483,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -547,7 +553,8 @@ situation to be quickly identified and resolved.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -623,7 +630,8 @@ sonusTgAlternateName is the old trunk group name.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -692,7 +700,8 @@ sonusTgAlternateName is the old trunk group name.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -782,7 +791,8 @@ to a trunk group.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#9]% 
 			sonusEventTime=%parm[#10]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -872,7 +882,8 @@ from a trunk group.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#9]% 
 			sonusEventTime=%parm[#10]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -942,7 +953,8 @@ enabled on a trunk group with non-ISDN service groups.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1029,7 +1041,8 @@ object or objects have changed.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1114,7 +1127,8 @@ manual control was active.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1198,7 +1212,8 @@ what automatic control was active.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1267,7 +1282,8 @@ what automatic control was active.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-TRUNK-GROUP-RESOURCES-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-SYSTEM-TIMING-MIB -->
@@ -1442,7 +1458,8 @@ clock source has been switched to another source.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#7]% 
 			sonusEventTime=%parm[#8]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1518,7 +1535,8 @@ source of timing is the MTA's internal oscillator.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1593,7 +1611,8 @@ has failed or been removed from the shelf.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1668,7 +1687,8 @@ is now operational.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSystemTimingMTAFailedNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" />
 </event>
 <event>
 	<mask>
@@ -1743,7 +1763,8 @@ MITDC(Marlin Inter-chassis Timing Daisy Chain) may be affected.&lt;/p&gt;&lt;tab
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1828,7 +1849,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#8]% 
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1913,7 +1935,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#8]% 
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-SYSTEM-TIMING-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-SOFTSWITCH-CLIENT-SERVICES-MIB -->
@@ -2006,6 +2029,7 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusEventTime=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSscsOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -2085,7 +2109,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2163,7 +2188,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2261,7 +2287,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#10]% 
 			sonusEventTime=%parm[#11]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2344,7 +2371,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2425,7 +2453,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2518,7 +2547,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#9]% 
 			sonusEventTime=%parm[#10]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2582,7 +2612,8 @@ and adds a string interpretation of the source type.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#4]% 
 			sonusEventTime=%parm[#5]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-SOFTSWITCH-CLIENT-SERVICES-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-SS7-SERVICES-MIB -->
@@ -2667,7 +2698,8 @@ established (ISUP or TCAP).&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#7]% 
 			sonusEventTime=%parm[#8]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionFailedNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" />
 </event>
 <event>
 	<mask>
@@ -2755,7 +2787,638 @@ the connection has failed.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#8]% 
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotificationActive</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectionStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that an established connection to an SS7 gateway
+has changed state. Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the type of SS7 service affected by this failure, the new state
+of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		offline(1)
+		active(2)
+		initializing(3)
+		failed(4)
+		disabled(5)
+		congested(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeStateChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectionStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeCurrentState=%parm[#4]% 
+			sonusSs7NodeStateChangeReason=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotificationOffline</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectionStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that an established connection to an SS7 gateway
+has changed state. Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the type of SS7 service affected by this failure, the new state
+of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		offline(1)
+		active(2)
+		initializing(3)
+		failed(4)
+		disabled(5)
+		congested(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeStateChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectionStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeCurrentState=%parm[#4]% 
+			sonusSs7NodeStateChangeReason=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotificationInitializing</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectionStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that an established connection to an SS7 gateway
+has changed state. Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the type of SS7 service affected by this failure, the new state
+of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		offline(1)
+		active(2)
+		initializing(3)
+		failed(4)
+		disabled(5)
+		congested(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeStateChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectionStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeCurrentState=%parm[#4]% 
+			sonusSs7NodeStateChangeReason=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotificationFailed</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectionStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that an established connection to an SS7 gateway
+has changed state. Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the type of SS7 service affected by this failure, the new state
+of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		offline(1)
+		active(2)
+		initializing(3)
+		failed(4)
+		disabled(5)
+		congested(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeStateChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectionStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeCurrentState=%parm[#4]% 
+			sonusSs7NodeStateChangeReason=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotificationDisabled</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectionStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that an established connection to an SS7 gateway
+has changed state. Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the type of SS7 service affected by this failure, the new state
+of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		offline(1)
+		active(2)
+		initializing(3)
+		failed(4)
+		disabled(5)
+		congested(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeStateChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectionStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeCurrentState=%parm[#4]% 
+			sonusSs7NodeStateChangeReason=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotificationCongested</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectionStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that an established connection to an SS7 gateway
+has changed state. Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the type of SS7 service affected by this failure, the new state
+of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		offline(1)
+		active(2)
+		initializing(3)
+		failed(4)
+		disabled(5)
+		congested(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeStateChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectionStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeCurrentState=%parm[#4]% 
+			sonusSs7NodeStateChangeReason=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectionStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2856,6 +3519,209 @@ of the node, and the reason for the state change.&lt;/p&gt;&lt;table&gt;
 			sonusEventTime=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotificationResumed</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeMtpStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that a MTP state change event has been received from the
+SS7 gateway, affecting the specified destination (or remote) point 
+code (DPC). Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the updated MTP state, and the DPC affected by this event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeMtpStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		paused(1)
+		resumed(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeAffectedPointCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeMtpStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeMtpStatus=%parm[#4]% 
+			sonusSs7NodeAffectedPointCode=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotificationPaused</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeMtpStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that a MTP state change event has been received from the
+SS7 gateway, affecting the specified destination (or remote) point 
+code (DPC). Information provided by this trap includes the name 
+of the affected SS7 node, the name of the SS7 gateway on which the node 
+resides, the updated MTP state, and the DPC affected by this event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeGatewayAssignment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeMtpStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		paused(1)
+		resumed(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeAffectedPointCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeMtpStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeGatewayAssignment=%parm[#2]% 
+			sonusSs7NodeServiceType=%parm[#3]% 
+			sonusSs7NodeMtpStatus=%parm[#4]% 
+			sonusSs7NodeAffectedPointCode=%parm[#5]% 
+			sonusEventDescription=%parm[#6]% 
+			sonusEventClass=%parm[#7]% 
+			sonusEventLevel=%parm[#8]% 
+			sonusSequenceId=%parm[#9]% 
+			sonusEventTime=%parm[#10]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2952,6 +3818,7 @@ resides, the updated MTP state, and the DPC affected by this event.&lt;/p&gt;&lt
 			sonusEventTime=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeMtpStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[%5]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3031,7 +3898,8 @@ object or objects have changed.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3107,7 +3975,8 @@ supported in this GSX Release.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3195,7 +4064,170 @@ the connection has failed.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#8]% 
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>CONNECTED</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectivityChangeNotificationCONNECTED</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectivityChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates the connectivity of the named SS7 node 
+to the SS7 network has changed.  The new state can be either 
+CONNECTED or DISCONNECTED.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectivityChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeServiceType=%parm[#2]% 
+			sonusEventDescription=%parm[#3]% 
+			sonusEventClass=%parm[#4]% 
+			sonusEventLevel=%parm[#5]% 
+			sonusSequenceId=%parm[#6]% 
+			sonusEventTime=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectivityChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>DISCONNECTED</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectivityChangeNotificationDISCONNECTED</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeConnectivityChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates the connectivity of the named SS7 node 
+to the SS7 network has changed.  The new state can be either 
+CONNECTED or DISCONNECTED.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeConnectivityChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeServiceType=%parm[#2]% 
+			sonusEventDescription=%parm[#3]% 
+			sonusEventClass=%parm[#4]% 
+			sonusEventLevel=%parm[#5]% 
+			sonusSequenceId=%parm[#6]% 
+			sonusEventTime=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeConnectivityChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3272,6 +4304,195 @@ CONNECTED or DISCONNECTED.&lt;/p&gt;&lt;table&gt;
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeRpcStateChangeNotificationResumed</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeRpcStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that the state of the named remote point 
+code in relation to the named node has changed.  The new state 
+can be one of PAUSE, RESUME, CONGESTED, or UPU&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeMtpStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		paused(1)
+		resumed(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeAffectedPointCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeRpcStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeServiceType=%parm[#2]% 
+			sonusSs7NodeMtpStatus=%parm[#3]% 
+			sonusSs7NodeAffectedPointCode=%parm[#4]% 
+			sonusEventDescription=%parm[#5]% 
+			sonusEventClass=%parm[#6]% 
+			sonusEventLevel=%parm[#7]% 
+			sonusSequenceId=%parm[#8]% 
+			sonusEventTime=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeRpcStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="2" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2879.2.5.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/sonus/traps/sonusSs7NodeRpcStateChangeNotificationPaused</uei>
+	<event-label>SONUS-SS7-SERVICES-MIB defined trap event: sonusSs7NodeRpcStateChangeNotification</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that the state of the named remote point 
+code in relation to the named node has changed.  The new state 
+can be one of PAUSE, RESUME, CONGESTED, or UPU&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeServiceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeMtpStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		paused(1)
+		resumed(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSs7NodeAffectedPointCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		sysmgmt(1)
+		callproc(2)
+		resmgmt(3)
+		directory(4)
+		netmgmt(5)
+		signaling(6)
+		routing(7)
+		trace(8)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		critical(1)
+		major(2)
+		minor(3)
+		info(4)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusSequenceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sonusEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sonusSs7NodeRpcStateChangeNotification trap received 
+			sonusSs7NodeName=%parm[#1]% 
+			sonusSs7NodeServiceType=%parm[#2]% 
+			sonusSs7NodeMtpStatus=%parm[#3]% 
+			sonusSs7NodeAffectedPointCode=%parm[#4]% 
+			sonusEventDescription=%parm[#5]% 
+			sonusEventClass=%parm[#6]% 
+			sonusEventLevel=%parm[#7]% 
+			sonusSequenceId=%parm[#8]% 
+			sonusEventTime=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/sonus/traps/sonusSs7NodeRpcStateChangeNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3361,6 +4582,7 @@ can be one of PAUSE, RESUME, CONGESTED, or UPU&lt;/p&gt;&lt;table&gt;
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3436,7 +4658,8 @@ code of this chassis has been overridden.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#6]% 
 			sonusEventTime=%parm[#7]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-SS7-SERVICES-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-SS7-MTP3-MIB -->
@@ -3523,7 +4746,8 @@ destionation has chagned as described in the event description.&lt;/p&gt;&lt;tab
 			sonusSequenceId=%parm[#8]% 
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3646,7 +4870,8 @@ link has chagned as described in the event description.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#9]% 
 			sonusEventTime=%parm[#10]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3731,7 +4956,8 @@ route has chagned as described in the event description.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#8]% 
 			sonusEventTime=%parm[#9]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-SS7-MTP3-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-SS7-MTP2-MIB -->
@@ -3804,6 +5030,7 @@ entered IN-SERVICE state.&lt;/p&gt;&lt;table&gt;
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/sonus/traps/sonusSs7Mtp2LinkOutOfServiceNotification:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -3873,7 +5100,8 @@ entered OUT-OF-SERVICE state.&lt;/p&gt;&lt;table&gt;
 			sonusSequenceId=%parm[#5]% 
 			sonusEventTime=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
+	<alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: SONUS-SS7-MTP2-MIB -->
 <!-- Start of auto generated data from MIB: SONUS-SONET-MIB -->
