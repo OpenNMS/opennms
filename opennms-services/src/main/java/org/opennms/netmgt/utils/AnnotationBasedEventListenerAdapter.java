@@ -34,12 +34,13 @@ package org.opennms.netmgt.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -67,7 +68,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     private Object m_annotatedListener;
     private EventIpcManager m_eventIpcManager;
     private Map<String, Method> m_ueiToHandlerMap;
-    private List<String> m_subscribedEvents;
+    private Set<String> m_subscribedEvents;
     private List<Method> m_eventPreProcessors;
     private List<Method> m_eventPostProcessors;
     private SortedSet<Method> m_exceptionHandlers;
@@ -190,7 +191,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         
         constructExeptionHandlersSet();
         
-        m_subscribedEvents = new ArrayList<String>(m_ueiToHandlerMap.keySet());
+        m_subscribedEvents = new HashSet<String>(m_ueiToHandlerMap.keySet());
         
         m_eventIpcManager.addEventListener(this, m_subscribedEvents);
 

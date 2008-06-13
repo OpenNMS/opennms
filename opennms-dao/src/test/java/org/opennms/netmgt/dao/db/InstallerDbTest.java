@@ -907,7 +907,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
     public void testGetColumnsFromDBWithDefaultIntegerConstant() throws Exception {
         String command = "CREATE TABLE alarms (\n"
-                + "  x733ProbableCause INTEGER DEFAULT -1 NOT NULL\n"
+                + "  x733ProbableCause INTEGER DEFAULT 17 NOT NULL\n"
                 + ")";
         executeSQL(command);
 
@@ -915,10 +915,9 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         assertNotNull("column list not null", columns);
         assertEquals("column list size", 1, columns.size());
         assertEquals("column zero toString()",
-                     "x733probablecause integer(4) DEFAULT -1 NOT NULL",
+                     "x733probablecause integer(4) DEFAULT 17 NOT NULL",
                      columns.get(0).toString());
     }
-
 
     public void testGetColumnsFromDBWithDefaultTextConstant() throws Exception {
         String command = "CREATE TABLE alarms (\n"
@@ -2063,7 +2062,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     }
     
    public void testColumnNoChangeWithDefault() throws Exception {
-        final String sql = "CREATE TABLE alarms ( id integer, x733ProbableCause integer DEFAULT -1 NOT NULL );\n";
+        final String sql = "CREATE TABLE alarms ( id integer, x733ProbableCause integer DEFAULT 0 NOT NULL );\n";
 
         executeSQL(sql);
 
