@@ -31,9 +31,9 @@
  */
 package org.opennms.netmgt.utils;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -61,7 +61,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
     private AnnotationBasedEventListenerAdapter m_adapter;
     private EasyMockUtils m_mockUtils;
     private EventIpcManager m_eventIpcMgr;
-    private List<String> m_subscriptions;
+    private Set<String> m_subscriptions;
     
     @EventListener(name=ANNOTATED_NAME)
     private static class AnnotatedListener {
@@ -128,7 +128,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         m_adapter.setAnnotatedListener(m_annotatedListener);
         m_adapter.setEventIpcManager(m_eventIpcMgr);
         
-        m_subscriptions = new ArrayList<String>();
+        m_subscriptions = new HashSet<String>();
         
         Collections.addAll(m_subscriptions, 
                 EventConstants.NODE_DOWN_EVENT_UEI, 

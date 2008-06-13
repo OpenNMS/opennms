@@ -37,7 +37,7 @@
 //
 package org.opennms.netmgt.eventd;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -72,7 +72,7 @@ public interface EventIpcManager {
     /**
      * Registers an event listener interested in the UEIs in the passed list
      */
-    public void addEventListener(EventListener listener, List<String> ueiList);
+    public void addEventListener(EventListener listener, Collection<String> ueis);
 
     /**
      * Registers an event listener interested in the passed UEI
@@ -88,7 +88,7 @@ public interface EventIpcManager {
      * Removes a registered event listener - the UEI list indicates the list of
      * events the listener is no more interested in
      */
-    public void removeEventListener(EventListener listener, List<String> ueiList);
+    public void removeEventListener(EventListener listener, Collection<String> ueis);
 
     /**
      * Removes a registered event listener - the UEI indicates an event the

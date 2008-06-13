@@ -395,6 +395,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testXmlrpcdConfiguration() throws Exception {
         unmarshal("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
     }
+    public void testExampleXmlrpcdConfiguration() throws Exception {
+        unmarshalExample("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
+    }
     public void testEventdConfiguration() throws Exception {
         unmarshal("eventd-configuration.xml", Viewinfo.class);
     }
