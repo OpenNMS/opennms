@@ -37,16 +37,12 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.apache.xmlrpc.WebServer;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
@@ -54,7 +50,6 @@ import org.jmock.core.Constraint;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.spring.xmlrpc.XmlRpcProxyFactoryBean;
 import org.opennms.spring.xmlrpc.XmlRpcServiceExporter;
 import org.opennms.spring.xmlrpc.XmlRpcWebServerFactoryBean;
