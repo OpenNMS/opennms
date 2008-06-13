@@ -34,6 +34,7 @@
  */
 package org.opennms.netmgt.utils;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -132,8 +133,8 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         Assert.state(m_eventIpcManager != null, "eventIpcManager property must be set");
     }
 
-    public void addEventListener(EventListener listener, List<String> ueilist) {
-        m_eventIpcManager.addEventListener(listener, ueilist);
+    public void addEventListener(EventListener listener, Collection<String> ueis) {
+        m_eventIpcManager.addEventListener(listener, ueis);
     }
 
     public void addEventListener(EventListener listener, String uei) {
@@ -144,8 +145,8 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         m_eventIpcManager.addEventListener(listener);
     }
 
-    public void removeEventListener(EventListener listener, List<String> ueiList) {
-        m_eventIpcManager.removeEventListener(listener, ueiList);
+    public void removeEventListener(EventListener listener, Collection<String> ueis) {
+        m_eventIpcManager.removeEventListener(listener, ueis);
     }
 
     public void removeEventListener(EventListener listener, String uei) {
