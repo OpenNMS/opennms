@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -129,7 +130,7 @@ public class CollectdTest extends TestCase {
 
         m_eventIpcManager.addEventListener(isA(EventListener.class));
         expectLastCall().anyTimes();
-        m_eventIpcManager.addEventListener(isA(EventListener.class), isAList(String.class));
+        m_eventIpcManager.addEventListener(isA(EventListener.class), isACollection(String.class));
         expectLastCall().anyTimes();
         m_eventIpcManager.addEventListener(isA(EventListener.class), isA(String.class));
         expectLastCall().anyTimes();
@@ -371,6 +372,11 @@ public class CollectdTest extends TestCase {
         m_collectd.stop();
 
         m_easyMockUtils.verifyAll();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <K> Collection<K> isACollection(Class<K> innerClass) {
+        return isA(Collection.class);
     }
 
     @SuppressWarnings("unchecked")
