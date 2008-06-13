@@ -232,6 +232,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testDiscoveryConfiguration() throws Exception {
         unmarshal("discovery-configuration.xml", DiscoveryConfiguration.class);
     }
+    public void testExampleDiscoveryConfiguration() throws Exception {
+        unmarshalExample("discovery-configuration.xml", DiscoveryConfiguration.class);
+    }
     public void testEventconf() throws Exception {
         unmarshal("eventconf.xml", Events.class);
     }
@@ -390,6 +393,9 @@ public class WillItUnmarshalTest extends TestCase {
     }
     public void testXmlrpcdConfiguration() throws Exception {
         unmarshal("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
+    }
+    public void testExampleXmlrpcdConfiguration() throws Exception {
+        unmarshalExample("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
     }
     public void testEventdConfiguration() throws Exception {
         unmarshal("eventd-configuration.xml", Viewinfo.class);
