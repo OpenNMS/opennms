@@ -51,6 +51,7 @@
 package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -336,22 +337,22 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * Register an event listener interested in the UEIs in the passed list.
      */
-    public synchronized void addEventListener(EventListener listener, List<String> ueilist) {
+    public synchronized void addEventListener(EventListener listener, Collection<String> ueis) {
         Assert.notNull(listener, "listener argument cannot be null");
-        Assert.notNull(ueilist, "ueilist argument cannot be null");
+        Assert.notNull(ueis, "ueilist argument cannot be null");
 
-        if (ueilist.isEmpty()) {
+        if (ueis.isEmpty()) {
             log().warn("Not adding event listener " + listener.getName() + " because the ueilist argument contains no entries");
             return;
         }
 
         if (log().isDebugEnabled()) {
-            log().debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueilist));
+            log().debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
         }
 
         createListenerThread(listener);
 
-        for (String uei : ueilist) {
+        for (String uei : ueis) {
             addUeiForListener(uei, listener);
         }
 
@@ -377,11 +378,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * stopped until the 'removeEventListener(EventListener listener)' method is
      * called.
      */
-    public synchronized void removeEventListener(EventListener listener, List<String> ueilist) {
+    public synchronized void removeEventListener(EventListener listener, Collection<String> ueis) {
         Assert.notNull(listener, "listener argument cannot be null");
-        Assert.notNull(ueilist, "ueilist argument cannot be null");
+        Assert.notNull(ueis, "ueilist argument cannot be null");
 
-        for (String uei : ueilist) {
+        for (String uei : ueis) {
             removeUeiForListener(uei, listener);
         }
     }

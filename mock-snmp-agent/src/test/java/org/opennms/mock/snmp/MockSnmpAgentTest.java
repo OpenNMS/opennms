@@ -232,7 +232,8 @@ public class MockSnmpAgentTest extends TestCase {
         target.setSecurityName(userId);
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version3);
-
+        target.setTimeout(5000);
+        
         TransportMapping transport = null;
         try {
             transport = new DefaultUdpTransportMapping();

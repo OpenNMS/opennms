@@ -37,6 +37,7 @@
 package org.opennms.netmgt.mock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -114,8 +115,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_listeners.add(new ListenerKeeper(listener, null));
     }
 
-    public void addEventListener(EventListener listener, List<String> ueilist) {
-        m_listeners.add(new ListenerKeeper(listener, new HashSet<String>(ueilist)));
+    public void addEventListener(EventListener listener, Collection<String> ueis) {
+        m_listeners.add(new ListenerKeeper(listener, new HashSet<String>(ueis)));
     }
 
     public void addEventListener(EventListener listener, String uei) {
@@ -145,8 +146,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_listeners.remove(new ListenerKeeper(listener, null));
     }
 
-    public void removeEventListener(EventListener listener, List<String> ueiList) {
-        m_listeners.remove(new ListenerKeeper(listener, new HashSet<String>(ueiList)));
+    public void removeEventListener(EventListener listener, Collection<String> ueis) {
+        m_listeners.remove(new ListenerKeeper(listener, new HashSet<String>(ueis)));
     }
 
     public void removeEventListener(EventListener listener, String uei) {
