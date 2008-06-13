@@ -233,6 +233,7 @@ public class XmlRpcTest extends MockObjectTestCase {
     
     public void testReadOldStyleConfiguration() throws MarshalException, ValidationException, IOException {
     	File cfgIn = ConfigurationTestUtils.getFileForResource(this, "/etc/xmlrpcd-configuration-old.xml");
+        XmlrpcdConfigFactory.reload();
     	XmlrpcdConfigFactory.init(cfgIn);
     	XmlrpcdConfigFactory f = XmlrpcdConfigFactory.getInstance();
     	assertNotNull("Xmlrpcd instance", f);
@@ -256,6 +257,7 @@ public class XmlRpcTest extends MockObjectTestCase {
 
     public void testReadNewStyleConfiguration() throws MarshalException, ValidationException, IOException {
     	File cfgIn = ConfigurationTestUtils.getFileForResource(this, "/etc/xmlrpcd-configuration-new.xml");
+        XmlrpcdConfigFactory.reload();
     	XmlrpcdConfigFactory.init(cfgIn);
     	XmlrpcdConfigFactory f = XmlrpcdConfigFactory.getInstance();
     	assertNotNull("Xmlrpcd instance", f);
