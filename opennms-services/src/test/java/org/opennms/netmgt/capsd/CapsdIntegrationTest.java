@@ -132,7 +132,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
         
         m_capsd.rescanInterfaceParent(77);
         
-        Thread.sleep(10000);
+        Thread.sleep(20000);
         
         m_capsd.stop();
         
