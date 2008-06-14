@@ -11,6 +11,9 @@
  * Modifications:
  * 
  * Created March 10, 2007
+ * 
+ * 2008 Jun 14: Use instances of Marshaller/Unmarshaller to avoid
+ *              problematic-looking Castor log messages. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -72,7 +75,10 @@ public class CastorUtils {
      */
     public static void marshalWithTranslatedExceptions(Object obj, Writer writer) throws DataAccessException {
         try {
-            Marshaller.marshal(obj, writer);
+            Marshaller m = new Marshaller(writer);
+            m.marshal(obj);
+        } catch (IOException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Marshalling XML file", e);
         } catch (MarshalException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("Marshalling XML file", e);
         } catch (ValidationException e) {
@@ -97,7 +103,8 @@ public class CastorUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T unmarshal(Class<T> clazz, Reader reader) throws MarshalException, ValidationException {
-        return (T) Unmarshaller.unmarshal(clazz, reader);
+        Unmarshaller u = new Unmarshaller(clazz);
+        return (T) u.unmarshal(reader);
     }
 
     /**
@@ -118,7 +125,7 @@ public class CastorUtils {
     @SuppressWarnings("unchecked")
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader) throws DataAccessException {
         try {
-            return (T) Unmarshaller.unmarshal(clazz, reader);
+            return unmarshal(clazz, reader);
         } catch (MarshalException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("Unmarshalling XML file", e);
         } catch (ValidationException e) {
@@ -135,7 +142,9 @@ public class CastorUtils {
      */
     public static void marshalViaString(Object config, File cfgFile) throws MarshalException, ValidationException, IOException {
         StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(config, stringWriter);
+        
+        Marshaller m = new Marshaller(stringWriter);
+        m.marshal(config);
 
         FileWriter fileWriter = new FileWriter(cfgFile);
         fileWriter.write(stringWriter.toString());
