@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jun 14: Use CastorUtils.unmarshal and eliminate a needless
+//              get*Collection method. - dj@opennms.org
+//
 // Copyright (C) 2004 Eric Molitor (eric@tuxbot.com)
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -50,13 +55,12 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
-import org.opennms.netmgt.config.users.Users;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -116,7 +120,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
     private Userinfo unmarshall(Reader reader) throws DataRetrievalFailureException {
         try {
-            return (Userinfo) Unmarshaller.unmarshal(Userinfo.class, reader);
+            return CastorUtils.unmarshal(Userinfo.class, reader);
         } catch (MarshalException e) {
             throw new DataRetrievalFailureException("Failed unmarshalling configuration: " + e.getMessage(), e);
         } catch (ValidationException e) {
@@ -137,7 +141,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         long lastModified = new File(m_usersConfigurationFile).lastModified();
         Userinfo userinfo = unmarshallUsers();
 
-        Collection<User> usersList = getUserCollection(userinfo.getUsers());
+        Collection<User> usersList = userinfo.getUsers().getUserCollection();
 
         for (User user : usersList) {
             org.opennms.web.acegisecurity.User newUser = new org.opennms.web.acegisecurity.User();
@@ -152,11 +156,6 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
         m_usersLastModified = lastModified; 
         m_users = users;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Collection<User> getUserCollection(Users users) {
-        return users.getUserCollection();
     }
 
     /**
