@@ -218,6 +218,24 @@ public final class XmlrpcdConfigFactory {
     }
 
     /**
+     * Reload the specified config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void reload(File cfgFile) throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
+
+        init(cfgFile);
+    }
+
+
+    /**
      * Return the singleton instance of this factory.
      * 
      * @return The current factory instance.
