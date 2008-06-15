@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jun 14: Expose the eventIpcManager with getEventIpcManager(). - dj@opennms.org
 // 2008 Feb 15: Work with updated dependency injected and Resource-based DAO. - dj@opennms.org
 // 2008 Feb 02: Remove EventdConfigManager--we can directly inject the values we want. - dj@opennms.org
 // 2008 Jan 27: Move createStandardNetwork to MockNetwork.  Follow
@@ -63,6 +64,7 @@ import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
@@ -330,6 +332,10 @@ public class OpenNMSTestCase extends TestCase {
     
     private String getSnmpImplementation() {
         return SnmpUtils.getStrategy().getClass().getSimpleName();
+    }
+
+    public EventIpcManager getEventIpcManager() {
+        return m_eventdIpcMgr;
     }
 
 }
