@@ -12,7 +12,8 @@
  * 
  * Created: January 13, 2004
  * 
- *
+ * 2008 Jun 14: Improving logging and some exceptions, use Java 5
+ *              generics and loops. - dj@opennms.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +66,7 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class Xmlrpcd extends AbstractServiceDaemon {
-
-	/**
+    /**
      * The singleton instance.
      */
     private static final AbstractServiceDaemon m_singleton = new Xmlrpcd();
@@ -87,6 +87,10 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      */
     private ArrayList<BroadcastEventProcessor> m_eventReceivers = new ArrayList<BroadcastEventProcessor>();
 
+    private OpennmsServerConfigFactory m_serverConfig;
+
+    private XmlrpcdConfigFactory m_config;
+
     /**
      * <P>
      * Constructs a new Xmlrpcd object that receives events subscribed by the
@@ -100,26 +104,21 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     protected void onInit() {
 
 
-        if (log().isDebugEnabled())
-            log().debug("start: Creating the xmlrpc event queue processor");
+        log().debug("start: Creating the xmlrpc event queue processor");
 
         // set up the event queue processor
         try {
-            if (log().isDebugEnabled())
-                log().debug("start: Initializing the xmlrpcd config factory");
+            log().debug("start: Initializing the xmlrpcd config factory");
 
-            XmlrpcdConfigFactory.reload();
-            OpennmsServerConfigFactory.reload();
-
-            XmlrpcdConfigFactory xFactory = XmlrpcdConfigFactory.getInstance();
-            boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+            boolean verifyServer = getServerConfig().verifyServer();
             String localServer = null;
 
-            if (verifyServer)
-                localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+            if (verifyServer) {
+                localServer = getServerConfig().getServerName();
+            }
 
             // create a BroadcastEventProcessor per server 
-            Enumeration<ExternalServers> servers = xFactory.getExternalServerEnumeration();
+            Enumeration<ExternalServers> servers = getConfig().getExternalServerEnumeration();
             int i = 0;
             while (servers.hasMoreElements()) {
                 ExternalServers server = servers.nextElement();
@@ -127,11 +126,11 @@ public class Xmlrpcd extends AbstractServiceDaemon {
                 FifoQueue<Event> q = new FifoQueueImpl<Event>();
                 m_eventlogQs.add(q);
                 m_eventReceivers.add(new BroadcastEventProcessor(
-                            Integer.toString(i), q, xFactory.getMaxQueueSize(), 
-                                    xFactory.getEventList(server)));
+                            Integer.toString(i), q, getConfig().getMaxQueueSize(), 
+                                    getConfig().getEventList(server)));
 
                 // create an EventQueueProcessor per server 
-                m_processors.add( new EventQueueProcessor(q, xServers, server.getRetries(), server.getElapseTime(), verifyServer, localServer, xFactory.getMaxQueueSize()) );
+                m_processors.add( new EventQueueProcessor(q, xServers, server.getRetries(), server.getElapseTime(), verifyServer, localServer, getConfig().getMaxQueueSize()) );
                 i++;
             }
 
@@ -146,63 +145,83 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(e);
         } catch (Throwable t) {
             log().error("Failed to load configuration", t);
+            throw new UndeclaredThrowableException(t);
         }
     }
 
-    protected void onStart() {
-		if (log().isDebugEnabled())
-            log().debug("start: Initializing the xmlrpcd config factory");
+    public XmlrpcdConfigFactory getConfig() throws MarshalException, ValidationException, IOException {
+        if (m_config == null) {
+            createConfig();
+        }
+        return m_config;
+    }
 
+    public void createConfig() throws MarshalException, ValidationException, IOException {
+        XmlrpcdConfigFactory.init();
+        setConfig(XmlrpcdConfigFactory.getInstance());
+    }
+
+    public void setConfig(XmlrpcdConfigFactory config) {
+        m_config = config;
+    }
+    
+    public OpennmsServerConfigFactory getServerConfig() throws MarshalException, ValidationException, IOException {
+        if (m_serverConfig == null) {
+            createServerConfig(); 
+        }
+        return m_serverConfig;
+    }
+
+    public void createServerConfig() throws MarshalException, ValidationException, IOException {
+        OpennmsServerConfigFactory.init();
+        setServerConfig(OpennmsServerConfigFactory.getInstance());
+    }
+
+    public void setServerConfig(OpennmsServerConfigFactory serverConfig) {
+        m_serverConfig = serverConfig;
+    }
+
+    protected void onStart() {
+        log().debug("start: Initializing the xmlrpcd config factory");
         
-        for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = m_processors.get(i);
+        for (EventQueueProcessor proc : m_processors) {
             proc.start();
         }
 
-        if (log().isDebugEnabled())
-            log().debug("start: xmlrpcd ready to process events");
-	}
+        log().debug("start: xmlrpcd ready to process events");
+    }
 
     protected void onPause() {
-		if (log().isDebugEnabled())
-            log().debug("Calling pause on processor");
+        log().debug("Calling pause on processor");
 
-        for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = m_processors.get(i);
+        for (EventQueueProcessor proc : m_processors) {
             proc.pause();
         }
 
-        if (log().isDebugEnabled())
-            log().debug("Processor paused");
-	}
-
+        log().debug("Processor paused");
+    }
+    
     protected void onResume() {
-		if (log().isDebugEnabled())
-            log().debug("Calling resume on processor");
+        log().debug("Calling resume on processor");
 
-        for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = m_processors.get(i);
+        for (EventQueueProcessor proc : m_processors) {
             proc.resume();
         }
 
-        if (log().isDebugEnabled())
-            log().debug("Processor resumed");
-	}
+        log().debug("Processor resumed");
+    }
 
     protected void onStop() {
-		// shutdown and wait on the background processing thread to exit.
-        if (log().isDebugEnabled())
-            log().debug("exit: closing communication paths.");
+        // shutdown and wait on the background processing thread to exit.
+        log().debug("exit: closing communication paths.");
 
-        if (log().isDebugEnabled())
-            log().debug("stop: Stopping queue processor.");
+        log().debug("stop: Stopping queue processor.");
 
         // interrupt the processor daemon thread
-        for (int i = 0; i < m_processors.size(); i++) {
-            EventQueueProcessor proc = m_processors.get(i);
+        for (EventQueueProcessor proc : m_processors) {
             proc.stop();
         }
-	}
+    }
 
     /**
      * Returns the singular instance of the xmlrpcd daemon. There can be only

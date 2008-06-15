@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jun 14: Java 5 loops, code formatting, implement a constructor
+//              that takes a Reader, setInstance(), and log(). - dj@opennms.org
 // 2004 Jan 13: Added this XML RPC Daemon
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,8 +42,8 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -49,7 +51,6 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -57,6 +58,7 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -96,11 +98,29 @@ public final class XmlrpcdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private XmlrpcdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+        InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
+        unmarshal(rdr);
+        rdr.close();
+    }
+    
+    /**
+     * Constructor for testing
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified reader cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public XmlrpcdConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+        unmarshal(rdr);
+    }
 
-        m_config = (XmlrpcdConfiguration) Unmarshaller.unmarshal(XmlrpcdConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+    private void unmarshal(Reader rdr) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(XmlrpcdConfiguration.class, rdr);
 
+        handleLegacyConfiguration();
     }
 
     /**
@@ -116,8 +136,7 @@ public final class XmlrpcdConfigFactory {
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
+            // Already initialized.  To reload, reload() will need to be called.
             return;
         }
 
@@ -143,9 +162,12 @@ public final class XmlrpcdConfigFactory {
             return;
         }
 
-        ThreadCategory.getInstance(XmlrpcdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        log().debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new XmlrpcdConfigFactory(cfgFile.getPath());
+        setInstance(new XmlrpcdConfigFactory(cfgFile.getPath()));
+    }
+
+    private void handleLegacyConfiguration() {
         String generatedSubscriptionName = null;
 
         /* Be backwards-compatible with old configurations.
@@ -153,51 +175,53 @@ public final class XmlrpcdConfigFactory {
          * The old style configuration did not have a <serverSubscription> field
          * inside the <external-servers> tag, so create a default one.
          */
-        Enumeration<ExternalServers> e = m_singleton.getExternalServerEnumeration();
+        Enumeration<ExternalServers> e = getExternalServerEnumeration();
         while (e.hasMoreElements()) {
-        	ExternalServers es = e.nextElement();
-        	if (es.getServerSubscriptionCollection().size() == 0) {
-        		if (generatedSubscriptionName == null) {
-        			generatedSubscriptionName = "legacyServerSubscription-" + java.util.UUID.randomUUID().toString();
-        		}
-        		es.addServerSubscription(generatedSubscriptionName);
-        	}
+            ExternalServers es = e.nextElement();
+            if (es.getServerSubscriptionCollection().size() == 0) {
+                if (generatedSubscriptionName == null) {
+                    generatedSubscriptionName = "legacyServerSubscription-" + java.util.UUID.randomUUID().toString();
+                }
+                es.addServerSubscription(generatedSubscriptionName);
+            }
         }
 
         if (generatedSubscriptionName != null) {
-        	boolean foundUnnamedSubscription = false;
-        	for (Subscription s : m_singleton.getConfiguration().getSubscriptionCollection()) {
-        		if (s.getName() == null) {
-        			s.setName(generatedSubscriptionName);
-        			foundUnnamedSubscription = true;
-        			break;
-        		}
-        	}
-        	if (! foundUnnamedSubscription) {
-        		String[] ueis = {
-        				"uei.opennms.org/nodes/nodeLostService",
-        				"uei.opennms.org/nodes/nodeRegainedService",
-        				"uei.opennms.org/nodes/nodeUp",
-        				"uei.opennms.org/nodes/nodeDown",
-        				"uei.opennms.org/nodes/interfaceUp",
-        				"uei.opennms.org/nodes/interfaceDown",
-        				"uei.opennms.org/internal/capsd/updateServer",
-        				"uei.opennms.org/internal/capsd/updateService",
-        				"uei.opennms.org/internal/capsd/xmlrpcNotification"
-        		};
-        		Subscription subscription = new Subscription();
-        		subscription.setName(generatedSubscriptionName);
-        		SubscribedEvent subscribedEvent = null;
-        		for (String uei : ueis) {
-        			subscribedEvent = new SubscribedEvent();
-        			subscribedEvent.setUei(uei);
-        			subscription.addSubscribedEvent(subscribedEvent);
-        		}
-        		m_singleton.getConfiguration().addSubscription(subscription);
-        	}
+            boolean foundUnnamedSubscription = false;
+            for (Subscription s : getConfiguration().getSubscriptionCollection()) {
+                if (s.getName() == null) {
+                    s.setName(generatedSubscriptionName);
+                    foundUnnamedSubscription = true;
+                    break;
+                }
+            }
+            if (! foundUnnamedSubscription) {
+                String[] ueis = {
+                        "uei.opennms.org/nodes/nodeLostService",
+                        "uei.opennms.org/nodes/nodeRegainedService",
+                        "uei.opennms.org/nodes/nodeUp",
+                        "uei.opennms.org/nodes/nodeDown",
+                        "uei.opennms.org/nodes/interfaceUp",
+                        "uei.opennms.org/nodes/interfaceDown",
+                        "uei.opennms.org/internal/capsd/updateServer",
+                        "uei.opennms.org/internal/capsd/updateService",
+                        "uei.opennms.org/internal/capsd/xmlrpcNotification"
+                };
+                Subscription subscription = new Subscription();
+                subscription.setName(generatedSubscriptionName);
+                SubscribedEvent subscribedEvent = null;
+                for (String uei : ueis) {
+                    subscribedEvent = new SubscribedEvent();
+                    subscribedEvent.setUei(uei);
+                    subscription.addSubscribedEvent(subscribedEvent);
+                }
+                getConfiguration().addSubscription(subscription);
+            }
         }
+    }
 
-        m_loaded = true;
+    private static Category log() {
+        return ThreadCategory.getInstance(XmlrpcdConfigFactory.class);
     }
 
     /**
@@ -218,24 +242,6 @@ public final class XmlrpcdConfigFactory {
     }
 
     /**
-     * Reload the specified config file
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     */
-    public static synchronized void reload(File cfgFile) throws IOException, MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init(cfgFile);
-    }
-
-
-    /**
      * Return the singleton instance of this factory.
      * 
      * @return The current factory instance.
@@ -244,10 +250,16 @@ public final class XmlrpcdConfigFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized XmlrpcdConfigFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(XmlrpcdConfigFactory instance) {
+        m_singleton = instance;
+        m_loaded = true;
     }
 
     /**
@@ -266,21 +278,13 @@ public final class XmlrpcdConfigFactory {
      * 
      * @return an enumeration of subscribed event ueis.
      */
-    public synchronized ArrayList<SubscribedEvent> getEventList(ExternalServers server) throws ValidationException {
-        // get names of event subscriptions from server
-        List<String> serverSubs = server.getServerSubscriptionCollection();
-
-        // get event lists from names
-        ArrayList<SubscribedEvent> allEventsList = new ArrayList<SubscribedEvent>();
-        for (int i = 0; i < serverSubs.size(); i++) {
-            String name = serverSubs.get(i);
-
+    public synchronized List<SubscribedEvent> getEventList(ExternalServers server) throws ValidationException {
+        List<SubscribedEvent> allEventsList = new ArrayList<SubscribedEvent>();
+        for (String name : server.getServerSubscriptionCollection()) {
             List<Subscription> subscriptions = m_config.getSubscriptionCollection();
 
             boolean foundSubscription = false;
-
-            for (int j = 0; j < subscriptions.size(); j++) {
-                Subscription sub = subscriptions.get(j);
+            for (Subscription sub : subscriptions) {
                 if (sub.getName().equals(name)) {
                     allEventsList.addAll(sub.getSubscribedEventCollection());
                     foundSubscription = true;
@@ -289,20 +293,18 @@ public final class XmlrpcdConfigFactory {
             }
 
             if (!foundSubscription) {
-                // oops -- a serverSubscription element referenced a 
-                //  subscription element that doesn't exist
-                
-                Category log = ThreadCategory.getInstance(getClass());
-                log.error("serverSubscription element " + name + 
+                /*
+                 * Oops -- a serverSubscription element referenced a 
+                 * subscription element that doesn't exist.
+                 */
+                log().error("serverSubscription element " + name + 
                             " references a subscription that does not exist");
                 throw new ValidationException("serverSubscription element " +
                     name + " references a subscription that does not exist");
             }
         }
 
-        // return the merged list
-        return(allEventsList);
-
+        return allEventsList;
     }
 
     /**
