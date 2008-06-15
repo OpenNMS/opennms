@@ -12,6 +12,7 @@
  * 
  * Created: January 13, 2004
  *
+ * 2008 Jun 14: Code formatting, Java 5 generics. - dj@opennms.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,45 +107,47 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     }
 
     private void processEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         String uei = event.getUei();
         if (uei == null) {
             // should only get registered events
-            if (log.isDebugEnabled())
-                log.debug("Event received with null UEI, ignoring event");
+            log().debug("Event received with null UEI, ignoring event");
             return;
         }
 
-        if (log.isDebugEnabled()) 
-            log.debug("About to process event: " + event.getUei());
+        if (log().isDebugEnabled()) { 
+            log().debug("About to process event: " + event.getUei());
+        }
 
         // get eventid
         long eventId = -1;
-        if (event.hasDbid())
+        if (event.hasDbid()) {
             eventId = event.getDbid();
+        }
 
         // get node id
         long nodeId = -1;
-        if (event.hasNodeid())
+        if (event.hasNodeid()) {
             nodeId = event.getNodeid();
+        }
 
         String ipAddr = event.getInterface();
         String service = event.getService();
         String eventTime = event.getTime();
 
-        if (log.isDebugEnabled())
-            log.debug("Event\nuei\t\t" + uei + "\neventid\t\t" + eventId + "\nnodeid\t\t" + nodeId + "\nipaddr\t\t" + ipAddr + "\nservice\t\t" + service + "\neventtime\t" + (eventTime != null ? eventTime : "<null>"));
+        if (log().isDebugEnabled()) {
+            log().debug("Event\nuei\t\t" + uei + "\neventid\t\t" + eventId + "\nnodeid\t\t" + nodeId + "\nipaddr\t\t" + ipAddr + "\nservice\t\t" + service + "\neventtime\t" + (eventTime != null ? eventTime : "<null>"));
+        }
 
         if (m_useGenericMessages) {
             // new single RPC for all events (subject to config uei filter)
             if (!m_notifier.sendEvent(event)) {
                 pushBackEvent(event);
             }
-        }
-        else {
-            // original specific RPC calls -- limits us to exporting a max of
-            //  6 specific events
+        } else {
+            /*
+             * original specific RPC calls -- limits us to exporting a max of
+             * 6 specific events
+             */
             if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
                 if (!m_notifier.sendServiceDownEvent(event)) {
                     pushBackEvent(event);
@@ -177,14 +180,16 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         }
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
     /**
      * Process xmlrpcNotificationEvent according the status flag to determine to
      * send a notifyReceivedEvent, or a notifySuccess, or a notifyFailure
      * notification to XMLRPC Server.
      */
     private void xmlrpcNotificationEventHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         long txNo = -1L;
         String sourceUei = null;
         String notification = null;
@@ -201,40 +206,45 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 Parm parm = (Parm) parmEnum.nextElement();
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
-                if (parmValue == null)
+                if (parmValue == null) {
                     continue;
-                else
+                } else {
                     parmContent = parmValue.getContent();
+                }
 
                 // get txNo
                 if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
                     String temp = parmContent;
-                    if (log.isDebugEnabled())
-                        log.debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    if (log().isDebugEnabled()) {
+                        log().debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    }
 
                     try {
                         txNo = Long.valueOf(temp).longValue();
                     } catch (NumberFormatException nfe) {
-                        log.warn("Parameter " + EventConstants.PARM_TRANSACTION_NO + " cannot be non-numberic", nfe);
+                        log().warn("Parameter " + EventConstants.PARM_TRANSACTION_NO + " cannot be non-numberic", nfe);
                         txNo = -1L;
                     }
                 } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_UEI)) {
                     sourceUei = parmContent;
-                    if (log.isDebugEnabled())
-                        log.debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    if (log().isDebugEnabled()) {
+                        log().debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    }
                 } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_MESSAGE)) {
                     notification = parmContent;
-                    if (log.isDebugEnabled())
-                        log.debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    if (log().isDebugEnabled()) {
+                        log().debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    }
                 } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_STATUS)) {
                     String temp = parmContent;
-                    if (log.isDebugEnabled())
-                        log.debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    if (log().isDebugEnabled()) {
+                        log().debug("ParmName: " + parmName + " /parmContent: " + parmContent);
+                    }
 
                     try {
                         status = Integer.valueOf(temp).intValue();
                     } catch (NumberFormatException nfe) {
-                        log.warn("Parameter " + EventConstants.PARM_SOURCE_EVENT_STATUS + " cannot be non-numberic", nfe);
+                        log().warn("Parameter " + EventConstants.PARM_SOURCE_EVENT_STATUS + " cannot be non-numberic", nfe);
                         status = -1;
                     }
                 }
@@ -244,7 +254,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
 
         boolean validParameters = (txNo != -1L) && (sourceUei != null) && (notification != null) && (status != -1);
         if (!validParameters) {
-            log.error("Invalid parameters.");
+            log().error("Invalid parameters.");
             return;
         }
 
@@ -268,27 +278,24 @@ class EventQueueProcessor implements Runnable, PausableFiber {
 
     /**
      * Push the event back to the event queue if OpenNMS failed to send message
-     * to the external XMLRPC server, so that it could be send to the server
-     * again later.
+     * to the external XMLRPC server, so that an attempt to send to the server
+     * can be made again later.
      */
     private void pushBackEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         // push the event back to the event queue
         try {
             if (m_eventQ.size() < m_maxQSize) {
                 m_eventQ.add(event);
 
-                if (log.isDebugEnabled())
-                    log.debug("Push the event back to queue.");
+                log().debug("Push the event back to queue.");
             }
 
             // re-establish connection to xmlrpc servers
             m_notifier.createConnection();
         } catch (FifoQueueException e) {
-            log.error("Failed to push the event back to queue", e);
+            log().error("Failed to push the event back to queue", e);
         } catch (InterruptedException e) {
-            log.error("Failed to push the event back to queue", e);
+            log().error("Failed to push the event back to queue", e);
         }
     }
 
@@ -298,25 +305,18 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * 
      */
     private synchronized boolean statusOK() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        //
-        // Loop until there is a new client or we are shutdown
-        //
         boolean exitThread = false;
         boolean exitCheck = false;
+        
+        // Loop until there is a new client or we are shutdown
         while (!exitCheck) {
-            //
             // check the child thread!
-            //
             if (m_worker.isAlive() == false && m_status != STOP_PENDING) {
-                log.warn(getName() + " terminated abnormally");
+                log().warn(getName() + " terminated abnormally");
                 m_status = STOP_PENDING;
             }
 
-            //
             // do normal status checks now
-            //
             if (m_status == STOP_PENDING) {
                 exitCheck = true;
                 exitThread = true;
@@ -351,26 +351,25 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * 
      */
     public synchronized void start() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (m_worker != null)
+        if (m_worker != null) {
             throw new IllegalStateException("The fiber is running or has already run");
+        }
 
         m_status = STARTING;
 
         m_worker = new Thread(this, getName());
         m_worker.start();
 
-        if (log.isDebugEnabled())
-            log.debug(getName() + " started");
+        log().info(getName() + " started");
     }
 
     /**
      * Pauses the current fiber.
      */
     public synchronized void pause() {
-        if (m_worker == null || m_worker.isAlive() == false)
+        if (m_worker == null || m_worker.isAlive() == false) {
             throw new IllegalStateException("The fiber is not running");
+        }
 
         m_status = PAUSED;
         notifyAll();
@@ -380,8 +379,9 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * Resumes the currently paused fiber.
      */
     public synchronized void resume() {
-        if (m_worker == null || m_worker.isAlive() == false)
+        if (m_worker == null || m_worker.isAlive() == false) {
             throw new IllegalStateException("The fiber is not running");
+        }
 
         m_status = RUNNING;
         notifyAll();
@@ -397,8 +397,9 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      *             Thrown if the fiber has never been started.
      */
     public synchronized void stop() {
-        if (m_worker == null)
+        if (m_worker == null) {
             throw new IllegalStateException("The fiber has never run");
+        }
 
         m_status = STOP_PENDING;
         m_worker.interrupt();
@@ -420,8 +421,9 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * @return The status of the Fiber.
      */
     public synchronized int getStatus() {
-        if (m_worker != null && !m_worker.isAlive())
+        if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;
+        }
 
         return m_status;
     }
@@ -433,37 +435,35 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
         synchronized (this) {
             m_status = RUNNING;
         }
 
         while (statusOK()) {
-            Object obj = null;
+            Event event = null;
             try {
-                obj = m_eventQ.remove(1000);
+                event = m_eventQ.remove(1000);
             } catch (InterruptedException iE) {
-                log.debug("Caught interrupted exception");
-                log.debug(iE.getLocalizedMessage(), iE);
-
-                obj = null;
+                log().debug("Caught interrupted exception, transitioning to STOP_PENDING status");
+                
+                event = null;
 
                 m_status = STOP_PENDING;
             } catch (FifoQueueException qE) {
-                log.debug("Caught fifo queue exception");
-                log.debug(qE.getLocalizedMessage(), qE);
+                if (log().isDebugEnabled()) {
+                    log().debug("Caught fifo queue exception: " + qE.getLocalizedMessage(), qE);
+                }
 
-                obj = null;
+                event = null;
 
                 m_status = STOP_PENDING;
             }
 
-            if (obj != null && statusOK()) {
+            if (event != null && statusOK()) {
                 try {
-                    processEvent((Event) obj);
+                    processEvent(event);
                 } catch (Throwable t) {
-                    log.error("Unexpected error processing event", t);
+                    log().error("Unexpected error processing event: " + t, t);
                 }
             }
         }
