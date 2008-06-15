@@ -12,6 +12,8 @@
  * 
  * Created: January 13, 2004
  *
+ * 2008 Jun 14: Java 5 generics, code formatting, and log(). - dj@opennms.org
+ *
  * Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,15 +38,13 @@
 package org.opennms.netmgt.xmlrpcd;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
@@ -63,7 +63,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where incoming events of interest are enqueued
      */
-    private FifoQueue m_eventQ;
+    private FifoQueue<Event> m_eventQ;
 
     /**
      * The maximam size of the event queue.
@@ -73,7 +73,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * Subscribed events for this listener
      */
-    private HashSet m_events;
+    private HashSet<String> m_events;
 
     /**
      * Suffix used to create a unique name for event registration
@@ -83,15 +83,14 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * Create message selector to set to the subscription
      */
-    BroadcastEventProcessor(String nameSuffix, FifoQueue eventQ, int maxQSize, ArrayList eventList) {
+    BroadcastEventProcessor(String nameSuffix, FifoQueue<Event> eventQ, int maxQSize, List<SubscribedEvent> eventList) {
         m_nameSuffix = nameSuffix;
 
         // Create the selector for the ueis this service is interested in
-        //
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
 
-        for (int i = 0; i < eventList.size(); i++) {
-            ueiList.add(((SubscribedEvent)eventList.get(i)).getUei());
+        for (SubscribedEvent event : eventList) {
+            ueiList.add(event.getUei());
         }
 
         m_eventQ = eventQ;
@@ -99,7 +98,7 @@ final class BroadcastEventProcessor implements EventListener {
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
 
-        m_events = new HashSet();
+        m_events = new HashSet<String>();
         m_events.addAll(ueiList);
     }
 
@@ -120,39 +119,44 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         String eventUei = event.getUei();
-        if (eventUei == null)
+        if (eventUei == null) {
             return;
+        }
 
-        if (log.isDebugEnabled())
-            log.debug("Received event: " + eventUei);
+        if (log().isDebugEnabled()) {
+            log().debug("Received event: " + eventUei);
+        }
 
         try {
             if (m_events.contains(eventUei)) {
                 if (m_eventQ.size() >= m_maxQSize) {
                     m_eventQ.remove(1000);
 
-                    if (log.isDebugEnabled())
-                        log.debug("Event " + eventUei + " removed from event queue");
+                    if (log().isDebugEnabled()) {
+                        log().debug("Event " + eventUei + " removed from event queue");
+                    }
                 }
 
                 m_eventQ.add(event);
 
-                if (log.isDebugEnabled())
-                    log.debug("Event " + eventUei + " added to event queue");
+                if (log().isDebugEnabled())
+                    log().debug("Event " + eventUei + " added to event queue");
             }
         } catch (InterruptedException ex) {
-            log.error("Failed to process event", ex);
+            log().error("Failed to process event", ex);
             return;
         } catch (FifoQueueException ex) {
-            log.error("Failed to process event", ex);
+            log().error("Failed to process event", ex);
             return;
         } catch (Throwable t) {
-            log.error("Failed to process event", t);
+            log().error("Failed to process event", t);
             return;
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
