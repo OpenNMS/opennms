@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -202,9 +201,9 @@ public final class ServiceConfigFactory {
         Service[] slist = new Service[count];
 
         count = 0;
-        Enumeration esvc = m_config.enumerateService();
-        while (esvc.hasMoreElements())
-            slist[count++] = (Service) esvc.nextElement();
+        for (Service s : m_config.getServiceCollection()) {
+            slist[count++] = s;
+        }
 
         return slist;
     }

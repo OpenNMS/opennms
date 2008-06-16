@@ -172,13 +172,15 @@ public class AvailabilityCalculator {
             log.debug("category:     " + m_categoryName);
             log.debug("monthFormat:  " + m_monthFormat);
             log.debug("reportFormat: " + m_reportFormat);
-            AvailabilityData availData = new AvailabilityData(m_categoryName,
+            /* We just initialize this to make sure there are no exceptions, I guess?
+             * AvailabilityData availData =
+             */
+            new AvailabilityData(m_categoryName,
                                                               m_report,
                                                               m_reportFormat,
                                                               m_monthFormat,
                                                               m_calendar,
                                                               m_periodEndDate);
-
         } catch (MarshalException me) {
             log.fatal("MarshalException ", me);
             throw new AvailabilityCalculationException(me);

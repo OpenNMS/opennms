@@ -89,7 +89,7 @@ public class ViewFactory {
     /**
      * A mapping of views ids to the View objects
      */
-    protected static HashMap m_views;
+    protected static HashMap<String, View> m_views;
 
     /**
      * Boolean indicating if the init() method has been called
@@ -135,12 +135,10 @@ public class ViewFactory {
         Viewinfo viewinfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, new InputStreamReader(configIn));
         Views views = viewinfo.getViews();
         oldHeader = viewinfo.getHeader();
-        Collection viewsList = views.getViewCollection();
-        m_views = new HashMap();
+        Collection<View> viewsList = views.getViewCollection();
+        m_views = new HashMap<String, View>();
 
-        Iterator i = viewsList.iterator();
-        while (i.hasNext()) {
-            View curView = (View) i.next();
+        for (View curView : viewsList) {
             m_views.put(curView.getName(), curView);
         }
 
@@ -159,8 +157,8 @@ public class ViewFactory {
 
         // Saves into "views.xml" file
         Views views = new Views();
-        Collection viewList = (Collection) m_views.values();
-        views.setViewCollection(new ArrayList(viewList));
+        Collection<View> viewList = (Collection<View>) m_views.values();
+        views.setView(new ArrayList<View>(viewList));
         saveViews(views);
     }
 
@@ -172,22 +170,20 @@ public class ViewFactory {
         // Check if the user exists
         if (name != null) {
             // Remove the user in the view.
-            Set viewKeys = (Set) m_views.keySet();
-            Map map = new HashMap();
+            Set<String> viewKeys = (Set<String>) m_views.keySet();
+            Map<String, View> map = new HashMap<String, View>();
 
             View view;
-            Iterator iter = viewKeys.iterator();
+            Iterator<String> iter = viewKeys.iterator();
             while (iter.hasNext()) {
                 View newView = new View();
-                view = (View) m_views.get((String) iter.next());
+                view = m_views.get(iter.next());
                 newView = view;
 
                 Membership membership = new Membership();
                 Membership viewmembers = view.getMembership();
                 if (viewmembers != null) {
-                    Enumeration en = viewmembers.enumerateMember();
-                    while (en.hasMoreElements()) {
-                        Member member = (Member) en.nextElement();
+                    for (Member member : viewmembers.getMemberCollection()) {
                         if (member.getType().equals("user")) {
                             if (!member.getContent().equals(name)) {
                                 membership.addMember(member);
@@ -202,7 +198,7 @@ public class ViewFactory {
             // Saves into "views.xml" file
             m_views.clear();
             Views views = new Views();
-            views.setViewCollection(new ArrayList(map.values()));
+            views.setView(new ArrayList<View>(map.values()));
             saveViews(views);
         } else {
             throw new Exception("ViewFactory:delete Invalid user name:" + name);
@@ -215,40 +211,41 @@ public class ViewFactory {
      */
     public synchronized void renameUser(String oldName, String newName) throws Exception {
         // Get the old data
-        if (oldName == null || newName == null || oldName == "" || newName == "") {
-            throw new Exception("Group Factory: Rename user.. no value ");
-        } else {
+        if (oldName == null || oldName == "") {
+            throw new Exception("ViewFactory:renameUser Invalid old name");
+        }
+        if (newName == null || newName == "") {
+            throw new Exception("ViewFactory:renameUser Invalid new name");
+        }
+        Collection<View> coll = m_views.values();
+        Iterator<View> iter = coll.iterator();
+        Map<String, View> map = new HashMap<String, View>();
 
-            Collection coll = (Collection) m_views.values();
-            Iterator iter = (Iterator) coll.iterator();
-            Map map = new HashMap();
-
-            while (iter.hasNext()) {
-                View view = (View) iter.next();
-                Membership membership = view.getMembership();
-                if (membership != null) {
-                    Collection memberColl = membership.getMemberCollection();
-                    if (memberColl != null) {
-                        Iterator iterMember = (Iterator) memberColl.iterator();
-                        while (iterMember != null && iterMember.hasNext()) {
-                            Member member = (Member) iterMember.next();
-                            if (member.getType().equals("user")) {
-                                String name = member.getContent();
-                                if (name.equals(oldName)) {
-                                    member.setContent(newName);
-                                }
+        while (iter.hasNext()) {
+            View view = iter.next();
+            Membership membership = view.getMembership();
+            if (membership != null) {
+                Collection<Member> memberColl = membership.getMemberCollection();
+                if (memberColl != null) {
+                    Iterator<Member> iterMember = memberColl.iterator();
+                    while (iterMember != null && iterMember.hasNext()) {
+                        Member member = iterMember.next();
+                        if (member.getType().equals("user")) {
+                            String name = member.getContent();
+                            if (name.equals(oldName)) {
+                                member.setContent(newName);
                             }
                         }
                     }
                 }
-                view.setMembership(membership);
-                map.put(view.getName(), view);
             }
-            m_views.clear();
-            Views views = new Views();
-            views.setViewCollection(new ArrayList(map.values()));
-            saveViews(views);
+            view.setMembership(membership);
+            map.put(view.getName(), view);
         }
+        m_views.clear();
+        Views views = new Views();
+        views.setView(new ArrayList<View>(map.values()));
+        saveViews(views);
     }
 
     /**
@@ -306,23 +303,24 @@ public class ViewFactory {
         View view;
 
         // Check if the group exists
-        if (oldName != null || !oldName.equals("") || newName != "" || oldName != "") {
-            if (m_views.containsKey(oldName)) {
-                view = (View) m_views.get(oldName);
+        if (oldName == null || oldName == "") {
+            throw new Exception("ViewFactory:rename Invalid old view name");
+        }
+        if (newName == null || newName == "") {
+            throw new Exception("ViewFactory:rename Invalid new view name");
+        }
+        if (m_views.containsKey(oldName)) {
+            view = m_views.get(oldName);
 
-                // Remove the view.
-                m_views.remove(oldName);
-                view.setName(newName);
-                m_views.put(newName, view);
-            } else
-                throw new Exception("ViewFactory:rename View doesnt exist:" + oldName);
-        } else {
-            throw new Exception("ViewFactory:rename Invalid view name:" + oldName);
+            // Remove the view.
+            m_views.remove(oldName);
+            view.setName(newName);
+            m_views.put(newName, view);
         }
         // Saves into "views.xml" file
-        Collection coll = (Collection) m_views.values();
+        Collection<View> coll = m_views.values();
         Views views = new Views();
-        views.setViewCollection(new ArrayList(coll));
+        views.setView(new ArrayList<View>(coll));
         saveViews(views);
     }
 
@@ -335,14 +333,14 @@ public class ViewFactory {
         if (name == null || name.equals("")) {
             throw new Exception("ViewFactory:deleteView  " + name);
         } else if (!m_views.containsKey(name)) {
-            throw new Exception("ViewFactory:deleteView     View:" + name + " not found ");
+            throw new Exception("ViewFactory:deleteView  View:" + name + " not found ");
         } else {
             m_views.remove(name);
         }
         // Saves into "views.xml" file
         Views views = new Views();
-        Collection viewList = (Collection) m_views.values();
-        views.setViewCollection(new ArrayList(viewList));
+        Collection<View> viewList = (Collection<View>) m_views.values();
+        views.setView(new ArrayList<View>(viewList));
         saveViews(views);
     }
 
@@ -360,9 +358,9 @@ public class ViewFactory {
         //
         File ofile = ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_CONF_FILE_NAME);
 
-        // marshall to a string first, then write the string to the file. This
+        // marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(vinfo, stringWriter);
         if (stringWriter.toString() != null) {
@@ -375,9 +373,9 @@ public class ViewFactory {
         // clear out the internal structure and reload it
         m_views.clear();
 
-        Enumeration en = views.enumerateView();
+        Enumeration<View> en = views.enumerateView();
         while (en.hasMoreElements()) {
-            View curView = (View) en.nextElement();
+            View curView = en.nextElement();
             m_views.put(curView.getName(), curView);
         }
     }
@@ -385,13 +383,13 @@ public class ViewFactory {
     /**
      */
     public String getCategoryComments(String viewName, String categoryName) {
-        View view = (View) m_views.get(viewName);
+        View view = m_views.get(viewName);
         Categories categories = view.getCategories();
-        Collection category = (Collection) categories.getCategoryCollection();
-        Iterator iter = category.iterator();
+        Collection<org.opennms.netmgt.config.views.Category> category = categories.getCategoryCollection();
+        Iterator<org.opennms.netmgt.config.views.Category> iter = category.iterator();
         org.opennms.netmgt.config.views.Category cat;
         while (iter.hasNext()) {
-            cat = (org.opennms.netmgt.config.views.Category) iter.next();
+            cat = iter.next();
             String name = cat.getLabel();
             if (name != null && name.equals(categoryName)) {
                 return stripWhiteSpace(cat.getCategoryComment());
@@ -431,13 +429,13 @@ public class ViewFactory {
      * Return a <code>Map</code> of usernames to user instances.
      */
     public View getView(String name) {
-        return (View) m_views.get(name);
+        return m_views.get(name);
     }
 
     /**
      * Return a <code>Map</code> of usernames to user instances.
      */
-    public Map getViews() {
+    public Map<String, View> getViews() {
         return m_views;
     }
 }

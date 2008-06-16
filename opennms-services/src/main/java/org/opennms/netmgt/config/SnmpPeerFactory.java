@@ -50,7 +50,6 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
@@ -216,6 +215,7 @@ public final class SnmpPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      */
+    @SuppressWarnings("unused")
     private void define(InetAddress ip, String community) throws UnknownHostException {
         Category log = log();
 
@@ -224,16 +224,15 @@ public final class SnmpPeerFactory extends PeerFactory {
 
         // Copy the current definitions so that elements can be added and
         // removed
-        ArrayList definitions =
-            new ArrayList(m_config.getDefinitionCollection());
+        ArrayList<Definition> definitions =
+            new ArrayList<Definition>(m_config.getDefinitionCollection());
 
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Iterator definitionsIterator = definitions.iterator();
+        for (Iterator<Definition> definitionsIterator = definitions.iterator();
              definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+            Definition currentDefinition = definitionsIterator.next();
 
             if ((currentDefinition.getReadCommunity() != null
                  && currentDefinition.getReadCommunity().equals(community))
@@ -260,10 +259,9 @@ public final class SnmpPeerFactory extends PeerFactory {
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Iterator definitionsIterator = definitions.iterator();
+        for (Iterator<Definition> definitionsIterator = definitions.iterator();
              definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+            Definition currentDefinition = definitionsIterator.next();
 
             // Ignore this definition if it was the one identified by the first
             // step
@@ -278,8 +276,8 @@ public final class SnmpPeerFactory extends PeerFactory {
             }
 
             // Split and replace any range elements that contain IP
-            ArrayList ranges =
-                new ArrayList(currentDefinition.getRangeCollection());
+            ArrayList<Range> ranges =
+                new ArrayList<Range>(currentDefinition.getRangeCollection());
             Range[] rangesArray = currentDefinition.getRange();
             for (int rangesArrayIndex = 0;
                  rangesArrayIndex < rangesArray.length;
@@ -321,11 +319,11 @@ public final class SnmpPeerFactory extends PeerFactory {
                     ranges.add(tail);
                 }
             }
-            currentDefinition.setRangeCollection(ranges);
+            currentDefinition.setRange(ranges);
         }
 
         // Store the altered list of definitions
-        m_config.setDefinitionCollection(definitions);
+        m_config.setDefinition(definitions);
     }
     
     public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
@@ -352,15 +350,10 @@ public final class SnmpPeerFactory extends PeerFactory {
 
         // Attempt to locate the node
         //
-        Enumeration edef = m_config.enumerateDefinition();
-        DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = (Definition) edef.nextElement();
-
+        DEFLOOP: for (Definition def: m_config.getDefinitionCollection()) {
             // check the specifics first
             //
-            Enumeration espec = def.enumerateSpecific();
-            while (espec.hasMoreElements()) {
-                String saddr = ((String) espec.nextElement()).trim();
+            for (String saddr : def.getSpecificCollection()) {
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
@@ -376,9 +369,7 @@ public final class SnmpPeerFactory extends PeerFactory {
             // check the ranges
             //
             long lhost = toLong(agentConfig.getAddress());
-            Enumeration erange = def.enumerateRange();
-            while (erange.hasMoreElements()) {
-                Range rng = (Range) erange.nextElement();
+            for (Range rng : def.getRangeCollection()) {
                 try {
                     InetAddress begin = InetAddress.getByName(rng.getBegin());
                     InetAddress end = InetAddress.getByName(rng.getEnd());
@@ -397,10 +388,7 @@ public final class SnmpPeerFactory extends PeerFactory {
             }
             
             // check the matching ip expressions
-            //
-            Enumeration eMatch = def.enumerateIpMatch();
-            while (eMatch.hasMoreElements()) {
-                String ipMatch = (String)eMatch.nextElement();
+            for (String ipMatch : def.getIpMatchCollection()) {
                 if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
                     setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                     break DEFLOOP;
@@ -410,7 +398,6 @@ public final class SnmpPeerFactory extends PeerFactory {
         } // end DEFLOOP
 
         if (agentConfig == null) {
-
             Definition def = new Definition();
             setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
         }
@@ -688,6 +675,7 @@ public final class SnmpPeerFactory extends PeerFactory {
         return m_config;
     }
 
+    @SuppressWarnings("unused")
     private static synchronized void setSnmpConfig(SnmpConfig m_config) {
         SnmpPeerFactory.m_config = m_config;
     }

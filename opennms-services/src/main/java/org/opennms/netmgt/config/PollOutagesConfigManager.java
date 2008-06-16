@@ -34,17 +34,16 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
-import org.opennms.netmgt.config.common.Time;
 
 /**
  * Represents a PollOutagesConfigManager
@@ -91,9 +90,7 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @return the specified outage, null if not found
      */
     public synchronized Outage getOutage(String name) {
-        Enumeration e = getConfig().enumerateOutage();
-        while (e.hasMoreElements()) {
-            Outage out = (Outage) e.nextElement();
+        for (Outage out : getConfig().getOutageCollection()) {
             if (out.getName().equals(name)) {
                 return out;
             }
@@ -182,9 +179,7 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
         if (out == null)
             return false;
 
-        Enumeration e = out.enumerateInterface();
-        while (e.hasMoreElements()) {
-            Interface ointerface = (Interface) e.nextElement();
+        for (Interface ointerface : out.getInterfaceCollection()) {
             if (ointerface.getAddress().equals(linterface)) {
                 return true;
             }
@@ -369,9 +364,7 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
         if (out == null)
             return false;
 
-        Enumeration en = out.enumerateNode();
-        while (en.hasMoreElements()) {
-            Node onode = (Node) en.nextElement();
+        for (Node onode : out.getNodeCollection()) {
             if ((long) onode.getId() == lnodeid) {
                 return true;
             }
@@ -384,9 +377,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * Saves the current in-memory configuration to disk and reloads
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-        // marshall to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // Marshal to a string first, then write the string to the file. This
+        // way the original configuration isn't lost if the XML from the
+        // marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
 

@@ -448,10 +448,10 @@ public class OssDaoOpenNMSImpl {
 	public OnmsAlarm[] getAlarmCache(){
 		OnmsAlarm[] returnAlarmCache= new OnmsAlarm[alarmCacheByID.size()];
 		int i=0;
-		Enumeration alarmIDS = alarmCacheByID.keys();
+		Enumeration<Integer> alarmIDS = alarmCacheByID.keys();
 		while(alarmIDS.hasMoreElements()) {
-			Integer alarmID = (Integer)alarmIDS.nextElement();
-			returnAlarmCache[i] = (OnmsAlarm)alarmCacheByID.get(alarmID);
+			Integer alarmID = alarmIDS.nextElement();
+			returnAlarmCache[i] = alarmCacheByID.get(alarmID);
 			i++;
 		}
 		return returnAlarmCache;
@@ -460,7 +460,7 @@ public class OssDaoOpenNMSImpl {
 	/**
 	 * Tries to call back to QoSD to send the latest alarm list after an update.
 	 * If QoSD not running. Logs a debug message and returns
-	 * Note this is NOT synchronised as it is always called from within a synchronised method in this class
+	 * Note this is NOT synchronized as it is always called from within a synchronized method in this class
 	 * @throws an IllegalStateException if qoSD not running.
 	 */
 	private void sendAlarms(){
@@ -713,9 +713,7 @@ public class OssDaoOpenNMSImpl {
 			if (log.isDebugEnabled()) {
 				log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByID : contents :");
 				try {
-					Enumeration nodeIDs = nodeCacheByID.keys();
-					while(nodeIDs.hasMoreElements())	{
-						Integer id=(Integer)nodeIDs.nextElement();
+				    for (Integer id : nodeCacheByID.keySet()) {
 						OnmsNode node =(OnmsNode)nodeCacheByID.get(id);
 						log.debug("\t\tKey: Node ID:"+id+"\tNodeLabel:"+node.getLabel());
 					}
@@ -724,9 +722,7 @@ public class OssDaoOpenNMSImpl {
 				}
 				log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByLabel : contents :");
 				try {
-					Enumeration nodelabels = nodeCacheByLabel.keys();
-					while(nodelabels.hasMoreElements())	{
-						String label=(String)nodelabels.nextElement();
+				    for (String label : nodeCacheByLabel.keySet()) {
 						OnmsNode node =(OnmsNode)nodeCacheByLabel.get(label);
 						log.debug("\t\tKey: Label:"+label+"\tNodeID:"+node.getId());
 					}
@@ -735,9 +731,7 @@ public class OssDaoOpenNMSImpl {
 				}
 				try {
 					log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByUniqueID : contents :");
-					Enumeration uniqueids = nodeCacheByUniqueID.keys();
-					while(uniqueids.hasMoreElements())	{
-						String uniqueID=(String)uniqueids.nextElement();
+					for (String uniqueID : nodeCacheByUniqueID.keySet()) {
 						OnmsNode node =(OnmsNode)nodeCacheByUniqueID.get(uniqueID);
 						log.debug("\t\tKey: uniqueID:"+uniqueID+"\tNodeID:"+node.getId());
 					}

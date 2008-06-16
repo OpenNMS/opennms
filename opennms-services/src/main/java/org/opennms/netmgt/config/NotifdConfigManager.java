@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
-import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -206,9 +205,7 @@ public abstract class NotifdConfigManager {
                 parmmatch = true;
             }
 
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
+            for (Parm parm : parms.getParmCollection()) {
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
                 if (parmValue == null)
@@ -233,12 +230,10 @@ public abstract class NotifdConfigManager {
         return getConfiguration().getNextUserNotifId();
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<AutoAcknowledge> getAutoAcknowledges() throws MarshalException, ValidationException, IOException {
         return getConfiguration().getAutoAcknowledgeCollection();
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<String> getOutageCalendarNames() throws MarshalException, ValidationException, IOException {
         return getConfiguration().getOutageCalendarCollection();
     }

@@ -36,6 +36,8 @@ import org.opennms.core.utils.ThreadCategory;
 
 public class CollectionError extends Exception {
     
+    private static final long serialVersionUID = 1L;
+
     private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
     public CollectionError() {
