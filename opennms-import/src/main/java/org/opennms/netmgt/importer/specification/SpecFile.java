@@ -34,6 +34,7 @@
 package org.opennms.netmgt.importer.specification;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -47,29 +48,50 @@ import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.importer.ModelImportException;
 import org.springframework.core.io.Resource;
+import org.xml.sax.InputSource;
 
 public class SpecFile {
 
     private ModelImport m_mi;
 
     public void loadResource(Resource resource) throws ModelImportException, IOException {
-        Reader reader = new InputStreamReader(resource.getInputStream());
-        unmarshall(reader);
-        closeQuietly(reader);
-        
+        InputStream inputStream = null;
+        try {
+            inputStream = resource.getInputStream();
+            unmarshall(inputStream);
+        } finally {
+            closeQuietly(inputStream);
+        }
     }
 
-    private void closeQuietly(Reader reader) {
+    private void closeQuietly(InputStream stream) {
     	try {
-			if (reader != null) reader.close();
+			if (stream != null) stream.close();
 		} catch (IOException e) {
 			// ignore failed close
 		}
 	}
 
-	public void unmarshall(Reader rdr) throws ModelImportException {
+	public void unmarshall(InputStream stream) throws ModelImportException {
         try {
-            m_mi = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, rdr);
+            InputSource source = new InputSource(stream);
+            m_mi = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, source);
+        } catch (MarshalException e) {
+            throw new ModelImportException("Exception while marshalling import: "+e, e);
+        } catch (ValidationException e) {
+            throw new ModelImportException("Exception while validating import "+e);
+        }
+    }
+
+	/**
+	 * @deprecated
+	 * @param rdr
+	 * @throws ModelImportException
+	 */
+    public void unmarshall(Reader rdr) throws ModelImportException {
+        try {
+            InputSource source = new InputSource(rdr);
+            m_mi = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, source);
         } catch (MarshalException e) {
             throw new ModelImportException("Exception while marshalling import: "+e, e);
         } catch (ValidationException e) {
