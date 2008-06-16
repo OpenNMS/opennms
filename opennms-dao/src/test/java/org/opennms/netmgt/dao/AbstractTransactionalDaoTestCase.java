@@ -96,6 +96,9 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     }
 
 
+    public void testNothing() {
+    }
+
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
