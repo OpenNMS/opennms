@@ -173,7 +173,7 @@ public class BasePersisterTest extends TestCase {
 
     private SnmpAttribute buildStringAttribute() {
         
-        EasyMock.expect(m_ifDao.get(m_intf.getId())).andReturn(m_intf).anyTimes();
+        EasyMock.expect(m_ifDao.load(m_intf.getId())).andReturn(m_intf).anyTimes();
         
         m_easyMockUtils.replayAll();
         

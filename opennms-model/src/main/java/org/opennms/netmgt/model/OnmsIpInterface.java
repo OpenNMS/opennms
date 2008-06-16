@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -63,11 +62,12 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
 
     @Embeddable
-    public static class CollectionType implements Comparable, Serializable {
+    public static class CollectionType implements Comparable<CollectionType>, Serializable {
         private static final long serialVersionUID = 3684486716941692804L;
         private static final char[] s_order = {'N', 'C', 'S', 'P' };
         char m_collType;
 
+        @SuppressWarnings("unused")
         private CollectionType() {
         }
 
@@ -84,8 +84,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             m_collType = collType;
         }
 
-        public int compareTo(Object o) {
-            CollectionType collType = (CollectionType)o;
+        public int compareTo(CollectionType collType) {
             return getIndex(m_collType) - getIndex(collType.m_collType);
         }
 
@@ -96,11 +95,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             throw new IllegalArgumentException("illegal collType code '"+code+"'");
         }
 
-        public boolean equals(Object o) {
-            if (o instanceof CollectionType) {
-                return m_collType == ((CollectionType)o).m_collType;
-            }
-            return false;
+        public boolean equals(CollectionType o) {
+            return m_collType == o.m_collType;
         }
 
         public int hashCode() {
@@ -334,8 +330,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     public void visit(EntityVisitor visitor) {
         visitor.visitIpInterface(this);
 
-        for (Iterator it = getMonitoredServices().iterator(); it.hasNext();) {
-            OnmsMonitoredService monSvc = (OnmsMonitoredService) it.next();
+        for (OnmsMonitoredService monSvc : getMonitoredServices()) {
             monSvc.visit(visitor);
         }
 
@@ -361,8 +356,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @Transient
     public boolean isDown() {
         boolean down = true;
-        for (Iterator it = m_monitoredServices.iterator(); it.hasNext();) {
-            OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+        for (OnmsMonitoredService svc : m_monitoredServices) {
             if (!svc.isDown()) {
                 return !down;
             }

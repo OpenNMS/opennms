@@ -235,7 +235,7 @@ public class JavaMailerTest extends TestCase {
     public final void testJavaMailerWithFileAttachment() throws Exception {
         JavaMailer jm = createMailer("Test message with file attachment from testJavaMailer");
 
-        jm.setFileName("/etc/motd");
+        jm.setFileName("/etc/shells");
 
         jm.mailSend();
     }
