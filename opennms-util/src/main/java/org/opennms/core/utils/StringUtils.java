@@ -35,6 +35,7 @@
 //
 package org.opennms.core.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -153,11 +154,11 @@ public class StringUtils {
                 log.debug("tokenize: checking char: " + ch);
             if (escaping) {
                 if (ch == 'n') {
-                    currToken.append('\n');
+                    currToken.append(escapeIfNotPathSepInDEF(ch, '\n', currToken));
                 } else if (ch == 'r') {
-                    currToken.append('\r');
+                    currToken.append(escapeIfNotPathSepInDEF(ch, '\r', currToken));
                 } else if (ch == 't') {
-                    currToken.append('\t');
+                    currToken.append(escapeIfNotPathSepInDEF(ch, '\t', currToken));
                 } else {
                     if (tokens.indexOf(ch) >= 0) {
                         currToken.append('\\').append(ch);
@@ -219,6 +220,14 @@ public class StringUtils {
     public static String truncate(String name, int length) {
         if (name.length() <= length) return name;
         return name.substring(0, length);
+    }
+    
+    public static char[] escapeIfNotPathSepInDEF(char encountered, char escaped, StringBuffer currToken) {
+    	if ( ('\\' != File.separatorChar) || (! currToken.toString().startsWith("DEF:")) ) {
+    		return new char[] { escaped };
+    	} else {
+    		return new char[] { '\\', encountered };
+    	}
     }
 
 }
