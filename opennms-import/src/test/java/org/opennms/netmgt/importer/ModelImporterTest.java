@@ -266,6 +266,30 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
      * 
      * @throws ModelImportException
      */
+    public void testImportUtf8() throws Exception {
+        createAndFlushServiceTypes();
+        createAndFlushCategories();
+        
+        //Initialize the database
+        ModelImporter mi = m_importer;
+        String specFile = "/utf-8.xml";
+        mi.importModelFromResource(new ClassPathResource(specFile));
+        
+        assertEquals(1, mi.getNodeDao().countAll());
+        assertEquals("–ode2", mi.getNodeDao().get(1).getLabel());
+        
+//        ImportVisitor visitor = new ImportAccountant();
+//        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
+//        mi.visitImport(visitor);
+        
+    }
+    
+    /**
+     * This test first bulk imports 10 nodes then runs update with 1 node missing
+     * from the import file.
+     * 
+     * @throws ModelImportException
+     */
     public void testDelete() throws Exception {
         createAndFlushServiceTypes();
         createAndFlushCategories();
