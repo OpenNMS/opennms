@@ -256,6 +256,10 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
     grep -v '/remote-poller.sh' | \
     sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    grep -v '/opennms-remote-poller.jar' | \
+    sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
     sort >> %{_tmppath}/files.main
@@ -295,9 +299,7 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{bindir}/*
 %attr(755,root,root)	%{instprefix}/contrib
-%attr(755,root,root)	%{instprefix}/lib
 			%{sharedir}
 			%{logdir}
 			%{logdir}/controller
@@ -311,6 +313,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files remote-poller
+%attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/lib/opennms-remote-poller.jar
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
