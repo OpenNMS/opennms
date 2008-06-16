@@ -56,10 +56,10 @@ public class InvocationAnticipator implements InvocationHandler {
 
     private HashMap<String, Integer> m_counts = new HashMap<String, Integer>();
     private HashMap<String, Integer> m_anticipatedCounts = new HashMap<String, Integer>();
-    private Class m_clazz;
+    private Class<?> m_clazz;
     private InvocationHandler m_handler = new NullInvocationHandler();
 
-    public InvocationAnticipator(Class clazz) {
+    public InvocationAnticipator(Class<?> clazz) {
         m_clazz = clazz;
     }
 

@@ -198,6 +198,9 @@ public class TemporaryDatabaseTestCase extends TestCase {
         super.tearDown();
     }
     
+    public void testNothing() {
+    }
+
     protected String getTestDatabaseName() {
         return TEST_DB_NAME_PREFIX + System.currentTimeMillis();
     }
@@ -461,4 +464,5 @@ public class TemporaryDatabaseTestCase extends TestCase {
     public SimpleJdbcTemplate getJdbcTemplate() {
     	return jdbcTemplate;
     }
+    
 }

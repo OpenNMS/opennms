@@ -288,8 +288,7 @@ public class CollectdPackage {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-    public Service getService(final String svcName) {
+	public Service getService(final String svcName) {
         final List<Service> pkgSvcs = m_pkg.getServiceCollection();
         
         for (Service svc : pkgSvcs) {

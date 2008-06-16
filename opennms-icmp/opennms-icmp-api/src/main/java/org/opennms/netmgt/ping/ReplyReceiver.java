@@ -129,6 +129,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * @exception java.lang.UnsupportedOperationException
      *                Always thrown.
      */
+    @SuppressWarnings("unused")
     private ReplyReceiver() throws java.lang.UnsupportedOperationException {
         throw new java.lang.UnsupportedOperationException("invalid constructor invocation");
     }

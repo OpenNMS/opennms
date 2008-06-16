@@ -124,7 +124,6 @@ public class HttpCollector implements ServiceCollector {
         
     }
 
-    @SuppressWarnings("unchecked")
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
         collectionSet.collect();
@@ -156,7 +155,6 @@ public class HttpCollector implements ServiceCollector {
             m_status=ServiceCollector.COLLECTION_FAILED;
         }
         
-        @SuppressWarnings("unchecked")
         public void collect() {
             String collectionName=m_parameters.get("collection");
             if(collectionName==null) {
@@ -340,7 +338,6 @@ public class HttpCollector implements ServiceCollector {
         
     }
     
-    @SuppressWarnings("unchecked")
     private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet) {
         log().debug("processResponse: ");
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();

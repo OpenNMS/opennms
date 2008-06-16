@@ -137,7 +137,6 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         return ds;
     }
 
-    @SuppressWarnings("unchecked")
     private List<JdbcDataSource> getJdbcDataSources(DataSourceConfiguration dsc) {
         return dsc.getJdbcDataSourceCollection();
     }
@@ -162,7 +161,6 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private List<Param> getParamsForJdbcDataSource(JdbcDataSource ds) {
         return ds.getParamCollection();
     }
