@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 31: Log details about why we can't close a data source. - dj@opennms.org
 // 2007 Aug 02: Prepare for Castor 1.0.5. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -120,7 +121,7 @@ public final class DataSourceFactory implements DataSource {
                 try {
                     dataSource.close();
                 } catch (Exception e) {
-                    ThreadCategory.getInstance(DataSourceFactory.class).info("Unabled to close datasource "+dsName);
+                    ThreadCategory.getInstance(DataSourceFactory.class).info("Unabled to close datasource " + dsName + ": " + e, e);
                 }
             }
         });
