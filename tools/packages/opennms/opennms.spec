@@ -248,10 +248,14 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/share
 
 pushd $RPM_BUILD_ROOT
 
-# config files
+# core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    grep -v '/remote-poller.sh' | \
+    sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
     sort >> %{_tmppath}/files.main
