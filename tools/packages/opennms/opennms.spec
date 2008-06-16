@@ -53,7 +53,6 @@ AutoReqProv:		no
 Requires:		opennms-webui     >= %{version}-%{release}
 Requires:		opennms-core      = %{version}-%{release}
 Requires:		postgresql-server >= 7.4
-Requires:		iplike
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 BuildRequires:		%{jdk}
