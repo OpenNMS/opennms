@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jun 17: Change tests to use google.com
 // 2008 Feb 09: Eliminate warnings. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -122,7 +123,7 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
 
         
         p.setKey("port");
@@ -176,7 +177,7 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
 
         p.setKey("port");
         p.setValue("80");
@@ -199,11 +200,11 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("host-name");
-        p.setValue("www.opennms.org");
+        p.setValue("www.google.com");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/index.php/Main_Page");
+        p.setValue("/");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response-text");
@@ -216,10 +217,10 @@ public class HttpMonitorTest extends TestCase {
         assertNotNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("New and Noteworthy");
+        p.setValue("Feeling Lucky");
         m.put(p.getKey(), p.getValue());
         
-        MockUtil.println("\nliteral text check: \"New and Noteworthy\"");
+        MockUtil.println("\nliteral text check: \"Feeling Lucky\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -227,10 +228,10 @@ public class HttpMonitorTest extends TestCase {
         assertNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("~.*[Tt]ry [Oo]ut [Oo]penNMS.*");
+        p.setValue("~.*[Gg]oogle [Ss]earch.*");
         m.put(p.getKey(), p.getValue());
 
-        MockUtil.println("\nregex check: \".*[Tt]ry [Oo]ut [Oo]penNMS.*\"");
+        MockUtil.println("\nregex check: \".*[Gg]oogle [Ss]earch.*\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -368,14 +369,14 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
         
         p.setKey("host-name");
-        p.setValue("www.opennms.org");
+        p.setValue("www.google.com");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/index.php/Enterprise_grade");
+        p.setValue("/search?hl=en&q=monkey&btnG=Google+Search");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("port");
@@ -395,7 +396,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response-text");
-        p.setValue("thousands");
+        p.setValue("Results");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("verbose");
@@ -418,7 +419,7 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
         
         p.setKey("port");
         p.setValue("80");
@@ -441,10 +442,9 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
 
         p.setKey("response-text");
-        p.setValue("~.*[Cc]blahblah.*");
+        p.setValue("~.*[Ff]eeling [Ll]ucky.*");
         m.put(p.getKey(), p.getValue());
 
-        //Try on opennms.org
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status not available", PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         
