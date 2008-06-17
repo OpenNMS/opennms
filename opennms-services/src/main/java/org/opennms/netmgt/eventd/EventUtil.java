@@ -531,9 +531,9 @@ public final class EventUtil {
         	StringBuffer ret = new StringBuffer();
 
         	Parms parms = event.getParms();
-        	Enumeration en = parms.enumerateParm();
+        	Enumeration<Parm> en = parms.enumerateParm();
         	while (en.hasMoreElements()) {
-        		Parm evParm = (Parm) en.nextElement();
+        		Parm evParm = en.nextElement();
         		Value parmValue = evParm.getValue();
         		if (parmValue == null)
         			continue;
@@ -557,7 +557,7 @@ public final class EventUtil {
     /**
      * Helper method.
      * @param event
-     * @return The names of all the event paramenters.
+     * @return The names of all the event parameters.
      */
     private static String getAllParmNames(Event event) {
         String retParmVal = null;
@@ -573,9 +573,9 @@ public final class EventUtil {
          //Fixed a bug here, used to check "parm" for null (before this method was created during refactoring)
          // pretty parms was the intented variable to test.
         	if (parms != null) {
-        		Enumeration en = parms.enumerateParm();
+        		Enumeration<Parm> en = parms.enumerateParm();
         		while (en.hasMoreElements()) {
-        			Parm evParm = (Parm) en.nextElement();
+        			Parm evParm = en.nextElement();
         			String parmName = evParm.getParmName();
         			if (parmName == null)
         				continue;
@@ -610,9 +610,9 @@ public final class EventUtil {
 
         	Parms parms = event.getParms();
         	if (parms != null) {
-        		Enumeration en = parms.enumerateParm();
+        		Enumeration<Parm> en = parms.enumerateParm();
         		while (en.hasMoreElements()) {
-        			Parm evParm = (Parm) en.nextElement();
+        			Parm evParm = en.nextElement();
         			String parmName = evParm.getParmName();
         			if (parmName == null)
         				continue;
@@ -704,9 +704,9 @@ public final class EventUtil {
 
         	Parms parms = event.getParms();
         	if (parms != null) {
-        		Enumeration en = parms.enumerateParm();
+        		Enumeration<Parm> en = parms.enumerateParm();
         		while (en.hasMoreElements()) {
-        			Parm evParm = (Parm) en.nextElement();
+        			Parm evParm = en.nextElement();
         			String parmName = evParm.getParmName();
         			if (parmName != null
         					&& parmName.trim().equals(eparmname)) {
