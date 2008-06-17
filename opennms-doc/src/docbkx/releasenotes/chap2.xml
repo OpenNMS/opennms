@@ -5,6 +5,48 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <section>
+    <title>Changes in OpenNMS 1.5.92</title>
+
+    <section>
+      <title>New Features</title>
+      
+      <para>Xmlrpcd has been improved to allow multicasting events as well as a few
+      other changes.  (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1487">#1487</ulink>)</para>
+
+      <para>Support for logging logins, failed login attempts, logouts, and session timeouts
+      was added.  (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1580">#1580</ulink>)</para>
+      
+      <para>Support for new Juniper, Cisco, Sonus, and VMware traps (Bugs
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2368">#2368</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2487">#2487</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2500">#2500</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2502">#2502</ulink>,
+      and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2540">#2540</ulink>)</para>
+      
+      <para>Support for new Asterisk, Juniper, Cisco, Windows, Mikrotik, and UCD
+      data collections (Bugs
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2356">#2356</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2367">#2367</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2384">#2384</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2387">#2387</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2390">#2390</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2420">#2420</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2477">#2477</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2483">#2483</ulink>,
+      and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2529">#2529</ulink>)</para>
+     </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>A full list of bugs fixed in the release can be found in <ulink
+      url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.92+%281.6+beta+3%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+
+    </section>
+    
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.5.91</title>
 
     <section>
