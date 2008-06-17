@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.eventd;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.xml.event.Event;
@@ -68,6 +69,11 @@ public class EventIpcManagerProxy implements EventIpcManager {
         m_delegate.addEventListener(listener, uei);
     }
 
+	public void addEventListener(EventListener listener, Collection<String> ueis) {
+		assertState();
+		m_delegate.addEventListener(listener, ueis);
+	}
+
     public void removeEventListener(EventListener listener) {
         assertState();
         m_delegate.addEventListener(listener);
@@ -82,6 +88,11 @@ public class EventIpcManagerProxy implements EventIpcManager {
         assertState();
         m_delegate.addEventListener(listener, uei);
     }
+
+	public void removeEventListener(EventListener listener, Collection<String> ueis) {
+		assertState();
+        m_delegate.addEventListener(listener, ueis);
+	}
 
     public void sendNow(Event event) {
         assertState();
@@ -104,4 +115,5 @@ public class EventIpcManagerProxy implements EventIpcManager {
     public void setDelegate(EventIpcManager delegate) {
         m_delegate = delegate;
     }
+
 }
