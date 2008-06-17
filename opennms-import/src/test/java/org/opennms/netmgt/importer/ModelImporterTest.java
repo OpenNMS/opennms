@@ -276,7 +276,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         mi.importModelFromResource(new ClassPathResource(specFile));
         
         assertEquals(1, mi.getNodeDao().countAll());
-        assertEquals("ñode2", mi.getNodeDao().get(1).getLabel());
+        // \u00f1 is unicode for n~ 
+        assertEquals("\u00f1ode2", mi.getNodeDao().get(1).getLabel());
         
 //        ImportVisitor visitor = new ImportAccountant();
 //        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
