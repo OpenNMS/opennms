@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jun 17: Add tests for bug #2223. - jeffg@opennms.org
  * 2008 Feb 15: Add tests for bug #2272. - dj@opennms.org
  * 2007 Mar 19: Adjust for changes with exceptions and add test
  *              for a graph with only PRINT commands through the
@@ -40,6 +41,7 @@ package org.opennms.netmgt.rrd.jrobin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -57,6 +59,7 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.mock.MockUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -309,6 +312,38 @@ public class JRobinRrdStrategyTest extends TestCase {
         assertEquals("graph printLines item 0", "1.000000e+00", printLines[0]);
         double d = Double.parseDouble(printLines[0]);
         assertEquals("graph printLines item 0 as a double", 1.0, d);
+    }
+    
+    public void testTWQnENoQNoE() throws Exception {
+    	String input = "This string has no quoting and no escapes";
+    	String[] expected = new String[] { "This", "string", "has", "no", "quoting", "and", "no", "escapes" }; 
+    	String[] actual = JRobinRrdStrategy.tokenizeWithQuotingAndEscapes(input, " ", false, "");
+    	assertEquals(Arrays.asList(expected), Arrays.asList(actual));
+    }
+    
+    public void testTWQnENoQNoEWithDEFUnix() throws Exception {
+    	if (File.separatorChar != '/') {
+    		MockUtil.println("-------- Skipping testTWQnENoQNoEWithDEFUnix since File.separator is not / ------------");
+    		MockUtil.println("-------- Be sure to run the tests on Unix too! ---------");
+    		return;
+    	}
+    	String input = "No quote, no escapes, but DEF:test=snmp/42/test.jrb:test:AVERAGE";
+    	String[] expected = new String[] { "No", "quote,", "no", "escapes,", "but", "DEF:test=snmp/42/test.jrb:test:AVERAGE" }; 
+    	String[] actual = JRobinRrdStrategy.tokenizeWithQuotingAndEscapes(input, " ", false, "");
+    	assertEquals(Arrays.asList(expected), Arrays.asList(actual));
+    }
+    
+    public void testTWQnENoQNoEWithDEFWindows() throws Exception {
+    	// This test case inspired by bug #2223
+    	if (File.separatorChar != '\\') {
+    		MockUtil.println("-------- Skipping testTWQnENoQNoEWithDEFWindows since File.separator is not \\ ------------");
+    		MockUtil.println("-------- Be sure to run the tests on Windows too! ---------");
+    		return;
+    	}
+    	String input = "No quote, no escapes, but DEF:test=snmp\\42\\test.jrb:test:AVERAGE";
+    	String[] expected = new String[] { "No", "quote,", "no", "escapes,", "but", "DEF:test=snmp\\42\\test.jrb:test:AVERAGE" }; 
+    	String[] actual = JRobinRrdStrategy.tokenizeWithQuotingAndEscapes(input, " ", false, "");
+    	assertEquals(Arrays.asList(expected), Arrays.asList(actual));
     }
 
     public File createRrdFile() throws Exception {

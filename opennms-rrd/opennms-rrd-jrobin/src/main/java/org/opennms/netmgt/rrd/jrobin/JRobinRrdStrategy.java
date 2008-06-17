@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jun 16: Move RRD command-specific tokenizing methods here from StringUtils - jeffg@opennms.org
  * 2007 Aug 02: Organize imports. - dj@opennms.org
  * 2007 Apr 05: Java 5 generics and loops. - dj@opennms.org
  * 2007 Mar 19: Add createGraphReturnDetails and move assertion of a graph being created to JRobinRrdGraphDetails. - dj@opennms.org
@@ -45,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -590,7 +592,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
     
     private String[] tokenize(String line, String delimiters, boolean processQuotes) {
         String passthroughTokens = "lcrjgsJ"; /* see org.jrobin.graph.RrdGraphConstants.MARKERS */
-        return StringUtils.tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes, passthroughTokens);
+        return tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes, passthroughTokens);
     }
 
     /**
@@ -682,6 +684,111 @@ public class JRobinRrdStrategy implements RrdStrategy {
 
     private final Category log() {
         return ThreadCategory.getInstance(getClass());
+    }
+
+    public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted) {
+        return tokenizeWithQuotingAndEscapes(line, delims, processQuoted, "");
+    }
+    
+    /**
+     * Tokenize a {@link String} into an array of {@link String}s.
+     * @param line
+     *          the string to tokenize
+     * @param delims
+     *          a string containing zero or more characters to treat as a delimiter
+     * @param processQuoted
+     *          whether or not to process escaped values inside quotes
+     * @param tokens
+     *          custom escaped tokens to pass through, escaped.  For example, if tokens contains "lsg", then \l, \s, and \g
+     *          will be passed through unescaped.
+     * @return
+     */
+    public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted, String tokens) {
+        Category log = ThreadCategory.getInstance(StringUtils.class);
+        List<String> tokenList = new LinkedList<String>();
+    
+        StringBuffer currToken = new StringBuffer();
+        boolean quoting = false;
+        boolean escaping = false;
+        boolean debugTokens = Boolean.getBoolean("org.opennms.netmgt.rrd.debugTokens");
+    
+        if (debugTokens)
+            log.debug("tokenize: line=" + line + " delims=" + delims);
+        for (int i = 0; i < line.length(); i++) {
+            char ch = line.charAt(i);
+            if (debugTokens)
+                log.debug("tokenize: checking char: " + ch);
+            if (escaping) {
+                if (ch == 'n') {
+                    currToken.append(escapeIfNotPathSepInDEF(ch, '\n', currToken));
+                } else if (ch == 'r') {
+                    currToken.append(escapeIfNotPathSepInDEF(ch, '\r', currToken));
+                } else if (ch == 't') {
+                    currToken.append(escapeIfNotPathSepInDEF(ch, '\t', currToken));
+                } else {
+                    if (tokens.indexOf(ch) >= 0) {
+                        currToken.append('\\').append(ch);
+                    } else if (currToken.toString().startsWith("DEF:")) {
+                        currToken.append('\\').append(ch);
+                    } else {
+                        // silently pass through the character *without* the \ in front of it
+                        currToken.append(ch);
+                    }
+                }
+                escaping = false;
+                if (debugTokens)
+                    log.debug("tokenize: escaped. appended to " + currToken);
+            } else if (ch == '\\') {
+                if (debugTokens)
+                    log.debug("tokenize: found a backslash... escaping currToken = " + currToken);
+                if (quoting && !processQuoted)
+                    currToken.append(ch);
+                else
+                    escaping = true;
+            } else if (ch == '\"') {
+                if (!processQuoted)
+                    currToken.append(ch);
+                if (quoting) {
+                    if (debugTokens)
+                        log.debug("tokenize: found a quote ending quotation currToken = " + currToken);
+                    quoting = false;
+                } else {
+                    if (debugTokens)
+                        log.debug("tokenize: found a quote beginning quotation  currToken =" + currToken);
+                    quoting = true;
+                }
+            } else if (!quoting && delims.indexOf(ch) >= 0) {
+                if (debugTokens)
+                    log.debug("tokenize: found a token: " + ch + " ending token [" + currToken + "] and starting a new one");
+                tokenList.add(currToken.toString());
+                currToken = new StringBuffer();
+            } else {
+                if (debugTokens)
+                    log.debug("tokenize: appending " + ch + " to token: " + currToken);
+                currToken.append(ch);
+            }
+    
+        }
+    
+        if (escaping || quoting) {
+            if (debugTokens)
+                log.debug("tokenize: ended string but escaping = " + escaping + " and quoting = " + quoting);
+            throw new IllegalArgumentException("unable to tokenize string " + line + " with token chars " + delims);
+        }
+    
+        if (debugTokens)
+            log.debug("tokenize: reached end of string.  completing token " + currToken);
+        tokenList.add(currToken.toString());
+    
+        return (String[]) tokenList.toArray(new String[tokenList.size()]);
+    }
+    
+    public static char[] escapeIfNotPathSepInDEF(char encountered, char escaped, StringBuffer currToken) {
+    	if ( ('\\' != File.separatorChar) || (! currToken.toString().startsWith("DEF:")) ) {
+    		return new char[] { escaped };
+    	} else {
+    		return new char[] { '\\', encountered };
+    	}
     }
 
 }
