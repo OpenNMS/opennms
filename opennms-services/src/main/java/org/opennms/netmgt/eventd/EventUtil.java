@@ -199,7 +199,18 @@ public final class EventUtil {
 	 */
 	static final String TAG_MOUSEOVERTEXT = "mouseovertext";
 
-    static final Object TAG_TTICKET_ID = "tticketid";
+        static final Object TAG_TTICKET_ID = "tticketid";
+
+	/**
+	 * The string that starts the expansion for an asset field - used to lookup values
+	 * of asset fields by their names
+	 */
+	final static String ASSET_BEGIN = "asset[";
+
+	/**
+	 * The string that ends the expansion of a parm
+	 */
+	final static String ASSET_END_SUFFIX = "]";
 
 	/**
 	 * The '%' sign used to indicate parms to be expanded
@@ -494,9 +505,9 @@ public final class EventUtil {
 			retParmVal = event.getOperinstruct();
 		} else if (parm.equals(TAG_MOUSEOVERTEXT)) {
 			retParmVal = event.getMouseovertext();
-        } else if (parm.equals(TAG_TTICKET_ID)) {
-            Tticket ticket = event.getTticket();
-            retParmVal = ticket == null ? "" : ticket.getContent();
+                } else if (parm.equals(TAG_TTICKET_ID)) {
+                        Tticket ticket = event.getTticket();
+                        retParmVal = ticket == null ? "" : ticket.getContent();
 		} else if (parm.equals(PARMS_VALUES)) {
 			retParmVal = getAllParmValues(event);
 		} else if (parm.equals(PARMS_NAMES)) {
@@ -511,6 +522,16 @@ public final class EventUtil {
 			if (parm.length() > PARM_BEGIN_LENGTH) {
 				retParmVal = getNamedParmValue(parm, event);
 			}
+                } else if (parm.startsWith(ASSET_BEGIN)) {
+			retParmVal = null;
+			String assetFieldValue = null;
+			if (event.getNodeid() > 0) {
+				assetFieldValue = getAssetFieldValue(parm, event.getNodeid());
+			}
+			if (assetFieldValue != null)
+				retParmVal = assetFieldValue;
+			else
+				retParmVal = "Unknown";
 		}
 
 		return (retParmVal == null ? null : retParmVal.trim());
@@ -935,4 +956,57 @@ public final class EventUtil {
 	        }
 	        return copy;
 	}	
+
+    /**
+     * Helper method.
+     * 
+     * @param parm
+     * @param event
+     * @return The value of an asset field based on the nodeid of the event 
+     */
+    private static String getAssetFieldValue(String parm, long nodeId) {
+        String retParmVal = null;
+        int end = parm.lastIndexOf(ASSET_END_SUFFIX);
+        // The "asset[" start of this parameter is 6 characters long
+	String assetField = parm.substring(6,end);
+        java.sql.Connection dbConn = null;
+        try {
+             Statement stmt = null;
+             try {
+                    // Get datbase connection from the factory
+                    dbConn = DataSourceFactory.getInstance().getConnection();
+
+                    // Issue query and extract nodeLabel from result set
+                    stmt = dbConn.createStatement();
+                    ResultSet rs = stmt.executeQuery("SELECT " + assetField + " FROM node WHERE nodeid=" + String.valueOf(nodeId));
+                         if (rs.next()) {
+                             retParmVal = (String) rs.getString(assetField);
+                         }
+                  } catch (SQLException sqlE) {
+                                // do nothing
+                    } finally {
+                        // Close the statement
+                        if (stmt != null) {
+                            try {
+                                stmt.close();
+                            } catch (Exception e) {
+                                // do nothing
+                            }
+                        }
+                    }
+                  } finally {
+
+                        // Close the database connection
+                        if (dbConn != null) {
+                                try {
+                                        dbConn.close();
+                                } catch (Throwable t) {
+                                        // do nothing
+                                }
+                        }
+                }
+
+        return retParmVal;
+
+    }
 }
