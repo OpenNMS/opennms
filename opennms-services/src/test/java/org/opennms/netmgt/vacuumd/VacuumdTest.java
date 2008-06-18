@@ -150,7 +150,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         bringNodeDownCreatingEvent(1);
         
         // Sleep and wait for the alarm to be written
-        Thread.sleep(500);
+        Thread.sleep(1500);
         assertEquals("counter in the alarm", 2, getJdbcTemplate().queryForInt("select counter from alarms"));
                 
         /*
