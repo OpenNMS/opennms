@@ -115,12 +115,12 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
-        Thread.sleep(100);
+        Thread.sleep(200);
         
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
-        Thread.sleep(100);
+        Thread.sleep(200);
 
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
@@ -129,13 +129,13 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         verify(engine);
         
-        Thread.sleep(850);
+        Thread.sleep(1700);
 
         m_anticipatedMemorySize = 3;
         
         verify(engine);
         
-        Thread.sleep(150);
+        Thread.sleep(300);
         
         m_anticipatedMemorySize = 0;
         
@@ -156,7 +156,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         verify(engine);
         
-        Thread.sleep(1100);
+        Thread.sleep(2200);
         
         m_anticipatedMemorySize = 0;
         
