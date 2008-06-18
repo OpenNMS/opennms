@@ -978,7 +978,7 @@ public final class EventUtil {
 
                     // Issue query and extract nodeLabel from result set
                     stmt = dbConn.createStatement();
-                    ResultSet rs = stmt.executeQuery("SELECT " + assetField + " FROM node WHERE nodeid=" + String.valueOf(nodeId));
+                    ResultSet rs = stmt.executeQuery("SELECT " + assetField + " FROM assets WHERE nodeid=" + String.valueOf(nodeId));
                          if (rs.next()) {
                              retParmVal = (String) rs.getString(assetField);
                          }
