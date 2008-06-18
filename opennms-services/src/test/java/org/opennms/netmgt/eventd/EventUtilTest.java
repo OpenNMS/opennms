@@ -33,6 +33,7 @@
 
 package org.opennms.netmgt.eventd;
 
+import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.mock.MockService;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.event.Value;
 
 public class EventUtilTest extends OpenNMSTestCase {
 
@@ -62,14 +64,18 @@ public class EventUtilTest extends OpenNMSTestCase {
      * Test method for 'org.opennms.netmgt.eventd.EventUtil.getValueAsString(Value)'
      */
     public void testGetValueAsString() {
-        //TODO: write tests for this method
+        Value v = new Value();
+        v.setContent(new String(Base64.encodeBase64((new String("test")).getBytes())));
+        v.setEncoding("base64");
+        
+        assertEquals("test", EventUtil.getValueAsString(v));
     }
 
     /*
      * Test method for 'org.opennms.netmgt.eventd.EventUtil.escape(String, char)'
      */
     public void testEscape() {
-        //TODO: write tests for this method
+        assertEquals("m%onkeys%47rock", EventUtil.escape("m%onkeys/rock", '/'));
     }
 
     /*

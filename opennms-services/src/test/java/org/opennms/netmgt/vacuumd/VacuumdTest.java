@@ -150,7 +150,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         bringNodeDownCreatingEvent(1);
         
         // Sleep and wait for the alarm to be written
-        Thread.sleep(500);
+        Thread.sleep(1500);
         assertEquals("counter in the alarm", 2, getJdbcTemplate().queryForInt("select counter from alarms"));
                 
         /*
@@ -310,10 +310,10 @@ public class VacuumdTest extends OpenNMSTestCase {
         // create node down events with severity 6
         bringNodeDownCreatingEvent(1);
         bringNodeDownCreatingEvent(2);
-        Thread.sleep(500);
+        Thread.sleep(1000);
         // create node up event with severity 3
         bringNodeUpCreatingEvent(1);
-        Thread.sleep(500);
+        Thread.sleep(1000);
         
         assertEquals("clearUei for nodeUp", "uei.opennms.org/nodes/nodeDown", getJdbcTemplate().queryForObject("select clearUei from alarms where eventUei = ?", String.class, "uei.opennms.org/nodes/nodeUp"));
         

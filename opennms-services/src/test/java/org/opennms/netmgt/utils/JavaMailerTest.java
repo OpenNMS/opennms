@@ -57,7 +57,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class JavaMailerTest extends TestCase {
-    private static final String TEST_ADDRESS = "root@localhost";
+    private static final String TEST_ADDRESS = "test@opennms.org";
 
     protected void setUp() throws IOException {
         MockLogAppender.setupLogging();

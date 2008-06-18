@@ -108,6 +108,12 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     public void testFlappingMonitor() throws Exception {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
+        
+        /* 
+         * for testing the flap rules detect 3 outages that occur within 1000 millis
+         * when this happens a serviceflapping event is produced
+         */
+        
 
         anticipateServiceFlappingEvent();
         
@@ -125,17 +131,22 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
+        // expect an affliction and a flap for each outage
         m_anticipatedMemorySize = 4;
         
+        // ensure the correct objects are in memory and the service flapping event has been sent
         verify(engine);
         
-        Thread.sleep(850);
+        // wait for one of the flaps to expire - this is kind  of tight an a unresponsive may 
+        // not wake up in time and the second flap could be expired also
+        Thread.sleep(810);
 
         m_anticipatedMemorySize = 3;
         
         verify(engine);
         
-        Thread.sleep(150);
+        // now all of the flaps should be expired
+        Thread.sleep(200);
         
         m_anticipatedMemorySize = 0;
         
@@ -143,6 +154,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         anticipateServiceFlappingEvent();
         
+        // cause another very fast flapping situtation
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
@@ -156,8 +168,10 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         verify(engine);
         
+        // wait for it to expire
         Thread.sleep(1100);
-        
+
+        // now there should be nothing
         m_anticipatedMemorySize = 0;
         
         verify(engine);
