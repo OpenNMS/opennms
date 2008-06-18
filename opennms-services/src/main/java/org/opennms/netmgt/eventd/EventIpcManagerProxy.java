@@ -69,10 +69,10 @@ public class EventIpcManagerProxy implements EventIpcManager {
         m_delegate.addEventListener(listener, uei);
     }
 
-	public void addEventListener(EventListener listener, Collection<String> ueis) {
-		assertState();
-		m_delegate.addEventListener(listener, ueis);
-	}
+    public void addEventListener(EventListener listener, Collection<String> ueis) {
+        assertState();
+        m_delegate.addEventListener(listener, ueis);
+    }
 
     public void removeEventListener(EventListener listener) {
         assertState();
@@ -89,10 +89,10 @@ public class EventIpcManagerProxy implements EventIpcManager {
         m_delegate.addEventListener(listener, uei);
     }
 
-	public void removeEventListener(EventListener listener, Collection<String> ueis) {
-		assertState();
+    public void removeEventListener(EventListener listener, Collection<String> ueis) {
+        assertState();
         m_delegate.addEventListener(listener, ueis);
-	}
+    }
 
     public void sendNow(Event event) {
         assertState();
