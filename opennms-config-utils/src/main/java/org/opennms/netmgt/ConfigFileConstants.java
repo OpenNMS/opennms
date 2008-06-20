@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 12: Add xmp-config and xmp-datacollection-config. - jeffg@opennms.org
 // 2006 Sep 10: Better error reporting, some code formatting. - dj@opennms.org
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 03: Minor opennms-server changes
@@ -430,6 +431,16 @@ public final class ConfigFileConstants {
      */
     public static final int NSCLIENT_CONFIG_FILE_NAME;
 
+    /**
+     * The XMP data collection configuration file
+     */
+    public static final int XMP_COLLECTION_CONFIG_FILE_NAME;
+
+    /**
+     * The XMP agent configuration file
+     */
+    public static final int XMP_CONFIG_FILE_NAME;
+
     //
     // Initialize the class data. This section is used to initialize the
     // integer constants to their final values and to build the array
@@ -537,9 +548,13 @@ public final class ConfigFileConstants {
         
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 67;
         
+        XMP_COLLECTION_CONFIG_FILE_NAME = 68;
+        
+        XMP_CONFIG_FILE_NAME = 69;
+
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[68];
+        FILE_ID_TO_NAME = new String[70];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -624,6 +639,8 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
         FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
+        FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
+        FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
     }
 
     /**

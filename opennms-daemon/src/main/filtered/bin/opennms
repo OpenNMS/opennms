@@ -85,6 +85,9 @@ RUNJAVA_OPTIONS=""
 # URL that this script uses to communicate with a running OpenNMS daemon.
 INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager"
 
+# The user that OpenNMS needs to run as.
+RUNAS="root"
+
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -347,7 +350,7 @@ doKill(){
 
     pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
     if [ x"$pid" != x"" ]; then
-	if ps -p "$pid" | grep "^root" > /dev/null; then
+	if ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
 	    kill -9 $pid > /dev/null 2>&1
 	fi
     fi
@@ -517,10 +520,11 @@ if [ ! -f $OPENNMS_HOME/etc/configured ]; then
     exit 6    # From LSB: 6 - program is not configured
 fi
 
-if id | grep '^uid=0(' > /dev/null; then
+myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"
+if [ x"$myuser" = x"$RUNAS" ]; then
     true # all is well
 else
-    echo "Error: you must run this script as root" >&2
+    echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
     exit 4    # According to LSB: 4 - user had insufficient privileges
 fi
 

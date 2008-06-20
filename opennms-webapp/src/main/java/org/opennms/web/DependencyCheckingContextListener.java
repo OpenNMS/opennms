@@ -8,6 +8,11 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * 
+ * Modifications:
+ *
+ * 2008 Jun 05: When we throw an exception, not only include the reason why we
+ *              are throwing the exception, but how to fix it. - dj@opennms.org
+ * 
  * Copyright (C) 2007 Daniel J. Gregor, Jr.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -86,9 +91,12 @@ public class DependencyCheckingContextListener implements ServletContextListener
             log().warn(message);
             log().warn("Context parameter '" + IGNORE_ERRORS_PROPERTY + "' is set in " + webXmlPath + ", so the above warning is not fatal,  " + IGNORE_ERRORS_MESSAGE);
         } else {
+            String howToFixMessage = "You can edit " + webXmlPath + " and change the value for the '" + IGNORE_ERRORS_PROPERTY + "' context parameter from 'false' to 'true', " + IGNORE_ERRORS_MESSAGE;
+
             log().fatal(message);
-            log().fatal("You can edit " + webXmlPath + " and change the value for the '" + IGNORE_ERRORS_PROPERTY + "' context parameter from 'false' to 'true', " + IGNORE_ERRORS_MESSAGE);
-            throw new RuntimeException(message);
+            log().fatal(howToFixMessage);
+            
+            throw new RuntimeException(message + "  " + howToFixMessage);
         }
     }
 

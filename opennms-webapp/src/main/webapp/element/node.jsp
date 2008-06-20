@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 May 20: Remove the extra box around the interfaces table. - dj@opennms.org
 // 2007 Nov 12: change interfaces box to table
 // 2007 Jun 02: Refactor to MVC pattern and pull reusable code into
 //              for dealing with nodes into ElementUtil. - dj@opennms.org
@@ -367,78 +368,76 @@
 
   <!-- Interface box -->
   <h3>Interfaces</h3>
-  <div class="boxWrapper">
-    <table>
+  <table>
+    <tr>
+      <th>Interface</th>
+      <th>Index</th>
+      <th>Description</th>
+      <c:if test="${model.hasIfAliases}">
+        <th>IfAlias</th>
+      </c:if>
+    </tr>
+    <c:forEach items="${model.intfs}" var="intf">
+      <c:url var="interfaceLink" value="element/interface.jsp">
+        <c:param name="ipinterfaceid" value="${intf.id}"/>
+      </c:url>
       <tr>
-        <th>Interface</th>
-        <th>Index</th>
-        <th>Description</th>
+        <td>
+          <c:choose>
+            <c:when test="${intf.ipAddress == '0.0.0.0'}">
+              <c:choose>
+                <c:when test="${intf.snmpIfName != null && intf.snmpIfName != ''}">
+                  <a href="${interfaceLink}">${intf.snmpIfName}</a>
+                </c:when>
+                <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
+                  <a href="${interfaceLink}">${intf.snmpIfDescription}</a>
+                </c:when>
+                <c:otherwise>
+                  <a href="${interfaceLink}">Non-IP</a>
+                </c:otherwise>
+              </c:choose>
+            </c:when>
+            <c:otherwise>
+              <a href="${interfaceLink}">${intf.ipAddress}</a>
+              <c:if test="${intf.ipAddress != intf.hostname}">
+                (${intf.hostname})
+              </c:if>
+            </c:otherwise>
+          </c:choose>
+        </td>
+        <td>
+          <c:choose>
+            <c:when test="${intf.ifIndex > 0}">
+              ${intf.ifIndex}
+            </c:when>
+            <c:otherwise>
+              &nbsp;
+            </c:otherwise>
+          </c:choose>
+        </td>
+        <td>
+          <c:choose>
+            <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
+              ${intf.snmpIfDescription}
+            </c:when>
+            <c:when test="${intf.snmpIfName != null && intf.snmpIfName != '' && intf.ipAddress != '0.0.0.0'}">
+              ${intf.snmpIfName}
+             </c:when>
+            <c:otherwise>
+              &nbsp;
+            </c:otherwise>
+          </c:choose>
+        </td>
         <c:if test="${model.hasIfAliases}">
-          <th>IfAlias</th>
+          <td>
+            <c:if test="${intf.snmpIfAlias != null && intf.snmpIfAlias != ''}">
+              ${intf.snmpIfAlias}
+            </c:if>
+          </td>
         </c:if>
       </tr>
-      <c:forEach items="${model.intfs}" var="intf">
-        <c:url var="interfaceLink" value="element/interface.jsp">
-          <c:param name="ipinterfaceid" value="${intf.id}"/>
-        </c:url>
-        <tr>
-          <td>
-            <c:choose>
-              <c:when test="${intf.ipAddress == '0.0.0.0'}">
-                <c:choose>
-                  <c:when test="${intf.snmpIfName != null && intf.snmpIfName != ''}">
-                    <a href="${interfaceLink}">${intf.snmpIfName}</a>
-                  </c:when>
-                  <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
-                    <a href="${interfaceLink}">${intf.snmpIfDescription}</a>
-                  </c:when>
-                  <c:otherwise>
-                    <a href="${interfaceLink}">Non-IP</a>
-                  </c:otherwise>
-                </c:choose>
-              </c:when>
-              <c:otherwise>
-                <a href="${interfaceLink}">${intf.ipAddress}</a>
-                <c:if test="${intf.ipAddress != intf.hostname}">
-                  (${intf.hostname})
-                </c:if>
-              </c:otherwise>
-            </c:choose>
-          </td>
-          <td>
-            <c:choose>
-              <c:when test="${intf.ifIndex > 0}">
-                ${intf.ifIndex}
-              </c:when>
-              <c:otherwise>
-                &nbsp;
-              </c:otherwise>
-            </c:choose>
-          </td>
-          <td>
-            <c:choose>
-              <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
-                ${intf.snmpIfDescription}
-              </c:when>
-              <c:when test="${intf.snmpIfName != null && intf.snmpIfName != '' && intf.ipAddress != '0.0.0.0'}">
-                ${intf.snmpIfName}
-               </c:when>
-              <c:otherwise>
-                &nbsp;
-              </c:otherwise>
-            </c:choose>
-          </td>
-          <c:if test="${model.hasIfAliases}">
-            <td>
-              <c:if test="${intf.snmpIfAlias != null && intf.snmpIfAlias != ''}">
-                ${intf.snmpIfAlias}
-              </c:if>
-            </td>
-          </c:if>
-        </tr>
-      </c:forEach>
-    </table>
-  </div>
+    </c:forEach>
+  </table>
 
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">

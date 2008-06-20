@@ -8,6 +8,13 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jun 05: Remove Thread.sleep in testAgentSetup (functinality
+//              now exists to do the same in MockSnmpAgent with a
+//              system property) and enhance asserts. - dj@opennms.org
+// 2008 Jun 05: Format code, eliminate warnings. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -62,76 +69,72 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.springframework.core.io.ClassPathResource;
 
 public class MockSnmpAgentTest extends TestCase {
-	
-	private MockSnmpAgent agt;
+
+    private MockSnmpAgent m_agent;
 
     @Override
-	protected void setUp() throws Exception {
-		super.setUp();
+    protected void setUp() throws Exception {
+        super.setUp();
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
-		MockLogAppender.setupLogging();
+        MockLogAppender.setupLogging();
 
-		agt = MockSnmpAgent.createAgentAndRun(
-				new ClassPathResource("loadSnmpDataTest.properties"),
-				"127.0.0.1/1691");	// Homage to Empire
-	}
-	
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("loadSnmpDataTest.properties"), "127.0.0.1/1691");	// Homage to Empire
+    }
+
     @Override
-	public void runTest() throws Throwable {
-		super.runTest();
-		MockLogAppender.assertNoWarningsOrGreater();
-	}
-	
-	@Override
-	protected void tearDown() throws Exception {
-        agt.shutDownAndWait();
-		super.tearDown();
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        m_agent.shutDownAndWait();
+        super.tearDown();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
-	}
+    }
 
-	/**
-	 * Make sure that we can setUp() and tearDown() the agent.
-	 * @throws InterruptedException 
-	 */
-	public void testAgentSetup() throws InterruptedException {
-		assertNotNull("agent should be non-null", agt);
-		//Thread.sleep(60000);
-	}
-	
-	/**
-	 * Test that we can setUp() and tearDown() twice to ensure that the
-	 * MockSnmpAgent tears itself down properly. In particular, we want to make
-	 * sure that the UDP listener gets torn down so listening port is free for
-	 * later instances of the agent.
-	 * 
-	 * @throws Exception
-	 */
-	public void testSetUpTearDownTwice() throws Exception {
-		// don't need the first setUp(), since it's already been done by JUnit
-		tearDown();
-		setUp();
-		// don't need the second tearDown(), since it will be done by JUnit
-	}
-	
-	public void testGetNext() throws Exception {
-	    assertResultFromGetNext("1.3.5.1.1.3", "1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-	}
+    /**
+     * Make sure that we can setUp() and tearDown() the agent.
+     * @throws InterruptedException 
+     */
+    public void testAgentSetup() {
+        assertNotNull("agent should be non-null", m_agent);
+    }
 
-	public void testGet() throws Exception {
+    /**
+     * Test that we can setUp() and tearDown() twice to ensure that the
+     * MockSnmpAgent tears itself down properly. In particular, we want to make
+     * sure that the UDP listener gets torn down so listening port is free for
+     * later instances of the agent.
+     * 
+     * @throws Exception
+     */
+    public void testSetUpTearDownTwice() throws Exception {
+        // don't need the first setUp(), since it's already been done by JUnit
+        tearDown();
+        setUp();
+        // don't need the second tearDown(), since it will be done by JUnit
+    }
+
+    public void testGetNext() throws Exception {
+        assertResultFromGetNext("1.3.5.1.1.3", "1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+    }
+
+    public void testGet() throws Exception {
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-        
-        agt.updateValue("1.3.5.1.1.3.0", new Integer32(77));
-        
+
+        m_agent.updateValue("1.3.5.1.1.3.0", new Integer32(77));
+
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
-        
-	}
+
+    }
 
     private void assertResultFromGet(String oidStr, int expectedSyntax, Integer32 expected) throws Exception {
         assertResult(PDU.GET, oidStr, oidStr, expectedSyntax, expected);
     }
 
-    private void assertResultFromGetNext(String oidStr, String expectedOid, int expectedSyntax,
-            Integer32 expected) throws UnknownHostException, IOException {
+    private void assertResultFromGetNext(String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
         assertResult(PDU.GETNEXT, oidStr, expectedOid, expectedSyntax, expected);
     }
 
@@ -139,19 +142,18 @@ public class MockSnmpAgentTest extends TestCase {
         assertV3Result(pduType, oidStr, expectedOid, expectedSyntax, expected);
     }
 
-    private void assertV1Result(int pduType, String oidStr, String expectedOid,
-            int expectedSyntax, Integer32 expected)
-            throws UnknownHostException, IOException {
+    @SuppressWarnings("unused")
+    private void assertV1Result(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
         PDU pdu = new PDU();
         OID oid = new OID(oidStr);
         pdu.add(new VariableBinding(oid));
         pdu.setType(pduType);
-        
+
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version1);
-        
+
         TransportMapping transport = null;
         try {
             transport = new DefaultUdpTransportMapping();
@@ -161,7 +163,7 @@ public class MockSnmpAgentTest extends TestCase {
             ResponseEvent e = snmp.send(pdu, target);
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
-            
+
             VariableBinding vb = response.get(0);
             assertNotNull(vb);
             assertNotNull(vb.getVariable());
@@ -178,19 +180,18 @@ public class MockSnmpAgentTest extends TestCase {
         }
     }
 
-    private void assertV2Result(int pduType, String oidStr, String expectedOid,
-            int expectedSyntax, Integer32 expected)
-            throws UnknownHostException, IOException {
+    @SuppressWarnings("unused")
+    private void assertV2Result(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
         PDU pdu = new PDU();
         OID oid = new OID(oidStr);
         pdu.add(new VariableBinding(oid));
         pdu.setType(pduType);
-        
+
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version2c);
-        
+
         TransportMapping transport = null;
         try {
             transport = new DefaultUdpTransportMapping();
@@ -200,7 +201,7 @@ public class MockSnmpAgentTest extends TestCase {
             ResponseEvent e = snmp.send(pdu, target);
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
-            
+
             VariableBinding vb = response.get(0);
             assertNotNull(vb);
             assertNotNull(vb.getVariable());
@@ -216,15 +217,13 @@ public class MockSnmpAgentTest extends TestCase {
             }
         }
     }
-    
-    private void assertV3Result(int pduType, String oidStr, String expectedOid,
-            int expectedSyntax, Integer32 expected)
-            throws UnknownHostException, IOException {
+
+    private void assertV3Result(int pduType, String oidStr, String expectedOid, int expectedSyntax, Integer32 expected) throws UnknownHostException, IOException {
         PDU pdu = new ScopedPDU();
         OID oid = new OID(oidStr);
         pdu.add(new VariableBinding(oid));
         pdu.setType(pduType);
-        
+
         OctetString userId = new OctetString("opennmsUser");
         OctetString pw = new OctetString("0p3nNMSv3");
 
@@ -239,27 +238,25 @@ public class MockSnmpAgentTest extends TestCase {
         try {
             transport = new DefaultUdpTransportMapping();
             Snmp snmp = new Snmp(transport);
-            
+
             UsmUser user = new UsmUser(userId, AuthMD5.ID, pw, PrivDES.ID, pw);
             snmp.getUSM().addUser(userId, user);
-            
-     
-            transport.listen();
 
+            transport.listen();
+            
             ResponseEvent e = snmp.send(pdu, target);
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
             MockUtil.println("Response is: "+response);
-            assertTrue("unexpected report pdu", response.getType() != PDU.REPORT);
+            assertEquals("unexpected report pdu", PDU.REPORT, response.getType());
             
             VariableBinding vb = response.get(0);
-            assertNotNull(vb);
-            assertNotNull(vb.getVariable());
-            assertEquals(new OID(expectedOid), vb.getOid());
-            assertEquals(expectedSyntax, vb.getSyntax());
+            assertNotNull("variable binding should not be null", vb);
             Variable val = vb.getVariable();
-            assertNotNull(val);
-            assertEquals(expected, val);
+            assertNotNull("variable should not be null", val);
+            assertEquals("OID (value: " + val + ")", new OID(expectedOid), vb.getOid());
+            assertEquals("syntax", expectedSyntax, vb.getSyntax());
+            assertEquals("value", expected, val);
 
         } finally { 
             if (transport != null) {
@@ -269,6 +266,6 @@ public class MockSnmpAgentTest extends TestCase {
     }
 
 
-    
-    
+
+
 }
