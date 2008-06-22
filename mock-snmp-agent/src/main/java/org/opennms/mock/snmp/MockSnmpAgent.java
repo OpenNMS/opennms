@@ -10,9 +10,6 @@
  *
  * Modifications:
  * 
- * 2008 Jun 05: Reorganize a bit, add property mockSnmpAgent.sleepOnCreate that
- *              can be used to make createAgentAndRun sleep for the specified
- *              number of milliseconds upon startup. - dj@opennms.org
  * 2008 Feb 10: Eliminate warnings. - dj@opennms.org
  * 
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -91,19 +88,19 @@ import org.springframework.core.io.Resource;
  * @version 1.0
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
-    private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
-
-    private String m_address;
-    private Resource m_moFile;
-    private boolean m_running;
-    private boolean m_stopped;
-    private List<ManagedObject> m_moList;
-    private MockSnmpMOLoader m_moLoader;
 
     // initialize Log4J logging
     static {
         LogFactory.setLogFactory(new Log4jLogFactory());
     }
+    
+
+    protected String m_address;
+    private Resource m_moFile;
+    private boolean m_running;
+    private boolean m_stopped;
+    private List<ManagedObject> m_moList;
+    private MockSnmpMOLoader m_moLoader;
 
     /*
      * Creates the mock agent with files to read and store the boot counter,
@@ -153,11 +150,6 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             agent.m_running = false;
             agent.m_stopped = true;
             throw new IllegalStateException("agent failed to start--check logs");
-        }
-        
-        if (System.getProperty(PROPERTY_SLEEP_ON_CREATE) != null) {
-            long sleep = Long.parseLong(System.getProperty(PROPERTY_SLEEP_ON_CREATE));
-            Thread.sleep(sleep);
         }
 
         return agent;
