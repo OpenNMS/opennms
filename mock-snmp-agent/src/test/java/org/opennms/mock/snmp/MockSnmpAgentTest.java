@@ -8,12 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+//
 // Modifications:
 //
-// 2008 Jun 05: Remove Thread.sleep in testAgentSetup (functinality
-//              now exists to do the same in MockSnmpAgent with a
-//              system property) and enhance asserts. - dj@opennms.org
 // 2008 Jun 05: Format code, eliminate warnings. - dj@opennms.org
+//
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -98,8 +97,9 @@ public class MockSnmpAgentTest extends TestCase {
      * Make sure that we can setUp() and tearDown() the agent.
      * @throws InterruptedException 
      */
-    public void testAgentSetup() {
+    public void testAgentSetup() throws InterruptedException {
         assertNotNull("agent should be non-null", m_agent);
+        Thread.sleep(60000);
     }
 
     /**
@@ -242,21 +242,23 @@ public class MockSnmpAgentTest extends TestCase {
             UsmUser user = new UsmUser(userId, AuthMD5.ID, pw, PrivDES.ID, pw);
             snmp.getUSM().addUser(userId, user);
 
+
             transport.listen();
-            
+
             ResponseEvent e = snmp.send(pdu, target);
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
             MockUtil.println("Response is: "+response);
-            assertEquals("unexpected report pdu", PDU.REPORT, response.getType());
-            
+            assertTrue("unexpected report pdu", response.getType() != PDU.REPORT);
+
             VariableBinding vb = response.get(0);
-            assertNotNull("variable binding should not be null", vb);
+            assertNotNull(vb);
+            assertNotNull(vb.getVariable());
+            assertEquals(new OID(expectedOid), vb.getOid());
+            assertEquals(expectedSyntax, vb.getSyntax());
             Variable val = vb.getVariable();
-            assertNotNull("variable should not be null", val);
-            assertEquals("OID (value: " + val + ")", new OID(expectedOid), vb.getOid());
-            assertEquals("syntax", expectedSyntax, vb.getSyntax());
-            assertEquals("value", expected, val);
+            assertNotNull(val);
+            assertEquals(expected, val);
 
         } finally { 
             if (transport != null) {
