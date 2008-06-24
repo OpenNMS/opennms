@@ -255,6 +255,8 @@
   <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
   <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
   <monitor service="NSClient" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
+  <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+  <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
 </poller-configuration>
