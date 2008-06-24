@@ -7,6 +7,17 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
+    <title>OpenNMS 1.5.93 Known Issues</title>
+
+    <para>OpenNMS is still not 100% compatible with PostgreSQL 8.3, because of
+    a change in behavior regarding implicit casts.  Until we can fix our code to
+    not rely on implicit casts, a workaround is available
+    <ulink url="http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html">here</ulink>,
+    but it is recommended that you stick with PostgreSQL 7.4 to 8.2 for production
+    environments until this issue is resolved.</para>
+  </section>
+
+  <section>
     <title>OpenNMS 1.5.92 Known Issues</title>
 
     <para>No known issues.</para>
