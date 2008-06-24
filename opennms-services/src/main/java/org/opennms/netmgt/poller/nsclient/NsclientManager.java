@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 May 13: Add support for INSTANCES command - jeffg@opennms.org
 // 2007 Apr 18: Use Java 5 generics to eliminate warnings. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -71,6 +72,7 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
 
@@ -166,8 +168,7 @@ public class NsclientManager {
 
     /**
      * This check type is used by the NSClient developers as a utility for an
-     * easy remote method of looking up potential COUNTER instances. This
-     * check type is not currently supported by this manager.
+     * easy remote method of looking up potential COUNTER instances.
      */
     public static final String CHECK_INSTANCES = "10";
     
@@ -512,6 +513,9 @@ public class NsclientManager {
         	else if (type.equals(CHECK_FILEAGE)) {
                 return checkFileAge(param);
             }
+        	else if (type.equals(CHECK_INSTANCES)) {
+        		return checkInstances(param);
+        	}
             return null;
         } catch (NsclientException e) {
             throw e;
@@ -1009,6 +1013,45 @@ public class NsclientManager {
         } catch (NsclientException e) {
             throw e;
         }
+    }
+    
+    /**
+     * This method requests a list of instances for a perfmon object as
+     * defined by the 'parameter' string. Examples of this string would be:
+     * Processor or PhysicalDisk- the available instances are returned by the
+     * agent as a comma-separated list.  The warning and critical members of
+     * param are ignored.
+     * 
+     * @param param
+     *            The param string should contain a perfmon object name. Warning and
+     *            critical values are ignored.
+     * @return the processed <code>NsclientPacket</code> containing a comma-separated instance list.
+     * @throws NsclientException
+     *             this method rethrows the exception thrown by
+     *             <code>sendCheckRequest</code>
+     */
+    private NsclientPacket checkInstances(NsclientCheckParams param) throws NsclientException {
+    	NsclientPacket pack = null;
+    	String responseValue = "";
+    	try {
+    		// send/receive the request
+    		pack = sendCheckRequest(m_Password + "&" + CHECK_INSTANCES + "&"
+    				+ param.getParamString());
+    		pack.setResultCode(NsclientPacket.RES_STATE_OK);
+    		// Check for "ERROR" string.
+    		if (pack.getResponse().matches(".*ERROR.*")) {
+    			pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
+    			return pack;
+    		}
+    		
+    		// If we did not receive an ERROR report, then we are done here
+    		if (log().isDebugEnabled()) {
+    			log().debug("checkInstances: received result '" + pack.getResponse() + "'");
+    		}
+    		return pack;
+    	} catch (NsclientException e) {
+    		throw e;
+    	}
     }
 
     private String prepList(String list) {
