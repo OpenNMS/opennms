@@ -45,6 +45,9 @@ install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
 tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
 chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
 
+%clean
+rm -rf $RPM_BUILD_ROOT
+
 %files
 %defattr(664 root root 775)
 %{instprefix}/etc/*.properties
