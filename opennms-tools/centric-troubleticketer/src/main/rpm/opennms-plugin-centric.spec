@@ -1,4 +1,4 @@
-%{!?version:%define version 1.5.94-SNAPSHOT}
+%{!?version:%define version 1.5.93}
 %{!?releasenumber:%define releasenumber 0}
 %{!?instprefix:%define instprefix /opt/opennms}
 %{!?jdk:%define jdk jdk >= 1:1.5}
@@ -42,6 +42,10 @@ mvn -Droot.dir="%{instprefix}" -Dmaven.test.skip.exec=true -Dcentric.tools.jar="
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
-pushd $RPM_BUILD_ROOT%{instprefix}
-	tar -xzf $RPM_BUILD_DIR/target/centric-troubleticketer-*.tar.gz
-popd
+tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
+chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
+
+%files
+%defattr(664 root root 775)
+%{instprefix}/etc/*.properties
+%{instprefix}/lib/*.jar
