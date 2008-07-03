@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Jul 02: Expose our DataSource to remove duplication in tests. - dj@opennms.org
  * 2008 Feb 10: Organize imports. - dj@opennms.org
  * 2007 Apr 14: Call setDirty() at the end of runTest, not early on. - dj@opennms.org
  * 2007 Apr 07: Add docs; use ArrayList instead of LinkedList. - dj@opennms.org
@@ -41,6 +42,8 @@ package org.opennms.netmgt.dao.db;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -267,5 +270,9 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests e
      */
     public SimpleJdbcTemplate getSimpleJdbcTemplate() {
         return new SimpleJdbcTemplate(jdbcTemplate);
+    }
+    
+    public DataSource getDataSource() {
+        return m_populatedTempDb.getDataSource();
     }
 }

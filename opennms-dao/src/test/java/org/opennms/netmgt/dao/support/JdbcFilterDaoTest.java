@@ -11,6 +11,9 @@
  * Modifications:
  * 
  * Created July 22, 2007
+ * 
+ * 2008 Jul 02: Get rid of DataSource stuff since it is now
+ *              in our superclass. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -40,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
@@ -58,7 +59,6 @@ import org.opennms.test.ThrowableAnticipator;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    private DataSource m_dataSource;
     private NodeDao m_nodeDao;
     private JdbcFilterDao m_dao;
     private DatabasePopulator m_populator;
@@ -217,14 +217,6 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         
         // Just make sure this one doesn't hurl
         m_dao.getInterfaceWithServiceStatement("serviceName == 'DiskUsage-/foo/bar'");
-    }
-
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
     }
 
     public NodeDao getNodeDao() {
