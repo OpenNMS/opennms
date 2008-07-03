@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jul 02: Get rid of DataSource stuff since it is now in our superclass.
+//              Use DaoTestConfigBean.  Add some comments. - dj@opennms.org
 // 2007 Jul 03: Fix test resource calls. - dj@opennms.org
 // 2007 Jul 03: Enable testIplikeAllStars. - dj@opennms.org
 // 2007 Jul 03: Move notifd configuration to a resource. - dj@opennms.org
@@ -53,14 +55,17 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.DaoTestConfigBean;
 
 public class NotificationManagerTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private NotificationManagerImpl m_notificationManager;
-    private DataSource m_dataSource;
     private NotifdConfigManager m_configManager;
     
     public NotificationManagerTest() {
-        System.setProperty("opennms.home", "../opennms-daemon/src/main/filtered");
+        super();
+        
+        DaoTestConfigBean configBean = new DaoTestConfigBean();
+        configBean.afterPropertiesSet();
     }
 
     @Override
@@ -73,10 +78,15 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
     protected void onSetUpInTransactionIfEnabled() throws Exception {
         super.onSetUpInTransactionIfEnabled();
 
+        /*
+         * Make sure we get a new FilterDaoFactory every time because our
+         * DataSource changes every test.
+         */
         FilterDaoFactory.setInstance(null);
         FilterDaoFactory.getInstance();
+        
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
-        m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
+        m_notificationManager = new NotificationManagerImpl(m_configManager, getDataSource());
         
         assertNotNull("getJdbcTemplate() should not return null", getJdbcTemplate());
         assertNotNull("getJdbcTemplate().getJdbcOperations() should not return null", getSimpleJdbcTemplate().getJdbcOperations());
@@ -120,15 +130,6 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
         setComplete();
         endTransaction();
         startNewTransaction();
-    }
-    
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-        super.setDataSource(dataSource);
     }
     
     public void testSetUp() {
