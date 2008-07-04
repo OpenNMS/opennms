@@ -10,6 +10,8 @@
  *
  * Modifications:
  *
+ * 2008 Jul 04: Move Castor unmarshalling code from a resource to
+ *              CastorUtils. - dj@opennms.org
  * 2008 Feb 15: Add support for reloadCheckInterval, a description for
  *              log messages, time how long it takes to load the file and
  *              log this along with the description, and make the "loaded"
@@ -40,11 +42,7 @@
  */
 package org.opennms.netmgt.dao.castor;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.support.FileReloadCallback;
@@ -62,8 +60,6 @@ import org.springframework.util.Assert;
  *            as the Castor class or could be a different class)
  */
 public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean {
-    private static final CastorExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new CastorExceptionTranslator();
-    
     private Class<K> m_castorClass;
     private String m_description;
     private Resource m_configResource;
@@ -91,20 +87,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
             log().debug("Loading " + m_description + " configuration from " + resource);
         }
 
-        Reader reader;
-        try {
-            reader = new InputStreamReader(resource.getInputStream());
-        } catch (IOException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("opening XML configuration file for resource '" + resource + "': " + e, e);
-        }
-    
-        V config;
-        try {
-            K castorConfig = CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, reader);
-            config = translateConfig(castorConfig);
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
+        V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource));
         
         long endTime = System.currentTimeMillis();
         log().info(createLoadedLogMessage(config, (endTime - startTime)));
