@@ -2,17 +2,6 @@
 
 <project name="opennms" default="usage" basedir=".">
   <description>OpenNMS Ant Targets</description>
-
-  <target name="platform.check">
-    <fail unless="platform">
-Your operating system is not supported by the build system.  See the
-platform.* targets in the build.xml file for details on supported
-platforms.  You can try to work around this error by modifying an
-existing platform or creating your own (and don't forget to add it
-to the depends list in the platform.check target).
-    </fail>
-  </target>
-
   <target name="java.check">
     <condition property="java.versionokay">
       <or>
@@ -30,30 +19,5 @@ build system is currently designed and tested to work with Java
 versions 1.5 and 1.6.  You can try to work around this error by
 modifying the java.check target in the build.xml file.
     </fail>
-  </target>
-
-  <target name="compile.check" depends="java.check, platform.check">
-    <condition property="compile.check.jni.include">
-      <available file="${platform.jdk.include.dir}/jni.h"/>
-    </condition>
-
-    <fail unless="compile.check.jni.include">
-Could not find the jni.h include file in ${platform.jdk.include.dir}.
-Please make sure that you have a full Java Development Kit installed.
-    </fail>
-
-    <condition property="compile.check.jni_md.include">
-      <or>
-        <available file="${platform.jdk.include.dir}/${platform.javahOS}/jni_md.h"/>
-        <available file="${platform.jdk.include.dir}/jni_md.h"/>
-      </or>
-    </condition>
-
-    <fail unless="compile.check.jni_md.include">
-Could not find the jni_md.h include file in ${platform.jdk.include.dir}/${platform.javahOS}
-or ${platform.jdk.include.dir}.
-Please make sure that you have a full Java Development Kit installed.
-    </fail>
-
   </target>
 </project>
