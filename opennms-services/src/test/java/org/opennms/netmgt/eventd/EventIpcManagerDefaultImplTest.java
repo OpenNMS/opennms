@@ -9,6 +9,8 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Jul 04: Test for the case where no date is set on the event. - dj@opennms.org
  * 
  * Created: January 15, 2008
  *
@@ -420,6 +422,38 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.verifyAll();
         
         assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+    }
+    
+
+    /**
+     * This is the type of exception we want to catch.
+     * 
+     * 2006-05-28 18:30:12,532 WARN  [EventHandlerPool-fiber0] OpenNMS.Xmlrpcd.org.opennms.netmgt.eventd.EventHandler: Unknown exception processing event
+     * java.lang.NullPointerException
+     *    at java.text.SimpleDateFormat.parse(SimpleDateFormat.java:1076)
+     *    at java.text.DateFormat.parse(DateFormat.java:333)
+     *    at org.opennms.netmgt.EventConstants.parseToDate(EventConstants.java:744)
+     *    at org.opennms.netmgt.eventd.Persist.getEventTime(Persist.java:801)
+     *    at org.opennms.netmgt.eventd.Persist.insertEvent(Persist.java:581)
+     *    at org.opennms.netmgt.eventd.EventWriter.persistEvent(EventWriter.java:131)
+     *    at org.opennms.netmgt.eventd.EventHandler.run(EventHandler.java:154)
+     *    at org.opennms.core.concurrent.RunnableConsumerThreadPool$FiberThreadImpl.run(RunnableConsumerThreadPool.java:412)
+     *    at java.lang.Thread.run(Thread.java:613)
+     */
+    public void testNoDateDate() throws InterruptedException {
+        Event e = new Event();
+        e.setUei("uei.opennms.org/nodes/nodeLostService");
+        e.setNodeid(1);
+        e.setSource("the one true event source");
+        e.setInterface("192.168.1.1");
+        e.setService("ICMP");
+
+        m_mocks.replayAll();
+
+        m_manager.broadcastNow(e);
+        Thread.sleep(100);
+        
+        m_mocks.verifyAll();
     }
     
     public class MockEventListener implements EventListener {
