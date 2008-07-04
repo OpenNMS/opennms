@@ -12,6 +12,7 @@
  * 
  * Created March 10, 2007
  * 
+ * 2008 Jul 04: Move resource unmarshalling code here. - dj@opennms.org
  * 2008 Jun 14: Use instances of Marshaller/Unmarshaller to avoid
  *              problematic-looking Castor log messages. - dj@opennms.org
  *
@@ -41,14 +42,17 @@ package org.opennms.netmgt.dao.castor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -106,6 +110,39 @@ public class CastorUtils {
         Unmarshaller u = new Unmarshaller(clazz);
         return (T) u.unmarshal(reader);
     }
+    
+    /**
+     * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
+     * return type. 
+     * 
+     * @param <T> the class representing the marshalled XML configuration
+     *      file.  This will be the return time form the method.
+     * @param clazz the class representing the marshalled XML configuration
+     *      file
+     * @param resource the marshalled XML configuration file to unmarshal
+     * @return Unmarshalled object representing XML file
+     * @throws MarshalException if the underlying Castor
+     *      Unmarshaller.unmarshal() call throws a MarshalException
+     * @throws ValidationException if the underlying Castor
+     *      Unmarshaller.unmarshal() call throws a ValidationException
+     * @throws IOException if the resource could not be opened
+     */
+    public static <T> T unmarshal(Class<T> clazz, Resource resource) throws MarshalException, ValidationException, IOException {
+        Reader reader;
+        try {
+            reader = new InputStreamReader(resource.getInputStream());
+        } catch (IOException e) {
+            IOException newE = new IOException("Failed to open XML configuration file for resource '" + resource + "': " + e);
+            newE.initCause(e);
+            throw newE;
+        }
+    
+        try {
+            return unmarshal(clazz, reader);
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+    }
 
     /**
      * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
@@ -122,7 +159,6 @@ public class CastorUtils {
      *      ValidationException.  The underlying exception will be translated
      *      using CastorExceptionTranslator.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader) throws DataAccessException {
         try {
             return unmarshal(clazz, reader);
@@ -130,6 +166,42 @@ public class CastorUtils {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("Unmarshalling XML file", e);
         } catch (ValidationException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("Unmarshalling XML file", e);
+        }
+    }
+
+    /**
+     * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
+     * return type and throws DataAccessExceptions.
+     * 
+     * @param <T> the class representing the marshalled XML configuration
+     *      file.  This will be the return time form the method.
+     * @param clazz the class representing the marshalled XML configuration
+     *      file
+     * @param resource the marshalled XML configuration file to unmarshal
+     * @return Unmarshalled object representing XML file
+     * @throws DataAccessException if the resource could not be opened or the
+     *      underlying Castor
+     *      Unmarshaller.unmarshal() call throws a MarshalException or
+     *      ValidationException.  The underlying exception will be translated
+     *      using CastorExceptionTranslator and will include information about
+     *      the resource from its {@link Resource#toString() toString()} method.
+     */
+    public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource) {
+        Reader reader;
+        try {
+            reader = new InputStreamReader(resource.getInputStream());
+        } catch (IOException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("opening XML configuration file for resource '" + resource + "'", e);
+        }
+    
+        try {
+            return unmarshal(clazz, reader);
+        } catch (MarshalException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file for resource '" + resource + "'", e);
+        } catch (ValidationException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file for resource '" + resource + "'", e);
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
     }
 
