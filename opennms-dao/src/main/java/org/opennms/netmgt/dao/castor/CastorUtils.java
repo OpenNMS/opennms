@@ -82,11 +82,11 @@ public class CastorUtils {
             Marshaller m = new Marshaller(writer);
             m.marshal(obj);
         } catch (IOException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Marshalling XML file", e);
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
         } catch (MarshalException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Marshalling XML file", e);
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
         } catch (ValidationException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Marshalling XML file", e);
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
         }
     }
 
