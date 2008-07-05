@@ -262,7 +262,7 @@ doStart(){
 	if doStatus; then
 	    return 0
 	fi
-	if ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
+	if /bin/ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
 	    true	# Java process is still running... don't do anything
         else
             echo "Started OpenNMS, but it stopped running: for details see $REDIRECT" >&2
@@ -350,7 +350,7 @@ doKill(){
 
     pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
     if [ x"$pid" != x"" ]; then
-	if ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
+	if /bin/ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
 	    kill -9 $pid > /dev/null 2>&1
 	fi
     fi
@@ -391,6 +391,10 @@ if [ `echo "\000\c" | wc -c` -eq 1 ]; then
     opennms_echo="echo"
 elif [ `echo -e "\000\c" | wc -c` -eq 1 ]; then
     opennms_echo="echo -e"
+elif [ `/bin/echo "\000\c" | wc -c` -eq 1 ]; then
+    opennms_echo="/bin/echo"
+elif [ `/bin/echo -e "\000\c" | wc -c` -eq 1 ]; then
+    opennms_echo="/bin/echo -e"
 else
     echo "ERROR: could not get 'echo' to emit just a null character" >&2
     exit 1
