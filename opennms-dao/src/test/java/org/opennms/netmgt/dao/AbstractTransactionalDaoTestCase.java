@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jul 05: Setup ipLike by default. - dj@opennms.org
 // 2007 Apr 05: Use DaoTestConfigBean to set system properties. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -71,7 +72,8 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     protected String[] getConfigLocations() {
         return new String[] {
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+                "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+                "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
         };
     }
 
