@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Jul 05: Indent and organize imports. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,13 +33,10 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.importer.specification;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -65,14 +66,14 @@ public class SpecFile {
     }
 
     private void closeQuietly(InputStream stream) {
-    	try {
-			if (stream != null) stream.close();
-		} catch (IOException e) {
-			// ignore failed close
-		}
-	}
+        try {
+            if (stream != null) stream.close();
+        } catch (IOException e) {
+            // ignore failed close
+        }
+    }
 
-	public void unmarshall(InputStream stream) throws ModelImportException {
+    public void unmarshall(InputStream stream) throws ModelImportException {
         try {
             InputSource source = new InputSource(stream);
             m_mi = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, source);
@@ -83,11 +84,11 @@ public class SpecFile {
         }
     }
 
-	/**
-	 * @deprecated
-	 * @param rdr
-	 * @throws ModelImportException
-	 */
+    /**
+     * @deprecated
+     * @param rdr
+     * @throws ModelImportException
+     */
     public void unmarshall(Reader rdr) throws ModelImportException {
         try {
             InputSource source = new InputSource(rdr);
@@ -98,7 +99,7 @@ public class SpecFile {
             throw new ModelImportException("Exception while validating import "+e);
         }
     }
-    
+
     public void visitImport(ImportVisitor visitor) {
         doVisitImport(visitor);
     }
@@ -155,11 +156,11 @@ public class SpecFile {
         visitor.visitMonitoredService(svc);
         visitor.completeMonitoredService(svc);
     }
-    
+
     public String getForeignSource() {
         return m_mi.getForeignSource();
     }
-    
+
     public void setForeignSource(String foreignSource) {
         m_mi.setForeignSource(foreignSource);
     }
