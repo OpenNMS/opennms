@@ -11,6 +11,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Modifications:
+ * 
+ * 2008 Jul 05: Indent, eliminate warnings. - dj@opennms.org
  */
 
 package org.opennms.web.acegisecurity;
@@ -111,10 +115,13 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
 
     /** Attributes of the User's LDAP Object that contain role name information. */
 
-//    private String[] userRoleAttributes = null;
+//  private String[] userRoleAttributes = null;
+
+    @SuppressWarnings("unused")
     private String rolePrefix = "ROLE_";
+
     private boolean convertToUpperCase = true;
-    
+
     private List<String> adminGroups = new ArrayList<String>();
     private List<String> userGroups = new ArrayList<String>();
     private List<String> rtcGroups = new ArrayList<String>();
@@ -123,7 +130,7 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
 
     //~ Constructors ===================================================================================================
 
-	/**
+    /**
      * Constructor for group search scenarios. <tt>userRoleAttributes</tt> may still be
      * set as a property.
      *
@@ -148,7 +155,7 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
      * @return the extra roles which will be merged with those returned by the group search
      */
 
-    protected Set getAdditionalRoles(LdapUserDetails ldapUser) {
+    protected Set<GrantedAuthority> getAdditionalRoles(LdapUserDetails ldapUser) {
         return null;
     }
 
@@ -167,16 +174,16 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
             logger.debug("Getting authorities for user " + userDn);
         }
 
-        Set roles = getGroupMembershipRoles(userDn, userDetails.getUsername());
+        Set<GrantedAuthority> roles = getGroupMembershipRoles(userDn, userDetails.getUsername());
 
         // Temporary use of deprecated method
-        Set oldGroupRoles = getGroupMembershipRoles(userDn, userDetails.getAttributes());
+        Set<GrantedAuthority> oldGroupRoles = getGroupMembershipRoles(userDn, userDetails.getAttributes());
 
         if (oldGroupRoles != null) {
             roles.addAll(oldGroupRoles);
         }
 
-        Set extraRoles = getAdditionalRoles(userDetails);
+        Set<GrantedAuthority> extraRoles = getAdditionalRoles(userDetails);
 
         if (extraRoles != null) {
             roles.addAll(extraRoles);
@@ -186,24 +193,24 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
             roles.add(defaultRole);
         }
 
-        return (GrantedAuthority[]) roles.toArray(new GrantedAuthority[roles.size()]);
+        return roles.toArray(new GrantedAuthority[roles.size()]);
     }
 
-//    protected Set getRolesFromUserAttributes(String userDn, Attributes userAttributes) {
-//        Set userRoles = new HashSet();
-//
-//        for(int i=0; userRoleAttributes != null && i < userRoleAttributes.length; i++) {
-//            Attribute roleAttribute = userAttributes.get(userRoleAttributes[i]);
-//
-//            addAttributeValuesToRoleSet(roleAttribute, userRoles);
-//        }
-//
-//        return userRoles;
-//    }
+//  protected Set getRolesFromUserAttributes(String userDn, Attributes userAttributes) {
+//  Set userRoles = new HashSet();
+
+//  for(int i=0; userRoleAttributes != null && i < userRoleAttributes.length; i++) {
+//  Attribute roleAttribute = userAttributes.get(userRoleAttributes[i]);
+
+//  addAttributeValuesToRoleSet(roleAttribute, userRoles);
+//  }
+
+//  return userRoles;
+//  }
 
 
-    public Set getGroupMembershipRoles(String userDn, String username) {
-        Set authorities = new HashSet();
+    public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String username) {
+        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 
         if (getGroupSearchBase() == null) {
             return authorities;
@@ -211,7 +218,7 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
 
         if (logger.isDebugEnabled()) {
             logger.debug("Searching for roles for user '" + username + "', DN = " + "'" + userDn + "', with filter "
-                + groupSearchFilter + " in search base '" + getGroupSearchBase() + "'");
+                    + groupSearchFilter + " in search base '" + getGroupSearchBase() + "'");
         }
 
         Set userRoles = ldapTemplate.searchForSingleAttributeValues(getGroupSearchBase(), groupSearchFilter,
@@ -229,47 +236,47 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
             if (convertToUpperCase) {
                 role = role.toUpperCase();
             }
-       	 if (logger.isDebugEnabled()) {
-             logger.debug("Parsing Role: " + role);
-         }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Parsing Role: " + role);
+            }
 
             if (adminGroups.contains(role)) {
-            	 if (logger.isDebugEnabled()) {
-                     logger.debug("Adding Role Admin : " + Authentication.ADMIN_ROLE);
-                 }
-            	authorities.add(new GrantedAuthorityImpl(Authentication.ADMIN_ROLE));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding Role Admin : " + Authentication.ADMIN_ROLE);
+                }
+                authorities.add(new GrantedAuthorityImpl(Authentication.ADMIN_ROLE));
             }
             if (userGroups.contains(role)) {
-           	 if (logger.isDebugEnabled()) {
-                 logger.debug("Adding Role User : " + Authentication.USER_ROLE);
-             }
-            	authorities.add(new GrantedAuthorityImpl(Authentication.USER_ROLE));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding Role User : " + Authentication.USER_ROLE);
+                }
+                authorities.add(new GrantedAuthorityImpl(Authentication.USER_ROLE));
             }
             if (rtcGroups.contains(role)) {
-            	if (logger.isDebugEnabled()) {
-            		logger.debug("Adding Role RTC: " + Authentication.RTC_ROLE);
-            	}
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding Role RTC: " + Authentication.RTC_ROLE);
+                }
 
-            	authorities.add(new GrantedAuthorityImpl(Authentication.RTC_ROLE));
+                authorities.add(new GrantedAuthorityImpl(Authentication.RTC_ROLE));
             }
             if (dashboardGroups.contains(role)) {
-           	 	if (logger.isDebugEnabled()) {
-           	 		logger.debug("Adding Role DashBoard : " + Authentication.DASHBOARD_ROLE);
-           	 	}
-           	 authorities.add(new GrantedAuthorityImpl(Authentication.DASHBOARD_ROLE));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding Role DashBoard : " + Authentication.DASHBOARD_ROLE);
+                }
+                authorities.add(new GrantedAuthorityImpl(Authentication.DASHBOARD_ROLE));
             }
             if (readonlyGroups.contains(role)) {
-            	if (logger.isDebugEnabled()) {
-            		logger.debug("Adding Role READONLY : " + Authentication.READONLY_ROLE);
-            	}
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding Role READONLY : " + Authentication.READONLY_ROLE);
+                }
 
-            	authorities.add(new GrantedAuthorityImpl(Authentication.READONLY_ROLE));
+                authorities.add(new GrantedAuthorityImpl(Authentication.READONLY_ROLE));
             }
-            
+
             //authorities.add(new GrantedAuthorityImpl(rolePrefix + role));
         }
 
-        
+
         return authorities;
     }
 
@@ -284,8 +291,8 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
      *
      * @deprecated Subclasses should implement <tt>getAdditionalRoles</tt> instead.
      */
-    protected Set getGroupMembershipRoles(String userDn, Attributes userAttributes) {
-        return new HashSet();
+    protected Set<GrantedAuthority> getGroupMembershipRoles(String userDn, Attributes userAttributes) {
+        return new HashSet<GrantedAuthority>();
     }
 
     protected InitialDirContextFactory getInitialDirContextFactory() {
@@ -316,7 +323,7 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         this.groupSearchBase = groupSearchBase;
         if (groupSearchBase.length() == 0) {
             logger.info("groupSearchBase is empty. Searches will be performed from the root: "
-                + getInitialDirContextFactory().getRootDn());
+                    + getInitialDirContextFactory().getRootDn());
         }
     }
 
@@ -357,46 +364,46 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         int searchScope = searchSubtree ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE;
         searchControls.setSearchScope(searchScope);
     }
-    
+
     public List<String> getAdminGroups() {
-		return adminGroups;
-	}
+        return adminGroups;
+    }
 
-	public void setAdminGroups(List<String> adminGroups) {
-		this.adminGroups = adminGroups;
-	}
+    public void setAdminGroups(List<String> adminGroups) {
+        this.adminGroups = adminGroups;
+    }
 
-	public List<String> getDashboardGroups() {
-		return dashboardGroups;
-	}
+    public List<String> getDashboardGroups() {
+        return dashboardGroups;
+    }
 
-	public void setDashboardGroups(List<String> dashboardGroups) {
-		this.dashboardGroups = dashboardGroups;
-	}
+    public void setDashboardGroups(List<String> dashboardGroups) {
+        this.dashboardGroups = dashboardGroups;
+    }
 
-	public List<String> getRtcGroups() {
-		return rtcGroups;
-	}
+    public List<String> getRtcGroups() {
+        return rtcGroups;
+    }
 
-	public void setRtcGroups(List<String> rtcGroups) {
-		this.rtcGroups = rtcGroups;
-	}
+    public void setRtcGroups(List<String> rtcGroups) {
+        this.rtcGroups = rtcGroups;
+    }
 
-	public List<String> getUserGroups() {
-		return userGroups;
-	}
+    public List<String> getUserGroups() {
+        return userGroups;
+    }
 
-	public void setUserGroups(List<String> userGroups) {
-		this.userGroups = userGroups;
-	}
+    public void setUserGroups(List<String> userGroups) {
+        this.userGroups = userGroups;
+    }
 
-	public List<String> getReadonlyGroups() {
-		return readonlyGroups;
-	}
+    public List<String> getReadonlyGroups() {
+        return readonlyGroups;
+    }
 
-	public void setReadonlyGroups(List<String> readonlyGroups) {
-		this.readonlyGroups = readonlyGroups;
-	}
+    public void setReadonlyGroups(List<String> readonlyGroups) {
+        this.readonlyGroups = readonlyGroups;
+    }
 
 
 }
