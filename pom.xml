@@ -183,14 +183,10 @@
                 <!-- I have to explicitly set Ant properties from Maven
                      properties.  They aren't passed automatically, even
                      when inheritAll="true" is used with <ant />.  -->
-                <ant target="compile.check">
+                <ant target="java.check">
                   <property name="java.vm.version" value="${java.vm.version}" />
                   <property name="java.version" value="${java.version}" />
                   <property name="java.home" value="${java.home}" />
-                  <property name="platform" value="${platform}" />
-                  <property name="platform.jdk.include.dir" value="${platform.jdk.include.dir}" />
-                  <property name="platform.javahOS" value="${platform.javahOS}" />
-                  <property name="platform.shlib" value="${platform.shlib}" />
                 </ant>
               </tasks>
             </configuration>
@@ -200,38 +196,6 @@
           </execution>
         </executions>
      </plugin>
-<!--
-     <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <configuration>
-              <tasks>
-                <echo>
-M2 Project Info via AntRun
-==========================
-project.basedir = ${project.basedir}
-project.groupId = ${project.groupId}
-project.artifactId = ${project.artifactId}
-project.version = ${project.version}
-project.build.directory = ${project.build.directory}
-project.build.outputDirectory = ${project.build.outputDirectory}
-project.build.testOutputDirectory = ${project.build.testOutputDirectory}
-platform = ${platform}
-install.dir = ${install.dir}
-opennms.home = ${opennms.home}
-                </echo>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-     </plugin>
--->
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -558,11 +522,6 @@ opennms.home = ${opennms.home}
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
   
-    <!-- platform specific -->
-    <build.soext>${platform.shlib}</build.soext>
-    <build.jni.compiler.arg />
-    <build.jni.linker.arg />
-    
     <!-- rpm specific -->
     <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -601,107 +560,6 @@ opennms.home = ${opennms.home}
       <modules>
         <module>opennms-doc</module>
       </modules>
-
-    </profile>
-
-    <profile>
-      <id>windows</id>
-      
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-  
-      <properties>
-        <platform>windows</platform>
-        <platform.jdk.include.dir>${java.home}\..\include</platform.jdk.include.dir>
-        <platform.javahOS>win32</platform.javahOS>
-        <platform.define>__WIN32__</platform.define>
-        <platform.shlib>dll</platform.shlib>
-        <platform.jni>dll</platform.jni>
-      </properties>
-
-    </profile>
-
-    <profile>
-      <id>macosx</id>
-      
-      <activation>
-        <property>
-          <name>os.name</name>
-          <value>Mac OS X</value>
-        </property>
-      </activation>
-  
-      <properties>
-        <platform>macosx</platform>
-        <platform.jdk.include.dir>${java.home}/include</platform.jdk.include.dir>
-        <platform.javahOS>macosx</platform.javahOS>
-        <platform.define>__DARWIN__</platform.define>
-        <platform.shlib>dylib</platform.shlib>
-        <platform.jni>jnilib</platform.jni>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>Linux</id>
-      
-      <activation>
-        <property>
-          <name>os.name</name>
-          <value>Linux</value>
-        </property>
-      </activation>
-  
-      <properties>
-        <platform>linux</platform>
-        <platform.jdk.include.dir>${java.home}/../include</platform.jdk.include.dir>
-        <platform.javahOS>linux</platform.javahOS>
-        <platform.define>__LINUX__</platform.define>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>Solaris</id>
-      
-      <activation>
-        <property>
-          <name>os.name</name>
-          <value>SunOS</value>
-        </property>
-      </activation>
-  
-      <properties>
-    	<platform>solaris</platform>
-        <platform.jdk.include.dir>${java.home}/../include</platform.jdk.include.dir>
-        <platform.javahOS>solaris</platform.javahOS>
-        <platform.define>__SOLARIS__</platform.define>
-	<platform.shlib>so</platform.shlib>
-	<platform.jni>so</platform.jni>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>FreeBSD</id>
-      
-      <activation>
-        <property>
-          <name>os.name</name>
-          <value>FreeBSD</value>
-        </property>
-      </activation>
-
-      <properties>
-        <platform>freebsd</platform>
-        <platform.jdk.include.dir>${java.home}/../include</platform.jdk.include.dir>
-        <platform.javahOS>freebsd</platform.javahOS>
-        <platform.define>__FREEBSD__</platform.define>
-        <platform.shlib>so</platform.shlib>
-        <platform.jni>so</platform.jni>
-      </properties>
     </profile>
 
     <profile>
@@ -789,9 +647,7 @@ opennms.home = ${opennms.home}
         <module>opennms-tools</module>
       </modules>
     </profile>
-
   </profiles>
-
 
   <dependencies>
     <dependency>
