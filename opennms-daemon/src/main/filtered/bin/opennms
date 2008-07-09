@@ -131,7 +131,7 @@ getTempFile(){
 
 	local TEMPFILE=""
 	test -n "$mktemp" && {
-		TEMPFILE=`mktemp $TMPDIR/xmllintXXXXXX`
+		TEMPFILE=`mktemp $TMPDIR/opennmsXXXXXX`
 	}
 	test -z "$mktemp" && {
 		TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
@@ -144,11 +144,11 @@ getTempFile(){
 	
 checkXmlFiles(){
 	XMLLINT=`which xmllint 2>/dev/null || :`
-	TEMPFILE=`getTempFile`
 
 	if [ -n "$XMLLINT" ] && [ -x "$XMLLINT" ]; then
+		TEMPFILE=`getTempFile`
 		find "$OPENNMS_HOME/etc" -type f -name \*.xml | while read "FILE"; do
-			$XMLLINT "$FILE" >/dev/null 2>&1
+			"$XMLLINT" "$FILE" >/dev/null 2>&1
 			if [ $? != 0 ]; then
 				echo "ERROR: XML validation failed: $FILE"
 				echo "       run '$XMLLINT $FILE' for details"
