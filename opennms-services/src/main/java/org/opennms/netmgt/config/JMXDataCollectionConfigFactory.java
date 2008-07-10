@@ -308,27 +308,31 @@ public final class JMXDataCollectionConfigFactory {
         // Retrieve the appropriate Collection object
         // 
         org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
-        
-        Mbeans beans = collection.getMbeans();
-        Enumeration en = beans.enumerateMbean();
-        while (en.hasMoreElements()) {
-        	BeanInfo beanInfo = new BeanInfo();
-        	
-            Mbean mbean = (Mbean)en.nextElement();
-            beanInfo.setMbeanName(mbean.getName());
-            beanInfo.setObjectName(mbean.getObjectname());
-            beanInfo.setKeyField(mbean.getKeyfield());
-            beanInfo.setExcludes(mbean.getExclude());
-            beanInfo.setKeyAlias(mbean.getKeyAlias());
-            int count = mbean.getAttribCount();
-            String[] attribs = new String[count];
-            Attrib[] attributes = mbean.getAttrib();
-            for (int i = 0; i < attributes.length; i++) {
-                attribs[i] = attributes[i].getName();
+
+        if (collection == null) {
+            log().warn("no collection named '" + cName + "' was found");
+        } else {
+            Mbeans beans = collection.getMbeans();
+            Enumeration en = beans.enumerateMbean();
+            while (en.hasMoreElements()) {
+                BeanInfo beanInfo = new BeanInfo();
+                
+                Mbean mbean = (Mbean)en.nextElement();
+                beanInfo.setMbeanName(mbean.getName());
+                beanInfo.setObjectName(mbean.getObjectname());
+                beanInfo.setKeyField(mbean.getKeyfield());
+                beanInfo.setExcludes(mbean.getExclude());
+                beanInfo.setKeyAlias(mbean.getKeyAlias());
+                int count = mbean.getAttribCount();
+                String[] attribs = new String[count];
+                Attrib[] attributes = mbean.getAttrib();
+                for (int i = 0; i < attributes.length; i++) {
+                    attribs[i] = attributes[i].getName();
+                }
+                
+                beanInfo.setAttributes(attribs);
+                map.put(mbean.getObjectname(), beanInfo);
             }
-            
-            beanInfo.setAttributes(attribs);
-            map.put(mbean.getObjectname(), beanInfo);
         }
         return map;
     }
