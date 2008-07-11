@@ -124,25 +124,45 @@ END
     return
 }
 
+getTempFile(){
+	mktemp=`which mktemp 2>/dev/null`
+
+	test -z "$TMPDIR" && TMPDIR=/tmp
+
+	local TEMPFILE=""
+	test -n "$mktemp" && {
+		TEMPFILE=`mktemp $TMPDIR/opennmsXXXXXX`
+	}
+	test -z "$mktemp" && {
+		TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
+	}
+
+	rm "$TEMPFILE"
+	(umask 077 && touch "$TEMPFILE")
+	echo "$TEMPFILE"
+}
+	
 checkXmlFiles(){
 	XMLLINT=`which xmllint 2>/dev/null || :`
-	FAILED_XML=0
 
 	if [ -n "$XMLLINT" ] && [ -x "$XMLLINT" ]; then
-		for FILE in `find "$OPENNMS_HOME/etc" -type f -name \*.xml`; do
-			$XMLLINT "$FILE" >/dev/null 2>&1
+		TEMPFILE=`getTempFile`
+		find "$OPENNMS_HOME/etc" -type f -name \*.xml | while read "FILE"; do
+			"$XMLLINT" "$FILE" >/dev/null 2>&1
 			if [ $? != 0 ]; then
 				echo "ERROR: XML validation failed: $FILE"
 				echo "       run '$XMLLINT $FILE' for details"
-				FAILED_XML=`expr $FAILED_XML + 1 2>/dev/null || echo 1`
 			fi
-		done
+		done >"$TEMPFILE"
+		cat "$TEMPFILE"
+		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
+		rm "$TEMPFILE"
+		if [ $FAILCOUNT -gt 0 ]; then
+			echo "Validation failed on $FAILCOUNT XML files.  Exiting."
+			exit 1
+		fi
 	fi
-
-	if [ $FAILED_XML -gt 0 ]; then
-		echo "$FAILED_XML XML file(s) failed validation.  Exiting."
-		exit $FAILED_XML
-	fi
+	 
 	return 0
 }
 
