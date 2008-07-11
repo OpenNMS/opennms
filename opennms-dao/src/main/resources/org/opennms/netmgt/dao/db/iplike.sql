@@ -27,25 +27,25 @@ create or replace function iplike(text, text) returns boolean as '
 	if i_ipaddress ~ ''^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'' then
 		c_work := i_ipaddress;
 
-		c_i1 := substr(c_work, 0, strpos(c_work, ''.''));
+		c_i1 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
 		if c_i1 > 255 then
 			return ''f'';
 		end if;
 		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
 
-		c_i2 := substr(c_work, 0, strpos(c_work, ''.''));
+		c_i2 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
 		if c_i2 > 255 then
 			return ''f'';
 		end if;
 		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
 	
-		c_i3 := substr(c_work, 0, strpos(c_work, ''.''));
+		c_i3 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
 		if c_i3 > 255 then
 			return ''f'';
 		end if;
 		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
 
-		c_i4 := c_work;
+		c_i4 := to_number(c_work, ''999'');
 		if c_i4 > 255 then
 			return ''f'';
 		end if;
@@ -104,8 +104,8 @@ begin
 	end if;
 
 	if i_rule ~ ''^[0-9]+$'' then
-		c_element := i_rule;
-		if i_octet = i_rule then
+		c_element := to_number(i_rule, ''999'');
+		if i_octet = to_number(i_rule, ''999'') then
 			return ''t'';
 		else
 			return ''f'';
@@ -113,8 +113,8 @@ begin
 	end if;
 
 	if i_rule ~ ''[0-9]+-[0-9]'' then
-		c_r1 := substr(i_rule, 0, strpos(i_rule, ''-''));
-		c_r2 := substr(i_rule, strpos(i_rule, ''-'')+1);
+		c_r1 := to_number(substr(i_rule, 0, strpos(i_rule, ''-'')), ''999'');
+		c_r2 := to_number(substr(i_rule, strpos(i_rule, ''-'')+1), ''999'');
 
 		if i_octet between c_r1 and c_r2 then
 			return ''t'';
@@ -127,17 +127,17 @@ begin
 		c_work := i_rule;
 		while c_work <> '''' loop
 			if c_work ~ ''^[0-9]+$'' then
-				c_element := c_work;
+				c_element := to_number(c_work, ''999'');
 				if c_element = i_octet then
 					return ''t'';
 				end if;
 				return ''f'';
 			end if;			
-			c_element := substr(c_work, 0, strpos(c_work, '',''));
+			c_element := to_number(substr(c_work, 0, strpos(c_work, '','')), ''999'');
 			if c_element = i_octet then
 				return ''t'';
 			end if;
-			c_work := substr(c_work, strpos(c_work, '','')+1);
+			c_work := to_number(substr(c_work, strpos(c_work, '','')+1), ''999'');
 		end loop;
 		return ''f'';
 	end if;

@@ -251,7 +251,7 @@
   <monitor service="Postgres" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
-  <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.JschSshMonitor" />
   <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
   <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
   <monitor service="NSClient" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
