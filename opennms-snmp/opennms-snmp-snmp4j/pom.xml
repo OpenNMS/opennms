@@ -29,6 +29,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j-agent</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

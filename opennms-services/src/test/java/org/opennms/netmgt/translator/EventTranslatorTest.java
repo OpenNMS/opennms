@@ -341,7 +341,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         "      <mappings>\n" + 
         "        <mapping>\n" +
         "          <assignment type=\"field\" name=\"nodeid\">\n" +  
-        "            <value type=\"sql\" result=\"select node.nodeid from node, ipInterface where node.nodeLabel=? and ipinterface.ipaddr=? and node.nodeId=ipinterface.nodeid and ipInterface.isManaged != 'D' and node.nodeType != 'D' and ? = 9999 \" >\n" +
+        "            <value type=\"sql\" result=\"select node.nodeid from node, ipInterface where node.nodeLabel=? and ipinterface.ipaddr=? and node.nodeId=ipinterface.nodeid and ipInterface.isManaged != 'D' and node.nodeType != 'D' and to_number(?, '999999') = 9999 \" >\n" +
         "				<value type=\"parameter\" name=\"passiveNodeLabel\" matches=\"Router\" result=\"Firewall\" />\n" +
         "				<value type=\"constant\" result=\"192.168.1.4\" />\n" +
         "				<value type=\"field\" name=\"nodeid\" result=\"9999\" />\n" +
