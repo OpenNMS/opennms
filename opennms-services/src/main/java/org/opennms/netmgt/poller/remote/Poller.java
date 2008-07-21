@@ -37,8 +37,11 @@ package org.opennms.netmgt.poller.remote;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -110,8 +113,19 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
 		long startTime = System.currentTimeMillis();
 		long scheduleSpacing = m_initialSpreadTime / polledServices.size();
+		
+		Set<String> scheduledJobs = new HashSet<String>(Arrays.asList(m_scheduler.getJobNames(PollJobDetail.GROUP)));
 
         for (PolledService polledService : polledServices) {
+            
+            String jobName = polledService.toString();
+
+            if (scheduledJobs.contains(jobName)) {
+                log().debug(String.format("Job for %s already scheduled.  Rescheduling", polledService));
+                m_scheduler.deleteJob(jobName, PollJobDetail.GROUP);
+            } else {
+                log().debug("Scheduling job for "+polledService);
+            }
 			
 			Date initialPollTime = new Date(startTime);
 			
@@ -120,11 +134,10 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 			Trigger pollTrigger = new PolledServiceTrigger(polledService);
 			pollTrigger.setStartTime(initialPollTime);
 			
-			PollJobDetail jobDetail = new PollJobDetail(polledService.toString(), PollJob.class);
+            PollJobDetail jobDetail = new PollJobDetail(jobName, PollJob.class);
 			jobDetail.setPolledService(polledService);
 			jobDetail.setPollerFrontEnd(m_pollerFrontEnd);
 			
-            log().debug("Scheduling job for "+polledService);
             
 			m_scheduler.scheduleJob(jobDetail, pollTrigger);
 			
