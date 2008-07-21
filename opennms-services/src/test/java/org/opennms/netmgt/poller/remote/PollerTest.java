@@ -84,18 +84,7 @@ public class PollerTest extends TestCase {
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
         expect(pollerFrontEnd.isStarted()).andReturn(true);
         
-        String[] jobNames;
-        if (reschedule) {
-            jobNames = new String[] { polledService.toString() };
-        } else {
-            jobNames = new String[0];
-        }
-        
-        expect(scheduler.getJobNames(PollJobDetail.GROUP)).andReturn(jobNames);
-        
-        if (reschedule) {
-            expect(scheduler.deleteJob(polledService.toString(), PollJobDetail.GROUP)).andReturn(true);
-        }
+        expect(scheduler.deleteJob(polledService.toString(), PollJobDetail.GROUP)).andReturn(reschedule);
         
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
 		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
