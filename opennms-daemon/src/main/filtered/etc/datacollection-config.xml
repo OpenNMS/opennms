@@ -145,6 +145,15 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+     <resourceType name="xmpFilesys" label="Filesystems" resourceLabel="${index}" >
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+     </resourceType>
+
+     <resourceType name="procStats" label="Process Stats" resourceLabel="${index}" >
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+     </resourceType>
 
     <groups>
       <!-- data from standard (mib-2) sources -->
