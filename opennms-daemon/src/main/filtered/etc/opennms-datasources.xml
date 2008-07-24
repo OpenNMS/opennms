@@ -13,7 +13,7 @@
   <jdbc-data-source name="opennms-admin" 
                     database-name="template1" 
                     class-name="@install.database.driver@" 
-                    url="jdbc:postgresql://localhost:5432/postgres"
+                    url="jdbc:postgresql://localhost:5432/template1"
                     user-name="@install.database.admin.user@"
                     password="@install.database.admin.password@" />
 </datasource-configuration>

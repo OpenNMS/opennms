@@ -124,25 +124,45 @@ END
     return
 }
 
+getTempFile(){
+	mktemp=`which mktemp 2>/dev/null`
+
+	test -z "$TMPDIR" && TMPDIR=/tmp
+
+	local TEMPFILE=""
+	test -n "$mktemp" && {
+		TEMPFILE=`mktemp $TMPDIR/opennmsXXXXXX`
+	}
+	test -z "$mktemp" && {
+		TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
+	}
+
+	rm "$TEMPFILE"
+	(umask 077 && touch "$TEMPFILE")
+	echo "$TEMPFILE"
+}
+	
 checkXmlFiles(){
 	XMLLINT=`which xmllint 2>/dev/null || :`
-	FAILED_XML=0
 
 	if [ -n "$XMLLINT" ] && [ -x "$XMLLINT" ]; then
-		for FILE in `find "$OPENNMS_HOME/etc" -type f -name \*.xml`; do
-			$XMLLINT "$FILE" >/dev/null 2>&1
+		TEMPFILE=`getTempFile`
+		find "$OPENNMS_HOME/etc" -type f -name \*.xml | while read "FILE"; do
+			"$XMLLINT" "$FILE" >/dev/null 2>&1
 			if [ $? != 0 ]; then
 				echo "ERROR: XML validation failed: $FILE"
 				echo "       run '$XMLLINT $FILE' for details"
-				FAILED_XML=`expr $FAILED_XML + 1 2>/dev/null || echo 1`
 			fi
-		done
+		done >"$TEMPFILE"
+		cat "$TEMPFILE"
+		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
+		rm "$TEMPFILE"
+		if [ $FAILCOUNT -gt 0 ]; then
+			echo "Validation failed on $FAILCOUNT XML files.  Exiting."
+			exit 1
+		fi
 	fi
-
-	if [ $FAILED_XML -gt 0 ]; then
-		echo "$FAILED_XML XML file(s) failed validation.  Exiting."
-		exit $FAILED_XML
-	fi
+	 
 	return 0
 }
 
@@ -262,7 +282,7 @@ doStart(){
 	if doStatus; then
 	    return 0
 	fi
-	if ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
+	if /bin/ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
 	    true	# Java process is still running... don't do anything
         else
             echo "Started OpenNMS, but it stopped running: for details see $REDIRECT" >&2
@@ -350,7 +370,7 @@ doKill(){
 
     pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
     if [ x"$pid" != x"" ]; then
-	if ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
+	if /bin/ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
 	    kill -9 $pid > /dev/null 2>&1
 	fi
     fi
@@ -391,6 +411,10 @@ if [ `echo "\000\c" | wc -c` -eq 1 ]; then
     opennms_echo="echo"
 elif [ `echo -e "\000\c" | wc -c` -eq 1 ]; then
     opennms_echo="echo -e"
+elif [ `/bin/echo "\000\c" | wc -c` -eq 1 ]; then
+    opennms_echo="/bin/echo"
+elif [ `/bin/echo -e "\000\c" | wc -c` -eq 1 ]; then
+    opennms_echo="/bin/echo -e"
 else
     echo "ERROR: could not get 'echo' to emit just a null character" >&2
     exit 1

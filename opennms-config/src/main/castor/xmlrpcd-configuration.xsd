@@ -66,8 +66,8 @@
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:xmlrpc-server">
           <annotation>
-            <documentation>Configuration of xmlrpc servers -- these servers are
-            serially redundant -- ie. OpenNMS will connect to one, and if it 
+            <documentation>Configuration of xmlrpc servers - these servers are
+            serially redundant - ie. OpenNMS will connect to one, and if it 
             goes down will connect to another</documentation>
           </annotation>
         </element>
