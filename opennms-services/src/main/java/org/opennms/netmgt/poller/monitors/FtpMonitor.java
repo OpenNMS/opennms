@@ -180,7 +180,7 @@ final public class FtpMonitor extends IPv4Monitor {
 
                         FtpResponse userResponse = FtpResponse.readResponse(lineRdr);
 
-                        if (userResponse.isSuccess()) {
+                        if (userResponse.isSuccess() || bannerResponse.isIntermediate()) {
                             FtpResponse.sendCommand(socket, "PASS " + password);
                             
                             FtpResponse passResponse = FtpResponse.readResponse(lineRdr);
