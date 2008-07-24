@@ -271,5 +271,10 @@
       <groupId>jep</groupId>
       <artifactId>jep</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.krupczak.Xmp</groupId>
+      <artifactId>Xmp</artifactId>
+      <version>0.1-38</version>
+    </dependency>
   </dependencies>
 </project>

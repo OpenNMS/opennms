@@ -272,4 +272,12 @@
         <specific>0.0.0.0</specific>
         <range begin="127.0.0.0" end="127.255.255.255" />
     </ip-management>
+
+    <protocol-plugin protocol="XMP" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on" user-defined="false">
+        <property key="banner" value="*" />
+        <property key="port" value="5270" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="1" />
+    </protocol-plugin>    
+
 </capsd-configuration>
