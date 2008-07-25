@@ -35308,4 +35308,461 @@ changes.&lt;/p&gt;&lt;table&gt;
 	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: CISCO-SLB-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-STACKWISE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChangeUp</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/cswStackPortChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChangeDown</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackPortChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChangeForcedDown</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackPortChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChange</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackNewMaster</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackNewMaster</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a new master has been
+elected.  The notification will contain the cswSwitchNumCurrent
+object to indicate the new master ID.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackNewMaster trap received 
+			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackMismatch</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackMismatch</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a new member attempt
+to join the stack but was denied due to a mismatch.  The
+cswSwitchState object will indicate the type of mismatch.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		waiting(1)
+		progressing(2)
+		added(3)
+		ready(4)
+		sdmMismatch(5)
+		verMismatch(6)
+		featureMismatch(7)
+		newMasterInit(8)
+		provisioned(9)
+		invalid(10)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackMismatch trap received 
+			cswSwitchState=%parm[#1]% 
+			cswSwitchNumCurrent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackRingRedundantTrue</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackRingRedundant</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the redundancy of the
+ring has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswRingRedundant&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackRingRedundant trap received 
+			cswRingRedundant=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackRingRedundantFalse</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackRingRedundant</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the redundancy of the
+ring has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswRingRedundant&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackRingRedundant trap received 
+			cswRingRedundant=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackRingRedundant</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the redundancy of the
+ring has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswRingRedundant&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackRingRedundant trap received 
+			cswRingRedundant=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackNewMember</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackNewMember</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a new member joins the
+stack.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackNewMember trap received 
+			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackMemberRemoved</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackMemberRemoved</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a member is removed
+from the stack.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackMemberRemoved trap received 
+			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-STACKWISE-MIB -->
 </events>
