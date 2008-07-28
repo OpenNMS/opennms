@@ -130,7 +130,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
          */
         public synchronized Object peek() throws InterruptedException, FifoQueueException {
             if (m_hold == null)
-                m_hold = super.remove(1L);
+                m_hold = super.remove(0L);
 
             return m_hold;
         }
