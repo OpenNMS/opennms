@@ -64,6 +64,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+//import com.gregor.jrobin.xml.RrdGraphDef;
 
 /**
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
@@ -312,7 +313,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
             throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph: " + e.getMessage(), e);
         }
     }
-    
+
+
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // no need to do anything since this strategy doesn't queue
     }
@@ -790,5 +792,10 @@ public class JRobinRrdStrategy implements RrdStrategy {
     		return new char[] { '\\', encountered };
     	}
     }
+
+	public RrdGraphDetails createGraph(com.gregor.jrobin.xml.RrdGraphDef graphdef) throws IOException, org.opennms.netmgt.rrd.RrdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -57,6 +57,8 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.util.FileCopyUtils;
 
+import com.gregor.jrobin.xml.RrdGraphDef;
+
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
  * JNI based single-threaded interface to write the rrdtool compatibile RRD
@@ -399,6 +401,10 @@ public class JniRrdStrategy implements RrdStrategy {
         return new ByteArrayInputStream(byteArray);
     }
 
+	public RrdGraphDetails createGraph(RrdGraphDef graphdef) throws IOException, RrdException {
+		return null;
+	}
+
     private byte[] createGraphAsByteArray(String command, File workDir) throws IOException, RrdException {
         String[] commandArray = StringUtils.createCommandArray(command, '@');
         Process process;
@@ -507,4 +513,5 @@ public class JniRrdStrategy implements RrdStrategy {
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // no need to do anything since this strategy doesn't queue
     }
+
 }

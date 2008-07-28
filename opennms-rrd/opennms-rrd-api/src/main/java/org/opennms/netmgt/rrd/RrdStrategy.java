@@ -43,6 +43,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import com.gregor.jrobin.xml.RrdGraphDef;
+
 /**
  * Defines an abstract strategy for manipulating round robin database file. This
  * is used by the RrdUtils to implement the appropriate behavior
@@ -235,7 +237,24 @@ public interface RrdStrategy {
      *             if an RRD error occurs
      */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException;
+
     
+    /**
+     * Creates an RrdGraphDetails object representing the graph created from
+     * round robin data. It accepts an RrdGraphDef object.  The underlying
+     * implementation converts this object to a format appropriate for it .
+     * 
+     * @param graphdef
+     *            the object for the graph
+     * @return details for the graph including an InputStream, any PRINTed
+     *      lines, and graph dimensions.
+     * @throws IOException
+     *             if an IOError occurs
+     * @throws RrdException
+     *             if an RRD error occurs
+     */
+    public RrdGraphDetails createGraph(RrdGraphDef graphdef) throws IOException, RrdException;
+
     
     /**
      * Returns the number of pixels that the leftt-hand side of the graph is

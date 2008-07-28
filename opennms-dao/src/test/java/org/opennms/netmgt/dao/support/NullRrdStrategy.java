@@ -47,6 +47,8 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
+import com.gregor.jrobin.xml.RrdGraphDef;
+
 public class NullRrdStrategy implements RrdStrategy {
 	
 	// THIS IS USED FOR TESTS SO RrdUtils can be initialized
@@ -126,5 +128,9 @@ public class NullRrdStrategy implements RrdStrategy {
 
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
     }
+
+	public RrdGraphDetails createGraph(RrdGraphDef graphdef) throws IOException, RrdException {
+		return null;
+	}
 
 }

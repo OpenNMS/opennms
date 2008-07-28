@@ -55,6 +55,8 @@ import java.util.Set;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
+import com.gregor.jrobin.xml.RrdGraphDef;
+
 /**
  * Provides queuing implementation of RrdStrategy.
  * 
@@ -1095,6 +1097,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
 	public void setStartTime(long updateStart) {
 		m_startTime = updateStart;
+	}
+
+	public RrdGraphDetails createGraph(RrdGraphDef graphdef) throws IOException, RrdException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
