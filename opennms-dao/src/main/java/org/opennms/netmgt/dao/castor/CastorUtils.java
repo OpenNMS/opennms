@@ -12,6 +12,9 @@
  * 
  * Created March 10, 2007
  * 
+ * 2008 Jul 28: Use InputSources and InputStreams wherever we can instead of
+ *              readers to avoid character set problems with Readers.  Also
+ *              deprecate the Reader methods. - dj@opennms.org
  * 2008 Jul 04: Move resource unmarshalling code here. - dj@opennms.org
  * 2008 Jun 14: Use instances of Marshaller/Unmarshaller to avoid
  *              problematic-looking Castor log messages. - dj@opennms.org
@@ -42,7 +45,7 @@ package org.opennms.netmgt.dao.castor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -54,6 +57,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.xml.sax.InputSource;
 
 /**
  * Utility class for Castor configuration files.
@@ -104,11 +108,38 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a MarshalException
      * @throws ValidationException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a ValidationException
+     * @deprecated Use a Resource or InputStream-based method instead to avoid
+     *             character set issues.
      */
     @SuppressWarnings("unchecked")
     public static <T> T unmarshal(Class<T> clazz, Reader reader) throws MarshalException, ValidationException {
         Unmarshaller u = new Unmarshaller(clazz);
         return (T) u.unmarshal(reader);
+    }
+    
+    /**
+     * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
+     * return type. 
+     * 
+     * @param <T> the class representing the marshalled XML configuration
+     *      file.  This will be the return time form the method.
+     * @param clazz the class representing the marshalled XML configuration
+     *      file
+     * @param in the marshalled XML configuration file to unmarshal
+     * @return Unmarshalled object representing XML file
+     * @throws MarshalException if the underlying Castor
+     *      Unmarshaller.unmarshal() call throws a MarshalException
+     * @throws ValidationException if the underlying Castor
+     *      Unmarshaller.unmarshal() call throws a ValidationException
+     */
+    public static <T> T unmarshal(Class<T> clazz, InputStream in) throws MarshalException, ValidationException {
+        return unmarshal(clazz, new InputSource(in));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T unmarshal(Class<T> clazz, InputSource source) throws MarshalException, ValidationException {
+        Unmarshaller u = new Unmarshaller(clazz);
+        return (T) u.unmarshal(source);
     }
     
     /**
@@ -128,9 +159,9 @@ public class CastorUtils {
      * @throws IOException if the resource could not be opened
      */
     public static <T> T unmarshal(Class<T> clazz, Resource resource) throws MarshalException, ValidationException, IOException {
-        Reader reader;
+        InputStream in;
         try {
-            reader = new InputStreamReader(resource.getInputStream());
+            in = resource.getInputStream();
         } catch (IOException e) {
             IOException newE = new IOException("Failed to open XML configuration file for resource '" + resource + "': " + e);
             newE.initCause(e);
@@ -138,9 +169,15 @@ public class CastorUtils {
         }
     
         try {
-            return unmarshal(clazz, reader);
+            InputSource source = new InputSource(in);
+            try {
+                source.setSystemId(resource.getURL().toString());
+            } catch (Throwable t) {
+                // ignore
+            }
+            return unmarshal(clazz, source);
         } finally {
-            IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(in);
         }
     }
 
@@ -158,16 +195,44 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
      *      using CastorExceptionTranslator.
+     * @deprecated Use a Resource or InputStream-based method instead to avoid
+     *             character set issues.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader) throws DataAccessException {
         try {
             return unmarshal(clazz, reader);
         } catch (MarshalException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Unmarshalling XML file", e);
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file", e);
         } catch (ValidationException e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("Unmarshalling XML file", e);
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file", e);
         }
     }
+    
+    /**
+     * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
+     * return type and throws DataAccessExceptions.
+     * 
+     * @param <T> the class representing the marshalled XML configuration
+     *      file.  This will be the return time form the method.
+     * @param clazz the class representing the marshalled XML configuration
+     *      file
+     * @param in the marshalled XML configuration file to unmarshal
+     * @return Unmarshalled object representing XML file
+     * @throws DataAccessException if the underlying Castor
+     *      Unmarshaller.unmarshal() call throws a MarshalException or
+     *      ValidationException.  The underlying exception will be translated
+     *      using CastorExceptionTranslator.
+     */
+    public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, InputStream in) throws DataAccessException {
+        try {
+            return unmarshal(clazz, in);
+        } catch (MarshalException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file", e);
+        } catch (ValidationException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file", e);
+        }
+    }
+
 
     /**
      * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
@@ -187,21 +252,27 @@ public class CastorUtils {
      *      the resource from its {@link Resource#toString() toString()} method.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource) {
-        Reader reader;
+        InputStream in;
         try {
-            reader = new InputStreamReader(resource.getInputStream());
+            in = resource.getInputStream();
         } catch (IOException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("opening XML configuration file for resource '" + resource + "'", e);
         }
     
         try {
-            return unmarshal(clazz, reader);
+            InputSource source = new InputSource(in);
+            try {
+                source.setSystemId(resource.getURL().toString());
+            } catch (Throwable t) {
+                // ignore
+            }
+            return unmarshal(clazz, source);
         } catch (MarshalException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file for resource '" + resource + "'", e);
         } catch (ValidationException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("unmarshalling XML file for resource '" + resource + "'", e);
         } finally {
-            IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(in);
         }
     }
 
