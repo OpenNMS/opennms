@@ -149,7 +149,7 @@ public class FifoQueueImpl implements FifoQueue {
     public Object remove(long timeout) throws FifoQueueException, InterruptedException {
         Object rval = null;
         synchronized (m_delegate) {
-            if (m_delegate.isEmpty()) {
+            if (m_delegate.isEmpty() && timeout > 0) {
                 long start = System.currentTimeMillis();
                 long diff = 0;
                 do {
@@ -158,7 +158,7 @@ public class FifoQueueImpl implements FifoQueue {
                 } while (diff < timeout && m_delegate.isEmpty());
             }
 
-            if (!m_delegate.isEmpty())
+	    if (!m_delegate.isEmpty())
                 rval = m_delegate.removeFirst();
         }
 
