@@ -184,8 +184,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return locationMonitor.getName();
     }
 
-    @SuppressWarnings("unchecked")
-    private Map getParameterMap(Service serviceConfig) {
+    private Map<String, String> getParameterMap(Service serviceConfig) {
         Map<String, String> paramMap = new HashMap<String, String>();
         Enumeration<Parameter> serviceParms = serviceConfig.enumerateParameter();
         while(serviceParms.hasMoreElements()) {
@@ -223,7 +222,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         for (OnmsMonitoredService monSvc : services) {
             Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
             long interval = serviceConfig.getInterval();
-            Map parameters = getParameterMap(serviceConfig);
+            Map<String, String> parameters = getParameterMap(serviceConfig);
             configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
         }
 

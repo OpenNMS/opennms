@@ -7,6 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-remote-poller</artifactId>
+  <packaging>jar</packaging>
   <name>OpenNMS Remote Poller</name>
   <url>http://maven.apache.org</url>
   <build>
@@ -34,12 +35,124 @@
           <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>webstart-maven-plugin</artifactId>
+        <version>1.0-alpha-1</version>
+        <executions>
+           <execution>
+              <phase>package</phase>
+              <goals>
+                 <goal>jnlp</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <outputDirectory>${project.build.director}/classes/webstart</outputDirectory>
+
+           <!-- JNLP generation -->
+           <jnlp>
+             <outputFile>app.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+             <inputTemplate>src/main/jnlp/template.vm</inputTemplate>
+
+             <!-- used to automatically identify the jar containing the main class. -->
+             <!-- this is perhaps going to change -->
+             <mainClass>org.opennms.poller.remote.Main</mainClass>
+           </jnlp>
+
+           <!-- SIGNING in THIS way is 'fake' REAL signing will move to a profile since it is setup specific -->
+           <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
+           <sign>
+             <keystore>${webstart.keystore}</keystore>
+             <keypass>${webstart.keypass}</keypass>
+             <storepass>${webstart.storepass}</storepass>
+             <alias>${webstart.keyalias}</alias>
+
+             <dnameCn>${webstart.dnameCn}</dnameCn>
+             <dnameL>${webstart.dnameL}</dnameL>
+             <dnameSt>${webstart.dnameSt}</dnameSt>
+             <dnameC>${webstart.dnameC}</dnameC>
+
+             <verify>true</verify>
+           </sign>
+
+           <!-- KEYSTORE MANGEMENT -->
+           <keystore>
+             <delete>${webstart.keystore.delete}</delete>
+             <gen>${webstart.keygen}</gen>      
+           </keystore>
+
+           <!-- BUILDING PROCESS -->
+           <!--usejnlpservlet>true</usejnlpservlet--> <!-- not yet supported -->
+
+           <verbose>false</verbose>
+
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>opennms-groovyc-plugin</artifactId>
+        <executions>
+          <execution>
+          <goals>
+            <goal>compile</goal>
+            <goal>test-compile</goal>
+          </goals>
+        </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-groovy-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/main/groovy</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalBuildcommands>
+            <buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
+          </additionalBuildcommands> 
+          <additionalProjectnatures>
+            <projectnature>org.codehaus.groovy.eclipse.groovyNature</projectnature>
+          </additionalProjectnatures>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.codehaus.groovy.eclipse.preferences.prefs</name>
+              <content><![CDATA[#Added by maven-eclipse-plugin
+eclipse.preferences.version=1
+groovy.compiler.output.path=target/classes
+]]></content>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>groovy</groupId>
+      <artifactId>groovy</artifactId>
     </dependency>
   </dependencies>
 </project>

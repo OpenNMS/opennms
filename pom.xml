@@ -106,7 +106,6 @@
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
-    <module>opennms-webstart</module>
     <module>opennms-remote-poller</module>
     <module>opennms-webapp</module>
     <module>opennms-daemon</module>
@@ -866,11 +865,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp-ng</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-webstart</artifactId>
         <version>${project.version}</version>
       </dependency>
 
