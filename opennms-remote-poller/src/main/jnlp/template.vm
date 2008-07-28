@@ -20,6 +20,8 @@
     $dependencies
   </resources>
   <application-desc main-class="$mainClass">
+    <argument>--gui</argument>
+    <argument>--url</argument>
     <argument>$$context</argument>
   </application-desc>
 </jnlp> 

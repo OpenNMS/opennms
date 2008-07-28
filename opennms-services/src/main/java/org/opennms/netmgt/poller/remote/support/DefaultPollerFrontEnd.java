@@ -592,6 +592,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
                 + " must be set for instances of " + Poller.class);
     }
 
+    @SuppressWarnings("unused")
     private void assertRegistered() {
         Assert.state(isRegistered(),
                         "The poller must be registered before we can poll or get its configuration");

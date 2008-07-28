@@ -32,7 +32,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.webstart.poller.helper;
+package org.opennms.poller.remote;
 
 import java.awt.Component;
 
