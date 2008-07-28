@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+  <header>
+    <rev>.9</rev>
+    <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+    <mstation>master.nmanage.com</mstation>
+  </header>
+  <users>
+  <!-- Leave out users so that Castor throws an exception -->
+  </users>
+</userinfo>
