@@ -48,7 +48,7 @@ import javax.swing.table.TableModel;
 
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition
-import org.opennms.webstart.poller.helper.MonitoringLocationListCellRenderer;
+import org.opennms.poller.remote.MonitoringLocationListCellRenderer;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.beans.factory.InitializingBean;
 
