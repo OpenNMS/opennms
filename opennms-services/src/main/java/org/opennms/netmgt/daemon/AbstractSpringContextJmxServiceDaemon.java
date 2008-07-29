@@ -10,6 +10,9 @@
  *
  * Modifications:
  * 
+ * 2008 Jul 29: Genericized with the class of the service daemon and added a
+ *              getDaemon() method to return the daemon. - dj@opennms.org
+ * 
  * Created: March 30, 2007
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -49,7 +52,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsMBean {
+public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServiceDaemon> implements BaseOnmsMBean {
 
     public static final String DAEMON_BEAN_NAME = "daemon";
 
@@ -86,7 +89,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
         setLoggingCategory();
         
         setStatus(Fiber.STARTING);
-        SpringServiceDaemon daemon = (SpringServiceDaemon) m_context.getBean(DAEMON_BEAN_NAME, SpringServiceDaemon.class);
+        SpringServiceDaemon daemon = getDaemon();
         try {
             daemon.start();
         } catch (Throwable t) {
@@ -105,6 +108,16 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
             }
         }
         setStatus(Fiber.RUNNING);
+    }
+
+    /**
+     * Get the service daemon object that this JMX MBean represents.
+     * 
+     * @return the service daemon object
+     */
+    @SuppressWarnings("unchecked")
+    public T getDaemon() {
+        return (T) m_context.getBean(DAEMON_BEAN_NAME, SpringServiceDaemon.class);
     }
 
     public final void stop() {
