@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jul 29: Fix up a test string. - dj@opennms.org
  * 2008 Jun 17: Add tests for bug #2223. - jeffg@opennms.org
  * 2008 Feb 15: Add tests for bug #2272. - dj@opennms.org
  * 2007 Mar 19: Adjust for changes with exceptions and add test
@@ -133,7 +134,7 @@ public class JRobinRrdStrategyTest extends TestCase {
         //m_strategy.updateFile(openedFile, "huh?", "N:1,234234");
         
         Sample sample = ((RrdDb) openedFile).createSample();
-        sample.set("N:1.234 eat my mom's ass");
+        sample.set("N:1.234 something not that politically incorrect");
         System.err.println(sample.dump());
 
         m_strategy.closeFile(openedFile);
