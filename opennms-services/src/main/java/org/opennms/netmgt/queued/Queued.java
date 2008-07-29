@@ -10,6 +10,8 @@
  *
  * Modifications:
  * 
+ * 2008 Jul 29: Eliminate generics warning in onEvent. - dj@opennms.org
+ * 
  * Created: August 31, 2007
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -81,11 +83,16 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
 
     public void onEvent(Event e) {
         String fileList = EventUtils.getParm(e, "filesToPromote");
-        Set<String> files = StringUtils.commaDelimitedListToSet(fileList);
+        Set<String> files = commaDelimitedListToSet(fileList);
 
         logFilePromotion(files);
         
         m_rrdStrategy.promoteEnqueuedFiles(files);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<String> commaDelimitedListToSet(String fileList) {
+        return StringUtils.commaDelimitedListToSet(fileList);
     }
     
     private void logFilePromotion(Set<String> files) {
