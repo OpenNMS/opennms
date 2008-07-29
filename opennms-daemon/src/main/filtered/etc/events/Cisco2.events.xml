@@ -33538,7 +33538,7 @@ cnrNotifServer object.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33583,7 +33583,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33628,7 +33628,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33673,7 +33673,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33718,7 +33718,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33763,7 +33763,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33808,7 +33808,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33853,7 +33853,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33894,7 +33894,7 @@ slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33946,7 +33946,7 @@ slbRealServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -33994,7 +33994,7 @@ slbRealServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34033,7 +34033,7 @@ has been enabled or disabled on the Load Balancer.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34072,7 +34072,7 @@ has been enabled or disabled on the Load Balancer.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34107,7 +34107,7 @@ has been enabled or disabled on the Load Balancer.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34153,7 +34153,7 @@ to a new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34195,7 +34195,7 @@ to a new state.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34254,7 +34254,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34313,7 +34313,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34372,7 +34372,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34431,7 +34431,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34490,7 +34490,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34549,7 +34549,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34608,7 +34608,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34663,7 +34663,7 @@ server state is changed.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34745,7 +34745,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34827,7 +34827,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34909,7 +34909,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -34991,7 +34991,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -35073,7 +35073,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -35155,7 +35155,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
@@ -35237,7 +35237,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
-			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>specific</mename>
