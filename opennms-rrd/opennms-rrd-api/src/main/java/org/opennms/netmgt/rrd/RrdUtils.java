@@ -110,20 +110,6 @@ public class RrdUtils {
     }
 
     /**
-     * 
-     * 
-     */
-    public static void graphicsInitialize() throws RrdException {
-        try {
-            createStrategy();
-            m_rrdStrategy.graphicsInitialize();
-        } catch (Exception e) {
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured initializing the Rrd subsytem", e);
-
-        }
-    }
-
-    /**
      * Create the appropriate RrdStrategy object based on the configuration
      * @throws RrdException 
      */
@@ -319,35 +305,11 @@ public class RrdUtils {
         return getStrategy().fetchLastValueInRange(rrdFile, ds, interval, range);
     }
     
-    /**
-     * Creates an InputStream representing the bytes of a graph created from
-     * round robin data. It accepts an rrdtool graph command. The underlying
-     * implementation converts this command to a format appropriate for it .
-     * 
-     * @param command
-     *            the command needed to create the graph
-     * @param workDir
-     *            the directory that all referenced files are relative to
-     * @return an input stream representing the bytes of a graph image as a PNG
-     *         file
-     * @throws IOException
-     *             if an IOError occurs
-     * @throws RrdException
-     *             if an RRD error occurs
-     */
-    public static InputStream createGraph(String command, File workDir) throws IOException, RrdException {
-        return getStrategy().createGraph(command, workDir);
-    }
-
     public static String getExtension() {
         if (m_rrdExtension == null) {
             return getStrategy().getDefaultFileExtension();
         }
         return m_rrdExtension;
-    }
-
-    public static void promoteEnqueuedFiles(Collection<String> files) {
-        getStrategy().promoteEnqueuedFiles(files);
     }
 
 }

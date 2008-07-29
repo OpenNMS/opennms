@@ -42,7 +42,6 @@ package org.opennms.web.svclayer.support;
 
 import java.io.File;
 import java.io.InputStream;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,6 +60,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.beans.factory.InitializingBean;
@@ -101,7 +101,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         OnmsResource r = m_resourceDao.getResourceById(resourceId);
         
-        String command = createAdHocCommand(t,
+        String[] command = createAdHocCommand(t,
                                   r,
                                   start, end,
                                   title,
@@ -114,7 +114,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return getInputStreamForCommand(command);
     }
 
-    private InputStream getInputStreamForCommand(String command) {
+    private InputStream getInputStreamForCommand(String[] command) {
         boolean debug = true;
         File workDir = m_resourceDao.getRrdDirectory(true);
 
@@ -163,7 +163,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         Graph graph = new Graph(prefabGraph, r, new Date(start), new Date(end));
 
-        String command = createPrefabCommand(graph,
+        String[] command = createPrefabCommand(graph,
                                              t.getCommandPrefix(),
                                              m_resourceDao.getRrdDirectory(true),
                                              report);
@@ -171,7 +171,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return getInputStreamForCommand(command);
     }
     
-    protected String createAdHocCommand(AdhocGraphType adhocType,
+    protected String[] createAdHocCommand(AdhocGraphType adhocType,
             OnmsResource resource,
             long start, long end,
             String graphtitle,
@@ -180,10 +180,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             String[] colors,
             String[] dsTitles,
             String[] dsStyles) {
-        String commandPrefix = adhocType.getCommandPrefix();
-        String title = adhocType.getTitleTemplate();
-        String ds = adhocType.getDataSourceTemplate();
-        String graphline = adhocType.getGraphLineTemplate();
+//        String commandPrefix = adhocType.getCommandPrefix();
+//        String title = adhocType.getTitleTemplate();
+//        String ds = adhocType.getDataSourceTemplate();
+//        String graphline = adhocType.getGraphLineTemplate();
 
         /*
          * Remember that rrdtool wants the time in seconds, not milliseconds;
@@ -192,10 +192,11 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         String starttime = Long.toString(start / 1000);
         String endtime = Long.toString(end / 1000);
 
-        StringBuffer buf = new StringBuffer();
-        buf.append(commandPrefix);
-        buf.append(" ");
-        buf.append(title);
+        List<String> commandList = new ArrayList<String>();
+        commandList.add("--imgformat=PNG");
+        commandList.add("--start="+starttime);
+        commandList.add("--end="+endtime);
+        commandList.add("--title="+graphtitle);
         
         String[] rrdFiles = getRrdNames(resource, dsNames);
 
@@ -210,32 +211,29 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             String color = colors[i];
             String dsTitle = dsTitles[i];
             String dsStyle = dsStyles[i];
-
-            defs.add(MessageFormat.format(ds, rrd, starttime,
-                                            endtime, graphtitle,
-                                            dsAbbrev, dsName,
-                                            dsAggregFxn, dsStyle,
-                                            color, dsTitle));
             
-            lines.add(MessageFormat.format(graphline, rrd,
-                                            starttime, endtime, graphtitle,
-                                            dsAbbrev, dsName, dsAggregFxn,
-                                            dsStyle, color, dsTitle));
+            defs.add("DEF:"+dsAbbrev+"="+rrd+":"+dsName+":"+dsAggregFxn);
+            lines.add(dsStyle+":"+dsAbbrev+"#"+color+":"+dsTitle);
+//            defs.add(MessageFormat.format(ds, rrd, starttime,
+//                                            endtime, graphtitle,
+//                                            dsAbbrev, dsName,
+//                                            dsAggregFxn, dsStyle,
+//                                            color, dsTitle));
+//            
+//            lines.add(MessageFormat.format(graphline, rrd,
+//                                            starttime, endtime, graphtitle,
+//                                            dsAbbrev, dsName, dsAggregFxn,
+//                                            dsStyle, color, dsTitle));
         }
         
-        for (String def : defs) {
-            buf.append(" ");
-            buf.append(def);
-        }
-        for (String line : lines) {
-            buf.append(" ");
-            buf.append(line);
-        }
+        commandList.addAll(defs);
+        commandList.addAll(lines);
 
-        log().debug("formatting: " + buf + ", bogus-rrd, " + starttime + ", "
+        log().debug("formatting: " + StringUtils.collectionToDelimitedString(commandList, " " ) + ", bogus-rrd, " + starttime + ", "
                     + endtime + ", " + graphtitle);
-        return MessageFormat.format(buf.toString(), "bogus-rrd",
-                                    starttime, endtime, graphtitle);
+//        return MessageFormat.format(buf.toString(), "bogus-rrd",
+//                                    starttime, endtime, graphtitle);
+        return commandList.toArray(new String[commandList.size()]);
     }
 
     private String[] getRrdNames(OnmsResource resource, String[] dsNames) {
@@ -277,7 +275,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return translations;
     }
 
-    protected String createPrefabCommand(Graph graph,
+    protected String[] createPrefabCommand(Graph graph,
             String commandPrefix,
             File workDir, String reportName) {
         PrefabGraph prefabGraph = graph.getPrefabGraph();
@@ -329,8 +327,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                                + "syntax, check "
                                                + "rrd-properties file", e);
         }
-        
-        return command;
+        return JRobinRrdStrategy.tokenize(command, " \t", false);
     }
 
     private Category log() {

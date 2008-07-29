@@ -37,7 +37,15 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jrobin.core.RrdException;
 import org.springframework.util.Assert;
+
+import com.gregor.jrobin.xml.Def;
+import com.gregor.jrobin.xml.RrdGraphDef;
+import com.gregor.rrd.graph.parser.xml.CastorXmlConverter;
 
 public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private String m_name;
@@ -63,8 +71,57 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private Integer m_graphHeight;
     
     private String[] m_suppress;
+    
+    private RrdGraphDef m_rrdGraphDef;
 
-    public PrefabGraph(String name, String title, String[] columns,
+	public PrefabGraph(RrdGraphDef rrdGraphDef, String name, 
+            String[] externalValues, String[] propertiesValues, int order, 
+            String[] types, String description, String[] suppress) throws RrdException {
+
+//      Retrieve the title from the RrdGraphDef object
+        String title = rrdGraphDef.getOptions().getTitle();
+        
+//      Retrieve the columns from the RrdGraphDef object
+        List<String> columnList = new ArrayList<String>();
+        for(Def def : rrdGraphDef.getDatasources().getDef()) {
+        	columnList.add(def.getSource());
+        }
+        String[] columns = columnList.toArray(new String[columnList.size()]);
+
+//      Retrieve the command from the RrdGraphDef object
+        CastorXmlConverter converter = new CastorXmlConverter();
+        converter.init();
+        String[] commandArray = converter.convertToCommandArray(rrdGraphDef);
+        StringBuffer sb = new StringBuffer();
+        for (int i=0; i < commandArray.length; ++i) {
+          sb.append(commandArray[i]);
+        }
+        String command = sb.toString();
+
+        Assert.notNull(name, "name argument cannot be null");
+        Assert.notNull(externalValues, "externalValues argument cannot be null");
+        Assert.notNull(propertiesValues, "propertiesValues argument cannot be null");
+        Assert.notNull(suppress, "suppress argument cannot be null");
+        Assert.notNull(title, "title argument cannot be null");
+        Assert.notNull(columns, "columns argument cannot be null");
+        Assert.notNull(command, "command argument cannot be null");
+
+        m_name = name;
+        m_title = title;
+        m_columns = columns;
+        m_command = command;
+        m_externalValues = externalValues;
+        m_propertiesValues = propertiesValues;
+        m_order = order;
+        m_suppress = suppress;
+
+        m_types = types;
+        m_description = description;
+        m_graphWidth = rrdGraphDef.getOptions().getWidth();
+        m_graphHeight = rrdGraphDef.getOptions().getHeight();
+    }
+
+	public PrefabGraph(String name, String title, String[] columns,
             String command, String[] externalValues,
             String[] propertiesValues, int order, String[] types,
             String description, Integer graphWidth, Integer graphHeight,
@@ -166,4 +223,13 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
 
         return getOrder() - other.getOrder();
     }
+    
+    public RrdGraphDef getRrdGraphDef() {
+		return m_rrdGraphDef;
+	}
+
+	public void setRrdGraphDef(RrdGraphDef graphDef) {
+		m_rrdGraphDef = graphDef;
+	}
+
 }

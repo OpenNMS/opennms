@@ -48,7 +48,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -56,8 +55,7 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.util.FileCopyUtils;
-
-import com.gregor.jrobin.xml.RrdGraphDef;
+import org.springframework.util.StringUtils;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
@@ -396,22 +394,19 @@ public class JniRrdStrategy implements RrdStrategy {
      * directory. The output stream of the command (a PNG image) is copied to a
      * the InputStream returned from the method.
      */
-    public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
+    public InputStream createGraph(String[] command, File workDir) throws IOException, RrdException {
         byte[] byteArray = createGraphAsByteArray(command, workDir);
         return new ByteArrayInputStream(byteArray);
     }
 
-	public RrdGraphDetails createGraph(RrdGraphDef graphdef) throws IOException, RrdException {
-		return null;
-	}
 
-    private byte[] createGraphAsByteArray(String command, File workDir) throws IOException, RrdException {
-        String[] commandArray = StringUtils.createCommandArray(command, '@');
+    private byte[] createGraphAsByteArray(String[] commandArray, File workDir) throws IOException, RrdException {
         Process process;
+        log().debug("About to exec " + StringUtils.arrayToDelimitedString(commandArray, " "));
         try {
-             process = Runtime.getRuntime().exec(commandArray, null, workDir);
+             process = Runtime.getRuntime().exec(commandArray);
         } catch (IOException e) {
-            IOException newE = new IOException("IOException thrown while executing command '" + command + "' in " + workDir.getAbsolutePath() + ": " + e);
+            IOException newE = new IOException("IOException thrown while executing command '" + StringUtils.arrayToDelimitedString(commandArray, " ") + "' in " + workDir.getAbsolutePath() + ": " + e);
             newE.initCause(e);
             throw newE;
         }
@@ -421,7 +416,7 @@ public class JniRrdStrategy implements RrdStrategy {
         
         // this close the stream when its finished
         String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
-        
+
         // one particular warning message that originates in libart should be ignored
         if (errors.length() > 0 && errors.contains(IGNORABLE_LIBART_WARNING_STRING)) {
         	log().debug("Ignoring libart warning message in rrdtool stderr stream: " + IGNORABLE_LIBART_WARNING_STRING);
@@ -461,10 +456,12 @@ public class JniRrdStrategy implements RrdStrategy {
         return ".rrd";
     }
     
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+    public RrdGraphDetails createGraphReturnDetails(String[] command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         // Creating Temp PNG File
         File pngFile = File.createTempFile("opennms.rrdtool.", ".png");
-        command = command.replaceFirst("graph - ", "graph " + pngFile.getAbsolutePath() + " ");
+        for (int i = 0; i < command.length; i++) {
+            command[i] = command[i].replaceFirst("graph - ", "graph " + pngFile.getAbsolutePath() + " ");
+		}
 
         int width;
         int height;

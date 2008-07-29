@@ -62,90 +62,88 @@ public class JniRrdStrategyTest extends TestCase {
         MockLogAppender.setupLogging();
         
         // FIXME: This is disabled.  See FIXMEtestGraph for details.
-        if (false) {
-            System.setProperty("opennms.library.jrrd", findJrrdLibrary().getAbsolutePath());
+//        if (false) {
+//            System.setProperty("opennms.library.jrrd", findJrrdLibrary().getAbsolutePath());
             
             m_strategy = new JniRrdStrategy();
-            m_strategy.initialize();
-        }
+//            m_strategy.initialize();
+          m_strategy.graphicsInitialize();
+//        }
     }
     
     public void testInitialize() {
         // Do nothing; just checking to see if setUp() worked.
     }
-    
+
     /*
      * FIXME: This is disabled since the test doesn't work if building from
      * scratch.  This should likely be moved into the platform modules.
      */
     public void FIXMEtestGraph() throws Exception {
-        long end = System.currentTimeMillis();
-        long start = end - (24 * 60 * 60 * 1000);
         String[] command = new String[] {
-                "rrdtool",
+                "/sw/bin/rrdtool",
                 "graph", 
                 "-",
-                "--start=" + start,
-                "--end=" + end,
-                "CDEF:a=1",
-                "GPRINT:a:AVERAGE:\"%8.2lf\\n\""
+                "--start=end-120000s",
+                "--end=now",
+                "DEF:temp=/Users/mhuot/temperature.rrd:temp:AVERAGE",
+                "GPRINT:temp:AVERAGE:\"%8.2lf\\n\""
         };
-        
-        m_strategy.createGraph(StringUtils.arrayToDelimitedString(command, " "), new File(""));
+        m_strategy.createGraph(command, new File(""));
     }
 
-    private File findJrrdLibrary() {
-        File parentDir = new File("..");
-        assertTrue("parent directory exists at ..: " + parentDir.getAbsolutePath(), parentDir.exists());
-        
-        File parentPomXml = new File(parentDir, "pom.xml");
-        assertTrue("parent directory's pom.xml exists at ../pom.xml: " + parentPomXml.getAbsolutePath(), parentPomXml.exists());
-        
-        File jniDir = new File(parentDir, "opennms-rrdtool-jni");
-        assertTrue("opennms-rrdtool-jni directory exists at ../opennms-rrdtool-jni: " + jniDir.getAbsolutePath(), jniDir.exists());
-        
-        File[] jniPlatformDirs = jniDir.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                if (file.getName().matches("opennms-rrdtool-jni-.*") && file.isDirectory()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-        assertTrue("expecting at least one opennms opennms-rrdtool-jni platform directory in " + jniDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(jniPlatformDirs, ", "), jniPlatformDirs.length > 0);
-
-        File jniFile = null;
-        for (File jniPlatformDir : jniPlatformDirs) {
-            assertTrue("opennms-rrdtool-jni platform directory does not exist but was listed in directory listing: " + jniPlatformDir.getAbsolutePath(), jniPlatformDir.exists());
-            
-            File jniTargetDir = new File(jniPlatformDir, "target");
-            if (!jniTargetDir.exists() || !jniTargetDir.isDirectory()) {
-                // Skip this one
-                continue;
-            }
-          
-            File[] jniFiles = jniTargetDir.listFiles(new FileFilter() {
-                public boolean accept(File file) {
-                    if (file.isFile()
-                        && (file.getName().matches("opennms-rrdtool-jni-.*\\.so")
-                            || file.getName().matches("opennms-rrdtool-jni-.*\\.jnilib"))) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-            assertFalse("expecting zero or one opennms-rrdtool-jni file in " + jniTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(jniFiles, ", "), jniFiles.length > 1);
-            
-            if (jniFiles.length == 1) {
-                jniFile = jniFiles[0];
-            }
-            
-        }
-        
-        assertNotNull("Could not find opennms-rrdtool-jni shared object in a target directory in any of these directories: " + StringUtils.arrayToDelimitedString(jniPlatformDirs, ", "), jniFile);
-        
-        return jniFile;
-    }
+//    private File findJrrdLibrary() {
+//        File parentDir = new File("..");
+//        assertTrue("parent directory exists at ..: " + parentDir.getAbsolutePath(), parentDir.exists());
+//        
+//        File parentPomXml = new File(parentDir, "pom.xml");
+//        assertTrue("parent directory's pom.xml exists at ../pom.xml: " + parentPomXml.getAbsolutePath(), parentPomXml.exists());
+//        
+//        File jniDir = new File(parentDir, "opennms-rrdtool-jni");
+//        assertTrue("opennms-rrdtool-jni directory exists at ../opennms-rrdtool-jni: " + jniDir.getAbsolutePath(), jniDir.exists());
+//        
+//        File[] jniPlatformDirs = jniDir.listFiles(new FileFilter() {
+//            public boolean accept(File file) {
+//                if (file.getName().matches("opennms-rrdtool-jni-.*") && file.isDirectory()) {
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            }
+//        });
+//        assertTrue("expecting at least one opennms opennms-rrdtool-jni platform directory in " + jniDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(jniPlatformDirs, ", "), jniPlatformDirs.length > 0);
+//
+//        File jniFile = null;
+//        for (File jniPlatformDir : jniPlatformDirs) {
+//            assertTrue("opennms-rrdtool-jni platform directory does not exist but was listed in directory listing: " + jniPlatformDir.getAbsolutePath(), jniPlatformDir.exists());
+//            
+//            File jniTargetDir = new File(jniPlatformDir, "target");
+//            if (!jniTargetDir.exists() || !jniTargetDir.isDirectory()) {
+//                // Skip this one
+//                continue;
+//            }
+//          
+//            File[] jniFiles = jniTargetDir.listFiles(new FileFilter() {
+//                public boolean accept(File file) {
+//                    if (file.isFile()
+//                        && (file.getName().matches("opennms-rrdtool-jni-.*\\.so")
+//                            || file.getName().matches("opennms-rrdtool-jni-.*\\.jnilib"))) {
+//                        return true;
+//                    } else {
+//                        return false;
+//                    }
+//                }
+//            });
+//            assertFalse("expecting zero or one opennms-rrdtool-jni file in " + jniTargetDir.getAbsolutePath() + "; got: " + StringUtils.arrayToDelimitedString(jniFiles, ", "), jniFiles.length > 1);
+//            
+//            if (jniFiles.length == 1) {
+//                jniFile = jniFiles[0];
+//            }
+//            
+//        }
+//        
+//        assertNotNull("Could not find opennms-rrdtool-jni shared object in a target directory in any of these directories: " + StringUtils.arrayToDelimitedString(jniPlatformDirs, ", "), jniFile);
+//        
+//        return jniFile;
+//    }
 }

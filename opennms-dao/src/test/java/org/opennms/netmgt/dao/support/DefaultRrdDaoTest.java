@@ -54,7 +54,6 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.util.StringUtils;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -156,7 +155,6 @@ public class DefaultRrdDaoTest extends TestCase {
                 "DEF:ds=" + rrdDir + File.separator + rrdFile + ":ifInOctets:AVERAGE",
                 "PRINT:ds:AVERAGE:\"%le\""
         };
-        String commandString = StringUtils.arrayToDelimitedString(command, " ");
         
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
 
@@ -170,7 +168,7 @@ public class DefaultRrdDaoTest extends TestCase {
         
         DefaultRrdGraphDetails details = new DefaultRrdGraphDetails();
         details.setPrintLines(new String[] { printLine });
-        expect(m_rrdStrategy.createGraphReturnDetails(commandString, m_dao.getRrdBaseDirectory())).andReturn(details);
+        expect(m_rrdStrategy.createGraphReturnDetails(command, m_dao.getRrdBaseDirectory())).andReturn(details);
 
         return childResource;
     }

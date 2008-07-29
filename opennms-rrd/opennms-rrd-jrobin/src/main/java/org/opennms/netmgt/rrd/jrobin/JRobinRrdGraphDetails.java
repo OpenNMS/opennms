@@ -52,9 +52,9 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
 public class JRobinRrdGraphDetails implements RrdGraphDetails {
     
     private RrdGraph m_rrdGraph;
-    private String m_graphCommand;
+    private String[] m_graphCommand;
 
-    public JRobinRrdGraphDetails(RrdGraph rrdGraph, String graphCommand) {
+    public JRobinRrdGraphDetails(RrdGraph rrdGraph, String[] graphCommand) {
         m_rrdGraph = rrdGraph;
         m_graphCommand = graphCommand;
     }
@@ -63,7 +63,7 @@ public class JRobinRrdGraphDetails implements RrdGraphDetails {
         return m_rrdGraph;
     }
     
-    public String getGraphCommand() {
+    public String[] getGraphCommand() {
         return m_graphCommand;
     }
     

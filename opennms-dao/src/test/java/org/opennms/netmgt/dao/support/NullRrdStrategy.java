@@ -66,12 +66,12 @@ public class NullRrdStrategy implements RrdStrategy {
 	public void createFile(Object rrdDef) throws Exception {
 	}
 
-    public InputStream createGraph(String command, File workDir)
+    public InputStream createGraph(String[] command, File workDir)
             throws IOException, RrdException {
         return null;
     }
     
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir)
+    public RrdGraphDetails createGraphReturnDetails(String[] command, File workDir)
             throws IOException, RrdException {
         return null;
     }

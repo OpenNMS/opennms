@@ -808,7 +808,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.fetchLastValueInRange(rrdFile, ds, interval, range);
     }
 
-    public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
+    public InputStream createGraph(String[] command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraph(command, workDir);
     }
 
@@ -999,7 +999,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.getDefaultFileExtension();
     }
 
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException {
+    public RrdGraphDetails createGraphReturnDetails(String[] command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraphReturnDetails(command, workDir);
     }
 

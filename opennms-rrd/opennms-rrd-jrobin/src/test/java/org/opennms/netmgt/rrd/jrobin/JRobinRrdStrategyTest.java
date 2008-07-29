@@ -60,7 +60,6 @@ import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
-import org.springframework.util.StringUtils;
 
 /**
  * Unit tests for the JrobinRrdStrategy.
@@ -107,7 +106,7 @@ public class JRobinRrdStrategyTest extends TestCase {
     public void testCommandWithoutDrawing() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
-        String command = "--start=" + start + " --end=" + end;
+        String[] command = {"--start=" + start, "--end=" + end};
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new RrdException(ThrowableAnticipator.IGNORE_MESSAGE));
@@ -303,7 +302,7 @@ public class JRobinRrdStrategyTest extends TestCase {
                 "PRINT:something:AVERAGE:\"%le\""
         };
 
-        RrdGraphDetails graphDetails = m_strategy.createGraphReturnDetails(StringUtils.arrayToDelimitedString(command, " "), new File(""));
+        RrdGraphDetails graphDetails = m_strategy.createGraphReturnDetails(command, new File(""));
         assertNotNull("graph details object", graphDetails);
         
         String[] printLines = graphDetails.getPrintLines();

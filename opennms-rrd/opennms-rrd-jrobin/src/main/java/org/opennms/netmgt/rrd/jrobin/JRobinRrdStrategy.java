@@ -273,7 +273,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
-    public InputStream createGraph(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+    public RrdGraphDetails createGraph(com.gregor.jrobin.xml.RrdGraphDef graphdef) throws IOException, org.opennms.netmgt.rrd.RrdException {
+		return null;
+	}
+
+    public InputStream createGraph(String command[], File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         return createGraphReturnDetails(command, workDir).getInputStream();
     }
 
@@ -286,11 +290,9 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * stream returning the bytes of the PNG image is returned.
      */
 
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+    public RrdGraphDetails createGraphReturnDetails(String[] commandArray, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
 
         try {
-            String[] commandArray = tokenize(command, " \t", false);
-
             RrdGraphDef graphDef = createGraphDef(workDir, commandArray);
             graphDef.setSignature("OpenNMS/JRobin");
 
@@ -307,7 +309,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
              * used.  If they just call RrdGraphDetails.getPrintLines, though,
              * we don't want to throw an exception.
              */
-            return new JRobinRrdGraphDetails(graph, command);
+            return new JRobinRrdGraphDetails(graph, commandArray);
         } catch (Exception e) {
             log().error("JRobin: exception occurred creating graph: " + e.getMessage(), e);
             throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph: " + e.getMessage(), e);
@@ -592,7 +594,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
 		*/
 	}
     
-    private String[] tokenize(String line, String delimiters, boolean processQuotes) {
+    public static String[] tokenize(String line, String delimiters, boolean processQuotes) {
         String passthroughTokens = "lcrjgsJ"; /* see org.jrobin.graph.RrdGraphConstants.MARKERS */
         return tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes, passthroughTokens);
     }
@@ -688,10 +690,6 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return ThreadCategory.getInstance(getClass());
     }
 
-    public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted) {
-        return tokenizeWithQuotingAndEscapes(line, delims, processQuoted, "");
-    }
-    
     /**
      * Tokenize a {@link String} into an array of {@link String}s.
      * @param line
@@ -792,10 +790,5 @@ public class JRobinRrdStrategy implements RrdStrategy {
     		return new char[] { '\\', encountered };
     	}
     }
-
-	public RrdGraphDetails createGraph(com.gregor.jrobin.xml.RrdGraphDef graphdef) throws IOException, org.opennms.netmgt.rrd.RrdException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
