@@ -85,8 +85,10 @@
     <attribute name="type" type="string" use="required">
       <annotation>
         <documentation>
-          Threshold type. If "high", a 'highThresholdExceeded' event
-          will be generated. If "low", a 'lowThresholdExceeded' event.
+          Threshold type. "high" to trigger if the value exceeds the threshold,
+          "low" to trigger if the value drops below the threshold,
+          "relativeChange" to trigger if the value changes more than the proportion represented by the threshold, or
+          "absoluteChange" to trigger if the value changes by more than the threshold value
         </documentation>
       </annotation>
     </attribute>

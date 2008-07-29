@@ -341,6 +341,11 @@ public class EventConstants {
     public final static String RELATIVE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/relativeChangeExceeded";
 
     /**
+     * The relative change event UEI
+     */
+    public final static String ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/absoluteChangeExceeded";
+
+    /**
      * The interface index changed event
      */
     public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
