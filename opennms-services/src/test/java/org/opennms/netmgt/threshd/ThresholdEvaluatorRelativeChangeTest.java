@@ -315,6 +315,56 @@ public class ThresholdEvaluatorRelativeChangeTest extends TestCase {
         assertEquals("UEI should be the uei.opennms.org/custom/relativeChangeThresholdTriggered", triggeredUEI, event.getUei());
        
     }
+    
+    public void testNegativeNumberTriggers() {
+        Threshold threshold = new Threshold();
+        threshold.setType("relativeChange");
+        threshold.setDsName("ds-name");
+        threshold.setDsType("ds-type");
+        threshold.setValue(1.1);
+        threshold.setRearm(0.5);
+        threshold.setTrigger(3);
+        ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
+        ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper);
+        
+        assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(-10.0));
+        assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(-12.0));   	
+    }
+    
+    public void testNegativeNumberNotTriggers() {
+        Threshold threshold = new Threshold();
+        threshold.setType("relativeChange");
+        threshold.setDsName("ds-name");
+        threshold.setDsType("ds-type");
+        threshold.setValue(1.1);
+        threshold.setRearm(0.5);
+        threshold.setTrigger(3);
+        ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
+        ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper);
+        
+        assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(-10.0));
+        assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(-10.5));   	
+    }
+    	 
+    public void testNegativeValueNoChange() {
+    	Threshold threshold = new Threshold();
+		threshold.setType("relativeChange");
+		threshold.setDsName("ds-name");
+		threshold.setDsType("ds-type");
+		threshold.setValue(0.9);
+		threshold.setRearm(0.5);
+		threshold.setTrigger(1);
+		ThresholdConfigWrapper wrapper = new ThresholdConfigWrapper(threshold);
+		ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(
+				wrapper);
+
+		assertEquals("should not trigger", Status.NO_CHANGE, evaluator
+				.evaluate(-10.0));
+		assertEquals("should not trigger", Status.NO_CHANGE, evaluator
+				.evaluate(-10.0));
+    }
+
+
     @SuppressWarnings("unchecked")
     private static Collection<Parm> getParmCollection(Event event) {
         if (event.getParms() == null) {
