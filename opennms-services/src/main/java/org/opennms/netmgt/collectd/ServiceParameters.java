@@ -98,9 +98,21 @@ public class ServiceParameters {
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-
+    
     boolean forceStoreByAlias(String alias) {
-        return overrideStorageFlag() && alias != null && !alias.equals("");
+    	if(alias == null || alias.equals("")) {
+    		return false;
+    	}
+    	String comment = getIfAliasComment();
+    	int si = -1;
+    	if( comment != null && !comment.equals("")) {
+            si = alias.indexOf(comment);
+    	}
+    	//if ifAlias begins with comment, return false
+        if (si == 0) {
+            return false;
+        }
+        return overrideStorageFlag();
     }
 
     String getCollectionName() {
