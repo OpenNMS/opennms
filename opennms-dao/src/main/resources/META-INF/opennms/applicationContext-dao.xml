@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+    ">
 
   <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
@@ -152,21 +155,21 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="locationMonitorConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
-    <property name="location" value="file:${opennms.home}/etc/monitoring-locations.xml" />
+  <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/monitoring-locations.xml" />
   </bean>
 
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResource" />
+    <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResourceLocation" />
   </bean>
 
-  <bean id="surveillanceViewConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
-    <property name="location" value="file:${opennms.home}/etc/surveillance-views.xml" />
+  <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
   </bean>
 
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
-    <property name="configResource" ref="surveillanceViewConfigResource" />
+    <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
   </bean>
 
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -221,11 +224,11 @@
     <property name="rrdBinaryPath" value="${rrd.binary}" />
   </bean>
 
-  <bean id="statsdConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
-    <property name="location" value="file:${opennms.home}/etc/statsd-configuration.xml" />
+  <bean id="statsdConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/statsd-configuration.xml" />
   </bean>
 
   <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" ref="statsdConfigResource" />
+    <property name="configResource" ref="statsdConfigResourceLocation" />
   </bean>
 </beans>

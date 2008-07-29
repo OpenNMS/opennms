@@ -66,12 +66,12 @@
 
 
 	<!-- This is shared by eventd and trapd. -->
-	<bean id="eventConfResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
-		<property name="location" value="file:${opennms.home}/etc/eventconf.xml" />
+	<bean id="eventConfResourceLocation" class="java.lang.String">
+	  <constructor-arg value="file:${opennms.home}/etc/eventconf.xml" />
 	</bean>
 	
 	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
-		<property name="configResource" ref="eventConfResource"/>
+		<property name="configResource" ref="eventConfResourceLocation"/>
 		<property name="reloadCheckInterval" value="-1" />
 	</bean>
 

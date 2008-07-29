@@ -12,95 +12,139 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use the spring library.
   </description>
-  <properties>
-    <springVersion>2.0.7</springVersion>
-    <aspectJVersion>1.5.3</aspectJVersion>
-  </properties>
+
   <dependencies>
+
+    <!-- Spring -->
+
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
+      <artifactId>spring-agent</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-attrs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-        </exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-mock</artifactId>
+      <artifactId>spring-aop</artifactId>
       <version>${springVersion}</version>
       <exclusions>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-attrs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-        </exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aspects</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-entitymanager</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${springVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
+        <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Spring Dependencies -->
+
+    <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
     </dependency>
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib-nodep</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-aspects</artifactId>
-      <version>${springVersion}</version>
-      <!-- Need to exclude the individual spring jars that include in the main spring jar -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-attrs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-agent</artifactId>
-      <version>${springVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-hibernate</artifactId>
     </dependency>
-    <dependency>
-      <groupId>aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-      <version>${aspectJVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>${aspectJVersion}</version>
-    </dependency>
+
   </dependencies>
 </project>
