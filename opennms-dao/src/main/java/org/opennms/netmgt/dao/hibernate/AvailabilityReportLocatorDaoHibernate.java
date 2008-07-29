@@ -41,7 +41,6 @@ public class AvailabilityReportLocatorDaoHibernate extends AbstractDaoHibernate<
 
 	public AvailabilityReportLocatorDaoHibernate() {
 		super(AvailabilityReportLocator.class);
-                System.err.println("AvailabileReportLocatorDaohibernate create!!!!");
 	}
 
 	public void delete(int id) {
