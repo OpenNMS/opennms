@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Jul 29: Expose the RrdStrategy for use in our JMX MBean. - dj@opennms.org
  * 2008 Jul 29: Eliminate generics warning in onEvent. - dj@opennms.org
  * 
  * Created: August 31, 2007
@@ -67,6 +68,10 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         m_eventMgr = eventMgr;
     }
     
+    public RrdStrategy getRrdStrategy() {
+        return m_rrdStrategy;
+    }
+
     public void setRrdStrategy(RrdStrategy rrdStrategy) {
         m_rrdStrategy = rrdStrategy;
     }
