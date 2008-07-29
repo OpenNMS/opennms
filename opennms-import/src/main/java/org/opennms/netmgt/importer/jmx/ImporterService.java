@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jul 29: Take advantage of the new getDaemon() method on
+//              AbstractSpringContextJmxServiceDaemon. - dj@opennms.org
 // 2007 Aug 25: Implement AbstractSpringContextJmxServiceDaemon. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -37,7 +39,7 @@ package org.opennms.netmgt.importer.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class ImporterService extends AbstractSpringContextJmxServiceDaemon implements ImporterServiceMBean {
+public class ImporterService extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.importer.ImporterService> implements ImporterServiceMBean {
     @Override
     protected String getLoggingPrefix() {
         return org.opennms.netmgt.importer.ImporterService.NAME;
@@ -49,10 +51,6 @@ public class ImporterService extends AbstractSpringContextJmxServiceDaemon imple
     }
 
     public String getStats() {
-        return getImporterService().getStats();
-    }
-
-    private org.opennms.netmgt.importer.ImporterService getImporterService() {
-        return (org.opennms.netmgt.importer.ImporterService) getContext().getBean(AbstractSpringContextJmxServiceDaemon.DAEMON_BEAN_NAME);
+        return getDaemon().getStats();
     }
 }
