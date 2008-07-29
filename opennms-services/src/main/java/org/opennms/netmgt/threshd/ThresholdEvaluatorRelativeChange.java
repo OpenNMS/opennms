@@ -109,6 +109,11 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         }
 
         public Status evaluate(double dsValue) {
+        	//Fix for Bug 2275 so we handle negative numbers
+        	//It will not handle values which cross the 0 boundary (from - to +, or v.v.) properly, but
+        	// after some discussion, we can't come up with a sensible scenario when that would actually happen.
+        	// If such a scenario eventuates, reconsider
+        	dsValue=Math.abs(dsValue);
             if (getLastSample() != 0.0) {
                 double threshold = getMultiplier() * getLastSample();
 
