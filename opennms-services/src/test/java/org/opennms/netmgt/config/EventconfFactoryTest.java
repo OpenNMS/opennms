@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -485,6 +486,18 @@ public class EventconfFactoryTest extends TestCase {
 
         public boolean isOpen() {
             return m_delegate.isOpen();
+        }
+
+        public URI getURI() throws IOException {
+            return m_delegate.getURI();
+        }
+
+        public boolean isReadable() {
+            return m_delegate.isReadable();
+        }
+
+        public long lastModified() throws IOException {
+            return m_delegate.lastModified();
         }
     }
 }

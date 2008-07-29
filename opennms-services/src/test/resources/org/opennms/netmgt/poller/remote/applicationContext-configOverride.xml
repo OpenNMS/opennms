@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
     
-  <bean id="locationMonitorConfigResource" class="org.springframework.beans.factory.config.ResourceFactoryBean">
-    <property name="location" value="classpath:/org/opennms/netmgt/poller/remote/monitoring-locations.xml"/>
+  <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="classpath:/org/opennms/netmgt/poller/remote/monitoring-locations.xml" />
   </bean>
   
   <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">

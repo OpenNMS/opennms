@@ -226,10 +226,16 @@
       <groupId>org.openoss</groupId>
       <artifactId>OSSbeans-xml</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring</artifactId></exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.openoss</groupId>
       <artifactId>OSSbeans-qos-ejb</artifactId>
+      <exclusions>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring</artifactId></exclusion>
+      </exclusions>
       <scope>compile</scope>
     </dependency>
     

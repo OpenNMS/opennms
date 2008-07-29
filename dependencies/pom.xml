@@ -13,5 +13,10 @@
     <module>opennms-drools</module>
     <module>opennms-hibernate</module>
     <module>opennms-spring</module>
+    <module>opennms-spring-web</module>
+    <module>opennms-spring-test</module>
   </modules>
+  <properties>
+    <springVersion>2.5.5</springVersion>
+  </properties>
 </project>

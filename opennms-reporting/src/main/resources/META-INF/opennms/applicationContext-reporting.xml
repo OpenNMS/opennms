@@ -7,15 +7,13 @@
 	<bean id="availabilityReportScheduler"
 		class="org.opennms.report.availability.AvailabilityReportSchedulerService"
 		lazy-init="true">
-		<property name="availabilityReportLocatorDao"
-			ref="availabilityReportLocatorDao" />
+		<property name="availabilityReportLocatorDao" ref="availabilityReportLocatorDao" />
 	</bean>
 
 	<bean id="availabilityReportLocator"
 		class="org.opennms.report.availability.AvailabilityReportLocatorService"
 		lazy-init="true">
-		<property name="availabilityReportLocatorDao"
-			ref="availabilityReportLocatorDao" />
+		<property name="availabilityReportLocatorDao" ref="availabilityReportLocatorDao" />
 	</bean>
 
 	<bean id="calendarAvailabilityCalculator"
