@@ -1164,6 +1164,17 @@
       <severity>Warning</severity>
     </event>
     <event>
+      <uei>uei.opennms.org/threshold/absoluteChangeExceeded</uei>
+      <event-label>OpenNMS-defined threshold event: absoluteChangeExceeded</event-label>
+      <descr>
+        &lt;p&gt;Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+      </descr>
+      <logmsg dest='logndisplay'>
+        Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
+      </logmsg>
+      <severity>Warning</severity>
+    </event>
+    <event>
       <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
       <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
       <descr>
