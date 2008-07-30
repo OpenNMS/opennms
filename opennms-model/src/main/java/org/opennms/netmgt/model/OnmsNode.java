@@ -62,6 +62,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.core.style.ToStringCreator;
@@ -74,6 +78,7 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="node"
  *     
 */
+@XmlRootElement
 @Entity
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
@@ -168,8 +173,15 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     @Column(name="nodeId")
     @SequenceGenerator(name="nodeSequence", sequenceName="nodeNxtId")
     @GeneratedValue(generator="nodeSequence")
+    @XmlTransient
     public Integer getId() {
         return m_id;
+    }
+    
+    @XmlID
+    @Transient
+    public String getNodeId() {
+        return getId().toString();
     }
 
     public void setId(Integer nodeid) {
@@ -198,6 +210,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * the nodeID of the chassis/physical node/"parent" device.
      * 
      */
+    @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeParentID")
     public OnmsNode getParent() {
@@ -391,6 +404,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * Distributed Poller responsible for this node
      * 
      */
+    @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="dpName")
     public OnmsDistPoller getDistPoller() {
@@ -404,6 +418,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * The assert record associated with this node
      */
+    @XmlTransient
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
@@ -413,6 +428,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         m_assetRecord = asset;
     }
     
+    @XmlTransient
     @Embedded
     @AttributeOverrides({
     	@AttributeOverride(name="ipAddress", column=@Column(name="criticalPathIp", table="pathOutage")),
@@ -432,6 +448,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * 
      */
     @OneToMany(mappedBy="node")
+    @XmlElement(name = "OnmsIpInterface")
     @org.hibernate.annotations.Cascade( {
         org.hibernate.annotations.CascadeType.ALL,
         org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -452,6 +469,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * The information from the SNMP interfaces/ipAddrTables for the node
      *  
      */
+    @XmlTransient
     @OneToMany(mappedBy="node")
     @org.hibernate.annotations.Cascade( {
          org.hibernate.annotations.CascadeType.ALL,
@@ -468,6 +486,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * The arp interfaces on this node
      * 
      */
+    @XmlTransient
     @OneToMany(mappedBy="node")
     @org.hibernate.annotations.Cascade( {
         org.hibernate.annotations.CascadeType.ALL,
@@ -485,7 +504,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         getArpInterfaces().add(iface);
     }
 
-    
+    @XmlTransient
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
     		name="category_node",

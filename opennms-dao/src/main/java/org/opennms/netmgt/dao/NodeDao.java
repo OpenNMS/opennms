@@ -38,7 +38,9 @@ import java.util.Map;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
 	
     public abstract Collection<OnmsNode> findByLabel(String label);

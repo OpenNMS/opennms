@@ -51,6 +51,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
@@ -240,6 +241,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifAlias = snmpifalias;
     }
 
+    @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
     public OnmsNode getNode() {
@@ -271,6 +273,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         visitor.visitSnmpInterfaceComplete(this);
     }
 
+    @XmlIDREF
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;

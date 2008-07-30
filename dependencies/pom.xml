@@ -15,6 +15,7 @@
     <module>opennms-spring</module>
     <module>opennms-spring-web</module>
     <module>opennms-spring-test</module>
+    <module>opennms-jersey</module>
   </modules>
   <properties>
     <springVersion>2.5.5</springVersion>

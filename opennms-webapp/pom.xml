@@ -209,6 +209,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring-web</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-jersey</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
     <dependency>
       <groupId>org.opennms</groupId>
