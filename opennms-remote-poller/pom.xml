@@ -25,7 +25,7 @@
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>jnlp</goal>
+              <goal>jnlp-single</goal>
             </goals>
           </execution>
         </executions>
@@ -102,22 +102,6 @@
             <sources>
               <source>src/main/groovy</source>
             </sources>
-          </configuration>
-        </execution>
-        <execution>
-          <id>attach-artifacts</id>
-          <phase>package</phase>
-          <goals>
-            <goal>attach-artifact</goal>
-          </goals>
-          <configuration>
-            <artifacts>
-              <artifact>
-                <file>${project.build.directory}/${project.build.finalName}.zip</file>
-                <type>zip</type>
-                <classifier>webstart</classifier>
-              </artifact>
-            </artifacts>
           </configuration>
         </execution>
       </executions>
