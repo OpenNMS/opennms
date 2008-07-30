@@ -38,6 +38,7 @@
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
         classpath:/META-INF/opennms/applicationContext-reporting.xml
         /WEB-INF/applicationContext-acegi-security.xml
+        /WEB-INF/applicationContext-jersey.xml
     </param-value>
   </context-param>
   
@@ -164,9 +165,19 @@
   </filter>
   
   <filter>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+  </filter>
+  
+  <filter>
     <filter-name>eXtremeExport</filter-name>
     <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
   </filter>
+  
+  <filter-mapping>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   
   <filter-mapping>
     <filter-name>Acegi Filter Chain Proxy</filter-name>
@@ -248,6 +259,21 @@
   <listener>
     <listener-class>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
   </listener>
+
+  <!--  RESTful Web Services -->
+  <servlet>
+    <servlet-name>opennmsRestWebServices</servlet-name>
+    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+      <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.opennms.web.rest</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
 
   <!--  servlet that gwt rpc requests get mapped to -->
    <servlet>
@@ -620,6 +646,11 @@
     <url-pattern>/account/selfService/newPasswordAction</url-pattern>
   </servlet-mapping>
   
+  <!-- Servlet mappings for REST Services -->
+  <servlet-mapping>
+    <servlet-name>opennmsRestWebServices</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
   
   <servlet>
     <servlet-name>nodeLabelChange</servlet-name>
