@@ -101,12 +101,12 @@
     <module>opennms-snmp</module>
     <module>opennms-config</module>
     <module>opennms-services</module>
+    <module>opennms-remote-poller</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
-    <module>opennms-remote-poller</module>
     <module>opennms-webapp</module>
     <module>opennms-daemon</module>
   </modules>
