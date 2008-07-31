@@ -35,4 +35,4 @@ exec nohup $JAVA_HOME/bin/java \
         -Djava.rmi.activation.port="$RMI_PORT" \
         -Dlog4j.logger="DEBUG" \
         -jar "$MONITOR_JAR" \
-        "rmi://$RMI_HOST" "$RMI_LOCATION" > $log_file 2>&1 &
+        --url="rmi://$RMI_HOST" --location="$RMI_LOCATION" > $log_file 2>&1 &
