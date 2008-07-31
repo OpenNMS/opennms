@@ -45,6 +45,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.*;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -55,13 +56,10 @@ import javax.sql.DataSource;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.filter.Table;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.filter.SQLTranslation;
-import org.opennms.netmgt.filter.lexer.Lexer;
-import org.opennms.netmgt.filter.node.Start;
-import org.opennms.netmgt.filter.parser.Parser;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
@@ -379,10 +377,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             conn = getDataSource().getConnection();
 
             // parse the rule and get the sql select statement
-            Start parseTree = parseRule(rule);
-            SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-            translation.setLimitCount(1);
-            sqlString = translation.getStatement();
+            sqlString = getSQLStatement(rule) + " LIMIT 1";
             if (log().isDebugEnabled()) {
                 log().debug("Filter: SQL statement: \n" + sqlString);
             }
@@ -425,81 +420,290 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 }
             }
         }
+
+        return matches;
     }
 
     public void validateRule(String rule) throws FilterParseException {
-        getSQLStatement(rule);
+        // Since parseRule does not do complete syntax checking,
+        // we need to call a function that will actually execute the generated SQL
+        isRuleMatching(rule);
     }
 
     private final Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
-    protected String getNodeMappingStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setNodeMappingTranslation();
-        return translation.getStatement();
+    protected String getNodeMappingStatement(String rule) throws FilterParseException {
+        List<Table> tables = new ArrayList<Table>();
+
+        StringBuffer columns = new StringBuffer();
+        columns.append(addColumn(tables, "nodeID"));
+        columns.append(", " + addColumn(tables, "nodeLabel"));
+
+        String where = parseRule(tables, rule);
+
+        String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+
+        return "SELECT DISTINCT " + columns.toString() + " " + from + " " + where;
     }
 
-    protected String getIPServiceMappingStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setIPServiceMappingTranslation();
-        return translation.getStatement();
+    protected String getIPServiceMappingStatement(String rule) throws FilterParseException {
+        List<Table> tables = new ArrayList<Table>();
+
+        StringBuffer columns = new StringBuffer();
+        columns.append(addColumn(tables, "ipAddr"));
+        columns.append(", " + addColumn(tables, "serviceName"));
+
+        String where = parseRule(tables, rule);
+
+        String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+
+        return "SELECT " + columns.toString() + " " + from + " " + where;
     }
 
-    protected String getInterfaceWithServiceStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setInterfaceWithServiceTranslation();
-        return translation.getStatement();
+    protected String getInterfaceWithServiceStatement(String rule) throws FilterParseException {
+        List<Table> tables = new ArrayList<Table>();
+
+        StringBuffer columns = new StringBuffer();
+        columns.append(addColumn(tables, "ipAddr"));
+        columns.append(", " + addColumn(tables, "serviceName"));
+        columns.append(", " + addColumn(tables, "nodeID"));
+
+        String where = parseRule(tables, rule);
+
+        String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+
+        return "SELECT DISTINCT " + columns.toString() + " " + from + " " + where;
     }
 
     /**
      * This method parses a rule and returns the SQL select statement equivalent
      * of the rule.
      *
-     * @return the sql select statement
+     * @return the SQL select statement
      */
-    protected String getSQLStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        return translation.getStatement();
-    }
+    protected String getSQLStatement(String rule) throws FilterParseException {
+        List<Table> tables = new ArrayList<Table>();
 
-    protected String getSQLStatement(String rule, long nodeId, String ipaddr, String service) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setConstraintTranslation(nodeId, ipaddr, service);
-        return translation.getStatement();
+        StringBuffer columns = new StringBuffer();
+        columns.append(addColumn(tables, "ipAddr"));
+
+        String where = parseRule(tables, rule);
+
+        String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+
+        return "SELECT DISTINCT " + columns.toString() + " " + from + " " + where;
     }
 
     /**
-     * This method is used to parse and valiate a rule into its graph tree. If
-     * the parser cannot validate the rule then an exception is generated.
+     * This method should be called if you want to put constraints on the node,
+     * interface or service that is returned in the rule. This is useful to see
+     * if a particular node, interface, or service matches in the rule, and is
+     * primarily used to filter notices. A sub-select is built containing joins
+     * constrained by node, interface, and service if they are not null or
+     * blank. This select is then ANDed with the filter rule to get the complete
+     * SQL statement.
      *
+     * @param nodeId
+     *            a node id to constrain against
+     * @param ipaddr
+     *            an ipaddress to constrain against
+     * @param service
+     *            a service name to constrain against
+     */
+    protected String getSQLStatement(String rule, long nodeId, String ipaddr, String service) throws FilterParseException {
+        List<Table> tables = new ArrayList<Table>();
+
+        StringBuffer columns = new StringBuffer();
+        columns.append(addColumn(tables, "ipAddr"));
+
+        StringBuffer where = new StringBuffer(parseRule(tables, rule));
+        if (nodeId != 0)
+            where.append(" AND " + addColumn(tables, "nodeID") + " = " + nodeId);
+        if (ipaddr != null && !ipaddr.equals(""))
+            where.append(" AND " + addColumn(tables, "ipAddr") + " = '" + ipaddr + "'");
+        if (service != null && !service.equals(""))
+            where.append(" AND " + addColumn(tables, "serviceName") + " = '" + service + "'");
+
+        String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+
+        return "SELECT DISTINCT " + columns.toString() + " " + from + " " + where;
+    }
+
+    /**
+     * SQL Key Word regex
+     *
+     * Binary Logic / Operators - \\s+(?:AND|OR|(?:NOT )?(?:LIKE|IN)|IS (?:NOT )?DISTINCT FROM)\\s+
+     * Unary Operators - \\s+IS (?:NOT )?NULL(?!\\w)
+     * Typecasts - ::(?:TIMESTAMP|INET)(?!\\w)
+     * Unary Logic - (?&lt;!\\w)NOT\\s+
+     * Functions - (?&lt;!\\w)IPLIKE(?=\\()
+     *
+     */
+    private static String sqlKeyWordRegex = "\\s+(?:AND|OR|(?:NOT )?(?:LIKE|IN)|IS (?:NOT )?DISTINCT FROM)\\s+|(?:\\s+IS (?:NOT )?NULL|::(?:TIMESTAMP|INET))(?!\\w)|(?<!\\w)(?:NOT\\s+|IPLIKE(?=\\())";
+
+    /**
+     * Generic method to parse and translate a rule into SQL.
+     *
+     * Only columns listed in database-schema.xml may be used in a filter
+     * (explicit "table.column" specification is not supported in filters)
+     *
+     * To differentiate column names from SQL key words (operators, functions, typecasts, etc)
+     * sqlKeyWordRegex must match any SQL key words that may be used in filters,
+     * and must not match any column names or prefixed values
+     *
+     * To make filter syntax more simple and intuitive than SQL
+     * - Filters support some aliases for common SQL key words / operators
+     *    "&amp;" or "&amp;&amp;" = "AND"
+     *    "|" or "||" = "OR"
+     *    "!" = "NOT"
+     *    "==" = "="
+     * - "IPLIKE" may be used as an operator instead of a function in filters ("ipAddr IPLIKE '*.*.*.*'")
+     *   When using "IPLIKE" as an operator, the value does not have to be quoted ("ipAddr IPLIKE *.*.*.*" is ok)
+     * - Some common SQL expressions may be generated by adding a (lower-case) prefix to an unquoted value in the filter
+     *    "isVALUE" = "serviceName = VALUE"
+     *    "notisVALUE" = interface does not support the specified service
+     *    "catincVALUE" = node is in the specified category
+     * - Double-quoted (") strings in filters are converted to single-quoted (') strings in SQL
+     *   SQL treats single-quoted strings as constants (values) and double-quoted strings as identifiers (columns, tables, etc)
+     *   So, all quoted strings in filters are treated as constants, and filters don't support quoted identifiers
+     *
+     * This function does not do complete syntax/grammar checking - that is left to the database itself - do not assume the output is valid SQL
+     *
+     * @param tables
+     *            a list to be populated with any tables referenced by the returned SQL
      * @param rule
-     *            The rule to parse.
+     *            the rule to parse
+     *
+     * @return an SQL WHERE clause
      *
      * @throws FilterParseException
-     *             Thrown if the rule cannot be parsed.
+     *             if any errors occur during parsing
      */
-    private Start parseRule(String rule) throws FilterParseException {
+    private String parseRule(List<Table> tables, String rule) throws FilterParseException {
         if (rule != null && rule.length() > 0) {
-            try {
-                // Create a Parser instance.
-                Parser p = new Parser(new Lexer(new PushbackReader(new StringReader(rule))));
+            String sqlRule = new String(rule);
+            Matcher regex;
+            List<String> extractedStrings = new ArrayList<String>();
+            StringBuffer tempStringBuff;
 
-                // Parse the input.
-                return p.parse();
-            } catch (Exception e) {
-                log().error("Failed to parse the filter rule '" + rule + "': " + e, e);
-                throw new FilterParseException("Parse error in rule '" + rule + "': " + e, e);
+            // Extract quoted strings from rule and convert double-quoted strings to single-quoted strings
+            // Quoted strings need to be extracted first to avoid accidentally matching/modifying anything within them
+            // As in SQL, pairs of quotes within a quoted string are treated as an escaped quote character:
+            //  'a''b' = a'b ; "a""b" = a"b ; 'a"b' = a"b ; "a'b" = a'b
+            regex = Pattern.compile("'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"").matcher(sqlRule);
+            tempStringBuff = new StringBuffer();
+            while (regex.find()) {
+                String tempString = regex.group();
+                if (tempString.charAt(0) == '"') {
+                    extractedStrings.add("'" + tempString.substring(1, tempString.length() - 1).replaceAll("\"\"", "\"").replaceAll("'", "''") + "'");
+                } else {
+                    extractedStrings.add(regex.group());
+                }
+                regex.appendReplacement(tempStringBuff, "###@" + (extractedStrings.size() - 1) + "@###");
             }
-        } else {
-            throw new FilterParseException("Parse error: rule is null or empty");
+            int tempIndex = tempStringBuff.length();
+            regex.appendTail(tempStringBuff);
+            if (tempStringBuff.substring(tempIndex).indexOf('\'') > -1) {
+                log().error("Unmatched ' in filter rule '" + rule + "'");
+                throw new FilterParseException("Unmatched ' in filter rule '" + rule + "'");
+            }
+            if (tempStringBuff.substring(tempIndex).indexOf('"') > -1) {
+                log().error("Unmatched \" in filter rule '" + rule + "'");
+                throw new FilterParseException("Unmatched \" in filter rule '" + rule + "'");
+            }
+            sqlRule = tempStringBuff.toString();
+
+            // Translate filter-specific operators to SQL operators
+            sqlRule = sqlRule.replaceAll("\\s*(?:&|&&)\\s*", " AND ");
+            sqlRule = sqlRule.replaceAll("\\s*(?:\\||\\|\\|)\\s*", " OR ");
+            sqlRule = sqlRule.replaceAll("\\s*!(?!=)\\s*", " NOT ");
+            sqlRule = sqlRule.replaceAll("==", "=");
+
+            // Translate IPLIKE operators to IPLIKE() functions
+            // If IPLIKE is already used as a function in the filter, this regex should not match it
+            regex = Pattern.compile("(\\w+)\\s+IPLIKE\\s+([0-9.*,-]+|###@\\d+@###)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(sqlRule);
+            tempStringBuff = new StringBuffer();
+            while (regex.find()) {
+                // Is the second argument already a quoted string?
+                if (regex.group().charAt(0) == '#') {
+                    regex.appendReplacement(tempStringBuff, "IPLIKE($1, $2)");
+                } else {
+                    regex.appendReplacement(tempStringBuff, "IPLIKE($1, '$2')");
+                }
+            }
+            regex.appendTail(tempStringBuff);
+            sqlRule = tempStringBuff.toString();
+
+            // Extract SQL key words to avoid identifying them as columns or prefixed values
+            regex = Pattern.compile(sqlKeyWordRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(sqlRule);
+            tempStringBuff = new StringBuffer();
+            while (regex.find()) {
+                extractedStrings.add(regex.group().toUpperCase());
+                regex.appendReplacement(tempStringBuff, "###@" + (extractedStrings.size() - 1) + "@###");
+            }
+            regex.appendTail(tempStringBuff);
+            sqlRule = tempStringBuff.toString();
+
+            // Identify prefixed values and columns
+            regex = Pattern.compile("[a-zA-Z0-9_\\-]*[a-zA-Z][a-zA-Z0-9_\\-]*").matcher(sqlRule);
+            tempStringBuff = new StringBuffer();
+            while (regex.find()) {
+                // Convert prefixed values to SQL expressions
+                if (regex.group().startsWith("is")) {
+                    regex.appendReplacement(tempStringBuff,
+                        addColumn(tables, "serviceName") + " = '" + regex.group().substring(2) + "'");
+                } else if (regex.group().startsWith("notis")) {
+                    regex.appendReplacement(tempStringBuff,
+                        addColumn(tables, "ipAddr") + " NOT IN (SELECT ifServices.ipAddr FROM ifServices, service WHERE service.serviceName ='" + regex.group().substring(5) + "' AND service.serviceID = ifServices.serviceID)");
+                } else if (regex.group().startsWith("catinc")) {
+                    regex.appendReplacement(tempStringBuff,
+                        addColumn(tables, "nodeID") + " IN (SELECT category_node.nodeID FROM category_node, categories WHERE categories.categoryID = category_node.categoryID AND categories.categoryName = '" + regex.group().substring(6) + "')");
+                } else {
+                    // Call addColumn() on each column
+                    regex.appendReplacement(tempStringBuff, addColumn(tables, regex.group()));
+                }
+            }
+            regex.appendTail(tempStringBuff);
+            sqlRule = tempStringBuff.toString();
+
+            // Merge extracted strings back into expression
+            regex = Pattern.compile("###@(\\d+)@###").matcher(sqlRule);
+            tempStringBuff = new StringBuffer();
+            while (regex.find())
+                regex.appendReplacement(tempStringBuff, regex.quoteReplacement(extractedStrings.get(Integer.parseInt(regex.group(1)))));
+            regex.appendTail(tempStringBuff);
+            sqlRule = tempStringBuff.toString();
+
+            return "WHERE " + sqlRule;
         }
+        return "";
+    }
+
+    /**
+     * Validate that a column is in the schema, add it's table to a list of tables,
+     * and return the full table.column name of the column.
+     *
+     * @param tables
+     *            a list of tables to add the column's table to
+     * @param column
+     *            the column to add
+     *
+     * @return table.column string
+     *
+     * @exception FilterParseException
+     *                if the column is not found in the schema
+     */
+    private String addColumn(List<Table> tables, String column) throws FilterParseException {
+        Table table = m_databaseSchemaConfigFactory.findTableByVisibleColumn(column);
+        if(table == null) {
+            log().error("Could not find the column '" + column +"' in filter rule");
+            throw new FilterParseException("Could not find the column '" + column +"' in filter rule");
+        }
+        if (!tables.contains(table))
+            tables.add(table);
+        return table.getName() + "." + column;
     }
 
 }
