@@ -73,26 +73,74 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class JdbcFilterDao implements FilterDao, InitializingBean {
-    private NodeDao m_nodeDao;
     private DataSource m_dataSource;
     private DatabaseSchemaConfigFactory m_databaseSchemaConfigFactory;
-    
+    private NodeDao m_nodeDao;
+
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+    }
+
+    public DataSource getDataSource() {
+        return m_dataSource;
+    }
+
+    public void setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory factory) {
+        m_databaseSchemaConfigFactory = factory;
+    }
+
+    public DatabaseSchemaConfigFactory getDatabaseSchemaConfigFactory() {
+        return m_databaseSchemaConfigFactory;
+    }
+
+    public void afterPropertiesSet() {
+        Assert.state(m_dataSource != null, "property dataSource cannot be null");
+        Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void walkMatchingNodes(String rule, EntityVisitor visitor) {
+        Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
+
+        SortedMap<Integer, String> map;
+        try {
+            map = getNodeMap(rule);
+        } catch (FilterParseException e) {
+            throw new DataRetrievalFailureException("Could not parse rule '" + rule + "': " + e, e);
+        }
+        if (log().isDebugEnabled()) {
+            log().debug("got " + map.size() + " results");
+        }
+
+        for (Integer nodeId : map.keySet()) {
+            OnmsNode node = getNodeDao().load(nodeId);
+            visitor.visitNode(node);
+        }
+    }
+
     /**
      * This method returns a map of all nodeids and nodelabels that match
      * the rule that is passed in, sorted by nodeid.
-     * 
+     *
      * @param rule
      *            an expression rule to be parsed and executed.
-     * 
+     *
      * @return SortedMap containing all nodeids/nodelabels selected by the rule.
-     * 
+     *
      * @exception FilterParseException
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
      */
     public SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException {
         SortedMap<Integer, String> resultMap = new TreeMap<Integer, String>();
-        String sqlString = null;
+        String sqlString;
 
         if (log().isDebugEnabled()) {
             log().debug("Filter: rule: " + rule);
@@ -129,9 +177,12 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 stmt.close();
             } catch (SQLException e) {
             }
+        } catch (FilterParseException e) {
+            log().info("Filter Parse Exception occurred getting node map: " + e, e);
+            throw new FilterParseException("Filter Parse Exception occurred getting node map: " + e);
         } catch (SQLException e) {
-            log().info("SQL Exception occured getting node map: " + e, e);
-            throw new UndeclaredThrowableException(e);
+            log().info("SQL Exception occurred getting node map: " + e, e);
+            throw new FilterParseException("SQL Exception occurred getting node map: " + e);
         } catch (Exception e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
@@ -146,51 +197,29 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         return resultMap;
     }
-    
-    private final Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
-    public void afterPropertiesSet() {
-        Assert.state(m_dataSource != null, "property dataSource cannot be null");
-        Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
-    }
-    
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public DataSource getDataSource() {
-        return m_dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
-    
-    public void setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory factory) {
-        m_databaseSchemaConfigFactory = factory;
-    }
-
-    public DatabaseSchemaConfigFactory getDatabaseSchemaConfigFactory() {
-        return m_databaseSchemaConfigFactory;
-    }
-    
-    public Map<String, Set<String>> getIPServiceMap(String rule) {
+    public Map<String, Set<String>> getIPServiceMap(String rule) throws FilterParseException {
         Map<String, Set<String>> ipServices = new TreeMap<String, Set<String>>();
+        String sqlString;
+
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
+        }
 
         // get the database connection
         Connection conn = null;
         try {
             conn = getDataSource().getConnection();
 
-            // execute query and return the list of ip addresses
+            // parse the rule and get the sql select statement
+            sqlString = getIPServiceMappingStatement(rule);
+            if (log().isDebugEnabled()) {
+                log().debug("Filter: SQL statement: " + sqlString);
+            }
+
+            // execute query
             Statement stmt = conn.createStatement();
-            ResultSet rset = stmt.executeQuery(getIPServiceMappingStatement(rule));
+            ResultSet rset = stmt.executeQuery(sqlString);
 
             // fill up the array list if the result set has values
             if (rset != null) {
@@ -201,7 +230,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                     if (!ipServices.containsKey(ipaddr)) {
                         ipServices.put(ipaddr, new TreeSet<String>());
                     }
-                    
+
                     ipServices.get(ipaddr).add(rset.getString(2));
                 }
             }
@@ -215,9 +244,12 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 stmt.close();
             } catch (SQLException e) {
             }
+        } catch (FilterParseException e) {
+            log().info("Filter Parse Exception occurred getting IP Service List: " + e, e);
+            throw new FilterParseException("Filter Parse Exception occurred getting IP Service List: " + e);
         } catch (SQLException e) {
-            log().info("SQL Exception occured getting IP List: " + e, e);
-            throw new UndeclaredThrowableException(e);
+            log().info("SQL Exception occurred getting IP Service List: " + e, e);
+            throw new FilterParseException("SQL Exception occurred getting IP Service List: " + e);
         } catch (Exception e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
@@ -236,19 +268,23 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     /**
      * This method returns a list of all ip addresses that match the rule that
      * is passed in.
-     * 
+     *
      * @param rule
      *            an expression rule to be parsed and executed.
-     * 
+     *
      * @return interface containing all ip addresses selected by the rule.
-     * 
+     *
      * @exception FilterParseException
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
      */
     public List<String> getIPList(String rule) throws FilterParseException {
         List<String> resultList = new ArrayList<String>();
-        String sqlString = null;
+        String sqlString;
+
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
+        }
 
         // get the database connection
         Connection conn = null;
@@ -282,9 +318,12 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 stmt.close();
             } catch (SQLException e) {
             }
+        } catch (FilterParseException e) {
+            log().info("Filter Parse Exception occurred getting IP List: " + e, e);
+            throw new FilterParseException("Filter Parse Exception occurred getting IP List: " + e);
         } catch (SQLException e) {
-            log().info("SQL Exception occured getting IP List: " + e, e);
-            throw new UndeclaredThrowableException(e);
+            log().info("SQL Exception occurred getting IP List: " + e, e);
+            throw new FilterParseException("SQL Exception occurred getting IP List: " + e);
         } catch (Exception e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
@@ -301,15 +340,15 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     /**
-     * This method verifies if an ip address adhers to a given rule.
-     * 
+     * This method verifies if an ip address adheres to a given rule.
+     *
      * @param addr
      *            an octet string ip to be validated against a rule.
      * @param rule
      *            an expression rule to be parsed and executed.
-     * 
+     *
      * @return indicating that the ip is included in the rule
-     * 
+     *
      * @exception FilterParseException
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement.
@@ -326,17 +365,123 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         }
     }
 
+    public boolean isRuleMatching(String rule) throws FilterParseException {
+        boolean matches = false;
+        String sqlString;
+
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
+        }
+
+        // get the database connection
+        Connection conn = null;
+        try {
+            conn = getDataSource().getConnection();
+
+            // parse the rule and get the sql select statement
+            Start parseTree = parseRule(rule);
+            SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+            translation.setLimitCount(1);
+            sqlString = translation.getStatement();
+            if (log().isDebugEnabled()) {
+                log().debug("Filter: SQL statement: \n" + sqlString);
+            }
+
+            // execute query and return the list of ip addresses
+            Statement stmt = conn.createStatement();
+            ResultSet rset = stmt.executeQuery(sqlString);
+
+            // we only want to check if zero or one rows were fetched, so just
+            // return the output from rset.next()
+            matches = rset.next();
+
+            try {
+                rset.close();
+            } catch (SQLException e) {
+            }
+
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+
+            if (log().isDebugEnabled()) {
+                log().debug("isRuleMatching: rule \"" + rule + "\" " + (matches ? "matches" : "does not match") + " an entry in the database");
+            }
+        } catch (FilterParseException e) {
+            log().info("Filter Parse Exception occurred testing rule \"" + rule + "\" for matching results: " + e, e);
+            throw new FilterParseException("Filter Parse Exception occurred testing rule \"" + rule + "\" for matching results: " + e);
+        } catch (SQLException e) {
+            log().warn("SQL Exception occurred testing rule \""+ rule + "\" for matching results: " + e, e);
+            throw new FilterParseException("SQL Exception occurred testing rule \""+ rule + "\" for matching results: " + e);
+        } catch (Exception e) {
+            log().fatal("Exception getting database connection: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+    }
+
     public void validateRule(String rule) throws FilterParseException {
         getSQLStatement(rule);
     }
-    
+
+    private final Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    protected String getNodeMappingStatement(String rule) {
+        Start parseTree = parseRule(rule);
+        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+        translation.setNodeMappingTranslation();
+        return translation.getStatement();
+    }
+
+    protected String getIPServiceMappingStatement(String rule) {
+        Start parseTree = parseRule(rule);
+        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+        translation.setIPServiceMappingTranslation();
+        return translation.getStatement();
+    }
+
+    protected String getInterfaceWithServiceStatement(String rule) {
+        Start parseTree = parseRule(rule);
+        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+        translation.setInterfaceWithServiceTranslation();
+        return translation.getStatement();
+    }
+
+    /**
+     * This method parses a rule and returns the SQL select statement equivalent
+     * of the rule.
+     *
+     * @return the sql select statement
+     */
+    protected String getSQLStatement(String rule) {
+        Start parseTree = parseRule(rule);
+        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+        return translation.getStatement();
+    }
+
+    protected String getSQLStatement(String rule, long nodeId, String ipaddr, String service) {
+        Start parseTree = parseRule(rule);
+        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
+        translation.setConstraintTranslation(nodeId, ipaddr, service);
+        return translation.getStatement();
+    }
+
     /**
      * This method is used to parse and valiate a rule into its graph tree. If
      * the parser cannot validate the rule then an exception is generated.
-     * 
+     *
      * @param rule
      *            The rule to parse.
-     * 
+     *
      * @throws FilterParseException
      *             Thrown if the rule cannot be parsed.
      */
@@ -356,116 +501,5 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             throw new FilterParseException("Parse error: rule is null or empty");
         }
     }
-    
-    /**
-     * This method parses a rule and returns the SQL select statement equivalent
-     * of the rule.
-     * 
-     * @return the sql select statement
-     */
-    protected String getSQLStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        return translation.getStatement();
-    }
 
-    protected String getSQLStatement(String rule, long nodeId, String ipaddr, String service) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setConstraintTranslation(nodeId, ipaddr, service);
-        return translation.getStatement();
-    }
-
-    protected String getIPServiceMappingStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setIPServiceMappingTranslation();
-        return translation.getStatement();
-    }
-
-    protected String getNodeMappingStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setNodeMappingTranslation();
-        return translation.getStatement();
-    }
-
-    protected String getInterfaceWithServiceStatement(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setInterfaceWithServiceTranslation();
-        return translation.getStatement();
-    }
-    
-    public boolean isRuleMatching(String rule) {
-        Start parseTree = parseRule(rule);
-        SQLTranslation translation = new SQLTranslation(parseTree, getDatabaseSchemaConfigFactory());
-        translation.setLimitCount(1);
-        
-        String sql = translation.getStatement();
-        
-        
-        
-        Connection conn = null;
-        
-        try {
-            conn = getDataSource().getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rows = stmt.executeQuery(sql);
-            
-            /**
-             * We only want to check if zero or one rows were fetched, so just
-             * return the output from rows.next(); 
-             */
-            boolean matches = rows.next();
-    
-            try {
-                rows.close();
-            } catch (SQLException e) {
-            }
-    
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
-            
-            if (log().isDebugEnabled()) {
-                log().debug("isRuleMatching: rule \"" + rule + "\" does " + (matches ? "" : "not ") + "match an entry in the database; converted to SQL: " + sql);
-            }
-
-            return matches;
-        } catch (SQLException e) {
-            log().warn("SQL Exception occured testing rule \""+ rule + "\" ("+sql+") for matching results: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        } catch (Exception e) {
-            log().fatal("Exception getting database connection: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
-    }
-
-    public void walkMatchingNodes(String rule, EntityVisitor visitor) {
-        Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
-
-        SortedMap<Integer, String> map;
-        try {
-            map = getNodeMap(rule);
-        } catch (FilterParseException e) {
-            throw new DataRetrievalFailureException("Could not parse rule '" + rule + "': " + e, e);
-        }
-        if (log().isDebugEnabled()) {
-            log().debug("got " + map.size() + " results");
-        }
-        
-        for (Integer nodeId : map.keySet()) {
-            OnmsNode node = getNodeDao().load(nodeId);
-            visitor.visitNode(node);
-        }
-    }
 }

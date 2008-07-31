@@ -28,11 +28,11 @@
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:join"/>
-        
+
         <element maxOccurs="unbounded" minOccurs="1" ref="this:column"/>
       </sequence>
 
-      <attribute default="true" name="visable" use="optional">
+      <attribute default="true" name="visible" use="optional">
         <simpleType>
           <restriction base="string">
             <pattern value="(true|false)"/>
@@ -66,7 +66,7 @@
 
       <attribute name="java-type" type="string" use="optional"/>
 
-      <attribute default="true" name="visable" use="optional">
+      <attribute default="true" name="visible" use="optional">
         <simpleType>
           <restriction base="string">
             <pattern value="(true|false)"/>
@@ -92,6 +92,14 @@
 
   <element name="join">
     <complexType>
+      <attribute default="inner" name="type" use="optional">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(inner|left|right|full)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
       <attribute name="column" type="string" use="required"/>
 
       <attribute name="table" type="string" use="required"/>
