@@ -3,13 +3,14 @@
 //
 // OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
 //
+// 2008 Jan 08: Use JOIN rather than WHERE to join tables, to allow outer joins
 // 2007 Jul 03: Use Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -22,13 +23,13 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
+//
+// For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
 //      http://www.opennms.com/
@@ -62,12 +63,12 @@ import org.opennms.netmgt.config.filter.Table;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * database schemafor the filters from the database-schema xml file.
- * 
+ * database schema for the filters from the database-schema xml file.
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
@@ -102,7 +103,7 @@ public final class DatabaseSchemaConfigFactory {
 
     /**
      * Private constructor
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
@@ -115,26 +116,24 @@ public final class DatabaseSchemaConfigFactory {
 
         parseXML(cfgIn);
 
-
         cfgIn.close();
-	}
-    
+    }
+
     public DatabaseSchemaConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
         parseXML(reader);
     }
 
     private void parseXML(Reader rdr) throws IOException, MarshalException, ValidationException {
-    
+
         m_config = (DatabaseSchema) Unmarshaller.unmarshal(DatabaseSchema.class, rdr);
-    
+
         finishConstruction();
-    
     }
 
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
@@ -158,7 +157,7 @@ public final class DatabaseSchemaConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
@@ -175,9 +174,9 @@ public final class DatabaseSchemaConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -187,7 +186,7 @@ public final class DatabaseSchemaConfigFactory {
 
         return m_singleton;
     }
-    
+
     public static synchronized void setInstance(DatabaseSchemaConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
@@ -195,7 +194,7 @@ public final class DatabaseSchemaConfigFactory {
 
     /**
      * Return the database schema.
-     * 
+     *
      * @return the database schema
      */
     public synchronized DatabaseSchema getDatabaseSchema() {
@@ -206,14 +205,14 @@ public final class DatabaseSchemaConfigFactory {
      * This method is used to find the table that should drive the construction
      * of the join clauses between all table in the from clause. At least one
      * table has to be designated as the driver table.
-     * 
+     *
      * @return The name of the driver table
      */
     public Table getPrimaryTable() {
         Enumeration<Table> e = getDatabaseSchema().enumerateTable();
         while (e.hasMoreElements()) {
             Table t = e.nextElement();
-            if (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true")) {
+            if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
                 if (t.getKey() != null && t.getKey().equals("primary")) {
                     return t;
                 }
@@ -223,149 +222,14 @@ public final class DatabaseSchemaConfigFactory {
     }
 
     /**
-     * Find a table using its name as the search key.
-     * 
-     * @param name
-     *            the name of the table to find
-     * @return the table if it is found, null otherwise.
-     */
-    public Table getTableByName(String name) {
-        Enumeration<Table> e = getDatabaseSchema().enumerateTable();
-        while (e.hasMoreElements()) {
-            Table t = e.nextElement();
-            if (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true")) {
-                if (t.getName() != null && t.getName().equals(name)) {
-                    return t;
-                }
-            }
-        }
-        return null;
-
-    }
-
-    /**
-     * Find the table which has a visible column named 'colName'
-     * 
-     * @param the
-     *            name of the column to search for
-     * @return the table containing column 'colName', null if colName is not a
-     *         valid column or if is not visible.
-     * 
-     */
-    public Table findTableByVisableColumn(String colName) {
-        Table table = null;
-
-        Enumeration<Table> etbl = getDatabaseSchema().enumerateTable();
-        OUTER: while (etbl.hasMoreElements()) {
-            Table t = etbl.nextElement();
-            Enumeration<Column> ecol = t.enumerateColumn();
-            while (ecol.hasMoreElements()) {
-                Column col = ecol.nextElement();
-                if (col.getVisable() == null || col.getVisable().equalsIgnoreCase("true")) {
-                    if (col.getName().equalsIgnoreCase(colName)) {
-                        table = t;
-                        break OUTER;
-                    }
-                }
-            }
-        }
-
-        return table;
-    }
-
-    /**
-     * Return a count of the number of tables defined.
-     * 
-     * @return the number of tables in the schema
-     */
-    public int getTableCount() {
-        return getDatabaseSchema().getTableCount();
-    }
-
-    /**
-     * Construct a joining expression necessary to join the given table to the
-     * primary table.
-     * 
-     * @param t
-     *            the table to create the expression for
-     * @return a string representing the joining expression or "" if no
-     *         expression is found
-     */
-    public String constructJoinExprForTable(Table t) {
-        StringBuffer buf = new StringBuffer();
-
-        // change this to use getPrimaryJoinsForTable
-        Join[] joins = getPrimaryJoinsForTable(t);
-        for (int i = 0; i < joins.length; i++) {
-            Join j = joins[i];
-            if (i != 0)
-                buf.append(" AND ");
-            buf.append(i == 0 ? t.getName() : joins[i - 1].getTable()).append('.').append(j.getColumn());
-            buf.append(" = ");
-            buf.append(j.getTable()).append('.').append(j.getTableColumn());
-        }
-        return buf.toString();
-    }
-
-    /**
-     * Returns an array of the names of tables involved in a join of the given
-     * table and the primary. The tables are listing in order starting with
-     * primary and moving 'toward' the given table.
-     * 
-     * @param t
-     *            the Table to join
-     * @return an array containing the names of the tables involved. If t is the
-     *         primary or there is no join that reaches the primary table from
-     *         t, then join list is a zero-length aarray
-     */
-    public String[] getJoinTablesForTable(Table t) {
-        Join[] joins = getPrimaryJoinsForTable(t);
-        String[] tables = new String[joins.length + 1];
-        tables[joins.length] = t.getName();
-        for (int i = 0; i < joins.length; i++) {
-            // put these in reverse order so they are from primary toward 't'
-            tables[joins.length - 1 - i] = joins[i].getTable();
-        }
-        return tables;
-    }
-
-    /**
-     * Get the sequence of joins that are necessary to joint table t to the
-     * primary table.
-     * 
-     * @param t
-     *            the table to join
-     * @return a list of the join objects for all the tables between the given
-     *         table and the primary or a zero-length array if t is the primary
-     *         or no join exists.
-     */
-    public Join[] getPrimaryJoinsForTable(Table t) {
-        Table primary = getPrimaryTable();
-
-        Join j = m_primaryJoins.get(t.getName());
-        List<Join> joins = new ArrayList<Join>();
-        while (j != null && j.getTable() != null && !j.getTable().equals(primary.getName())) {
-            joins.add(j);
-            j = m_primaryJoins.get(j.getTable());
-        }
-
-        if (j != null) {
-            joins.add(j);
-        }
-
-        return joins.toArray(new Join[joins.size()]);
-    }
-
-    /**
-     * 
+     * Construct m_primaryJoins
      */
     private void finishConstruction() {
-        Table primary = getPrimaryTable();
         Set<String> joinableSet = new HashSet<String>();
         Map<String, Join> primaryJoins = new HashMap<String, Join>();
-        joinableSet.add(primary.getName());
-        int joinableCount = 0;
+        joinableSet.add(getPrimaryTable().getName());
         // loop until we stop adding entries to the set
+        int joinableCount = 0;
         while (joinableCount < joinableSet.size()) {
             joinableCount = joinableSet.size();
             Set<String> newSet = new HashSet<String>(joinableSet);
@@ -373,7 +237,7 @@ public final class DatabaseSchemaConfigFactory {
             // for each table not already in the set
             while (e.hasMoreElements()) {
                 Table t = e.nextElement();
-                if (!joinableSet.contains(t.getName()) && (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true"))) {
+                if (!joinableSet.contains(t.getName()) && (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true"))) {
                     Enumeration<Join> ejoin = t.enumerateJoin();
                     // for each join does it join a table in the set?
                     while (ejoin.hasMoreElements()) {
@@ -392,4 +256,120 @@ public final class DatabaseSchemaConfigFactory {
         m_primaryJoins = Collections.synchronizedMap(primaryJoins);
     }
 
+    /**
+     * Find a table using its name as the search key.
+     *
+     * @param name
+     *            the name of the table to find
+     * @return the table if it is found, null otherwise.
+     */
+    public Table getTableByName(String name) {
+        Enumeration<Table> e = getDatabaseSchema().enumerateTable();
+        while (e.hasMoreElements()) {
+            Table t = e.nextElement();
+            if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
+                if (t.getName() != null && t.getName().equals(name)) {
+                    return t;
+                }
+            }
+        }
+        return null;
+
+    }
+
+    /**
+     * Find the table which has a visible column named 'colName'
+     *
+     * @param the
+     *            name of the column to search for
+     * @return the table containing column 'colName', null if colName is not a
+     *         valid column or if is not visible.
+     *
+     */
+    public Table findTableByVisibleColumn(String colName) {
+        Table table = null;
+
+        Enumeration<Table> etbl = getDatabaseSchema().enumerateTable();
+        OUTER: while (etbl.hasMoreElements()) {
+            Table t = etbl.nextElement();
+            Enumeration<Column> ecol = t.enumerateColumn();
+            while (ecol.hasMoreElements()) {
+                Column col = ecol.nextElement();
+                if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
+                    if (col.getName().equalsIgnoreCase(colName)) {
+                        table = t;
+                        break OUTER;
+                    }
+                }
+            }
+        }
+
+        return table;
+    }
+
+    /**
+     * Return a count of the number of tables defined.
+     *
+     * @return the number of tables in the schema
+     */
+    public int getTableCount() {
+        return getDatabaseSchema().getTableCount();
+    }
+
+    /**
+     * Return the sequence of tables necessary to join the primary table to the
+     * given tables.
+     *
+     * @param tables
+     *            list of Tables to join
+     * @return a list of table names, starting with the primary table, going
+     *         to each of the given tables, or a zero-length array if no join
+     *         exists or only the primary table was specified
+     */
+    public List<String> getJoinTables(List<Table> tables) {
+        List<String> joinedTables = new ArrayList<String>();
+
+        for (int i = 0; i < tables.size(); i++) {
+            int insertPosition = joinedTables.size();
+            String currentTable = tables.get(i).getName();
+            while (currentTable != null && !joinedTables.contains(currentTable)) {
+                joinedTables.add(insertPosition, currentTable);
+                Join next = m_primaryJoins.get(currentTable);
+                if (next != null) {
+                    currentTable = next.getTable();
+                } else {
+                    currentTable = null;
+                }
+            }
+        }
+
+        return joinedTables;
+    }
+
+    /**
+     * Construct a SQL FROM clause joining the given tables to the primary table.
+     *
+     * @param tables
+     *            list of Tables to join
+     * @return an SQL FROM clause or "" if no expression is found
+     */
+    public String constructJoinExprForTables(List<Table> tables) {
+        StringBuffer joinExpr = new StringBuffer();
+
+        List<String> joinTables = getJoinTables(tables);
+        joinExpr.append(joinTables.get(0));
+        for (int i = 1; i < joinTables.size(); i++) {
+            Join currentJoin = m_primaryJoins.get(joinTables.get(i));
+            if (currentJoin.getType() != null && !currentJoin.getType().equalsIgnoreCase("inner")) {
+              joinExpr.append(" " + currentJoin.getType().toUpperCase());
+            }
+            joinExpr.append(" JOIN " + joinTables.get(i) + " ON (");
+            joinExpr.append(currentJoin.getTable() + "." + currentJoin.getTableColumn() + " = ");
+            joinExpr.append(joinTables.get(i) + "." + currentJoin.getColumn() + ")");
+        }
+
+        if (joinExpr.length() > 0)
+            return "FROM " + joinExpr.toString();
+        return "";
+    }
 }
