@@ -39,12 +39,14 @@
               <artifactItems>
                <artifactItem>
                  <groupId>org.opennms</groupId>
-                 <artifactId>opennms-webstart</artifactId>
+                 <artifactId>opennms-remote-poller</artifactId>
                  <version>${project.version}</version>
                  <type>zip</type>
                  <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart</outputDirectory>
                </artifactItem>
               </artifactItems>
+              <excludes>**/*</excludes>
+              <includes>*.jar,*.jnlp</includes>
             </configuration>
           </execution>
         </executions>
