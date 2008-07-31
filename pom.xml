@@ -102,6 +102,7 @@
     <module>opennms-config</module>
     <module>opennms-services</module>
     <module>opennms-remote-poller</module>
+    <module>opennms-integration-otrs</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
@@ -769,6 +770,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-integration-otrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-install</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -887,6 +893,11 @@
         <version>1.0</version>
       </dependency>
       <dependency>
+        <groupId>axis</groupId>
+        <artifactId>axis</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
         <groupId>batik</groupId>
         <artifactId>batik-dom</artifactId>
         <version>1.5</version>
@@ -954,6 +965,11 @@
         <version>1.1</version>
       </dependency>
       <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>1.5</version>
+      </dependency>
+      <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
         <version>1.2</version>
@@ -971,7 +987,7 @@
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-        <version>2.1</version>
+        <version>2.3</version>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
