@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <datacollection-config rrdRepository="/space/svn/trunk/target/opennms-1.3.3-SNAPSHOT/share/rrd/snmp/">
-  <snmp-collection name="default" maxVarsPerPdu="10" snmpStorageFlag="select">
+  <snmp-collection name="default" snmpStorageFlag="select">
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:8928</rra>
       <rra>RRA:AVERAGE:0.5:12:8784</rra>
