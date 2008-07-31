@@ -33,10 +33,12 @@
  */
 package org.opennms.netmgt.ticketd;
 
+import org.opennms.api.integration.ticketing.*;
+import org.opennms.api.integration.ticketing.Ticket.State;
+
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.netmgt.ticketd.Ticket.State;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -51,7 +53,7 @@ import org.springframework.util.Assert;
 public class DefaultTicketerServiceLayer implements TicketerServiceLayer, InitializingBean {
 	
 	private AlarmDao m_alarmDao;
-    private TicketerPlugin m_ticketerPlugin;
+    private Plugin m_ticketerPlugin;
 
 	/**
 	 * Needs access to the AlarmDao.
@@ -63,12 +65,12 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	}
     
     /**
-     * Needs access to the TicketerPlugin API implementation for
+     * Needs access to the ticketer Plugin API implementation for
      * communication with the HelpDesk.
      * 
      * @param ticketerPlugin
      */
-    public void setTicketerPlugin(TicketerPlugin ticketerPlugin) {
+    public void setTicketerPlugin(Plugin ticketerPlugin) {
         m_ticketerPlugin = ticketerPlugin;
     }
     

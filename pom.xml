@@ -681,6 +681,11 @@
         <artifactId>service-registration</artifactId>
         <version>0.3</version>
       </dependency>
+      <dependency>
+        <groupId>org.opennms.api.integration</groupId>
+        <artifactId>opennms-ticketing</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
 
       <!--  opennms dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
@@ -1316,6 +1321,17 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-releases</id>
+      <name>OpenNMS Maven Release Repository</name>
+      <url>http://repo.opennms.org/releases</url>
     </repository>
     <repository>
       <snapshots>

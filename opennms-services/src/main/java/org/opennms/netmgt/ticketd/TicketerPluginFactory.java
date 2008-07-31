@@ -35,8 +35,8 @@
  */
 package org.opennms.netmgt.ticketd;
 
-
 import org.springframework.beans.factory.FactoryBean;
+import org.opennms.api.integration.ticketing.*;
 
 /**
  * 
@@ -46,7 +46,7 @@ import org.springframework.beans.factory.FactoryBean;
 public class TicketerPluginFactory implements FactoryBean {
 
     private Class m_pluginClass;
-    private TicketerPlugin m_ticketerPlugin;
+    private Plugin m_ticketerPlugin;
 
     public void setPluginClass(Class pluginClass) {
         m_pluginClass = pluginClass;
@@ -56,18 +56,18 @@ public class TicketerPluginFactory implements FactoryBean {
         if (m_pluginClass == null) {
             throw new IllegalStateException("pluginClass must be set");
         }
-        if (!TicketerPlugin.class.isAssignableFrom(m_pluginClass)) {
+        if (!Plugin.class.isAssignableFrom(m_pluginClass)) {
             throw new IllegalArgumentException("The class "+m_pluginClass+" is not assignable to TicketPlugin class");
         }
         if (m_ticketerPlugin == null) {
-            m_ticketerPlugin = (TicketerPlugin)m_pluginClass.newInstance();
+            m_ticketerPlugin = (Plugin)m_pluginClass.newInstance();
         }
         return m_ticketerPlugin;
         
     }
 
     public Class getObjectType() {
-        return (m_pluginClass == null ? TicketerPlugin.class : m_pluginClass);
+        return (m_pluginClass == null ? Plugin.class : m_pluginClass);
     }
 
     public boolean isSingleton() {
