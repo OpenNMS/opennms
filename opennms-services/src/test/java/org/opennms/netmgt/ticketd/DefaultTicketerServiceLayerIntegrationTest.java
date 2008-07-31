@@ -44,6 +44,8 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 
+import org.opennms.api.integration.ticketing.*;
+
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -119,7 +121,7 @@ public class DefaultTicketerServiceLayerIntegrationTest extends
         
     }
     
-    public static class TestTicketerPlugin implements TicketerPlugin {
+    public static class TestTicketerPlugin implements Plugin {
         
         public Ticket get(String ticketId) {
             Ticket ticket = new Ticket();

@@ -41,6 +41,8 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.test.mock.EasyMockUtils;
 
+import org.opennms.api.integration.ticketing.*;
+
 import junit.framework.TestCase;
 
 /**
@@ -54,7 +56,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
     private DefaultTicketerServiceLayer m_defaultTicketerServiceLayer;
     private EasyMockUtils m_easyMockUtils;
     private AlarmDao m_alarmDao;
-    private TicketerPlugin m_ticketerPlugin;
+    private Plugin m_ticketerPlugin;
     private OnmsAlarm m_alarm;
     private Ticket m_ticket;
 
@@ -68,7 +70,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
         m_easyMockUtils = new EasyMockUtils();
         m_alarmDao = m_easyMockUtils.createMock(AlarmDao.class);
         m_defaultTicketerServiceLayer.setAlarmDao(m_alarmDao);
-        m_ticketerPlugin = m_easyMockUtils.createMock(TicketerPlugin.class);
+        m_ticketerPlugin = m_easyMockUtils.createMock(Plugin.class);
         m_defaultTicketerServiceLayer.setTicketerPlugin(m_ticketerPlugin);
         m_alarm = new OnmsAlarm();
         m_alarm.setId(1);
