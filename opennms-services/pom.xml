@@ -126,6 +126,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.api.integration</groupId>
+      <artifactId>opennms-ticketing</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
     </dependency>

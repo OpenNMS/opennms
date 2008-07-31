@@ -33,6 +33,8 @@
  */
 package org.opennms.netmgt.ticketd;
 
+import org.opennms.api.integration.ticketing.*;
+
 /**
  * OpenNMS Trouble Ticket Plugin API implementation used as a no-op when not custom
  * tickeing plugin is implemented... Allows the daemon to be started without having
@@ -42,7 +44,7 @@ package org.opennms.netmgt.ticketd;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class NullTicketerPlugin implements TicketerPlugin {
+public class NullTicketerPlugin implements Plugin {
 
     public Ticket get(String ticketId) {
         Ticket ticket = new Ticket();

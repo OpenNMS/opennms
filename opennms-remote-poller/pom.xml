@@ -25,7 +25,7 @@
             <artifactId>keytool-maven-plugin</artifactId>
             <executions>
               <execution>
-                <phase>generate-resources</phase>
+                <phase>prepare-package</phase>
                 <goals>
                   <goal>genkey</goal>
                 </goals>
