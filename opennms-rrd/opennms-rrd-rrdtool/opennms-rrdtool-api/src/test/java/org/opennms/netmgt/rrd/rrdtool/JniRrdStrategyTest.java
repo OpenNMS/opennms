@@ -38,12 +38,10 @@
 package org.opennms.netmgt.rrd.rrdtool;
 
 import java.io.File;
-import java.io.FileFilter;
 
 import junit.framework.TestCase;
 
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.util.StringUtils;
 
 /**
  * Unit tests for the JniRrdStrategy.  This requires that the shared object
