@@ -136,6 +136,7 @@
     <div class="boxWrapper">
       <ul class="plain">  
         <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a></li>
+        <li><a href="admin/sysconfig.jsp">System Information</a></li>
       </ul>
     </div>
 
