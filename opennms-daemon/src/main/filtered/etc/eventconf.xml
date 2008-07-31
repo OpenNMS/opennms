@@ -1540,6 +1540,20 @@
   </event>
   
   <event>
+    <uei>uei.opennms.org/troubleTicket/communicationError</uei>
+    <event-label>OpenNMS defined trouble ticket event: A communication error occurred</event-label>
+    <descr>
+      This event is generated when OpenNMS is unable to retrive, save or update a ticket
+      via the Trouble Ticket API.
+    </descr>
+    <logmsg dest='logndisplay'>
+      A communication error occurred between OpenNMS and the Trouble Ticket system.
+      Communications failed with reason: %parm[reason]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  
+  <event>
     <uei>uei.opennms.org/internal/promoteQueueData</uei>
     <event-label>OpenNMS defined event: A request has been made promote data from the RRD Queue</event-label>
     <descr>
