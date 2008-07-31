@@ -121,11 +121,6 @@ public class JMXNodeCollector {
     private String m_primaryIf;
 
     /**
-     * Max number of variables permitted in a single outgoing JMX PDU request..
-     */
-    private int m_maxVarsPerPdu;
-
-    /**
      * The default constructor is marked private and will always throw an
      * exception. This is done to disallow the default constructor. The reason
      * is that this object requires several arguments to perform it's duties.
@@ -149,10 +144,8 @@ public class JMXNodeCollector {
      *            The object signaled when data collection is done.
      * @param objList
      *            The list of object id's to be collected.
-     * @param maxVarsPerPdu
-     *            Max number of vars permitted in a single PDU
      */
-    public JMXNodeCollector(List objList, int maxVarsPerPdu) {
+    public JMXNodeCollector(List objList) {
         super();
 
         // Log4j category
@@ -174,10 +167,9 @@ public class JMXNodeCollector {
         */
         m_objList = objList;
         m_oidListIndex = 0;
-        m_maxVarsPerPdu = maxVarsPerPdu;
 
         if (log.isDebugEnabled())
-            log.debug("JMXNodeCollector: totalOids=" + objList.size() + " maxVarsPerPdu=" + maxVarsPerPdu);
+            log.debug("JMXNodeCollector: totalOids=" + objList.size());
 
     }
 
