@@ -147,12 +147,13 @@ final public class FtpMonitor extends IPv4Monitor {
         // Extract the address
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log().isDebugEnabled()) {
-            log().debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + tracker);
-        }
-
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
+
+            if (log().isDebugEnabled()) {
+                log().debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + tracker);
+            }
+
             Socket socket = null;
             try {
                 // create a connected socket
@@ -173,6 +174,7 @@ final public class FtpMonitor extends IPv4Monitor {
                 if (bannerResponse.isSuccess()) {
                     // Attempt to login if userid and password available
                     boolean loggedInSuccessfully = false;
+                    log().debug("FtpMonitor: Banner response successful.");
                     if (userid == null || userid.length() == 0 || password == null || password.length() == 0) {
                         loggedInSuccessfully = true;
                     } else {
@@ -180,7 +182,8 @@ final public class FtpMonitor extends IPv4Monitor {
 
                         FtpResponse userResponse = FtpResponse.readResponse(lineRdr);
 
-                        if (userResponse.isSuccess()) {
+                        if (userResponse.isSuccess() || userResponse.isIntermediate()) {
+                            log().debug("FtpMonitor: User response successful.");
                             FtpResponse.sendCommand(socket, "PASS " + password);
                             
                             FtpResponse passResponse = FtpResponse.readResponse(lineRdr);

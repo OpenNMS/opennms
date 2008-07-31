@@ -3888,6 +3888,334 @@ by ciscoEnvMonVoltageState.&lt;/p&gt;&lt;table&gt;
 			<mename>specific</mename>
 			<mevalue>7</mevalue>
 		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotifNormal</uei>
+	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
+	<descr>
+&lt;p&gt;A ciscoEnvMonTempStatusChangeNotif is sent if there 
+is change in the state of a device being monitored
+by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		normal(1)
+		warning(2)
+		critical(3)
+		shutdown(4)
+		notPresent(5)
+		notFunctioning(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Cisco Event: ciscoEnvMonTempStatusChangeNotif trap received 
+			ciscoEnvMonTemperatureStatusDescr=%parm[#1]% 
+			ciscoEnvMonTemperatureStatusValue=%parm[#2]% 
+			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.13.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotifWarning</uei>
+	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
+	<descr>
+&lt;p&gt;A ciscoEnvMonTempStatusChangeNotif is sent if there 
+is change in the state of a device being monitored
+by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		normal(1)
+		warning(2)
+		critical(3)
+		shutdown(4)
+		notPresent(5)
+		notFunctioning(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Cisco Event: ciscoEnvMonTempStatusChangeNotif trap received 
+			ciscoEnvMonTemperatureStatusDescr=%parm[#1]% 
+			ciscoEnvMonTemperatureStatusValue=%parm[#2]% 
+			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.13.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotifCritical</uei>
+	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
+	<descr>
+&lt;p&gt;A ciscoEnvMonTempStatusChangeNotif is sent if there 
+is change in the state of a device being monitored
+by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		normal(1)
+		warning(2)
+		critical(3)
+		shutdown(4)
+		notPresent(5)
+		notFunctioning(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Cisco Event: ciscoEnvMonTempStatusChangeNotif trap received 
+			ciscoEnvMonTemperatureStatusDescr=%parm[#1]% 
+			ciscoEnvMonTemperatureStatusValue=%parm[#2]% 
+			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.13.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotifShutdown</uei>
+	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
+	<descr>
+&lt;p&gt;A ciscoEnvMonTempStatusChangeNotif is sent if there 
+is change in the state of a device being monitored
+by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		normal(1)
+		warning(2)
+		critical(3)
+		shutdown(4)
+		notPresent(5)
+		notFunctioning(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Cisco Event: ciscoEnvMonTempStatusChangeNotif trap received 
+			ciscoEnvMonTemperatureStatusDescr=%parm[#1]% 
+			ciscoEnvMonTemperatureStatusValue=%parm[#2]% 
+			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.13.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotifNotPresent</uei>
+	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
+	<descr>
+&lt;p&gt;A ciscoEnvMonTempStatusChangeNotif is sent if there 
+is change in the state of a device being monitored
+by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		normal(1)
+		warning(2)
+		critical(3)
+		shutdown(4)
+		notPresent(5)
+		notFunctioning(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Cisco Event: ciscoEnvMonTempStatusChangeNotif trap received 
+			ciscoEnvMonTemperatureStatusDescr=%parm[#1]% 
+			ciscoEnvMonTemperatureStatusValue=%parm[#2]% 
+			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.13.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotifNotFunctioning</uei>
+	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
+	<descr>
+&lt;p&gt;A ciscoEnvMonTempStatusChangeNotif is sent if there 
+is change in the state of a device being monitored
+by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureStatusValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ciscoEnvMonTemperatureState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		normal(1)
+		warning(2)
+		critical(3)
+		shutdown(4)
+		notPresent(5)
+		notFunctioning(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Cisco Event: ciscoEnvMonTempStatusChangeNotif trap received 
+			ciscoEnvMonTemperatureStatusDescr=%parm[#1]% 
+			ciscoEnvMonTemperatureStatusValue=%parm[#2]% 
+			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.13.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
 	</mask>
 	<uei>uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif</uei>
 	<event-label>CISCO-ENVMON-MIB defined trap event: ciscoEnvMonTempStatusChangeNotif</event-label>
@@ -3922,6 +4250,7 @@ by ciscoEnvMonTemperatureState.&lt;/p&gt;&lt;table&gt;
 			ciscoEnvMonTemperatureState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoEnvMonTempStatusChangeNotif:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -33200,4 +33529,2240 @@ cnrNotifServer object.&lt;/p&gt;&lt;table&gt;
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
     </event>
 <!-- End of auto generated data from MIB: CISCO-SME-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-SLB-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeInService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeOutOfService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeStandby</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeStbInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeTestReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>7</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChangeOutOfMemory</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server changes to a new state.  The value of
+slbVirtualServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualStateChange trap received 
+			slbVirtualServerState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVirtualStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbRealStateChangeInService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a real server
+changes to a new state.  The value of
+slbRealServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealStateChange trap received 
+			slbRealState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbRealStateChange:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbRealStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a real server
+changes to a new state.  The value of
+slbRealServerState indicates the new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealStateChange trap received 
+			slbRealState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspStateChangeEnabled</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbSaspStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when the SASP functionality
+has been enabled or disabled on the Load Balancer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbSaspEnabled&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbSaspStateChange trap received 
+			slbSaspEnabled=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspStateChange:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspStateChangeDisabled</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbSaspStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when the SASP functionality
+has been enabled or disabled on the Load Balancer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbSaspEnabled&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbSaspStateChange trap received 
+			slbSaspEnabled=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbSaspStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when the SASP functionality
+has been enabled or disabled on the Load Balancer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbSaspEnabled&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbSaspStateChange trap received 
+			slbSaspEnabled=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspStateChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspAgentStateChangeEstablished</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbSaspAgentStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a SASP Agent changes
+to a new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbSaspAgentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		initialized(2)
+		closed(3)
+		trying(4)
+		connecting(5)
+		established(6)
+		downTrying(7)
+		downDuplicate(8)
+		down(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbSaspAgentStateChange trap received 
+			slbSaspAgentState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%::%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspAgentStateChange:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbSaspAgentStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbSaspAgentStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a SASP Agent changes
+to a new state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbSaspAgentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		initialized(2)
+		closed(3)
+		trying(4)
+		connecting(5)
+		established(6)
+		downTrying(7)
+		downDuplicate(8)
+		down(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbSaspAgentStateChange trap received 
+			slbSaspAgentState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%::%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeInService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeOutOfService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeStandby</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeStbInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeTestReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>7</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChangeOutOfMemory</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when a virtual
+server state is changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeInService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeOutOfService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeStandby</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeStbInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeTestReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>7</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChangeOutOfMemory</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVServerVIPStateChange</event-label>
+	<descr>
+&lt;p&gt;The notification generated when configuration
+or association of virtual server IP address(VIP)
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerStateChangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerClassMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerPolicyMap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVServerProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVServerVIPStateChange trap received 
+			slbVServerState=%parm[#1]% 
+			slbVServerStateChangeDescr=%parm[#2]% 
+			slbVServerClassMap=%parm[#3]% 
+			slbVServerPolicyMap=%parm[#4]% 
+			slbVServerIpAddressType=%parm[#5]% 
+			slbVServerIpAddress=%parm[#6]% 
+			slbVServerProtocol=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-SLB-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-STACKWISE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChangeUp</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/cswStackPortChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChangeDown</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackPortChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChangeForcedDown</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackPortChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackPortChange</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackPortChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the state
+of a stack port has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswStackPortOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		forcedDown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackPortChange trap received 
+			ifIndex=%parm[#1]% 
+			cswStackPortOperStatus=%parm[#2]% 
+			cswSwitchNumCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackNewMaster</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackNewMaster</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a new master has been
+elected.  The notification will contain the cswSwitchNumCurrent
+object to indicate the new master ID.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackNewMaster trap received 
+			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackMismatch</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackMismatch</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a new member attempt
+to join the stack but was denied due to a mismatch.  The
+cswSwitchState object will indicate the type of mismatch.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		waiting(1)
+		progressing(2)
+		added(3)
+		ready(4)
+		sdmMismatch(5)
+		verMismatch(6)
+		featureMismatch(7)
+		newMasterInit(8)
+		provisioned(9)
+		invalid(10)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackMismatch trap received 
+			cswSwitchState=%parm[#1]% 
+			cswSwitchNumCurrent=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackRingRedundantTrue</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackRingRedundant</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the redundancy of the
+ring has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswRingRedundant&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackRingRedundant trap received 
+			cswRingRedundant=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant:%dpname%:%nodeid%:%interface%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackRingRedundantFalse</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackRingRedundant</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the redundancy of the
+ring has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswRingRedundant&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackRingRedundant trap received 
+			cswRingRedundant=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackRingRedundant</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the redundancy of the
+ring has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswRingRedundant&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackRingRedundant trap received 
+			cswRingRedundant=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/cswStackRingRedundant:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackNewMember</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackNewMember</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a new member joins the
+stack.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackNewMember trap received 
+			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.500.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cswStackMemberRemoved</uei>
+	<event-label>CISCO-STACKWISE-MIB defined trap event: cswStackMemberRemoved</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a member is removed
+from the stack.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cswSwitchNumCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cswStackMemberRemoved trap received 
+			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-STACKWISE-MIB -->
 </events>
