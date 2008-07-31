@@ -201,7 +201,7 @@ public final class NtpPlugin extends AbstractPlugin {
         if (qualifiers != null) {
             port = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
             timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-            retries = ParameterMap.getKeyedInteger(qualifiers, "retries", DEFAULT_RETRY);
+            retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
         }
 
         boolean result = isServer(address, port, retries, timeout);

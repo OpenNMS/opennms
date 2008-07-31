@@ -5,13 +5,86 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <section>
+    <title>Changes in OpenNMS 1.5.94</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>foobar</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>foobar</para>
+    </section>
+
+    <section>
+      <title>Changes</title>
+
+      <para>In the plugins for capsd and the monitors for the service poller,
+      the correct parameter to use for retries is "retry" however some used
+      "retries". This has been corrected, but on upgrading one may need to
+      change the configuration files if they have been customized. Those
+      changed were:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>service poller monitors:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>SNMP Monitor</para>
+            </listitem>
+          </itemizedlist>
+
+          <itemizedlist>
+            <listitem>
+              <para>OMSA Storage Monitor</para>
+            </listitem>
+          </itemizedlist>
+
+          <itemizedlist>
+            <listitem>
+              <para>PERC Monitor</para>
+            </listitem>
+          </itemizedlist>
+
+          <itemizedlist>
+            <listitem>
+              <para>Disk Usage Monitor</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
+
+      <itemizedlist>
+        <listitem>
+          <para>capsd plugins:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>NTP Plugin</para>
+            </listitem>
+          </itemizedlist>
+
+          <itemizedlist>
+            <listitem>
+              <para>DNS Plugin</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.5.93</title>
 
     <section>
       <title>New Features</title>
 
       <para>This is a quick bugfix release, no new feature were added.</para>
-
     </section>
 
     <section>
@@ -19,12 +92,12 @@
 
       <para>This release is intended primarily to solve an issue in SNMP4J
       which could cause performance issues from excessive logging in some
-      situations.  (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2552">#2552</ulink>)</para>
-      
+      situations. (Bug <ulink
+      url="http://bugzilla.opennms.org/show_bug.cgi?id=2552">#2552</ulink>)</para>
+
       <para>In addition, the installer was updated to not force a specific
-      amount of memory when run, so it should work with large databases without
-      the need to edit the upgrade script.</para>
-      
+      amount of memory when run, so it should work with large databases
+      without the need to edit the upgrade script.</para>
     </section>
   </section>
 
