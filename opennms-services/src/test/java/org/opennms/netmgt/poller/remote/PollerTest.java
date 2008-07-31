@@ -31,12 +31,20 @@
 //
 package org.opennms.netmgt.poller.remote;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+
+import junit.framework.TestCase;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -44,11 +52,17 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.quartz.Scheduler;
 
-import junit.framework.TestCase;
-
 public class PollerTest extends TestCase {
+    
+    public void testSchedule() throws Exception {
+        testSchedule(false);
+    }
+    
+    public void testReschedule() throws Exception {
+        testSchedule(true);
+    }
 	
-	public void testSchedule() throws Exception {
+	public void testSchedule(boolean reschedule) throws Exception {
 		
 		Scheduler scheduler = createMock(Scheduler.class);
 		PollService pollService = createNiceMock(PollService.class);
@@ -69,6 +83,9 @@ public class PollerTest extends TestCase {
         pollerFrontEnd.addPropertyChangeListener(poller);
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
         expect(pollerFrontEnd.isStarted()).andReturn(true);
+        
+        expect(scheduler.deleteJob(polledService.toString(), PollJobDetail.GROUP)).andReturn(reschedule);
+        
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
 		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
 		

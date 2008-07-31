@@ -372,7 +372,7 @@ create table snmpInterface (
 	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
 	snmpIfType		integer,
-	snmpIfName		varchar(32),
+	snmpIfName		varchar(96),
 	snmpIfSpeed		bigint,
 	snmpIfAdminStatus	integer,
 	snmpIfOperStatus	integer,

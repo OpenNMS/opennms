@@ -110,8 +110,17 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
 		long startTime = System.currentTimeMillis();
 		long scheduleSpacing = m_initialSpreadTime / polledServices.size();
-
+		
         for (PolledService polledService : polledServices) {
+            
+            String jobName = polledService.toString();
+
+            // remove any currently scheduled job
+            if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
+                log().debug(String.format("Job for %s already scheduled.  Rescheduling", polledService));
+            } else {
+                log().debug("Scheduling job for "+polledService);
+            }
 			
 			Date initialPollTime = new Date(startTime);
 			
@@ -120,11 +129,10 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 			Trigger pollTrigger = new PolledServiceTrigger(polledService);
 			pollTrigger.setStartTime(initialPollTime);
 			
-			PollJobDetail jobDetail = new PollJobDetail(polledService.toString(), PollJob.class);
+            PollJobDetail jobDetail = new PollJobDetail(jobName, PollJob.class);
 			jobDetail.setPolledService(polledService);
 			jobDetail.setPollerFrontEnd(m_pollerFrontEnd);
 			
-            log().debug("Scheduling job for "+polledService);
             
 			m_scheduler.scheduleJob(jobDetail, pollTrigger);
 			

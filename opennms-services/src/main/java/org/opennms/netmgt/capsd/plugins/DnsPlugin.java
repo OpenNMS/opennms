@@ -215,7 +215,7 @@ public final class DnsPlugin extends AbstractPlugin {
         if (qualifiers != null) {
             port = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
             timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-            retries = ParameterMap.getKeyedInteger(qualifiers, "retries", DEFAULT_RETRY);
+            retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
             lookup = ParameterMap.getKeyedString(qualifiers, "lookup", DEFAULT_LOOKUP);
         }
 

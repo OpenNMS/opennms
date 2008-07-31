@@ -443,6 +443,93 @@
         <downtime interval="300000" begin="43200000" end="432000000"/>  <!-- 5m, 12h, 5d -->
         <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
     </package>
+	<package name="Windows Services">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+		<include-url>file:@install.etc.dir@/include</include-url>
+                <rrd step = "300">
+                        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                        <rra>RRA:AVERAGE:0.5:12:4464</rra>
+                        <rra>RRA:MIN:0.5:12:4464</rra>
+                        <rra>RRA:MAX:0.5:12:4464</rra>
+                </rrd>
+	<service name="MSExchangeSA" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeSA"/>
+        </service>
+        <service name="MSExchangeIS" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeIS"/>
+        </service>
+        <service name="MSExchangeMailboxAssistants" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeMailboxAssistants"/>
+        </service>
+        <service name="MSExchangeMailSubmission" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeMailSubmission"/>
+        </service>
+        <service name="MSExchangeADTopology" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeADTopology"/>
+        </service>
+        <service name="MSExchangeAntispamUpdate" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeAntispamUpdate"/>
+        </service>
+	<service name="MSExchangeEdgeSync" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeEdgeSync"/>
+        </service>
+        <service name="MSExchangeFDS" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeFDS"/>
+        </service>
+        <service name="MSExchangeServiceHost" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeServiceHost"/>
+        </service>
+        <service name="MSExchangeTransport" interval="3000000"
+            user-defined="false" status="on">
+            <parameter key="retry" value="2"/>
+            <parameter key="timeout" value="30000"/>
+            <parameter key="port" value="161"/>
+            <parameter key="service-name" value="MSExchangeTransport"/>
+        </service>
+
+        <downtime interval="15000" begin="0" end="300000"/>     <!-- 15s, 0, 5m -->
+        <downtime interval="30000" begin="300000" end="43200000"/>  <!-- 30s, 5m, 12h -->
+        <downtime interval="300000" begin="43200000" end="432000000"/>  <!-- 5m, 12h, 5d -->
+        <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
+    </package>
     
     	<monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
     	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
@@ -480,5 +567,16 @@
 	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
 	 -->
 	<monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
-    <monitor service="MAIL" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
+	<monitor service="MAIL" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
+	<!-- Windows Exchange Services -->
+	<monitor service="MSExchangeSA" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeIS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeMailboxAssistants" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeMailSubmission" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeADTopology" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeAntispamUpdate" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeEdgeSync" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeFDS"  class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeServiceHost" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="MSExchangeTransport"  class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
 </poller-configuration>

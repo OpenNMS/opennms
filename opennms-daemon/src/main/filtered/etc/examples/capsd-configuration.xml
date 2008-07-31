@@ -261,6 +261,78 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
+<!--- Windows Exchange Service Monitors -->
+<protocol-plugin protocol="MSExchangeSA"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeSA" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeADTopology"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeADTopology" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeAntispamUpdate"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeAntispamUpdate" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeEdgeSync"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeEdgeSync" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeFDS"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeFDS" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeServiceHost"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeServiceHost" />
+    </protocol-plugin>
+<protocol-plugin protocol="MSExchangeTransport"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeTransport" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeMailSubmission"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeMailSubmission" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeMailboxAssistants"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeMailboxAssistants" />
+    </protocol-plugin>
+    <protocol-plugin protocol="MSExchangeSA"
+          class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
+          user-defined="false">
+        <property key="timeout" value="3000000" />
+        <property key="retry" value="1" />
+        <property key="service-name" value="MSExchangeSA" />
+    </protocol-plugin>
+<!-- End Windows Exchange Service Monitors -->
     <smb-config>
         <smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
     </smb-config>
