@@ -10,6 +10,40 @@
   <packaging>jar</packaging>
   <name>OpenNMS Remote Poller</name>
   <url>http://maven.apache.org</url>
+  <profiles>
+    <profile>
+      <id>create-keystore</id>
+      <activation>
+        <file>
+          <missing>target/build-generated-keystore.ks</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>keytool-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>genkey</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration> 
+              <keystore>${webstart.keystore}</keystore>
+              <dname>cn=${webstart.dnameCn}</dname>
+              <alias>${webstart.keyalias}</alias>
+              <keypass>${webstart.keypass}</keypass>
+              <storepass>${webstart.storepass}</storepass>
+              <verbose>true</verbose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <resources>
       <resource>
@@ -46,9 +80,9 @@
             <storepass>${webstart.storepass}</storepass>
             <alias>${webstart.keyalias}</alias>
             <dnameCn>${webstart.dnameCn}</dnameCn>
-            <dnameL>${webstart.dnameL}</dnameL>
+            <!-- <dnameL>${webstart.dnameL}</dnameL>
             <dnameSt>${webstart.dnameSt}</dnameSt>
-            <dnameC>${webstart.dnameC}</dnameC>
+            <dnameC>${webstart.dnameC}</dnameC> -->
             <verify>true</verify>
           </sign>
           <keystoreConfig>

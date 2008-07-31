@@ -534,6 +534,7 @@
 
 
    <!-- code signing properties - used in opennms-webstart -->
+   <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in opennms-remote-poller/pom.xml -->
    <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
    <webstart.keypass>opennms</webstart.keypass>
    <webstart.storepass>opennms</webstart.storepass>
