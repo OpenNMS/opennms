@@ -36,5 +36,7 @@
 package org.opennms.netmgt.tl1d;
 
 public interface Tl1MessageProcessor {
+	
+	Tl1Message proccessRawMessage(String rawTl1Message);
 
 }
