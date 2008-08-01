@@ -36,11 +36,14 @@
 package org.opennms.netmgt.tl1d;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.Tl1ConfigurationDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,6 +54,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  */
 public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean {
+
     private static final String TL1_UEI = "uei.opennms.org/api/tl1d/message";
     /*
      * The last status sent to the service control manager.
@@ -58,12 +62,19 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     private int m_status = START_PENDING;
     private BlockingQueue<Tl1GenericMessage> m_tl1Queue;
     private Thread m_tl1MesssageProcessor;
-    private ArrayList<Tl1ClientImpl> m_tl1Clients;
+    private ArrayList<Tl1Client> m_tl1Clients;
     private EventIpcManager m_eventManager;
+    private Tl1MessageProcessor m_messageProcessor;
+	private Tl1ConfigurationDao m_configurationDao;
 
     public Tl1d() {
         super("OpenNMS.Tl1d");
     }
+	
+	public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
+	    m_configurationDao = configurationDao;
+	}
+
 
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
@@ -72,12 +83,19 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     public synchronized void onInit() {
         log().info("onInit: Initializing Tl1d connections." );
         m_tl1Queue = new LinkedBlockingQueue<Tl1GenericMessage>();
-
+    
         //initialize a factory of configuration
-
-        m_tl1Clients = new ArrayList<Tl1ClientImpl>();
-        m_tl1Clients.add(new Tl1ClientImpl(m_tl1Queue, log()));
-        log().info("onInit: Finished Initializing Tl1d connections.");
+    
+        List<Tl1Element> configElements = m_configurationDao.getElements();
+    
+        m_tl1Clients = new ArrayList<Tl1Client>();
+    
+        for(Tl1Element element : configElements) {
+            m_tl1Clients.add(new Tl1ClientImpl(m_tl1Queue, element.getHost(), element.getPort(), log()));
+        }
+    
+    
+        log().info("onInit: Finished Initializing Tl1d connections.");  
     }
 
     public synchronized void onStart() {
@@ -88,13 +106,19 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
             }
         };
 
-        m_tl1MesssageProcessor.start();
-
         for (Tl1Client client : m_tl1Clients) {
             client.start();
         }
         log().info("onStart: Finished Initializing Tl1d connections.");
     }
+
+	public synchronized void onStop() {
+		for (Tl1Client client : m_tl1Clients) {
+			client.stop();
+		}
+		m_tl1MesssageProcessor.interrupt();
+	}
+
 
     private void processMessage(Tl1Message message) {
         log().debug("processMessage: Processing message: "+message);
@@ -114,12 +138,6 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     }
 
     public void onResume() {
-    }
-
-    public synchronized void onStop() {
-        for (Tl1Client client : m_tl1Clients) {
-            client.stop();
-        }
     }
 
     /**
