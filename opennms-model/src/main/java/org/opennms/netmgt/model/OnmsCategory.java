@@ -43,10 +43,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.style.ToStringCreator;
 
-
+@XmlRootElement(name = "category")
 @Entity
 @Table(name="categories")
 public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
