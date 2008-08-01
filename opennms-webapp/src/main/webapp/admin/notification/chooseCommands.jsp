@@ -213,7 +213,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
     {
           String values[] = {"off", "auto", "on"};
           StringBuffer buffer = new StringBuffer("<select size=\"3\" NAME=\"" + name  + "AutoNotify\">");
-          String defaultOption = "auto";
+          String defaultOption = "on";
  
           if(currValue == null || currValue.equals("")) {
               currValue = defaultOption;

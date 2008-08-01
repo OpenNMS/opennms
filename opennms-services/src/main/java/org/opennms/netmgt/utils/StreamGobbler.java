@@ -54,7 +54,6 @@ import java.io.PrintWriter;
  * See the ExecRunner class for a reference implementation.
  * 
  * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
- * @version CVS $Id$
  */
 class StreamGobbler extends Thread {
 
@@ -66,12 +65,6 @@ class StreamGobbler extends Thread {
 
     /** Our flag to allow us to safely terminate the monitoring thread * */
     private boolean quit = false;
-
-    /** The name of this class for logging * */
-    private static final String CLASS_NAME = "StreamGobbler";
-
-    /** The version of this class (filled in by CVS) * */
-    private static final String VERSION = "CVS $Revision$";
 
     /**
      * Basic constructor for StreamGobbler.
@@ -139,7 +132,7 @@ class StreamGobbler extends Thread {
 
     /**
      * Tells the StreamGobbler to quit it's operation. This is safer than using
-     * stop() since it uses a semophore checked in the main wait loop instead of
+     * stop() since it uses a semaphore checked in the main wait loop instead of
      * possibly forcing semaphores to untimely unlock.
      */
     public void quit() {
@@ -184,7 +177,8 @@ class StreamGobbler extends Thread {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	// if we're not passing the exception on, why bother?
+            // e.printStackTrace();
         }
 
     }
