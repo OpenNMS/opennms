@@ -99,6 +99,11 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
 	private void processMessage(Tl1Message message) {
 		log().debug("processMessage: Processing message: "+message);
+		
+		if (m_messageProcessor != null) {
+			m_messageProcessor.proccessMessage(message);
+		}
+		
 		EventBuilder bldr = new EventBuilder(TL1_UEI, "Tl1d");
 		bldr.setHost(message.getHost());
 		bldr.setTime(message.getTimestamp());
