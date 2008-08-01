@@ -10,40 +10,6 @@
   <packaging>jar</packaging>
   <name>OpenNMS Remote Poller</name>
   <url>http://maven.apache.org</url>
-  <profiles>
-    <profile>
-      <id>create-keystore</id>
-      <activation>
-        <file>
-          <missing>${project.build.directory}/build-generated-keystore.ks</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>keytool-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>compile</phase>
-                <goals>
-                  <goal>genkey</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration> 
-              <keystore>${project.build.directory}/build-generated-keystore.ks</keystore>
-              <dname>cn=${webstart.dnameCn}</dname>
-              <alias>${webstart.keyalias}</alias>
-              <keypass>${webstart.keypass}</keypass>
-              <storepass>${webstart.storepass}</storepass>
-              <verbose>true</verbose>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
   <build>
     <resources>
       <resource>
@@ -55,6 +21,36 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                def keystore = new File(project.properties['webstart.keystore'])
+                if (!keystore.exists()) {
+                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
+                  def args = [
+                    keystore: project.properties['webstart.keystore'],
+                    alias: project.properties['webstart.keyalias'],
+                    storepass: project.properties['webstart.storepass'],
+                    dname: "cn=${project.properties['webstart.dnameCn']}"
+                  ]
+                  if (project.properties['webstart.keypass']) {
+                    args.put('keypass', project.properties['webstart.keypass'])
+                  }
+                  ant.genkey(args)
+                }
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo.webstart</groupId>
         <artifactId>webstart-maven-plugin</artifactId>

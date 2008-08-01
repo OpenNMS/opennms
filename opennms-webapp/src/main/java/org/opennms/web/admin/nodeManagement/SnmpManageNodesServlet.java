@@ -147,7 +147,8 @@ public class SnmpManageNodesServlet extends HttpServlet {
             sendSNMPRestartEvent(currNodeId, primeInt);
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpGetNodes");
+        // TODO This will redirect to the node page, but the URL will be admin/changeCollectStatus. Needs fixed.
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/element/node.jsp?node=" + currNodeId);
         dispatcher.forward(request, response);
     }
 

@@ -499,7 +499,11 @@ public class Collectd extends AbstractServiceDaemon implements
                 sb.append(svcName);
                 sb.append(", reason: ");
                 sb.append(rE.getMessage());
-                log().warn(sb.toString(), rE);
+                if (log().isDebugEnabled()) {
+                    log().debug(sb.toString(), rE);
+                } else if (log().isInfoEnabled()) {
+                    log().info(sb.toString());
+                }
             } catch (Throwable t) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Uncaught exception, failed to schedule interface ");

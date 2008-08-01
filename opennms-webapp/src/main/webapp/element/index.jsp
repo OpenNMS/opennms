@@ -74,28 +74,28 @@
 		<div class="boxWrapper">
             <form action="element/nodeList.htm" method="GET">
 					<p align="right">Name containing:          
-              <input type="hidden" name="listInterfaces" value="true"/>
+              <input type="hidden" name="listInterfaces" value="false"/>
               <input type="text" name="nodename" />
               <input type="submit" value="Search"/></p>                
             </form>
 
             <form action="element/nodeList.htm" method="GET">
 					<p align="right">TCP/IP Address like:          
-              <input type="hidden" name="listInterfaces" value="true"/>
+              <input type="hidden" name="listInterfaces" value="false"/>
               <input type="text" name="iplike" value="*.*.*.*" />
               <input type="submit" value="Search"/></p>                
             </form>
 
             <form action="element/nodeList.htm" method="GET">
 					<p align="right">IfAlias containing:          
-						<input type="hidden" name="listInterfaces" value="true"/>
+						<input type="hidden" name="listInterfaces" value="false"/>
 						<input type="text" name="ifAlias" />
 						<input type="submit" value="Search"/></p>                
             </form>
 
             <form action="element/nodeList.htm" method="GET">
 					<p align="right">Providing service:          
-						<input type="hidden" name="listInterfaces" value="true"/>
+						<input type="hidden" name="listInterfaces" value="false"/>
 						<select name="service" size="1">
 						  <% while( serviceNameIterator.hasNext() ) { %>
 						    <% String name = (String)serviceNameIterator.next(); %> 
@@ -107,7 +107,7 @@
             
             <form action="element/nodeList.htm" method="GET">
 					<p align="right">Mac Address like:          
-						<input type="hidden" name="listInterfaces" value="true"/>
+						<input type="hidden" name="listInterfaces" value="false"/>
 						<input type="text" name="maclike" />
 						<input type="submit" value="Search"/></p>                
             </form>
