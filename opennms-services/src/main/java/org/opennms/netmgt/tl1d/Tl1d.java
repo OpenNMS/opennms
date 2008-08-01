@@ -64,7 +64,6 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     private Thread m_tl1MesssageProcessor;
     private ArrayList<Tl1Client> m_tl1Clients;
     private EventIpcManager m_eventManager;
-    private Tl1MessageProcessor m_messageProcessor;
 	private Tl1ConfigurationDao m_configurationDao;
 
     public Tl1d() {
