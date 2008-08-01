@@ -78,7 +78,7 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="node"
  *     
 */
-@XmlRootElement
+@XmlRootElement(name = "node")
 @Entity
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
@@ -447,6 +447,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * The interfaces on this node
      * 
      */
+    @XmlTransient
     @OneToMany(mappedBy="node")
     @XmlElement(name = "OnmsIpInterface")
     @org.hibernate.annotations.Cascade( {

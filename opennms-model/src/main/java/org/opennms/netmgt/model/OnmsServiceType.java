@@ -39,6 +39,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -47,6 +48,7 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="service"
  *     
 */
+@XmlRootElement(name = "serviceType")
 @Entity
 @Table(name="service")
 public class OnmsServiceType implements Serializable {
