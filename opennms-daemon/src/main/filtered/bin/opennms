@@ -124,6 +124,10 @@ END
 	return
 }
 
+getPid(){
+	test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE
+}
+
 getTempFile(){
 	mktemp=`which mktemp 2>/dev/null`
 
@@ -339,6 +343,12 @@ doStop() {
 		return 7   # LSB says: 7 - program is not running
 	fi
 
+	pid=`getPid`
+	if [ -n "$pid" ]; then
+		echo "=== OpenNMS Complimentary Thread Dump ===" >> $REDIRECT
+		kill -3 "$pid" >> $REDIRECT 2>&1
+	fi
+
 	STOP_ATTEMPTS=0
 	while [ $STOP_ATTEMPTS -lt 5 ]; do
 		doStatus
@@ -368,7 +378,7 @@ doKill(){
 		$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
 
-	pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
+	pid=`getPid`
 	if [ x"$pid" != x"" ]; then
 		if /bin/ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
 			kill -9 $pid > /dev/null 2>&1
