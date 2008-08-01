@@ -31,7 +31,7 @@ public abstract class AbstractSpringJerseyRestTestCase extends TestCase {
     static String DELETE = "DELETE";
     static String PUT = "PUT";
     
-    String contextPath = "/springrest";
+    String contextPath = "/opennms/rest";
     
     private ServletContainer dispatcher;
     private MockServletConfig servletConfig;
