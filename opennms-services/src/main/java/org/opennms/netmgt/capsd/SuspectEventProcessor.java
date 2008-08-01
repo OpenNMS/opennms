@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Jul 31: Bug #1995: Deal with null ifEntry values. - dj@opennms.org
  * 2007 May 06: Moved database synchronization code out of
  *              CapsdConfigManager. - dj@opennms.org
  * 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
@@ -868,14 +869,12 @@ final class SuspectEventProcessor implements Runnable {
 
         boolean addedSnmpInterfaceEntry = false;
 
-        List<IfTableEntry> ifTableEntries = snmpc.getIfTable().getEntries();
-        for (IfTableEntry ifte : ifTableEntries) {
+        for (IfTableEntry ifte : snmpc.getIfTable().getEntries()) {
             // index
-            Integer sint = ifte.getIfIndex();
-            if (sint == null) {
+            if (ifte.getIfIndex() == null) {
                 continue;
             }
-            int xifIndex = sint.intValue();
+            final int xifIndex = ifte.getIfIndex().intValue();
 
             /*
              * address WARNING: IfSnmpCollector.getIfAddressAndMask() ONLY
@@ -884,7 +883,7 @@ final class SuspectEventProcessor implements Runnable {
              */
             InetAddress[] aaddrs = null;
             if (snmpc.hasIpAddrTable()) {
-                aaddrs = snmpc.getIfAddressAndMask(sint.intValue());
+                aaddrs = snmpc.getIfAddressAndMask(xifIndex);
             }
             if (aaddrs == null) {
                 /*
@@ -900,17 +899,13 @@ final class SuspectEventProcessor implements Runnable {
                 aaddrs[1] = null;
             }
 
-            // Retrieve ifType so we can check for loopback
-            sint = ifte.getIfType();
-            // FIXME: What if sint is null?
-            int ifType = sint.intValue();
-
+            // At some point back in the day this was done with ifType
             // Skip loopback interfaces
             if (aaddrs[0].getHostAddress().startsWith("127.")) {
                 continue;
             }
 
-            DbSnmpInterfaceEntry snmpEntry =
+            final DbSnmpInterfaceEntry snmpEntry =
                 DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
             // IP address
@@ -925,7 +920,7 @@ final class SuspectEventProcessor implements Runnable {
             }
 
             // description
-            String str = ifte.getIfDescr();
+            final String str = ifte.getIfDescr();
             if (log().isDebugEnabled()) {
                 log().debug("SuspectEventProcessor: "
                         + aaddrs[0].getHostAddress() + " has ifDescription: "
@@ -936,43 +931,41 @@ final class SuspectEventProcessor implements Runnable {
             }
 
             // physical address
-            String physAddr = ifte.getPhysAddr();
-
+            final String physAddr = ifte.getPhysAddr();
             if (log().isDebugEnabled()) {
                 log().debug("SuspectEventProcessor: "
                         + aaddrs[0].getHostAddress()
                         + " has physical address: -" + physAddr + "-");
             }
-
             if (physAddr != null && physAddr.length() == 12) {
                 snmpEntry.setPhysicalAddress(physAddr);
             }
 
-            // type
-            snmpEntry.setType(ifType);
+            if (ifte.getIfType() == null) {
+                snmpEntry.setType(0);
+            } else {
+                snmpEntry.setType(ifte.getIfType().intValue());
+            }
 
             // speed
-            Long uint = ifte.getIfSpeed();
-            if (uint == null) {
+            if (ifte.getIfSpeed() == null) {
                 snmpEntry.setSpeed(0);
             } else {
-                snmpEntry.setSpeed(uint.longValue());
+                snmpEntry.setSpeed(ifte.getIfSpeed().longValue());
             }
 
             // admin status
-            sint = ifte.getIfAdminStatus();
-            if (sint == null) {
+            if (ifte.getIfAdminStatus() == null) {
                 snmpEntry.setAdminStatus(0);
             } else {
-                snmpEntry.setAdminStatus(sint.intValue());
+                snmpEntry.setAdminStatus(ifte.getIfAdminStatus().intValue());
             }
 
             // oper status
-            sint = ifte.getIfOperStatus();
-            if (sint == null) {
+            if (ifte.getIfOperStatus() == null) {
                 snmpEntry.setOperationalStatus(0);
             } else {
-                snmpEntry.setOperationalStatus(sint.intValue());
+                snmpEntry.setOperationalStatus(ifte.getIfOperStatus().intValue());
             }
 
             // name (from interface extensions table)
@@ -982,7 +975,7 @@ final class SuspectEventProcessor implements Runnable {
             }
 
             // alias (from interface extensions table)
-            String ifAlias = snmpc.getIfAlias(xifIndex);
+            final String ifAlias = snmpc.getIfAlias(xifIndex);
             if (ifAlias != null && ifAlias.length() > 0) {
                 snmpEntry.setAlias(ifAlias);
             }
