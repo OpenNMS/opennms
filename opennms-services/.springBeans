@@ -1,109 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.0.6.v200806241357]]></pluginVersion>
+	<pluginVersion><![CDATA[2.0.5.v200805211800]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
 	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
-		<config>src/main/resources/META-INF/opennms/applicationContext-collectd.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-commonConfigs.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-linkd.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-pollerBackEnd.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-pollerFrontEnd.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-queued.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-remotePollerBackEnd.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-statisticsDaemon.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-troubleTicketer.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-capsd.xml</config>
-		<config>src/test/resources/org/opennms/netmgt/utils/applicationContext-testTAEventIpcMgrTest.xml</config>
 	</configs>
 	<configSets>
-		<configSet>
-			<name><![CDATA[Collectd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-collectd.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-commonConfigs.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[Queued]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-queued.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[Linkd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-linkd.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[Ticketd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-troubleTicketer.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[Statsd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-statisticsDaemon.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[PollerBackEnd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-commonConfigs.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-pollerBackEnd.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[PollerFrontEnd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>src/main/resources/META-INF/opennms/applicationContext-pollerFrontEnd.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-remotePollerBackEnd.xml</config>
-			</configs>
-		</configSet>
-		<configSet>
-			<name><![CDATA[Capsd]]></name>
-			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
-			<incomplete>false</incomplete>
-			<configs>
-				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-commonConfigs.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-capsd.xml</config>
-			</configs>
-		</configSet>
 	</configSets>
 </beansProjectDescription>

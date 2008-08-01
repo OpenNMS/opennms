@@ -288,5 +288,15 @@ maintained
   </service>
 -->
 
+<!-- Only uncomment this service if your are integrating TL1 element managers
+  <service>
+    <name>OpenNMS:Name=Tl1d</name>
+    <class-name>org.opennms.netmgt.tl1d.jmx.Tl1d</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+-->
 </service-configuration>
 
