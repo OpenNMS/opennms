@@ -73,7 +73,7 @@ public class OnmsCategoryResource extends OnmsRestService {
         log().debug("addCategory: Adding category " + category + " to node " + nodeId);
         node.addCategory(category);
         m_nodeDao.save(node);
-        return Response.ok(node).build();
+        return Response.ok().build();
     }
     
     @PUT
@@ -97,7 +97,7 @@ public class OnmsCategoryResource extends OnmsRestService {
         }
         log().debug("updateCategory: category " + category + " updated");
         m_nodeDao.saveOrUpdate(node);
-        return Response.ok(node).build();
+        return Response.ok().build();
     }
     
     @DELETE

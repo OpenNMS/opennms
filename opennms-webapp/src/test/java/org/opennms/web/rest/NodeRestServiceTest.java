@@ -11,11 +11,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
-    public NodeRestServiceTest() {
-        super();
-        contextPath = "/opennms/rest";
-    }
-
     public void testNode() throws Exception {
         createNode();
         String url = "/nodes/1";

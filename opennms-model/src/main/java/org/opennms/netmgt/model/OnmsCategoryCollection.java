@@ -12,16 +12,20 @@ public class OnmsCategoryCollection extends LinkedList<OnmsCategory> {
 
     private static final long serialVersionUID = 4731486422555152257L;
 
+    public OnmsCategoryCollection() {
+        super();
+    }
+
     public OnmsCategoryCollection(Collection<? extends OnmsCategory> c) {
         super(c);
     }
 
-    @XmlElement(name="category")
-    public List<OnmsCategory> getNotifications() {
+    @XmlElement(name = "category")
+    public List<OnmsCategory> getCategories() {
         return this;
     }
 
-    public void setEvents(List<OnmsCategory> categories) {
+    public void setCategories(List<OnmsCategory> categories) {
         clear();
         addAll(categories);
     }
