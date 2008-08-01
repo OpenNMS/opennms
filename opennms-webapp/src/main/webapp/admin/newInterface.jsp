@@ -101,6 +101,7 @@
         }
 </script>
 
+<div class="TwoColLAdmin">
 <form method="post" name="newIpForm">
   <h3>Enter IP address</h3>
   <div class="boxWrapper">
@@ -112,18 +113,29 @@
         </li>
       </ul>
     </c:if>
-  
+
     <p>
       IP address:
       <input size="15" name="ipAddress">
     </p>
-  
+
     <p>
       <input type="submit" value="Add" onClick="verifyIpAddress()">
       <input type="button" value="Cancel" onClick="cancel()">
     </p>
-  
+
   </div>
 </form>
+</div>
+
+        <div class="TwoColRAdmin">
+      <h3>Add Interface</h3>
+        <p>
+        Enter in a valid IP address to generate a newSuspectEvent. This will add a node to the OpenNMS
+        database for this device. Note: if the IP address already exists in OpenNMS, use "Rescan" from
+        the node page to update it. Also, if no services exist for this IP, it will still be added.
+        </p>
+  </div>
+  <hr />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
