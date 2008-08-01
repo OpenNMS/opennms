@@ -32,11 +32,11 @@
             </goals>
             <configuration>
               <source>
-                def keystore = new File(project.basedir, 'target/build-generated-keystore.ks')
+                def keystore = new File(project.properties['webstart.keystore'])
                 if (!keystore.exists()) {
                   println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
                   def args = [
-                    keystore: 'target/build-generated-keystore.ks',
+                    keystore: project.properties['webstart.keystore'],
                     alias: project.properties['webstart.keyalias'],
                     storepass: project.properties['webstart.storepass'],
                     dname: "cn=${project.properties['webstart.dnameCn']}"
