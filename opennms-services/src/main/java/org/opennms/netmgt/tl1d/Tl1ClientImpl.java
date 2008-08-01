@@ -66,14 +66,14 @@ public class Tl1ClientImpl implements Tl1Client {
 
 
     public Tl1ClientImpl(BlockingQueue<Tl1GenericMessage> queue, Category log) {
-        this("localhost", 15000, queue);
-        m_log = log;
+        this(queue, "localhost", 15000, log);
     }
-
-    public Tl1ClientImpl(String host, int port, BlockingQueue<Tl1GenericMessage> queue) {
-        m_host = host;
-        m_port = port;
-        m_tl1Queue = queue;
+    
+    public Tl1ClientImpl(BlockingQueue<Tl1GenericMessage> queue, String host, int port, Category log) {
+	m_host = host;
+	m_port = port;
+	m_tl1Queue = queue;
+        m_log = log;
     }
 
     /* (non-Javadoc)

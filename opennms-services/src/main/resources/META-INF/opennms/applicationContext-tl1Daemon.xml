@@ -4,20 +4,15 @@
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
-
-  <bean id="daemon" class="org.opennms.netmgt.tl1d.Tl1d">
-    <property name="eventManager" ref="eventIpcManager" />
-<!--     <property name="tl1dConfig" ref="tl1dConfig" /> -->
+       
+       
+  <bean id="tl1dConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
+    <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml" />
   </bean>
   
-  <!-- 
-   <bean id="tl1dConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.Tl1dConfigFactory.init</value></property>
+  <bean id="daemon" class="org.opennms.netmgt.tl1d.Tl1d">
+    <property name="eventManager" ref="eventIpcManager" />
+    <property name="configurationDao" ref="tl1dConfigurationDao" />
   </bean>
-
-  <bean id="tl1dConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="tl1dConfig-init" lazy-init="true">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.Tl1dConfigFactory.getInstance</value></property>
-  </bean>
-  -->
-  <tx:annotation-driven/>
+  
 </beans>
