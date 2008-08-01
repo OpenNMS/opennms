@@ -35,8 +35,37 @@
  */
 package org.opennms.netmgt.tl1d;
 
-public interface Tl1MessageProcessor {
+import java.util.Date;
 
-    Tl1Message proccessMessage(String message);
+/**
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
+public class Tl1GenericMessage extends Tl1Message {
+
+    private static Tl1MessageProcessor m_messageProcessor;
+
+    public static Tl1GenericMessage create(String rawMessage) {
+        if (m_messageProcessor == null) {
+            m_messageProcessor = new Tl1MessageProcessorImpl();
+        }
+        return new Tl1GenericMessage("localhost", new Date(), "WHOA!", rawMessage, rawMessage);
+    }
+
+    public Tl1MessageProcessor getMessageProcessor() {
+        return m_messageProcessor;
+    }
+
+    public void setMessageProcessor(Tl1MessageProcessor messageProcessor) {
+        m_messageProcessor = messageProcessor;
+    }
+
+    public Tl1GenericMessage(String host, Date timestamp, String severity, String message, String rawMessage) {
+        m_host = host;
+        m_timestamp = timestamp;
+        m_severity = severity;
+        m_message = message;
+        m_rawMessage = rawMessage;
+    }
+
 
 }

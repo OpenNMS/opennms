@@ -35,8 +35,40 @@
  */
 package org.opennms.netmgt.tl1d;
 
-public interface Tl1MessageProcessor {
+import java.util.Date;
+import java.util.StringTokenizer;
 
-    Tl1Message proccessMessage(String message);
+public class Tl1MessageProcessorImpl implements Tl1MessageProcessor {
+
+    public Tl1Message proccessMessage(String rawMessage) {
+
+        Tl1Message message = Tl1GenericMessage.create(rawMessage);
+        StringTokenizer toColon = new StringTokenizer(rawMessage, ";");
+        String reptAlarm = toColon.nextToken();
+        StringTokenizer getQuote = new StringTokenizer(reptAlarm,"\"");
+        String R1 = getQuote.nextToken();
+        String R2 = getQuote.nextToken();
+        StringTokenizer parseR1 =  new StringTokenizer(R1);
+
+        //TODO: this needs better tokenization, for now just setting to Date()
+        String tid = parseR1.nextToken();
+        String almDate = parseR1.nextToken();
+        String almTime = parseR1.nextToken();
+        message.setTimeStamp(new Date());
+
+        StringTokenizer parseR2 =  new StringTokenizer(R2);
+        String[] R2Parts = R2.split(":");
+        String equip = R2Parts[0];
+        message.setEquipment(equip);
+
+        String parms = R2Parts[1];
+        message.setAdditonalParms(parms);
+
+        StringTokenizer parmParser = new StringTokenizer(parms,",");
+        message.setSeverity(parmParser.nextToken().split("=")[1]);
+        return message;
+
+    }
+
 
 }

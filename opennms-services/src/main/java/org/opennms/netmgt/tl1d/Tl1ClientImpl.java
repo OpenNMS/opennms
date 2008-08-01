@@ -45,199 +45,199 @@ import org.apache.log4j.Category;
 
 public class Tl1ClientImpl implements Tl1Client {
 
-	public class TimeoutSleeper {
+    public class TimeoutSleeper {
 
-		public void sleep() throws InterruptedException {
-			Thread.sleep(3000);
-		}
+        public void sleep() throws InterruptedException {
+            Thread.sleep(3000);
+        }
 
-	}
+    }
 
-	String m_host = "127.0.0.1";
-	int m_port = 502;
-	boolean m_started = false;
-	
-	private Socket m_tl1Socket;
+    String m_host = "127.0.0.1";
+    int m_port = 502;
+    boolean m_started = false;
+
+    private Socket m_tl1Socket;
     private Thread m_socketReader;
-	private BlockingQueue<Tl1Message> m_tl1Queue;
-	private BufferedReader m_reader;
-	private TimeoutSleeper m_sleeper;
-	private Category m_log;
+    private BlockingQueue<Tl1GenericMessage> m_tl1Queue;
+    private BufferedReader m_reader;
+    private TimeoutSleeper m_sleeper;
+    private Category m_log;
 
 
-	public Tl1ClientImpl(BlockingQueue<Tl1Message> queue, Category log) {
-		this("localhost", 15000, queue);
-		m_log = log;
-	}
-	
-	public Tl1ClientImpl(String host, int port, BlockingQueue<Tl1Message> queue) {
-		m_host = host;
-		m_port = port;
-		m_tl1Queue = queue;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#start()
-	 */
-	public void start() {
-		m_log.info("Starting TL1 client: "+m_host+":"+String.valueOf(m_port));
-		m_started = true;
-		
-		m_socketReader = new Thread("TL1-Socket-Reader") {
-			
-			public void run() {
-				readMessages();
-			}
+    public Tl1ClientImpl(BlockingQueue<Tl1GenericMessage> queue, Category log) {
+        this("localhost", 15000, queue);
+        m_log = log;
+    }
 
-		};
-		
-		m_socketReader.start();
-		m_log.info("Started TL1 client: "+m_host+":"+String.valueOf(m_port));
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#stop()
-	 */
-	public void stop() {
-		m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
-		m_started = false;
-	}
-	
-	private BufferedReader getReader() {
-		if (m_reader == null) {
-			m_reader = createReader();
-		}
-		return m_reader;
-	}
-	
-	private BufferedReader createReader() {
-		BufferedReader reader;
-		while (m_started) {
-		    try {
-				m_tl1Socket = new Socket(m_host, m_port);
-				reader = new BufferedReader(new InputStreamReader(m_tl1Socket.getInputStream()));
-				resetTimeout();
-				return reader;
-			} catch (IOException e) {
-				e.printStackTrace();
-				waitUntilNextConnectTime();
-			} 
-		}
-		return null;
-	}
+    public Tl1ClientImpl(String host, int port, BlockingQueue<Tl1GenericMessage> queue) {
+        m_host = host;
+        m_port = port;
+        m_tl1Queue = queue;
+    }
 
-	private void resetTimeout() {
-		m_sleeper = null;
-	}
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#start()
+     */
+    public void start() {
+        m_log.info("Starting TL1 client: "+m_host+":"+String.valueOf(m_port));
+        m_started = true;
 
-	private void waitUntilNextConnectTime() {
-		if (m_started) {
-			if (m_sleeper == null) {
-				m_sleeper = new TimeoutSleeper();
-			}
-			try { m_sleeper.sleep(); } catch (InterruptedException e) { }
-		}
-	}
+        m_socketReader = new Thread("TL1-Socket-Reader") {
 
-	private void readMessages() {
-		StringBuilder rawMessage = new StringBuilder();
-		m_log.debug("readMessages: Begin reading off socket...");
-		while(m_started) {
-			try {
-				m_log.info("readMessages: reading line from TL1 socket...");
-				BufferedReader reader = getReader();
-				if (reader != null) {
-					int ch;
-					while((ch = reader.read()) != -1) {
-						rawMessage.append((char)ch);
-						if((char)ch == ';') {
-							m_log.debug("readMessages: offering message to queue: "+rawMessage.toString());
-							m_tl1Queue.offer(Tl1Message.create(rawMessage.toString()));
-							m_log.debug("readMessages: successfully offered to queue.");
-							rawMessage.setLength(0);
-						}
-					}
-					m_log.warn("readMessages: resetting socket reader to client: "+m_host+":"+m_port);
-					resetReader(null);
-				}
-			} catch (IOException e) {
-				resetReader(e);
-			}
-		}
-		m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
-	}
+            public void run() {
+                readMessages();
+            }
 
-	private void resetReader(IOException ex) {
-		if (ex != null) {
-			ex.printStackTrace();
-		}
-		try {
-			m_reader.close();
-		} catch (IOException e) { 
-		} finally {
-			m_reader = null;
-		}
-		try {
-			m_tl1Socket.close();
-		} catch (IOException e) {
-			m_tl1Socket = null;
-		}
-	}
+        };
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#getHost()
-	 */
-	public String getHost() {
-		return m_host;
-	}
+        m_socketReader.start();
+        m_log.info("Started TL1 client: "+m_host+":"+String.valueOf(m_port));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#setHost(java.lang.String)
-	 */
-	public void setHost(String host) {
-		m_host = host;
-	}
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#stop()
+     */
+    public void stop() {
+        m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+        m_started = false;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#getPort()
-	 */
-	public int getPort() {
-		return m_port;
-	}
+    private BufferedReader getReader() {
+        if (m_reader == null) {
+            m_reader = createReader();
+        }
+        return m_reader;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#setPort(int)
-	 */
-	public void setPort(int port) {
-		m_port = port;
-	}
+    private BufferedReader createReader() {
+        BufferedReader reader;
+        while (m_started) {
+            try {
+                m_tl1Socket = new Socket(m_host, m_port);
+                reader = new BufferedReader(new InputStreamReader(m_tl1Socket.getInputStream()));
+                resetTimeout();
+                return reader;
+            } catch (IOException e) {
+                e.printStackTrace();
+                waitUntilNextConnectTime();
+            } 
+        }
+        return null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#getTl1Socket()
-	 */
-	public Socket getTl1Socket() {
-		return m_tl1Socket;
-	}
+    private void resetTimeout() {
+        m_sleeper = null;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#setTl1Socket(java.net.Socket)
-	 */
-	public void setTl1Socket(Socket tl1Socket) {
-		m_tl1Socket = tl1Socket;
-	}
+    private void waitUntilNextConnectTime() {
+        if (m_started) {
+            if (m_sleeper == null) {
+                m_sleeper = new TimeoutSleeper();
+            }
+            try { m_sleeper.sleep(); } catch (InterruptedException e) { }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#getSocketReader()
-	 */
-	public Thread getSocketReader() {
-		return m_socketReader;
-	}
+    private void readMessages() {
+        StringBuilder rawMessage = new StringBuilder();
+        m_log.debug("readMessages: Begin reading off socket...");
+        while(m_started) {
+            try {
+                m_log.info("readMessages: reading line from TL1 socket...");
+                BufferedReader reader = getReader();
+                if (reader != null) {
+                    int ch;
+                    while((ch = reader.read()) != -1) {
+                        rawMessage.append((char)ch);
+                        if((char)ch == ';') {
+                            m_log.debug("readMessages: offering message to queue: "+rawMessage.toString());
+                            m_tl1Queue.offer(Tl1GenericMessage.create(rawMessage.toString()));
+                            m_log.debug("readMessages: successfully offered to queue.");
+                            rawMessage.setLength(0);
+                        }
+                    }
+                    m_log.warn("readMessages: resetting socket reader to client: "+m_host+":"+m_port);
+                    resetReader(null);
+                }
+            } catch (IOException e) {
+                resetReader(e);
+            }
+        }
+        m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+    }
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.tl1d.Tl1Client#setSocketReader(java.lang.Thread)
-	 */
-	public void setSocketReader(Thread socketReader) {
-		m_socketReader = socketReader;
-	}
+    private void resetReader(IOException ex) {
+        if (ex != null) {
+            ex.printStackTrace();
+        }
+        try {
+            m_reader.close();
+        } catch (IOException e) { 
+        } finally {
+            m_reader = null;
+        }
+        try {
+            m_tl1Socket.close();
+        } catch (IOException e) {
+            m_tl1Socket = null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#getHost()
+     */
+    public String getHost() {
+        return m_host;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#setHost(java.lang.String)
+     */
+    public void setHost(String host) {
+        m_host = host;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#getPort()
+     */
+    public int getPort() {
+        return m_port;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#setPort(int)
+     */
+    public void setPort(int port) {
+        m_port = port;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#getTl1Socket()
+     */
+    public Socket getTl1Socket() {
+        return m_tl1Socket;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#setTl1Socket(java.net.Socket)
+     */
+    public void setTl1Socket(Socket tl1Socket) {
+        m_tl1Socket = tl1Socket;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#getSocketReader()
+     */
+    public Thread getSocketReader() {
+        return m_socketReader;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#setSocketReader(java.lang.Thread)
+     */
+    public void setSocketReader(Thread socketReader) {
+        m_socketReader = socketReader;
+    }
 
 }

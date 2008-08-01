@@ -39,70 +39,78 @@ import java.util.Date;
 
 public class Tl1Message {
 
-	String m_host;
-	Date m_timestamp;
-	String m_severity;
-	String m_message;
-	String m_rawMessage;
-	
-	
-	public static Tl1Message create(String rawMessage) {
-		// TODO need to add code to parse the raw message
-		// Just return a bogus one for now
-		return new Tl1Message("localhost", new Date(), "WHOA!", rawMessage, rawMessage);
-	}
-	
-	public Tl1Message(String host, Date timestamp, String severity, String message, String rawMessage) {
-		m_host = host;
-		m_timestamp = timestamp;
-		m_severity = severity;
-		m_message = message;
-		m_rawMessage = rawMessage;
-	}
-	
-	public String getHost() {
-		return m_host;
-	}
+    protected String m_message;
+    protected String m_rawMessage;
+    protected String m_severity;
+    protected String m_equipment;
+    protected String m_additionalParms;
+    protected Date m_timestamp;
+    protected String m_host;
 
-	public void setHost(String host) {
-		m_host = host;
-	}
+    public String getHost() {
+        return m_host;
+    }
 
-	public Date getTimestamp() {
-		return m_timestamp;
-	}
+    public void setHost(String host) {
+        m_host = host;
+    }
 
-	public void setTimestamp(Date timestamp) {
-		m_timestamp = timestamp;
-	}
+    public String getSeverity() {
+        return m_severity;
+    }
 
-	public String getSeverity() {
-		return m_severity;
-	}
+    public void setSeverity(String severity) {
+        m_severity = severity;
+    }
 
-	public void setSeverity(String severity) {
-		m_severity = severity;
-	}
+    public Tl1Message() {
+        super();
+    }
 
-	public String getMessage() {
-		return m_message;
-	}
+    public String getMessage() {
+        return m_message;
+    }
 
-	public void setMessage(String message) {
-		m_message = message;
-	}
-	
-	public String getRawMessage() {
-		return m_rawMessage;
-	}
-	
-	public void setRawMessage(String rawMessage) {
-		m_rawMessage = rawMessage;
-	}
-	
-	public String toString() {
-		return m_message;
-	}
+    public void setMessage(String message) {
+        m_message = message;
+    }
+
+    public String getRawMessage() {
+        return m_rawMessage;
+    }
+
+    public void setRawMessage(String rawMessage) {
+        m_rawMessage = rawMessage;
+    }
+
+    public String getEquipment() {
+        return m_equipment;
+    }
+
+    public void setEquipment(String equipment) {
+        m_equipment = equipment;
+    }
+
+    public String getAdditionalParms() {
+        return m_additionalParms;
+    }
+
+    public void setAdditonalParms(String parms) {
+        m_additionalParms = parms;
+    }
+
+    public Date getTimeStamp() {
+        return m_timestamp;
+    }
+
+    public void setTimeStamp(Date date) {
+        m_timestamp = date;
+    }
+
+    public String toString() {
+        return m_message;
+    }
+
 
 
 }
