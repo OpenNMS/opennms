@@ -1656,6 +1656,21 @@
     <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="1" auto-clean="true"/>
   </event> 
   
+  <event> 
+    <uei>uei.opennms.org/api/tl1d/message</uei>
+    <event-label>OpenNMS-defined generic TL1 message</event-label>
+    <descr>
+      This is a TL1 message delivered for host: %host%.&lt;p&gt;
+
+      &lt;p&gt;Message: %parm[tl1message]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;TL1 Alert: %parm[action.longReason]% &lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%host%" alarm-type="1" auto-clean="false"/>
+  </event> 
+  
   <event-file>events/ia.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
