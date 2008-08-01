@@ -47,6 +47,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -214,6 +215,7 @@ public class OnmsNotification {
     	m_ipAddress = ipAddress;
     }
 
+    @XmlTransient
     @ManyToOne
     @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
@@ -235,6 +237,7 @@ public class OnmsNotification {
     }
 
 
+    @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="eventId", nullable=false)
     public OnmsEvent getEvent() {
@@ -258,6 +261,7 @@ public class OnmsNotification {
         // do nothing as this is a HACK
     }
 
+    @XmlTransient
     @ManyToOne
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
@@ -268,6 +272,7 @@ public class OnmsNotification {
         m_node = node;
     }
 
+    @XmlTransient
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
     public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;

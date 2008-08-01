@@ -46,6 +46,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -54,6 +56,7 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="outages"
  *     
 */
+@XmlRootElement
 @Entity
 @Table(name="outages")
 public class OnmsOutage implements Serializable {
@@ -122,7 +125,7 @@ public class OnmsOutage implements Serializable {
         m_id = outageId;
     }
 
-
+	@XmlTransient
     @ManyToOne
     @JoinColumn(name="ifserviceId")
     public OnmsMonitoredService getMonitoredService() {
@@ -144,7 +147,7 @@ public class OnmsOutage implements Serializable {
         m_ifLostService = ifLostService;
     }
 
-
+	@XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="svcLostEventId")
     public OnmsEvent getServiceLostEvent() {
@@ -166,7 +169,7 @@ public class OnmsOutage implements Serializable {
         m_ifRegainedService = ifRegainedService;
     }
 
-    
+	@XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="svcRegainedEventId")
     public OnmsEvent getServiceRegainedEvent() {

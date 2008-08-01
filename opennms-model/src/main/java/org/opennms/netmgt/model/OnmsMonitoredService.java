@@ -52,11 +52,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Where;
 import org.springframework.core.style.ToStringCreator;
 
-
+@XmlRootElement(name = "service")
 @Entity
 @Table(name="ifServices")
 public class OnmsMonitoredService extends OnmsEntity implements Serializable,
@@ -124,11 +127,13 @@ Comparable<OnmsMonitoredService> {
         m_id = id;
     }
 
+    @XmlTransient
     @Transient
     public String getIpAddress() {
         return m_ipInterface.getIpAddress();
     }
 
+    @XmlTransient
     @Transient
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
@@ -190,6 +195,7 @@ Comparable<OnmsMonitoredService> {
         m_notify = notify;
     }
 
+    @XmlIDREF
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getIpInterface() {
@@ -200,6 +206,7 @@ Comparable<OnmsMonitoredService> {
         m_ipInterface = ipInterface;
     }
 
+    @XmlTransient
     @Transient
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
@@ -255,6 +262,7 @@ Comparable<OnmsMonitoredService> {
         return down;
     }
 
+    @XmlTransient
     @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
     @Where(clause="ifRegainedService is null")
     public Set<OnmsOutage> getCurrentOutages() {

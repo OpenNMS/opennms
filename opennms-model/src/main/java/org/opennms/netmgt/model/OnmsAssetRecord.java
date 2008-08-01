@@ -45,6 +45,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -55,6 +57,7 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="assets"
  *     
  */
+@XmlRootElement(name = "assetRecord")
 @Entity
 @Table(name="assets")
 public class OnmsAssetRecord implements Serializable {
@@ -205,6 +208,7 @@ public class OnmsAssetRecord implements Serializable {
     /** 
      * The node this asset information belongs to.
      */
+    @XmlIDREF
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {

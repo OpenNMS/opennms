@@ -51,12 +51,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
 
+@XmlRootElement
 @Entity
 @Table(name="alarms")
 public class OnmsAlarm implements Serializable {
@@ -241,6 +244,7 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
+	@XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="dpName", nullable=false)
     public OnmsDistPoller getDistPoller() {
@@ -252,7 +256,8 @@ public class OnmsAlarm implements Serializable {
     }
 
     // TODO change this to an Entity anre remove nodeid, ipaddr, serviceid
-    @ManyToOne(fetch=FetchType.LAZY)
+	@XmlTransient
+	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return this.m_node;
@@ -271,6 +276,7 @@ public class OnmsAlarm implements Serializable {
         this.m_ipAddr = ipaddr;
     }
 
+    @XmlTransient
     @ManyToOne
     @JoinColumn(name="serviceid")
     public OnmsServiceType getServiceType() {
@@ -447,6 +453,7 @@ public class OnmsAlarm implements Serializable {
         this.m_clearKey = clearKey;
     }
 
+    @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY, optional=true)
     @JoinColumn(name="lastEventId")
     public OnmsEvent getLastEvent() {
@@ -558,6 +565,7 @@ public class OnmsAlarm implements Serializable {
         m_lastAutomationTime = lastAutomationTime;
     }
     
+    @XmlTransient
     @CollectionOfElements
     @JoinTable(name="alarm_details", joinColumns = @JoinColumn(name="alarmId"))
     @MapKey(columns=@Column(name="attribute"))
