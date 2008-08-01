@@ -60,6 +60,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 	private Thread m_tl1MesssageProcessor;
 	private ArrayList<Tl1ClientImpl> m_tl1Clients;
 	private EventIpcManager m_eventManager;
+	private Tl1MessageProcessor m_messageProcessor;
 
 	public Tl1d() {
 		super("OpenNMS.Tl1d");
