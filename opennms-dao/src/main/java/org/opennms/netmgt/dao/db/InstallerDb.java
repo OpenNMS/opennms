@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jul 29: Check for database maximum version, too. - dj@opennms.org
 // 2008 May 31: Catch and rethrow SQLExceptions with more data when trying to
 //              connect to the database. - dj@opennms.org
 // 2008 Mar 25: Remove admin database username and password--they are not
@@ -84,6 +85,8 @@ public class InstallerDb {
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     public static final float POSTGRES_MIN_VERSION = 7.3f;
+    
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.3f;
 
     private static final int s_fetch_size = 1024;
     
@@ -1541,10 +1544,17 @@ public class InstallerDb {
         }
         m_pg_version = Float.parseFloat(m.group(1));
 
+        String message = "Unsupported database version \""
+                            + m_pg_version + "\" -- you need at least "
+                            + POSTGRES_MIN_VERSION + " and less than "
+                            + POSTGRES_MAX_VERSION_PLUS_ONE
+                            + ".  Use the \"-Q\" option to disable this check "
+                            + "if you feel brave and are willing to find and "
+                            + "fix bugs found yourself.";
         if (m_pg_version < POSTGRES_MIN_VERSION) {
-            throw new Exception("Unsupported database version \""
-                    + m_pg_version + "\" -- you need at least "
-                    + POSTGRES_MIN_VERSION);
+            throw new Exception(message);
+        } else if (m_pg_version >= POSTGRES_MAX_VERSION_PLUS_ONE) {
+            throw new Exception(message);
         }
 
         m_out.println(Float.toString(m_pg_version));
