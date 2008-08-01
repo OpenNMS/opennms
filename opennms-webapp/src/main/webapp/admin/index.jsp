@@ -144,7 +144,7 @@
     
     <div class="boxWrapper">
       <ul class="plain">  
-        <li><a href="admin/discovery/index.jsp">Configure Discovery</a></li>
+        <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
         <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
         <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
 		<!-- Removed this - see bug 586

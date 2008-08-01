@@ -49,6 +49,12 @@
 		response.setHeader("Cache-Control", "no-cache");
 	}
 %>
+
+<%
+HttpSession sess = request.getSession(false);
+DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
+%>
+
 <html>
 <head>
   <title>Add Specific | Admin | OpenNMS Web Console</title>
@@ -109,8 +115,8 @@ function addSpecific(){
 <table class="standard">
  <tr>
 	  <td class="standard" align="center" width="17%">Ip Address:<input type="text" id="ipaddress" name="ipaddress" size="10"/></td>
-	  <td class="standard" align="center" width="17%">Timeout (msec):<input type="text" id="timeout" name="timeout" size="4" value="800"/></td>
-	  <td class="standard" align="center" width="17%">Retries:<input type="text" id="retries" name="retries" size="2" value="3"/></td>
+	  <td class="standard" align="center" width="17%">Timeout (msec):<input type="text" id="timeout" name="timeout" size="4" value="<%=currConfig.getTimeout()%>"/></td>
+	  <td class="standard" align="center" width="17%">Retries:<input type="text" id="retries" name="retries" size="2" value="<%=currConfig.getRetries()%>"/></td>
  </tr>
 </table>
 

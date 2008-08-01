@@ -1394,7 +1394,7 @@
 
   <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
-    <event-label>OpenNMS defined corellator event: A widespread outage has been detected</event-label>
+    <event-label>OpenNMS defined correlator event: A widespread outage has been detected</event-label>
     <descr>
       This event is sent when a widespread outage is detected.  Typically used in correlation rules
       that detected a threshold # of monitors have detected the same outage.
@@ -1408,7 +1408,7 @@
 
   <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
-    <event-label>OpenNMS defined corellator event: A widespread outage has been resolved</event-label>
+    <event-label>OpenNMS defined correlator event: A widespread outage has been resolved</event-label>
     <descr>
       This event is sent when a widespread outage has been cleared.  Typically used in correlation rules
       that have detected that a wide spread outage has been cleared.
@@ -1422,7 +1422,7 @@
 
   <event>
     <uei>uei.opennms.org/correlation/serviceFlapping</uei>
-    <event-label>OpenNMS defined corellator event: A service has been detected to be in a flapping state</event-label>
+    <event-label>OpenNMS defined correlator event: A service has been detected to be in a flapping state</event-label>
     <descr>
       This event is sent when a correlation rule has detected that a service is flapping.
     </descr>

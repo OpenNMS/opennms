@@ -50,6 +50,12 @@
 	}
 
 %>
+
+<%
+HttpSession sess = request.getSession(false);
+DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
+%>
+
 <html>
 <head>
   <title>Add Include Range | Admin | OpenNMS Web Console</title>
@@ -125,8 +131,8 @@ function addIncludeRange(){
  <tr>
   <td class="standard" align="center" width="30%">Begin IP Address:<input type="text" id="base" name="base" size="15" value=''/></td>
   <td class="standard" align="center" width="30%">End IP Address:<input type="text" id="end" name="end" size="15"  value=''/></td>
-  <td class="standard" align="center" width="20%">Retries:<input type="text" id="retries" name="retries" value='3' size="2" /></td>
-  <td class="standard" align="center" width="20%">Timeout (ms):<input type="text" id="timeout" name="timeout" value='800' size="5" /></td>
+  <td class="standard" align="center" width="20%">Retries:<input type="text" id="retries" name="retries" value='<%=currConfig.getRetries()%>' size="2" /></td>
+  <td class="standard" align="center" width="20%">Timeout (ms):<input type="text" id="timeout" name="timeout" value='<%=currConfig.getTimeout()%>' size="5" /></td>
  </tr>
 </table>
 	
