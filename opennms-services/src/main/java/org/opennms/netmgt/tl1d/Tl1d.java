@@ -98,13 +98,15 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     }
 
     public synchronized void onStart() {
-        log().info("onStart: Initializing Tl1d connections." );
+        log().info("onStart: Initializing Tl1d message processing." );
         m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
             public void run() {
                 doMessageProcessing();
             }
         };
 
+        m_tl1MesssageProcessor.start();
+        
         for (Tl1Client client : m_tl1Clients) {
             client.start();
         }
