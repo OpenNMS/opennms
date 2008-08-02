@@ -37,6 +37,6 @@ package org.opennms.netmgt.tl1d;
 
 public interface Tl1MessageProcessor {
 
-    Tl1Message proccessMessage(String message);
+    Tl1Message proccessMessage(String rawMessage);
 
 }
