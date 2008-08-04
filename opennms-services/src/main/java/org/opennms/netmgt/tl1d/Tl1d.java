@@ -56,11 +56,12 @@ import org.springframework.beans.factory.InitializingBean;
 public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean {
 
     private static final String TL1_UEI = "uei.opennms.org/api/tl1d/message";
+
     /*
      * The last status sent to the service control manager.
      */
     private int m_status = START_PENDING;
-    private BlockingQueue<Tl1GenericMessage> m_tl1Queue;
+    private BlockingQueue<Tl1Message> m_tl1Queue;
     private Thread m_tl1MesssageProcessor;
     private ArrayList<Tl1Client> m_tl1Clients;
     private EventIpcManager m_eventManager;
@@ -81,7 +82,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
     public synchronized void onInit() {
         log().info("onInit: Initializing Tl1d connections." );
-        m_tl1Queue = new LinkedBlockingQueue<Tl1GenericMessage>();
+        m_tl1Queue = new LinkedBlockingQueue<Tl1Message>();
     
         //initialize a factory of configuration
     
@@ -126,9 +127,11 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
         EventBuilder bldr = new EventBuilder(TL1_UEI, "Tl1d");
         bldr.setHost(message.getHost());
-        bldr.setTime(message.getTimeStamp());
-        bldr.setSeverity(message.getSeverity());
-        bldr.setLogMessage(message.getMessage());
+        bldr.setTime(message.getTimestamp());
+//        bldr.setSeverity(message.getSeverity());
+//        bldr.setLogMessage(message.getMessage());
+        
+        //TODO: Work to do here, yet
         bldr.addParam("tl1message", message.getRawMessage());
         m_eventManager.sendNow(bldr.getEvent());
         log().debug("processMessage: Message processed: "+message);
@@ -155,7 +158,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         boolean cont = true;
         while (cont ) {
             try {
-                Tl1GenericMessage message = m_tl1Queue.take();
+                Tl1Message message = m_tl1Queue.take();
                 processMessage(message);
             } catch (InterruptedException e) {
                 e.printStackTrace();

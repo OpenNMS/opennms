@@ -37,15 +37,43 @@ package org.opennms.netmgt.tl1d;
 
 import java.util.Date;
 
-public class Tl1Message {
 
-    protected String m_message;
-    protected String m_rawMessage;
-    protected String m_severity;
-    protected String m_equipment;
-    protected String m_additionalParms;
-    protected Date m_timestamp;
-    protected String m_host;
+public abstract class Tl1Message {
+    
+    public static final int INPUT = 1;
+    public static final int OUTPUT = 2;
+    public static final int ACKNOWLEDGEMENT = 3;
+    public static final int AUTONOMOUS = 4;
+
+    private Date m_timestamp;
+    private String m_rawMessage;
+    private String m_host;
+    
+    private Tl1MessageProcessor m_processor;
+    
+    public void setMessageProcessor(Tl1MessageProcessor processor) {
+        m_processor = processor;
+    }
+    
+    public Tl1MessageProcessor getMessageProcessor() {
+        return m_processor;
+    }
+
+    public Date getTimestamp() {
+        return m_timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        m_timestamp = timestamp;
+    }
+
+    public String getRawMessage() {
+        return m_rawMessage;
+    }
+
+    public void setRawMessage(String rawMessage) {
+        this.m_rawMessage = rawMessage;
+    }
 
     public String getHost() {
         return m_host;
@@ -54,63 +82,5 @@ public class Tl1Message {
     public void setHost(String host) {
         m_host = host;
     }
-
-    public String getSeverity() {
-        return m_severity;
-    }
-
-    public void setSeverity(String severity) {
-        m_severity = severity;
-    }
-
-    public Tl1Message() {
-        super();
-    }
-
-    public String getMessage() {
-        return m_message;
-    }
-
-    public void setMessage(String message) {
-        m_message = message;
-    }
-
-    public String getRawMessage() {
-        return m_rawMessage;
-    }
-
-    public void setRawMessage(String rawMessage) {
-        m_rawMessage = rawMessage;
-    }
-
-    public String getEquipment() {
-        return m_equipment;
-    }
-
-    public void setEquipment(String equipment) {
-        m_equipment = equipment;
-    }
-
-    public String getAdditionalParms() {
-        return m_additionalParms;
-    }
-
-    public void setAdditonalParms(String parms) {
-        m_additionalParms = parms;
-    }
-
-    public Date getTimeStamp() {
-        return m_timestamp;
-    }
-
-    public void setTimeStamp(Date date) {
-        m_timestamp = date;
-    }
-
-    public String toString() {
-        return m_message;
-    }
-
-
-
+        
 }
