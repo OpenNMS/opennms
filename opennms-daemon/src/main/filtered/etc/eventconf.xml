@@ -1713,6 +1713,7 @@
   <event-file>events/Overland.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/Pixelmetrix.events.xml</event-file>
+  <event-file>events/Polycom.events.xml</event-file>
   <event-file>events/Primecluster.events.xml</event-file>
   <event-file>events/Quintum.events.xml</event-file>
   <event-file>events/Redline.events.xml</event-file>
