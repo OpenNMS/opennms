@@ -153,9 +153,6 @@ public abstract class JMXCollector implements ServiceCollector {
     static String NODE_INFO_KEY =
         "org.opennms.netmgt.collectd.JMXCollector.nodeInfo";
 
-    static String MAX_VARS_PER_PDU_STORAGE_KEY =
-        "org.opennms.netmgt.collectd.JMXCollector.maxVarsPerPdu";
-
     /**
      * The service name is provided by the derived class
      */
