@@ -35,8 +35,20 @@
  */
 package org.opennms.netmgt.tl1d;
 
+/**
+ * TL1 Message parsing API.
+ * 
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ */
 public interface Tl1MessageProcessor {
 
+    /**
+     * This is the API for TL1 message parsing.
+     * 
+     * @param rawMessage
+     * @param messageType
+     * @return a Tl1Message implementation based on one of the 4 types of TL1 Message types
+     */
     Tl1Message process(String rawMessage, int messageType);
 
 }

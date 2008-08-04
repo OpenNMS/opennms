@@ -39,33 +39,76 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 
+/**
+ * Implementation of the <code>Tl1MessageProcessor</code> Interface.  This is the default
+ * Autonomous Message Parser based on Tl1Messages recorded from the Hitachi GPOND TL1 simulator.
+ * 
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ *
+ */
 public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1MessageProcessor#process(java.lang.String, int)
+     */
     public Tl1AutonomousMessage process(String rawMessage, int messageType) {
 
         StringTokenizer lineParser = new StringTokenizer(rawMessage, "\n");
         Tl1AutonomousMessage message = new Tl1AutonomousMessage(rawMessage);
-        processHeader(lineParser, message);
-        processId(lineParser, message);
-        processAutoBlock(lineParser, message);
+        try {
+            processHeader(lineParser, message);
+            processId(lineParser, message);
+            processAutoBlock(lineParser, message);
+        } catch (IllegalStateException e) {
+            return null;
+        }
         
         return message;
         
     }
 
-    private void processAutoBlock(StringTokenizer lineParser, Tl1AutonomousMessage message) {
-        boolean foundId = false;
-        while(!foundId ) {
-            while (lineParser.hasMoreElements() && !foundId) {
-                String line = (String) lineParser.nextElement();
+    private void processHeader(StringTokenizer lineParser, Tl1AutonomousMessage message) {
+        boolean foundHeader = false;
+        while(!foundHeader ) {
+            while (lineParser.hasMoreTokens() && !foundHeader) {
+                String line = (String) lineParser.nextToken();
                 if (line != null && !(line.equals(message.getTerminator()))) {
-                    foundId = true;
-                    message.getAutoBlock().setBlock(line.trim());
+                    try {
+                        foundHeader = parseHeader(line, message);
+                    } catch (IllegalArgumentException e) {
+                    }
                 }
             }
         }
+        if (!foundHeader) {
+            throw new IllegalStateException("No TL1 Header found in: "+lineParser.toString());
+        }
+    }
+
+    private static boolean parseHeader(String line, Tl1AutonomousMessage message) throws IllegalArgumentException {
+        StringTokenizer headerParser = new StringTokenizer(line);
+
+        if (headerParser.countTokens() != 3) {
+            throw new IllegalArgumentException("The line: "+line+" is not an Autonomous message header");
+        }
+
+        message.getHeader().setRawMessage(line);
+        message.getHeader().setSid(headerParser.nextToken());
+        message.setHost(message.getHeader().getSid());
+        message.getHeader().setDate(headerParser.nextToken());
+        message.getHeader().setTime(headerParser.nextToken());
+        
+        try {
+            message.getHeader().setTimestamp(SDF.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
+            message.setTimestamp(message.getHeader().getTimestamp());
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("The line: "+line+", doesn't contain date and time in the format: "+SDF.toLocalizedPattern());
+        }
+        
+        return true;
     }
 
     private void processId(StringTokenizer lineParser, Tl1AutonomousMessage message) {
@@ -99,39 +142,17 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         return true;
     }
 
-    private void processHeader(StringTokenizer lineParser, Tl1AutonomousMessage message) {
-        boolean foundHeader = false;
-        while(!foundHeader ) {
-            while (lineParser.hasMoreTokens() && !foundHeader) {
-                String line = (String) lineParser.nextToken();
+    private void processAutoBlock(StringTokenizer lineParser, Tl1AutonomousMessage message) {
+        boolean foundId = false;
+        while(!foundId ) {
+            while (lineParser.hasMoreElements() && !foundId) {
+                String line = (String) lineParser.nextElement();
                 if (line != null && !(line.equals(message.getTerminator()))) {
-                    foundHeader = parseHeader(line, message);
+                    foundId = true;
+                    message.getAutoBlock().setBlock(line.trim());
                 }
             }
         }
-    }
-
-    private static boolean parseHeader(String line, Tl1AutonomousMessage message) throws IllegalArgumentException {
-        StringTokenizer headerParser = new StringTokenizer(line);
-
-        if (headerParser.countTokens() != 3) {
-            throw new IllegalArgumentException("The line: "+line+" is not an Autonomous message header");
-        }
-
-        message.getHeader().setRawMessage(line);
-        message.getHeader().setSid(headerParser.nextToken());
-        message.setHost(message.getHeader().getSid());
-        message.getHeader().setDate(headerParser.nextToken());
-        message.getHeader().setTime(headerParser.nextToken());
-        
-        try {
-            message.getHeader().setTimestamp(SDF.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
-            message.setTimestamp(message.getHeader().getTimestamp());
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("The line: "+line+", doesn't contain date and time in the format: "+SDF.toLocalizedPattern());
-        }
-        
-        return true;
     }
 
 }

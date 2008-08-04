@@ -19,7 +19,7 @@
       <attribute name="userid" type="string" use="optional" default="opennms" />
       <attribute name="password" type="string" use="optional" default="opennms" />
       <attribute name="tl1-client-api" type="string" use="optional" default="org.opennms.netmgt.tl1d.Tl1Client" />
-      <attribute name="tl1-message-parser" type="string" use="optional" default="org.opennms.netmgt.tl1d.Tl1MessageProcessorImpl" />
+      <attribute name="tl1-message-parser" type="string" use="optional" default="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" />
       <attribute name="reconnect-delay" type="positiveInteger" use="optional" default="30000" />
     </complexType>
   </element>

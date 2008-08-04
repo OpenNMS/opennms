@@ -46,7 +46,7 @@ import org.opennms.netmgt.dao.Tl1ConfigurationDao;
 public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConfiguration, List<Tl1Element>>implements Tl1ConfigurationDao {
 
     public DefaultTl1ConfigurationDao() {
-        super(Tl1dConfiguration.class, "tl1 configuration");
+        super(Tl1dConfiguration.class, "TL1d configuration");
     }
 
     /* (non-Javadoc)
