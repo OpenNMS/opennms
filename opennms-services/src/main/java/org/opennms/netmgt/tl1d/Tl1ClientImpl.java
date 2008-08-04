@@ -53,23 +53,24 @@ public class Tl1ClientImpl implements Tl1Client {
 
     }
 
-    String m_host = "127.0.0.1";
-    int m_port = 502;
+    String m_host;
+    int m_port;
     boolean m_started = false;
 
     private Socket m_tl1Socket;
     private Thread m_socketReader;
-    private BlockingQueue<Tl1GenericMessage> m_tl1Queue;
+    private BlockingQueue<Tl1Message> m_tl1Queue;
     private BufferedReader m_reader;
     private TimeoutSleeper m_sleeper;
     private Category m_log;
+    private Tl1MessageProcessor m_messageProcessor;
 
 
-    public Tl1ClientImpl(BlockingQueue<Tl1GenericMessage> queue, Category log) {
+    public Tl1ClientImpl(BlockingQueue<Tl1Message> queue, Category log) {
         this(queue, "localhost", 15000, log);
     }
     
-    public Tl1ClientImpl(BlockingQueue<Tl1GenericMessage> queue, String host, int port, Category log) {
+    public Tl1ClientImpl(BlockingQueue<Tl1Message> queue, String host, int port, Category log) {
 	m_host = host;
 	m_port = port;
 	m_tl1Queue = queue;
@@ -152,8 +153,13 @@ public class Tl1ClientImpl implements Tl1Client {
                         rawMessage.append((char)ch);
                         if((char)ch == ';') {
                             m_log.debug("readMessages: offering message to queue: "+rawMessage.toString());
-                            m_tl1Queue.offer(Tl1GenericMessage.create(rawMessage.toString()));
-                            m_log.debug("readMessages: successfully offered to queue.");
+                            Tl1Message message = detectMessageType(rawMessage);
+                            if (message != null) {
+                                m_tl1Queue.offer(message);
+                                m_log.debug("readMessages: successfully offered to queue.");
+                            } else {
+                                m_log.debug("readMessages: message was null, not offered to queue.");
+                            }
                             rawMessage.setLength(0);
                         }
                     }
@@ -165,6 +171,24 @@ public class Tl1ClientImpl implements Tl1Client {
             }
         }
         m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+    }
+
+    //TODO: Lots of work to do here
+    private Tl1Message detectMessageType(StringBuilder rawMessage) {
+        
+        //check token 5 to see if this is a reply message.  This implies that the Tl1Client must
+        //track message TAGs (Correlation TAGs (CTAG) vs. Autonomous TAGs (ATAG))
+        
+        if(isAutonomousMessage(rawMessage)) {
+            return m_messageProcessor.process(rawMessage.toString(), Tl1Message.AUTONOMOUS);
+        }
+        
+        return null;
+    }
+
+    //TODO: Lots of work to do here
+    private boolean isAutonomousMessage(StringBuilder rawMessage) {
+        return true;
     }
 
     private void resetReader(IOException ex) {
