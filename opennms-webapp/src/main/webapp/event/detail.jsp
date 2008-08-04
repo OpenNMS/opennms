@@ -52,6 +52,7 @@
 		org.opennms.web.event.Event,
 		org.opennms.web.event.EventFactory,
 		org.opennms.web.event.EventUtil,
+		org.opennms.web.Util,
         org.opennms.web.acegisecurity.Authentication
         "
 
@@ -196,7 +197,7 @@
           <th>Log Message</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td><%=event.getLogMessage()%></td>
+          <td><%=Util.htmlify(event.getLogMessage())%></td>
         </tr>
       </table>
 
@@ -205,7 +206,7 @@
           <th>Description</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td><%=event.getDescription()%></td>
+          <td><%=Util.htmlify(event.getDescription())%></td>
         </tr>
       </table>
       
@@ -218,7 +219,7 @@
 	    <%if (event.getOperatorInstruction()==null) { %>
               No instructions available
             <% } else { %>
-              <%=event.getOperatorInstruction()%>
+              <%=Util.htmlify(event.getOperatorInstruction())%>
             <% } %>
 	  </td>
         </tr>
