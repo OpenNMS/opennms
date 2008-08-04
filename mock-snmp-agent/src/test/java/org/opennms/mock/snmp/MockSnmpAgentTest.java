@@ -248,7 +248,7 @@ public class MockSnmpAgentTest extends TestCase {
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
             MockUtil.println("Response is: "+response);
-            assertTrue("unexpected report pdu", response.getType() != PDU.REPORT);
+            assertEquals("unexpected report pdu", PDU.REPORT, response.getType());
             
             VariableBinding vb = response.get(0);
             assertNotNull("variable binding should not be null", vb);
