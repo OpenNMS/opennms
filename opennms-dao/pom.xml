@@ -21,18 +21,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>sablecc-maven-plugin</artifactId>
-	<version>2.0.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
@@ -44,9 +32,9 @@
         </executions>
       </plugin>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
-	<configuration>
+        <configuration>
           <additionalBuildcommands>
             <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
           </additionalBuildcommands> 
@@ -103,7 +91,6 @@
       <groupId>org.codehaus.castor</groupId>
       <artifactId>castor</artifactId>
     </dependency>
-
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils-core</artifactId>

@@ -55,7 +55,7 @@ public class FilterWalker implements InitializingBean {
     private String m_filter;
     private ResourceDao m_resourceDao;
     private ResourceVisitor m_visitor;
-    
+
     private ResourceTreeWalker m_resourceWalker = new ResourceTreeWalker();
 
     public void walk() {
@@ -64,11 +64,11 @@ public class FilterWalker implements InitializingBean {
             public void visitNode(OnmsNode node) {
                 walk(node);
             }
-            
+
         };
         getFilterDao().walkMatchingNodes(m_filter, visitor);
     }
-    
+
     public void walk(OnmsNode node) {
         OnmsResource resource = getResourceDao().getResourceForNode(node);
         m_resourceWalker.walk(Collections.singleton(resource));
@@ -79,7 +79,7 @@ public class FilterWalker implements InitializingBean {
         Assert.state(m_visitor !=  null, "property visitor must be set to a non-null value");
         Assert.state(m_filterDao !=  null, "property filterDao must be set to a non-null value");
         Assert.state(m_filter !=  null, "property filter must be set to a non-null value");
-        
+
         m_resourceWalker.setResourceDao(getResourceDao());
         m_resourceWalker.setVisitor(getVisitor());
         m_resourceWalker.afterPropertiesSet();
