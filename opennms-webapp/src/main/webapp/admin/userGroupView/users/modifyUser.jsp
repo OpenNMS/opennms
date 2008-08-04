@@ -202,13 +202,13 @@
         String comments = null;
         Boolean isReadOnly = false;
         try {
-            email = userFactory.getEmail(userid);
-            pagerEmail = userFactory.getPagerEmail(userid);
-            xmppAddress = userFactory.getXMPPAddress(userid);
-            numericPage = userFactory.getNumericPage(userid);
-            numericPin = userFactory.getNumericPin(userid);
-            textPage = userFactory.getTextPage(userid);
-            textPin = userFactory.getTextPin(userid);
+            email = userFactory.getEmail(user);
+            pagerEmail = userFactory.getPagerEmail(user);
+            xmppAddress = userFactory.getXMPPAddress(user);
+            numericPage = userFactory.getNumericPage(user);
+            numericPin = userFactory.getNumericPin(user);
+            textPage = userFactory.getTextPage(user);
+            textPin = userFactory.getTextPin(user);
             fullName = user.getFullName();
             comments = user.getUserComments();
             isReadOnly = user.isReadOnly();

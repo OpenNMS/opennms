@@ -292,6 +292,16 @@ public abstract class UserManager {
     public String getEmail(String userID) throws IOException, MarshalException, ValidationException {
         return getContactInfo(userID, "email");
     }
+    
+    /**
+     * Get a email by user
+     * 
+     * @param user the user to find the email for
+     * @return String the email specified by name
+     */
+    public String getEmail(User user) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(user, "email");
+    }
 
     /**
      * Get a pager email by name
@@ -305,6 +315,16 @@ public abstract class UserManager {
     }
 
     /**
+     * Get a pager email by user
+     * 
+     * @param user
+     * @return String the pager email
+     */
+    public String getPagerEmail(User user) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(user, "pagerEmail");
+    }
+
+    /**
      * Get a numeric pin
      * 
      * @param userID
@@ -313,6 +333,17 @@ public abstract class UserManager {
      */
     public String getNumericPin(String userID) throws IOException, MarshalException, ValidationException {
         return getContactInfo(userID, "numericPage");
+    }
+
+    /**
+     * Get a numeric pin
+     * 
+     * @param userID
+     *            the user ID of the user to return
+     * @return String the numeric pin
+     */
+    public String getNumericPin(User user) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(user, "numericPage");
     }
 
     /**
@@ -341,6 +372,29 @@ public abstract class UserManager {
     }
 
     /**
+     * Get an XMPP address by name
+     * 
+     * @param user
+     * @return String the XMPP address
+     */
+
+    public String getXMPPAddress(User user) throws IOException, MarshalException, ValidationException {
+
+        update();
+        
+        if (user == null)
+            return "";
+        
+        for (Contact contact : user.getContactCollection()) {
+        	if (contact != null && contact.getType().equals("xmppAddress")) {
+        		return contact.getInfo();
+        	}
+        }
+        
+        return "";
+    }
+
+    /**
      * Get a numeric service provider
      * 
      * @param userID
@@ -349,6 +403,17 @@ public abstract class UserManager {
      */
     public String getNumericPage(String userID) throws IOException, MarshalException, ValidationException {
         return getContactServiceProvider(userID, "numericPage");
+    }
+    
+    /**
+     * Get a numeric service provider
+     * 
+     * @param userID
+     *            the user ID of the user to return
+     * @return String the service provider
+     */
+    public String getNumericPage(User user) throws IOException, MarshalException, ValidationException {
+        return getContactServiceProvider(user, "numericPage");
     }
 
     /**
@@ -361,6 +426,17 @@ public abstract class UserManager {
     public String getTextPin(String userID) throws IOException, MarshalException, ValidationException {
         return getContactInfo(userID, "textPage");
     }
+    
+    /**
+     * Get a text pin
+     * 
+     * @param userID
+     *            the user ID of the user to return
+     * @return String the text pin
+     */
+    public String getTextPin(User user) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(user, "textPage");
+    }
 
     /**
      * Get a Text Page Service Provider
@@ -371,6 +447,17 @@ public abstract class UserManager {
      */
     public String getTextPage(String userID) throws IOException, MarshalException, ValidationException {
         return getContactServiceProvider(userID, "textPage");
+    }
+    
+    /**
+     * Get a Text Page Service Provider
+     * 
+     * @param userID
+     *            the user ID of the user to return
+     * @return String the text page service provider.
+     */
+    public String getTextPage(User user) throws IOException, MarshalException, ValidationException {
+        return getContactServiceProvider(user, "textPage");
     }
 
     /**
