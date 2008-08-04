@@ -42,7 +42,13 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Category;
+import org.opennms.netmgt.config.tl1d.Tl1Element;
 
+/**
+ * Default Implementation of the Tl1Client API.
+ * 
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ */
 public class Tl1ClientImpl implements Tl1Client {
 
     public class TimeoutSleeper {
@@ -59,21 +65,21 @@ public class Tl1ClientImpl implements Tl1Client {
 
     private Socket m_tl1Socket;
     private Thread m_socketReader;
-    private BlockingQueue<Tl1Message> m_tl1Queue;
+    private BlockingQueue<Tl1AutonomousMessage> m_tl1Queue;
     private BufferedReader m_reader;
     private TimeoutSleeper m_sleeper;
     private Category m_log;
-    private Tl1MessageProcessor m_messageProcessor;
-
-
-    public Tl1ClientImpl(BlockingQueue<Tl1Message> queue, Category log) {
-        this(queue, "localhost", 15000, log);
-    }
+    private Tl1AutonomousMessageProcessor m_messageProcessor;
     
-    public Tl1ClientImpl(BlockingQueue<Tl1Message> queue, String host, int port, Category log) {
-	m_host = host;
-	m_port = port;
-	m_tl1Queue = queue;
+    
+    public Tl1ClientImpl(BlockingQueue<Tl1AutonomousMessage> queue, Tl1Element element, Category log) 
+        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        
+        m_host = element.getHost();
+        m_port = element.getPort();
+        
+        m_tl1Queue = queue;
+        m_messageProcessor = (Tl1AutonomousMessageProcessor) Class.forName(element.getTl1MessageParser()).newInstance();
         m_log = log;
     }
 
@@ -153,7 +159,7 @@ public class Tl1ClientImpl implements Tl1Client {
                         rawMessage.append((char)ch);
                         if((char)ch == ';') {
                             m_log.debug("readMessages: offering message to queue: "+rawMessage.toString());
-                            Tl1Message message = detectMessageType(rawMessage);
+                            Tl1AutonomousMessage message = detectMessageType(rawMessage);
                             if (message != null) {
                                 m_tl1Queue.offer(message);
                                 m_log.debug("readMessages: successfully offered to queue.");
@@ -174,7 +180,7 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     //TODO: Lots of work to do here
-    private Tl1Message detectMessageType(StringBuilder rawMessage) {
+    private Tl1AutonomousMessage detectMessageType(StringBuilder rawMessage) {
         
         //check token 5 to see if this is a reply message.  This implies that the Tl1Client must
         //track message TAGs (Correlation TAGs (CTAG) vs. Autonomous TAGs (ATAG))
@@ -263,5 +269,4 @@ public class Tl1ClientImpl implements Tl1Client {
     public void setSocketReader(Thread socketReader) {
         m_socketReader = socketReader;
     }
-
 }
