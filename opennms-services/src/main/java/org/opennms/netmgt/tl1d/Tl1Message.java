@@ -37,7 +37,12 @@ package org.opennms.netmgt.tl1d;
 
 import java.util.Date;
 
-
+/**
+ * Abstraction for generic TL1 Messages.  Must generic methods are used to populate
+ * OpenNMS Event fields.
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
 public abstract class Tl1Message {
     
     public static final int INPUT = 1;

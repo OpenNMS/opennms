@@ -1657,15 +1657,19 @@
   </event> 
   
   <event> 
-    <uei>uei.opennms.org/api/tl1d/message</uei>
-    <event-label>OpenNMS-defined generic TL1 message</event-label>
+    <uei>uei.opennms.org/api/tl1d/message/autonomous</uei>
+    <event-label>OpenNMS-defined Autonomous TL1 message</event-label>
     <descr>
-      This is a TL1 message delivered for host: %host%.&lt;p&gt;
+      This is a TL1 autonomous message delivered for host: %host%.&lt;p&gt;
 
-      &lt;p&gt;Message: %parm[tl1message]% &lt;/p&gt;
+      &lt;p&gt;Message: %parm[raw-message]% &lt;/p&gt;
+      &lt;p&gt;Alarm Code: %parm[alarm-code]% &lt;/p&gt;
+      &lt;p&gt;ATAG: %parm[atag]% &lt;/p&gt;
+      &lt;p&gt;Verb: %parm[verb]% &lt;/p&gt;
+      &lt;p&gt;Auto Block: %parm[autoblock]% &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      &lt;p&gt;TL1 Alert: %parm[action.longReason]% &lt;/p&gt;
+      &lt;p&gt;TL1 Alert: %parm[verb]% &lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
     <alarm-data reduction-key="%host%" alarm-type="1" auto-clean="false"/>

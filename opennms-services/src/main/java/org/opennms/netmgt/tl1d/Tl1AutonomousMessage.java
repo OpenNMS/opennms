@@ -38,6 +38,8 @@ package org.opennms.netmgt.tl1d;
 import java.util.Date;
 
 /**
+ * This class is used to represent a TL1 Autonomous Message as defined below and scraped from
+ * WikiPedia.
  *
 <table border="1" cellspacing="0">
 <tr>
@@ -71,10 +73,11 @@ import java.util.Date;
 </tr>
 </table>
 
-    @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
  */
 public class Tl1AutonomousMessage extends Tl1Message {
     
+    public static final String UEI = "uei.opennms.org/api/tl1d/message/autonomous";
     private AutoHeader m_autoHeader;
     private AutoId m_autoId;
     private AutoBlock m_autoBlock;
