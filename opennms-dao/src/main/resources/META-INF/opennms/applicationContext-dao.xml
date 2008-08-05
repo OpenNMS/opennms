@@ -232,7 +232,4 @@
     <property name="configResource" ref="statsdConfigResourceLocation" />
   </bean>
   
-  <bean id="tl1ConfigDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml" />
-  </bean>
 </beans>
