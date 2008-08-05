@@ -77,6 +77,10 @@ function addIncludeRange(){
 	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-ir.jsp', 'AddIncludeRange', 'toolbar=0,width=750 ,height=230, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
+function addIncludeUrl(){
+	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-url.jsp', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
+}
+
 function addExcludeRange(){
 	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-er.jsp', 'AddExcludeRange', 'toolbar=0,width=600 ,height=200, left=0, top=0, resizable=1, scrollbars=1') 
 }
@@ -92,6 +96,13 @@ function deleteSpecific(i){
 function deleteIR(i){
       if(confirm("Are you sure to delete the 'Include Range'?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeRangeAction%>&index="+i;
+	document.modifyDiscoveryConfig.submit();
+	}
+}
+
+function deleteIR(i){
+    if(confirm("Are you sure to delete the 'Include URL'?")){
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
@@ -125,10 +136,18 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
 <input type="hidden" id="specificretries" name="specificretries" value=""/>
 
+<input type="hidden" id="iuurl" name="iuurl" value=""/>
+<input type="hidden" id="iutimeout" name="iutimeout" value=""/>
+<input type="hidden" id="iuretries" name="iuretries" value=""/>
+
 <input type="hidden" id="irbase" name="irbase" value=""/>
 <input type="hidden" id="irend" name="irend" value=""/>
 <input type="hidden" id="irtimeout" name="irtimeout" value=""/>
 <input type="hidden" id="irretries" name="irretries" value=""/>
+
+<input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
+<input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
+<input type="hidden" id="specificretries" name="specificretries" value=""/>
 
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
@@ -215,8 +234,8 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 				      <%for(int i=0; i<specs.length; i++){%>
 					 <tr>
 					  <td class="standard"  align="center"><%=specs[i].getContent()%></td>
-					  <td class="standard" align="center"><%=(specs[i].getTimeout()!=0)?""+specs[i].getTimeout():"800"%></td>
-					  <td class="standard" align="center"><%=(specs[i].getRetries()!=0)?""+specs[i].getRetries():"3"%></td>
+					  <td class="standard" align="center"><%=(specs[i].getTimeout()!=0)?""+specs[i].getTimeout():currConfig.getTimeout() %></td>
+					  <td class="standard" align="center"><%=(specs[i].getRetries()!=0)?""+specs[i].getRetries():currConfig.getRetries() %></td>
 					  <td class="standard" width="1%" align="center"><input type="button" value="Delete" onclick="deleteSpecific(<%=i%>);"/></td> 
 					</tr>		      	
 				      <%} // end for%>
@@ -224,6 +243,49 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 				     </table>
 			  <%}else{ // end if currConfig.getSpecificsCount()>0  
 			  	 out.print("No Specifics found.");
+			  	}
+			  %>
+			     </td>
+		  	   </tr>
+		       </table>			  
+
+			<h3>Include URLs</h3>
+		    <table class="standard">
+	    	<tr>
+	    	  <td class="standard" valign="top" width="1%">
+			    <input type="button" value="Add New" onclick="addIncludeUrl();"/>
+			  </td>
+			  <td class="standard">
+			    <%if(currConfig.getIncludeUrlCount()>0){
+			        IncludeUrl[] urls = currConfig.getIncludeUrl();
+			    %>
+				    <table class="standard">
+				      <tr>
+					<td class="standardheaderplain">
+					    <b>URL</b>
+					</td> 
+					<td class="standardheaderplain">
+					    <b>Timeout (ms.)</b>
+					</td>	
+					<td class="standardheaderplain">
+					    <b>Retries</b>
+					</td>			
+					<td class="standardheaderplain">
+					    <b>Action</b>
+					</td>
+				      </tr>
+				      <%for(int i=0; i<urls.length; i++){%>
+					 <tr>
+					  <td class="standard"  align="center"><%=urls[i].getContent()%></td>
+					  <td class="standard" align="center"><%=(urls[i].getTimeout()!=0)?""+urls[i].getTimeout():currConfig.getTimeout() %></td>
+					  <td class="standard" align="center"><%=(urls[i].getRetries()!=0)?""+urls[i].getRetries():currConfig.getRetries() %></td>
+					  <td class="standard" width="1%" align="center"><input type="button" value="Delete" onclick="deleteIncludeUrl(<%=i%>);"/></td> 
+					</tr>		      	
+				      <%} // end for%>
+
+				     </table>
+			  <%}else{ // end if currConfig.getIncludeUrlCount()>0  
+			  	 out.print("No Include URLs found.");
 			  	}
 			  %>
 			     </td>
@@ -265,8 +327,8 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 						 <tr>
 						  <td class="standard" align="center"><%=irange[i].getBegin()%></td>
 						  <td class="standard" align="center"><%=irange[i].getEnd()%></td>
-						  <td class="standard" align="center"><%=(irange[i].getTimeout()!=0)?""+irange[i].getTimeout():"800"%></td>
-						  <td class="standard" align="center"><%=(irange[i].getRetries()!=0)?""+irange[i].getRetries():"3"%></td>
+						  <td class="standard" align="center"><%=(irange[i].getTimeout()!=0)?""+irange[i].getTimeout():currConfig.getTimeout() %></td>
+						  <td class="standard" align="center"><%=(irange[i].getRetries()!=0)?""+irange[i].getRetries():currConfig.getRetries() %></td>
 						  <td class="standard" width="1%" align="center"><input type="button" value="Delete" onclick="deleteIR(<%=i%>);"/></td> 						  
 						</tr>		      	
 					      <%} // end for%>

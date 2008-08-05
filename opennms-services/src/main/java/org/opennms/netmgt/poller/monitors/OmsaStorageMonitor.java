@@ -205,7 +205,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 		SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(snmpAgentConfigKey);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", agentConfig.getRetries()));
+        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 		return agentConfig;
 	}
