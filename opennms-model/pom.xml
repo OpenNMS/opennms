@@ -40,9 +40,14 @@
       <artifactId>opennms-spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jersey</artifactId>
-      <version>${project.version}</version>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.castor</groupId>
