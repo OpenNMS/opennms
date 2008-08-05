@@ -129,6 +129,10 @@ public class Tl1AutonomousMessage extends Tl1Message {
         public void setTimestamp(Date timestamp) {
             m_timestamp = timestamp;
         }
+        
+        public String toString() {
+            return m_rawMessage;
+        }
 
     }
     
@@ -162,7 +166,9 @@ public class Tl1AutonomousMessage extends Tl1Message {
         public void setVerb(String verb) {
             m_verb = verb;
         }
-
+        public String toString() {
+            return m_rawMessage;
+        }
     }
 
     protected class AutoBlock {
@@ -176,7 +182,10 @@ public class Tl1AutonomousMessage extends Tl1Message {
         public void setBlock(String block) {
             m_block = block;
         }
-
+        
+        public String toString() {
+            return m_block;
+        }
     }
 
     public AutoHeader getHeader() {
@@ -210,14 +219,4 @@ public class Tl1AutonomousMessage extends Tl1Message {
     public void setTerminator(String terminator) {
         m_terminator = terminator;
     }
-
-    @Override
-    public Tl1MessageProcessor getMessageProcessor() {
-        return null;
-    }
-
-    @Override
-    public void setMessageProcessor(Tl1MessageProcessor processor) {
-    }
-
 }

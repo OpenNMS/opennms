@@ -78,5 +78,9 @@ public class Tl1AutonomousMessageProcessorTest extends TestCase {
         assertEquals("\"1-4:NTFCNCDE=CR,CONDTYPE=FAIL,SRVEFF=SA,OCRDAT=09-23,OCRTM=02-03-04,LOCN=NEND,DIRN=RCV\"", alarm.getAutoBlock().getBlock());
         
     }
+    
+    public void testInstanitateClass() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        Tl1Client client = (Tl1Client) Class.forName("org.opennms.netmgt.tl1d.Tl1ClientImpl").newInstance();
+    }
 
 }

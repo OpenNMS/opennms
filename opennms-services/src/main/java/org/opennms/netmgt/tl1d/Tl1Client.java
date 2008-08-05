@@ -36,6 +36,9 @@
 package org.opennms.netmgt.tl1d;
 
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+
+import org.apache.log4j.Category;
 
 /**
  * The API for TL1 client connections.
@@ -49,19 +52,16 @@ public interface Tl1Client {
 	void stop();
 
 	String getHost();
-
 	void setHost(String host);
 
 	int getPort();
-
 	void setPort(int port);
 
-	Socket getTl1Socket();
-
-	void setTl1Socket(Socket tl1Socket);
-
-	Thread getSocketReader();
-
-	void setSocketReader(Thread socketReader);
+	BlockingQueue<Tl1AutonomousMessage> getTl1Queue();
+	void setTl1Queue(BlockingQueue<Tl1AutonomousMessage> queue);
 	
+    public Tl1AutonomousMessageProcessor getMessageProcessor();
+    public void setMessageProcessor(Tl1AutonomousMessageProcessor messageProcessor);
+
+    void setLog(Category log);	
 }

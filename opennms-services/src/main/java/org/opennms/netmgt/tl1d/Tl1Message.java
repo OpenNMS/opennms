@@ -54,16 +54,6 @@ public abstract class Tl1Message {
     private String m_rawMessage;
     private String m_host;
     
-    private Tl1MessageProcessor m_processor;
-    
-    public void setMessageProcessor(Tl1MessageProcessor processor) {
-        m_processor = processor;
-    }
-    
-    public Tl1MessageProcessor getMessageProcessor() {
-        return m_processor;
-    }
-
     public Date getTimestamp() {
         return m_timestamp;
     }
@@ -86,6 +76,10 @@ public abstract class Tl1Message {
 
     public void setHost(String host) {
         m_host = host;
+    }
+    
+    public String toString() {
+        return m_rawMessage;
     }
         
 }
