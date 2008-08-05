@@ -90,16 +90,6 @@
   </dependencies>
   <repositories>
     <repository>
-     <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>java-net-maven2-repo</id>
-      <url>http://download.java.net/maven/2</url>
-    </repository>
-    <repository>
       <id>java-net-maven1-repo</id>
       <url>http://download.java.net/maven/1</url>
       <layout>legacy</layout>
