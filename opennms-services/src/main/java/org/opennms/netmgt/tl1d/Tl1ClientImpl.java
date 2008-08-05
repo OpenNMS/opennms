@@ -51,14 +51,6 @@ import org.opennms.netmgt.config.tl1d.Tl1Element;
  */
 public class Tl1ClientImpl implements Tl1Client {
 
-    public class TimeoutSleeper {
-
-        public void sleep() throws InterruptedException {
-            Thread.sleep(3000);
-        }
-
-    }
-
     String m_host;
     int m_port;
     boolean m_started = false;
@@ -70,6 +62,7 @@ public class Tl1ClientImpl implements Tl1Client {
     private TimeoutSleeper m_sleeper;
     private Category m_log;
     private Tl1AutonomousMessageProcessor m_messageProcessor;
+    private long m_reconnectionDelay;
     
     
     public Tl1ClientImpl(BlockingQueue<Tl1AutonomousMessage> queue, Tl1Element element, Category log) 
@@ -80,6 +73,7 @@ public class Tl1ClientImpl implements Tl1Client {
         
         m_tl1Queue = queue;
         m_messageProcessor = (Tl1AutonomousMessageProcessor) Class.forName(element.getTl1MessageParser()).newInstance();
+        m_reconnectionDelay = element.getReconnectDelay();
         m_log = log;
     }
 
@@ -269,4 +263,14 @@ public class Tl1ClientImpl implements Tl1Client {
     public void setSocketReader(Thread socketReader) {
         m_socketReader = socketReader;
     }
+    
+    private class TimeoutSleeper {
+
+        public void sleep() throws InterruptedException {
+            Thread.sleep(m_reconnectionDelay);
+        }
+
+    }
+
+
 }
