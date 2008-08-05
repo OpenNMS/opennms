@@ -89,10 +89,16 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         List<Tl1Element> configElements = m_configurationDao.getElements();
     
         m_tl1Clients = new ArrayList<Tl1Client>();
-    
+        
         for(Tl1Element element : configElements) {
             try {
-                m_tl1Clients.add(new Tl1ClientImpl(m_tl1Queue, element, log()));
+                Tl1Client client = (Tl1Client) Class.forName(element.getTl1ClientApi()).newInstance();
+                client.setHost(element.getHost());
+                client.setPort(element.getPort());
+                client.setTl1Queue(m_tl1Queue);
+                client.setMessageProcessor((Tl1AutonomousMessageProcessor) Class.forName(element.getTl1MessageParser()).newInstance());
+                client.setLog(log());
+                m_tl1Clients.add(client);
             } catch (InstantiationException e) {
                 log().error("onInit: could not instantiate specified class.", e);
             } catch (IllegalAccessException e) {
@@ -135,7 +141,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         EventBuilder bldr = new EventBuilder(Tl1AutonomousMessage.UEI, "Tl1d");
         bldr.setHost(message.getHost());
         bldr.setTime(message.getTimestamp());
-        bldr.addParam("rawmessage", message.getRawMessage());
+        bldr.addParam("raw-message", message.getRawMessage());
         bldr.addParam("alarm-code", message.getId().getAlarmCode());
         bldr.addParam("atag", message.getId().getAlarmTag());
         bldr.addParam("verb", message.getId().getVerb());

@@ -1672,7 +1672,7 @@
       &lt;p&gt;TL1 Alert: %parm[verb]% &lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%host%" alarm-type="1" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%host%" alarm-type="1" auto-clean="false"/>
   </event> 
   
   <event-file>events/ia.events.xml</event-file>

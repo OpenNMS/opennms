@@ -65,6 +65,9 @@ public class Tl1ClientImpl implements Tl1Client {
     private long m_reconnectionDelay;
     
     
+    public Tl1ClientImpl() {
+    }
+    
     public Tl1ClientImpl(BlockingQueue<Tl1AutonomousMessage> queue, Tl1Element element, Category log) 
         throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         
@@ -243,41 +246,30 @@ public class Tl1ClientImpl implements Tl1Client {
         m_port = port;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.tl1d.Tl1Client#getTl1Socket()
-     */
-    public Socket getTl1Socket() {
-        return m_tl1Socket;
+    public BlockingQueue<Tl1AutonomousMessage> getTl1Queue() {
+        return m_tl1Queue;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.tl1d.Tl1Client#setTl1Socket(java.net.Socket)
-     */
-    public void setTl1Socket(Socket tl1Socket) {
-        m_tl1Socket = tl1Socket;
+    public void setTl1Queue(BlockingQueue<Tl1AutonomousMessage> tl1Queue) {
+        m_tl1Queue = tl1Queue;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.tl1d.Tl1Client#getSocketReader()
-     */
-    public Thread getSocketReader() {
-        return m_socketReader;
+    public Tl1AutonomousMessageProcessor getMessageProcessor() {
+        return m_messageProcessor;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.tl1d.Tl1Client#setSocketReader(java.lang.Thread)
-     */
-    public void setSocketReader(Thread socketReader) {
-        m_socketReader = socketReader;
+    public void setMessageProcessor(Tl1AutonomousMessageProcessor messageProcessor) {
+        m_messageProcessor = messageProcessor;
     }
-    
+
+    public void setLog(Category log) {
+        m_log = log;
+    }
+
     private class TimeoutSleeper {
 
         public void sleep() throws InterruptedException {
             Thread.sleep(m_reconnectionDelay);
         }
-
     }
-
-
 }
