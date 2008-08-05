@@ -141,26 +141,22 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     private void readMessages() {
-        StringBuilder rawMessage = new StringBuilder();
-        m_log.debug("readMessages: Begin reading off socket...");
+        StringBuilder rawMessageBuilder = new StringBuilder();
+        
+        m_log.info("readMessages: Begin reading off socket...");
         while(m_started) {
             try {
                 m_log.info("readMessages: reading line from TL1 socket...");
                 BufferedReader reader = getReader();
+                
                 if (reader != null) {
                     int ch;
                     while((ch = reader.read()) != -1) {
-                        rawMessage.append((char)ch);
+                        rawMessageBuilder.append((char)ch);
+                        
                         if((char)ch == ';') {
-                            m_log.debug("readMessages: offering message to queue: "+rawMessage.toString());
-                            Tl1AutonomousMessage message = detectMessageType(rawMessage);
-                            if (message != null) {
-                                m_tl1Queue.offer(message);
-                                m_log.debug("readMessages: successfully offered to queue.");
-                            } else {
-                                m_log.debug("readMessages: message was null, not offered to queue.");
-                            }
-                            rawMessage.setLength(0);
+                            createAndQueueTl1Message(rawMessageBuilder);
+                            rawMessageBuilder.setLength(0);
                         }
                     }
                     m_log.warn("readMessages: resetting socket reader to client: "+m_host+":"+m_port);
@@ -171,6 +167,17 @@ public class Tl1ClientImpl implements Tl1Client {
             }
         }
         m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+    }
+
+    private void createAndQueueTl1Message(StringBuilder rawMessageBuilder) {
+        m_log.debug("readMessages: offering message to queue: "+rawMessageBuilder.toString());
+        Tl1AutonomousMessage message = detectMessageType(rawMessageBuilder);
+        if (message != null) {
+            m_tl1Queue.offer(message);
+            m_log.debug("readMessages: successfully offered to queue.");
+        } else {
+            m_log.debug("readMessages: message was null, not offered to queue.");
+        }
     }
 
     //TODO: Lots of work to do here
@@ -193,7 +200,7 @@ public class Tl1ClientImpl implements Tl1Client {
 
     private void resetReader(IOException ex) {
         if (ex != null) {
-            ex.printStackTrace();
+            m_log.error("resetReader: connection failure.", ex);
         }
         try {
             m_reader.close();
