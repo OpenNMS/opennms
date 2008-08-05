@@ -162,6 +162,18 @@
   </pluginManagement>
    <plugins>
      <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-eclipse-plugin</artifactId>
+       <configuration>
+         <additionalConfig>
+           <file>
+             <name>.settings/org.eclipse.jdt.core.prefs</name>
+             <url>http://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+           </file>
+         </additionalConfig>
+       </configuration>
+     </plugin>
+     <plugin>
        <inherited>false</inherited>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-release-plugin</artifactId>
@@ -474,8 +486,8 @@
 
   <properties>
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.3</maven.surefire.plugin.version>
-    <maven.eclipse.plugin.version>2.4</maven.eclipse.plugin.version>
+    <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
+    <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -1115,7 +1127,7 @@
       <dependency>
         <groupId>com.jcraft</groupId>
         <artifactId>jsch</artifactId>
-        <version>0.1.31</version>
+        <version>0.1.39</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>

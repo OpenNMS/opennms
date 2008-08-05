@@ -74,11 +74,11 @@ public class MailTransportParameters {
     }
     
     @SuppressWarnings("unchecked")
-    static synchronized MailTransportParameters get(Map paramterMap) {
-        MailTransportParameters parms = (MailTransportParameters)paramterMap.get(KEY);
+    static synchronized MailTransportParameters get(Map parameterMap) {
+        MailTransportParameters parms = (MailTransportParameters)parameterMap.get(KEY);
         if (parms == null) {
-            parms = new MailTransportParameters(paramterMap);
-            paramterMap.put(KEY, parms);
+            parms = new MailTransportParameters(parameterMap);
+            parameterMap.put(KEY, parms);
         }
         return parms;
     }

@@ -46,7 +46,7 @@
                 trigger-name="selectClearedAlarms" 
                 action-name="resetSeverity" />
                 
-    <automation name="escalation" interval="30000" active="true" 
+    <automation name="escalation" interval="30000" active="false" 
                 trigger-name="selectSuspectAlarms" 
                 action-name="escalateAlarm" 
                 action-event="eventEscalated" />

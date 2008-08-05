@@ -47,6 +47,7 @@ import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -55,14 +56,13 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * A servlet that handles updating the status of the notifications
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class ActionDiscoveryServlet extends HttpServlet {
  
-    private static final long serialVersionUID = 1L;
-
-
+    private static final long serialVersionUID = 2L;
+    
     protected static Category log = ThreadCategory.getInstance("WEB");
     
     
@@ -71,7 +71,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
     
     public static String addIncludeRangeAction = "AddIncludeRange";
     public static String removeIncludeRangeAction = "RemoveIncludeRange";
-    
+
+    public static String addIncludeUrlAction = "AddIncludeUrl";
+    public static String removeIncludeUrlAction = "RemoveIncludeUrl";
+
     public static String addExcludeRangeAction = "AddExcludeRange";
     public static String removeExcludeRangeAction = "RemoveExcludeRange";
     
@@ -99,11 +102,11 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	String retries = request.getParameter("specificretries");
         	Specific newSpecific = new Specific();
         	newSpecific.setContent(ipAddr);
-        	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals("800")){
+        	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals(config.getTimeout())){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
-        	
-        	if(retries!=null && !retries.trim().equals("") && !retries.equals("3")){
+
+        	if(retries!=null && !retries.trim().equals("") && !retries.equals(config.getRetries())){
         		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
         	config.addSpecific(newSpecific);
@@ -130,10 +133,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	IncludeRange newIR = new IncludeRange();
         	newIR.setBegin(ipAddrBase);
         	newIR.setEnd(ipAddrEnd);
-        	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals("800")){
+        	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals(config.getTimeout())){
         		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
-        	if(retries!=null && !retries.trim().equals("") && !retries.equals("3")){
+        	if(retries!=null && !retries.trim().equals("") && !retries.equals(config.getRetries())){
         		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
         	config.addIncludeRange(newIR);
@@ -149,7 +152,34 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	log.debug("Removing Include Range result = "+result);
         } 
         
-         
+        //add an 'Include URL'
+        if(action.equals(addIncludeUrlAction)){
+            log.debug("Adding Include URL");
+            String url = request.getParameter("iuurl");
+            String timeout = request.getParameter("iutimeout");
+            String retries = request.getParameter("iuretries");
+
+            IncludeUrl iu = new IncludeUrl();
+            iu.setContent(url);
+            if(timeout!=null && !timeout.trim().equals("") && !timeout.equals(config.getTimeout())){
+                iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
+            }
+            if(retries!=null && !retries.trim().equals("") && !retries.equals(config.getRetries())){
+                iu.setRetries(WebSecurityUtils.safeParseInt(retries));
+            }
+            config.addIncludeUrl(iu);
+        }
+
+        //remove 'Include URL' from configuration
+        if(action.equals(removeIncludeUrlAction)){
+            log.debug("Removing Include URL");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            IncludeUrl iu = config.getIncludeUrl(index);
+            boolean result = config.removeIncludeUrl(iu);
+            log.debug("Removing Include URL result = "+result);
+        } 
+        
         //add an 'Exclude Range'
         if(action.equals(addExcludeRangeAction)){
         	log.debug("Adding Exclude Range");
