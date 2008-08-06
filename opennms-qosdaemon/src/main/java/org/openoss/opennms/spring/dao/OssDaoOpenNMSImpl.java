@@ -400,7 +400,10 @@ public class OssDaoOpenNMSImpl {
 		//TODO - ISSUE if too many alarms?
 		for (int i=0; i<alarms.length; i++){
 			OnmsAlarm newalarm=alarms[i];
-			newalarm.getNode().getLabel(); // force node to retreive inner contents
+			// retrieve inner contents of alarm node if there is a node associated with the alarm
+			if (newalarm.getNode()!=null) {
+				newalarm.getNode().getLabel();
+			}
 
 			alarmCacheByID.put(new Integer (newalarm.getId()), newalarm);
 
@@ -684,28 +687,56 @@ public class OssDaoOpenNMSImpl {
 							nodeCacheByLabel.put((String)node.getLabel(), node);
 						}
 					} else {
-						log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" Node Label is Not putting node in nodeCacheByLabel");
+						log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" Node Label is NULL. Not putting node in nodeCacheByLabel");
 					}
 
 					// update node by Unique ID -managedObjectInstance+ManagedObjectType 
-					OnmsAssetRecord assetRecord = node.getAssetRecord();
+					final OnmsAssetRecord assetRecord = node.getAssetRecord();
 					if (assetRecord==null) {
 						log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" assetRecord is NULL. Not putting node in nodeCacheByUniqueID");
 						continue;
-					} else
-						if ((assetRecord.getManagedObjectInstance()==null) || (assetRecord.getManagedObjectType()==null)){
-							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" ManagedObjectInstance and/or ManagedObjectType are NULL. Not putting node in nodeCacheByUniqueID");
-							continue;
-						} else {
-							String uniqueid=assetRecord.getManagedObjectInstance()+assetRecord.getManagedObjectType();
-							if (nodeCacheByUniqueID.get((String)uniqueid)!=null){
-								log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+
-										"Unique ID is duplicated. Unique ID = ManagedObjectInstance:"+assetRecord.getManagedObjectInstance()+"+ ManagedObjectType:"+assetRecord.getManagedObjectType());
-							} else {
-								nodeCacheByUniqueID.put(uniqueid, node);
-							}
+					} else {
+						
+						// Note that the node asset record data for instance and type are only filled 
+						// given default values once - subsequently changes must be explicitly set directly
+						// in the database
+						String moi=assetRecord.getManagedObjectInstance();
+						if ((moi==null)||("".equals(moi))){
+							String fid  = (node.getForeignId()==null) ? "" : node.getForeignId();
+							String fsrc = (node.getForeignSource()==null) ? "" : node.getForeignSource() ;
+							String label= (node.getLabel()==null) ? "" : node.getLabel();
+							moi  = "Label:"+label+":ForeignSource:"+fsrc+":ForeignId():"+fid;
+							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()
+									+" ManagedObjectInstance is NULL. Setting  ManagedObjectInstance to: "+moi);
+							assetRecord.setManagedObjectInstance(moi);
 						}
-
+						String mot=assetRecord.getManagedObjectType();
+						if ((mot==null)||("".equals(mot))){
+							mot="UNSPECIFIED_TYPE";
+							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"
+									+node.getId()+"ManagedObjectType was NULL. Setting ManagedObjectType to: "+mot);
+							assetRecord.setManagedObjectType(mot);
+						}
+						
+						// save asset data back with new node information 
+						// (Note - data may not have changed)
+						transTemplate.execute(new TransactionCallback() {
+							public Object doInTransaction(TransactionStatus status) {
+								_assetRecordDao.update(assetRecord);
+								return null;
+							}
+						});
+						
+						// update nodeCacheByUniqueID
+						String uniqueid=assetRecord.getManagedObjectInstance()+assetRecord.getManagedObjectType();
+						if (nodeCacheByUniqueID.get((String)uniqueid)!=null){
+							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+
+										" Unique ID is duplicated. Unique ID = ManagedObjectInstance:"+assetRecord.getManagedObjectInstance()+"+ ManagedObjectType:"+assetRecord.getManagedObjectType());
+						} else {
+							nodeCacheByUniqueID.put(uniqueid, node);
+						}
+						
+					}
 				} catch (Exception ex){
 					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches Error updating node caches: ERROR : ", ex);
 				}	
