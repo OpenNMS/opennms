@@ -4,11 +4,12 @@
 %{!?package_version:%define package_version 1.5.0}
 %{!?package_release:%define package_release 1}
 %{!?package_epoch:%define package_epoch 2000}
+%{!?my_epoch:%define my_epoch %{package_epoch}}
 %{!?dep_package:%define dep_package java-%(echo %{package_version} | sed -e 's,\\\.,_,g')-sun-devel}
 
 Name:			jdk
 Summary:		Sun JDK compatible placeholder
-Epoch:			%{package_epoch}
+Epoch:			%{my_epoch}
 Version:		%{package_version}
 Release:		%{package_release}
 License:		Public Domain
