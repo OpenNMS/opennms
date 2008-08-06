@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo opennms_1_3_2_example_deploy_1dot0.sh 30-10-06
 echo This file deploys the opennms Qos RX and TX files
 
 echo Description:
@@ -13,40 +12,39 @@ echo "                        -              export JBOSS_HOME
 echo "       Requires that QOS_BUILD_HOME is set as the directory of the qos implimentation"
 echo "       Requires that OPEN_NMS_HOME is set as installed directory of OpenNMS"
 echo "              this is normally /opt/OpenNMS"
-echo "       NOTE this script uses fixed locations for Tomcat55 as symbolic links are not resolved easily"
-echo "              you must ensure these values are correct in script before use"
+
 
 
 #################################
 # setting up jar names
 #################################
 # VERSION - the version suffix for the Jars to be moved to opennms
-VERSION=2.1.0-SNAPSHOT
-echo Information: VERSION set to $VERSION
+#VERSION=2.1.0-SNAPSHOT
+#echo Information: VERSION set to $VERSION
 
 # opennms-qosdaemon jar name
-OPENNMS_QOSDAEMON_NAME=opennms-qosd-$VERSION.jar
-echo opennms-qosdaemon jar name set to: $OPENNMS_QOSDAEMON_NAME
+#OPENNMS_QOSDAEMON_NAME=opennms-qosd-$VERSION.jar
+#echo opennms-qosdaemon jar name set to: $OPENNMS_QOSDAEMON_NAME
 
 # OSSbeans-qos-ejb jar name
-OSSBEANS_QOS_EJB_NAME=OSSbeans-qos-ejb-$VERSION.jar
-echo OSSbeans-qos-ejb jar name set to: $OSSBEANS_QOS_EJB_NAME
+#OSSBEANS_QOS_EJB_NAME=OSSbeans-qos-ejb-$VERSION.jar
+#echo OSSbeans-qos-ejb jar name set to: $OSSBEANS_QOS_EJB_NAME
 
 # OSSbeans-xml jar name
-OSSBEANS_XML_NAME=OSSbeans-xml-$VERSION.jar
-echo OSSbeans-xml jar name set to: $OSSBEANS_XML_NAME
+#OSSBEANS_XML_NAME=OSSbeans-xml-$VERSION.jar
+#echo OSSbeans-xml jar name set to: $OSSBEANS_XML_NAME
 
 # OSSbeans-qos-ear ear name
-OSSBEANS_QOS_EAR_NAME=OSSbeans-qos-ear-$VERSION.ear
-echo OSSbeans-qos-ear ear name set to: $OSSBEANS_QOS_EAR_NAME
+#OSSBEANS_QOS_EAR_NAME=OSSbeans-qos-ear-$VERSION.ear
+#echo OSSbeans-qos-ear ear name set to: $OSSBEANS_QOS_EAR_NAME
   
 echo Information: Setting up and checking copy locations:
 #################################
 # local directories to copy from
 #################################
 # QOS_BUILD_HOME - to be changed to where QosD is built on your machine 
-QOS_BUILD_HOME=./../..
-echo Information: QOS_BUILD_HOME set to $QOS_BUILD_HOME
+#QOS_BUILD_HOME=./../..
+#echo Information: QOS_BUILD_HOME set to $QOS_BUILD_HOME
 
 
 # OPEN_NMS_CONFIG_HOME- the location of files to be deployed to OpenNMS from this script
@@ -62,7 +60,7 @@ echo Information: OPEN_NMS_CONFIG_HOME set to $OPEN_NMS_CONFIG_HOME
 
 # set OPEN_NMS_HOME - The address of the installed OpenNMS system
 #################################################################
-OPEN_NMS_HOME=/opt/OpenNMS
+OPEN_NMS_HOME=/opt/opennms
 echo Information: OPEN_NMS_HOME set to $OPEN_NMS_HOME
 if [ -d "$OPEN_NMS_HOME" ]; then
     echo Information: $OPEN_NMS_HOME directory exists - using as home directory for opennms
@@ -116,19 +114,6 @@ set -x
 # starting to copy files
 ########################
 
-# set Tomcat 55 settings
-#########################
-# IMPORTANT - NOTE no symbolic linking here - set location of tomcat manually
-# Setting up Tomcat server addresses to 8081 and also preparation for BUTE code images
-cp $OPEN_NMS_CONFIG_HOME/tomcat55/server.xml   /etc/tomcat55
-cp $OPEN_NMS_CONFIG_HOME/tomcat55/tomcat55.conf /etc/tomcat55
-cp -r $OPEN_NMS_CONFIG_HOME/tomcat55/images    /usr/share/tomcat55/webapps
-chmod -R 664 /usr/share/tomcat55/webapps/images
-
-# IMPORTANT - NOTE no symbolic linking here because  $OPEN_NMS_HOME/webapps/opennms/WEB-INF cannot be resolved
-# this is because the directory is symbolically linked between OpenNMS and Tomcat TODO - CHECK WHY THIS IS
-cp $OPEN_NMS_CONFIG_HOME/opennms/web.xml      /opt/OpenNMS/webapps/opennms/WEB-INF
-
 
 #########################################
 # FILES FOR OPENNMS SERVICE CONFIGURATION
@@ -136,15 +121,20 @@ cp $OPEN_NMS_CONFIG_HOME/opennms/web.xml      /opt/OpenNMS/webapps/opennms/WEB-I
 
 
 # files to copy to opennms to set up the log4j perameters for deamon and services file
+
+cp $OPEN_NMS_HOME/etc/rmi.policy $OPEN_NMS_HOME/etc/rmi.policy_back 
 cp $OPEN_NMS_CONFIG_HOME/opennms/rmi.policy                   $OPEN_NMS_HOME/etc
+
+cp $OPEN_NMS_HOME/etc/log4j.properties                        $OPEN_NMS_HOME/etc/log4j.properties_back
 cp $OPEN_NMS_CONFIG_HOME/opennms/log4j.properties             $OPEN_NMS_HOME/etc
+
+cp $OPEN_NMS_HOME/etc/service-configuration.xml $OPEN_NMS_HOME/etc/service-configuration_back.xml
 cp $OPEN_NMS_CONFIG_HOME/opennms/service-configuration.xml    $OPEN_NMS_HOME/etc
 
 # opennms.conf contains additional JVM -D settings which point to qosd.properties qosdrx.properties etc.
-cp $OPEN_NMS_CONFIG_HOME/opennms/opennms.conf                 $OPEN_NMS_HOME/etc
 
-# file to set up Jrobin polling looks like this may not be necessary with new OpenNMS
-cp $OPEN_NMS_CONFIG_HOME/opennms/rrd-configuration.properties $OPEN_NMS_HOME/etc
+cp $OPEN_NMS_HOME/etc/opennms.conf  $OPEN_NMS_HOME/etc/opennms.conf_back
+cp $OPEN_NMS_CONFIG_HOME/opennms/opennms.conf                 $OPEN_NMS_HOME/etc
 
 
 #########################################
@@ -171,6 +161,7 @@ cp $OPEN_NMS_CONFIG_HOME/opennms/QoSDrxOssBeanRunnerSpringContext.xml	$OPEN_NMS_
 #####################################################
 echo
 echo vacuumd file is used to set up opennms automations to drive ossj interface
+cp $OPEN_NMS_HOME/etc/vacuumd-configuration.xml $OPEN_NMS_HOME/etc/vacuumd-configuration_back.xml 
 cp $OPEN_NMS_CONFIG_HOME/opennms_fault_config/vacuumd-configuration.xml     $OPEN_NMS_HOME/etc
 
 echo ossj_events.xml contains events specifically to drive opennms interface
@@ -180,25 +171,21 @@ cp $OPEN_NMS_CONFIG_HOME/opennms_fault_config/events/ossj_events.xml 	    $OPEN_
 echo
 echo note ossj_events.xml must be configured in eventconf.xml for ossj interface to work
 echo eventconf must reference the required trap handling configuration files in OPEN_NMS_HOME/etc/events
+cp $OPEN_NMS_HOME/etc/eventconf.xml $OPEN_NMS_HOME/etc/eventconf_back.xml
 cp $OPEN_NMS_CONFIG_HOME/opennms_fault_config/eventconf.xml                 $OPEN_NMS_HOME/etc 
+
+###################################
+# set up opennms inventory importer
+###################################
+cp $OPEN_NMS_HOME/etc/model-importer.properties $OPEN_NMS_HOME/etc/model-importer.properties_back
+cp $OPEN_NMS_CONFIG_HOME/opennms_fault_config/inventory/model-importer.properties        $OPEN_NMS_HOME/etc 
 
 ########################################
 # FILES TO DEPLOY configuration on JBOSS
 ########################################
 echo
 echo jar files to copy from jboss server - dependancies for opennms interface
-# ORIGINAL CLIENT LIBRARIES USED
-# cp $JBOSS_HOME/server/default/lib/jnpserver.jar              $OPEN_NMS_HOME/lib
-# cp $JBOSS_HOME/client/jboss-common-client.jar                $OPEN_NMS_HOME/lib
-# cp $JBOSS_HOME/lib/concurrent.jar                            $OPEN_NMS_HOME/lib
-# cp $JBOSS_HOME/server/default/lib/jbossmq.jar                $OPEN_NMS_HOME/lib
-# cp $JBOSS_HOME/server/default/lib/jboss-j2ee.jar             $OPEN_NMS_HOME/lib
 
-# ALTERNATIVE NEW LIBRARIES FROM MAVEN
-# cp $QOS_BUILD_HOME/target/lib/jboss-client-4.0.2.jar           $OPEN_NMS_HOME/lib
-# cp $QOS_BUILD_HOME/target/lib/jboss-common-4.0.2.jar           $OPEN_NMS_HOME/lib
-# cp $QOS_BUILD_HOME/target/lib/jboss-j2ee-4.0.2.jar             $OPEN_NMS_HOME/lib
-# cp $QOS_BUILD_HOME/target/lib/jbossmq-client-4.0.2.jar         $OPEN_NMS_HOME/lib
 
 # USING THIS SETTING AS MAVEN DOES NOT SUPPORT ALL LIBRARIES NEEDED ( and this is simpler )
 cp $JBOSS_HOME/client/jbossall-client.jar               	$OPEN_NMS_HOME/lib
@@ -212,6 +199,4 @@ cp $OPEN_NMS_CONFIG_HOME/jboss/uil2-service.xml              $JBOSS_HOME/server/
 cp $OPEN_NMS_CONFIG_HOME/jboss/log4j.xml                     $JBOSS_HOME/server/default/conf
 cp $OPEN_NMS_CONFIG_HOME/jboss/openoss-jms-service.xml       $JBOSS_HOME/server/default/deploy/jms
 
-# ear is no longer contained in build
-# cp $QOS_BUILD_HOME/target/lib/$OSSBEANS_QOS_EAR_NAME         $JBOSS_HOME/server/default/deploy
 

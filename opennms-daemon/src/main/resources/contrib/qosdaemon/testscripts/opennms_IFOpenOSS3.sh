@@ -40,8 +40,8 @@ echo OSSbeans-qos-ear ear name set to: $OSSBEANS_QOS_EAR_NAME
 
 # This file runs the OSS/J client test program
 # Requires that OPENNMS_LIB is set as the directory where the qos project is built on your machine 
-OPENNMS_LIB=/opt/OpenNMS/lib
-OPENNMS_ETC=/opt/OpenNMS/etc
+OPENNMS_LIB=/opt/opennms/lib
+OPENNMS_ETC=/opt/opennms/etc
 
 echo running openoss ossj openoss sentinal interface 
 echo OPENNMS_LIB set to $OPENNMS_LIB
