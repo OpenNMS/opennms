@@ -50,6 +50,7 @@ import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
 import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Date;
+import java.util.HashMap;
 
 
 /**
@@ -415,6 +416,10 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setAlarmType(new Integer(1)); // set to raise alarm
 				//alarm.setAlarmAckUser(arg0);
 				//alarm.setAlarmAckTime(arg0);
+				
+				//TODO added for new alarm field
+				HashMap<String, String> m_details = new HashMap();
+				alarm.setDetails(m_details);
 
 				try {
 					if (log.isDebugEnabled()) log.debug(logheader+": Creating Alarm: " );

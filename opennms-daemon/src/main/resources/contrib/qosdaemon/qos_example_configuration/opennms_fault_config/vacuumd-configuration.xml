@@ -1,7 +1,7 @@
 <!-- vacuumd-configuration.xml 
 
 This vacuumd configuration shows the configuration used to drive the QoSD OSS/J interface.
-
+v0.9 13-06-08 cgallen - added field action-events to make run with new vacuumd-daemon
 v0.8 7-10-06 cgallen - using new field qosalarmstate instead of tticketid
 v0.7 19-09-06 cgallen - changed to case statement to speed up processing
 v0.6 9-09-06 cgallen - changed to speed up processing
@@ -128,7 +128,10 @@ V0.2 Original working version
         <auto-event name="alarmListChangedEvent" >
             <uei>uei.opennms.org/vacuumd/alarmListChanged</uei>
         </auto-event>
-        
     </auto-events>
+    
+    <action-events>
+        <!-- included because auto-events now depreciated but not yet used-->
+    </action-events>
     
 </VacuumdConfiguration>
