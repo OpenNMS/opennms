@@ -40,10 +40,9 @@ import com.atlassian.jira.rpc.soap.client.RemoteIssue;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ticketd.Ticket;
-import org.opennms.netmgt.ticketd.TicketerPlugin;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.api.integration.ticketing.Plugin;
 
-import javax.xml.rpc.ServiceException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -58,7 +57,7 @@ import java.net.MalformedURLException;
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for Jira
  *
- * @author <a href="mailto:joed@opennms.org">Johan Edstromi</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  */
 
 /*
@@ -68,7 +67,7 @@ import java.net.MalformedURLException;
 *
 */
 
-public class JiraTicketerPlugin implements TicketerPlugin {
+public class JiraTicketerPlugin implements Plugin {
 
     /*
     * @returns JiraConnection
@@ -190,7 +189,7 @@ public class JiraTicketerPlugin implements TicketerPlugin {
      * the OpenNMS enumerated ticket states.
      *
      * @param stateIdString
-     * @return the converted <code>org.opennms.netmgt.ticketd.Ticket.State</code>
+     * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
     private Ticket.State getStateFromId(String stateIdString) {
         if (stateIdString == null) {
@@ -250,7 +249,7 @@ public class JiraTicketerPlugin implements TicketerPlugin {
 
     /*
     * (non-Javadoc)
-    * @see org.opennms.netmgt.ticketd.TicketerPlugin#saveOrUpdate(org.opennms.netmgt.ticketd.Ticket)
+    * @see org.opennms.api.integration.ticketing.Plugin#saveOrUpdate(org.opennms.api.integration.ticketing.Ticket)
     */
     public void saveOrUpdate(Ticket ticket) {
 
@@ -320,7 +319,7 @@ public class JiraTicketerPlugin implements TicketerPlugin {
     }
 
     /**
-     * Covenience logging.
+     * Convenience logging.
      *
      * @return a log4j Category for this class
      */
