@@ -40,46 +40,9 @@ import java.net.InetAddress;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class SnmpAgentConfig {
-    
-    public static final int DEFAULT_TIMEOUT = 3000;
-    public static final int DEFAULT_PORT = 161;
-    public static final int VERSION1 = 1;
-    public static final int VERSION2C = 2;
-    public static final int VERSION3 = 3;
-    public static final int DEFAULT_VERSION = VERSION1;
-    public static final int DEFAULT_RETRIES = 1;
-    public static final int DEFAULT_MAX_REQUEST_SIZE = 65535;
-    public static final int NOAUTH_NOPRIV = 1;
-    public static final int AUTH_NOPRIV = 2;
-    public static final int AUTH_PRIV = 3;
-    public static final String DEFAULT_READ_COMMUNITY = "public";
-    public static final int DEFAULT_MAX_VARS_PER_PDU = 10;
-    public static final int DEFAULT_MAX_REPETITIONS = 2;
-    public static final String DEFAULT_WRITE_COMMUNITY = "private";
-    public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NOPRIV;
-    public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
-    public static final String DEFAULT_AUTH_PASS_PHRASE = "0p3nNMSv3";
-    public static final String DEFAULT_AUTH_PROTOCOL = "MD5";
-    public static final String DEFAULT_PRIV_PROTOCOL = "DES";
-    public static final String DEFAULT_PRIV_PASS_PHRASE = DEFAULT_AUTH_PASS_PHRASE;
+public class SnmpAgentConfig extends SnmpConfiguration {
     
     private InetAddress m_address;
-    private int m_timeout;
-    private int m_retries;
-    private int m_port;
-    private int m_version;
-    private int m_maxRequestSize;
-    private int m_securityLevel;
-    private String m_securityName;
-    private String m_readCommunity;
-    private int m_maxVarsPerPdu;
-    private int m_maxRepetitions;
-    private String m_writeCommunity;
-    private String m_authPassPhrase;
-    private String m_authProtocol;
-    private String m_PrivProtocol;
-    private String m_privPassPhrase;
     private InetAddress m_proxyFor;
     
     public SnmpAgentConfig() {
@@ -91,43 +54,25 @@ public class SnmpAgentConfig {
         setDefaults();
     }
 
-    private void setDefaults() {
-        m_timeout = DEFAULT_TIMEOUT;
-        m_retries = DEFAULT_RETRIES;
-        m_port = DEFAULT_PORT;
-        m_version = DEFAULT_VERSION;
-        m_maxRequestSize = DEFAULT_MAX_REQUEST_SIZE;
-        m_securityLevel = DEFAULT_SECURITY_LEVEL;
-        m_securityName = DEFAULT_SECURITY_NAME;
-        m_authPassPhrase = DEFAULT_AUTH_PASS_PHRASE;
-        m_authProtocol = DEFAULT_AUTH_PROTOCOL;
-        m_PrivProtocol = DEFAULT_PRIV_PROTOCOL;
-        m_privPassPhrase = DEFAULT_PRIV_PASS_PHRASE;
-        m_readCommunity = DEFAULT_READ_COMMUNITY;
-        m_maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
-        m_maxRepetitions = DEFAULT_MAX_REPETITIONS;
-        m_writeCommunity = DEFAULT_WRITE_COMMUNITY;
-    }
-    
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
-        buff.append("Address: "+m_address);
-        buff.append(", Port: "+m_port);
-        buff.append(", Community: "+m_readCommunity);
-        buff.append(", Timeout: "+m_timeout);
-        buff.append(", Retries: "+m_retries);
-        buff.append(", MaxVarsPerPdu: "+m_maxVarsPerPdu);
-        buff.append(", MaxRepititions: "+m_maxRepetitions);
-        buff.append(", Max request size: "+m_maxRequestSize);
-        buff.append(", Version: "+m_version);
-        buff.append(", ProxyForAddress: "+m_proxyFor);
+        buff.append("Address: "+getAddress());
+        buff.append(", ProxyForAddress: "+getProxyFor());
+        buff.append(", Port: "+getPort());
+        buff.append(", Community: "+getReadCommunity());
+        buff.append(", Timeout: "+getTimeout());
+        buff.append(", Retries: "+getRetries());
+        buff.append(", MaxVarsPerPdu: "+getMaxVarsPerPdu());
+        buff.append(", MaxRepititions: "+getMaxRepetitions());
+        buff.append(", Max request size: "+getMaxRequestSize());
+        buff.append(", Version: "+versionToString(getVersion()));
         if (m_version == VERSION3) {
-            buff.append(", Security level: "+m_securityLevel);
-            buff.append(", Security name: "+m_securityName);
-            buff.append(", auth-passphrase: "+m_authPassPhrase);
-            buff.append(", auth-protocol: "+m_authProtocol);
-            buff.append(", priv-passprhase: "+m_privPassPhrase);
-            buff.append(", priv-protocol: "+m_PrivProtocol);
+            buff.append(", Security level: "+getSecurityLevel());
+            buff.append(", Security name: "+getSecurityName());
+            buff.append(", auth-passphrase: "+getAuthPassPhrase());
+            buff.append(", auth-protocol: "+getAuthProtocol());
+            buff.append(", priv-passprhase: "+getPrivPassPhrase());
+            buff.append(", priv-protocol: "+getPrivProtocol());
         }
         buff.append("]");
         return buff.toString();
@@ -140,139 +85,6 @@ public class SnmpAgentConfig {
 
     public void setAddress(InetAddress address) {
         m_address = address;
-    }
-
-    public int getPort() {
-        return m_port;
-    }
-
-    public void setPort(int port) {
-        m_port = port;
-    }
-
-    public int getTimeout() {
-        return m_timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        m_timeout = timeout;
-    }
-
-    public int getVersion() {
-        return m_version;
-    }
-
-    public void setVersion(int version) {
-        m_version = version;
-    }
-
-    public int getRetries() {
-        return m_retries;
-    }
-
-    public void setRetries(int retries) {
-        m_retries = retries;
-    }
-
-    public int getSecurityLevel() {
-        return m_securityLevel;
-    }
-
-    public void setSecurityLevel(int securityLevel) {
-        m_securityLevel = securityLevel;
-    }
-
-    public String getSecurityName() {
-        return m_securityName;
-    }
-
-    public void setSecurityName(String securityName) {
-        m_securityName = securityName;
-    }
-
-    public void setReadCommunity(String community) {
-        m_readCommunity = community;
-    }
-
-    public int getMaxRequestSize() {
-        return m_maxRequestSize;
-    }
-
-    public void setMaxRequestSize(int maxRequestSize) {
-        m_maxRequestSize = maxRequestSize;
-    }
-
-    public String getReadCommunity() {
-        return m_readCommunity;
-    }
-
-    public int getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu;
-    }
-
-    public void setMaxVarsPerPdu(int maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
-    }
-    
-    public int getMaxRepetitions() {
-        return m_maxRepetitions;
-    }
-
-    public void setMaxRepetitions(int maxRepetitions) {
-        m_maxRepetitions = maxRepetitions;
-    }
-
-    public String getWriteCommunity() {
-        return m_writeCommunity;
-    }
-    
-    public void setWriteCommunity(String community) {
-        m_writeCommunity = community;
-    }
-    
-    public static String versionToString(int version) {
-        switch (version) {
-        case VERSION1 :
-            return "v1";
-        case VERSION2C :
-            return "v2c";
-        case VERSION3 :
-            return "v3";
-        default :
-            return "unknown";
-        }
-    }
-
-    public String getAuthPassPhrase() {
-        return m_authPassPhrase;
-    }
-
-    public void setAuthPassPhrase(String authPassPhrase) {
-        m_authPassPhrase = authPassPhrase;
-    }
-
-    public String getPrivProtocol() {
-        return m_PrivProtocol;
-    }
-
-    public void setPrivProtocol(String authPrivProtocol) {
-        m_PrivProtocol = authPrivProtocol;
-    }
-
-    public String getAuthProtocol() {
-        return m_authProtocol;
-    }
-
-    public void setAuthProtocol(String authProtocol) {
-        m_authProtocol = authProtocol;
-    }
-    
-    public String getPrivPassPhrase() {
-        return m_privPassPhrase;
-    }
-
-    public void setPrivPassPhrase(String privPassPhrase) {
-        m_privPassPhrase = privPassPhrase;
     }
 
     public InetAddress getProxyFor() {
