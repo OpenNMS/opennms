@@ -33,7 +33,7 @@ package org.opennms.netmgt.jetty.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class JettyServer extends AbstractSpringContextJmxServiceDaemon implements JettyServerMBean {
+public class JettyServer extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.jetty.JettyServer> implements JettyServerMBean {
 
     @Override
     protected String getLoggingPrefix() {

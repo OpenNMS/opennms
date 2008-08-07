@@ -95,6 +95,38 @@ public class CastorUtils {
     }
 
     /**
+     * Marshal a Castor XML configuration file.
+     *
+     * @param obj the object representing the objected to be marshalled to XML
+     * @param writer where the marshalled XML will be written
+     * @throws DataAccessException if the underlying Castor
+     *      Marshaller.marshal() call throws a MarshalException or
+     *      ValidationException.  The underlying exception will be translated
+     *      using CastorExceptionTranslator.
+     */
+    public static void marshalWithTranslatedExceptionsViaString(Object obj, Resource resource) throws DataAccessException {
+        Writer fileWriter = null;
+        try {
+            StringWriter writer = new StringWriter();
+            Marshaller m = new Marshaller(writer);
+            m.marshal(obj);
+            
+            fileWriter= new FileWriter(resource.getFile());
+            fileWriter.write(writer.toString());
+            fileWriter.flush();
+            
+        } catch (IOException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
+        } catch (MarshalException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
+        } catch (ValidationException e) {
+            throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
+        } finally {
+            IOUtils.closeQuietly(fileWriter);
+        }
+    }
+
+  /**
      * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
      * return type. 
      * 
