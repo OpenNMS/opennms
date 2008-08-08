@@ -146,7 +146,7 @@ public class ImportAssetsServlet extends HttpServlet {
             messageText.append(".");
             
             if (errors.size() > 0) {
-                messageText.append(errors.size()).append(" non-fatal errors occurred:");
+                messageText.append("  ").append(errors.size()).append(" non-fatal errors occurred:");
                 for (String error : errors) {
                     messageText.append("<br />").append(error);
                 }
