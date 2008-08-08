@@ -103,6 +103,19 @@
         </annotation>
       </attribute>
 
+      <attribute name="security-level" use="optional">
+        <annotation>
+          <documentation>SNMPv3</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1" />
+            <maxInclusive value="3" />
+          </restriction>
+        </simpleType>
+      </attribute>
+
       <attribute name="auth-passphrase" type="string" use="optional">
         <annotation>
           <documentation>SNMPv3</documentation>

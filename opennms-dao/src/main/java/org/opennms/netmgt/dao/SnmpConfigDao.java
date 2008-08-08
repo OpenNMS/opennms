@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.dao;
 
+import java.net.InetAddress;
+
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 
@@ -41,11 +43,11 @@ import org.opennms.netmgt.snmp.SnmpConfiguration;
  */
 public interface SnmpConfigDao {
     
-    SnmpAgentConfig get(String ipAddress);
+    SnmpAgentConfig get(InetAddress ipAddress);
     
     void saveOrUpdate(SnmpAgentConfig config);
     
-    void saveConfigForRange(SnmpConfiguration config, String beginAddress, String endAddress);
+    void saveConfigForRange(SnmpConfiguration config, InetAddress beginAddress, InetAddress endAddress);
     
     void saveAsDefaults(SnmpConfiguration defaults);
 
