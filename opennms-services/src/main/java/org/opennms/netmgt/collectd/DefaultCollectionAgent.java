@@ -261,6 +261,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         return ifInfos;
     }
 
+    public String getSnmpInterfaceLabel(int ifIndex) {
+        for (SnmpIfData ifData : getSnmpInterfaceData()) {
+            if (ifData.getIfIndex() == ifIndex)
+                return ifData.getLabelForRRD();
+        }
+        return null;
+    }
+
     public long getSavedSysUpTime() {
         return m_sysUpTime;
     }

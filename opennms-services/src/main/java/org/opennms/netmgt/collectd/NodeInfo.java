@@ -91,4 +91,9 @@ final class NodeInfo extends SnmpCollectionResource {
     public String getInstance() {
         return null; //For node type resources, use the default instance
     }
+
+    public String getLabel() {
+        return null;
+    }
+
 } // end class

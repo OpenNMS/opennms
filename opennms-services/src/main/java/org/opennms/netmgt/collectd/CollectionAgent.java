@@ -38,6 +38,7 @@ package org.opennms.netmgt.collectd;
 import java.net.InetAddress;
 import java.util.Set;
 
+import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
@@ -45,7 +46,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public interface CollectionAgent extends NetworkInterface {
+public interface CollectionAgent extends NetworkInterface,StorageStrategyService {
 
     public abstract String getHostAddress();
 
