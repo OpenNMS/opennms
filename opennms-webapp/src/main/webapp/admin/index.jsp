@@ -205,21 +205,21 @@
   <div class="TwoColRight">
       <h3>Descriptions</h3>
       <div class="boxWrapper">
-      <p>Detailed Documentation on all options can be found on the OpenNMS wiki: <a title="We know you won't read it so we put some info here" href="http://www.opennms.org" target="new">www.opennms.org</a>
+      <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
       </p>
         <p><b>Configure Users, Groups and Roles</b>: Add, modify or delete
             existing users. Groups contain users. Roles are then assigned to Groups.
             (User: A person, Group: Administrators, Role: On Duty Administrator)
         </p>
         
-       <p><b>Notification Status</b>: Notifications will only be sent out if this is switched to <em>On</em>.
-			This is a system-wide setting. As long as this is <em>Off</em> OpenNMS will be silent.
-			The current status of notifications is as well reflected in the upper right-hand
-            corner of every OpenNMS screen with either a <em>Notices On</em> or <em>Notices
-            Off</em> banner.  
+       <p><b>Notification Status</b>: Notifications will be sent out only if this setting is switched to <em>On</em>.
+			This is a system-wide setting. As long as this is <em>Off</em> OpenNMS will create no notifications.
+			The current status of notifications is also reflected in the upper right-hand
+            corner of every OpenNMS screen with a banner denoting either <em>Notices On</em> or <em>Notices
+            Off</em>.
         </p>
         
-        <p><b>Configure Discovery</b>: Set up the network ranges and IP addresses you want OpenNMS to scan ("discover").
+        <p><b>Configure Discovery</b>: Set up the IP addresses (individual addresses and/or ranges) that you want OpenNMS to scan for new nodes.
          </p>
         
 	<P><B>Configure SNMP Community Names by IP</b>:Configure the Community String used in SNMP Data Collection. OpenNMS is shipped with a community string of "public".
@@ -228,13 +228,13 @@
 	</P>           
 
 	<P><B>Configure SNMP Data Collection per Interface</b>: This interface will allow you
-	to configure which non-IP interfaces are used in SNMP Data Collection.
+	to configure which IP and non-IP interfaces are used in SNMP Data Collection.
 	</P>
 
         <p><b>Manage and Unmanage Interfaces and Services</b>: <em>Managing</em> an interface or service means that
         OpenNMS performs tests on this interface or service. If you want to explicitly enable or disable testing you
-        can set that up here. A typical case is if a webserver is listening on both the backend and the frontend interface.
-        If you manage the service on both interfaces, you will get two notifications if it fails. If you only want one,
+        can set that up here. A typical case is if a web server is listening on both an internal and an external interface.
+        If you manage the service on both interfaces, you will get two notifications if it fails. If you want only one,
         unmanage the service on one of the interfaces.
         </p>
               
@@ -242,16 +242,16 @@
      <p><b>Manage thresholds</b>: Allows you to configure (add/remove/modify) thresholds. 
 
         <p><b>Configure Notifications</b>: Create and manage notification escalation
-            plans, called <em>notification paths</em>. A notification path is associated to
+            plans, called <em>destination paths</em>. A destination path is associated to
             an OpenNMS event.  Each path can have any arbitrary number of escalations or 
             targets (users or groups) and can send notices through email, pagers, et cetera.  
-            Each notification path can be triggered by any number of OpenNMS events and can 
+            Each destination path can be triggered by any number of OpenNMS events and can 
             further be associated with specific interfaces or services.   
         </p>
 
 
 	<p><b>Scheduled Outages</b>: Add and edit scheduled 
-	    outages.  You can pause notifications, polling, thresholding and data collection 
+	    outages. You can pause notifications, polling, thresholding and data collection 
             (or any combination of the four) for any interface/node for any time.  
 	</p>
 
@@ -263,9 +263,8 @@
         </p>
 
 	<p><b>Manage Provisioning Groups</b>: Manually add nodes, interfaces
-	and services to OpenNMS.  The creation of these nodes are managed completely by you 
-	rather by creating an import file and sending the data to the OpenNMS importer or having OpenNMS
-	discover the network.
+	and services to OpenNMS.  The creation of these entities is managed completely by you 
+	rather than by having OpenNMS discover the network.
 	</p>
 
         <p><b>Import and Export Asset Information</b>: Export and import data into OpenNMS's asset inventory.             
@@ -274,8 +273,8 @@
             functionalities can be found through this link as well.
         </p>
 
-	<p><b>Manage Surveillance Categories</b>: Manage surveillance
-          categories and edit the list of nodes belonging to each category.
+	<p><b>Manage Surveillance Categories</b>: Manage surveillance categories (also known
+            as node categories) and edit the list of nodes belonging to each category.
 	</p>
         
         <p><b>Delete Nodes</b>: Permanently delete nodes from the database.
