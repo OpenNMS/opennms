@@ -58,6 +58,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         m_datasources=new ArrayList<String>();
         m_parser = new JEP();
         m_parser.setAllowUndeclared(true); //This is critical - we allow undelared vars, then ask the parser for what vars are used
+        m_parser.addStandardFunctions();
         m_parser.parseExpression(m_expression.getExpression());
         if(m_parser.hasError()) {
             throw new ThresholdExpressionException("Could not parse threshold expression:"+m_parser.getErrorInfo());
