@@ -46,12 +46,16 @@ public class SnmpAgentConfig extends SnmpConfiguration {
     private InetAddress m_proxyFor;
     
     public SnmpAgentConfig() {
-        setDefaults();
+        this(null);
     }
     
     public SnmpAgentConfig(InetAddress agentAddress) {
+        this(agentAddress, SnmpConfiguration.DEFAULTS);
+    }
+    
+    public SnmpAgentConfig(InetAddress agentAddress, SnmpConfiguration defaults) {
+        super(defaults);
         m_address = agentAddress;
-        setDefaults();
     }
 
     public String toString() {
@@ -66,7 +70,7 @@ public class SnmpAgentConfig extends SnmpConfiguration {
         buff.append(", MaxRepititions: "+getMaxRepetitions());
         buff.append(", Max request size: "+getMaxRequestSize());
         buff.append(", Version: "+versionToString(getVersion()));
-        if (m_version == VERSION3) {
+        if (getVersion() == VERSION3) {
             buff.append(", Security level: "+getSecurityLevel());
             buff.append(", Security name: "+getSecurityName());
             buff.append(", auth-passphrase: "+getAuthPassPhrase());

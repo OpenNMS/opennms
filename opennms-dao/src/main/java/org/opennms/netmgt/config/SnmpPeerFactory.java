@@ -174,7 +174,7 @@ public final class SnmpPeerFactory extends PeerFactory {
     /**
      * Saves the current settings to disk
      */
-    public static synchronized void saveCurrent() throws Exception {
+    public static synchronized void saveCurrent() throws IOException, MarshalException, ValidationException {
 
         // Marshall to a string first, then write the string to the file. This
         // way the original config
@@ -585,7 +585,18 @@ public final class SnmpPeerFactory extends PeerFactory {
      * @return
      */
     private int determineSecurityLevel(Definition def) {
+        
+        // use the def security level first
+        if (def.hasSecurityLevel()) {
+            return def.getSecurityLevel();
+        }
+        
+        // use a configured default security level next
+        if (m_config.hasSecurityLevel()) {
+            return m_config.getSecurityLevel();
+        }
 
+        // if no security level configuration exists use
         int securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
 
         String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
@@ -703,7 +714,7 @@ public final class SnmpPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      */
-    public synchronized void define(SnmpEventInfo info) throws UnknownHostException {
+    public synchronized void define(SnmpEventInfo info) {
         SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
         mgr.mergeIntoConfig(info.createDef());
     }

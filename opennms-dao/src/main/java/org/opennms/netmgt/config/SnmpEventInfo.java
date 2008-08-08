@@ -149,6 +149,16 @@ public class SnmpEventInfo {
         m_firstIPAddress = firstIPAddress;
         m_first = SnmpPeerFactory.toLong(InetAddress.getByName(firstIPAddress));
     }
+    
+    public void setFirstIPAddress(InetAddress firstIPAddress) {
+        if (firstIPAddress == null) {
+            m_firstIPAddress = null;
+            m_first = 0;
+        } else {
+            m_firstIPAddress = firstIPAddress.getHostAddress();
+            m_first = SnmpPeerFactory.toLong(firstIPAddress);
+        }
+    }
     public String getLastIPAddress() {
         return m_lastIPAddress;
     }
@@ -159,6 +169,16 @@ public class SnmpEventInfo {
 	        m_lastIPAddress = lastIPAddress;
 	        m_last = SnmpPeerFactory.toLong(InetAddress.getByName(lastIPAddress));
 		}
+    }
+    
+    public void setListIPAddress(InetAddress lastIPAddress) {
+        if (lastIPAddress == null) {
+            m_lastIPAddress = null;
+            m_last = 0;
+        } else {
+            m_lastIPAddress = lastIPAddress.getHostAddress();
+            m_last = SnmpPeerFactory.toLong(lastIPAddress);
+        }
     }
     public long getFirst() {
         return m_first;
