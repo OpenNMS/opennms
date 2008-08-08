@@ -37,7 +37,7 @@ package org.opennms.netmgt.snmp;
  * @author brozow
  */
 public class SnmpConfiguration {
-
+    
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final int DEFAULT_PORT = 161;
     public static final int VERSION1 = 1;
@@ -59,21 +59,53 @@ public class SnmpConfiguration {
     public static final String DEFAULT_AUTH_PROTOCOL = "MD5";
     public static final String DEFAULT_PRIV_PROTOCOL = "DES";
     public static final String DEFAULT_PRIV_PASS_PHRASE = DEFAULT_AUTH_PASS_PHRASE;
-    protected int m_timeout;
-    protected int m_retries;
-    protected int m_port;
-    protected int m_version;
-    protected int m_maxRequestSize;
-    protected int m_securityLevel;
-    protected String m_securityName;
-    protected String m_readCommunity;
-    protected int m_maxVarsPerPdu;
-    protected int m_maxRepetitions;
+
+    public static final SnmpConfiguration DEFAULTS;
+    
+    static {
+        DEFAULTS = new SnmpConfiguration(null);
+        DEFAULTS.setTimeout(DEFAULT_TIMEOUT);
+        DEFAULTS.setRetries(DEFAULT_RETRIES);
+        DEFAULTS.setPort(DEFAULT_PORT);
+        DEFAULTS.setVersion(DEFAULT_VERSION);
+        DEFAULTS.setMaxRequestSize(DEFAULT_MAX_REQUEST_SIZE);
+        DEFAULTS.setSecurityLevel(DEFAULT_SECURITY_LEVEL);
+        DEFAULTS.setSecurityName(DEFAULT_SECURITY_NAME);
+        DEFAULTS.setReadCommunity(DEFAULT_READ_COMMUNITY);
+        DEFAULTS.setMaxVarsPerPdu(DEFAULT_MAX_VARS_PER_PDU);
+        DEFAULTS.setMaxRepetitions(DEFAULT_MAX_REPETITIONS);
+        DEFAULTS.setWriteCommunity(DEFAULT_WRITE_COMMUNITY);
+        DEFAULTS.setAuthPassPhrase(DEFAULT_AUTH_PASS_PHRASE);
+        DEFAULTS.setAuthProtocol(DEFAULT_AUTH_PROTOCOL);
+        DEFAULTS.setPrivProtocol(DEFAULT_PRIV_PROTOCOL);
+        DEFAULTS.setPrivPassPhrase(DEFAULT_PRIV_PASS_PHRASE);
+    }
+
+    private Integer m_timeout;
+    private Integer m_retries;
+    private Integer m_port;
+    private Integer m_version;
+    private Integer m_maxRequestSize;
+    private Integer m_securityLevel;
+    private String m_securityName;
+    private String m_readCommunity;
+    private Integer m_maxVarsPerPdu;
+    private Integer m_maxRepetitions;
     private String m_writeCommunity;
-    protected String m_authPassPhrase;
-    protected String m_authProtocol;
-    protected String m_PrivProtocol;
-    protected String m_privPassPhrase;
+    private String m_authPassPhrase;
+    private String m_authProtocol;
+    private String m_privProtocol;
+    private String m_privPassPhrase;
+    
+    private SnmpConfiguration m_defaults;
+    
+    public SnmpConfiguration() {
+        this(DEFAULTS);
+    }
+    
+    public SnmpConfiguration(SnmpConfiguration defaults) {
+        m_defaults = defaults;
+    }
 
     protected void setDefaults() {
         m_timeout = DEFAULT_TIMEOUT;
@@ -85,7 +117,7 @@ public class SnmpConfiguration {
         m_securityName = DEFAULT_SECURITY_NAME;
         m_authPassPhrase = DEFAULT_AUTH_PASS_PHRASE;
         m_authProtocol = DEFAULT_AUTH_PROTOCOL;
-        m_PrivProtocol = DEFAULT_PRIV_PROTOCOL;
+        m_privProtocol = DEFAULT_PRIV_PROTOCOL;
         m_privPassPhrase = DEFAULT_PRIV_PASS_PHRASE;
         m_readCommunity = DEFAULT_READ_COMMUNITY;
         m_maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
@@ -94,47 +126,75 @@ public class SnmpConfiguration {
     }
 
     public int getPort() {
-        return m_port;
+        return hasPort() ? m_port : m_defaults.getPort();
     }
 
-    public void setPort(int port) {
+    public boolean hasPort() {
+        return m_port != null;
+    }
+
+    public void setPort(Integer port) {
         m_port = port;
     }
 
     public int getTimeout() {
-        return m_timeout;
+        return hasTimeout() ? m_timeout : m_defaults.getTimeout();
     }
 
-    public void setTimeout(int timeout) {
+    public boolean hasTimeout() {
+        return m_timeout != null;
+    }
+
+    public void setTimeout(Integer timeout) {
         m_timeout = timeout;
     }
 
     public int getVersion() {
-        return m_version;
+        return hasVersion() ? m_version : m_defaults.getVersion();
+    }
+    
+    public String getVersionAsString() {
+        return versionToString(getVersion());
     }
 
-    public void setVersion(int version) {
+    public boolean hasVersion() {
+        return m_version != null;
+    }
+
+    public void setVersion(Integer version) {
         m_version = version;
     }
 
     public int getRetries() {
-        return m_retries;
+        return hasRetries() ? m_retries : m_defaults.getRetries();
     }
 
-    public void setRetries(int retries) {
+    public boolean hasRetries() {
+        return m_retries != null;
+    }
+
+    public void setRetries(Integer retries) {
         m_retries = retries;
     }
 
     public int getSecurityLevel() {
-        return m_securityLevel;
+        return hasSecurityLevel() ? m_securityLevel : m_defaults.getSecurityLevel();
     }
 
-    public void setSecurityLevel(int securityLevel) {
+    public boolean hasSecurityLevel() {
+        return m_securityLevel != null;
+    }
+
+    public void setSecurityLevel(Integer securityLevel) {
         m_securityLevel = securityLevel;
     }
 
     public String getSecurityName() {
-        return m_securityName;
+        return hasSecurityName() ? m_securityName : m_defaults.getSecurityName();
+    }
+
+    public boolean hasSecurityName() {
+        return m_securityName != null;
     }
 
     public void setSecurityName(String securityName) {
@@ -146,35 +206,55 @@ public class SnmpConfiguration {
     }
 
     public int getMaxRequestSize() {
-        return m_maxRequestSize;
+        return hasMaxRequestSize() ? m_maxRequestSize : m_defaults.getMaxRequestSize();
     }
 
-    public void setMaxRequestSize(int maxRequestSize) {
+    public boolean hasMaxRequestSize() {
+        return m_maxRequestSize != null;
+    }
+
+    public void setMaxRequestSize(Integer maxRequestSize) {
         m_maxRequestSize = maxRequestSize;
     }
 
     public String getReadCommunity() {
-        return m_readCommunity;
+        return hasReadCommunity() ? m_readCommunity : m_defaults.getReadCommunity();
+    }
+
+    public boolean hasReadCommunity() {
+        return m_readCommunity != null;
     }
 
     public int getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu;
+        return hasMaxVarsPerPdu() ? m_maxVarsPerPdu : m_defaults.getMaxVarsPerPdu();
     }
 
-    public void setMaxVarsPerPdu(int maxVarsPerPdu) {
+    public boolean hasMaxVarsPerPdu() {
+        return m_maxVarsPerPdu != null;
+    }
+
+    public void setMaxVarsPerPdu(Integer maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
 
     public int getMaxRepetitions() {
-        return m_maxRepetitions;
+        return hasMaxRepetitions() ? m_maxRepetitions : m_defaults.getMaxRepetitions();
     }
 
-    public void setMaxRepetitions(int maxRepetitions) {
+    public boolean hasMaxRepetitions() {
+        return m_maxRepetitions != null;
+    }
+
+    public void setMaxRepetitions(Integer maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
     }
 
     public String getWriteCommunity() {
-        return m_writeCommunity;
+        return hasWriteCommunity() ? m_writeCommunity : m_defaults.getWriteCommunity();
+    }
+
+    public boolean hasWriteCommunity() {
+        return m_writeCommunity != null;
     }
 
     public void setWriteCommunity(String community) {
@@ -195,7 +275,11 @@ public class SnmpConfiguration {
     }
 
     public String getAuthPassPhrase() {
-        return m_authPassPhrase;
+        return hasAuthPassPhrase() ? m_authPassPhrase : m_defaults.getAuthPassPhrase();
+    }
+
+    public boolean hasAuthPassPhrase() {
+        return m_authPassPhrase != null;
     }
 
     public void setAuthPassPhrase(String authPassPhrase) {
@@ -203,15 +287,23 @@ public class SnmpConfiguration {
     }
 
     public String getPrivProtocol() {
-        return m_PrivProtocol;
+        return hasPrivProtocol() ? m_privProtocol : m_defaults.getPrivProtocol();
+    }
+
+    public boolean hasPrivProtocol() {
+        return m_privProtocol != null;
     }
 
     public void setPrivProtocol(String authPrivProtocol) {
-        m_PrivProtocol = authPrivProtocol;
+        m_privProtocol = authPrivProtocol;
     }
 
     public String getAuthProtocol() {
-        return m_authProtocol;
+        return hasAuthProtocol() ? m_authProtocol : m_defaults.getAuthProtocol();
+    }
+
+    public boolean hasAuthProtocol() {
+        return m_authProtocol != null;
     }
 
     public void setAuthProtocol(String authProtocol) {
@@ -219,7 +311,11 @@ public class SnmpConfiguration {
     }
 
     public String getPrivPassPhrase() {
-        return m_privPassPhrase;
+        return hasPrivPassPhrase() ? m_privPassPhrase : m_defaults.getPrivPassPhrase();
+    }
+
+    public boolean hasPrivPassPhrase() {
+        return m_privPassPhrase != null;
     }
 
     public void setPrivPassPhrase(String privPassPhrase) {
