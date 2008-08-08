@@ -33,6 +33,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
+import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
@@ -40,6 +41,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
 
     private SnmpInstId m_inst;
     private String m_name;
+    private String m_resourceLabel;
 
     public GenericIndexResource(ResourceType def, String name, SnmpInstId inst) {
         super(def);
@@ -47,19 +49,16 @@ public class GenericIndexResource extends SnmpCollectionResource {
         m_inst = inst;
     }
 
-    // XXX should be based on the storageStrategy
     @Override
     public File getResourceDir(RrdRepository repository) {
-        File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
-        File typeDir = new File(nodeDir, m_name);
-        File instDir = new File(typeDir, m_inst.toString());
-        log().debug("getResourceDir: " + instDir.toString());
-        return instDir;
+        String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
+        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
+        log().debug("getResourceDir: " + resourceDir);
+        return resourceDir;
     }
 
     public String toString() {
-        return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + m_inst + "]";
+        return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() + "]";
     }
 
 
@@ -79,5 +78,24 @@ public class GenericIndexResource extends SnmpCollectionResource {
     
     public String getInstance() {
         return m_inst.toString();
+    }
+
+    private StorageStrategy getStrategy() {
+        return ((GenericIndexResourceType)getResourceType()).getStorageStrategy();
+    }
+
+    private String getParent() {
+        return String.valueOf(getCollectionAgent().getNodeId());
+    }
+
+    /*
+     * Because call getResourceNameFromIndex could be expensive.
+     * This class save the returned value from Strategy on a local variable.
+     */
+    public String getLabel() {
+        if (m_resourceLabel == null) {
+            m_resourceLabel = getStrategy().getResourceNameFromIndex(getParent(), getInstance());
+        }
+        return m_resourceLabel;
     }
 }
