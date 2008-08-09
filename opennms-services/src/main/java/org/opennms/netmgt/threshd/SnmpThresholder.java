@@ -435,15 +435,21 @@ public final class SnmpThresholder implements ServiceThresholder {
         return eventList;
     }
 
+    private String getDsLabel(ThresholdEntity threshold) {
+        String dsLabelValue = threshold.getDatasourceLabel();
+        if(dsLabelValue == null) {
+            dsLabelValue = "Null";
+        }
+        return dsLabelValue;
+    }
+    
     private void processThresholdForNode(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events, ThresholdEntity threshold)  {
         List<Event> eventList=processThreshold(directory, snmpIface, threshold, date);
         if (eventList==null || eventList.size() == 0) {
             //Nothing to do, so return
             return;
         }
-        String dsLabelValue = getDataSourceLabel(directory, snmpIface, threshold);
-        
-        completeEventListAndAddToEvents(events, eventList, snmpIface, null, dsLabelValue);
+        completeEventListAndAddToEvents(events, eventList, snmpIface, null, getDsLabel(threshold));
     }
     
     private void processThresholdForInterface(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events, ThresholdEntity threshold, String ifLabel, Map<String, String> ifDataMap)  {
@@ -456,8 +462,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         if (ifDataMap.size() == 0 && ifLabel != null) {
             populateIfDataMap(ifDataMap, snmpIface.getNodeId().intValue(), ifLabel);
         }
-
-        completeEventListAndAddToEvents(events, eventList, snmpIface, ifDataMap, "Unknown");
+        completeEventListAndAddToEvents(events, eventList, snmpIface, ifDataMap, getDsLabel(threshold));
     }
     
     private void processThresholdForResource(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events, ThresholdEntity threshold, String resource)  {
