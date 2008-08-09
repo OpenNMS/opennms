@@ -145,6 +145,18 @@
           <documentation>URL of an XMLRPC server</documentation>
         </annotation>
       </attribute>
+
+      <attribute name="timeout" use="optional" default="0">
+        <annotation>
+          <documentation>For non-https connections, specify a read timeout in milliseconds.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
     </complexType>
   </element>
 
