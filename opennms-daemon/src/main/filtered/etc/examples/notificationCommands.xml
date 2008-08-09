@@ -211,4 +211,9 @@
             <switch>-subject</switch>
         </argument>
     </command>
+    <command binary="false">
+        <name>Null</name>
+        <execute>org.opennms.netmgt.notifd.NullNotificationStrategy</execute>
+        <comment>Placeholder to allow for a notification to be made without any other action</comment>
+    </command>
 </notification-commands>

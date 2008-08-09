@@ -78,7 +78,7 @@
 
           <tr>
             <td><input type="text" name="msgsub" /></td>
-            <td><input type="text" name="iplike" value="*.*.*.*" /></td>
+            <td><input type="text" name="iplike" value="" /></td>
           </tr>
 
           <tr>

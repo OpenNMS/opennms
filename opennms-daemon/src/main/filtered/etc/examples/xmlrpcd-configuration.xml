@@ -2,13 +2,13 @@
 
 <xmlrpcd-configuration max-event-queue-size="5000" generic-msgs="true">
         <external-servers retries="3" elapse-time="15000">
-                <xmlrpc-server url="http://localhost:9000" />
-                <xmlrpc-server url="http://localhost:10000" />
+                <xmlrpc-server url="http://localhost:9000" timeout="0" />
+                <xmlrpc-server url="http://localhost:10000" timeout="0" />
                 <serverSubscription>baseEvents</serverSubscription>
                 <serverSubscription>extraEvents</serverSubscription>
         </external-servers>
         <external-servers retries="3" elapse-time="15000">
-                <xmlrpc-server url="http://localhost:7000" />
+                <xmlrpc-server url="http://localhost:7000" timeout="300" />
                 <serverSubscription>baseEvents</serverSubscription>
                 <serverSubscription>extraEvents</serverSubscription>
         </external-servers>

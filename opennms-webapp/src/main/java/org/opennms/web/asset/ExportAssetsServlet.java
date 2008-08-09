@@ -38,8 +38,8 @@
 package org.opennms.web.asset;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -48,11 +48,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.element.NetworkElementFactory;
 
+import au.com.bytecode.opencsv.CSVWriter;
+
 /**
- * Exports the assets database to a comma-seperated values text file.
- */
+ *
+ * Exports the assets database to a comma-separated values text file.
+ *
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ **/
+
 public class ExportAssetsServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     
     protected AssetModel model;
 
@@ -70,60 +79,60 @@ public class ExportAssetsServlet extends HttpServlet {
         }
 
         response.setContentType("text/plain");
-        PrintWriter out = response.getWriter();
 
-        StringBuffer buffer = new StringBuffer();
+        CSVWriter out = new CSVWriter(response.getWriter());
 
-        // add the headers
-        buffer.append("Node Label,");
-        buffer.append("Node ID,");
-        buffer.append("Category,");
-        buffer.append("Manufacturer,");
-        buffer.append("Vendor,");
-        buffer.append("Model Number,");
-        buffer.append("Serial Number,");
-        buffer.append("Description,");
-        buffer.append("Circuit ID,");
-        buffer.append("Asset Number,");
-        buffer.append("Operating System,");
-        buffer.append("Rack,");
-        buffer.append("Slot,");
-        buffer.append("Port,");
-        buffer.append("Region,");
-        buffer.append("Division,");
-        buffer.append("Department,");
-        buffer.append("Address 1,");
-        buffer.append("Address 2,");
-        buffer.append("City,");
-        buffer.append("State,");
-        buffer.append("Zip,");
-        buffer.append("Building,");
-        buffer.append("Floor,");
-        buffer.append("Room,");
-        buffer.append("Vendor Phone,");
-        buffer.append("Vendor Fax,");
-        buffer.append("Date Installed,");
-        buffer.append("Lease,");
-        buffer.append("Lease Expires,");
-        buffer.append("Support Phone,");
-        buffer.append("Maint Contract,");
-        buffer.append("Vendor Asset Number,");
-        buffer.append("Maint Contract Expires,");
-        buffer.append("Display Category,");
-        buffer.append("Notification Category,");
-        buffer.append("Poller Category,");
-        buffer.append("Threshold Category,");
-        buffer.append("Comments");
-
-        out.println(buffer.toString());
-        buffer.setLength(0);
+        String[] header = {
+                "Node Label",
+                "Node ID",
+                "Category",
+                "Manufacturer",
+                "Vendor",
+                "Model Number",
+                "Serial Number",
+                "Description",
+                "Circuit ID",
+                "Asset Number",
+                "Operating System",
+                "Rack",
+                "Slot",
+                "Port",
+                "Region",
+                "Division",
+                "Department",
+                "Address 1",
+                "Address 2",
+                "City",
+                "State",
+                "Zip",
+                "Building",
+                "Floor",
+                "Room",
+                "Vendor Phone",
+                "Vendor Fax",
+                "Date Installed",
+                "Lease",
+                "Lease Expires",
+                "Support Phone",
+                "Maint Contract",
+                "Vendor Asset Number",
+                "Maint Contract Expires",
+                "Display Category",
+                "Notification Category",
+                "Poller Category",
+                "Threshold Category",
+                "Comments"
+        };
+        
+        out.writeNext(header);
 
         // print a single line for each asset
         for (int i = 0; i < assets.length; i++) {
             Asset asset = assets[i];
+            ArrayList<String> entries = new ArrayList<String>();
 
             try {
-                buffer.append(NetworkElementFactory.getNodeLabel(asset.getNodeId()));
+                entries.add(NetworkElementFactory.getNodeLabel(asset.getNodeId()));
             } catch (SQLException e) {
                 // just log the error, the node label is only a human aid,
                 // anyway,
@@ -131,84 +140,46 @@ public class ExportAssetsServlet extends HttpServlet {
                 this.log("Database error while looking up node label for node " + asset.getNodeId(), e);
             }
 
-            buffer.append(",");
-            buffer.append(asset.getNodeId());
-            buffer.append(",");
-            buffer.append(asset.getCategory());
-            buffer.append(",");
-            buffer.append(asset.getManufacturer());
-            buffer.append(",");
-            buffer.append(asset.getVendor());
-            buffer.append(",");
-            buffer.append(asset.getModelNumber());
-            buffer.append(",");
-            buffer.append(asset.getSerialNumber());
-            buffer.append(",");
-            buffer.append(asset.getDescription());
-            buffer.append(",");
-            buffer.append(asset.getCircuitId());
-            buffer.append(",");
-            buffer.append(asset.getAssetNumber());
-            buffer.append(",");
-            buffer.append(asset.getOperatingSystem());
-            buffer.append(",");
-            buffer.append(asset.getRack());
-            buffer.append(",");
-            buffer.append(asset.getSlot());
-            buffer.append(",");
-            buffer.append(asset.getPort());
-            buffer.append(",");
-            buffer.append(asset.getRegion());
-            buffer.append(",");
-            buffer.append(asset.getDivision());
-            buffer.append(",");
-            buffer.append(asset.getDepartment());
-            buffer.append(",");
-            buffer.append(asset.getAddress1());
-            buffer.append(",");
-            buffer.append(asset.getAddress2());
-            buffer.append(",");
-            buffer.append(asset.getCity());
-            buffer.append(",");
-            buffer.append(asset.getState());
-            buffer.append(",");
-            buffer.append(asset.getZip());
-            buffer.append(",");
-            buffer.append(asset.getBuilding());
-            buffer.append(",");
-            buffer.append(asset.getFloor());
-            buffer.append(",");
-            buffer.append(asset.getRoom());
-            buffer.append(",");
-            buffer.append(asset.getVendorPhone());
-            buffer.append(",");
-            buffer.append(asset.getVendorFax());
-            buffer.append(",");
-            buffer.append(asset.getDateInstalled());
-            buffer.append(",");
-            buffer.append(asset.getLease());
-            buffer.append(",");
-            buffer.append(asset.getLeaseExpires());
-            buffer.append(",");
-            buffer.append(asset.getSupportPhone());
-            buffer.append(",");
-            buffer.append(asset.getMaintContract());
-            buffer.append(",");
-            buffer.append(asset.getVendorAssetNumber());
-            buffer.append(",");
-            buffer.append(asset.getMaintContractExpires());
-            buffer.append(",");
-            buffer.append(asset.getDisplayCategory());
-            buffer.append(",");
-            buffer.append(asset.getNotifyCategory());
-            buffer.append(",");
-            buffer.append(asset.getPollerCategory());
-            buffer.append(",");
-            buffer.append(asset.getThresholdCategory());
-            buffer.append(",");
-            buffer.append(asset.getComments());
-            out.println(buffer.toString());
-            buffer.setLength(0);
+            entries.add(Integer.toString(asset.getNodeId()));
+            entries.add(asset.getCategory());
+            entries.add(asset.getManufacturer());
+            entries.add(asset.getVendor());
+            entries.add(asset.getModelNumber());
+            entries.add(asset.getSerialNumber());
+            entries.add(asset.getDescription());
+            entries.add(asset.getCircuitId());
+            entries.add(asset.getAssetNumber());
+            entries.add(asset.getOperatingSystem());
+            entries.add(asset.getRack());
+            entries.add(asset.getSlot());
+            entries.add(asset.getPort());
+            entries.add(asset.getRegion());
+            entries.add(asset.getDivision());
+            entries.add(asset.getDepartment());
+            entries.add(asset.getAddress1());
+            entries.add(asset.getAddress2());
+            entries.add(asset.getCity());
+            entries.add(asset.getState());
+            entries.add(asset.getZip());
+            entries.add(asset.getBuilding());
+            entries.add(asset.getFloor());
+            entries.add(asset.getRoom());
+            entries.add(asset.getVendorPhone());
+            entries.add(asset.getVendorFax());
+            entries.add(asset.getDateInstalled());
+            entries.add(asset.getLease());
+            entries.add(asset.getLeaseExpires());
+            entries.add(asset.getSupportPhone());
+            entries.add(asset.getMaintContract());
+            entries.add(asset.getVendorAssetNumber());
+            entries.add(asset.getMaintContractExpires());
+            entries.add(asset.getDisplayCategory());
+            entries.add(asset.getNotifyCategory());
+            entries.add(asset.getPollerCategory());
+            entries.add(asset.getThresholdCategory());
+            entries.add(asset.getComments());
+            
+            out.writeNext(entries.toArray(new String[0]));
         }
 
         out.close();
