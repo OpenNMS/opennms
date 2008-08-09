@@ -97,59 +97,48 @@ public class ModifyAssetServlet extends HttpServlet {
         Asset asset = new Asset();
 
         asset.setNodeId(nodeId);
-        asset.setCategory(this.stripBadCharacters(request.getParameter("category")));
-        asset.setManufacturer(this.stripBadCharacters(request.getParameter("manufacturer")));
-        asset.setVendor(this.stripBadCharacters(request.getParameter("vendor")));
-        asset.setModelNumber(this.stripBadCharacters(request.getParameter("modelnumber")));
-        asset.setSerialNumber(this.stripBadCharacters(request.getParameter("serialnumber")));
-        asset.setDescription(this.stripBadCharacters(request.getParameter("description")));
-        asset.setCircuitId(this.stripBadCharacters(request.getParameter("circuitid")));
-        asset.setAssetNumber(this.stripBadCharacters(request.getParameter("assetnumber")));
-        asset.setOperatingSystem(this.stripBadCharacters(request.getParameter("operatingsystem")));
-        asset.setRack(this.stripBadCharacters(request.getParameter("rack")));
-        asset.setSlot(this.stripBadCharacters(request.getParameter("slot")));
-        asset.setPort(this.stripBadCharacters(request.getParameter("port")));
-        asset.setRegion(this.stripBadCharacters(request.getParameter("region")));
-        asset.setDivision(this.stripBadCharacters(request.getParameter("division")));
-        asset.setDepartment(this.stripBadCharacters(request.getParameter("department")));
-        asset.setAddress1(this.stripBadCharacters(request.getParameter("address1")));
-        asset.setAddress2(this.stripBadCharacters(request.getParameter("address2")));
-        asset.setCity(this.stripBadCharacters(request.getParameter("city")));
-        asset.setState(this.stripBadCharacters(request.getParameter("state")));
-        asset.setZip(this.stripBadCharacters(request.getParameter("zip")));
-        asset.setBuilding(this.stripBadCharacters(request.getParameter("building")));
-        asset.setFloor(this.stripBadCharacters(request.getParameter("floor")));
-        asset.setRoom(this.stripBadCharacters(request.getParameter("room")));
-        asset.setVendorPhone(this.stripBadCharacters(request.getParameter("vendorphone")));
-        asset.setVendorFax(this.stripBadCharacters(request.getParameter("vendorfax")));
-        asset.setDateInstalled(this.stripBadCharacters(request.getParameter("dateinstalled")));
-        asset.setLease(this.stripBadCharacters(request.getParameter("lease")));
-        asset.setLeaseExpires(this.stripBadCharacters(request.getParameter("leaseexpires")));
-        asset.setSupportPhone(this.stripBadCharacters(request.getParameter("supportphone")));
-        asset.setMaintContract(this.stripBadCharacters(request.getParameter("maintcontract")));
-        asset.setVendorAssetNumber(this.stripBadCharacters(request.getParameter("vendorassetnumber")));
-        asset.setMaintContractExpires(this.stripBadCharacters(request.getParameter("maintcontractexpires")));
-        asset.setDisplayCategory(this.stripBadCharacters(request.getParameter("displaycategory")));
-        asset.setNotifyCategory(this.stripBadCharacters(request.getParameter("notifycategory")));
-        asset.setPollerCategory(this.stripBadCharacters(request.getParameter("pollercategory")));
-        asset.setThresholdCategory(this.stripBadCharacters(request.getParameter("thresholdcategory")));
-        asset.setComments(this.stripBadCharacters(request.getParameter("comments")));
+        asset.setCategory(request.getParameter("category"));
+        asset.setManufacturer(request.getParameter("manufacturer"));
+        asset.setVendor(request.getParameter("vendor"));
+        asset.setModelNumber(request.getParameter("modelnumber"));
+        asset.setSerialNumber(request.getParameter("serialnumber"));
+        asset.setDescription(request.getParameter("description"));
+        asset.setCircuitId(request.getParameter("circuitid"));
+        asset.setAssetNumber(request.getParameter("assetnumber"));
+        asset.setOperatingSystem(request.getParameter("operatingsystem"));
+        asset.setRack(request.getParameter("rack"));
+        asset.setSlot(request.getParameter("slot"));
+        asset.setPort(request.getParameter("port"));
+        asset.setRegion(request.getParameter("region"));
+        asset.setDivision(request.getParameter("division"));
+        asset.setDepartment(request.getParameter("department"));
+        asset.setAddress1(request.getParameter("address1"));
+        asset.setAddress2(request.getParameter("address2"));
+        asset.setCity(request.getParameter("city"));
+        asset.setState(request.getParameter("state"));
+        asset.setZip(request.getParameter("zip"));
+        asset.setBuilding(request.getParameter("building"));
+        asset.setFloor(request.getParameter("floor"));
+        asset.setRoom(request.getParameter("room"));
+        asset.setVendorPhone(request.getParameter("vendorphone"));
+        asset.setVendorFax(request.getParameter("vendorfax"));
+        asset.setDateInstalled(request.getParameter("dateinstalled"));
+        asset.setLease(request.getParameter("lease"));
+        asset.setLeaseExpires(request.getParameter("leaseexpires"));
+        asset.setSupportPhone(request.getParameter("supportphone"));
+        asset.setMaintContract(request.getParameter("maintcontract"));
+        asset.setVendorAssetNumber(request.getParameter("vendorassetnumber"));
+        asset.setMaintContractExpires(request.getParameter("maintcontractexpires"));
+        asset.setDisplayCategory(request.getParameter("displaycategory"));
+        asset.setNotifyCategory(request.getParameter("notifycategory"));
+        asset.setPollerCategory(request.getParameter("pollercategory"));
+        asset.setThresholdCategory(request.getParameter("thresholdcategory"));
+        asset.setComments(request.getParameter("comments"));
 
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());
 
         return (asset);
-    }
-
-    public String stripBadCharacters(String s) {
-        if (s != null) {
-            s = s.replace('\n', ' ');
-            s = s.replace('\f', ' ');
-            s = s.replace('\r', ' ');
-            s = s.replace(',', ' ');
-        }
-
-        return (s);
     }
 
     private void sendEvent(Event event) throws ServletException {

@@ -55,7 +55,7 @@ import java.util.Vector;
 import org.apache.log4j.Category;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.secure.SecureXmlRpcClient;
+/*import org.apache.xmlrpc.secure.SecureXmlRpcClient; */
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -76,8 +76,8 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
 public final class XmlRpcNotifier {
 
@@ -582,7 +582,7 @@ public final class XmlRpcNotifier {
      *            a list of parameters need for the external server command to
      *            process the request.
      */
-    private boolean sendXmlrpcRequest(String command, Vector params) {
+    private boolean sendXmlrpcRequest(String command, Vector<Object> params) {
         if (m_xmlrpcClient == null) {
             return false;
         }
@@ -602,6 +602,8 @@ public final class XmlRpcNotifier {
                 log().warn("Failed to send message to XMLRPC server due to connect exception " + m_xmlrpcClient.getURL() + ": " + e);
             } catch (IOException e) {
                 log().warn("Failed to send message to XMLRPC server: " + m_xmlrpcClient.getURL() + ": " + e, e);
+            } catch (Throwable t) {
+            	log().error("Received unknown error: ", t);
             }
             
             if (success) {
@@ -642,13 +644,15 @@ public final class XmlRpcNotifier {
             XmlrpcServer xServer = m_rpcServers[i];
 
             String url = xServer.getUrl();
+            int timeout = xServer.getTimeout();
 
             if (log().isDebugEnabled()) {
                 log().debug("Start to set up communication to XMLRPC server: " + url);
+                log().debug("Setting timeout value to: " + timeout);
             }
 
             try {
-                m_xmlrpcClient = new SecureXmlRpcClient(url);
+                m_xmlrpcClient = new TimeoutSecureXmlRpcClient(url, timeout);
             } catch (MalformedURLException e) {
                 log().error("Failed to send message to XMLRPC server: " + url, e);
                 continue;
