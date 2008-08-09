@@ -1,24 +1,24 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 
-%{!?package_version:%define version 1.3.10}
-
 %{!?package_version:%define package_version 1.5.0}
+%{!?package_release:%define package_release 1}
 %{!?package_epoch:%define package_epoch 2000}
+%{!?my_epoch:%define my_epoch %{package_epoch}}
 %{!?dep_package:%define dep_package java-%(echo %{package_version} | sed -e 's,\\\.,_,g')-sun-devel}
 
 Name:			jdk
 Summary:		Sun JDK compatible placeholder
-Release:		1
+Epoch:			%{my_epoch}
 Version:		%{package_version}
-Epoch:			%{package_epoch}
+Release:		%{package_release}
 License:		Public Domain
 Group:			Development/Tools
 BuildArch:		noarch
 
 AutoReqProv:		no
 
-Requires:		%{dep_package} >= %{package_epoch}:%{package_version}
+Requires:		%{dep_package} >= %{package_epoch}:%{package_version}-%{package_release}
 
 %description
 This is a placeholder wrapper package to provide a "jdk" dependency but to
