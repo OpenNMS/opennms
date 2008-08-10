@@ -546,7 +546,7 @@ final class CollectableService implements ReadyRunnable {
     public void reinitializeThresholding() {
         if(m_thresholdVisitor!=null) {
             log().debug("reinitializeThresholding on "+this);
-            m_thresholdVisitor.initThresholdState();
+            m_thresholdVisitor.reload();
         }
     }
     

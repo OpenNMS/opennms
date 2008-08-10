@@ -74,6 +74,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -88,7 +89,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.threshd.ThresholdingVisitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -1030,12 +1030,11 @@ public class Collectd extends AbstractServiceDaemon implements
         log().debug("handleThresholdConfigurationChanged: Reloading thresholding configuration in collectd");
         try {
             ThresholdingConfigFactory.reload();
+            ThreshdConfigFactory.reload(); // Added to avoid static methods on ThresholdingVisitor
         } catch (Exception e) {
             log().error("handleThresholdConfigurationChanged: Failed to reload threshold configuration because "+e.getMessage(), e);
             return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
         }
-        
-        ThresholdingVisitor.handleThresholdConfigChanged();
         
         synchronized (m_collectableServices) {
 	        for(CollectableService service: m_collectableServices) {
