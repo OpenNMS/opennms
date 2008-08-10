@@ -79,40 +79,44 @@ import org.springframework.dao.DataAccessException;
  * (so perhaps needs a better name than ThresholdingVisitor)
  * 
  * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
- *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
-    private static ThresholdsDao s_thresholdsDao;
-    private static ThreshdConfigManager s_threshdConfig;
-    static {
-        initThresholdsDao();
+    ThresholdsDao m_thresholdsDao;
+    ThreshdConfigManager m_threshdConfig;
+    
+    boolean m_initialized = false;
+    
+    protected void initThresholdsDao() {
+        if (!m_initialized) {
+            log().debug("initThresholdsDao: Initializing Factories and DAOs");
+            m_initialized = true;
+            DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
+            try {
+                ThresholdingConfigFactory.init();
+                defaultThresholdsDao.setThresholdingConfigFactory(ThresholdingConfigFactory.getInstance());
+                defaultThresholdsDao.afterPropertiesSet();
+            } catch (Throwable t) {
+                log().error("initialize: Could not initialize DefaultThresholdsDao: " + t, t);
+                throw new RuntimeException("Could not initialize DefaultThresholdsDao: " + t, t);
+            }
+            try {
+                ThreshdConfigFactory.init();
+            } catch (Throwable t) {
+                log().error("initialize: Could not initialize ThreshdConfigFactory: " + t, t);
+                throw new RuntimeException("Could not initialize ThreshdConfigFactory: " + t, t);
+            }
+            m_thresholdsDao = defaultThresholdsDao;
+            m_threshdConfig = ThreshdConfigFactory.getInstance();            
+        }
     }
     
-    protected static void initThresholdsDao() {
-        DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
-        
-        try {
-            ThresholdingConfigFactory.init();
-            defaultThresholdsDao.setThresholdingConfigFactory(ThresholdingConfigFactory.getInstance());
-            defaultThresholdsDao.afterPropertiesSet();
-        } catch (Throwable t) {
-            ThreadCategory.getInstance(ThresholdingVisitor.class).error("initialize: Could not initialize DefaultThresholdsDao: " + t, t);
-            throw new RuntimeException("Could not initialize DefaultThresholdsDao: " + t, t);
-        }
-        try {
-            ThreshdConfigFactory.init();
-        } catch (Throwable t) {
-            ThreadCategory.getInstance(ThresholdingVisitor.class).error("initialize: Could not initialize ThreshdConfigFactory: " + t, t);
-            throw new RuntimeException("Could not initialize ThreshdConfigFactory: " + t, t);
-        }
-        s_thresholdsDao = defaultThresholdsDao;
-        s_threshdConfig = ThreshdConfigFactory.getInstance();            
+    public void reload() {
+    	m_initialized = false;
+    	initThresholdState();
+    	buildThresholdGroupList();
     }
     
-    public static void handleThresholdConfigChanged() {
-    	initThresholdsDao();
-    }
-
     //DB node id of the node where thresholding
     private int m_nodeId;
     
@@ -149,16 +153,30 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     private boolean m_needsRefresh=false;
     
     
-    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map params) {
+    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
-        
+
         // Use the "thresholding-enable" to use Thresholds processing on Collectd
-        String enabled = (String)params.get("thresholding-enabled");
+        String enabled = params.get("thresholding-enabled");
         if (enabled == null || !enabled.equals("true")) {
-        	log.warn("createThresholdingVisitor: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
-        	return null;
+            log.info("createThresholdingVisitor: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
+            return null;
         }
 
+        ThresholdingVisitor visitor = new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo);
+        visitor.buildThresholdGroupList();
+
+        // Create ThresholdingVisitor is groupNameList is not empty
+        if (visitor.m_groupNameList == null || visitor.m_groupNameList.isEmpty()) {
+            log.warn("createThresholdingVisitor: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
+            return null;
+        }
+
+        return visitor;
+    }
+    
+    public void buildThresholdGroupList() {
+        initThresholdsDao();
         // The next code was extracted from Threshd.scheduleService
         //
         //
@@ -168,64 +186,59 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         // schedule it for collection
         //
         List<String> groupNameList = new ArrayList<String>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : s_threshdConfig.getConfiguration().getPackage()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdConfig.getConfiguration().getPackage()) {
 
             // Make certain the the current service is in the package
             // and enabled!
             //
-            if (!s_threshdConfig.serviceInPackageAndEnabled(serviceName, pkg)) {
-                if (log.isDebugEnabled())
-                    log.debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+            if (!m_threshdConfig.serviceInPackageAndEnabled(m_serviceName, pkg)) {
+                if (log().isDebugEnabled())
+                    log().debug("createThresholdingVisitor: address/service: " + m_hostAddress + "/" + m_serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
             //
-            log.debug("createThresholdingVisitor: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
-            boolean foundInPkg = s_threshdConfig.interfaceInPackage(hostAddress, pkg);
+            log().debug("createThresholdingVisitor: checking ipaddress " + m_hostAddress + " for inclusion in pkg " + pkg.getName());
+            boolean foundInPkg = m_threshdConfig.interfaceInPackage(m_hostAddress, pkg);
             if (!foundInPkg) {
                 // The interface might be a newly added one, rebuild the package
                 // to ipList mapping and again to verify if the interface is in
                 // the package.
                 //
-                s_threshdConfig.rebuildPackageIpListMap();
-                foundInPkg = s_threshdConfig.interfaceInPackage(hostAddress, pkg);
+                m_threshdConfig.rebuildPackageIpListMap();
+                foundInPkg = m_threshdConfig.interfaceInPackage(m_hostAddress, pkg);
             }
             if (!foundInPkg) {
-                if (log.isDebugEnabled())
-                    log.debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                if (log().isDebugEnabled())
+                    log().debug("createThresholdingVisitor: address/service: " + m_hostAddress + "/" + m_serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
             }
 
             // Getting thresholding-group for selected service and adding to groupNameList
             //
             for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
-            	if (svc.getName().equals(serviceName)) {
-            		String groupName = null;
-            		for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
-            			if (parameter.getKey().equals("thresholding-group")) {
-            				groupName = parameter.getValue();
-            			}
-            		}
-            		if (groupName != null) {
-            			groupNameList.add(groupName);
-            			log.debug("createThresholdingVisitor:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
-            		}
-            	}
+                if (svc.getName().equals(m_serviceName)) {
+                    String groupName = null;
+                    for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
+                        if (parameter.getKey().equals("thresholding-group")) {
+                            groupName = parameter.getValue();
+                        }
+                    }
+                    if (groupName != null) {
+                        groupNameList.add(groupName);
+                        log().debug("createThresholdingVisitor:  address/service: " + m_hostAddress + "/" + m_serviceName + ". Adding Group " + groupName);
+                    }
+                }
             }
         }
-        
-        // Create ThresholdingVisitor is groupNameList is not empty
-        if (groupNameList.isEmpty()) {
-            log.warn("createThresholdingVisitor: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
-            return null;
+
+        if (!groupNameList.isEmpty()) {
+            m_groupNameList = groupNameList;
         }
-        return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupNameList);
     }
     
-    protected ThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, List<String> groupNameList) { 
-
-        m_groupNameList=groupNameList;
+    protected ThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo) { 
         m_nodeId=nodeId;
         m_hostAddress=hostAddress;
         m_serviceName=serviceName;
@@ -239,7 +252,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * point in the near future 
      * Can be called when thresholding configuration has changed and we need to refresh the threshold state
      */
-    public void initThresholdState() {
+    private void initThresholdState() {
         log().debug("initThresholdState on "+this);
         m_needsRefresh=true; 
     }
@@ -254,7 +267,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             log().debug(this + " needs refresh of state; refreshing now");
             m_thresholdGroupList = new ArrayList<ThresholdGroup>();
             for (String groupName : m_groupNameList) {
-                ThresholdGroup thresholdGroup = s_thresholdsDao.get(groupName);
+                ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
                 if (thresholdGroup == null) {
                     log().error("Could not get threshold group with name " + groupName);
                 }
@@ -428,6 +441,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         m_cache.put(id, current);
         if (last == null) {
             return Double.NaN;
+        }
+        if (current < last) {
+        	log().info("getValue: counter reset detected, ignoring value");
+        	return Double.NaN;
         }
         return current - last;
     }
