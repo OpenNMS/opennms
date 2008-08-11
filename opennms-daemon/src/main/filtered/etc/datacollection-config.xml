@@ -167,6 +167,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <!-- HP-UX fileSystemTable resource type -->
+    <resourceType name="hpuxFSTable" label="HP-UX Filesystem" resourceLabel="${hpuxFSName} on ${hpuxFSDir}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
     <groups>
       <!-- data from standard (mib-2) sources -->
@@ -967,6 +972,18 @@
         <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.16" instance="0" alias="hpuxCpuNice" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.1" instance="0" alias="hpuxTotalFsMounted" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.11.2.3.1.4.1" instance="0" alias="hpuxTotalProcesses" type="gauge" />
+      </group>
+      <group name="hpux-filesystem" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.1" instance="hpuxFSTable" alias="hpuxFSID1" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.2" instance="hpuxFSTable" alias="hpuxFSID2" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.3" instance="hpuxFSTable" alias="hpuxFSName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.4" instance="hpuxFSTable" alias="hpuxFSBlock" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.5" instance="hpuxFSTable" alias="hpuxFSBfree" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.6" instance="hpuxFSTable" alias="hpuxFSBavail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.7" instance="hpuxFSTable" alias="hpuxFSBsize" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.8" instance="hpuxFSTable" alias="hpuxFSFiles" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.9" instance="hpuxFSTable" alias="hpuxFSFfree" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.10" instance="hpuxFSTable" alias="hpuxFSDir" type="string" />
       </group>
 
       <!-- IBM MIBs -->
@@ -1837,6 +1854,7 @@
         <sysoidMask>.1.3.6.1.4.1.11.2.3.2.</sysoidMask>
         <collect>
           <includeGroup>hpux</includeGroup>
+          <includeGroup>hpux-filesystem</includeGroup>
         </collect>
       </systemDef>
 
