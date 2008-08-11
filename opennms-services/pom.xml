@@ -123,6 +123,7 @@
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
+      <version>0.1.39</version>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
@@ -146,6 +147,12 @@
     <dependency>
       <groupId>jivesoftware</groupId>
       <artifactId>smackx</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.trilead</groupId>
+      <artifactId>ssh2</artifactId>
+      <version>213</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -272,4 +279,11 @@
       <artifactId>jep</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>trilead-mirror</id>
+      <name>Trilead Maven Mirror</name>
+      <url>http://shibboleth.internet2.edu/downloads/maven2/</url>
+    </repository>
+  </repositories>
 </project>

@@ -50,7 +50,7 @@ public class SshTest extends TestCase {
     private static final String GOOD_HOST = "127.0.0.1";
     private static final String BAD_HOST = "1.1.1.1";
     private static final int PORT = 22;
-    private static final int TIMEOUT = 30000;
+    private static final int TIMEOUT = 5000;
 
     Poll p;
     InetAddress good, bad;
