@@ -82,7 +82,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <specific>10.0.0.1</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\" max-request-size=\"434\">\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\" max-request-size=\"484\">\n" + 
                 "       <specific>10.0.0.2</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
@@ -166,7 +166,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals(SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE, agentConfig.getMaxRequestSize());
         
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.0.0.2"));
-        assertEquals(434, agentConfig.getMaxRequestSize());
+        assertEquals(484, agentConfig.getMaxRequestSize());
     }
     
     public void testDefaultMaxVarsPerPdu() throws UnknownHostException {
