@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jul 28: Use CastorUtils. - dj@opennms.org
 // 2007 Aug 02: Prepare for Castor 1.0.5. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -34,24 +35,20 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-// Tab Size = 8
-//
 package org.opennms.netmgt.vmmgr;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.xml.sax.InputSource;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * <p>
@@ -85,8 +82,6 @@ public class DatabaseChecker {
      */
     private String m_driverPass;
 
-    
-
     /**
      * Protected constructor
      * 
@@ -101,46 +96,15 @@ public class DatabaseChecker {
 						      MarshalException,
 						      ValidationException,
 						      ClassNotFoundException {
-        /*
-         * Set the system identifier for the source of the input stream.
-         * This is necessary so that any location information can
-         * positively identify the source of the error.
-         */
-        InputSource dbIn = new InputSource(new FileInputStream(configFile));
-        dbIn.setSystemId(configFile);
-
-        // Attempt to load the database reference.
-        DataSourceConfiguration m_database = (DataSourceConfiguration) Unmarshaller.unmarshal(DataSourceConfiguration.class, dbIn);
-
-        /*
-        Param[] parms = m_database.getDatabaseChoice().getDriver().getParam();
-        for (int i = 0; i < parms.length; i++) {
-        	if (parms[i].getName().equals("user")) {
-        		m_driverUser = parms[i].getValue();
-        	} else if (parms[i].getName().equals("password")) {
-        		m_driverPass = parms[i].getValue();
-        	} else {
-        		throw new ValidationException("Unsupported JDO parameter: " +
-        				parms[i].getName());
-        	}
-        }
-        */
+        DataSourceConfiguration m_database = CastorUtils.unmarshal(DataSourceConfiguration.class, new FileSystemResource(configFile));
         
-        for (JdbcDataSource jdbcDataSource : getJdbcDataSources(m_database)) {
+        for (JdbcDataSource jdbcDataSource : m_database.getJdbcDataSourceCollection()) {
             m_driverUrl = jdbcDataSource.getUrl();
             m_driverUser = jdbcDataSource.getUserName();
             m_driverPass = jdbcDataSource.getPassword();
-            String driverCN = jdbcDataSource.getClassName();
-            Class.forName(driverCN);
+            Class.forName(jdbcDataSource.getClassName());
         }
     }
-
-
-    @SuppressWarnings("unchecked")
-    private List<JdbcDataSource> getJdbcDataSources(DataSourceConfiguration m_database) {
-        return m_database.getJdbcDataSourceCollection();
-    }
-
 
     /**
      * Load the config from the default config file and create the singleton
