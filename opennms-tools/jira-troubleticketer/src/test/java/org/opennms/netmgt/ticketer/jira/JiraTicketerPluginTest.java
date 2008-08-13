@@ -1,7 +1,7 @@
 package org.opennms.netmgt.ticketer.jira;
 
 import junit.framework.TestCase;
-import org.opennms.netmgt.ticketd.Ticket;
+import org.opennms.api.integration.ticketing.Ticket;
 
 import java.io.File;
 import java.util.Date;
@@ -75,7 +75,7 @@ public class JiraTicketerPluginTest extends TestCase {
         assertEquals(ticket.getState(), newTicket.getState());
         assertEquals(ticket.getSummary(), newTicket.getSummary());
 
-        //TODO: Implement this later when we need 2 way retrievel of commments/details
+        //TODO: Implement this later when we need 2 way retrieval of comments/details
         //assertEquals(ticket.getDetails(), newTicket.getDetails());
     }
 
@@ -90,7 +90,7 @@ public class JiraTicketerPluginTest extends TestCase {
         System.out.println(newTicket.getId() + ":" + newTicket.getSummary());
         assertTrue(newTicket.getSummary().startsWith("This is the summary"));
 
-        //TODO: Implement this later when we need 2 way retrievel of commments/details
+        //TODO: Implement this later when we need 2 way retrieval of comments/details
         //assertEquals("These are the details", newTicket.getDetails());
 
     }

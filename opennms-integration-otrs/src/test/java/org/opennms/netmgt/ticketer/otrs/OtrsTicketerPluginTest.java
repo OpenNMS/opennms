@@ -11,7 +11,7 @@ import org.opennms.integration.otrs.ticketservice.TicketServiceLocator;
 import org.opennms.integration.otrs.ticketservice.TicketServicePort_PortType;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.ticketd.Ticket;
+import org.opennms.api.integration.ticketing.Ticket;
 import java.io.File;
 import java.util.Date;
 
