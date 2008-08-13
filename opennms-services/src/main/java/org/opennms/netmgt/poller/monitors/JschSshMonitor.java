@@ -34,7 +34,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.regexp.RE;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -45,11 +44,17 @@ import org.opennms.netmgt.protocols.ssh.Poll;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
+ * <P>
  * This class is designed to be used by the service poller framework to test the
- * availability of SSH remote interfaces. The class
- * implements the ServiceMonitor interface that allows it to be used along with
- * other plug-ins by the service poller framework.
+ * availability of SSH remote interfaces. The class implements the ServiceMonitor
+ * interface that allows it to be used along with other plug-ins by the service
+ * poller framework.
+ * </P>
+ * <P>
+ * This plugin is just an exact copy of the {@link SshMonitor} now.
+ * </P>
  * 
+ * @deprecated use {@link SshMonitor} instead
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * 
@@ -59,9 +64,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 final public class JschSshMonitor extends IPv4Monitor {
 
     private static final int DEFAULT_RETRY = 0;
-
     public static final int DEFAULT_TIMEOUT = 3000;
-    
     public static final int DEFAULT_PORT = 22;
 
     /**
@@ -78,17 +81,19 @@ final public class JschSshMonitor extends IPv4Monitor {
      * 
      * @return a {@link PollStatus} status object
      */
+    @SuppressWarnings("unchecked")
     public PollStatus poll(InetAddress address, Map parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        String banner = ParameterMap.getKeyedString(parameters, "banner", null);
-        String match = ParameterMap.getKeyedString(parameters, "match", null);
+        // String banner = ParameterMap.getKeyedString(parameters, "banner", null);
+        // String match = ParameterMap.getKeyedString(parameters, "match", null);
 
         PollStatus ps = PollStatus.unavailable();
         Poll ssh = new Poll(address, port, tracker.getConnectionTimeout());
 
+        /*
         RE regex = null;
         if (match == null && (banner == null || banner.equals("*"))) {
             regex = null;
@@ -97,6 +102,7 @@ final public class JschSshMonitor extends IPv4Monitor {
         } else if (banner != null) {
             regex = new RE(banner);
         }
+        */
 
         for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
             try {
@@ -114,6 +120,7 @@ final public class JschSshMonitor extends IPv4Monitor {
             // If banner matching string is null or wildcard ("*") then we
             // only need to test connectivity and we've got that!
 
+            /*
             if (regex == null) {
                 return ps;
             } else {
@@ -133,6 +140,7 @@ final public class JschSshMonitor extends IPv4Monitor {
                     return PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
                 }
             }
+            */
         }
         return ps;        
     }
@@ -148,6 +156,7 @@ final public class JschSshMonitor extends IPv4Monitor {
      * @return the availability of the interface
      */
     
+    @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
