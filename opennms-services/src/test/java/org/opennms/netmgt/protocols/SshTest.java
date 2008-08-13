@@ -36,7 +36,11 @@ package org.opennms.netmgt.protocols;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 import org.opennms.netmgt.protocols.ssh.Poll;
 
 import junit.framework.TestCase;
@@ -50,12 +54,18 @@ public class SshTest extends TestCase {
     private static final String GOOD_HOST = "127.0.0.1";
     private static final String BAD_HOST = "1.1.1.1";
     private static final int PORT = 22;
-    private static final int TIMEOUT = 30000;
-
+    private static final int TIMEOUT = 5000;
+    private TimeoutTracker tt;
     Poll p;
     InetAddress good, bad;
     
     public void setUp() throws Exception {
+        Map<String, String> parameters = new HashMap<String,String>();
+        parameters.put("retries", "0");
+        parameters.put("port", "22");
+        parameters.put("timeout", Integer.toString(TIMEOUT));
+        
+        tt = new TimeoutTracker(parameters, 0, TIMEOUT);
         p = new Poll();
         p.setPort(PORT);
         p.setTimeout(TIMEOUT);
@@ -70,11 +80,17 @@ public class SshTest extends TestCase {
     
     public void testSshGoodHost() throws Exception {
         p.setAddress(good);
-        assertTrue(p.poll().isAvailable());
+        assertTrue(p.poll(tt).isAvailable());
     }
     
     public void testSshBadHost() throws Exception {
+        Date start = new Date();
         p.setAddress(bad);
-        assertFalse(p.poll().isAvailable());
+        assertFalse(p.poll(tt).isAvailable());
+        Date end = new Date();
+  
+        System.err.println("start = " + start + ", end = " + end + ", end - start = " + (end.getTime() - start.getTime()) + "ms");
+        // give it 6 seconds to time out
+        assertTrue(end.getTime() - start.getTime() < 6000);
     }
 }

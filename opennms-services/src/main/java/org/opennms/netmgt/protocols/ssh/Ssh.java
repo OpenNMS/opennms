@@ -10,7 +10,8 @@
  *
  * Modifications:
  * 
- * Created: October 3, 2007
+ * 2008 Aug 11: Converted to Trilead SSH client
+ * 2007 Oct 03: Initial version
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -37,18 +38,17 @@ package org.opennms.netmgt.protocols.ssh;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.NoRouteToHostException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
+import com.sshtools.j2ssh.SshClient;
+import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
+import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
+import com.sshtools.j2ssh.configuration.SshConnectionProperties;
+import com.sshtools.j2ssh.transport.IgnoreHostKeyVerification;
 
 /**
  * 
@@ -61,16 +61,15 @@ public class Ssh {
     // SSH port is 22
     public static final int DEFAULT_PORT = 22;
     
-    JSch m_jsch = new JSch();
-    private Session m_session;
+    private SshClient m_client;
     private Throwable m_exception;
-    private String m_serverVersion;
     private InetAddress m_address;
     private int m_port = DEFAULT_PORT;
     private int m_timeout = DEFAULT_TIMEOUT;
     private File m_keydir;
     private String m_username;
     private String m_password;
+    private String m_serverVersion = "";
 
     /**
      * Set the address to connect to.
@@ -102,6 +101,9 @@ public class Ssh {
      * @return the port
      */
     public int getPort() {
+        if (m_port == 0) {
+            return 22;
+        }
         return m_port;
     }
     
@@ -178,14 +180,6 @@ public class Ssh {
     }
 
     /**
-     * Get the Jsch session object.
-     * @return the session
-     */
-    protected Session getSession() {
-        return m_session;
-    }
-    
-    /**
      * Attempt to connect, based on the parameters which have been set in
      * the object.
      * 
@@ -196,50 +190,57 @@ public class Ssh {
         if (getAddress() == null) {
             throw new InsufficientParametersException("you must specify an address");
         }
-        
-        m_exception = null;
-        m_serverVersion = null;
-        m_session = null;
+
         try {
-            m_session = m_jsch.getSession("opennms", getAddress().getHostAddress(), getPort());
-            m_session.connect(getTimeout());
-            m_serverVersion = m_session.getServerVersion();
-            return true;
-        } catch (JSchException e) {
-            m_exception = e;
-            if (e.getCause() != null) {
-                Class cause = e.getCause().getClass();
-                if (cause == ConnectException.class) {
-                    log().debug("connection refused", e);
-                    return false;
-                } else if (cause == NoRouteToHostException.class) {
-                    log().debug("no route to host", e);
-                    return false;
-                } else if (cause == InterruptedIOException.class) {
-                    log().debug("connection timeout", e);
-                    return false;
-                } else if (cause == IOException.class) {
-                    log().debug("An I/O exception occurred", e);
-                    return false;
-                } else if (e.getMessage().matches("^.*(connection is closed by foreign host).*$")) {
-                    log().debug("JSCH failed", e);
-                    return false;
+            m_client = new SshClient();
+            m_client.setSocketTimeout(getTimeout());
+            SshConnectionProperties props = new SshConnectionProperties();
+            props.setHost(getAddress().getHostAddress());
+            props.setPort(getPort());
+            m_client.connect(props, new IgnoreHostKeyVerification());
+            if (getUsername() != null) {
+                PasswordAuthenticationClient pac = new PasswordAuthenticationClient();
+                pac.setUsername(getUsername());
+                pac.setPassword(getPassword());
+                int result = m_client.authenticate(pac);
+                switch (result) {
+                case AuthenticationProtocolState.READY:
+                    m_client.disconnect();
+                    return true;
+                    case AuthenticationProtocolState.COMPLETE:
+                        m_client.disconnect();
+                        return true;
+                    case AuthenticationProtocolState.CANCELLED:
+                        log().error("the user cancelled authentication (this error should not occur)");
+                        break;
+                    case AuthenticationProtocolState.FAILED:
+                        log().error("the authentication failed");
+                        break;
+                    case AuthenticationProtocolState.PARTIAL:
+                        log().error("the authentication was rejected");
+                        break;
+                    default:
+                        log().error("unknown AuthenticationProtocolState: " + result);
+                        break;
                 }
             } else {
-                // ugh, string parse, maybe we can get him to fix this in a newer jsch release
-                if (e.getMessage().matches("^.*(socket is not established|connection is closed by foreign host|java.io.(IOException|InterruptedIOException)|java.net.(ConnectException|NoRouteToHostException)).*$")) {
-                    log().debug("did not connect enough to verify SSH server", e);
-                    return false;
+                if (m_client.isConnected()) {
+                    m_serverVersion = m_client.getServerId();
+                    m_client.disconnect();
+                    return true;
+                } else {
+                    log().error("client did not connect");
                 }
             }
-            if (m_session != null) {
-                if (m_session.isConnected()) {
-                    m_serverVersion = m_session.getServerVersion();
-                }
+        } catch (IOException e) {
+            log().debug("connection failed", e);
+        } finally {
+            if (m_client != null && m_client.isConnected()) {
+                log().debug("client is still connected, disconnecting");
+                m_client.disconnect();
             }
-            log().debug("valid SSH server is listening: " + e.getMessage());
-            return true;
         }
+        return false;
     }
 
     protected Throwable getError() {
