@@ -150,9 +150,15 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.trilead</groupId>
-      <artifactId>ssh2</artifactId>
-      <version>213</version>
+      <groupId>sshtools</groupId>
+      <artifactId>j2ssh-common</artifactId>
+      <version>0.2.9-onms</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>sshtools</groupId>
+      <artifactId>j2ssh-core</artifactId>
+      <version>0.2.9-onms</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
