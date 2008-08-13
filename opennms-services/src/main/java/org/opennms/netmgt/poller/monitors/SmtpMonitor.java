@@ -335,9 +335,9 @@ final public class SmtpMonitor extends IPv4Monitor {
             	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+            	serviceStatus = logDown(Level.DEBUG, "Did not receive expected response within timeout " + tracker);
             } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "Unable to connect to address " + ipv4Addr.getHostAddress(), e);
             } catch (IOException e) {
             	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + ipv4Addr.getHostAddress(), e);
             } finally {
