@@ -555,7 +555,7 @@
 	<monitor service="Sybase" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
 	<monitor service="Informix" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
 	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.JschSshMonitor"/>
+	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
 	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
 	<monitor service="RadiusAuth"	class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>

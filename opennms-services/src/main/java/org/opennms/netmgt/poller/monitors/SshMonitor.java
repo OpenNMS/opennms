@@ -1,228 +1,168 @@
+
+//This file is part of the OpenNMS(R) Application.
+
+//OpenNMS(R) is Copyright (C) 2002-2007 The OpenNMS Group, Inc. All rights reserved.
+//OpenNMS(R) is a derivative work, containing both original code, included code and modified
+//code that was published under the GNU General Public License. Copyrights for modified
+//and included code are below.
 //
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
 //
-// 2004 May 05: Switch from SocketChannel to Socket with connection timeout.
-// 2003 Jul 21: Explicitly closed socket.
-// 2003 Jul 18: Enabled retries for monitors.
-// 2003 Jun 11: Added a "catch" for RRD update errors. Bug #748.
-// 2003 Apr 24: Added new SSH poller, based on the generic TCP poller.
+// 2008 Aug 11: Removed banner/match stuff, since the Trilead code doesn't instrument the server version
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+//Original code base Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
+
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation; either version 2 of the License, or
+//(at your option) any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+//For more information contact:
+//OpenNMS Licensing <license@opennms.org>
+//http://www.opennms.org/
+//http://www.opennms.com/
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
+import org.apache.regexp.RE;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.HttpPageSequence;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceMonitorParameters;
+import org.opennms.netmgt.protocols.InsufficientParametersException;
+import org.opennms.netmgt.protocols.ssh.Poll;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This class is designed to be used by the service poller framework to test the
- * availability of a generic TCP service on remote interfaces. The class
+ * availability of SSH remote interfaces. The class
  * implements the ServiceMonitor interface that allows it to be used along with
  * other plug-ins by the service poller framework.
  * 
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author Weave
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * 
  */
 
 @Distributable
 final public class SshMonitor extends IPv4Monitor {
 
-    /**
-     * Default port.
-     */
-    private static final int DEFAULT_PORT = -1;
-
-    /**
-     * Default retries.
-     */
     private static final int DEFAULT_RETRY = 0;
+    public static final int DEFAULT_TIMEOUT = 3000;
+    public static final int DEFAULT_PORT = 22;
 
     /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting
-     * for data from the monitored interface.
-     */
-    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
-                                                        // read()
-
-    /**
-     * Poll the specified address for service availability.
+     * Poll an {@link InetAddress} for SSH availability.
      * 
      * During the poll an attempt is made to connect on the specified port. If
      * the connection request is successful, the banner line generated by the
      * interface is parsed and if the banner text indicates that we are talking
-     * to Provided that the interface's response is valid we set the service
-     * status to SERVICE_AVAILABLE and return.
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
+     * to Provided that the interface's response is valid we mark the poll status
+     * as available and return.
      * 
-     * @throws java.lang.RuntimeException
-     *             Thrown if the interface experiences errors during the poll.
+     * @param address the address to poll
+     * @param parameters  the package parameters (timeout, retry, etc...) to be used for this poll
+     * 
+     * @return a {@link PollStatus} status object
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
-        NetworkInterface iface = svc.getNetInterface();
-
-        //
-        // Get interface address from NetworkInterface
-        //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+    @SuppressWarnings("unchecked")
+    public PollStatus poll(InetAddress address, Map parameters) {
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        // Port
-        //
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        if (port == DEFAULT_PORT) {
-            throw new RuntimeException("SshMonitor: required parameter 'port' is not present in supplied properties.");
+        String banner = ParameterMap.getKeyedString(parameters, "banner", null);
+        String match = ParameterMap.getKeyedString(parameters, "match", null);
+
+        PollStatus ps = PollStatus.unavailable();
+        Poll ssh = new Poll(address, port, tracker.getConnectionTimeout());
+
+        RE regex = null;
+        if (match == null && (banner == null || banner.equals("*"))) {
+            regex = null;
+        } else if (match != null) {
+            regex = new RE(match);
+        } else if (banner != null) {
+            regex = new RE(banner);
         }
 
-        // BannerMatch
-        //
-        String strBannerMatch = (String) parameters.get("banner");
-
-        // Get the address instance.
-        //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
-
-        if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
-
-        // Give it a whirl
-        //
-        PollStatus serviceStatus = PollStatus.unavailable();
-
-        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
-            Socket socket = null;
+        for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
             try {
-                //
-                // create a connected socket
-                //
-                tracker.startAttempt();
+                ps = ssh.poll(tracker);
+            } catch (InsufficientParametersException e) {
+                log().error(e);
+                break;
+            }
 
-                socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
-                socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("SshMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+            if (!ps.isAvailable()) {
+                // not able to connect, retry
+                continue;
+            }
 
-                // We're connected, so upgrade status to unresponsive
-                serviceStatus = PollStatus.unresponsive();
+            // If banner matching string is null or wildcard ("*") then we
+            // only need to test connectivity and we've got that!
 
-                if (strBannerMatch == null || strBannerMatch.equals("*")) {
-                    serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
-                    break;
-                }
+            if (regex == null) {
+                return ps;
+            } else {
+                String response = ssh.getServerVersion();
 
-                BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                //
-                // Tokenize the Banner Line, and check the first
-                // line for a valid return.
-                //
-                String response = rdr.readLine();
-                double responseTime = tracker.elapsedTimeInMillis();
-
-                if (response == null)
-                    continue;
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: banner = " + response);
-                    log().debug("poll: responseTime= " + responseTime + "ms");
-                }
-
-                if (response.indexOf(strBannerMatch) > -1) {
-                    serviceStatus = PollStatus.available(responseTime);
-                    // send the identifier string
-                    //
-                    String cmd = "SSH-1.99-OpenNMS_1.1\r\n";
-                    socket.getOutputStream().write(cmd.getBytes());
-                    // get the response code.
-                    //
-                    response = null;
-                    try {
-                        response = rdr.readLine();
-                    } catch (IOException e) {
+                if (regex.match(response)) {
+                    if (log().isDebugEnabled()) {
+                        log().debug("isServer: matching response=" + response);
                     }
-
-                } else
-                    serviceStatus = PollStatus.unavailable();
-            } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
-                break; // Break out of for(;;)
-            } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
-            } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
-            } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
-            } finally {
-                try {
-                    // Close the socket
-                    if (socket != null)
-                        socket.close();
-                } catch (IOException e) {
-                    e.fillInStackTrace();
-                    if (log().isDebugEnabled())
-                        log().debug("poll: Error closing socket.", e);
+                    return ps;
+                } else {
+                    // Got a response but it didn't match... no need to attempt
+                    // retries
+                    if (log().isDebugEnabled()) {
+                        log().debug("isServer: NON-matching response=" + response);
+                    }
+                    return PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
                 }
             }
         }
+        return ps;        
+    }
 
-        //
-        // return the status of the service
-        //
-        return serviceStatus;
+    /**
+     * Poll the specified address for service availability.
+     * 
+     * @see #poll(InetAddress, Map)
+     * 
+     * @param svc the {@link MonitoredService} service object which defines what address to poll, etc.
+     * @param parameters the package parameters (timeout, retry, etc.) to be used for this poll
+     *
+     * @return the availability of the interface
+     */
+    
+    @SuppressWarnings("unchecked")
+    public PollStatus poll(MonitoredService svc, Map parameters) {
+        NetworkInterface iface = svc.getNetInterface();
+        if (iface.getType() != NetworkInterface.TYPE_IPV4)
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        InetAddress address = (InetAddress) iface.getAddress();
+
+        return poll(address, parameters);
     }
 
 }

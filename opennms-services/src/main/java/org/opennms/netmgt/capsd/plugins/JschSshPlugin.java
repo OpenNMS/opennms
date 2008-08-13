@@ -45,7 +45,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.poller.monitors.JschSshMonitor;
+import org.opennms.netmgt.poller.monitors.SshMonitor;
 
 /**
  * <P>
@@ -54,10 +54,12 @@ import org.opennms.netmgt.poller.monitors.JschSshMonitor;
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
  * </P>
+ * <P>
+ * This plugin is just an exact copy of the {@link SshPlugin} now.
+ * </P>
  * 
- * @author <a href="mailto:tarus@opennms.org">Tarus</a>
- * @author Mike Davidson
- * @author Brian Weaver
+ * @deprecated use {@link SshPlugin} instead
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  * 
  * 
@@ -111,7 +113,7 @@ public final class JschSshPlugin extends AbstractPlugin {
      * @return true if the protocol is supported by the address
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> parameters) {
-        JschSshMonitor m = new JschSshMonitor();
+        SshMonitor m = new SshMonitor();
 
         return m.poll(address, parameters).isAvailable();
     }
