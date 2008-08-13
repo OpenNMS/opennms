@@ -39,9 +39,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.opennms</groupId>
+			<groupId>org.opennms.api.integration</groupId>
 			<artifactId>opennms-ticketing</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms</groupId>
