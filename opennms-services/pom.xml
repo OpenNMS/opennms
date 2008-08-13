@@ -295,11 +295,4 @@
       <artifactId>jep</artifactId>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>trilead-mirror</id>
-      <name>Trilead Maven Mirror</name>
-      <url>http://shibboleth.internet2.edu/downloads/maven2/</url>
-    </repository>
-  </repositories>
 </project>
