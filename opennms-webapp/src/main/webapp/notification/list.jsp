@@ -135,7 +135,7 @@
        String eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());%>
 
     <tr class="<%=eventSeverity%>">
-      <!--all users can acknowlege any notice -->          
+      <!--all users can acknowledge any notice -->          
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE )) ) { %>
         <td>
           <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
