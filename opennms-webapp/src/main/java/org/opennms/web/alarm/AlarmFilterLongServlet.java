@@ -58,10 +58,10 @@ import org.opennms.web.alarm.filter.Filter;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AlarmFilterServlet extends HttpServlet {
+public class AlarmFilterLongServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public static final int DEFAULT_LIMIT = 20;
+    public static final int DEFAULT_LIMIT = 10;
 
     public static final int DEFAULT_MULTIPLE = 0;
 
@@ -153,7 +153,7 @@ public class AlarmFilterServlet extends HttpServlet {
             request.setAttribute("parms", parms);
 
             // forward the request for proper display
-            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/alarm/list.jsp");
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/alarm/list-long.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("", e);
