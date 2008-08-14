@@ -20,17 +20,7 @@
 <div class="formOnly">
   <form action="<c:url value='j_acegi_security_check'/>" method="POST">
     <p>
-      User: 
-      <c:choose>
-        <c:when test="${not empty param.login_error}">
-          <%-- This is: AuthenticationProcessingFilter.ACEGI_SECURITY_LAST_USERNAME_KEY --%>
-          <input type='text' id="input_j_username" name='j_username' value='${ACEGI_SECURITY_LAST_USERNAME}' /><br />
-        </c:when>
-        <c:otherwise>
-          <input type='text' id="input_j_username" name='j_username' /><br />
-        </c:otherwise>
-      </c:choose>
-      
+      User: <input type="text" id="input_j_username" name="j_username" <c:if test="${not empty param.login_error}">value='<c:out value="${ACEGI_SECURITY_LAST_USERNAME}"/>'</c:if> /><br />
       Password: <input type='password' name='j_password'>
     </p>
       
