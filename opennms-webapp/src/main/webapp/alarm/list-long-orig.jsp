@@ -94,7 +94,7 @@
     int alarmCount = AlarmFactory.getAlarmCount( parms.ackType, parms.getFilters() );  
     
     pageContext.setAttribute("alarmCount", new Integer(alarmCount));
- 
+    
     //useful constant strings
     String addPositiveFilterString = "[+]";
     String addNegativeFilterString = "[-]";
@@ -134,7 +134,7 @@
     {
         var isChecked = false
         var numChecked = 0;
-        
+         
         // Decide to which servlet we will submit
         if (anAction == "clear" || anAction == "escalate") {
         	document.alarm_action_form.action = "alarm/changeSeverity";
@@ -144,15 +144,15 @@
         
         // Decide what our action should be
         if (anAction == "escalate") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeServlet.ESCALATE_ACTION%>";
+        	document.alarm_action_form.action.value = "<%=AlarmSeverityChangeServlet.ESCALATE_ACTION%>";
         } else if (anAction == "clear") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeServlet.CLEAR_ACTION%>";
+        	document.alarm_action_form.action.value = "<%=AlarmSeverityChangeServlet.CLEAR_ACTION%>";
         } else if (anAction == "acknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.action.value = "<%=AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION%>";
         } else if (anAction == "unacknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.action.value = "<%=AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION%>";
         }
- 
+        
         if (document.alarm_action_form.alarm.length)
         {
             for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) 
@@ -211,7 +211,6 @@
       <ul>
       <li><a href="<%=this.makeLink( parms, new ArrayList<org.opennms.web.alarm.filter.Filter>())%>" title="Remove all search constraints" >View all alarms</a></li>
       <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-      <li><a href="alarm/listlong?<%=request.getQueryString()%>" title="Detailed List of Alarms">Long Listing</a></li>
       <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       <li>
       <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
@@ -226,9 +225,9 @@
 
       <!-- hidden form for acknowledging the result set --> 
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <form method="POST" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
+          <form method="POST" name="acknowledge_by_filter_form">    
             <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-            <input type="hidden" name="actionCode" value="<%=action%>" />
+            <input type="hidden" name="action" value="" />
             <%=org.opennms.web.Util.makeHiddenTags(request)%>
           </form>      
       <% } %>
@@ -267,14 +266,14 @@
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form action="alarm/acknowledge" method="POST" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-          <input type="hidden" name="actionCode" value="<%=action%>" />
+          <input type="hidden" name="action" value="<%=action%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>
       <% } %>
 			<jsp:include page="/includes/key.jsp" flush="false" />
       <table>
 				<thead>
 					<tr>
-                                             <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+                    <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
 						<% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
 						<th width="1%">Ack</th>
 						<% } else { %>
@@ -283,37 +282,45 @@
                     <% } else { %>
                         <th width="1%">&nbsp;</th>
                     <% } %>
-
-
-
-			<th width="8%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%><br /><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
-			<th width="19%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
-			<th width="3%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
-			<th width="20%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
-			<th width="48%">Log Msg</th>
-		</tr>
-	</thead>
-
+						<th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+						<th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
+						<th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+						<th width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
+						<th width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+						<th width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
+						<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
+						<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></th>
+					</tr>
+				</thead>
       <% for( int i=0; i < alarms.length; i++ ) { 
       	Alarm alarm = alarms[i];
       	pageContext.setAttribute("alarm", alarm);
-      %> 
-
+      %>        
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-              <td class="divider" rowspan="1">
+              <td class="divider" valign="top" rowspan="3">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
                 </nobr>
+              </td>
           <% } else { %>
-            <td rowspan="1" class="divider">&nbsp;
+            <td valign="top" rowspan="3" class="divider">&nbsp;</td>
           <% } %>
-          </td>
 
-          
-          <td class="divider bright" rowspan="1">
-            
+          <td class="divider" valign="top" rowspan="3">
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
+          </td>
+          
+          <td class="divider bright" valign="top" rowspan="3">
+            <%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>
+            
+            <% org.opennms.web.alarm.filter.Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      
+            <% if( !parms.filters.contains( severityFilter )) { %>
+              <nobr>
+                <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only alarms with this severity">${addPositiveFilter}</a>
+                <a href="<%=this.makeLink( parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true)%>" class="filterLink" title="Do not show alarms with this severity">${addNegativeFilter}</a>
+              </nobr>
+            <% } %>
           </td>
           <td class="divider">
 	    <% if(alarms[i].getNodeId() != 0 && alarms[i].getNodeLabel()!= null ) { %>
@@ -327,9 +334,45 @@
                   <a href="<%=this.makeLink( parms, new NegativeNodeFilter(alarms[i].getNodeId()), true)%>" class="filterLink" title="Do not show alarms for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
+          <td class="divider">
+            <% if(alarms[i].getIpAddress() != null ) { %>
+              <% org.opennms.web.alarm.filter.Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddress()); %>
+              <% if( alarms[i].getNodeId() != 0 ) { %>
+                 <a href="element/interface.jsp?node=<%=alarms[i].getNodeId()%>&intf=<%=alarms[i].getIpAddress()%>" title="More info on this interface"><%=alarms[i].getIpAddress()%></a>
+              <% } else { %>
+                 <%=alarms[i].getIpAddress()%>
+              <% } %>
+              <% if( !parms.filters.contains(intfFilter) ) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only alarms on this IP address">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(alarms[i].getIpAddress()), true)%>" class="filterLink" title="Do not show alarms for this interface">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
+          <td class="divider">
+            <% if(alarms[i].getServiceName() != null) { %>
+              <% org.opennms.web.alarm.filter.Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
+              <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
+                <a href="element/service.jsp?node=<%=alarms[i].getNodeId()%>&intf=<%=alarms[i].getIpAddress()%>&service=<%=alarms[i].getServiceId()%>" title="More info on this service"><%=alarms[i].getServiceName()%></a>
+              <% } else { %>
+                <%=alarms[i].getServiceName()%>
+              <% } %>
+              <% if( !parms.filters.contains( serviceFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>                            
             <% } %>
           </td>          
-          <td class="divider" rowspan="1" >
+          <td class="divider" valign="top" rowspan="1" >
 	    <% if(alarms[i].getId() > 0 ) { %>
               <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
                 <nobr>
@@ -346,7 +389,51 @@
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           </td>
-          <td class="divider"><%=alarms[i].getLogMessage()%></td>
+          <td class="divider">
+            <nobr><fmt:formatDate value="${alarm.firstEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.firstEventTime}" type="time" pattern="HH:mm:ss"/></nobr>
+            <nobr>
+              <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
+              <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
+            </nobr>
+          </td>
+	</tr>
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
+          <td>Ackd:
+            <% if (alarms[i].isAcknowledged()) { %>
+              <% org.opennms.web.alarm.filter.Filter acknByFilter = new AcknowledgedByFilter(alarms[i].getAcknowledgeUser()); %>      
+              <%=alarms[i].getAcknowledgeUser()%>
+              <% if( !parms.filters.contains( acknByFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only alarms with this acknowledged by user">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show alarms acknowledgd by this user">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>              
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
+        
+          <td colspan="2">
+            Ackd Time: <%=alarms[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getAcknowledgeTime()) : "&nbsp;"%>
+          </td>
+	  			<td colspan="3">
+            <% if(alarms[i].getUei() != null) { %>
+              <% org.opennms.web.alarm.filter.Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
+                UEI: <%=alarms[i].getUei()%>
+              <% if( !parms.filters.contains( exactUEIFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(alarms[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
+        </tr>
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>" valign="top">
+          <td valign="top" colspan="6"><%=alarms[i].getLogMessage()%></td>
+        </tr>
        
       <% } /*end for*/%>
 
@@ -376,17 +463,6 @@
       <% } %>--%>
 
  <!-- id="eventlist" -->
-
-            <% if( alarmCount > 0 ) { %>
-              <% String baseUrl = this.makeLink(parms); %>
-              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
-                <jsp:param name="count"    value="<%=alarmCount%>" />
-                <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-                <jsp:param name="limit"    value="<%=parms.limit%>"      />
-                <jsp:param name="multiple" value="<%=parms.multiple%>"   />
-              </jsp:include>
-            <% } %>
-
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />
@@ -436,7 +512,7 @@
         if( filters != null ) {
             for( int i=0; i < filters.size(); i++ ) {
                 buffer.append( "&filter=" );
-                String filterString = AlarmUtil.getFilterString(filters.get(i));
+                String filterString = AlarmUtil.getFilterString((org.opennms.web.alarm.filter.Filter)filters.get(i));
                 buffer.append( java.net.URLEncoder.encode(filterString) );
             }
         }      

@@ -160,15 +160,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>sshtools</groupId>
-      <artifactId>j2ssh-common</artifactId>
-      <version>0.2.9-onms</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>sshtools</groupId>
+      <groupId>net.sf.sshtools</groupId>
       <artifactId>j2ssh-core</artifactId>
-      <version>0.2.9-onms</version>
+      <version>0.2.9.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
