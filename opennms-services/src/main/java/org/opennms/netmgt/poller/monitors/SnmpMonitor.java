@@ -210,6 +210,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         String operator = ParameterMap.getKeyedString(parameters, "operator", null);
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
         String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
+        String matchstr = ParameterMap.getKeyedString(parameters, "matchall", "true");
 
         // set timeout and retries on SNMP peer object
         //
@@ -235,10 +236,13 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
+                            if ("false".equals(matchstr)) {
+                               return status;
+                            }
+                        } else if ("true".equals(matchstr)) {
+                            status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+                            return status;
                         }
-                    } else {
-                        status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
-                        return status;
                     }
                 }
 
