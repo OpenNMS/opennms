@@ -166,6 +166,10 @@
     <artifactId>commons-cli</artifactId>
   </dependency>
   <dependency>
+    <groupId>org.apache.ant</groupId>
+    <artifactId>ant</artifactId>
+  </dependency>
+  <dependency>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-services</artifactId>
   </dependency>
