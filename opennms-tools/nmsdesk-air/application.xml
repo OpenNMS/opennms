@@ -64,10 +64,10 @@
 		<height>600</height>
 
 		<!-- The window's initial x position. Optional. -->
-		<x>200</x>
+		<x>0</x>
 
 		<!-- The window's initial y position. Optional. -->
-		<y>200</y>
+		<y>0</y>
 
 		<!-- The window's minimum size, specified as a width/height pair, such as "400 200". Optional. -->
 		<!-- <minSize>800 600</minSize> -->
