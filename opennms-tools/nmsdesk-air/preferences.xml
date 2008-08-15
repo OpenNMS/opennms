@@ -5,4 +5,5 @@
 	<protocol>http</protocol>
 	<username>demo</username>
 	<password>demo</password>
+	<path>/opennms/rest</path>
 </nmsdesk>
