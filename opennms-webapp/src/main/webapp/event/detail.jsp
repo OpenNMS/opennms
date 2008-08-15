@@ -197,7 +197,7 @@
           <th>Log Message</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td><%=Util.htmlify(event.getLogMessage())%></td>
+          <td><%=event.getLogMessage()%></td>
         </tr>
       </table>
 
@@ -206,7 +206,7 @@
           <th>Description</th>
         </tr>
         <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
-          <td><%=Util.htmlify(event.getDescription())%></td>
+          <td><%=event.getDescription()%></td>
         </tr>
       </table>
       
@@ -219,7 +219,7 @@
 	    <%if (event.getOperatorInstruction()==null) { %>
               No instructions available
             <% } else { %>
-              <%=Util.htmlify(event.getOperatorInstruction())%>
+              <%=event.getOperatorInstruction()%>
             <% } %>
 	  </td>
         </tr>
