@@ -170,7 +170,7 @@
     <artifactId>opennms-services</artifactId>
   </dependency>
   <dependency>
-    <groupId>groovy</groupId>
+    <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy</artifactId>
   </dependency>
 </dependencies>
