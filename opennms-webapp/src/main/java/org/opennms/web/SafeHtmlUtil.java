@@ -15,7 +15,8 @@ public class SafeHtmlUtil
         if (raw==null || raw.length()==0)
             return raw;
 
-        return HTMLEntityEncode(canonicalize(raw));
+        return HTMLEntityEncode(raw);
+        // return HTMLEntityEncode(canonicalize(raw));
     }
 
     private static Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
@@ -44,6 +45,7 @@ public class SafeHtmlUtil
 
     // "Simplifies input to its simplest form to make encoding tricks more difficult"
     // though it didn't do seem to do anything to hex or HTML encoded characters... *shrug* maybe for unicode?
+    // Java 6 only, guess we'll have to skip this for now
     public static String canonicalize( String input )
     {
         return Normalizer.normalize( input, Normalizer.DECOMP, 0 );
