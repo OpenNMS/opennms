@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 14: Sanitize input
 // 2006 Nov 08: Added Read Only Role
 // 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
 // 2003 Sep 04: Added a check to allow for deleted node alarms to display.
@@ -50,7 +51,9 @@
 		java.util.*,
 		java.sql.SQLException,
 		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.alarm.filter.*
+		org.opennms.web.alarm.filter.*,
+		org.opennms.web.SafeHtmlUtil,
+		org.opennms.web.XssRequestWrapper
 		"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -67,9 +70,11 @@
 --%>
 
 <%
+	XssRequestWrapper req = new XssRequestWrapper(request);
+
     //required attributes
-    Alarm[] alarms = (Alarm[])request.getAttribute( "alarms" );
-    AlarmQueryParms parms = (AlarmQueryParms)request.getAttribute( "parms" );
+    Alarm[] alarms = (Alarm[])req.getAttribute( "alarms" );
+    AlarmQueryParms parms = (AlarmQueryParms)req.getAttribute( "parms" );
 
     if( alarms == null || parms == null ) {
 	throw new ServletException( "Missing either the alarms or parms request attribute." );
@@ -80,7 +85,7 @@
 
     String action = null;
 
-    if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) {     
+    if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) {     
         if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) {
             action = AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION;
         } 
@@ -211,8 +216,8 @@
       <ul>
       <li><a href="<%=this.makeLink( parms, new ArrayList<org.opennms.web.alarm.filter.Filter>())%>" title="Remove all search constraints" >View all alarms</a></li>
       <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-      <li><a href="alarm/listlong?<%=request.getQueryString()%>" title="Detailed List of Alarms">Long Listing</a></li>
-      <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <li><a href="alarm/listlong?<%=req.getQueryString()%>" title="Detailed List of Alarms">Long Listing</a></li>
+      <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(req)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       <li>
       <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
         <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
@@ -225,11 +230,11 @@
       <!-- end menu -->      
 
       <!-- hidden form for acknowledging the result set --> 
-      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form method="POST" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
-            <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+            <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
             <input type="hidden" name="actionCode" value="<%=action%>" />
-            <%=org.opennms.web.Util.makeHiddenTags(request)%>
+            <%=org.opennms.web.Util.makeHiddenTags(req)%>
           </form>      
       <% } %>
 
@@ -259,22 +264,22 @@
                 
                   <% for( int i=0; i < length; i++ ) { %>
                     <% org.opennms.web.alarm.filter.Filter filter = (org.opennms.web.alarm.filter.Filter)parms.filters.get(i); %>
-                    &nbsp; <span class="filter"><%=filter.getTextDescription()%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
+                    &nbsp; <span class="filter"><%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
                   <% } %>
               </p>           
             <% } %>
 
-      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form action="alarm/acknowledge" method="POST" name="alarm_action_form">
-          <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+          <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
-          <%=org.opennms.web.Util.makeHiddenTags(request)%>
+          <%=org.opennms.web.Util.makeHiddenTags(req)%>
       <% } %>
 			<jsp:include page="/includes/key.jsp" flush="false" />
       <table>
 				<thead>
 					<tr>
-                                             <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+                                             <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
 						<% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
 						<th width="1%">Ack</th>
 						<% } else { %>
@@ -300,7 +305,7 @@
       %> 
 
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
-          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
               <td class="divider" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
@@ -353,17 +358,17 @@
       </table>
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
-      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select name="alarmAction">
+          <option value="clear">Clear Alarms</option>
         <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <option value="acknowledge">Acknowledge Alarms</option>
         <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
           <option value="unacknowledge">Unacknowledge Alarms</option>
         <% } %>
           <option value="escalate">Escalate Alarms</option>
-          <option value="clear">Clear Alarms</option>
           </select>
           <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
@@ -371,7 +376,7 @@
       </form>
 
       <%--<br>
-      <% if(request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+      <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
         <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
       <% } %>--%>
 

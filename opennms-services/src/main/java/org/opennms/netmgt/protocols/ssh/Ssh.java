@@ -36,19 +36,18 @@
  */
 package org.opennms.netmgt.protocols.ssh;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
-
-import com.sshtools.j2ssh.SshClient;
-import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
-import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
-import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.transport.IgnoreHostKeyVerification;
 
 /**
  * 
@@ -60,8 +59,11 @@ public class Ssh {
     
     // SSH port is 22
     public static final int DEFAULT_PORT = 22;
-    
-    private SshClient m_client;
+
+    private Socket m_socket = null;
+    private BufferedReader m_reader = null;
+    private OutputStream m_writer = null;
+
     private Throwable m_exception;
     private InetAddress m_address;
     private int m_port = DEFAULT_PORT;
@@ -69,7 +71,9 @@ public class Ssh {
     private File m_keydir;
     private String m_username;
     private String m_password;
-    private String m_serverVersion = "";
+    private String m_serverBanner = "";
+
+    private static String m_banner = "SSH-1.99-OpenNMS_1.5";
 
     /**
      * Set the address to connect to.
@@ -175,8 +179,8 @@ public class Ssh {
      * Get the SSH server version banner.
      * @return the version string
      */
-    public String getServerVersion() {
-        return m_serverVersion;
+    public String getServerBanner() {
+        return m_serverBanner;
     }
 
     /**
@@ -186,61 +190,58 @@ public class Ssh {
      * @return true if it is able to connect
      * @throws InsufficientParametersException
      */
-    protected boolean connect() throws InsufficientParametersException {
+    protected boolean tryConnect() throws InsufficientParametersException {
         if (getAddress() == null) {
             throw new InsufficientParametersException("you must specify an address");
         }
 
         try {
-            m_client = new SshClient();
-            m_client.setSocketTimeout(getTimeout());
-            SshConnectionProperties props = new SshConnectionProperties();
-            props.setHost(getAddress().getHostAddress());
-            props.setPort(getPort());
-            m_client.connect(props, new IgnoreHostKeyVerification());
-            if (getUsername() != null) {
-                PasswordAuthenticationClient pac = new PasswordAuthenticationClient();
-                pac.setUsername(getUsername());
-                pac.setPassword(getPassword());
-                int result = m_client.authenticate(pac);
-                switch (result) {
-                case AuthenticationProtocolState.READY:
-                    m_client.disconnect();
-                    return true;
-                    case AuthenticationProtocolState.COMPLETE:
-                        m_client.disconnect();
-                        return true;
-                    case AuthenticationProtocolState.CANCELLED:
-                        log().error("the user cancelled authentication (this error should not occur)");
-                        break;
-                    case AuthenticationProtocolState.FAILED:
-                        log().error("the authentication failed");
-                        break;
-                    case AuthenticationProtocolState.PARTIAL:
-                        log().error("the authentication was rejected");
-                        break;
-                    default:
-                        log().error("unknown AuthenticationProtocolState: " + result);
-                        break;
-                }
-            } else {
-                if (m_client.isConnected()) {
-                    m_serverVersion = m_client.getServerId();
-                    m_client.disconnect();
-                    return true;
-                } else {
-                    log().error("client did not connect");
-                }
-            }
+            m_socket = new Socket();
+            m_socket.setTcpNoDelay(true);
+            m_socket.connect(new InetSocketAddress(getAddress(), getPort()), getTimeout());
+            
+            m_reader = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
+            m_writer = m_socket.getOutputStream();
+
+            // read the banner
+            m_serverBanner = m_reader.readLine();
+
+            // write our own
+            m_writer.write((m_banner + "\r\n").getBytes());
+
+            // then, disconnect
+            disconnect();
+
+            return true;
         } catch (IOException e) {
             log().debug("connection failed", e);
-        } finally {
-            if (m_client != null && m_client.isConnected()) {
-                log().debug("client is still connected, disconnecting");
-                m_client.disconnect();
-            }
+            disconnect();
         }
         return false;
+    }
+
+    protected void disconnect() {
+        if (m_writer != null) {
+            try {
+                m_writer.close();
+            } catch (IOException e) {
+                log().warn("error disconnecting output stream", e);
+            }
+        }
+        if (m_reader != null) {
+            try {
+                m_reader.close();
+            } catch (IOException e) {
+                log().warn("error disconnecting input stream", e);
+            }
+        }
+        if (m_socket != null) {
+            try {
+                m_socket.close();
+            } catch (IOException e) {
+                log().warn("error disconnecting socket", e);
+            }
+        }
     }
 
     protected Throwable getError() {
