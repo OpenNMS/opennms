@@ -1,7 +1,8 @@
 <html>
 	<head>
-        <title>Application Sandbox sample</title>
-		<link href="sample.css" rel="stylesheet" type="text/css"/>
+        <title id="title"">OpenNMS Desktop Client</title>
+		</title>
+		<!-- <link href="sample.css" rel="stylesheet" type="text/css"/> -->
 		<link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
         
         
@@ -21,10 +22,11 @@
         <script type="text/javascript" src="js/OpenNMS.js"></script>
 	</head>
 
-    <body>
+    <body bgcolor="#fff">
     		<div id=content>
-		<button onclick='rssoutage()'>Reload</button>
-		<!-- <button onclick='outages()'>Outages</button> -->
+		<button onclick='notifications()'>Notifications</button>
+		<button onclick='outages()'>Outages</button>
+		<button onclick='alarms()'>Alarms</button>
 		
 		<span id=results><table id="resultstable"></table></span>
 	</div>
