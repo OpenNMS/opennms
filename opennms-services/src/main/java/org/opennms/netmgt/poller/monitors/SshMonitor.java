@@ -124,7 +124,7 @@ final public class SshMonitor extends IPv4Monitor {
             if (regex == null) {
                 return ps;
             } else {
-                String response = ssh.getServerVersion();
+                String response = ssh.getServerBanner();
 
                 if (regex.match(response)) {
                     if (log().isDebugEnabled()) {

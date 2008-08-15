@@ -67,7 +67,7 @@ public class Poll extends Ssh implements org.opennms.netmgt.protocols.Poll {
 
     public PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException {
         tracker.startAttempt();
-        boolean isAvailable = connect();
+        boolean isAvailable = tryConnect();
         double responseTime = tracker.elapsedTimeInMillis();
 
         PollStatus ps = PollStatus.unavailable();
