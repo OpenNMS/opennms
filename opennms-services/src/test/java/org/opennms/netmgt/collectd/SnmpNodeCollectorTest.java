@@ -40,7 +40,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.VersionSettingTestSuite;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
-
+    
     public static TestSuite suite() {
         Class testClass = SnmpNodeCollectorTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
@@ -50,32 +50,34 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         return suite;
     }
 
+
     public void testZeroVars() throws Exception {
-        SnmpNodeCollector collector = createNodeCollector();
+        SnmpNodeCollector collector = createNodeCollector(50);
         assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
+
     public void testInvalidVar() throws Exception {
         addAttribute("invalid", ".1.3.6.1.2.1.2", "0", "string");
-        SnmpNodeCollector collector = createNodeCollector();
+        SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
 
     public void testInvalidInst() throws Exception {
         addAttribute("invalid", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
-        SnmpNodeCollector collector = createNodeCollector();
+        SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
 
     public void testOneVar() throws Exception {
         addSysName();
-        SnmpNodeCollector collector = createNodeCollector();
+        SnmpNodeCollector collector = createNodeCollector(50);
         assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
-    private SnmpNodeCollector createNodeCollector() throws Exception, InterruptedException {
+    private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
         initializeAgent();
-
+        
         SnmpNodeCollector collector = new SnmpNodeCollector(InetAddress.getLocalHost(), getCollectionSet().getAttributeList(), getCollectionSet());
 
         createWalker(collector);
@@ -84,6 +86,21 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         assertFalse("Timeout collecting data", collector.timedOut());
         assertFalse("Collector failed to collect data", collector.failed());
         return collector;
+    }
+
+    public void testManyVars() throws Exception {
+        testManyVars(50);
+    }
+    
+    public void testMaxVarsPerPdu() throws Exception {
+        testManyVars(2);
+    }
+    
+    private void testManyVars(int maxVarsPerPdu) throws Exception, InterruptedException {
+        addSystemGroup();
+        addIfNumber();
+        SnmpNodeCollector collector = createNodeCollector(maxVarsPerPdu);
+        assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
 }

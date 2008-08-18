@@ -31,11 +31,13 @@
 			<!-- collector name -->
 			<attribute name="name" type="string" use="required"/>
 			
-			<attribute name="maxVarsPerPdu" type="int" use="optional">
-				<annotation>
-					<documentation>DEPRECATED</documentation>
-				</annotation>
-			</attribute>
+			<!-- Specifies the maximum number of variables that may be 
+			     encoded into an individual JMX pdu request by Collectd
+			     Provides a means to limit the size of outgoing PDU requests.
+			     Value of 0 indicates no limit on number of PDUs which
+			     can be encoded into a single PDU.
+			-->
+			<attribute name="maxVarsPerPdu" type="int" use="required"/>
 		</complexType>
 	</element>
 

@@ -42,7 +42,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -65,6 +64,7 @@ public class OnmsSnmpCollection {
     private IfResourceType m_ifResourceType;
     private IfAliasResourceType m_ifAliasResourceType;
     private Map<String, ResourceType> m_genericIndexResourceTypes;
+    private int m_maxVarsPerPdu;
     private DataCollectionConfig m_dataCollectionConfig;
     private List<SnmpAttributeType> m_nodeAttributeTypes;
     private List<SnmpAttributeType> m_indexedAttributeTypes;
@@ -75,15 +75,19 @@ public class OnmsSnmpCollection {
     }
 
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfig config) {
-        setDataCollectionConfig(config);
-
+        // Need to set this first before determineMaxVarsPerPdu is called
+        m_dataCollectionConfig = config;
+        
         m_params = params;
-
+        m_maxVarsPerPdu = determineMaxVarsPerPdu(agent);
+        
         if (Boolean.getBoolean("org.opennms.netmgt.collectd.OnmsSnmpCollection.loadResourceTypesInInit")) {
             getResourceTypes(agent);
         }
+        
+        
     }
-
+    
     public ServiceParameters getServiceParameters() {
         return m_params;
     }
@@ -92,79 +96,53 @@ public class OnmsSnmpCollection {
         return m_params.getCollectionName();
     }
 
-    public int getSnmpPort(int current) {
-        return m_params.getSnmpPort(current);
+    public int getSnmpPort() {
+        return m_params.getSnmpPort();
+    }
+    
+    public String getReadCommunity(String current) {
+    	return m_params.getReadCommunity(current);
     }
 
-    public int getSnmpRetries(int current) {
-        return m_params.getSnmpRetries(current);
-    }
-
-    public int getSnmpTimeout(int current) {
-        return m_params.getSnmpTimeout(current);
-    }
-
-    public String getSnmpReadCommunity(String current) {
-        return m_params.getSnmpReadCommunity(current);
-    }
-
-    public String getSnmpWriteCommunity(String current) {
-        return m_params.getSnmpWriteCommunity(current);
-    }
-
-    public InetAddress getSnmpProxyFor(InetAddress current) {
-        return m_params.getSnmpProxyFor(current);
-    }
-
-    public int getSnmpVersion(int current) {
-        return m_params.getSnmpVersion(current);
-    }
-
-    public int getSnmpMaxVarsPerPdu(int current) {
-        return m_params.getSnmpMaxVarsPerPdu(current);
-    }
-
-    public int getSnmpMaxRepetitions(int current) {
-        return m_params.getSnmpMaxRepetitions(current);
-    }
-
-    public int getSnmpMaxRequestSize(int current) {
-        return m_params.getSnmpMaxRequestSize(current);
-    }
-
-    public String getSnmpSecurityName(String current) {
-        return m_params.getSnmpSecurityName(current);
-    }
-
-    public String getSnmpAuthPassPhrase(String current) {
-        return m_params.getSnmpAuthPassPhrase(current);
-    }
-
-    public String getSnmpAuthProtocol(String current) {
-        return m_params.getSnmpAuthProtocol(current);
-    }
-
-    public String getSnmpPrivPassPhrase(String current) {
-        return m_params.getSnmpPrivPassPhrase(current);
-    }
-
-    public String getSnmpPrivProtocol(String current) {
-        return m_params.getSnmpPrivProtocol(current);
-    }
+	public int getMaxRepetitions(int maxRepetitions) {
+		return m_params.getMaxRepetitions(maxRepetitions);
+	}
 
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    int getMaxVarsPerPdu() {
+        return m_maxVarsPerPdu;
+    }
+
+    private int determineMaxVarsPerPdu(CollectionAgent agent) {
+        // Retrieve configured value for max number of vars per PDU
+        int maxVarsPerPdu = getDataCollectionConfig().getMaxVarsPerPdu(getName());
+        if (maxVarsPerPdu == 0) {
+            log().info("determineMaxVarsPerPdu: using agent's configured value: "
+                       + agent.getMaxVarsPerPdu());
+            maxVarsPerPdu = agent.getMaxVarsPerPdu();
+        } else {
+            log().info("determineMaxVarsPerPdu: using data collection configured value: "
+                       + maxVarsPerPdu);
+        }
+        return maxVarsPerPdu;
+    }
+
     private DataCollectionConfig getDataCollectionConfig() {
         if (m_dataCollectionConfig == null) {
-            setDataCollectionConfig(DataCollectionConfigFactory.getInstance());
+            initializeDataCollectionConfig();
         }
         return m_dataCollectionConfig;
     }
 
     public void setDataCollectionConfig(DataCollectionConfig config) {
         m_dataCollectionConfig = config;
+    }
+    
+    private void initializeDataCollectionConfig() {
+        setDataCollectionConfig(DataCollectionConfigFactory.getInstance());
     }
 
     public String getStorageFlag() {
