@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.dao.castor.snmp;
+package org.opennms.netmgt.dao;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -39,7 +39,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.dao.SnmpConfigDao;
 import org.opennms.netmgt.dao.castor.CastorExceptionTranslator;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;

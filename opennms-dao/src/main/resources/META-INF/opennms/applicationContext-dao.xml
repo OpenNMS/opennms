@@ -232,4 +232,6 @@
     <property name="configResource" ref="statsdConfigResourceLocation" />
   </bean>
   
+  <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.FactoryBasedSnmpConfigDao" />
+  
 </beans>
