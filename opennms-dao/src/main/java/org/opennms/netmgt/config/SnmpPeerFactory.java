@@ -40,11 +40,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -55,15 +52,17 @@ import java.util.Iterator;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * This class is the main respository for SNMP configuration information used by
@@ -93,6 +92,8 @@ public final class SnmpPeerFactory extends PeerFactory {
      * The config class loaded from the config file
      */
     private static SnmpConfig m_config;
+    
+    private static File m_configFile;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -111,16 +112,16 @@ public final class SnmpPeerFactory extends PeerFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private SnmpPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
+    private SnmpPeerFactory(File configFile) throws IOException, MarshalException, ValidationException {
+        this(new FileSystemResource(configFile));
+    }
+    
+    public SnmpPeerFactory(Resource resource) {
+        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource);
     }
     
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
+        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
     }
     
     /**
@@ -141,11 +142,11 @@ public final class SnmpPeerFactory extends PeerFactory {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME);
+        File cfgFile = getFile();
 
         log().debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new SnmpPeerFactory(cfgFile.getPath());
+        m_singleton = new SnmpPeerFactory(cfgFile);
 
         m_loaded = true;
     }
@@ -181,7 +182,7 @@ public final class SnmpPeerFactory extends PeerFactory {
         // isn't lost if the XML from the marshall is hosed.
         String marshalledConfig = marshallConfig();
         if (marshalledConfig != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME));
+            FileWriter fileWriter = new FileWriter(getFile());
             fileWriter.write(marshalledConfig);
             fileWriter.flush();
             fileWriter.close();
@@ -204,6 +205,25 @@ public final class SnmpPeerFactory extends PeerFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setFile(File configFile) {
+        File oldFile = m_configFile;
+        m_configFile = configFile;
+        
+        // if the file changed then we need to reload the config
+        if (oldFile == null || m_configFile == null || !oldFile.equals(m_configFile)) {
+            m_singleton = null;
+            m_loaded = false;
+        }
+    }
+    
+    public static synchronized File getFile() throws IOException {
+        if (m_configFile == null) {
+            m_configFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME);
+        }
+        return m_configFile;
+        
     }
     
     public static synchronized void setInstance(SnmpPeerFactory singleton) {
