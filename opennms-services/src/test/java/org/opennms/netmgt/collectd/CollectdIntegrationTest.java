@@ -214,7 +214,7 @@ public class CollectdIntegrationTest extends TestCase {
 
         m_collectd.onEvent(bldr.getEvent());
         
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         
         assertNotNull(m_serviceCollector);
         assertEquals(1, m_serviceCollector.getCollectCount());

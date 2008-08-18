@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <jmx-datacollection-config
     rrdRepository = "@install.share.dir@/rrd/snmp/">
-    <jmx-collection name="jboss">
+    <jmx-collection name="jboss"
+        maxVarsPerPdu = "50">
         <rrd step = "300">
             <rra>RRA:AVERAGE:0.5:1:8928</rra>
             <rra>RRA:AVERAGE:0.5:12:8784</rra>
@@ -78,7 +79,8 @@
        </mbeans>   
     </jmx-collection>
 
-    <jmx-collection name="jsr160">
+    <jmx-collection name="jsr160"
+        maxVarsPerPdu = "50">
         <rrd step = "300">
             <rra>RRA:AVERAGE:0.5:1:8928</rra>
             <rra>RRA:AVERAGE:0.5:12:8784</rra>

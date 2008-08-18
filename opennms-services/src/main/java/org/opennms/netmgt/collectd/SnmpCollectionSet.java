@@ -54,17 +54,17 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class SnmpCollectionSet implements Collectable, CollectionSet {
-
-    public static class RescanNeeded {
+	
+	public static class RescanNeeded {
         boolean rescanNeeded = false;
         public void rescanIndicated() {
             rescanNeeded = true;
         }
-
+        
         public boolean rescanIsNeeded() {
             return rescanNeeded;
         }
-
+        
     }
 
     private CollectionAgent m_agent;
@@ -75,42 +75,42 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private SnmpNodeCollector m_nodeCollector;
     private int m_status=ServiceCollector.COLLECTION_FAILED;
     private boolean m_ignorePersist;
-
+    
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
 
     	buffer.append("CollectionAgent: ");
     	buffer.append(m_agent);
     	buffer.append("\n");
-
+    	
     	buffer.append("OnmsSnmpCollection: ");
     	buffer.append(m_snmpCollection);
     	buffer.append("\n");
-
+    	
     	buffer.append("SnmpIfCollector: ");
     	buffer.append(m_ifCollector);
     	buffer.append("\n");
-
+    	
     	buffer.append("IfNumberTracker: ");
     	buffer.append(m_ifNumber);
     	buffer.append("\n");
-
+    	
         buffer.append("SysUpTimeTracker: ");
         buffer.append(m_sysUpTime);
         buffer.append("\n");
-
+        
     	buffer.append("SnmpNodeCollector: ");
     	buffer.append(m_nodeCollector);
     	buffer.append("\n");
-
+    	
     	return buffer.toString();
     }
-
-    public SnmpCollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
-        m_agent = agent;
+	
+	public SnmpCollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+		m_agent = agent;
         m_snmpCollection = snmpCollection;
-    }
-
+	}
+    
     public SnmpIfCollector getIfCollector() {
         if (m_ifCollector == null)
             m_ifCollector = createIfCollector();
@@ -167,29 +167,29 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
         return ifCollector;
     }
-
-    public NodeInfo getNodeInfo() {
+	
+	public NodeInfo getNodeInfo() {
         return getNodeResourceType().getNodeInfo();
-    }
+	}
 
-    boolean hasDataToCollect() {
+	boolean hasDataToCollect() {
         return (getNodeResourceType().hasDataToCollect() || getIfResourceType().hasDataToCollect());
-    }
-
+	}
+    
     boolean hasInterfaceDataToCollect() {
         return getIfResourceType().hasDataToCollect();
     }
 
-    public CollectionAgent getCollectionAgent() {
-       return m_agent;
-    }
+	public CollectionAgent getCollectionAgent() {
+		return m_agent;
+	}
 
-    Category log() {
-       return ThreadCategory.getInstance(getClass());
-    }
+	Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 
-    Collection<SnmpAttributeType> getAttributeList() {
-       return m_snmpCollection.getNodeResourceType(m_agent).getAttributeTypes();
+	Collection<SnmpAttributeType> getAttributeList() {
+	    return m_snmpCollection.getNodeResourceType(m_agent).getAttributeTypes();
     }
 
     List<SnmpAttributeType> getCombinedIndexedAttributes() {
@@ -201,7 +201,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     	return attributes;
     }
-
+    
     protected Collection<SnmpAttributeType> getGenericIndexAttributeTypes() {
     	Collection<SnmpAttributeType> attributeTypes = new LinkedList<SnmpAttributeType>();
     	Collection<ResourceType> resourceTypes = getGenericIndexResourceTypes();
@@ -213,7 +213,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     private Collection<ResourceType> getGenericIndexResourceTypes() {
         return m_snmpCollection.getGenericIndexResourceTypes(m_agent);
-    }
+	}
 
     public CollectionTracker getCollectionTracker() {
         return new AggregateTracker(SnmpAttributeType.getCollectionTrackers(getAttributeTypes()));
@@ -229,17 +229,17 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
-
+        
         for (CollectionResource resource : getResources()) {
             resource.visit(visitor);
         }
-
+        
         visitor.completeCollectionSet(this);
     }
-
+    
     CollectionTracker getTracker() {
         List<Collectable> trackers = new ArrayList<Collectable>(4);
-
+       
         if (getIfNumber() != null) {
         	trackers.add(getIfNumber());
         }
@@ -252,7 +252,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         if (getIfCollector() != null) {
         	trackers.add(getIfCollector());
         }
-
+       
         return new AggregateTracker(trackers);
     }
 
@@ -287,22 +287,23 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     void collect() throws CollectionWarning {
     	// XXX Should we have a call to hasDataToCollect here?
         try {
-
+    
             // now collect the data
     		SnmpWalker walker = createWalker();
     		walker.start();
-
+    
             logStartedWalker();
-
+    
     		// wait for collection to finish
     		walker.waitFor();
-
+    
     		logFinishedWalker();
-
+    
     		// Was the collection successful?
     		verifySuccessfulWalk(walker);
                 m_status=ServiceCollector.COLLECTION_SUCCEEDED;
-
+    		getCollectionAgent().setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
+            
     	} catch (InterruptedException e) {
     		Thread.currentThread().interrupt();
             throw new CollectionWarning("collect: Collection of node SNMP "
@@ -313,16 +314,16 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     void checkForNewInterfaces(SnmpCollectionSet.RescanNeeded rescanNeeded) {
         if (!hasInterfaceDataToCollect()) return;
-
+        
         logIfCounts();
-
+    
         if (getIfNumber().isChanged(getCollectionAgent().getSavedIfCount())) {
             log().info("Sending rescan event because the number of interfaces on primary SNMP "
             + "interface " + getCollectionAgent().getHostAddress()
             + " has changed, generating 'ForceRescan' event.");
             rescanNeeded.rescanIndicated();
         }
-
+    
         getCollectionAgent().setSavedIfCount(getIfNumber().getIntValue());
     }
 
@@ -352,7 +353,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         CollectionAgent agent = getCollectionAgent();
         log().debug("collect: nodeId: " + agent.getNodeId()
                 + " interface: " + agent.getHostAddress()
-                + " ifCount: " + getIfNumber().getIntValue()
+                + " ifCount: " + getIfNumber().getIntValue() 
                 + " savedIfCount: " + agent.getSavedIfCount());
     }
 
@@ -365,10 +366,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     public boolean rescanNeeded() {
-
+        
         final RescanNeeded rescanNeeded = new RescanNeeded();
         visit(new ResourceVisitor() {
-
+        
             public void visitResource(CollectionResource resource) {
                 log().debug("rescanNeeded: Visiting resource " + resource);
                 if (resource.rescanNeeded()) {
@@ -376,33 +377,44 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
                     rescanNeeded.rescanIndicated();
                 }
             }
-
+            
         });
-
+            
         checkForNewInterfaces(rescanNeeded);
         checkForSystemRestart(rescanNeeded);
 
         return rescanNeeded.rescanIsNeeded();
     }
-
+    
     public SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig agentConfig = getCollectionAgent().getAgentConfig();
-        agentConfig.setPort(m_snmpCollection.getSnmpPort(agentConfig.getPort()));
-        agentConfig.setRetries(m_snmpCollection.getSnmpRetries(agentConfig.getRetries()));
-        agentConfig.setTimeout(m_snmpCollection.getSnmpTimeout(agentConfig.getTimeout()));
-        agentConfig.setReadCommunity(m_snmpCollection.getSnmpReadCommunity(agentConfig.getReadCommunity()));
-        agentConfig.setWriteCommunity(m_snmpCollection.getSnmpWriteCommunity(agentConfig.getWriteCommunity()));
-        agentConfig.setProxyFor(m_snmpCollection.getSnmpProxyFor(agentConfig.getProxyFor()));
-        agentConfig.setVersion(m_snmpCollection.getSnmpVersion(agentConfig.getVersion()));
-        agentConfig.setMaxVarsPerPdu(m_snmpCollection.getSnmpMaxVarsPerPdu(agentConfig.getMaxVarsPerPdu()));
-        agentConfig.setMaxRepetitions(m_snmpCollection.getSnmpMaxRepetitions(agentConfig.getMaxRepetitions()));
-        agentConfig.setMaxRequestSize(m_snmpCollection.getSnmpMaxRequestSize(agentConfig.getMaxRequestSize()));
-        agentConfig.setSecurityName(m_snmpCollection.getSnmpSecurityName(agentConfig.getSecurityName()));
-        agentConfig.setAuthPassPhrase(m_snmpCollection.getSnmpAuthPassPhrase(agentConfig.getAuthPassPhrase()));
-        agentConfig.setAuthProtocol(m_snmpCollection.getSnmpAuthProtocol(agentConfig.getAuthProtocol()));
-        agentConfig.setPrivPassPhrase(m_snmpCollection.getSnmpPrivPassPhrase(agentConfig.getPrivPassPhrase()));
-        agentConfig.setPrivProtocol(m_snmpCollection.getSnmpPrivProtocol(agentConfig.getPrivProtocol()));
+        agentConfig.setMaxVarsPerPdu(computeMaxVarsPerPdu(agentConfig));
+        agentConfig.setReadCommunity(m_snmpCollection.getReadCommunity(agentConfig.getReadCommunity()));
+        agentConfig.setMaxRepetitions(m_snmpCollection.getMaxRepetitions(agentConfig.getMaxRepetitions()));
+        int snmpPort = m_snmpCollection.getSnmpPort();
+        if (snmpPort > -1) {
+            agentConfig.setPort(snmpPort);
+        }
         return agentConfig;
+    }
+
+    private int computeMaxVarsPerPdu(SnmpAgentConfig agentConfig) {
+        int maxVarsPerPdu = getCollectionAgent().getMaxVarsPerPdu();
+        if (maxVarsPerPdu < 1) {
+            maxVarsPerPdu = m_snmpCollection.getMaxVarsPerPdu();
+            log().info("using maxVarsPerPdu from dataCollectionConfig");
+        }
+
+        if (maxVarsPerPdu < 1) {
+            maxVarsPerPdu = agentConfig.getMaxVarsPerPdu();
+            log().info("using maxVarsPerPdu from snmpconfig");
+        }
+
+        if (maxVarsPerPdu < 1) {
+            log().warn("maxVarsPerPdu CANNOT BE LESS THAN 1.  Using 10");
+            return 10;
+        }
+        return maxVarsPerPdu;
     }
 
     public void notifyIfNotFound(AttributeDefinition attrType, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
@@ -432,9 +444,9 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private IfResourceType getIfResourceType() {
         return m_snmpCollection.getIfResourceType(getCollectionAgent());
     }
-
+    
     private IfAliasResourceType getIfAliasResourceType() {
-        return m_snmpCollection.getIfAliasResourceType(getCollectionAgent());
+    	return m_snmpCollection.getIfAliasResourceType(getCollectionAgent());
     }
 
     public int getStatus() {

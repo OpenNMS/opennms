@@ -287,6 +287,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testNotificationCommands() throws Exception {
         unmarshal("notificationCommands.xml", NotificationCommands.class);
     }
+    public void testExampleNotificationCommands() throws Exception {
+        unmarshalExample("notificationCommands.xml", NotificationCommands.class);
+    }
     public void testNotifications() throws Exception {
         unmarshal("notifications.xml", Notifications.class);
     }
