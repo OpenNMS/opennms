@@ -145,6 +145,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     }
 
     public void saveOrUpdate(SnmpAgentConfig config) {
+        // Note: SnmpConfigRange treats a begin and end address the same as a specific
         saveConfigForRange(config, config.getAddress(), config.getAddress());
     }
 
