@@ -48,6 +48,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public interface CollectionAgent extends NetworkInterface,StorageStrategyService {
 
+    public abstract void setMaxVarsPerPdu(int maxVarsPerPdu);
+
+    public abstract int getMaxVarsPerPdu();
+
     public abstract String getHostAddress();
 
     public abstract void setSavedIfCount(int ifCount);
@@ -65,7 +69,7 @@ public interface CollectionAgent extends NetworkInterface,StorageStrategyService
     public abstract SnmpAgentConfig getAgentConfig();
 
     public abstract Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type);
-
+    
     public abstract InetAddress getInetAddress();
 
     public abstract long getSavedSysUpTime();

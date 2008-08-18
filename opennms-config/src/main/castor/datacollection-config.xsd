@@ -80,7 +80,11 @@
 
       <attribute name="maxVarsPerPdu" type="int" use="optional">
         <annotation>
-          <documentation>DEPRECATED</documentation>
+          <documentation>Specifies the maximum number of variables that may be
+          encoded into an individual SNMP pdu request by Collectd. Provides a
+          means to limit the size of outgoing PDU requests. Value of 0
+          indicates no limit on number of PDUs which can be encoded into a
+          single PDU.</documentation>
         </annotation>
       </attribute>
 

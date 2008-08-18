@@ -291,19 +291,19 @@ public class CollectdTest extends TestCase {
     	map.put("read-community", "notPublic");
 		ServiceParameters params = new ServiceParameters(map);
 		
-		int reps = params.getSnmpMaxRepetitions(6);
+		int reps = params.getMaxRepetitions(6);
 		assertEquals("Overriding max repetitions failed.", 11, reps);
 		params = new ServiceParameters(map);
 		map.remove("max-repetitions");
 		map.put("maxRepetitions", "11");
 		assertEquals("Overriding max repetitions failed.", 11, reps);
 		
-		String s = params.getSnmpReadCommunity("public");
+		String s = params.getReadCommunity("public");
 		assertEquals("Overriding read community failed.", "notPublic", s);
 		map.remove("read-community");
 		map.put("readCommunity", "notPublic");
 		params = new ServiceParameters(map);
-		s = params.getSnmpReadCommunity("public");
+		s = params.getReadCommunity("public");
 		assertEquals("Overriding read community failed.", "notPublic", s);
     }
 
@@ -379,10 +379,12 @@ public class CollectdTest extends TestCase {
         return isA(Collection.class);
     }
 
+    /*
     @SuppressWarnings("unchecked")
     private <K> List<K> isAList(Class<K> innerClass) {
         return isA(List.class);
     }
+    */
 
     @SuppressWarnings("unchecked")
     private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {
