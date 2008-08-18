@@ -36,44 +36,29 @@
  */
 package org.opennms.netmgt.protocols.ssh;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
 
 /**
  * 
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
-public class Ssh {
-    // 30 second timeout
-    public static final int DEFAULT_TIMEOUT = 30000;
+public abstract class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
     
     // SSH port is 22
     public static final int DEFAULT_PORT = 22;
 
-    private Socket m_socket = null;
-    private BufferedReader m_reader = null;
-    private OutputStream m_writer = null;
+    protected static String m_banner = "SSH-1.99-OpenNMS_1.5";
 
-    private Throwable m_exception;
-    private InetAddress m_address;
-    private int m_port = DEFAULT_PORT;
-    private int m_timeout = DEFAULT_TIMEOUT;
-    private File m_keydir;
-    private String m_username;
-    private String m_password;
-    private String m_serverBanner = "";
-
-    private static String m_banner = "SSH-1.99-OpenNMS_1.5";
+    protected int m_port = DEFAULT_PORT;
+    protected String m_username;
+    protected String m_password;
+    protected String m_serverBanner = "";
+    protected InetAddress m_address;
+    protected Throwable m_error;
 
     /**
      * Set the address to connect to.
@@ -109,38 +94,6 @@ public class Ssh {
             return 22;
         }
         return m_port;
-    }
-    
-    /**
-     * Set the timeout in milliseconds. 
-     * @param milliseconds the timeout
-     */
-    public void setTimeout(int milliseconds) {
-        m_timeout = milliseconds;
-    }
-
-    /**
-     * Get the timeout in milliseconds.
-     * @return the timeout
-     */
-    public int getTimeout() {
-        return m_timeout;
-    }
-    
-    /**
-     * Set the directory to search for SSH keys.
-     * @param directory the directory
-     */
-    public void setKeyDirectory(File directory) {
-        m_keydir = directory;
-    }
-    
-    /**
-     * Get the directory to search for SSH keys.
-     * @return the directory
-     */
-    public File getKeyDirectory() {
-        return m_keydir;
     }
     
     /**
@@ -183,6 +136,14 @@ public class Ssh {
         return m_serverBanner;
     }
 
+    protected void setError(Throwable t) {
+        m_error = t;
+    }
+    
+    protected Throwable getError() {
+        return m_error;
+    }
+
     /**
      * Attempt to connect, based on the parameters which have been set in
      * the object.
@@ -190,65 +151,38 @@ public class Ssh {
      * @return true if it is able to connect
      * @throws InsufficientParametersException
      */
-    protected boolean tryConnect() throws InsufficientParametersException {
-        if (getAddress() == null) {
-            throw new InsufficientParametersException("you must specify an address");
+    protected abstract boolean tryConnect() throws InsufficientParametersException;
+
+    public PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException {
+        tracker.startAttempt();
+        boolean isAvailable = tryConnect();
+        double responseTime = tracker.elapsedTimeInMillis();
+
+        PollStatus ps = PollStatus.unavailable();
+        
+        String errorMessage = "";
+        if (getError() != null) {
+            errorMessage = getError().getMessage();
+            ps.setReason(errorMessage);
         }
 
-        try {
-            m_socket = new Socket();
-            m_socket.setTcpNoDelay(true);
-            m_socket.connect(new InetSocketAddress(getAddress(), getPort()), getTimeout());
-            
-            m_reader = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
-            m_writer = m_socket.getOutputStream();
-
-            // read the banner
-            m_serverBanner = m_reader.readLine();
-
-            // write our own
-            m_writer.write((m_banner + "\r\n").getBytes());
-
-            // then, disconnect
-            disconnect();
-
-            return true;
-        } catch (IOException e) {
-            log().debug("connection failed", e);
-            disconnect();
+        if (isAvailable) {
+            ps = PollStatus.available(responseTime);
+        } else if (errorMessage.matches("^.*Authentication:.*$")) {
+            ps = PollStatus.unavailable("authentication failed");
+        } else if (errorMessage.matches("^.*java.net.NoRouteToHostException.*$")) {
+            ps = PollStatus.unavailable("no route to host");
+        } else if (errorMessage.matches("^.*(timeout: socket is not established|java.io.InterruptedIOException|java.net.SocketTimeoutException).*$")) {
+            ps = PollStatus.unavailable("connection timed out");
+        } else if (errorMessage.matches("^.*(connection is closed by foreign host|java.net.ConnectException).*$")) {
+            ps = PollStatus.unavailable("connection exception");
+        } else if (errorMessage.matches("^.*NumberFormatException.*$")) {
+            ps = PollStatus.unavailable("an error occurred parsing the server version number");
+        } else if (errorMessage.matches("^.*java.io.IOException.*$")) {
+            ps = PollStatus.unavailable("I/O exception");
         }
-        return false;
+        
+        return ps;
     }
-
-    protected void disconnect() {
-        if (m_writer != null) {
-            try {
-                m_writer.close();
-            } catch (IOException e) {
-                log().warn("error disconnecting output stream", e);
-            }
-        }
-        if (m_reader != null) {
-            try {
-                m_reader.close();
-            } catch (IOException e) {
-                log().warn("error disconnecting input stream", e);
-            }
-        }
-        if (m_socket != null) {
-            try {
-                m_socket.close();
-            } catch (IOException e) {
-                log().warn("error disconnecting socket", e);
-            }
-        }
-    }
-
-    protected Throwable getError() {
-        return m_exception;
-    }
-
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 }

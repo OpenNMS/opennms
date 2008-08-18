@@ -41,7 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.monitors.TimeoutTracker;
-import org.opennms.netmgt.protocols.ssh.Poll;
+import org.opennms.netmgt.protocols.ssh.Ssh;
+import org.opennms.netmgt.protocols.ssh.Sshv1;
+import org.opennms.netmgt.protocols.ssh.Sshv2;
 
 import junit.framework.TestCase;
 
@@ -56,7 +58,8 @@ public class SshTest extends TestCase {
     private static final int PORT = 22;
     private static final int TIMEOUT = 5000;
     private TimeoutTracker tt;
-    Poll p;
+    Ssh v1;
+    Ssh v2;
     InetAddress good, bad;
     
     public void setUp() throws Exception {
@@ -66,9 +69,12 @@ public class SshTest extends TestCase {
         parameters.put("timeout", Integer.toString(TIMEOUT));
         
         tt = new TimeoutTracker(parameters, 0, TIMEOUT);
-        p = new Poll();
-        p.setPort(PORT);
-        p.setTimeout(TIMEOUT);
+        v1 = new Sshv1();
+        v2 = new Sshv2();
+        v1.setPort(PORT);
+        v1.setTimeout(TIMEOUT);
+        v2.setPort(PORT);
+        v2.setTimeout(TIMEOUT);
 
         try {
             good = InetAddress.getByName(GOOD_HOST);
@@ -79,18 +85,23 @@ public class SshTest extends TestCase {
     }
     
     public void testSshGoodHost() throws Exception {
-        p.setAddress(good);
-        assertTrue(p.poll(tt).isAvailable());
+        v1.setAddress(good);
+        v2.setAddress(good);
+        assertTrue(v1.poll(tt).isAvailable());
+        assertTrue(v2.poll(tt).isAvailable());
     }
     
     public void testSshBadHost() throws Exception {
         Date start = new Date();
-        p.setAddress(bad);
-        assertFalse(p.poll(tt).isAvailable());
-        Date end = new Date();
-  
-        System.err.println("start = " + start + ", end = " + end + ", end - start = " + (end.getTime() - start.getTime()) + "ms");
+        v1.setAddress(bad);
+        assertFalse(v1.poll(tt).isAvailable());
+        Date endv1 = new Date();
+        v2.setAddress(bad);
+        assertFalse(v2.poll(tt).isAvailable());
+        Date endv2 = new Date();
+
         // give it 6 seconds to time out
-        assertTrue(end.getTime() - start.getTime() < 6000);
+        assertTrue(endv1.getTime() - start.getTime() < 6000);
+        assertTrue(endv2.getTime() - endv1.getTime() < 6000);
     }
 }
