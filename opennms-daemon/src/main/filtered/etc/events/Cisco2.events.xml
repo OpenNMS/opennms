@@ -35730,7 +35730,7 @@ stack.&lt;/p&gt;&lt;table&gt;
 			cswSwitchNumCurrent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/traps/cswStackMemberRemoved:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>

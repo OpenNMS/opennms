@@ -46,6 +46,7 @@ public class DataCollectionConfigFactoryTest extends TestCase {
             "<datacollection-config\n" + 
             "   rrdRepository = \"/wonka/rrd/snmp/\">\n" + 
             "   <snmp-collection name=\"default\"\n" + 
+            "       maxVarsPerPdu = \"10\"\n" + 
             "       snmpStorageFlag = \"select\">\n" + 
             "       <rrd step = \"300\">\n" + 
             "           <rra>RRA:AVERAGE:0.5:1:8928</rra>\n" + 
@@ -106,6 +107,7 @@ public class DataCollectionConfigFactoryTest extends TestCase {
     public void testSetInstance() throws MarshalException, ValidationException, IOException {
         DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(m_xml)));
         DataCollectionConfigFactory.init();
+        assertEquals(10, DataCollectionConfigFactory.getInstance().getMaxVarsPerPdu("default"));
         assertEquals("/wonka/rrd/snmp", DataCollectionConfigFactory.getInstance().getRrdPath());
     }
     
