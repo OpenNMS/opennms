@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 import org.opennms.netmgt.protocols.ssh.Ssh;
 import org.opennms.netmgt.protocols.ssh.Sshv1;
@@ -53,10 +54,10 @@ import junit.framework.TestCase;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
 public class SshTest extends TestCase {
-    private static final String GOOD_HOST = "127.0.0.1";
+    private static final String GOOD_HOST = "www.opennms.org";
     private static final String BAD_HOST = "1.1.1.1";
     private static final int PORT = 22;
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 2000;
     private TimeoutTracker tt;
     Ssh v1;
     Ssh v2;
@@ -84,24 +85,35 @@ public class SshTest extends TestCase {
         }
     }
     
-    public void testSshGoodHost() throws Exception {
-        v1.setAddress(good);
+    public void testSshGoodV2() throws Exception {
         v2.setAddress(good);
-        assertTrue(v1.poll(tt).isAvailable());
         assertTrue(v2.poll(tt).isAvailable());
     }
     
-    public void testSshBadHost() throws Exception {
+    public void testSshBadV1() throws Exception {
         Date start = new Date();
         v1.setAddress(bad);
         assertFalse(v1.poll(tt).isAvailable());
-        Date endv1 = new Date();
+        Date end = new Date();
+
+        // give it 2.5 seconds to time out
+        assertTrue(end.getTime() - start.getTime() < 2500);
+    }
+    
+    public void testSshBadV2() throws Exception {
+        Date start = new Date();
         v2.setAddress(bad);
         assertFalse(v2.poll(tt).isAvailable());
-        Date endv2 = new Date();
+        Date end = new Date();
 
-        // give it 6 seconds to time out
-        assertTrue(endv1.getTime() - start.getTime() < 6000);
-        assertTrue(endv2.getTime() - endv1.getTime() < 6000);
+        // give it 2.5 seconds to time out
+        assertTrue(end.getTime() - start.getTime() < 2500);
+    }
+    
+    public void testSshWrongVersion() throws Exception {
+        v1.setAddress(good);
+        PollStatus result = v1.poll(tt);
+        assertFalse(result.isAvailable());
+        assertTrue(result.getReason().contains("does not support version"));
     }
 }
