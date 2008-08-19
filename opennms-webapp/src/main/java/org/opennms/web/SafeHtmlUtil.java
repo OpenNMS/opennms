@@ -5,8 +5,8 @@ package org.opennms.web;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sun.text.Normalizer;
-
+// 1.6-only
+//import sun.text.Normalizer;
 
 public class SafeHtmlUtil
 {
@@ -48,6 +48,7 @@ public class SafeHtmlUtil
     // Java 6 only, guess we'll have to skip this for now
     public static String canonicalize( String input )
     {
-        return Normalizer.normalize( input, Normalizer.DECOMP, 0 );
+        return input;
+//        return Normalizer.normalize( input, Normalizer.DECOMP, 0 );
     }
 }
