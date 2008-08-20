@@ -44,8 +44,6 @@ import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -58,8 +56,6 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
     private SessionFactory m_sessionFactory;
     
     public PollerBackEndIntegrationTest() {
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
     }
