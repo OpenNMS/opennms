@@ -7,4 +7,8 @@
     <constructor-arg><value>true</value></constructor-arg>
   </bean>
   
+    <bean id="mockEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager">
+    <property name="eventIpcManagerProxy" ref="eventIpcManager" />
+  </bean>
+  
 </beans>

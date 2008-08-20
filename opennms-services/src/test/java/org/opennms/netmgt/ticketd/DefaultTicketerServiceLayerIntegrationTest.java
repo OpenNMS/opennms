@@ -61,13 +61,10 @@ public class DefaultTicketerServiceLayerIntegrationTest extends
         
         System.setProperty("opennms.ticketer.plugin", TestTicketerPlugin.class.getName());
         
-        // TODO I hate this
-        EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
-        
         String[] configs = new String[] {
+            "classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml",
             "classpath:/META-INF/opennms/applicationContext-daemon.xml",
             "classpath:/META-INF/opennms/applicationContext-troubleTicketer.xml",
-            "classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml",
         };
         
         List<String> configLocation = new ArrayList<String>();
