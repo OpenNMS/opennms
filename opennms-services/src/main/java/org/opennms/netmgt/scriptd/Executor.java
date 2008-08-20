@@ -53,8 +53,8 @@ import org.opennms.netmgt.config.scriptd.Uei;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Script;
 
-import com.ibm.bsf.BSFException;
-import com.ibm.bsf.BSFManager;
+import org.apache.bsf.BSFException;
+import org.apache.bsf.BSFManager;
 
 /**
  * This class is used as a thread for launching scripts to handle received
