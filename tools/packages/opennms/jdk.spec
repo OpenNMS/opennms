@@ -1,6 +1,7 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 
+%{!?package_arch:%define package_arch noarch}
 %{!?package_version:%define package_version 1.5.0}
 %{!?package_release:%define package_release 1}
 %{!?package_epoch:%define package_epoch 2000}
@@ -14,7 +15,7 @@ Version:		%{package_version}
 Release:		%{package_release}
 License:		Public Domain
 Group:			Development/Tools
-BuildArch:		noarch
+BuildArch:		%{package_arch}
 
 AutoReqProv:		no
 
