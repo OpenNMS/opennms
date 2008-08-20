@@ -71,6 +71,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
+            "classpath:/META-INF/opennms/applicationContext-dao.xml"
         };
     }
     
