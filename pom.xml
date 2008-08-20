@@ -285,6 +285,10 @@
               <value>${opennms.library.jrrd}</value>
             </property>
             <property>
+              <name>runOtrsTests</name>
+              <value>${runOtrsTests}</value>
+            </property>
+            <property>
               <name>runPingTests</name>
               <value>${runPingTests}</value>
             </property>

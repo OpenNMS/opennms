@@ -36,20 +36,18 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.regexp.RE;
-import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.HttpPageSequence;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceMonitorParameters;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
-import org.opennms.netmgt.protocols.ssh.Poll;
+import org.opennms.netmgt.protocols.ssh.Ssh;
+import org.opennms.netmgt.protocols.ssh.Sshv1;
+import org.opennms.netmgt.protocols.ssh.Sshv2;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -66,6 +64,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 @Distributable
 final public class SshMonitor extends IPv4Monitor {
 
+    private static final int DEFAULT_VERSION = 2;
     private static final int DEFAULT_RETRY = 0;
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final int DEFAULT_PORT = 22;
@@ -92,9 +91,23 @@ final public class SshMonitor extends IPv4Monitor {
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String banner = ParameterMap.getKeyedString(parameters, "banner", null);
         String match = ParameterMap.getKeyedString(parameters, "match", null);
-
+        int version = ParameterMap.getKeyedInteger(parameters, "protocolVersion", DEFAULT_VERSION);
         PollStatus ps = PollStatus.unavailable();
-        Poll ssh = new Poll(address, port, tracker.getConnectionTimeout());
+        
+        Ssh ssh;
+
+        switch (version) {
+            case 1:
+                ssh = new Sshv1(address, port, tracker.getConnectionTimeout());
+                break;
+            case 2:
+                ssh = new Sshv2(address, port, tracker.getConnectionTimeout());
+                break;
+            default:
+                log().warn("SSH protocol version " + version + " is unknown");
+                ssh = new Sshv2(address, port, tracker.getConnectionTimeout());
+                break;
+        }
 
         RE regex = null;
         if (match == null && (banner == null || banner.equals("*"))) {
