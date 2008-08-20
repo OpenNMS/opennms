@@ -51,12 +51,15 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerProxy;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
-public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster {
+public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
 
     static class ListenerKeeper {
         EventListener m_listener;
@@ -106,6 +109,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     private boolean m_synchronous = true;
     
     private ScheduledExecutorService m_scheduler = null;
+
+    private EventIpcManagerProxy m_proxy;
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
@@ -244,10 +249,22 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         // TODO Auto-generated method stub
         
     }
+    
+    
+    
 
     public void reset() {
         m_listeners = new ArrayList<ListenerKeeper>();
         m_anticipator.reset();
+    }
+
+    public void setEventIpcManagerProxy(EventIpcManagerProxy proxy) {
+        m_proxy = proxy;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_proxy, "expected to have proxy set");
+        m_proxy.setDelegate(this);
     }
 
 }
