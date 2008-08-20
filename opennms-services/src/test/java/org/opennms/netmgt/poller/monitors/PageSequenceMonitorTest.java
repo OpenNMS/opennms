@@ -72,7 +72,7 @@ public class PageSequenceMonitorTest extends TestCase {
     	m_monitor.initialize(Collections.EMPTY_MAP);
     	
 		m_params = new HashMap<String, String>();
-		m_params.put("timeout", "10000");
+		m_params.put("timeout", "6000");
 		m_params.put("retries", "1");
 		
 	}
@@ -165,7 +165,7 @@ public class PageSequenceMonitorTest extends TestCase {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/site\" port=\"80\" successMatch=\"Commercial Support\" virtual-host=\"www.opennms.com\"/>\n" + 
+				"  <page path=\"/\" port=\"80\" successMatch=\"Zero Bull\" virtual-host=\"www.opennms.com\"/>\n" + 
 				"</page-sequence>\n");
 		
 		
