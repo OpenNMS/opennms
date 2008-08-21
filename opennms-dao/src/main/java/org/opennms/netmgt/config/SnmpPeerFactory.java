@@ -465,8 +465,8 @@ public final class SnmpPeerFactory extends PeerFactory {
     }
 
     private int determineMaxRepetitions(Definition def) {
-        return (def.getMaxRepetitions() == 0 ? 
-                (m_config.getMaxRepetitions() == 0 ?
+        return (!def.hasMaxRepetitions() ? 
+                (!m_config.hasMaxRepetitions() ?
                   SnmpAgentConfig.DEFAULT_MAX_REPETITIONS : m_config.getMaxRepetitions()) : def.getMaxRepetitions());
     }
 
@@ -485,8 +485,8 @@ public final class SnmpPeerFactory extends PeerFactory {
     }
 
     private int determineMaxVarsPerPdu(Definition def) {
-        return (def.getMaxVarsPerPdu() == 0 ? 
-                (m_config.getMaxVarsPerPdu() == 0 ?
+        return (!def.hasMaxVarsPerPdu() ? 
+                (!m_config.hasMaxVarsPerPdu() ?
                   SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU : m_config.getMaxVarsPerPdu()) : def.getMaxVarsPerPdu());
     }
     /**
@@ -516,7 +516,7 @@ public final class SnmpPeerFactory extends PeerFactory {
      * @return
      */
     private int determineMaxRequestSize(Definition def) {
-        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : def.getMaxRequestSize());
+        return (!def.hasMaxRequestSize() ? (!m_config.hasMaxRequestSize() ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : def.getMaxRequestSize());
     }
 
     /**
