@@ -10,7 +10,7 @@
          <value>classpath*:META-INF/opennms/correlation-engine.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daoContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
         
