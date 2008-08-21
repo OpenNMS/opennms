@@ -11,7 +11,11 @@
 
     <aop:aspectj-autoproxy />
     
-    <bean name="eventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" />
+    <bean name="eventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager" >
+      <property name="eventIpcManagerProxy">
+        <bean class="org.opennms.netmgt.eventd.EventIpcManagerProxy" />
+      </property>
+    </bean>
 
     <bean name="handler" class="org.opennms.spring.xml.AspectJTestEventHandler" />
     
