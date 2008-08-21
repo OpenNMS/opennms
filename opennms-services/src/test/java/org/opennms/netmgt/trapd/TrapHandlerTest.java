@@ -92,9 +92,10 @@ public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTes
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
+                "classpath:META-INF/opennms/mockEventIpcManager.xml",
+                "classpath:META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
                 "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml",
-                "classpath:META-INF/opennms/mockEventIpcManager.xml"
         };
     }
 
