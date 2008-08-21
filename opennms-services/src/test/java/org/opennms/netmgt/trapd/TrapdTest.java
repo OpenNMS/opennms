@@ -71,9 +71,9 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
+                "classpath:META-INF/opennms/mockEventIpcManager.xml",
                 "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
                 "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
-                "classpath:META-INF/opennms/mockEventIpcManager.xml",
                 "classpath:META-INF/opennms/smallEventConfDao.xml"
         };
     }
