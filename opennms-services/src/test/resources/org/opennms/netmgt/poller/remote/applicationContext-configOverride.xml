@@ -7,10 +7,6 @@
     <constructor-arg value="classpath:/org/opennms/netmgt/poller/remote/monitoring-locations.xml" />
   </bean>
   
-  <bean id="mockEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager">
-    <property name="eventIpcManagerProxy" ref="eventIpcManager" />
-  </bean>
-  
   <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">
     <property name="configResource" value="classpath:/org/opennms/netmgt/poller/remote/poller-configuration.xml"/>
     <property name="localServer" value="nms1"/>
