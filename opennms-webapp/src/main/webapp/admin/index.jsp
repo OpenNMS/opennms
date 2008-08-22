@@ -135,7 +135,7 @@
     <h3>Options</h3>
     <div class="boxWrapper">
       <ul class="plain">  
-        <li><a href="admin/discovery/index.jsp">Configure Discovery</a></li>
+        <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
         <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a></li>
         <!-- <a href="admin/eventconf/list.jsp">Configure Events</a> -->
         <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
