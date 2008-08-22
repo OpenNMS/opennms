@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Jul 29: Check the database version against a maximum version number
+//              and give the user the option to disable the test. - dj@opennms.org
 // 2008 May 31: Fix for part of bug #2369, don't use C3P0 data sources
 //              for the installer.  Also clean up some JNI library log
 //              and exception messages and cleanup imports. - dj@opennms.org
@@ -104,6 +106,7 @@ public class Installer {
     boolean m_fix_constraint = false;
     boolean m_force = false;
     boolean m_ignore_not_null = false;
+    boolean m_ignore_database_version = false;
     boolean m_do_not_revert = false;
 
     String m_etc_dir = "";
@@ -179,7 +182,9 @@ public class Installer {
         // XXX Check Tomcat version?
         if (m_update_database || m_update_iplike || m_update_unicode
                 || m_do_inserts || m_fix_constraint) {
-            m_installerDb.databaseCheckVersion();
+            if (!m_ignore_database_version) {
+                m_installerDb.databaseCheckVersion();
+            }
             m_installerDb.databaseCheckLanguage();
         }
 
@@ -369,6 +374,8 @@ public class Installer {
                           "vacuum full the database (recovers unused disk space)");
         options.addOption("N", "ignore-not-null", false,
                           "ignore NOT NULL constraint when transforming data");
+        options.addOption("Q", "ignore-database-version", false,
+                          "disable the database version check");
 
         options.addOption("x", "database-debug", false,
                           "turn on debugging for the database data transformation");
@@ -438,6 +445,7 @@ public class Installer {
                                                              m_library_search_path);
         m_skip_constraints = m_commandLine.hasOption("n");
         m_ignore_not_null = m_commandLine.hasOption("N");
+        m_ignore_database_version = m_commandLine.hasOption("Q");
         m_do_not_revert = m_commandLine.hasOption("R");
         m_update_iplike = m_commandLine.hasOption("s");
         m_tomcat_conf = m_commandLine.getOptionValue("T", m_tomcat_conf);
