@@ -351,9 +351,12 @@
                             <th>IfAlias</th>
                         <% } %>
 			<th width="10%">If Status (Adm/Op)</th> 
+<%--
+			// TODO - turning this off until the SET is verified.
 			<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
 			<th width="10%">Set Admin Status</th> 
 			<% } %>
+--%>
 
 			<th>&nbsp;</th>
 			</tr>
@@ -420,6 +423,8 @@
 			<% } %>
 		</td>
 					
+<%--
+		// TODO - turning this off until the SET is verified.
 		<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 			<% if(OPER_ADMIN_STATUS[intfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
 		<td align="center"> <input type="button" value="Down" onClick="setDown(<%=intfs[i].getNodeId()%>,<%=intfs[i].getIfIndex()%>);"> </td>
@@ -429,6 +434,7 @@
 		<td><b>&nbsp;</b></td> 
 			<% } %>
 		<% } %>
+--%>
 				
 		<td class="standard">
 		<% if (ifl == null || ifl.size() == 0) {%>
