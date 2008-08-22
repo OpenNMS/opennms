@@ -67,7 +67,7 @@ public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringCont
         mbean.init();
         mbean.start();
         
-        Thread.sleep(3000);
+        Thread.sleep(2000);
         
         mbean.stop();
     }

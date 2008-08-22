@@ -55,10 +55,10 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
         
-    	// recieve outage event for only a single monitor
+    	// receive outage event for only a single monitor
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         
-        // expect memory to contain only the single 'afflication' for htis service
+        // expect memory to contain only the single 'application' for this service
         m_anticipatedMemorySize = 2;
         
         verify(engine);
@@ -69,7 +69,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         verify(engine);
         
-        // let flaps time otu
+        // let flaps time out
         Thread.sleep(1100);
         
         m_anticipatedMemorySize = 0;
@@ -82,11 +82,11 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
 
-        // recieve outage event for only a single monitor
+        // receive outage event for only a single monitor
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 8));
         
-        // expect memory to contain only the single 'afflication' for this service
+        // expect memory to contain only the single 'application' for this service
         m_anticipatedMemorySize = 3;
         
         verify(engine);
@@ -117,7 +117,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
         anticipateServiceFlappingEvent();
         
-        // recieve outage event for only a single monitor
+        // receive outage event for only a single monitor
         engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
         engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
         

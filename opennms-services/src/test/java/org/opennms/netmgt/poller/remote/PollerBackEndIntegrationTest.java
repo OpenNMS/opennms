@@ -80,10 +80,6 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         m_sessionFactory = sessionFactory;
     }
     
-//    public void testWait() throws InterruptedException {
-//        Thread.sleep(6000000);
-//    }
-   
     public void testRegister() {
         
         Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
