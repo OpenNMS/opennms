@@ -54,6 +54,7 @@ public class FtpMonitorTest extends TestCase {
     private FtpMonitor m_monitor = new FtpMonitor();
     private ServerSocket m_serverSocket = null;
     private Thread m_serverThread = null;
+    private static int TIMEOUT = 2000;
 
     @Override
     protected void setUp() throws Exception {
@@ -78,13 +79,13 @@ public class FtpMonitorTest extends TestCase {
 
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorOnOpennmsOrgFtpSuccess() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("ftp.opennms.org").getHostAddress(), "FTP"), new HashMap());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("ftp.opennms.org").getHostAddress(), "FTP"), new HashMap<String,String>());
         assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
     }
 
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorFailureOnRandomFtp() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", "1.1.1.1", "FTP"), new HashMap());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", "1.1.1.1", "FTP"), new HashMap<String,String>());
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
 
@@ -160,6 +161,8 @@ public class FtpMonitorTest extends TestCase {
     private PollStatus doPoll() throws UnknownHostException {
         Map<Object, Object> m = new HashMap<Object, Object>();
         m.put("port", m_serverSocket.getLocalPort());
+        m.put("retries", 0);
+        m.put("timeout", TIMEOUT);
         PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", m_serverSocket.getInetAddress().getHostAddress(), "FTP"), m);
         return status;
     }

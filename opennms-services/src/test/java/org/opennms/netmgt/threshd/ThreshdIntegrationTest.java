@@ -101,7 +101,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
         threshd.init();
         threshd.start();
         
-        Thread.sleep(10000);
+        Thread.sleep(5000);
         
         threshd.stop();
     }
