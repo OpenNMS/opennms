@@ -112,7 +112,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
     public String getSnmpConfig() {
         return "<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config "+ 
-                " retry=\"3\" timeout=\"2000\"\n" + 
+                " retry=\"3\" timeout=\"3000\"\n" + 
                 " read-community=\"public\"" +
                 " write-community=\"private\"\n" + 
                 " port=\"161\"\n" +
@@ -132,8 +132,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
         
         m_capsd.rescanInterfaceParent(77);
         
-        // 2000 timeout * 3 retries + wiggle room
-        Thread.sleep(7000);
+        Thread.sleep(20000);
         
         m_capsd.stop();
         
