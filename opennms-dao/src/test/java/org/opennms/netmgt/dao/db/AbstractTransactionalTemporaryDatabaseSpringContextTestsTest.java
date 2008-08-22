@@ -8,7 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2008 Jul 02: Test getDataSource(). - dj@opennms.org
+//
+// Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -59,6 +63,10 @@ public class AbstractTransactionalTemporaryDatabaseSpringContextTestsTest
         jdbcTemplate.getDataSource().getConnection().close();
     }
     
+    public void testGetConnectionFromSelf() throws SQLException {
+        getDataSource().getConnection().close();
+    }
+
     public void testGetConnectionFromFactory() throws SQLException {
         DataSourceFactory.getInstance().getConnection().close();
     }

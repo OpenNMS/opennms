@@ -271,15 +271,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
 
-    <!-- XXX this is a dependency for opennms-services, but if I build just
-         this project, the version is incorrect and it resolves to a broken
-         release candidate version (1.0.0-rc1) instead of 1.0.1, which is in
-         pom.xml -->
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jfreechart</artifactId>
-      <version>1.0.1</version>
-    </dependency>
     <!-- XXX used by the new "webapp-ng"/"secret" stuff directly -->
     <dependency>
       <groupId>org.jrobin</groupId>
