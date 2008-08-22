@@ -40,10 +40,10 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ServerSocket;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Level;
 import org.opennms.test.mock.MockLogAppender;
-
-import junit.framework.TestCase;
 
 public class ControllerTest extends TestCase {
     @Override
@@ -99,7 +99,7 @@ public class ControllerTest extends TestCase {
         
         acceptThread.start();
         
-        acceptThread.join(100);
+        acceptThread.join(200);
         assertFalse("the accept thread should have stopped because it should have received a connection", acceptThread.isAlive());
 
         clientThread.join(c.getHttpRequestReadTimeout() * 2);
