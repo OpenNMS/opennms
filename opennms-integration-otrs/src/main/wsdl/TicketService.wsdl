@@ -1,0 +1,550 @@
+<?xml version="1.0"?>
+<definitions name="ticketservice"
+	targetNamespace="http://opennms.org/integration/otrs/ticketservice"
+	xmlns:tns="http://opennms.org/integration/otrs/ticketservice"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+	<types>
+		<xsd:schema
+			targetNamespace="http://opennms.org/integration/otrs/ticketservice"
+			xmlns:tns="http://opennms.org/integration/otrs/ticketservice"
+			xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/"
+			xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+			<xsd:import
+				namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+			<xsd:complexType name="TicketCore">
+				<xsd:sequence>
+					<xsd:element name="Title" type="xsd:string" />
+					<xsd:choice>
+						<xsd:element name="User" type="xsd:string" />
+						<xsd:element name="UserID" type="xsd:int" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="State" type="xsd:string" />
+						<xsd:element name="StateID" type="xsd:int" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="Priority" type="xsd:string" />
+						<xsd:element name="PriorityID" type="xsd:int" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="Lock" type="xsd:string" />
+						<xsd:element name="LockID" type="xsd:int" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="Queue" type="xsd:string" />
+						<xsd:element name="QueueID" type="xsd:int" />
+					</xsd:choice>
+					<xsd:element name="OwnerID" type="xsd:int" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="TicketIDAndNumber">
+				<xsd:all>
+					<xsd:element name="TicketID" type="xsd:int"
+						minOccurs="1" />
+					<xsd:element name="TicketNumber" type="xsd:long"
+						minOccurs="1" />
+				</xsd:all>
+			</xsd:complexType>
+			<xsd:complexType name="Ticket">
+				<xsd:all>
+					<xsd:element name="TicketID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="TicketNumber" type="xsd:long"
+						minOccurs="0" />
+					<xsd:element name="Title" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="Age" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="State" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="StateID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="StateType" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="Priority" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="PriorityID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="Lock" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="LockID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="UnlockTimeout" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="Queue" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="QueueID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="GroupID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="CustomerID" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="CustomerUserID" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="Owner" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="OwnerID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="Responsible" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="ResponsibleID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="Type" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="TypeID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="SLAID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="ServiceID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="Created" type="xsd:dateTime"
+						minOccurs="0" />
+					<xsd:element name="CreateTimeUnix" type="xsd:long"
+						minOccurs="0" />
+					<xsd:element name="UntilTime" type="xsd:long"
+						minOccurs="0" />
+					<xsd:element name="EscalationStartTime"
+						type="xsd:long" minOccurs="0" />
+					<xsd:element name="EscalationResponseTime"
+						type="xsd:long" minOccurs="0" />
+					<xsd:element name="EscalationSolutionTime"
+						type="xsd:long" minOccurs="0" />
+				</xsd:all>
+			</xsd:complexType>
+			<xsd:complexType name="ArticleCore">
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:element name="TicketID" type="xsd:int" />
+						<xsd:element name="TicketNumber" type="xsd:long" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="ArticleTypeID"
+							type="xsd:int" />
+						<xsd:element name="ArticleType"
+							type="xsd:string" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="SenderTypeID" type="xsd:int" />
+						<xsd:element name="SenderType"
+							type="xsd:string" />
+					</xsd:choice>
+					<xsd:element name="From" type="xsd:string" />
+					<xsd:element name="Subject" type="xsd:string" />
+					<xsd:element name="ContentType" type="xsd:string" />
+					<xsd:element name="HistoryType" type="xsd:string" />
+					<xsd:element name="HistoryComment"
+						type="xsd:string" />
+					<xsd:element name="Body" type="xsd:string" />
+					<xsd:choice>
+						<xsd:element name="UserID" type="xsd:int" />
+						<xsd:element name="User" type="xsd:string" />
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Article">
+				<xsd:all>
+					<xsd:element name="ArticleID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="TicketID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="ArticleTypeID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="ArticleType" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="SenderTypeID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="SenderType" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="From" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="To" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="CC" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="Subject" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="ContentType" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="MessageID" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="IncomingTime" type="xsd:long"
+						minOccurs="0" />
+					<xsd:element name="ContentPath" type="xsd:string"
+						minOccurs="0" />
+					<xsd:element name="ValidID" type="xsd:int"
+						minOccurs="0" />
+					<xsd:element name="Body" type="xsd:string"
+						minOccurs="0" />
+				</xsd:all>
+			</xsd:complexType>
+			
+			<xsd:complexType name="ArrayOfArticle">
+				<xsd:complexContent>
+					<xsd:restriction base="soap-enc:Array">
+						<xsd:attribute ref="soap-enc:arrayType"
+							wsdl:arrayType="tns:Article[ ]" />
+					</xsd:restriction>
+				</xsd:complexContent>
+			</xsd:complexType>
+
+			<xsd:complexType name="Credentials">
+				<xsd:all>
+					<xsd:element name="User" type="xsd:string"
+						minOccurs="1" />
+					<xsd:element name="Pass" type="xsd:string"
+						minOccurs="1" />
+				</xsd:all>
+			</xsd:complexType>
+			
+			<xsd:complexType name="TicketStateUpdate">
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:element name="User" type="xsd:string" />
+						<xsd:element name="UserID" type="xsd:int" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="TicketID" type="xsd:int" />
+						<xsd:element name="TicketNumber" type="xsd:long" />
+					</xsd:choice>
+					<xsd:choice>
+						<xsd:element name="State" type="xsd:string" />
+						<xsd:element name="StateID" type="xsd:int" />
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:complexType>
+			
+			<xsd:complexType name="TicketWithArticles">
+				<xsd:sequence>
+					<xsd:element name="Ticket" type="tns:Ticket" />
+					<xsd:element name="Articles" type="tns:ArrayOfArticle" />
+				</xsd:sequence>
+			</xsd:complexType>
+			
+		</xsd:schema>
+	</types>
+
+
+	<message name="TicketGetByIDRequest">
+		<part name="ticketID" type="xsd:int" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="TicketGetByNumberRequest">
+		<part name="ticketNumber" type="xsd:long" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="TicketGetResponse">
+		<part name="return" type="tns:Ticket" />
+	</message>
+	
+	<message name="GetByNumberRequest">
+		<part name="ticketNumber" type="xsd:long" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+	
+	<message name="GetByIDRequest">
+		<part name="ticketID" type="xsd:int" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+	
+	<message name="GetResponse">
+		<part name="ticketWitArticles" type="tns:TicketWithArticles" />
+	</message>
+
+	<message name="TicketCreateRequest">
+		<part name="ticket" type="tns:TicketCore" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="TicketCreateResponse">
+		<part name="ticketIDAndNumber" type="tns:TicketIDAndNumber" />
+	</message>
+	
+	<message name="TicketStateUpdateRequest">
+		<part name="ticketStateUpdate" type="tns:TicketStateUpdate" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+	
+	<message name="ArticleGetByIDRequest">
+		<part name="articleID" type="xsd:int" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="ArticleGetByIDResponse">
+		<part name="article" type="tns:Article" />
+	</message>
+
+	<message name="ArticleCreateRequest">
+		<part name="article" type="tns:ArticleCore" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="ArticleCreateResponse">
+		<part name="articleID" type="xsd:int" />
+	</message>
+
+	<message name="ArticleGetAllByTicketIDRequest">
+		<part name="ticketID" type="xsd:int" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="ArticleGetAllByTicketIDResponse">
+		<part name="articles" type="tns:ArrayOfArticle" />
+	</message>
+
+	<message name="ArticleGetAllByTicketNumberRequest">
+		<part name="ticketNumber" type="xsd:long" />
+		<part name="request_header" type="tns:Credentials" />
+	</message>
+
+	<message name="ArticleGetAllByTicketNumberResponse">
+		<part name="articles" type="tns:ArrayOfArticle" />
+	</message>
+
+	<portType name="TicketServicePort">
+
+		<operation name="TicketGetByID">
+			<input message="tns:TicketGetByIDRequest" />
+			<output message="tns:TicketGetResponse" />
+		</operation>
+
+		<operation name="TicketGetByNumber">
+			<input message="tns:TicketGetByNumberRequest" />
+			<output message="tns:TicketGetResponse" />
+		</operation>
+		
+		<operation name="GetById">
+			<input message="tns:GetByNumberRequest" />
+			<output message="tns:GetResponse" />
+		</operation>
+		
+		<operation name="GetByNumber">
+			<input message="tns:GetByNumberRequest" />
+			<output message="tns:GetResponse" />
+		</operation>
+		
+		<operation name="TicketCreate">
+			<input message="tns:TicketCreateRequest" />
+			<output message="tns:TicketCreateResponse" />
+		</operation>
+		
+		<operation name="TicketStateUpdate">
+			<input message="tns:TicketStateUpdateRequest" />
+		</operation>
+
+		<operation name="ArticleCreate">
+			<input message="tns:ArticleCreateRequest" />
+			<output message="tns:ArticleCreateResponse" />
+		</operation>
+
+		<operation name="ArticleGetByID">
+			<input message="tns:ArticleGetByIDRequest" />
+			<output message="tns:ArticleGetByIDResponse" />
+		</operation>
+
+		<operation name="ArticleGetAllByTicketID">
+			<input message="tns:ArticleGetAllByTicketIDRequest" />
+			<output message="tns:ArticleGetAllByTicketIDResponse" />
+		</operation>
+
+		<operation name="ArticleGetAllByTicketNumber">
+			<input message="tns:ArticleGetAllByTicketNumberRequest" />
+			<output message="tns:ArticleGetAllByTicketNumberResponse" />
+		</operation>
+
+	</portType>
+
+	<binding name="TicketServiceSoapBinding" type="tns:TicketServicePort">
+		<soap:binding style="rpc"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<operation name="TicketGetByID">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#TicketGetByID" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:TicketGetByIDRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="TicketGetByNumber">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#TicketGetByNumber" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:TicketGetByNumberRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="GetById">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#GetById" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:GetByIdRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="GetByNumber">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#GetByNumber" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:GetByNumberRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="TicketCreate">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#TicketCreate" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:TicketCreateRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="TicketStateUpdate">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#TicketStateUpdate" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:TicketStateUpdateRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+		</operation>
+		<operation name="ArticleCreate">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#ArticleCreate" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:ArticleCreateRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="ArticleGetByID">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#ArticleGetByID" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:ArticleGetByIDRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+
+		<operation name="ArticleGetAllByTicketID">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#ArticleGetAllByTicketID" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:ArticleGetAllByTicketIDRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+		<operation name="ArticleGetAllByTicketNumber">
+			<soap:operation
+				soapAction="http://opennms.org/integration/otrs/ticketservice#ArticleGetAllByTicketNumber" />
+			<input>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+				<soap:header use="encoded" part="request_header"
+					message="tns:ArticleGetAllByTicketNumberRequest"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</input>
+			<output>
+				<soap:body use="encoded"
+					namespace="http://opennms.org/integration/otrs/ticketservice"
+					encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+			</output>
+		</operation>
+	</binding>
+
+	<service name="TicketService">
+		<port name="TicketServicePort" binding="tns:TicketServiceSoapBinding">
+			<soap:address location="http://localhost/otrs/opennms.pl" />
+		</port>
+	</service>
+
+</definitions>
