@@ -80,7 +80,7 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
         
         getDaemon().start();
 
-        Thread.sleep(60000);
+        Thread.sleep(30000);
       
         getDaemon().destroy();
         
