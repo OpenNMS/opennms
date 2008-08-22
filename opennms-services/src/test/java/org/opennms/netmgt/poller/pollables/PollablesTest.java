@@ -304,15 +304,15 @@ public class PollablesTest extends TestCase {
                     // schedule.schedule();
                     //MockUtil.println("Created Pollable Service "+svc+" with package "+pkg.getName());
                 } catch (UnknownHostException e) {
-                    // in 'real life' I would just log this and contine with the others
+                    // in 'real life' I would just log this and continue with the others
                     throw new RuntimeException("Error converting "+ipAddr+" to an InetAddress", e);
                 }
             }
             private Package findPackageForService(String ipAddr, String serviceName) {
-                Enumeration en = pollerConfig.enumeratePackage();
+                Enumeration<Package> en = pollerConfig.enumeratePackage();
                 Package lastPkg = null;
                 while (en.hasMoreElements()) {
-                    Package pkg = (Package)en.nextElement();
+                    Package pkg = en.nextElement();
                     if (pollableServiceInPackage(ipAddr, serviceName, pkg))
                         lastPkg = pkg;
                 }

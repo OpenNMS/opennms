@@ -105,7 +105,7 @@ public class PingTest extends TestCase {
 
     public void testParallelPingFailure() throws Exception {
         List<Number> items = Pinger.parallelPing(m_badHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
-        Thread.sleep(1000);
+        Thread.sleep(Pinger.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) == 0);
     }
