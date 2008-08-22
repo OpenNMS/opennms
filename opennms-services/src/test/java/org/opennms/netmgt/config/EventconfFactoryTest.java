@@ -88,18 +88,15 @@ public class EventconfFactoryTest extends TestCase {
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
     private static final String unknownUEI1="uei.opennms.org/foo/thisShouldBeAnUnknownUEI";
     
-    public EventconfFactoryTest() {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
-        daoTestConfig.afterPropertiesSet();
-    }
-    
+
     /*
      * @see TestCase#setUp()
      */
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
+        daoTestConfig.afterPropertiesSet();
 
         EventconfFactory.init();
     }
