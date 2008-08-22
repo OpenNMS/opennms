@@ -300,17 +300,17 @@
 
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-              <td class="divider" valign="top" rowspan="1">
+              <td class="divider" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
                 </nobr>
           <% } else { %>
-            <td valign="top" rowspan="1" class="divider">&nbsp;
+            <td rowspan="1" class="divider">&nbsp;
           <% } %>
           </td>
 
           
-          <td class="divider bright" valign="top" rowspan="1">
+          <td class="divider bright" rowspan="1">
             
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
             <% if(alarms[i].getUei() != null) { %>
@@ -383,7 +383,7 @@
               <% } %>                            
             <% } %>
           </td>          
-          <td class="divider" valign="top" rowspan="1" >
+          <td class="divider" rowspan="1" >
 	    <% if(alarms[i].getId() > 0 ) { %>
               <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
                 <nobr>
