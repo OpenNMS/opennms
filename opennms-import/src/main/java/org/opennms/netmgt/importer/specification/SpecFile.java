@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Jul 28: Use CastorUtils. - dj@opennms.org
 // 2008 Jul 05: Indent and organize imports. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -36,70 +37,32 @@
 package org.opennms.netmgt.importer.specification;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.importer.ModelImportException;
 import org.springframework.core.io.Resource;
-import org.xml.sax.InputSource;
 
 public class SpecFile {
 
     private ModelImport m_mi;
 
     public void loadResource(Resource resource) throws ModelImportException, IOException {
-        InputStream inputStream = null;
         try {
-            inputStream = resource.getInputStream();
-            unmarshall(inputStream);
-        } finally {
-            closeQuietly(inputStream);
-        }
-    }
-
-    private void closeQuietly(InputStream stream) {
-        try {
-            if (stream != null) stream.close();
-        } catch (IOException e) {
-            // ignore failed close
-        }
-    }
-
-    public void unmarshall(InputStream stream) throws ModelImportException {
-        try {
-            InputSource source = new InputSource(stream);
-            m_mi = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, source);
+            m_mi = CastorUtils.unmarshal(ModelImport.class, resource);
         } catch (MarshalException e) {
             throw new ModelImportException("Exception while marshalling import: "+e, e);
         } catch (ValidationException e) {
             throw new ModelImportException("Exception while validating import "+e);
         }
     }
-
-    /**
-     * @deprecated
-     * @param rdr
-     * @throws ModelImportException
-     */
-    public void unmarshall(Reader rdr) throws ModelImportException {
-        try {
-            InputSource source = new InputSource(rdr);
-            m_mi = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, source);
-        } catch (MarshalException e) {
-            throw new ModelImportException("Exception while marshalling import: "+e, e);
-        } catch (ValidationException e) {
-            throw new ModelImportException("Exception while validating import "+e);
-        }
-    }
-
+    
     public void visitImport(ImportVisitor visitor) {
         doVisitImport(visitor);
     }
