@@ -162,7 +162,7 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
-            PollStatus pollResult = monitor.poll(service, new HashMap<String,String>());
+            PollStatus pollResult = monitor.poll(service, new HashMap());
             assertEquals(m_expectedStatus, pollResult);
         }
     }
@@ -380,7 +380,7 @@ public class MockNetworkTest extends TestCase {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", "1.1.1.1", "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        monitor.poll(svc, new HashMap<String,String>());
+        monitor.poll(svc, new HashMap());
         assertEquals(1, m_network.getInvalidPollCount());
 
     }
@@ -403,13 +403,13 @@ public class MockNetworkTest extends TestCase {
         assertTrue(pollerConfig.nodeOutageProcessingEnabled());
 
         // test to ensure that the poller has packages
-        Enumeration<Package> pkgs = pollerConfig.enumeratePackage();
+        Enumeration pkgs = pollerConfig.enumeratePackage();
         assertNotNull(pkgs);
         int pkgCount = 0;
         Package pkg = null;
 
         while (pkgs.hasMoreElements()) {
-            pkg = pkgs.nextElement();
+            pkg = (Package) pkgs.nextElement();
             pkgCount++;
         }
         assertTrue(pkgCount > 0);
@@ -417,10 +417,10 @@ public class MockNetworkTest extends TestCase {
         // ensure a sample interface is in the package
         assertTrue(pollerConfig.interfaceInPackage("192.168.1.1", pkg));
 
-        Enumeration<Service> svcs = pkg.enumerateService();
+        Enumeration svcs = pkg.enumerateService();
         assertNotNull(svcs);
         while (svcs.hasMoreElements()) {
-            Service svc = svcs.nextElement();
+            Service svc = (Service) svcs.nextElement();
             if ("ICMP".equals(svc.getName()))
                 assertEquals(500L, svc.getInterval());
             else if ("HTTP".equals(svc.getName()))
@@ -526,12 +526,12 @@ public class MockNetworkTest extends TestCase {
         m_pollerConfig.addScheduledOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
         m_pollerConfig.addScheduledOutage("outage2", now - tenMinutes, now, "192.168.1.2");
         
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        try { Thread.sleep(1000); } catch (InterruptedException e) {}
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);
 
-        Collection<String> outages = pkg.getOutageCalendarCollection();
+        Collection outages = pkg.getOutageCalendarCollection();
         assertTrue(outages.contains("outage1"));
         assertTrue(outages.contains("outage2"));
 
