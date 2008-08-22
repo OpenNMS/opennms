@@ -129,7 +129,7 @@ public class XmlRpcTest extends TestCase {
 
 		XmlRpcProxyFactoryBean pfb = new XmlRpcProxyFactoryBean();
 		pfb.setServiceInterface(ITestBean.class);
-		pfb.setServiceUrl("http://myurl"); // this is wrong so we throw an exception
+		pfb.setServiceUrl("http://127.0.0.1:9191/RPC2"); // this is wrong (we hope) so we throw an exception
 		pfb.afterPropertiesSet();
 
         ITestBean proxy = (ITestBean) pfb.getObject();
