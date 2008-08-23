@@ -64,89 +64,168 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     public SnmpAgentConfig get(InetAddress agentAddress) {
         return getSnmpPeerFactory().getAgentConfig(agentAddress);
     }
+    
+    public SnmpConfiguration getDefaults() {
+        SnmpConfig config = getSnmpConfig();
 
-    public void saveAsDefaults(SnmpConfiguration defaults) {
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
-        
-        if (defaults.hasAuthPassPhrase()) {
-            config.setAuthPassphrase(defaults.getAuthPassPhrase());
-        }
-        if (defaults.hasAuthProtocol()) {
-            config.setAuthProtocol(defaults.getAuthProtocol());
-        }
-        if (defaults.hasMaxRepetitions()) {
-            config.setMaxRepetitions(defaults.getMaxRepetitions());
-        }
-        if (defaults.hasMaxRequestSize()) {
-            config.setMaxRequestSize(defaults.getMaxRequestSize());
-        }
-        if (defaults.hasMaxVarsPerPdu()) {
-            config.setMaxVarsPerPdu(defaults.getMaxVarsPerPdu());
-        }
-        if (defaults.hasPort()) {
-            config.setPort(defaults.getPort());
-        }
-        if (defaults.hasPrivPassPhrase()) {
-            config.setPrivacyPassphrase(defaults.getPrivPassPhrase());
-        }
-        if (defaults.hasPrivProtocol()) {
-            config.setPrivacyProtocol(defaults.getPrivProtocol());
-        }
-        if (defaults.hasReadCommunity()) {
-            config.setReadCommunity(defaults.getReadCommunity());
-        }
-        if (defaults.hasRetries()) {
-            config.setRetry(defaults.getRetries());
-        }
-        if (defaults.hasSecurityLevel()) {
-            config.setSecurityLevel(defaults.getSecurityLevel());
-        }
-        if (defaults.hasSecurityName()) {
-            config.setSecurityName(defaults.getSecurityName());
-        }
-        if (defaults.hasTimeout()) {
-            config.setTimeout(defaults.getTimeout());
-        }
-        if (defaults.hasVersion()) {
-            config.setVersion(defaults.getVersionAsString());
-        }
-        if (defaults.hasWriteCommunity()) {
-            config.setWriteCommunity(defaults.getWriteCommunity());
-        }
-        
-        saveCurrent();
-    }
+        SnmpConfiguration defaults = new SnmpConfiguration();
 
-    public void saveConfigForRange(SnmpConfiguration config, InetAddress beginAddress, InetAddress endAddress) {
-        SnmpEventInfo eventInfo = new SnmpEventInfo();
-        
-        eventInfo.setFirstIPAddress(beginAddress);
-        eventInfo.setListIPAddress(endAddress);
+        if (config.getAuthPassphrase() != null) {
+            defaults.setAuthPassPhrase(config.getAuthPassphrase());
+        } 
+        if (config.getAuthProtocol() != null) {
+            defaults.setAuthProtocol(config.getAuthProtocol());
+        }
+        if (config.hasMaxRepetitions()) {
+            defaults.setMaxRepetitions(config.getMaxRepetitions());
+        }
+        if (config.hasMaxRequestSize()) {
+            defaults.setMaxRequestSize(config.getMaxRequestSize());
+        }
+        if (config.hasMaxVarsPerPdu()) {
+            defaults.setMaxVarsPerPdu(config.getMaxVarsPerPdu());
+        }
         if (config.hasPort()) {
-            eventInfo.setPort(config.getPort());
+            defaults.setPort(config.getPort());
         }
-        if (config.hasReadCommunity()) {
-            eventInfo.setCommunityString(config.getReadCommunity());
+        if (config.getPrivacyPassphrase() != null) {
+            defaults.setPrivPassPhrase(config.getPrivacyPassphrase());
         }
-        if (config.hasRetries()) {
-            eventInfo.setRetryCount(config.getRetries());
+        if (config.getPrivacyProtocol() != null) {
+            defaults.setPrivProtocol(config.getPrivacyProtocol());
+        }
+        if (config.getReadCommunity() != null) {
+            defaults.setReadCommunity(config.getReadCommunity());
+        }
+        if (config.hasRetry()) {
+            defaults.setRetries(config.getRetry());
+        }
+        if (config.hasSecurityLevel()) {
+            defaults.setSecurityLevel(config.getSecurityLevel());
+        }
+        if (config.getSecurityName() != null) {
+            defaults.setSecurityName(config.getSecurityName());
         }
         if (config.hasTimeout()) {
-            eventInfo.setTimeout(config.getTimeout());
+            defaults.setTimeout(config.getTimeout());
         }
-        if (config.hasVersion()) {
-            eventInfo.setVersion(config.getVersionAsString());
+        if (config.getVersion() != null) {
+            defaults.setVersionAsString(config.getVersion());
         }
-        
-        getSnmpPeerFactory().define(eventInfo);
-        
-        saveCurrent();
+        if (config.getWriteCommunity() != null) {
+            defaults.setWriteCommunity(config.getWriteCommunity());
+        }
 
+        return defaults;
+    }
+    
+    private boolean nullSafeEquals(String o1, String o2) {
+        if (o1 == o2) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+        if (o1.equals(o2)) {
+            return true;
+        }
+        return false;
     }
 
-    public void saveOrUpdate(SnmpAgentConfig config) {
-        // Note: SnmpConfigRange treats a begin and end address the same as a specific
-        saveConfigForRange(config, config.getAddress(), config.getAddress());
+
+    public void saveAsDefaults(SnmpConfiguration newDefaults) {
+        SnmpConfig config = getSnmpConfig();
+        
+        SnmpConfiguration oldDefaults = getDefaults();
+        
+        if (!nullSafeEquals(oldDefaults.getAuthPassPhrase(), newDefaults.getAuthPassPhrase())) {
+            config.setAuthPassphrase(newDefaults.getAuthPassPhrase());
+        }
+        if (!nullSafeEquals(oldDefaults.getAuthProtocol(), newDefaults.getAuthProtocol())) {
+            config.setAuthProtocol(newDefaults.getAuthProtocol());
+        }
+        if (oldDefaults.getMaxRepetitions() != newDefaults.getMaxRepetitions()) {
+            config.setMaxRepetitions(newDefaults.getMaxRepetitions());
+        }
+        if (oldDefaults.getMaxRequestSize() != newDefaults.getMaxRequestSize()) {
+            config.setMaxRequestSize(newDefaults.getMaxRequestSize());
+        }
+        if (oldDefaults.getMaxVarsPerPdu() != newDefaults.getMaxVarsPerPdu()) {
+            config.setMaxVarsPerPdu(newDefaults.getMaxVarsPerPdu());
+        }
+        if (oldDefaults.getPort() != newDefaults.getPort()) {
+            config.setPort(newDefaults.getPort());
+        }
+        if (!nullSafeEquals(oldDefaults.getPrivPassPhrase(), newDefaults.getPrivPassPhrase())) {
+            config.setPrivacyPassphrase(newDefaults.getPrivPassPhrase());
+        }
+        if (!nullSafeEquals(oldDefaults.getPrivProtocol(), newDefaults.getPrivProtocol())) {
+            config.setPrivacyProtocol(newDefaults.getPrivProtocol());
+        }
+        if (!nullSafeEquals(oldDefaults.getReadCommunity(), newDefaults.getReadCommunity())) {
+            config.setReadCommunity(newDefaults.getReadCommunity());
+        }
+        if (oldDefaults.getRetries() != newDefaults.getRetries()) {
+            config.setRetry(newDefaults.getRetries());
+        }
+        if (oldDefaults.getSecurityLevel() != newDefaults.getSecurityLevel()) {
+            config.setSecurityLevel(newDefaults.getSecurityLevel());
+        }
+        if (!nullSafeEquals(oldDefaults.getSecurityName(), newDefaults.getSecurityName())) {
+            config.setSecurityName(newDefaults.getSecurityName());
+        }
+        if (oldDefaults.getTimeout() != newDefaults.getTimeout()) {
+            config.setTimeout(newDefaults.getTimeout());
+        }
+        if (oldDefaults.getVersion() != newDefaults.getVersion()) {
+            config.setVersion(newDefaults.getVersionAsString());
+        }
+        if (!nullSafeEquals(oldDefaults.getWriteCommunity(), newDefaults.getWriteCommunity())) {
+            config.setWriteCommunity(newDefaults.getWriteCommunity());
+        }
+        
+        saveCurrent();
+    }
+    
+    public void saveOrUpdate(SnmpAgentConfig newConfig) {
+        
+        SnmpAgentConfig oldConfig = get(newConfig.getAddress());
+        
+        SnmpEventInfo eventInfo = new SnmpEventInfo();
+        eventInfo.setFirstIPAddress(newConfig.getAddress());
+        eventInfo.setListIPAddress(newConfig.getAddress());
+
+        boolean save = false;
+        if (!nullSafeEquals(oldConfig.getReadCommunity(), newConfig.getReadCommunity())) {
+            eventInfo.setCommunityString(newConfig.getReadCommunity());
+            save = true;
+        }
+        if (oldConfig.getPort() != newConfig.getPort()) {
+            eventInfo.setPort(newConfig.getPort());
+            save = true;
+        }
+        if (oldConfig.getRetries() != newConfig.getRetries()) {
+            eventInfo.setRetryCount(newConfig.getRetries());
+            save = true;
+        }
+        if (oldConfig.getTimeout() != newConfig.getTimeout()) {
+            eventInfo.setTimeout(newConfig.getTimeout());
+            save = true;
+        }
+        if (oldConfig.getVersion() != newConfig.getVersion()) {
+            eventInfo.setVersion(newConfig.getVersionAsString());
+            save = true;
+        }
+        
+        if (save) {
+            getSnmpPeerFactory().define(eventInfo);
+            saveCurrent();
+        }
+        
+    }
+    
+    private SnmpConfig getSnmpConfig() {
+        return SnmpPeerFactory.getSnmpConfig();
     }
 
     private void saveCurrent() {

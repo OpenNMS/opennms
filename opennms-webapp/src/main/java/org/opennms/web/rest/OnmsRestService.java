@@ -169,7 +169,7 @@ public class OnmsRestService {
 		}
 	}
 	
-	    protected void throwException(Status status, String msg) {
+	    protected <T> T throwException(Status status, String msg) {
 	        log().error(msg);
 	        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
 	    }

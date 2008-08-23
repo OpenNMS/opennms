@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
-import org.springframework.core.io.ClassPathResource;
 
 
 public class SnmpConfigDaoTest extends TestCase {
@@ -20,19 +19,19 @@ public class SnmpConfigDaoTest extends TestCase {
     
     public void setUp() throws Exception {
         
-        ClassPathResource srcResource = new ClassPathResource("snmp-config.xml");
-        
         File dir = new File("target/test-work-dir");
         dir.mkdirs();
         
-        File src = srcResource.getFile();
+        m_configFile = File.createTempFile("snmp-config-"+getName()+"-", "xml", dir);
+//        m_configFile.deleteOnExit();
         
-        File dst = File.createTempFile("snmp-config-"+getName()+"-", "xml", dir);
-        dst.deleteOnExit();
+        FileUtils.writeStringToFile(m_configFile, 
+                "<?xml version=\"1.0\"?>" +
+                "<snmp-config port=\"9161\" retry=\"1\" timeout=\"2000\"\n" + 
+                "             read-community=\"myPublic\" \n" + 
+                "             version=\"v1\" \n" + 
+                "             max-vars-per-pdu=\"27\"  />");
         
-        FileUtils.copyFile(src, dst, true);
-        
-        m_configFile = dst;
         
         SnmpPeerFactory.setFile(m_configFile);
         
@@ -57,41 +56,42 @@ public class SnmpConfigDaoTest extends TestCase {
     }
 
     public void testGet() throws Exception {
-        assertConfig("192.168.1.3", 10, 1, "public");
+        assertConfig("192.168.1.3", 27, 1, "myPublic");
     }
     
     public void testUpdateDefaults() throws Exception {
         
         // assert original config
-        assertConfig("192.168.1.3", 10, 1, "public");
+        assertConfig("192.168.1.3", 27, 1, "myPublic");
         
         // update defaults
         SnmpConfiguration defaults = new SnmpConfiguration();
         defaults.setVersion(2);
+        defaults.setMaxVarsPerPdu(72);
         defaults.setReadCommunity("newcommunity");
         
         m_snmpConfigDao.saveAsDefaults(defaults);
         
         // assert new config
-        assertConfig("192.168.1.3", 10, 2, "newcommunity");
+        assertConfig("192.168.1.3", 72, 2, "newcommunity");
     }
     
-    public void testUpdateRangeData() throws Exception {
+    public void testUpdateConfig() throws Exception {
 
         // assert original config
-        assertConfig("192.168.1.3", 10, 1, "public");
-        assertConfig("192.168.1.7", 10, 1, "public");
+        assertConfig("192.168.1.3", 27, 1, "myPublic");
+        assertConfig("192.168.1.7", 27, 1, "myPublic");
 
         // update range config
-        SnmpConfiguration rangeConfig = new SnmpConfiguration();
-        rangeConfig.setVersion(2);
-        rangeConfig.setReadCommunity("newcommunity");
+        SnmpAgentConfig agentConfig = m_snmpConfigDao.get(InetAddress.getByName("192.168.1.3"));
+        agentConfig.setVersion(2);
+        agentConfig.setReadCommunity("newcommunity");
         
-        m_snmpConfigDao.saveConfigForRange(rangeConfig, InetAddress.getByName("192.168.1.1"), InetAddress.getByName("192.168.1.5"));
+        m_snmpConfigDao.saveOrUpdate(agentConfig);
         
         // assert original config
-        assertConfig("192.168.1.3", 10, 2, "newcommunity");
-        assertConfig("192.168.1.7", 10, 1, "public");
+        assertConfig("192.168.1.3", 27, 2, "newcommunity");
+        assertConfig("192.168.1.7", 27, 1, "myPublic");
 
     }
 

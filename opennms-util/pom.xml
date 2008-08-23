@@ -12,5 +12,9 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
   </dependencies>
 </project>
