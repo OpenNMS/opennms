@@ -706,7 +706,7 @@ public class PollerTest extends TestCase {
 
 		// wait for the polls to occur while its up... 1 poll per second plus
 		// overhead
-		assertEquals(0, anticipator.waitForAnticipated(4000L).size());
+		assertEquals(0, anticipator.waitForAnticipated(4500L).size());
 
 
 	}
