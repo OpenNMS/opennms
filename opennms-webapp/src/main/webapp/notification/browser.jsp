@@ -241,7 +241,9 @@
 
       <% for( int i=0; i < notices.length; i++ ) { 
         Event event = EventFactory.getEvent( notices[i].getEventId() );
-        String eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());%>
+        int severity = (event == null? 0 : event.getSeverity());
+        String eventSeverity = EventUtil.getSeverityLabel(severity);
+        %>
         <tr class="<%=eventSeverity%>">
           <td class="divider noWrap" rowspan="2"><% if((parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) && 
 		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
