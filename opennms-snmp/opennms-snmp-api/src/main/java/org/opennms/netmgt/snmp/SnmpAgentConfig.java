@@ -35,11 +35,17 @@ package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
+
 /**
  * @author (various previous authors not documented)
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
+@XmlRootElement(name="snmpAgentConfig")
 public class SnmpAgentConfig extends SnmpConfiguration {
     
     private InetAddress m_address;
@@ -83,6 +89,7 @@ public class SnmpAgentConfig extends SnmpConfiguration {
     }
 
 
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getAddress() {
         return m_address;
     }

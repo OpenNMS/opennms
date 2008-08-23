@@ -29,27 +29,27 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.dao;
+package org.opennms.core.xml.bind;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpConfiguration;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * SnmpConfigurationDao
+ * InetAddresssXmlAdapter
  *
  * @author brozow
  */
-public interface SnmpConfigDao {
-    
-    SnmpAgentConfig get(InetAddress ipAddress);
-    
-    void saveOrUpdate(SnmpAgentConfig config);
-    
-    SnmpConfiguration getDefaults();
-    
-    void saveAsDefaults(SnmpConfiguration defaults);
-    
+public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
+
+    @Override
+    public String marshal(InetAddress inetAddr) throws Exception {
+        return inetAddr.getHostAddress();
+    }
+
+    @Override
+    public InetAddress unmarshal(String ipAddr) throws Exception {
+        return InetAddress.getByName(ipAddr);
+    }
 
 }

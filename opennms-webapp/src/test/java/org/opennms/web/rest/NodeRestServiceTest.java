@@ -1,7 +1,11 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import javax.ws.rs.core.MediaType;
 
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -11,6 +15,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
+    
+    @Test
     public void testNode() throws Exception {
         // Testing POST
         createNode();
@@ -30,6 +36,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 204);
     }
 
+    @Test
     public void testIpInterface() throws Exception {
         createIpInterface();
         String url = "/nodes/1/ipinterfaces";
@@ -43,6 +50,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 204);
     }
 
+    @Test
     public void testSnmpInterface() throws Exception {
         createSnmpInterface();
         String url = "/nodes/1/snmpinterfaces";
@@ -56,6 +64,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 204);
     }
 
+    @Test
     public void testMonitoredService() throws Exception {
         createService();
         String url = "/nodes/1/ipinterfaces/10.10.10.10/services";
@@ -69,6 +78,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 204);
     }
     
+    @Test
     public void testCategory() throws Exception {
         createCategory();
         String url = "/nodes/1/categories";

@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.junit.After;
+import org.junit.Before;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.springframework.mock.web.MockFilterConfig;
@@ -22,9 +24,7 @@ import org.springframework.web.context.ContextLoaderListener;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
-import junit.framework.TestCase;
-
-public abstract class AbstractSpringJerseyRestTestCase extends TestCase {
+public abstract class AbstractSpringJerseyRestTestCase {
 
     static String GET = "GET";
     static String POST = "POST";
@@ -39,7 +39,11 @@ public abstract class AbstractSpringJerseyRestTestCase extends TestCase {
     private ContextLoaderListener contextListener;
     private Filter filter;
 
+    @Before
     public void setUp() throws Exception {
+        
+        beforeServletStart();
+        
         String userDir = System.getProperty("user.dir");
         System.setProperty("opennms.home", userDir+"/src/test/opennms-home");
         System.setProperty("rrd.base.dir", "/tmp");
@@ -75,15 +79,34 @@ public abstract class AbstractSpringJerseyRestTestCase extends TestCase {
         
         dispatcher = new SpringServlet();
         dispatcher.init(servletConfig);
+        
+        afterServletStart();
         System.err.println("------------------------------------------------------------------------------");
     }
+
+    protected void beforeServletStart() throws Exception {
+    }
     
-    public void tearDown() {
+    protected void afterServletStart() throws Exception {
+        
+    }
+
+    @After
+    public void tearDown() throws Exception {
         System.err.println("------------------------------------------------------------------------------");
+        beforeServletDestroy();
         contextListener.contextDestroyed(new ServletContextEvent(servletContext));
         dispatcher.destroy();
+        afterServletDestroy();
+    }
+
+    protected void beforeServletDestroy() throws Exception {
     }
     
+    protected void afterServletDestroy() throws Exception {
+        
+    }
+
     protected void dispatch(final MockHttpServletRequest request, final MockHttpServletResponse response) throws Exception {
         FilterChain filterChain = new FilterChain() {
             public void doFilter(ServletRequest arg0, ServletResponse arg1) throws IOException, ServletException {
