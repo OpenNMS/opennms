@@ -248,6 +248,9 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                     }
                 }
 
+            // This if block will count the number of matches within a walk and mark the service
+            // as up if it is between the minimum and maximum number, down if otherwise. Setting
+            // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
             } else if ("count".equals(matchstr)) {
 		int matchCount = 0;
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
