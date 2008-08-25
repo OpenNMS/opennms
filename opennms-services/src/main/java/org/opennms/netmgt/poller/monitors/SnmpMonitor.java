@@ -211,6 +211,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
         String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
         String matchstr = ParameterMap.getKeyedString(parameters, "matchall", "true");
+        String countOperator = ParameterMap.getKeyedString(parameters, "countoperator", null);
+        String countOperand = ParameterMap.getKeyedString(parameters, "countoperand", null);
 
         // set timeout and retries on SNMP peer object
         //
@@ -245,6 +247,25 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         }
                     }
                 }
+
+            } else if ("count".equals(matchstr)) {
+		int matchCount = 0;
+                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
+                for(SnmpValue result : results) {
+
+                    if (result != null) {
+                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                        if (meetsCriteria(result, operator, operand)) {
+				matchCount++;
+                        }
+                    }
+                }
+                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " " + countOperator + " " + countOperand);
+                if (checkStringCriteria(countOperator, countOperand, String.valueOf(matchCount))) {
+                    status = PollStatus.available();
+                } else {
+                    return status;
+		}
 
             } else {
 

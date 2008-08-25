@@ -117,7 +117,7 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      * @param value
      * @return
      */
-    private Boolean checkStringCriteria(String operator, String operand, String value) {
+    public Boolean checkStringCriteria(String operator, String operand, String value) {
         Boolean retVal = null;
         
         if (value.startsWith(".")) {
