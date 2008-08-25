@@ -211,8 +211,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
         String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
         String matchstr = ParameterMap.getKeyedString(parameters, "matchall", "true");
-        String countOperator = ParameterMap.getKeyedString(parameters, "countoperator", null);
-        String countOperand = ParameterMap.getKeyedString(parameters, "countoperand", null);
+        int countMin = ParameterMap.getKeyedInteger(parameters, "minimum", 0);
+        int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
 
         // set timeout and retries on SNMP peer object
         //
@@ -260,10 +260,11 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         }
                     }
                 }
-                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " " + countOperator + " " + countOperand);
-                if (checkStringCriteria(countOperator, countOperand, String.valueOf(matchCount))) {
+                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
+                if ((matchCount < countMax) && (matchCount > countMin)) {
                     status = PollStatus.available();
                 } else {
+                    status = logDown(Level.DEBUG, "Value: " + matchCount + " outside of range Min: " + countMin + " to Max: " + countMax);
                     return status;
 		}
 
