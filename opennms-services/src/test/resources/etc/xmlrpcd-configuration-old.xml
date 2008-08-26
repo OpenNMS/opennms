@@ -2,7 +2,7 @@
 
 <xmlrpcd-configuration max-event-queue-size="5000">
         <external-servers retries="3" elapse-time="15000">
-                <xmlrpc-server url="http://localhost:8000" />
+                <xmlrpc-server url="http://localhost:8000" timeout="0" />
         </external-servers>
         <subscription>
                 <subscribed-event uei="uei.opennms.org/nodes/nodeLostService"/>

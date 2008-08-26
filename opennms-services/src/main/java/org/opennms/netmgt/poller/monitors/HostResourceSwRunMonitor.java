@@ -10,9 +10,7 @@
 //
 // Modifications:
 //
-// 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
-// 2003 Jan 31: Cleaned up some unused imports.
-// 2003 Jan 29: Added response times to certain monitors.
+// 2008 Aug 26: First version of this monitor, based on SnmpMonitor
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -56,6 +54,7 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -64,32 +63,34 @@ import org.opennms.netmgt.utils.ParameterMap;
 /**
  * <P>
  * This class is designed to be used by the service poller framework to test the
- * availability of the SNMP service on remote interfaces. The class implements
+ * status of services reported in the Host Resources SW Run Table. The class implements
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
  * 
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
+
 @Distributable(DistributionContext.DAEMON)
-public class SnmpMonitor extends SnmpMonitorStrategy {
+public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.
      */
     private static final String SERVICE_NAME = "SNMP";
 
     /**
-     * Default object to collect if "oid" property not available.
+     * Default OID for the table that represents the name of the software running.
      */
-    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0"; // MIB-II
-                                                                                // System
-                                                                                // Object
-                                                                                // Id
+    private static final String HOSTRESOURCE_SW_NAME_OID = ".1.3.6.1.2.1.25.4.2.1.2";
+
+    /**
+     * Default OID for the table that represents the status of the software running.
+     */
+    private static final String HOSTRESOURCE_SW_STATUS_OID = ".1.3.6.1.2.1.25.4.2.1.7";
 
     /**
      * Interface attribute key used to store the interface's SnmpAgentConfig
@@ -206,13 +207,23 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
         // Get configuration parameters
         //
-        String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
-        String operator = ParameterMap.getKeyedString(parameters, "operator", null);
-        String operand = ParameterMap.getKeyedString(parameters, "operand", null);
-        String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
-        String matchstr = ParameterMap.getKeyedString(parameters, "match-all", "true");
-        int countMin = ParameterMap.getKeyedInteger(parameters, "minimum", 0);
-        int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
+        // This should never need to be overridden, but it can be in order to be used with similar tables.
+        String serviceNameOid = ParameterMap.getKeyedString(parameters, "service-name-oid", HOSTRESOURCE_SW_NAME_OID);
+        // This should never need to be overridden, but it can be in order to be used with similar tables.
+        String serviceStatusOid = ParameterMap.getKeyedString(parameters, "service-status-oid", HOSTRESOURCE_SW_STATUS_OID);
+        // This is the string that represents the service name to be monitored.
+        String serviceName = ParameterMap.getKeyedString(parameters, "service-name", null);
+        // The service name may appear in the table more than once. If this is set to true, all values must match the run level.
+        String matchAll = ParameterMap.getKeyedString(parameters, "match-all", "false");
+        // This is one of: 
+        //                   running(1),
+        //                   runnable(2),    -- waiting for resource
+        //                                   -- (i.e., CPU, memory, IO)
+        //                   notRunnable(3), -- loaded but waiting for event
+        //                   invalid(4)      -- not loaded
+        //
+        // This represents the maximum run-level, i.e. 2 means either running(1) or runnable(2) pass.
+        String runLevel = ParameterMap.getKeyedString(parameters, "run-level", "2");
 
         // set timeout and retries on SNMP peer object
         //
@@ -226,60 +237,36 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         //
         try {
             if (log().isDebugEnabled()) {
-                log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+                log().debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
-            if ("true".equals(walkstr)) {
-                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
-                for(SnmpValue result : results) {
+            if (serviceName == null) {
+                log().warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
+		return status;
+            }
 
-                    if (result != null) {
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                        if (meetsCriteria(result, operator, operand)) {
-                            status = PollStatus.available();
-                            if ("false".equals(matchstr)) {
-                               return status;
-                            }
-                        } else if ("true".equals(matchstr)) {
-                            status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
-                            return status;
+            // This returns two maps: one of instance and service name, and one of instance and status.
+            Map<SnmpInstId, SnmpValue> nameResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceNameOid));
+            Map<SnmpInstId, SnmpValue> statusResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceStatusOid));
+
+            // Iterate over the list of running services
+            for(SnmpInstId nameInstance : nameResults.keySet()) {
+
+                // See if the service name is in the list of running services
+                if (nameResults.get(nameInstance).toString().equals(serviceName)) {
+                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                    // Using the instance of the service, get its status and see if it meets the criteria
+                    if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
+                        status = PollStatus.available();
+                        // If we get here, that means the service passed the criteria, if only one match is desired we exit.
+                        if ("false".equals(matchAll)) {
+                           return status;
                         }
+                    // if we get here, that means the meetsCriteria test failed. 
+                    } else {
+                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + ipaddr.getHostAddress() + " service name= " + serviceName + " status= " + statusResults.get(nameInstance) );
+                        return status;
                     }
-                }
-
-            // This if block will count the number of matches within a walk and mark the service
-            // as up if it is between the minimum and maximum number, down if otherwise. Setting
-            // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
-            } else if ("count".equals(matchstr)) {
-		int matchCount = 0;
-                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
-                for(SnmpValue result : results) {
-
-                    if (result != null) {
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                        if (meetsCriteria(result, operator, operand)) {
-				matchCount++;
-                        }
-                    }
-                }
-                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
-                if ((matchCount < countMax) && (matchCount > countMin)) {
-                    status = PollStatus.available();
-                } else {
-                    status = logDown(Level.DEBUG, "Value: " + matchCount + " outside of range Min: " + countMin + " to Max: " + countMax);
-                    return status;
-		}
-
-            } else {
-
-                SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
-
-                if (result != null) {
-                    log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                    status = (meetsCriteria(result, operator, operand) ? PollStatus.available() : PollStatus.unavailable());
-                } else {
-                    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
                 }
             }
 
@@ -290,6 +277,9 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
+
+        // If matchAll is set to true, then the status is set to available above with a single match.
+        // Otherwise, the service will be unavailable.
 
         return status;
     }

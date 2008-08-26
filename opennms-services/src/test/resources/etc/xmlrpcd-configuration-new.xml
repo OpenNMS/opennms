@@ -7,8 +7,8 @@
 		<serverSubscription>otherEvents</serverSubscription>
 	</external-servers>
 	<external-servers retries="1" elapse-time="1000">
-		<xmlrpc-server url="http://localhost:8000" />
-		<xmlrpc-server url="http://localhost:9000" />
+		<xmlrpc-server url="http://localhost:8000" timeout="0" />
+		<xmlrpc-server url="http://localhost:9000" timeout="0" />
 	</external-servers>
 	<subscription name="serviceEvents">
 		<subscribed-event uei="uei.opennms.org/nodes/nodeLostService"/>

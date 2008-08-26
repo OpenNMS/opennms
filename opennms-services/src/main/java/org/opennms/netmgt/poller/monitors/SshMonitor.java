@@ -91,7 +91,7 @@ final public class SshMonitor extends IPv4Monitor {
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String banner = ParameterMap.getKeyedString(parameters, "banner", null);
         String match = ParameterMap.getKeyedString(parameters, "match", null);
-        int version = ParameterMap.getKeyedInteger(parameters, "protocolVersion", DEFAULT_VERSION);
+        int version = ParameterMap.getKeyedInteger(parameters, "version", DEFAULT_VERSION);
         PollStatus ps = PollStatus.unavailable();
         
         Ssh ssh;
