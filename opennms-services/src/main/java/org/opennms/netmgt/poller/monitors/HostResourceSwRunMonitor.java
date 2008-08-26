@@ -222,7 +222,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         //                   notRunnable(3), -- loaded but waiting for event
         //                   invalid(4)      -- not loaded
         //
-        // This represents the maximum run-level, i.e. 2 means either running(1) or runnable pass(2).
+        // This represents the maximum run-level, i.e. 2 means either running(1) or runnable(2) pass.
         String runLevel = ParameterMap.getKeyedString(parameters, "run-level", "2");
 
         // set timeout and retries on SNMP peer object
@@ -245,18 +245,18 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
 		return status;
             }
 
-            // This returns two maps: one of instace and service name, and one of instance and status.
+            // This returns two maps: one of instance and service name, and one of instance and status.
             Map<SnmpInstId, SnmpValue> nameResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceNameOid));
             Map<SnmpInstId, SnmpValue> statusResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceStatusOid));
 
             // Iterate over the list of running services
-            for(SnmpInstId nameResult : nameResults.keySet()) {
+            for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
-                if (nameResults.get(nameResult).toString().equals(serviceName)) {
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameResult));
+                if (nameResults.get(nameInstance).toString().equals(serviceName)) {
+                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
-                    if (meetsCriteria(statusResults.get(nameResult), "<=", runLevel)) {
+                    if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
                         status = PollStatus.available();
                         // If we get here, that means the service passed the criteria, if only one match is desired we exit.
                         if ("false".equals(matchAll)) {
@@ -264,7 +264,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                         }
                     // if we get here, that means the meetsCriteria test failed. 
                     } else {
-                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + ipaddr.getHostAddress() + " service name= " + serviceName + " status= " + statusResults.get(nameResult) );
+                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + ipaddr.getHostAddress() + " service name= " + serviceName + " status= " + statusResults.get(nameInstance) );
                         return status;
                     }
                 }
