@@ -136,12 +136,21 @@
     </service>
     <service name="SSH" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
-      <parameter key="banner" value="SSH" />
+      <parameter key="version" value="2" />
       <parameter key="port" value="22" />
       <parameter key="timeout" value="3000" />
       <parameter key="rrd-repository" value="@install.share.dir@/rrd/response" />
       <parameter key="rrd-base-name" value="ssh" />
       <parameter key="ds-name" value="ssh" />
+    </service>
+    <service name="SSHv1" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="version" value="1" />
+      <parameter key="port" value="22" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="@install.share.dir@/rrd/response" />
+      <parameter key="rrd-base-name" value="sshv1" />
+      <parameter key="ds-name" value="sshv1" />
     </service>
     <service name="DHCP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
@@ -252,6 +261,7 @@
   <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
+  <monitor service="SSHv1" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
   <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
   <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
   <monitor service="NSClient" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
