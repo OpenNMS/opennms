@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventListener;
@@ -97,9 +98,13 @@ public class DefaultPollContext implements PollContext, EventListener {
         synchronized (m_pendingPollEvents) {
             m_pendingPollEvents.add(pollEvent);
         }
-        ThreadCategory.getInstance(getClass()).info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService());
+        log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
         m_poller.getEventManager().sendNow(event);
         return pollEvent;
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /* (non-Javadoc)
@@ -109,12 +114,14 @@ public class DefaultPollContext implements PollContext, EventListener {
         return m_poller.createEvent(uei, nodeId, address, svcName, date, reason);
     }
 
-    public void openOutage(PollableService svc, final PollEvent svcLostEvent) {
+    public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
+        log().debug("openOutage: Opening outage for: "+svc+" with event:"+svcLostEvent);
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
         Runnable r = new Runnable() {
             public void run() {
+                log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
                 m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
             }
         };
@@ -170,20 +177,25 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     public void onEvent(Event e) {
         synchronized (m_pendingPollEvents) {
+            log().debug("onEvent: Opening outage for event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
             for (Iterator it = m_pendingPollEvents .iterator(); it.hasNext();) {
                 PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+                log().debug("onEvent: comparing events to poll event: "+pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
+                    log().debug("onEvent: completing pollevent: "+pollEvent);
                     pollEvent.complete(e);
                 }
             }
             
             for (Iterator it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+                log().debug("onEvent: determining if pollEvent is pending: "+pollEvent);
                 if (pollEvent.isPending()) continue;
                 
+                log().debug("onEvent: processing pending pollEvent...: "+pollEvent);
                 pollEvent.processPending();
                 it.remove();
-                
+                log().debug("onEvent: processing of pollEvent completed.: "+pollEvent);
             }
         }
         

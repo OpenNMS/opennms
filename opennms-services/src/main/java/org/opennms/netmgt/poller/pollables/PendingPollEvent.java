@@ -100,4 +100,9 @@ public class PendingPollEvent extends PollEvent {
         m_pendingOutages.clear();
         
     }
+    
+    //TODO: string builder or don't checking ;-)
+    public String toString() {
+        return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending+", list size: "+m_pendingOutages.size();
+    }
 }
