@@ -32,7 +32,7 @@
 
 package org.opennms.netmgt.vulnscand;
 
-import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.EventConstants;
 
 /**
  * Class that holds the return values when parsing a description field from
@@ -53,7 +53,7 @@ public class DescrValues {
 
     public void useDefaults() {
         descr = "";
-        severity = Constants.SEV_INDETERMINATE;
+        severity = EventConstants.SEV_INDETERMINATE;
     }
 
     public boolean isValid() {

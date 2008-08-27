@@ -39,7 +39,7 @@ package org.opennms.netmgt.vulnscand;
 import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.EventConstants;
 
 public class NessusParser {
     private static NessusParser instance;
@@ -230,31 +230,31 @@ public class NessusParser {
             }
 	    
 	    if (informational.match(risk)) {
-                retval.severity = Constants.SEV_NORMAL;
+                retval.severity = EventConstants.SEV_NORMAL;
             }
             if (normal.match(risk)) {
-                retval.severity = Constants.SEV_NORMAL;
+                retval.severity = EventConstants.SEV_NORMAL;
             }
             if (normal2.match(risk)) {
-                retval.severity = Constants.SEV_NORMAL;
+                retval.severity = EventConstants.SEV_NORMAL;
             }
             if (warning.match(risk)) {
-                retval.severity = Constants.SEV_WARNING;
+                retval.severity = EventConstants.SEV_WARNING;
             }
             if (minor.match(risk)) {
-                retval.severity = Constants.SEV_MINOR;
+                retval.severity = EventConstants.SEV_MINOR;
             }
             if (major.match(risk)) {
-                retval.severity = Constants.SEV_MAJOR;
+                retval.severity = EventConstants.SEV_MAJOR;
             }
             if (critical.match(risk)) {
-                retval.severity = Constants.SEV_CRITICAL;
+                retval.severity = EventConstants.SEV_CRITICAL;
             }
 
             // If we could not locate a severity in the string...
             if (retval.severity == 0) {
                 // Set it to be indeterminate
-                retval.severity = Constants.SEV_INDETERMINATE;
+                retval.severity = EventConstants.SEV_INDETERMINATE;
             }
 
             // Clear the severity line so that
@@ -263,7 +263,7 @@ public class NessusParser {
             descr = riskFactor.subst(descr, "");
         } else {
             risk = null;
-            retval.severity = Constants.SEV_INDETERMINATE;
+            retval.severity = EventConstants.SEV_INDETERMINATE;
         }
 
         // Get the CVE string

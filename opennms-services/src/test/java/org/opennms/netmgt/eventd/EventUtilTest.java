@@ -85,7 +85,7 @@ public class EventUtilTest extends OpenNMSTestCase {
         String testString = EventUtil.getValueOfParm(EventUtil.TAG_UEI, m_svcLostEvent);
         assertEquals("uei.opennms.org/nodes/nodeLostService", testString);
         
-        m_svcLostEvent.setSeverity(Constants.getSeverityString(Constants.SEV_MINOR));
+        m_svcLostEvent.setSeverity(Constants.getSeverityString(EventConstants.SEV_MINOR));
         testString = EventUtil.getValueOfParm(EventUtil.TAG_SEVERITY, m_svcLostEvent);
         assertEquals("Minor", testString);
         
