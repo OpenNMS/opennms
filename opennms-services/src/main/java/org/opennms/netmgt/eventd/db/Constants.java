@@ -41,6 +41,8 @@ package org.opennms.netmgt.eventd.db;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.netmgt.EventConstants;
+
 /**
  * This class contains the constants and methods related to inserting events
  * into the database
@@ -48,53 +50,7 @@ import java.util.List;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class Constants {
-    /**
-     * Enumerated values for severity being indeterminate
-     */
-    public final static int SEV_INDETERMINATE = 1;
-
-    /**
-     * Enumerated values for severity being unimplemented at this time
-     */
-    public final static int SEV_CLEARED = 2;
-
-    /**
-     * Enumerated values for severity indicates a warning
-     */
-    public final static int SEV_NORMAL = 3;
-
-    /**
-     * Enumerated values for severity indicates a warning
-     */
-    public final static int SEV_WARNING = 4;
-
-    /**
-     * Enumerated values for severity is minor
-     */
-    public final static int SEV_MINOR = 5;
-
-    /**
-     * Enumerated values for severity is major
-     */
-    public final static int SEV_MAJOR = 6;
-
-    /**
-     * Enumerated values for severity is critical
-     */
-    public final static int SEV_CRITICAL = 7;
-
-    /**
-     * Enumerated value for the state(tticket and forward) when entry is active
-     */
-    final static int STATE_ON = 1;
-
-    /**
-     * Enumerated value for the state(tticket and forward) when entry is not
-     * active
-     */
-    final static int STATE_OFF = 0;
-
+public class Constants extends EventConstants {
     /**
      * The 'parms' are added to a single column of the DB - the parm name and
      * value are added as delimiter separated list of ' <parmName>= <value>'
@@ -268,64 +224,6 @@ public class Constants {
         } else {
             return escapedString;
         }
-    }
-
-    /**
-     * Converts the severity to an integer
-     * 
-     * @return integer equivalent for the severity
-     */
-    public static int getSeverity(String sev) {
-        int rc = SEV_INDETERMINATE;
-        if (sev != null) {
-            sev = sev.trim();
-            if (sev.equalsIgnoreCase("normal"))
-                rc = SEV_NORMAL;
-            else if (sev.equalsIgnoreCase("warning"))
-                rc = SEV_WARNING;
-            else if (sev.equalsIgnoreCase("minor"))
-                rc = SEV_MINOR;
-            else if (sev.equalsIgnoreCase("major"))
-                rc = SEV_MAJOR;
-            else if (sev.equalsIgnoreCase("critical"))
-                rc = SEV_CRITICAL;
-            else if (sev.equalsIgnoreCase("cleared"))
-                rc = SEV_CLEARED;
-        }
-        return rc;
-    }
-    
-    /**
-     * Returns a severity constant as a printable string.
-     * 
-     * @param sev
-     * @return A capitalized String representing severity.
-     */
-    public static String getSeverityString(int sev) {
-        String retString = null;
-        switch (sev) {
-        case SEV_CLEARED :
-            retString = "Cleared";
-            break;
-        case SEV_CRITICAL :
-            retString = "Critical";
-            break;
-        case SEV_MAJOR :
-            retString = "Major";
-            break;
-        case SEV_MINOR :
-            retString = "Minor";
-            break;
-        case SEV_NORMAL :
-            retString = "Normal";
-            break;
-        case SEV_WARNING :
-            retString = "Warning";
-            break;
-        default :
-            retString = "Indeterminate";
-        }
-        return retString;
     }
 
 }
