@@ -55,9 +55,9 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
-import org.opennms.netmgt.eventd.db.Constants;
 
 /**
  * <p>
@@ -907,7 +907,7 @@ class NessusScan implements Runnable {
                         stmt.setTimestamp(7, currentTime);
 
                         // Use Normal severity for open ports
-                        stmt.setInt(8, Constants.SEV_NORMAL);
+                        stmt.setInt(8, EventConstants.SEV_NORMAL);
 
                         stmt.setInt(9, PORTSCAN_PLUGIN_ID);
                         stmt.setInt(10, 0);
