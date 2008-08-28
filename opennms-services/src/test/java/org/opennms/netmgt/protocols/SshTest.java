@@ -40,11 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 import org.opennms.netmgt.protocols.ssh.Ssh;
-import org.opennms.netmgt.protocols.ssh.Sshv1;
-import org.opennms.netmgt.protocols.ssh.Sshv2;
 
 import junit.framework.TestCase;
 
@@ -59,8 +56,7 @@ public class SshTest extends TestCase {
     private static final int PORT = 22;
     private static final int TIMEOUT = 2000;
     private TimeoutTracker tt;
-    Ssh v1;
-    Ssh v2;
+    Ssh ssh;
     InetAddress good, bad;
     
     public void setUp() throws Exception {
@@ -70,12 +66,9 @@ public class SshTest extends TestCase {
         parameters.put("timeout", Integer.toString(TIMEOUT));
         
         tt = new TimeoutTracker(parameters, 0, TIMEOUT);
-        v1 = new Sshv1();
-        v2 = new Sshv2();
-        v1.setPort(PORT);
-        v1.setTimeout(TIMEOUT);
-        v2.setPort(PORT);
-        v2.setTimeout(TIMEOUT);
+        ssh = new Ssh();
+        ssh.setPort(PORT);
+        ssh.setTimeout(TIMEOUT);
 
         try {
             good = InetAddress.getByName(GOOD_HOST);
@@ -85,35 +78,19 @@ public class SshTest extends TestCase {
         }
     }
     
-    public void testSshGoodV2() throws Exception {
-        v2.setAddress(good);
-        assertTrue(v2.poll(tt).isAvailable());
+    public void testSshGood() throws Exception {
+        ssh.setAddress(good);
+        assertTrue(ssh.poll(tt).isAvailable());
     }
     
-    public void testSshBadV1() throws Exception {
+    public void testSshBad() throws Exception {
         Date start = new Date();
-        v1.setAddress(bad);
-        assertFalse(v1.poll(tt).isAvailable());
+        ssh.setAddress(bad);
+        assertFalse(ssh.poll(tt).isAvailable());
         Date end = new Date();
 
         // give it 2.5 seconds to time out
         assertTrue(end.getTime() - start.getTime() < 2500);
     }
     
-    public void testSshBadV2() throws Exception {
-        Date start = new Date();
-        v2.setAddress(bad);
-        assertFalse(v2.poll(tt).isAvailable());
-        Date end = new Date();
-
-        // give it 2.5 seconds to time out
-        assertTrue(end.getTime() - start.getTime() < 2500);
-    }
-    
-    public void testSshWrongVersion() throws Exception {
-        v1.setAddress(good);
-        PollStatus result = v1.poll(tt);
-        assertFalse(result.isAvailable());
-        assertTrue(result.getReason().contains("does not support version"));
-    }
 }
