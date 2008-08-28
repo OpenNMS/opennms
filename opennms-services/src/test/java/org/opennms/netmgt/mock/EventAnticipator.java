@@ -44,7 +44,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

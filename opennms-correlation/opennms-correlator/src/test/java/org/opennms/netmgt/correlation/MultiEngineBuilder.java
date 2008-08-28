@@ -39,7 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 

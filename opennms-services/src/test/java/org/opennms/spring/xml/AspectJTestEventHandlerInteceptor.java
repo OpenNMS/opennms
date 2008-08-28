@@ -51,7 +51,7 @@ public class AspectJTestEventHandlerInteceptor implements Ordered {
     @Pointcut("execution(* *..AspectJTestEventHandler.*(..))")
     public void testMethods() {}
     
-    @Pointcut("@annotation(org.opennms.netmgt.utils.annotations.EventHandler)")
+    @Pointcut("@annotation(org.opennms.netmgt.model.events.annotations.EventHandler)")
     public void eventHandlers() {}
     
     @Pointcut("testMethods() && eventHandlers()")

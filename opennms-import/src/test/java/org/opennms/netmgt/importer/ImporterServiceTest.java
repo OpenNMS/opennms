@@ -41,7 +41,7 @@ package org.opennms.netmgt.importer;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;

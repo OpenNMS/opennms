@@ -52,8 +52,8 @@ import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
-import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 

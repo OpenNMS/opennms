@@ -36,8 +36,8 @@ import java.util.Date;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
 public class DefaultPollerService implements PollerService {

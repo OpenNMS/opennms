@@ -58,10 +58,10 @@ import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
+import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.ping.Pinger;
-import org.opennms.netmgt.utils.AnnotationBasedEventListenerAdapter;
-import org.opennms.netmgt.utils.annotations.EventHandler;
-import org.opennms.netmgt.utils.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -122,7 +122,7 @@ public class Discovery extends AbstractServiceDaemon {
         
         AnnotationBasedEventListenerAdapter listener = new AnnotationBasedEventListenerAdapter();
         listener.setAnnotatedListener(this);
-        listener.setEventIpcManager(EventIpcManagerFactory.getIpcManager());
+        listener.setEventSubscriptionService(EventIpcManagerFactory.getIpcManager());
         listener.afterPropertiesSet();
 
     }

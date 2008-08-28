@@ -38,7 +38,7 @@ package org.opennms.netmgt.threshd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.model.events.EventProxy;
 
 /**
  * <P>

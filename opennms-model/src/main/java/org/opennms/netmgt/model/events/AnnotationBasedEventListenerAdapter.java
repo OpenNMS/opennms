@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,12 +44,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.utils.annotations.EventExceptionHandler;
-import org.opennms.netmgt.utils.annotations.EventHandler;
-import org.opennms.netmgt.utils.annotations.EventListener;
-import org.opennms.netmgt.utils.annotations.EventPostProcessor;
-import org.opennms.netmgt.utils.annotations.EventPreProcessor;
+import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
+import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,22 +65,22 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     
     private String m_name = null;
     private Object m_annotatedListener;
-    private EventIpcManager m_eventIpcManager;
+    private EventSubscriptionService m_subscriptionService;
     private Map<String, Method> m_ueiToHandlerMap;
     private Set<String> m_subscribedEvents;
     private List<Method> m_eventPreProcessors;
     private List<Method> m_eventPostProcessors;
     private SortedSet<Method> m_exceptionHandlers;
     
-    public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventIpcManager eventIpcManager) {
+    public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService) {
         m_name = name;
         m_annotatedListener = annotatedListener;
-        m_eventIpcManager = eventIpcManager;
+        m_subscriptionService = subscriptionService;
         afterPropertiesSet();
     }
     
-    public AnnotationBasedEventListenerAdapter(Object annotatedListener, EventIpcManager eventIpcManager) {
-        this(null, annotatedListener, eventIpcManager);
+    public AnnotationBasedEventListenerAdapter(Object annotatedListener, EventSubscriptionService subscriptionService) {
+        this(null, annotatedListener, subscriptionService);
     }
     
     public AnnotationBasedEventListenerAdapter() {
@@ -171,7 +170,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     public void afterPropertiesSet() {
-        Assert.state(m_eventIpcManager != null, "eventIpcManager must be set");        
+        Assert.state(m_subscriptionService != null, "subscriptionService must be set");        
         Assert.state(m_annotatedListener != null, "must set the annotatedListener property");
         
         EventListener listenerInfo = findEventListenerAnnotation(m_annotatedListener);
@@ -193,7 +192,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         
         m_subscribedEvents = new HashSet<String>(m_ueiToHandlerMap.keySet());
         
-        m_eventIpcManager.addEventListener(this, m_subscribedEvents);
+        m_subscriptionService.addEventListener(this, m_subscribedEvents);
 
     }
 
@@ -301,15 +300,15 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
     
     public void stop() {
-        m_eventIpcManager.removeEventListener(this);
+        m_subscriptionService.removeEventListener(this);
     }
 
     public void destroy() throws Exception {
         stop();
     }
 
-    public void setEventIpcManager(EventIpcManager mgr) {
-        m_eventIpcManager = mgr;
+    public void setEventSubscriptionService(EventSubscriptionService subscriptionService) {
+        m_subscriptionService = subscriptionService;
     }
 
 }
