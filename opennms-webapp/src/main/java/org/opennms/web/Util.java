@@ -53,7 +53,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.web.element.NetworkElementFactory;
 

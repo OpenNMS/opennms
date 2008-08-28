@@ -54,7 +54,7 @@ import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.test.ConfigurationTestUtils;
 
 /**
@@ -124,7 +124,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
-     *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.utils.EventProxy, java.util.Map)}.
+     *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
      */
     public final void testCollect() throws Exception {
         

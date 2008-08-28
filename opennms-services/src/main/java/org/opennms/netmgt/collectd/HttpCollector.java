@@ -82,9 +82,9 @@ import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**

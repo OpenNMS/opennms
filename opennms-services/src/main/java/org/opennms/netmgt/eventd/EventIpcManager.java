@@ -37,8 +37,8 @@
 //
 package org.opennms.netmgt.eventd;
 
-import java.util.Collection;
-
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -48,7 +48,7 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public interface EventIpcManager {
+public interface EventIpcManager extends EventSubscriptionService, EventProxy {
     /**
      * Called by a service to send an event to eventd
      */
@@ -64,35 +64,4 @@ public interface EventIpcManager {
      * mess with Log everywhere that sends multiple events.
      */
 
-    /**
-     * Registers an event listener that is interested in all events
-     */
-    public void addEventListener(EventListener listener);
-
-    /**
-     * Registers an event listener interested in the UEIs in the passed list
-     */
-    public void addEventListener(EventListener listener, Collection<String> ueis);
-
-    /**
-     * Registers an event listener interested in the passed UEI
-     */
-    public void addEventListener(EventListener listener, String uei);
-
-    /**
-     * Removes a registered event listener
-     */
-    public void removeEventListener(EventListener listener);
-
-    /**
-     * Removes a registered event listener - the UEI list indicates the list of
-     * events the listener is no more interested in
-     */
-    public void removeEventListener(EventListener listener, Collection<String> ueis);
-
-    /**
-     * Removes a registered event listener - the UEI indicates an event the
-     * listener is no more interested in
-     */
-    public void removeEventListener(EventListener listener, String uei);
 }

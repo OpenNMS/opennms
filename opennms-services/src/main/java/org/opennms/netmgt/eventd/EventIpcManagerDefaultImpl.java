@@ -65,6 +65,8 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -218,6 +220,18 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     public EventIpcManagerDefaultImpl() {
+    }
+    
+    
+
+    public void send(Event event) throws EventProxyException {
+        sendNow(event);
+    }
+
+
+
+    public void send(Log eventLog) throws EventProxyException {
+        sendNow(eventLog);
     }
 
     /**

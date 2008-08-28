@@ -1250,7 +1250,7 @@
     <location>/errors/vulnerabilityidnotfound.jsp</location>
   </error-page>  
   <error-page>
-    <exception-type>org.opennms.netmgt.utils.EventProxyException</exception-type>
+    <exception-type>org.opennms.netmgt.model.events.EventProxyException</exception-type>
     <location>/errors/eventproxyexception.jsp</location>
   </error-page>  
   <error-page>

@@ -38,6 +38,8 @@ package org.opennms.netmgt.eventd;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.springframework.util.Assert;
@@ -92,6 +94,16 @@ public class EventIpcManagerProxy implements EventIpcManager {
     public void removeEventListener(EventListener listener, Collection<String> ueis) {
         assertState();
         m_delegate.addEventListener(listener, ueis);
+    }
+    
+    public void send(Event event) throws EventProxyException {
+        assertState();
+        m_delegate.send(event);
+    }
+
+    public void send(Log eventLog) throws EventProxyException {
+        assertState();
+        m_delegate.send(eventLog);
     }
 
     public void sendNow(Event event) {

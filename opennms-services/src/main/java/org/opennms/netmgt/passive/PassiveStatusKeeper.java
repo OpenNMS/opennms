@@ -48,8 +48,8 @@ import org.opennms.netmgt.config.PassiveStatusKey;
 import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 

@@ -57,7 +57,7 @@ import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;

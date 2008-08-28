@@ -29,7 +29,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
 
 public class EventProxyException extends Exception {
     public EventProxyException() {

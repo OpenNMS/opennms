@@ -1,7 +1,7 @@
 package org.opennms.web.rest;
 
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 

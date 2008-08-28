@@ -44,10 +44,10 @@ import java.sql.SQLException;
 
 import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.trapd.EventConstants;
-import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

@@ -35,7 +35,7 @@ package org.opennms.netmgt.collectd;
 import java.util.Map;
 
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.model.events.EventProxy;
 
 /**
  * The Collector class.

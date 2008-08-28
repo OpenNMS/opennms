@@ -56,7 +56,7 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockUtil;

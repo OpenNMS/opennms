@@ -3,7 +3,7 @@ package org.opennms.netmgt.correlation.drools;
 import static org.easymock.EasyMock.expect;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
