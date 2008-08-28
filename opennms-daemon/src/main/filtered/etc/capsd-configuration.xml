@@ -95,14 +95,8 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
     </protocol-plugin>
-    <protocol-plugin protocol="SSHv1" class-name="org.opennms.netmgt.capsd.plugins.SshPlugin" scan="on" user-defined="false">
-        <property key="version" value="1" />
-        <property key="port" value="22" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="1" />
-    </protocol-plugin>
     <protocol-plugin protocol="SSH" class-name="org.opennms.netmgt.capsd.plugins.SshPlugin" scan="on" user-defined="false">
-        <property key="version" value="2" />
+        <property key="banner" value="SSH" />
         <property key="port" value="22" />
         <property key="timeout" value="3000" />
         <property key="retry" value="1" />
