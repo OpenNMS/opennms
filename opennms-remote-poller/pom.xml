@@ -26,6 +26,7 @@
         <artifactId>gmaven-plugin</artifactId>
         <executions>
           <execution>
+            <id>generate-key</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>execute</goal>
@@ -49,6 +50,12 @@
                 }
               </source>
             </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -110,18 +117,6 @@
           </descriptorRefs>
         <tarLongFileMode>gnu</tarLongFileMode>
       </configuration>
-    </plugin>
-    <plugin>
-      <groupId>org.opennms.maven.plugins</groupId>
-      <artifactId>opennms-groovyc-plugin</artifactId>
-      <executions>
-        <execution>
-          <goals>
-            <goal>compile</goal>
-            <goal>test-compile</goal>
-          </goals>
-        </execution>
-      </executions>
     </plugin>
     <plugin>
       <groupId>org.codehaus.mojo</groupId>
