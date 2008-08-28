@@ -35307,7 +35307,2802 @@ changes.&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/traps/ciscoSlbVServerVIPStateChange:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" alarm-type="1" auto-clean="false" />
 </event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeOutOfService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeInService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeStandby</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeStbInOperReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeTestReal</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>7</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeOutOfMemory</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a virtual
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbVirtualServerState contains the new state of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualIpAddress contains the ip address of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualProtocol contains the protocol of the 
+virtual server identified by slbVirtualServerName.
+
+- slbVirtualPort contains the port number of the 
+virtual server identified by slbVirtualServerName.
+
+- slbName contains the name of the virtual server
+identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		standby(3)
+		inOperReal(4)
+		stbInOperReal(5)
+		testReal(6)
+		outOfMemory(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbVirtualPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbVirtualServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbVirtualServerState=%parm[#2]% 
+			slbVirtualIpAddress=%parm[#3]% 
+			slbVirtualProtocol=%parm[#4]% 
+			slbVirtualPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeOutOfService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeInService</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeFailed</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeReadyToTest</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>5</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeTesting</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>6</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeMaxConnsThrottle</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>7</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeMaxClientsThrottle</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>8</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeDfpThrottle</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>9</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeProbeFailed</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>10</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeProbeTesting</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>11</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeOperWait</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>12</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeTestWait</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>13</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeInbandProbeFailed</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>14</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeReturnCodeFailed</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>15</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeArpFailed</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>16</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeStandby</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>17</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeInactive</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>18</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeMaxLoad</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.161.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange</uei>
+	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real
+server changes to a new state.
+
+- entPhysicalParentRelPos contains the slot
+number of the module.
+
+- slbRealState contains the new state of real
+server identified by slbRealIpAddress.
+
+- slbInetAddressType contains the type of IP 
+address configured in slbInetAddress.
+
+- slbInetAddress contains the ip address of the
+real server identified by the INDEX object 
+slbRealIpAddress.
+
+- slbPort contains the TCP/UDP port of the real 
+server identified by the INDEX object slbRealPort.
+
+- slbName contains the serverfarm name atached to
+to the real server identified by the INDEX object
+slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalParentRelPos&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbRealState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoSlbRealServerStateChange trap received 
+			entPhysicalParentRelPos=%parm[#1]% 
+			slbRealState=%parm[#2]% 
+			slbInetAddressType=%parm[#3]% 
+			slbInetAddress=%parm[#4]% 
+			slbPort=%parm[#5]% 
+			slbName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
 <!-- End of auto generated data from MIB: CISCO-SLB-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-SLB-HEALTH-MON-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.508</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/cshMonSocketOveruse</uei>
+	<event-label>CISCO-SLB-HEALTH-MON-MIB defined trap event: cshMonSocketOveruse</event-label>
+	<descr>
+&lt;p&gt;The notification is generated when probes socket usage
+exceeds or equals 90% atleast 100 times in one minute.
+The object cshMonSocketOverusageCount represents the number 
+of times the probes socket usage exceeded 90 percentage 
+in that minute.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cshMonSocketOverusageCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cshMonSocketOveruse trap received 
+			cshMonSocketOverusageCount=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.508</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/cshMonSocketNormalUse</uei>
+	<event-label>CISCO-SLB-HEALTH-MON-MIB defined trap event: cshMonSocketNormalUse</event-label>
+	<descr>
+&lt;p&gt;The notification is generated when the probes socket usage
+becomes normal i.e the socket usage does not exceed 90% 100 or
+more times in that minute and after cshMonSocketOveruse 
+notification is generated.
+The object cshMonSocketOverusageCount represents the number of
+times the probes socket usage exceeded 90 percentage in that 
+minute.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cshMonSocketOverusageCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cshMonSocketNormalUse trap received 
+			cshMonSocketOverusageCount=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/cshMonSocketOveruse:%dpname%:%nodeid%:%interface%" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-SLB-HEALTH-MON-MIB -->
 <!-- Start of auto generated data from MIB: CISCO-STACKWISE-MIB -->
 <event>
 	<mask>
