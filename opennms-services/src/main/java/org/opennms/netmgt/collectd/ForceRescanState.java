@@ -38,8 +38,8 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
 public class ForceRescanState {

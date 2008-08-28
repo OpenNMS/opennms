@@ -61,9 +61,9 @@
         </property>
     </bean>
     
-    <bean name="capsdEventListenerAdapter" class="org.opennms.netmgt.utils.AnnotationBasedEventListenerAdapter">
+    <bean name="capsdEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
         <property name="annotatedListener" ref="capsdBroadcastProcessor" />
-        <property name="eventIpcManager" ref="eventIpcManager" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
         
     

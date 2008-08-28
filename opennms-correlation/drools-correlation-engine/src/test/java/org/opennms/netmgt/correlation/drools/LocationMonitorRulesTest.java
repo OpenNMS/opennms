@@ -1,6 +1,6 @@
 package org.opennms.netmgt.correlation.drools;
 
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 public class LocationMonitorRulesTest extends CorrelationRulesTestCase {

@@ -29,21 +29,22 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.utils.annotations.EventExceptionHandler;
-import org.opennms.netmgt.utils.annotations.EventHandler;
-import org.opennms.netmgt.utils.annotations.EventListener;
-import org.opennms.netmgt.utils.annotations.EventPostProcessor;
-import org.opennms.netmgt.utils.annotations.EventPreProcessor;
+import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
+import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -52,7 +53,7 @@ import org.opennms.test.mock.EasyMockUtils;
  *
  * @author brozow
  */
-public class AnnotationBasedEventListenerAdapterTest extends TestCase {
+public class AnnotationBasedEventListenerAdapterTest {
     
     private static final String ANNOTATED_NAME = "AnotatedListenerName";
     private static final String OVERRIDEN_NAME = "OverriddenName";
@@ -60,7 +61,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
     private AnnotatedListener m_annotatedListener;
     private AnnotationBasedEventListenerAdapter m_adapter;
     private EasyMockUtils m_mockUtils;
-    private EventIpcManager m_eventIpcMgr;
+    private EventSubscriptionService m_eventIpcMgr;
     private Set<String> m_subscriptions;
     
     @EventListener(name=ANNOTATED_NAME)
@@ -116,17 +117,17 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         
         m_mockUtils = new EasyMockUtils();
         
-        m_eventIpcMgr = m_mockUtils.createMock(EventIpcManager.class);
+        m_eventIpcMgr = m_mockUtils.createMock(EventSubscriptionService.class);
 
         m_annotatedListener = new AnnotatedListener();
         m_adapter = new AnnotationBasedEventListenerAdapter();
         m_adapter.setAnnotatedListener(m_annotatedListener);
-        m_adapter.setEventIpcManager(m_eventIpcMgr);
+        m_adapter.setEventSubscriptionService(m_eventIpcMgr);
         
         m_subscriptions = new HashSet<String>();
         
@@ -139,13 +140,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         m_eventIpcMgr.addEventListener(m_adapter, m_subscriptions);
     }
 
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    
+    @Test
     public void testDerivedClass() throws Exception {
         
         AnnotationBasedEventListenerAdapter adapter = new AnnotationBasedEventListenerAdapter();
@@ -163,7 +158,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         DerivedListener derivedListener = new DerivedListener();
         
         adapter.setAnnotatedListener(derivedListener);
-        adapter.setEventIpcManager(m_eventIpcMgr);
+        adapter.setEventSubscriptionService(m_eventIpcMgr);
         adapter.afterPropertiesSet();
         
 
@@ -180,7 +175,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         m_mockUtils.verifyAll();
     }
     
-    
+    @Test
     public void testGetNameFromAnnotation() throws Exception {
         m_mockUtils.replayAll();
         
@@ -190,6 +185,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         m_mockUtils.verifyAll();
     }
     
+    @Test
     public void testOverriddenName() throws Exception {
         m_mockUtils.replayAll();
 
@@ -201,6 +197,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         m_mockUtils.verifyAll();
     }
     
+    @Test
     public void testSendMatchingEvent() {
         
         m_mockUtils.replayAll();
@@ -221,6 +218,7 @@ public class AnnotationBasedEventListenerAdapterTest extends TestCase {
         
     }
     
+    @Test
     public void testProcessingException() {
         
         m_mockUtils.replayAll();

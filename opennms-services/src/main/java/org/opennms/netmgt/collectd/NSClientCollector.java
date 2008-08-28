@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.nsclient.Attrib;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.Wpm;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
@@ -40,7 +41,6 @@ import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.utils.EventProxy;
 
 public class NSClientCollector implements ServiceCollector {
 

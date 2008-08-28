@@ -53,6 +53,8 @@ import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.Marshaller;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;

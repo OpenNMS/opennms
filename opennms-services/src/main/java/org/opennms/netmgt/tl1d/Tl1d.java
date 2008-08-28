@@ -45,8 +45,8 @@ import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.Tl1ConfigurationDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 

@@ -54,7 +54,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.utils.AnnotationBasedEventListenerAdapter;
+import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -29,13 +29,12 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
 
 import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -90,7 +89,7 @@ public class EventBuilder {
     }
     
     public EventBuilder setSeverity(String severity) {
-    	m_event.setSeverity(Constants.getSeverityString(Constants.getSeverity(severity)));
+    	m_event.setSeverity(EventConstants.getSeverityString(EventConstants.getSeverity(severity)));
     	return this;
     }
 

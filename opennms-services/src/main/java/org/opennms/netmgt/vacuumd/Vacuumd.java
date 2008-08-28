@@ -58,7 +58,7 @@ import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;

@@ -44,11 +44,11 @@ import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;

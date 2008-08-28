@@ -52,7 +52,8 @@ import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerProxy;
-import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockUtil;
@@ -265,6 +266,14 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_proxy, "expected to have proxy set");
         m_proxy.setDelegate(this);
+    }
+
+    public void send(Event event) throws EventProxyException {
+        sendNow(event);
+    }
+
+    public void send(Log eventLog) throws EventProxyException {
+        sendNow(eventLog);
     }
 
 }
