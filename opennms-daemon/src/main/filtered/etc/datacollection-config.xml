@@ -1625,6 +1625,13 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.14" instance="sinfNetInstance" alias="netPktsPerSec" type="Gauge32" />
       </group>
 
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-termsvc-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.81.1" instance="0" alias="sinfTsActiveSess" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.81.2" instance="0" alias="sinfTsInactiveSess" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.81.3" instance="0" alias="sinfTsTotalSess" type="gauge" />
+      </group>
+
       <!-- 3Com MIBs -->
       <group name="3com-router-perf" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.4" instance="0" alias="a3perfBufMemAvail" type="integer" />

@@ -85,22 +85,6 @@ public final class IfXTableEntry extends SnmpTableEntry {
 
     public final static String IF_OUT_BCAST_PKTS = "ifOutBroadcastPkts";
 
-    public final static String IF_HC_IN_OCTETS = "ifHCInOctets";
-
-    public final static String IF_HC_IN_UCAST_PKTS = "ifHCInUcastPkts";
-
-    public final static String IF_HC_IN_MCAST_PKTS = "ifHCInMcastPkts";
-
-    public final static String IF_HC_IN_BCAST_PKTS = "ifHCInBcastPkts";
-
-    public final static String IF_HC_OUT_OCTETS = "ifHCOutOctets";
-
-    public final static String IF_HC_OUT_UCAST_PKTS = "ifHCOutUcastPkts";
-
-    public final static String IF_HC_OUT_MCAST_PKTS = "ifHCOutMcastPkts";
-
-    public final static String IF_HC_OUT_BCAST_PKTS = "ifHCOutBcastPkts";
-
     public final static String IF_LINK_UP_DOWN_TRAP_ENABLE = "ifLinkUpDownTrapEnable";
 
     public final static String IF_HIGH_SPEED = "ifHighSpeed";
@@ -130,7 +114,7 @@ public final class IfXTableEntry extends SnmpTableEntry {
      * WARNING: This value must be incremented by one for each new object added
      * to the ms_elemList variable
      */
-    static int NUM_OIDS = 19;
+    static int NUM_OIDS = 10;
     
     public static NamedSnmpVar[] ms_elemList = null;
 
@@ -148,21 +132,12 @@ public final class IfXTableEntry extends SnmpTableEntry {
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_MCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.2", 2);
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_IN_BCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.3", 3);
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_MCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.4", 4);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, IF_OUT_BCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.5", 5);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_IN_OCTETS, ".1.3.6.1.2.1.31.1.1.1.6", 6);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_IN_UCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.7", 7);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_IN_MCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.8", 8);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_IN_BCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.9", 9);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_OUT_OCTETS, ".1.3.6.1.2.1.31.1.1.1.10", 10);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_OUT_UCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.11", 11);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_OUT_MCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.12", 12);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER64, IF_HC_OUT_BCAST_PKTS, ".1.3.6.1.2.1.31.1.1.1.13", 13);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_LINK_UP_DOWN_TRAP_ENABLE, ".1.3.6.1.2.1.31.1.1.1.14", 14);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, IF_HIGH_SPEED, ".1.3.6.1.2.1.31.1.1.1.15", 15);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_PROMISCUOUS_MODE, ".1.3.6.1.2.1.31.1.1.1.16", 16);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_CONNECTOR_PRESENT, ".1.3.6.1.2.1.31.1.1.1.17", 17);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, IF_ALIAS, ".1.3.6.1.2.1.31.1.1.1.18", 18);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, IF_COUNTER_DISCONTINUITY_TIME, ".1.3.6.1.2.1.31.1.1.1.19", 19);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_LINK_UP_DOWN_TRAP_ENABLE, ".1.3.6.1.2.1.31.1.1.1.14", 5);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, IF_HIGH_SPEED, ".1.3.6.1.2.1.31.1.1.1.15", 6);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_PROMISCUOUS_MODE, ".1.3.6.1.2.1.31.1.1.1.16", 7);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IF_CONNECTOR_PRESENT, ".1.3.6.1.2.1.31.1.1.1.17", 8);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, IF_ALIAS, ".1.3.6.1.2.1.31.1.1.1.18", 9);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, IF_COUNTER_DISCONTINUITY_TIME, ".1.3.6.1.2.1.31.1.1.1.19", 10);
     }
 
     /**
