@@ -193,19 +193,23 @@ public class Main {
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
+            	log().debug("shouldExit: received property change event: "+e.getPropertyName()+";oldvalue:"+e.getOldValue()+";newvalue:"+e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
                 
                 // if exitNecessary becomes true.. then return true
                 if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+                	log().info("shouldExit: Exiting because exitNecessary is TRUE");
                     return true;
                 }
                 
                 // if started becomes false the we should exit
                 if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
+                	log().info("shouldExit: Exiting because started is now false");
                     return true;
                 }
                 
+            	log().debug("shouldExit: not exiting");
                 return false;
                 
             }
