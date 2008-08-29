@@ -19,7 +19,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>groovy</groupId>
+      <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
     </dependency>
   </dependencies>
