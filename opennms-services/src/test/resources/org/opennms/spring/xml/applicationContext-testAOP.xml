@@ -20,7 +20,7 @@
     <bean name="handler" class="org.opennms.spring.xml.AspectJTestEventHandler" />
     
     <bean name="adapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
-        <property name="eventIpcManager" ref="eventIpcManager" />
+        <property name="eventSubscriptionService" ref="eventIpcManager" />
         <property name="annotatedListener" ref="handler" />
     </bean>
 
