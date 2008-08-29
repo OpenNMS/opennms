@@ -79,7 +79,7 @@ public class ImporterServiceJmxTest {
         mbean.init();
         mbean.start();
         
-        Thread.sleep(3000);
+        Thread.sleep(10000);
         
         mbean.stop();
     }
