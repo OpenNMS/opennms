@@ -10,7 +10,7 @@
 //
 // Modifications:
 //
-// 2008 Aug 29: CollectionException is now our parent and indent. - dj@opennms.org
+// 2008 Aug 29: Copied from CollectionWarning. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -35,30 +35,10 @@
 //
 package org.opennms.netmgt.collectd;
 
-public class CollectionWarning extends CollectionException {
+public class CollectionTimedOut extends CollectionException {
     private static final long serialVersionUID = 1L;
 
-    public CollectionWarning() {
-        super();
-    }
-
-    public CollectionWarning(String message) {
+    public CollectionTimedOut(String message) {
         super(message);
-    }
-
-    public CollectionWarning(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public CollectionWarning(Throwable cause) {
-        super(cause);
-    }
-
-    protected void logError() {
-        if (getCause() == null) {
-            log().warn(getMessage());
-        } else {
-            log().warn(getMessage(), getCause());
-        }
     }
 }

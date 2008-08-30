@@ -10,7 +10,7 @@
 //
 // Modifications:
 //
-// 2008 Aug 29: CollectionException is now our parent and indent. - dj@opennms.org
+// 2008 Aug 29: Copied from CollectionWarning. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -35,22 +35,26 @@
 //
 package org.opennms.netmgt.collectd;
 
-public class CollectionWarning extends CollectionException {
+public class CollectionFailed extends CollectionException {
     private static final long serialVersionUID = 1L;
 
-    public CollectionWarning() {
+    public CollectionFailed() {
         super();
     }
 
-    public CollectionWarning(String message) {
+    public CollectionFailed(int code) {
+        super("Collection failed for an unknown reason (code " + code + ".  Please review previous logs for this thread for details.  You can also open up an enhancement bug report (include your logs) to request that failure messages are logged for this type of error.");
+    }
+
+    public CollectionFailed(String message) {
         super(message);
     }
 
-    public CollectionWarning(String message, Throwable cause) {
+    public CollectionFailed(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CollectionWarning(Throwable cause) {
+    public CollectionFailed(Throwable cause) {
         super(cause);
     }
 

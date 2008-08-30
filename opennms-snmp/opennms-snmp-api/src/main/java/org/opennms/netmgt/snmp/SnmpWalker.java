@@ -52,13 +52,15 @@ public abstract class SnmpWalker {
     private String m_name;
     private CollectionTracker m_tracker;
 
-    private boolean m_error;
     private BarrierSignaler m_signal;
 
     private InetAddress m_address;
     private WalkerPduBuilder m_pduBuilder;
     private ResponseProcessor m_responseProcessor;
     private int m_maxVarsPerPdu;
+    private boolean m_error = false;
+    private String m_errorMessage;
+    private Throwable m_errorThrowable;
     
     protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepititions, CollectionTracker tracker) {
         m_address = address;
@@ -66,8 +68,6 @@ public abstract class SnmpWalker {
         
         m_name = name;
 
-        m_error = false;
-        
         m_tracker = tracker;
         m_tracker.setMaxRepititions(maxRepititions);
         
@@ -102,6 +102,10 @@ public abstract class SnmpWalker {
 
     protected abstract void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException;
 
+    protected void handleDone() {
+        finish();
+    }
+
     /**
      * <P>
      * Returns the success or failure code for collection of the data.
@@ -110,36 +114,39 @@ public abstract class SnmpWalker {
     public boolean failed() {
         return m_error;
     }
-
-    protected void handleAuthError(String msg) {
-        m_error = true;
-        m_tracker.setFailed(true);
-        log().info(getName()+": Authentication error processing "+getName()+" for "+m_address);
-        finish();
+    
+    public boolean timedOut() {
+        return m_tracker.timedOut();
     }
 
-    protected void handleDone() {
-        finish();
+    protected void handleAuthError(String msg) {
+        m_tracker.setFailed(true);
+        processError("Authentication error processing", msg, null);
     }
 
     protected void handleError(String msg) {
-        m_error = true;
+        // XXX why do we set timedOut to false here?  should we be doing this everywhere?
         m_tracker.setTimedOut(false);
-        log().info(getName()+": Error retrieving "+getName()+" for "+m_address+": "+msg);
-        finish();
+        processError("Error retrieving", msg, null);
     }
 
     protected void handleFatalError(Throwable e) {
-        m_error = true;
         m_tracker.setFailed(true);
-        log().error(getName()+": Unexpected Error occurred processing "+getName()+" for "+m_address, e);
-        finish();
+        processError("Unexpected error occurred processing", e.toString(), e);
     }
     
     protected void handleTimeout(String msg) {
-        m_error = true;
         m_tracker.setTimedOut(true);
-        log().info(getName()+": Timeout retrieving "+getName()+" for "+m_address+": "+msg);
+        processError("Timeout retrieving", msg, null);
+    }
+
+    private void processError(String reason, String cause, Throwable t) {
+        String logMessage = reason + " " + getName() + " for " + m_address + ": " + cause;
+
+        m_error = true;
+        m_errorMessage = logMessage;
+        m_errorThrowable = t;
+        
         finish();
     }
 
@@ -193,6 +200,14 @@ public abstract class SnmpWalker {
 
     protected InetAddress getAddress() {
         return m_address;
+    }
+
+    public String getErrorMessage() {
+        return m_errorMessage;
+    }
+
+    public Throwable getErrorThrowable() {
+        return m_errorThrowable;
     }
 
 }

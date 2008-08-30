@@ -10,6 +10,7 @@
  * 
  * Modifications:
  *
+ * 2008 Aug 29: collect() can now throw CollectionException. - dj@opennms.org
  * 2008 Feb 09: Fix warnings. - dj@opennms.org
  * 2008 Jan 24: Fix testOneMatchingSpec test. - dj@opennms.org
  * 2007 Jun 30: Make tests work again. - dj@opennms.org
@@ -329,7 +330,7 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    public void testOneMatchingSpec() {
+    public void testOneMatchingSpec() throws CollectionException {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
 
@@ -436,7 +437,7 @@ public class CollectdTest extends TestCase {
             s_delegate = delegate;
         }
         
-        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
+        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) throws CollectionException {
             return s_delegate.collect(agent, eproxy, parameters);
         }
 
