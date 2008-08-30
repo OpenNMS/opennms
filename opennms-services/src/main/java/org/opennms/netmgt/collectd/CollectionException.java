@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Aug 29: Copied from CollectionError. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,25 +38,25 @@ package org.opennms.netmgt.collectd;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
-public class CollectionError extends Exception {
+public class CollectionException extends Exception {
     
     private static final long serialVersionUID = 1L;
 
     private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
-    public CollectionError() {
+    public CollectionException() {
         super();
     }
 
-    public CollectionError(String message) {
+    public CollectionException(String message) {
         super(message);
     }
 
-    public CollectionError(String message, Throwable cause) {
+    public CollectionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CollectionError(Throwable cause) {
+    public CollectionException(Throwable cause) {
         super(cause);
     }
 

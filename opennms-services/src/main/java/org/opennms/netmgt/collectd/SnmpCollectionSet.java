@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 29: Throw detailed failure exceptions in collect(). - dj@opennms.org
 // 2006 Aug 15: Formatting, use generics for collections, be explicit about method visibility, add support for generic indexes. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -276,40 +277,57 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         				+ getCollectionAgent().getHostAddress() + " complete.");
     }
 
-    void verifySuccessfulWalk(SnmpWalker walker) throws CollectionWarning {
-        if (walker.failed()) {
-        	// Log error and return COLLECTION_FAILED
-        	throw new CollectionWarning("collect: collection failed for "
-        			+ getCollectionAgent().getHostAddress());
+    /**
+     * Log error and return COLLECTION_FAILED is there is a failure.
+     * 
+     * @param walker
+     * @throws CollectionWarning
+     */
+    void verifySuccessfulWalk(SnmpWalker walker) throws CollectionException {
+        if (!walker.failed()) {
+            return;
+        }
+        
+        if (walker.timedOut()) {
+            throw new CollectionTimedOut(walker.getErrorMessage());
+        }
+        
+        String message = "collection failed for "
+            + getCollectionAgent().getHostAddress() 
+            + " due to: " + walker.getErrorMessage();
+        if (walker.getErrorThrowable() != null) {
+            throw new CollectionWarning(message, walker.getErrorThrowable());
+        } else {
+            throw new CollectionWarning(message, null);
         }
     }
 
-    void collect() throws CollectionWarning {
+    void collect() throws CollectionException {
     	// XXX Should we have a call to hasDataToCollect here?
         try {
-    
             // now collect the data
-    		SnmpWalker walker = createWalker();
-    		walker.start();
+            SnmpWalker walker = createWalker();
+            walker.start();
     
             logStartedWalker();
     
-    		// wait for collection to finish
-    		walker.waitFor();
+            // wait for collection to finish
+            walker.waitFor();
     
-    		logFinishedWalker();
+            logFinishedWalker();
     
-    		// Was the collection successful?
-    		verifySuccessfulWalk(walker);
-                m_status=ServiceCollector.COLLECTION_SUCCEEDED;
-    		getCollectionAgent().setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
+            // Was the collection successful?
+            verifySuccessfulWalk(walker);
+
+            getCollectionAgent().setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
             
-    	} catch (InterruptedException e) {
-    		Thread.currentThread().interrupt();
+            m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new CollectionWarning("collect: Collection of node SNMP "
-            		+ "data for interface " + getCollectionAgent().getHostAddress()
-            		+ " interrupted!", e);
-    	}
+                    + "data for interface " + getCollectionAgent().getHostAddress()
+                    + " interrupted: " + e, e);
+        }
     }
 
     void checkForNewInterfaces(SnmpCollectionSet.RescanNeeded rescanNeeded) {
