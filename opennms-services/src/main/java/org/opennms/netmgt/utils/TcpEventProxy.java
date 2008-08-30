@@ -118,12 +118,12 @@ public final class TcpEventProxy implements EventProxy {
      *                thrown if the send fails for any reason
      */
     public void send(Event event) throws EventProxyException {
-	Log elog = new Log();
-	Events events = new Events();
-	events.addEvent(event);
-	elog.setEvents(events);
+        Log elog = new Log();
+        Events events = new Events();
+        events.addEvent(event);
+        elog.setEvents(events);
 
-	send(elog);
+        send(elog);
     }
 
     /**
@@ -162,12 +162,12 @@ public final class TcpEventProxy implements EventProxy {
         public Connection(InetAddress target, int port) throws IOException {
             // get a socket and set the timeout
             //
-	    try {
+            try {
                 m_sock = new Socket(target, port);
             } catch (ConnectException e) {
-	 	ConnectException n = new ConnectException("Could not connect to event daemon at " + target + " on port " + Integer.toString(port) + ": " + e.getMessage());
-		n.initCause(e);
-	        throw n;
+                ConnectException n = new ConnectException("Could not connect to event daemon at " + target + " on port " + Integer.toString(port) + ": " + e.getMessage());
+                n.initCause(e);
+                throw n;
             }
             m_sock.setSoTimeout(500);
 
