@@ -9,6 +9,9 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Aug 29: We are now passing CollectionExceptions not
+ *              CollectionErrors. - dj@opennms.org
  * 
  * Created: July 20, 2007
  *
@@ -55,7 +58,7 @@ public interface CollectdInstrumentation {
     public void endCollectingServiceData(int nodeId, String ipAddress, String svcName);
     public void beginPersistingServiceData(int nodeId, String ipAddress, String svcName);
     public void endPersistingServiceData(int nodeId, String ipAddress, String svcName);
-    public void reportCollectionError(int nodeid, String ipAddress, String svcName, CollectionError e);
+    public void reportCollectionException(int nodeid, String ipAddress, String svcName, CollectionException e);
     
 
 }

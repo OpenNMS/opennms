@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 29: collect() can now throw CollectionException. - dj@opennms.org
 // 2008 May 13: Change expectation on IpInterfaceDao from get to load. - dj@opennms.org
 // 2008 Feb 09: Eliminate warnings. - dj@opennms.org
 //
@@ -298,7 +299,7 @@ public class SnmpCollectorTest extends TestCase {
     }
 
     private void collectNTimes(CollectionSpecification spec,
-            CollectionAgent agent, int numUpdates) throws InterruptedException {
+            CollectionAgent agent, int numUpdates) throws InterruptedException, CollectionException {
         for(int i = 0; i < numUpdates; i++) {
 
             // now do the actual collection

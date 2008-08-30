@@ -1,46 +1,47 @@
-
-//This file is part of the OpenNMS(R) Application.
-
-//OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
-//reserved.
-//OpenNMS(R) is a derivative work, containing both original code, included
-//code and modified
-//code that was published under the GNU General Public License. Copyrights
-//for modified
-//and included code are below.
-
-//OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-
-//Modifications:
-
-//2006 Aug 15: Make error messages more descriptive - dj@opennms.org
-//2005 Jan 03: Added support for lame SNMP hosts
-//2003 Oct 20: Added minval and maxval code for mibObj RRDs
-//2003 Jan 31: Cleaned up some unused imports.
-
-//Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-//reserved.
-
-//This program is free software; you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation; either version 2 of the License, or
-//(at your option) any later version.
-
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//GNU General Public License for more details.
-
-//You should have received a copy of the GNU General Public License
-//along with this program; if not, write to the Free Software
-//Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-//For more information contact:
-//OpenNMS Licensing <license@opennms.org>
-//http://www.opennms.org/
-//http://www.opennms.com/
-
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+ * reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included
+ * code and modified
+ * code that was published under the GNU General Public License. Copyrights
+ * for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * 2008 Aug 29: Remove superfluous comments, cleanup other comments, and
+ *              improve log messages. - dj@opennms.org
+ * 2006 Aug 15: Make error messages more descriptive - dj@opennms.org
+ * 2005 Jan 03: Added support for lame SNMP hosts
+ * 2003 Oct 20: Added minval and maxval code for mibObj RRDs
+ * 2003 Jan 31: Cleaned up some unused imports.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+ * reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.collectd;
 
 import java.beans.PropertyVetoException;
@@ -226,16 +227,10 @@ public class SnmpCollector implements ServiceCollector {
      *                plug-in from functioning.
      */
     public void initialize(Map parameters) {
-
-        // Initialize the SnmpPeerFactory
         initSnmpPeerFactory();
-
-        // Initialize the DataCollectionConfigFactory
         initDataCollectionConfig();
-
-        // Make sure we can connect to the database
         initDatabaseConnectionFactory();
-
+        
         // Get path to RRD repository
         //initializeRrdRepository();
 
@@ -271,22 +266,22 @@ public class SnmpCollector implements ServiceCollector {
         try {
             DataSourceFactory.init();
         } catch (IOException e) {
-            log().fatal("initDatabaseConnectionFactory: IOException getting database connection", e);
+            log().fatal("initDatabaseConnectionFactory: IOException getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (MarshalException e) {
-            log().fatal("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
+            log().fatal("initDatabaseConnectionFactory: Marshall Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
+            log().fatal("initDatabaseConnectionFactory: Validation Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
+            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
+            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed loading database driver.", e);
+            log().fatal("initDatabaseConnectionFactory: Failed loading database driver: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -295,13 +290,13 @@ public class SnmpCollector implements ServiceCollector {
         try {
             DataCollectionConfigFactory.init();
         } catch (MarshalException e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
+            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
+            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
+            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -310,13 +305,13 @@ public class SnmpCollector implements ServiceCollector {
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration", e);
+            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration", e);
+            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration", e);
+            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -370,15 +365,13 @@ public class SnmpCollector implements ServiceCollector {
      *            Key/value pairs from the package to which the interface
      *            belongs.
      */
-    public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) {
+    public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) throws CollectionException {
         try {
-            
-
             // XXX: Experimental code that reuses the OnmsSnmpCollection
-//            OnmsSnmpCollection snmpCollection = (OnmsSnmpCollection)agent.getAttribute("SNMP_COLLECTION");
-//            ServiceParameters params = snmpCollection.getServiceParameters();
+            // OnmsSnmpCollection snmpCollection = (OnmsSnmpCollection)agent.getAttribute("SNMP_COLLECTION");
+            // ServiceParameters params = snmpCollection.getServiceParameters();
             
-            // XXX: This code is commented out in light of the expermintal code above
+            // XXX: This code would be commented out in light if the expermintal code above was enabled
             final ServiceParameters params = new ServiceParameters(parameters);
             params.logIfAliasConfig();
             OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
@@ -388,32 +381,33 @@ public class SnmpCollector implements ServiceCollector {
             SnmpCollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
             if (!collectionSet.hasDataToCollect()) {
                 logNoDataToCollect(agent);
+                // should we return here?
             }
             
             Collectd.instrumentation().beginCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
             try {
                 collectionSet.collect();
                 if (collectionSet.rescanNeeded()) {
-                    
-                    //TODO: the behavior of this object may have been re-factored away
-                    //verify that this is correct and remove this unused object if it
-                    //is no longer needed.  My gut thinks this should be investigated.
+                    /*
+                     * TODO: the behavior of this object may have been re-factored away.
+                     * Verify that this is correct and remove this unused object if it
+                     * is no longer needed.  My gut thinks this should be investigated.
+                     */
                     forceRescanState.rescanIndicated();
                 }
-//              Not done here anymore - see CollectableService
+                //Not done here anymore - see CollectableService
                 //persistData(params, collectionSet);
                 return collectionSet;
-            } catch (CollectionWarning e) {
-                Collectd.instrumentation().reportCollectionError(agent.getNodeId(), agent.getHostAddress(), serviceName(), e);
-                e.reportError();
             } finally {
                 Collectd.instrumentation().endCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
             }
+        } catch (CollectionException e) {
+            Collectd.instrumentation().reportCollectionException(agent.getNodeId(), agent.getHostAddress(), serviceName(), e);
+            
+            throw e;
         } catch (Throwable t) {
-            t.printStackTrace();
-            log().error("Unexpected error during node SNMP collection for : " + agent.getHostAddress(), t);
+            throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress() + ": " + t, t);
         }
-        return null;
     }
 
     /*private void persistData(ServiceParameters params, SnmpCollectionSet collectionSet) {
@@ -438,16 +432,15 @@ public class SnmpCollector implements ServiceCollector {
         log().info("agent "+agent+" defines no data to collect.  Skipping.");
     }
 
-    Category log() {
-        return ThreadCategory.getInstance(SnmpCollector.class);
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
-    int unexpected(CollectionAgent agent, Throwable t) {
-        log().error(
-                    "Unexpected error during node SNMP collection for "
-                    + agent.getHostAddress(), t);
-        return ServiceCollector.COLLECTION_FAILED;
-    }
+    // Unused
+//    int unexpected(CollectionAgent agent, Throwable t) {
+//        log().error("Unexpected error during node SNMP collection for " + agent.getHostAddress(), t);
+//        return ServiceCollector.COLLECTION_FAILED;
+//    }
 
     public RrdRepository getRrdRepository(String collectionName) {
         return DataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);

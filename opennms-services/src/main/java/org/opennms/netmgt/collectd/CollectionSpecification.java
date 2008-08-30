@@ -10,6 +10,10 @@
 //
 // Modfications:
 //
+// 2008 Aug 29: collect() can now throw a CollectionException which will
+//              signal a connection failure and the resulting
+//              details are logged and included in data collection
+//              failure events. - dj@opennms.org
 // 2008 Feb 09: Indent, format code and comments, remove Outage collection. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -217,14 +221,13 @@ public class CollectionSpecification {
         }
     }
 
-    public CollectionSet collect(CollectionAgent agent) {
+    public CollectionSet collect(CollectionAgent agent) throws CollectionException {
         Collectd.instrumentation().beginCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             return getCollector().collect(agent, eventProxy(), getPropertyMap());
         } finally {
             Collectd.instrumentation().endCollectorCollect(agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
-
     }
 
     private EventProxy eventProxy() {

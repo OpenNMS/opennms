@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Aug 29: Update to work with the CollectionException exceptions
+//              that might be called when we call collect(), including
+//              putting the exception message into data collection
+//              failed events. - dj@opennms.org
 // 2006 Aug 15: Be explicit about method visibility. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -52,10 +56,10 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.threshd.ThresholdingVisitor;
-import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -230,45 +234,43 @@ final class CollectableService implements ReadyRunnable {
 
 	private boolean isSchedulingComplete() {
 		return m_schedulingCompletedFlag.isSchedulingCompleted();
-	}
+    }
 
     /**
      * Generate event and send it to eventd via the event proxy.
      * 
      * uei Universal event identifier of event to generate.
      */
-    private void sendEvent(String uei) {
-        Event event = new Event();
-        event.setUei(uei);
-        event.setNodeid((long) m_nodeId);
-        event.setInterface(getHostAddress());
-        event.setService(m_spec.getServiceName());
-        event.setSource("OpenNMS.Collectd");
+    private void sendEvent(String uei, String reason) {
+        EventBuilder builder = new EventBuilder(uei, "OpenNMS.Collectd");
+        builder.setNodeid(m_nodeId);
+        builder.setInterface(getHostAddress());
+        builder.setService(m_spec.getServiceName());
         try {
-            event.setHost(InetAddress.getLocalHost().getHostAddress());
+            builder.setHost(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException ex) {
-            event.setHost("unresolved.host");
+            builder.setHost("unresolved.host");
         }
-
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        if (reason != null) {
+            builder.addParam("reason", reason);
+        }
 
         // Send the event
-        //
         try {
-            EventIpcManagerFactory.getIpcManager().sendNow(event);
+            EventIpcManagerFactory.getIpcManager().sendNow(builder.getEvent());
 
-            if (log().isDebugEnabled())
+            if (log().isDebugEnabled()) {
                 log().debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
-
-        } catch (Exception ex) {
-            log().error("Failed to send the event " + uei + " for interface " + getHostAddress(), ex);
+            }
+        } catch (Exception e) {
+            log().error("Failed to send the event " + uei + " for interface " + getHostAddress() + ": " + e, e);
         }
-
     }
 
-	private String getHostAddress() {
-		return m_agent.getHostAddress();
-	}
+    private String getHostAddress() {
+        return m_agent.getHostAddress();
+    }
 
     /**
      * This is the main method of the class. An instance is normally enqueued on
@@ -280,7 +282,6 @@ final class CollectableService implements ReadyRunnable {
      */
     public void run() {
         // Process any oustanding updates.
-        //
         if (processUpdates() == ABORT_COLLECTION) {
             log().debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for "+this);
             return;
@@ -289,46 +290,59 @@ final class CollectableService implements ReadyRunnable {
         // Update last scheduled poll time
         m_lastScheduledCollectionTime = System.currentTimeMillis();
 
-        // Check scheduled outages to see if any apply indicating
-        // that the collection should be skipped
+        /*
+         * Check scheduled outages to see if any apply indicating
+         * that the collection should be skipped.
+         */
         if (!m_spec.scheduledOutage(m_agent)) {
-
-        	int status = doCollection();
-        	updateStatus(status);
-
+            try {
+                doCollection();
+                updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
+            } catch (CollectionException e) {
+                if (e instanceof CollectionWarning) {
+                    log().warn(e, e);
+                } else {
+                    log().error(e, e);
+                }
+                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+            }
         }
+        
     	// Reschedule the service
-    	//
         m_scheduler.schedule(m_spec.getInterval(), getReadyRunnable());
     }
 
-	private void updateStatus(int status) {
-		// Any change in status?
-		//
-		if (status != m_status) {
-			// Generate data collection transition events
-			if (log().isDebugEnabled())
-				log().debug("run: change in collection status, generating event.");
+    private void updateStatus(int status, CollectionException e) {
+        // Any change in status?
+        if (status != m_status) {
+            // Generate data collection transition events
+            if (log().isDebugEnabled()) {
+                log().debug("run: change in collection status, generating event.");
+            }
+            
+            String reason = null;
+            if (e != null) {
+                reason = e.getMessage();
+            }
 
-			// Send the appropriate event
-			//
-			switch (status) {
-			case ServiceCollector.COLLECTION_SUCCEEDED:
-				sendEvent(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI);
-				break;
+            // Send the appropriate event
+            switch (status) {
+            case ServiceCollector.COLLECTION_SUCCEEDED:
+                sendEvent(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI, null);
+                break;
 
-			case ServiceCollector.COLLECTION_FAILED:
-				sendEvent(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI);
-				break;
+            case ServiceCollector.COLLECTION_FAILED:
+                sendEvent(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI, reason);
+                break;
 
-			default:
-				break;
-			}
-		}
+            default:
+                break;
+            }
+        }
 
-		// Set the new status
-		m_status = status;
-	}
+        // Set the new status
+        m_status = status;
+    }
 
         private BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
             if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
@@ -337,16 +351,16 @@ final class CollectableService implements ReadyRunnable {
                 return new OneToOnePersister(params, repository);
             }
         }
-        
-	private int doCollection() {
-		// Perform data collection
-		//
+
+        /**
+         * Perform data collection.
+         */
+	private void doCollection() throws CollectionException {
 		log().info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName());
-		CollectionSet result=null;
+		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
-		    if(result!=null) {
-
+		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
                             BasePersister persister = createPersister(m_params, m_repository);
@@ -355,19 +369,26 @@ final class CollectableService implements ReadyRunnable {
                         } finally {
                             Collectd.instrumentation().endPersistingServiceData(m_nodeId, getHostAddress(), m_spec.getServiceName());
                         }
-                        //Do the thresholding; this could be made more generic (listeners begin passed the collectionset ), but frankly, why bother?
-                        //The first person who actually needs to configure that sort of thing on the fly can code it up
-                        if(m_thresholdVisitor!=null) {
+                        
+                        /*
+                         * Do the thresholding; this could be made more generic (listeners being passed the collectionset), but frankly, why bother?
+                         * The first person who actually needs to configure that sort of thing on the fly can code it up.
+                         */
+                        if (m_thresholdVisitor != null) {
                             result.visit(m_thresholdVisitor);
                         }
                        
-		        return result.getStatus();
-		    }
+                        if (result.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED) {
+                            return;
+                        } else {
+                            throw new CollectionFailed(result.getStatus());
+                        }
+                    }
+                } catch (CollectionException e) {
+                    throw e;
 		} catch (Throwable t) {
-		    log().error("run: An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
+                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
 		}
-		//Fall-through case - something went wrong, we failed
-		return ServiceCollector.COLLECTION_FAILED;
 	}
 
 	/**

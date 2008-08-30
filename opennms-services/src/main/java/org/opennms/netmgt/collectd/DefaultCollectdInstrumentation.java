@@ -10,6 +10,8 @@
  *
  * Modifications:
  * 
+ * 2008 Aug 29: reportCollectionError now takes a CollectionException. - dj@opennms.org
+ *
  * Created: July 20, 2007
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -138,8 +140,8 @@ public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
 
     }
 
-    public void reportCollectionError(int nodeId, String ipAddress,
-            String svcName, CollectionError e) {
+    public void reportCollectionException(int nodeId, String ipAddress,
+            String svcName, CollectionException e) {
         log().debug("collector.collect: error: "+nodeId+"/"+ipAddress+"/"+svcName+": "+e);
     }
 

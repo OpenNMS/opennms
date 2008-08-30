@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Aug 29: Set defaults for m_failed, m_timedOut. - dj@opennms.org
+// 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,8 +44,8 @@ public abstract class CollectionTracker implements Collectable {
     public static final int GEN_ERR = 5;
 
     private CollectionTracker m_parent;
-    private boolean m_failed;
-    private boolean m_timedOut;
+    private boolean m_failed = false;
+    private boolean m_timedOut = false;
     
     
     public CollectionTracker() {
@@ -50,7 +54,6 @@ public abstract class CollectionTracker implements Collectable {
     
     public CollectionTracker(CollectionTracker parent) {
         m_parent = parent;
-        m_failed = false;
     }
 
     public void setParent(CollectionTracker parent) {
