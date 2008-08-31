@@ -9,6 +9,8 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Aug 31: Update alarm list URL. - dj@opennms.org
  * 
  * Created: September 16, 2007
  *
@@ -67,7 +69,7 @@ public class AlarmFeed extends AbstractFeed {
 
         feed.setTitle("Alarms");
         feed.setDescription("OpenNMS Alarms");
-        feed.setLink(getUrlBase() + "alarm/list");
+        feed.setLink(getUrlBase() + "alarm/list.htm");
 
         ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
 
