@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 30: Use new alarm list URLs. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 04: Added a check to pralarm null entries in queries. Bug #536.
 // 
@@ -60,8 +61,8 @@
             <input type="submit" value="Get details"/></p>                
         </form>
         <ul class="plain">
-          <li><a href="alarm/list" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
-          <li><a href="alarm/listlong" title="Detailed view of all outstanding alarms">All alarms (detail)</a></li>
+          <li><a href="alarm/list.htm" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
+          <li><a href="alarm/list.htm?display=long" title="Detailed view of all outstanding alarms">All alarms (detail)</a></li>
           <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         </ul>  
       </div>
