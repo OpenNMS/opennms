@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 31: Remove an unneeded cast. - dj@opennms.org
 // 2006 Apr 17: added path outage processing for nodeDown event
 // 2004 Nov 22: Fixed problem with notifications for threshold events on non-IP interfaces.
 // 2004 Aug 26: Added the ability to trigger notifications on an event and a parameter.
@@ -839,7 +840,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 curSendTime += interval; 
             }
         }
-        return (NotificationTask[])taskList.toArray(new NotificationTask[taskList.size()]);
+        return taskList.toArray(new NotificationTask[taskList.size()]);
     }
     
     
