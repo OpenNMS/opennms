@@ -9,6 +9,11 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Aug 31: Remove an unneeded cast, convert to use CastorUtils
+ *              for unmarshalling, unmarshal from an InputSteram instead
+ *              of a reader in parseXML, and fix some collection types.
+ *              - dj@opennms.org
  * 
  * Created: December 6, 2004
  *
@@ -38,7 +43,7 @@ package org.opennms.netmgt.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -53,7 +58,6 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.common.Header;
@@ -62,6 +66,7 @@ import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -74,7 +79,7 @@ public abstract class UserManager {
     /**
      * A mapping of user IDs to the User objects
      */
-    protected HashMap<String, User> m_users;
+    protected Map<String, User> m_users;
     /**
      * The duty schedules for each user
      */
@@ -84,16 +89,17 @@ public abstract class UserManager {
     protected UserManager(GroupManager groupManager) {
         m_groupManager = groupManager;
     }
+    
     /**
-     * @param reader
+     * @param in
      * @throws MarshalException
      * @throws ValidationException
      */
-    public void parseXML(Reader reader) throws MarshalException, ValidationException {
-        Userinfo userinfo = (Userinfo) Unmarshaller.unmarshal(Userinfo.class, reader);
+    public void parseXML(InputStream in) throws MarshalException, ValidationException {
+        Userinfo userinfo = CastorUtils.unmarshal(Userinfo.class, in);
         Users users = userinfo.getUsers();
         oldHeader = userinfo.getHeader();
-        Collection<User> usersList = users.getUserCollection();
+        List<User> usersList = users.getUserCollection();
         m_users = new HashMap<String, User>();
 
         for (User curUser : usersList) {
@@ -102,6 +108,7 @@ public abstract class UserManager {
     
         buildDutySchedules(m_users);
     }
+
 
     /**
      * Adds a new user and overwrites the "users.xml"
@@ -714,7 +721,7 @@ public abstract class UserManager {
             }
         }
         
-        return (String[]) usersScheduledForRole.toArray(new String[usersScheduledForRole.size()]);
+        return usersScheduledForRole.toArray(new String[usersScheduledForRole.size()]);
     }
     
     public boolean hasRole(String roleid) throws MarshalException, ValidationException, IOException {
