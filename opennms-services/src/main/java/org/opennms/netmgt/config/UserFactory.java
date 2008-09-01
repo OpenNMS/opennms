@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 31: UserManager.parseXML now takes an InputStream. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -44,8 +45,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -130,8 +129,7 @@ public class UserFactory extends UserManager {
         InputStream configIn = new FileInputStream(m_usersConfFile);
         m_lastModified = m_usersConfFile.lastModified();
 
-        Reader reader = new InputStreamReader(configIn);
-        parseXML(reader);
+        parseXML(configIn);
         
         initialized = true;
 
