@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<groupinfo>
+    <header>
+        <rev>1.3</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>dhcp-219.internal.opennms.org</mstation>
+    </header>
+    <groups>
+        <group>
+            <name>InitialGroup</name>
+            <comments>The group that gets notified first</comments>
+            <user>admin</user>            <user>brozow</user>        </group>
+        <group>
+            <name>EscalationGroup</name>
+            <comments>The group things escalate to</comments>
+            <user>brozow</user>            <user>david</user>        </group>
+        <group>
+            <name>UpGroup</name>
+            <comments>The group things escalate to</comments>
+            <user>upUser</user>        </group>
+    </groups>
+  <roles>
+    <role supervisor="admin" name="oncall" description="The On Call Schedule" membership-group="InitialGroup">
+      <schedule name="brozow" type="weekly">
+         <time day="sunday" begins="09:00:00" ends="17:00:00"/>
+         <time day="monday" begins="09:00:00" ends="17:00:00"/>
+         <time day="wednesday" begins="09:00:00" ends="17:00:00"/>
+         <time day="friday" begins="09:00:00" ends="17:00:00"/>
+      </schedule>
+      <schedule name="admin" type="weekly">
+         <time day="sunday" begins="00:00:00" ends="23:59:59"/>
+         <time day="tuesday" begins="09:00:00" ends="17:00:00"/>
+         <time day="thursday" begins="09:00:00" ends="17:00:00"/>
+         <time day="saturday" begins="09:00:00" ends="17:00:00"/>
+      </schedule>
+      <schedule name="david" type="weekly">
+         <time day="sunday"    begins="00:00:00" ends="09:00:00"/>
+         <time day="sunday"    begins="17:00:00" ends="23:59:59"/>
+         <time day="monday"    begins="00:00:00" ends="09:00:00"/>
+         <time day="monday"    begins="17:00:00" ends="23:59:59"/>
+         <time day="tuesday"   begins="00:00:00" ends="09:00:00"/>
+         <time day="tuesday"   begins="17:00:00" ends="23:59:59"/>
+         <time day="wednesday" begins="00:00:00" ends="09:00:00"/>
+         <time day="wednesday" begins="17:00:00" ends="23:59:59"/>
+         <time day="thursday"  begins="00:00:00" ends="09:00:00"/>
+         <time day="thursday"  begins="17:00:00" ends="23:59:59"/>
+         <time day="friday"    begins="00:00:00" ends="09:00:00"/>
+         <time day="friday"    begins="17:00:00" ends="23:59:59"/>
+         <time day="saturday"  begins="00:00:00" ends="09:00:00"/>
+         <time day="saturday"  begins="17:00:00" ends="23:59:59"/>
+      </schedule>
+    </role>
+    <role supervisor="admin" name="unscheduled" description="The Unscheduled Schedule" membership-group="UpGroup">
+           <schedule name="upUser" type="weekly">               <time day="sunday" begins="00:00:00" ends="23:59:59"/>
+               <time day="monday" begins="00:00:00" ends="23:59:59"/>
+               <time day="tuesday" begins="00:00:00" ends="23:59:59"/>
+               <time day="wednesday" begins="00:00:00" ends="23:59:59"/>
+               <time day="thursday" begins="00:00:00" ends="23:59:59"/>
+               <time day="friday" begins="00:00:00" ends="23:59:59"/>
+               <time day="saturday" begins="00:00:00" ends="23:59:59"/>
+           </schedule>
+    </role>
+</roles>
+</groupinfo>
