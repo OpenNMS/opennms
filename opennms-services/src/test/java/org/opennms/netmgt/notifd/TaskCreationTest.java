@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Aug 31: Make testMakeRoleTasks run more reliably.  The NotificationTasks
+//              might not be in order because the ordering in the user map can
+//              vary. - dj@opennms.org
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -135,9 +141,11 @@ public class TaskCreationTest extends NotificationsTestCase {
     }
     
     public void testMakeRoleTasks() throws Exception {
+        int interval = 1000;
+
         Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
         long dayTime = day.getTime();
-        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, 1000);
+        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, interval);
         assertNotNull(tasks);
         assertEquals(1, tasks.length);
         assertEquals("brozow@opennms.org", tasks[0].getEmail());
@@ -145,13 +153,30 @@ public class TaskCreationTest extends NotificationsTestCase {
         
         Date sunday = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("30-JAN-2005 11:59:56"); // sunday
         long sundayTime = sunday.getTime();
-        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, 1000);
+        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, interval);
         assertNotNull(sundayTasks);
         assertEquals(2, sundayTasks.length);
-        assertEquals("brozow@opennms.org", sundayTasks[0].getEmail());
-        assertEquals(sundayTime, sundayTasks[0].getSendTime());
-        assertEquals("admin@opennms.org", sundayTasks[1].getEmail());
-        assertEquals(sundayTime+1000, sundayTasks[1].getSendTime());
+        
+        // The NotificationTasks might not be in order because the ordering in the user map can vary.
+        int brozowsFound = 0;
+        int adminsFound = 0;
+        long notificationExpectedTime = sundayTime;
+        for (NotificationTask task : sundayTasks) {
+            if ("brozow@opennms.org".equals(task.getEmail())) {
+                brozowsFound++;
+                assertEquals("time for brozow notification", notificationExpectedTime, task.getSendTime());
+            } else if ("admin@opennms.org".equals(task.getEmail())) {
+                adminsFound++;
+                assertEquals("time for admin notification", notificationExpectedTime, task.getSendTime());
+            } else {
+                fail("Sunday notification tasks list contains an unexpected user email address '" + task.getEmail() + "': " + task);
+            }
+            
+            notificationExpectedTime += interval; // add the interval for the next notification (if any)
+        }
+        
+        assertEquals("Number of brozows found", 1, brozowsFound);
+        assertEquals("Number of admins found", 1, adminsFound);
     }
     
     
