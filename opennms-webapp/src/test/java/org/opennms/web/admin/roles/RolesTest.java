@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Aug 31: User users.xml and groups.xml files from resource test files. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -51,124 +55,10 @@ import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class RolesTest extends IntervalTestCase {
-    
-    public static final String GROUP_MANAGER = "<?xml version=\"1.0\"?>\n" + 
-    "<groupinfo>\n" + 
-    "    <header>\n" + 
-    "        <rev>1.3</rev>\n" + 
-    "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-    "        <mstation>dhcp-219.internal.opennms.org</mstation>\n" + 
-    "    </header>\n" + 
-    "    <groups>\n" + 
-    "        <group>\n" + 
-    "            <name>InitialGroup</name>\n" + 
-    "            <comments>The group that gets notified first</comments>\n" + 
-    "            <user>admin</user>" + 
-    "            <user>brozow</user>" + 
-    "        </group>\n" + 
-    "        <group>\n" + 
-    "            <name>EscalationGroup</name>\n" + 
-    "            <comments>The group things escalate to</comments>\n" +
-    "            <user>brozow</user>" + 
-    "            <user>david</user>" + 
-    "        </group>\n" + 
-    "        <group>\n" + 
-    "            <name>UpGroup</name>\n" + 
-    "            <comments>The group things escalate to</comments>\n" +
-    "            <user>upUser</user>" + 
-    "        </group>\n" + 
-    "    </groups>\n" +
-    "  <roles>\n" + 
-    "    <role supervisor=\"brozow\" name=\"oncall\" description=\"The On Call Schedule\" membership-group=\"InitialGroup\">\n" + 
-    "      <schedule name=\"brozow\" type=\"weekly\">\n" + 
-    "         <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "         <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "         <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "         <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "      </schedule>\n" + 
-    "      <schedule name=\"admin\" type=\"weekly\">\n" + 
-    "         <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "         <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "         <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "      </schedule>\n" + 
-    "      <schedule name=\"david\" type=\"weekly\">\n" + 
-    "         <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "         <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
-    "      </schedule>\n" + 
-    "    </role>\n" +
-    "    <role supervisor=\"admin\" name=\"unscheduled\" description=\"The Unscheduled Schedule\" membership-group=\"UpGroup\">\n" + 
-    "           <schedule name=\"upUser\" type=\"weekly\">" +
-    "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "               <time day=\"monday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "               <time day=\"tuesday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "               <time day=\"thursday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "               <time day=\"friday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "               <time day=\"saturday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
-    "           </schedule>" +
-    "    </role>\n" +
-    "  </roles>\n" + 
-    "</groupinfo>\n" + 
-    "";
-public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" + 
-    "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">\n" + 
-    "   <header>\n" + 
-    "       <rev>.9</rev>\n" + 
-    "           <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
-    "       <mstation>master.nmanage.com</mstation>\n" + 
-    "   </header>\n" + 
-    "   <users>\n" + 
-    "       <user>\n" + 
-    "           <user-id>brozow</user-id>\n" + 
-    "           <full-name>Mathew Brozowski</full-name>\n" + 
-    "           <user-comments>Test User</user-comments>\n" +
-    "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-    "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
-    "       </user>\n" + 
-    "       <user>\n" + 
-    "           <user-id>admin</user-id>\n" + 
-    "           <full-name>Administrator</full-name>\n" + 
-    "           <user-comments>Default administrator, do not delete</user-comments>\n" +
-    "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-    "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
-    "       </user>\n" + 
-    "       <user>\n" + 
-    "           <user-id>upUser</user-id>\n" + 
-    "           <full-name>User that receives up notifications</full-name>\n" + 
-    "           <user-comments>Default administrator, do not delete</user-comments>\n" +
-    "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-    "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
-    "       </user>\n" + 
-    "       <user>\n" + 
-    "           <user-id>david</user-id>\n" + 
-    "           <full-name>David Hustace</full-name>\n" + 
-    "           <user-comments>A cool dude!</user-comments>\n" + 
-    "           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>\n" + 
-    "           <contact type=\"email\" info=\"david@opennms.org\"/>\n" + 
-    "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
-    "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
-    "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
-    "       </user>\n" + 
-    "   </users>\n" + 
-    "</userinfo>\n" + 
-    "";
-
     private GroupManager m_groupManager;
     private UserManager m_userManager;
     private WebRoleManager m_roleMgr;
@@ -180,8 +70,8 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         super.setUp();
         
         MockLogAppender.setupLogging();
-        m_groupManager = new MockGroupManager(GROUP_MANAGER);
-        m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
+        m_groupManager = new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/config/groups.xml", new String[][] {}));
+        m_userManager = new MockUserManager(m_groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/config/users.xml", new String[][] {}));
         
         GroupFactory.setInstance(m_groupManager);
         UserFactory.setInstance(m_userManager);
