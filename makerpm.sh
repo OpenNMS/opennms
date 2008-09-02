@@ -41,11 +41,11 @@ if [ -z $JAVA_HOME ]; then
 	exit
 fi
 
-export PATH="$JAVA_HOME/bin:$PATH"
 TAR=`which gtar 2>/dev/null || which tar 2>/dev/null`
 RSYNC=`which rsync 2>/dev/null`
 GPG=`which gpg 2>/dev/null`
 WORKDIR="$TOPDIR/target/rpm"
+export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 if [ -z "$TAR" ]; then
 	echo "*** could not find tar ***"
