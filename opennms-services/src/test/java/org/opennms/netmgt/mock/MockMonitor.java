@@ -64,9 +64,8 @@ public class MockMonitor implements ServiceMonitor {
 
     public PollStatus poll(MonitoredService monSvc, Map parameters) {
         synchronized(m_network) {
-            NetworkInterface iface = monSvc.getNetInterface();
-            String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
-            int nodeId = m_network.getNodeIdForInterface(ipAddr);
+            int nodeId = monSvc.getNodeId();
+            String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
             if (svc == null) {
                 MockUtil.println("Invalid Poll: " + ipAddr + "/" + m_svcName);
