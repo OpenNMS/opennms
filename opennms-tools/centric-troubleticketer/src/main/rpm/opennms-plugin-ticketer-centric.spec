@@ -17,7 +17,6 @@ Group:         Applications/System
 BuildArch:     noarch
 
 Source:        centric-troubleticketer.tar.gz
-Source2:       http://repo.opennms.org/maven2/org/aspcfs/centric_crm_tools/4.1.1/centric_crm_tools-4.1.1.jar
 URL:           http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -38,7 +37,7 @@ http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
 %setup -n centric-troubleticketer
 
 %build
-mvn -Droot.dir="%{instprefix}" -Dmaven.test.skip.exec=true -Dcentric.tools.jar="%{SOURCE2}" package assembly:attached
+mvn -Droot.dir="%{instprefix}" -Dmaven.test.skip.exec=true package assembly:attached
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
