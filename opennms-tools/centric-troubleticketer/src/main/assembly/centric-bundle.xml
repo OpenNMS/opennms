@@ -10,12 +10,14 @@
       <outputDirectory>etc</outputDirectory>
     </fileSet>
   </fileSets>
+<!--
   <files>
     <file>
       <source>${centric.tools.jar}</source>
       <outputDirectory>lib</outputDirectory>
     </file>
   </files>
+-->
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>

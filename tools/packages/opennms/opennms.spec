@@ -191,6 +191,11 @@ echo "=== RUNNING INSTALL ==="
 sh ./build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
     -Dopennms.home=%{instprefix} install assembly:attached
 
+pushd opennms-tools
+    sh ../build.sh -N -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+        -Dopennms.home=%{instprefix} install
+popd
+
 pushd opennms-remote-poller
     sh ../build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
         -Dopennms.home=%{instprefix} package
