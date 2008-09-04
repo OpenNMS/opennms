@@ -124,8 +124,13 @@ public class NotificationTask extends Thread {
     public String toString() {
         StringBuffer buffer = new StringBuffer("Send ");
 
-        for (Command command : m_commands) {
-            buffer.append(command.getName() + "/");
+        if (m_commands == null) {
+            buffer.append("Null Commands");
+        } else {
+            for (Command command : m_commands) {
+                buffer.append((command == null ? "null" : command.getName()));
+                buffer.append("/");
+            }
         }
         buffer.append(" to " + m_user.getUserId() + " at " + new Date(m_sendTime));
 
