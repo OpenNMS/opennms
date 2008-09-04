@@ -714,23 +714,6 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             return null;
     }
 
-    /**
-     * Retrieves the configured value for the maximum number of variables (oids)
-     * which can be encoded into a single outgoing SNMP PDU request..
-     * 
-     * @param cName
-     *            Name of the data collection
-     * 
-     * @return max number of variables per pdu or -1 upon error
-     */
-    public int getMaxVarsPerPdu(String cName) {
-        SnmpCollection collection = m_collectionMap.get(cName);
-        if (collection != null)
-            return collection.getMaxVarsPerPdu();
-        else
-            return 0;
-    }
-    
     public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
             repo.setRrdBaseDir(new File(getRrdPath()));
@@ -796,11 +779,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             while (giter.hasNext()) {
                 Group group = giter.next();
                 groupMap.put(group.getName(), group);
-}
+            }
             m_collectionGroupMap.put(collection.getName(), groupMap);
             m_collectionMap.put(collection.getName(), collection);
         }
     }
-
 
 }

@@ -194,12 +194,6 @@ public class SnmpCollector implements ServiceCollector {
     static String SNMP_STORAGE_KEY = "org.opennms.netmgt.collectd.SnmpCollector.snmpStorage";
 
     /**
-     * Interface attribute key used to store configured value for the maximum
-     * number of variables permitted in a single outgoing SNMP PDU request.
-     */
-    static String MAX_VARS_PER_PDU_STORAGE_KEY = "org.opennms.netmgt.collectd.SnmpCollector.maxVarsPerPdu";
-
-    /**
      * Returns the name of the service that the plug-in collects ("SNMP").
      * 
      * @return The service that the plug-in collects.

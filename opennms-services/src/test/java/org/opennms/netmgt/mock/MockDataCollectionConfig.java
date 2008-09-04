@@ -176,10 +176,6 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         getAttrList().add(attrType);
     }
 
-     public int getMaxVarsPerPdu(String collectionName) {
-        return 10;
-    }
-
     public List<String> getRRAList(String collectionName) {
         return new ArrayList<String>(0);
     }

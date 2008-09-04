@@ -292,19 +292,19 @@ public class CollectdTest extends TestCase {
     	map.put("read-community", "notPublic");
 		ServiceParameters params = new ServiceParameters(map);
 		
-		int reps = params.getMaxRepetitions(6);
+		int reps = params.getSnmpMaxRepetitions(6);
 		assertEquals("Overriding max repetitions failed.", 11, reps);
 		params = new ServiceParameters(map);
 		map.remove("max-repetitions");
 		map.put("maxRepetitions", "11");
 		assertEquals("Overriding max repetitions failed.", 11, reps);
 		
-		String s = params.getReadCommunity("public");
+		String s = params.getSnmpReadCommunity("public");
 		assertEquals("Overriding read community failed.", "notPublic", s);
 		map.remove("read-community");
 		map.put("readCommunity", "notPublic");
 		params = new ServiceParameters(map);
-		s = params.getReadCommunity("public");
+		s = params.getSnmpReadCommunity("public");
 		assertEquals("Overriding read community failed.", "notPublic", s);
     }
 

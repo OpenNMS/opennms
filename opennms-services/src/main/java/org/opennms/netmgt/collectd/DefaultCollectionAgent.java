@@ -62,7 +62,6 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     }
 
     // miscellaneous junk?
-    private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
     private long m_sysUpTime = -1;
 
@@ -96,23 +95,6 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
             m_inetAddress = m_agentService.getInetAddress();
         }
         return m_inetAddress;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#setMaxVarsPerPdu(int)
-     */
-    public void setMaxVarsPerPdu(int maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
-        if (log().isDebugEnabled()) {
-            log().debug("maxVarsPerPdu=" + maxVarsPerPdu);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.CollectionAgent#getMaxVarsPerPdu()
-     */
-    public int getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu;
     }
 
     /* (non-Javadoc)
