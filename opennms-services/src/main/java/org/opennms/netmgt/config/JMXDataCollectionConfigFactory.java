@@ -424,23 +424,6 @@ public final class JMXDataCollectionConfigFactory {
     }
 
     /**
-     * Retrieves the configured value for the maximum number of variables (oids)
-     * which can be encoded into a single outgoing SNMP PDU request..
-     * 
-     * @param cName
-     *            Name of the data collection
-     * 
-     * @return max number of variables per pdu or -1 upon error
-     */
-    public int getMaxVarsPerPdu(String cName) {
-        org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
-        if (collection != null)
-            return collection.getMaxVarsPerPdu();
-        else
-            return -1;
-    }
-
-    /**
      * Retrieves the configured path to the RRD file repository.
      * 
      * @return RRD repository path.

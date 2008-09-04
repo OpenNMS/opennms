@@ -37,10 +37,13 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Map;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public class ServiceParameters {
     
@@ -118,43 +121,110 @@ public class ServiceParameters {
     String getCollectionName() {
         //icky hard coded old names; we need to handle some old cases where configs might be not yet updated, but they should
         // still work
-        if(m_parameters.containsKey("collection")) {
-            return m_parameters.get("collection");
-        } else if(m_parameters.containsKey("http-collection")) {
-            return m_parameters.get("http-collection");
-        } else if(m_parameters.containsKey("nsclient-collection")) {
-            return m_parameters.get("nsclient-collection");
+        if(getParameters().containsKey("collection")) {
+            return getParameters().get("collection");
+        } else if(getParameters().containsKey("http-collection")) {
+            return getParameters().get("http-collection");
+        } else if(getParameters().containsKey("nsclient-collection")) {
+            return getParameters().get("nsclient-collection");
         } else {
             return "default";
         }
         //Previous code:  we can return to this in time (maybe 1.6, or even 2.0) when all old
         // configs should be long gone
-    	//return ParameterMap.getKeyedString(m_parameters, "collection", "default");
+        //return ParameterMap.getKeyedString(getParameters(), "collection", "default");
     }
 
-    /**
-     * This call returns a community string that may have been configured in a collector package
-     * @param current
-     * @return The collection configured read community string or the passed in string if not configured
+    /* (non-Javadoc)
+     * Parameters corresponding to attributes from snmp-config
      */
-    public String getReadCommunity(String current) {
-    	String readCommunity = ParameterMap.getKeyedString(m_parameters, "read-community", null);
-    	if (readCommunity == null) {
-			readCommunity = ParameterMap.getKeyedString(m_parameters, "readCommunity", current);
-		}
-		return readCommunity;
+
+    int getSnmpPort(int current) {
+        return ParameterMap.getKeyedInteger(getParameters(), "port", current);
     }
 
-    public int getSnmpPort() {
-        return ParameterMap.getKeyedInteger(getParameters(), "port", -1);
+    int getSnmpRetries(int current) {
+        return ParameterMap.getKeyedInteger(getParameters(), "retry", current);
     }
 
-	public int getMaxRepetitions(int current) {
-		int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
-		if (maxRepetitions == -1) {
-			maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "maxRepetitons", current);
-		}
-		return maxRepetitions;
-	}
+    int getSnmpTimeout(int current) {
+        return ParameterMap.getKeyedInteger(getParameters(), "timeout", current);
+    }
+
+    String getSnmpReadCommunity(String current) {
+        String readCommunity = ParameterMap.getKeyedString(getParameters(), "read-community", null);
+        if (readCommunity == null) {
+            // incase someone is using an ancient config file
+            readCommunity = ParameterMap.getKeyedString(m_parameters, "readCommunity", current);
+        }
+        return readCommunity;
+    }
+
+    String getSnmpWriteCommunity(String current) {
+        return ParameterMap.getKeyedString(getParameters(), "write-community", current);
+    }
+
+    InetAddress getSnmpProxyFor(InetAddress current) {
+        String address = ParameterMap.getKeyedString(getParameters(), "proxy-host", null);
+        if (address != null) {
+            try {
+                return InetAddress.getByName(address);
+            } catch (UnknownHostException e) {
+                log().error("determineProxyHost: Problem converting proxy host string to InetAddress", e);
+            }
+        }
+        return current;
+    }
+
+    int getSnmpVersion(int current) {
+        String version = ParameterMap.getKeyedString(getParameters(), "version", null);
+        if (version != null) {
+            if (version.equals("v1")) {
+                return SnmpAgentConfig.VERSION1;
+            } else if (version.equals("v2c")) {
+                return SnmpAgentConfig.VERSION2C;
+            } else if (version.equals("v3")) {
+                return SnmpAgentConfig.VERSION3;
+            }
+        }
+        return current;
+    }
+
+    int getSnmpMaxVarsPerPdu(int current) {
+        return ParameterMap.getKeyedInteger(getParameters(), "max-vars-per-pdu", current);
+    }
+
+    int getSnmpMaxRepetitions(int current) {
+        int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
+        if (maxRepetitions == -1) {
+            // incase someone is using an ancient config file
+            maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "maxRepetitions", current);
+        }
+        return maxRepetitions;
+    }
+
+    int getSnmpMaxRequestSize(int current) {
+        return ParameterMap.getKeyedInteger(getParameters(), "max-request-size", current);
+    }
+
+    String getSnmpSecurityName(String current) {
+        return ParameterMap.getKeyedString(getParameters(), "security-name", current);
+    }
+
+    String getSnmpAuthPassPhrase(String current) {
+        return ParameterMap.getKeyedString(getParameters(), "auth-passphrase", current);
+    }
+
+    String getSnmpAuthProtocol(String current) {
+        return ParameterMap.getKeyedString(getParameters(), "auth-protocol", current);
+    }
+
+    String getSnmpPrivPassPhrase(String current) {
+        return ParameterMap.getKeyedString(getParameters(), "privacy-passphrase", current);
+    }
+
+    String getSnmpPrivProtocol(String current) {
+        return ParameterMap.getKeyedString(getParameters(), "privacy-protocol", current);
+    }
 
 }
