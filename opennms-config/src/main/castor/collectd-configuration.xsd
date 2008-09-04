@@ -260,10 +260,9 @@
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
           <annotation>
-            <documentation>Parameters to be used for collecting data via this
-            service: "collection": name of data collection ("SNMP" specific);
-            "oid" : object identifier; "timeout": timeout (in milliseconds);
-            "retries": retries; "port" : protocol/service port</documentation>
+            <documentation>Parameters to be used for collecting data via this service.
+            "collection": name of data collection in datacollection-config.xml ("SNMP" specific);
+            SNMP parameters ("read-community", "version", etc) will override defaults set in snmp-config.xml</documentation>
           </annotation>
         </element>
       </sequence>
