@@ -2,7 +2,6 @@
 <datacollection-config
   rrdRepository = "/tmp">
   <snmp-collection name="default"
-    maxVarsPerPdu = "10"
     snmpStorageFlag = "select">
     <rrd step = "300">
       <rra>RRA:AVERAGE:0.5:1:8928</rra>
