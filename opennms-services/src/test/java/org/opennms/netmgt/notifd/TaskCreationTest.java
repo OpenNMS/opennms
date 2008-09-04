@@ -8,12 +8,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Modifications:
-//
-// 2008 Aug 31: Make testMakeRoleTasks run more reliably.  The NotificationTasks
-//              might not be in order because the ordering in the user map can
-//              vary. - dj@opennms.org
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -35,11 +29,15 @@
 //
 package org.opennms.netmgt.notifd;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockNode;
@@ -48,6 +46,7 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class TaskCreationTest extends NotificationsTestCase {
     
+    private static final int INTERVAL = 1000;
     private BroadcastEventProcessor m_eventProcessor;
     private Notification m_notif;
     private Map<String, String> m_params;
@@ -80,34 +79,56 @@ public class TaskCreationTest extends NotificationsTestCase {
 
 
     public void testMakeEmailTask() throws Exception {
-        long startTime = System.currentTimeMillis();
+        long startTime = now();
+
         NotificationTask task = m_eventProcessor.makeEmailTask(startTime, m_params, 1, "brozow@opennms.org", m_commands, new LinkedList(), null);
+
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
         assertEquals(startTime, task.getSendTime());
-    
-        
+    }
+
+
+
+    private long now() {
+        return System.currentTimeMillis();
     }
 
     public void testMakeUserTask() throws Exception {
-        long startTime = System.currentTimeMillis();
+        long startTime = now();
+
         NotificationTask task = m_eventProcessor.makeUserTask(startTime, m_params, 1, "brozow", m_commands, new LinkedList(), null);
+
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
         assertEquals(startTime, task.getSendTime());
+
+    }
     
-        
+    private void assertTasksWithEmail(NotificationTask[] tasks, String... emails) throws Exception {
+        assertNotNull(tasks);
+        assertEquals("Unexpected number of tasks", emails.length, tasks.length);
+        for(String email : emails) {
+            assertNotNull("Expected to find a task with email "+email+" in "+tasks, findTaskWithEmail(tasks, email));
+        }
+    }
+    
+    private void assertStartInterval(NotificationTask[] tasks, long startTime, long interval) {
+        assertNotNull(tasks);
+        long expectedTime = startTime;
+        for(NotificationTask task : tasks) {
+            assertEquals("Expected task "+task+" to have sendTime "+expectedTime, expectedTime, task.getSendTime());
+            expectedTime += interval;
+        }
     }
 
     public void testMakeGroupTasks() throws Exception {
-        long startTime = System.currentTimeMillis();
-        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, 1000);
-        assertNotNull(tasks);
-        assertEquals(2, tasks.length);
-        assertEquals("brozow@opennms.org", tasks[0].getEmail());
-        assertEquals(startTime, tasks[0].getSendTime());
-        assertEquals("david@opennms.org", tasks[1].getEmail());
-        assertEquals(startTime+1000, tasks[1].getSendTime());
+        long startTime = now();
+        
+        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, INTERVAL);
+
+        assertTasksWithEmail(tasks, "brozow@opennms.org", "david@opennms.org");
+        assertStartInterval(tasks, startTime, INTERVAL);
         
     }
     
@@ -119,64 +140,55 @@ public class TaskCreationTest extends NotificationsTestCase {
         group.addDutySchedule("MoTuWeThFr0900-1700");
         m_groupManager.saveGroups();
         
-        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
-        long dayTime = day.getTime();
-        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, 1000);
-        assertNotNull(dayTasks);
-        assertEquals(2, dayTasks.length);
-        assertEquals("brozow@opennms.org", dayTasks[0].getEmail());
-        assertEquals(dayTime, dayTasks[0].getSendTime());
-        assertEquals("david@opennms.org", dayTasks[1].getEmail());
-        assertEquals(dayTime+1000, dayTasks[1].getSendTime());
+        long dayTime = getTimeStampFor("21-FEB-2005 11:59:56");
         
-        Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:00:00");
-        long nightTime = night.getTime();
-        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, 1000);
-        assertNotNull(nightTasks);
-        assertEquals(2, nightTasks.length);
-        assertEquals("brozow@opennms.org", nightTasks[0].getEmail());
-        assertEquals(nightTime+36000000, nightTasks[0].getSendTime());
-        assertEquals("david@opennms.org", nightTasks[1].getEmail());
-        assertEquals(nightTime+1000+36000000, nightTasks[1].getSendTime());
+        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, INTERVAL);
+        
+        assertTasksWithEmail(dayTasks, "brozow@opennms.org", "david@opennms.org");
+        assertStartInterval(dayTasks, dayTime, INTERVAL);
+        
+        long nightTime = getTimeStampFor("21-FEB-2005 23:00:00");
+
+        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, INTERVAL);
+
+        assertTasksWithEmail(nightTasks, "brozow@opennms.org", "david@opennms.org");
+        // delayed start due to group duty schedule
+        assertStartInterval(nightTasks, nightTime+36000000, INTERVAL);
+
     }
     
     public void testMakeRoleTasks() throws Exception {
-        int interval = 1000;
+        long dayTime = getTimeStampFor("21-FEB-2005 11:59:56");
 
-        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
-        long dayTime = day.getTime();
-        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, interval);
-        assertNotNull(tasks);
-        assertEquals(1, tasks.length);
-        assertEquals("brozow@opennms.org", tasks[0].getEmail());
-        assertEquals(dayTime, tasks[0].getSendTime());
+        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, INTERVAL);
+
+        assertTasksWithEmail(tasks, "brozow@opennms.org");
+        assertStartInterval(tasks, dayTime, INTERVAL);
         
-        Date sunday = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("30-JAN-2005 11:59:56"); // sunday
-        long sundayTime = sunday.getTime();
-        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, interval);
-        assertNotNull(sundayTasks);
-        assertEquals(2, sundayTasks.length);
+        long sundayTime = getTimeStampFor("30-JAN-2005 11:59:56"); // sunday
+
+        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, INTERVAL);
         
-        // The NotificationTasks might not be in order because the ordering in the user map can vary.
-        int brozowsFound = 0;
-        int adminsFound = 0;
-        long notificationExpectedTime = sundayTime;
-        for (NotificationTask task : sundayTasks) {
-            if ("brozow@opennms.org".equals(task.getEmail())) {
-                brozowsFound++;
-                assertEquals("time for brozow notification", notificationExpectedTime, task.getSendTime());
-            } else if ("admin@opennms.org".equals(task.getEmail())) {
-                adminsFound++;
-                assertEquals("time for admin notification", notificationExpectedTime, task.getSendTime());
-            } else {
-                fail("Sunday notification tasks list contains an unexpected user email address '" + task.getEmail() + "': " + task);
+        assertTasksWithEmail(sundayTasks, "brozow@opennms.org", "admin@opennms.org");
+        assertStartInterval(sundayTasks, sundayTime, INTERVAL);
+
+    }
+
+
+
+    private long getTimeStampFor(String timeString) throws ParseException {
+        return new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse(timeString).getTime();
+    }
+    
+    private NotificationTask findTaskWithEmail(NotificationTask[] tasks, String email) throws Exception {
+        assertNotNull(email);
+        for(NotificationTask task : tasks) {
+            assertNotNull(task);
+            if (email.equals(task.getEmail())) {
+                return task;
             }
-            
-            notificationExpectedTime += interval; // add the interval for the next notification (if any)
         }
-        
-        assertEquals("Number of brozows found", 1, brozowsFound);
-        assertEquals("Number of admins found", 1, adminsFound);
+        return null;
     }
     
     
