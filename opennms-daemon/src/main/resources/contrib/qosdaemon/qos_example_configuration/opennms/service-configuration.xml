@@ -1,6 +1,7 @@
-<!-- v2.4 C Gallen  -->
-<!-- based on openoss 1.3.2_CANDIDATE Version 5189  Service-Consifuration.xml-->
-<!-- Modified to start QosD / Qosdrx -->
+<!-- v4.1  Example log configuration for OSS/J interface
+       Author : C Gallen
+       based on opennms-1.5.91
+-->
 
 <!-- NOTE!!!!!!!!!!!!!!!!!!!
 The order in which these services are specified is important - for example, Eventd
@@ -69,6 +70,12 @@ maintained
 		<class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
 		<invoke at="stop" pass="1" method="doSystemExit"/>
 	</service>
+	
+	<service>
+		<name>OpenNMS:Name=TestLoadLibraries</name>
+		<class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
+		<invoke at="start" pass="0" method="doTestLoadLibraries"/>
+	</service>
 
 	<service>
 		<name>OpenNMS:Name=Eventd</name>
@@ -79,12 +86,20 @@ maintained
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
-		<name>OpenNMS:Name=Trapd</name>
-		<class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
-		<invoke at="start" pass="0" method="init"/>
-		<invoke at="start" pass="1" method="start"/>
-		<invoke at="status" pass="0" method="status"/>
-		<invoke at="stop" pass="0" method="stop"/>
+        <name>OpenNMS:Name=Trapd</name>
+        <class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
+        <invoke at="start" pass="0" method="init"/>
+        <invoke at="start" pass="1" method="start"/>
+        <invoke at="status" pass="0" method="status"/>
+        <invoke at="stop" pass="0" method="stop"/>
+	</service>
+	<service>
+        <name>OpenNMS:Name=Queued</name>
+        <class-name>org.opennms.netmgt.queued.jmx.Queued</class-name>
+        <invoke at="start" pass="0" method="init"/>
+        <invoke at="start" pass="1" method="start"/>
+        <invoke at="status" pass="0" method="status"/>
+        <invoke at="stop" pass="0" method="stop"/>
 	</service>
 <!--
 	<service>
@@ -103,6 +118,7 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+	
 	<service>
 		<name>OpenNMS:Name=Actiond</name>
 		<class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
@@ -111,6 +127,8 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+	
+<!-- cgallen capsd disabled as capabilities determined from importer
 	<service>
 		<name>OpenNMS:Name=Capsd</name>
 		<class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
@@ -119,6 +137,7 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+ -->
 	<service>
 		<name>OpenNMS:Name=Notifd</name>
 		<class-name>org.opennms.netmgt.notifd.jmx.Notifd</class-name>
@@ -143,6 +162,8 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+
+<!-- cgallen stopped since poller backend jndi conflicts with JBOSS	
 	<service>
 		<name>OpenNMS:Name=Pollerd</name>
 		<class-name>org.opennms.netmgt.poller.jmx.Pollerd</class-name>
@@ -151,8 +172,9 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
-	
-<!-- Added: Poller back end cannot be run when OSS/J Jboss is on same machine as conflicts with rmi port 1099
+-->
+
+<!-- cgallen stopped since poller backend jndi conflicts with JBOSS if on same machine
 	<service>
 		<name>OpenNMS:Name=PollerBackEnd</name>
 		<class-name>org.opennms.netmgt.poller.jmx.RemotePollerBackEnd</class-name>
@@ -161,7 +183,15 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
--->
+ -->
+	<service>
+		<name>OpenNMS:Name=Ticketer</name>
+		<class-name>org.opennms.netmgt.ticketd.jmx.TroubleTicketer</class-name>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
+		<invoke at="status" pass="0" method="status"/>
+		<invoke at="stop" pass="0" method="stop"/>
+	</service>
 	<service>
 		<name>OpenNMS:Name=Collectd</name>
 		<class-name>org.opennms.netmgt.collectd.jmx.Collectd</class-name>
@@ -178,6 +208,8 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+	
+<!-- Discovery disabled as import from model importer
 	<service>
 		<name>OpenNMS:Name=Discovery</name>
 		<class-name>org.opennms.netmgt.discovery.jmx.Discovery</class-name>
@@ -186,6 +218,8 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+-->
+
 	<service>
 		<name>OpenNMS:Name=Vacuumd</name>
 		<class-name>org.opennms.netmgt.vacuumd.jmx.Vacuumd</class-name>
@@ -228,8 +262,14 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
-<!--  If you enable the importer don't forget to disable discovery and capsd -->
-<!--
+        <service>
+                <name>OpenNMS:Name=Statsd</name>
+                <class-name>org.opennms.netmgt.statsd.jmx.Statsd</class-name>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
+                <invoke at="status" pass="0" method="status"/>
+                <invoke at="stop" pass="0" method="stop"/>
+        </service>
         <service>
                 <name>OpenNMS:Name=Importer</name>
                 <class-name>org.opennms.netmgt.importer.jmx.ImporterService</class-name>
@@ -238,8 +278,15 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
--->
-<!--
+        <service>
+                <name>OpenNMS:Name=JettyServer</name>
+                <class-name>org.opennms.netmgt.jetty.jmx.JettyServer</class-name>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
+                <invoke at="status" pass="0" method="status"/>
+                <invoke at="stop" pass="0" method="stop"/>
+        </service>
+<!-- To enable network topology discovery uncomment this service
     <service>
         <name>OpenNMS:Name=Linkd</name>
         <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
@@ -248,6 +295,16 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
     </service>
+-->
+<!-- Only uncomment this service if proper rules correlation files have been implemented
+  <service>
+    <name>OpenNMS:Name=Correlator</name>
+    <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
 -->
 
 
@@ -273,7 +330,6 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
-
 
 
 
