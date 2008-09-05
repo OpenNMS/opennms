@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,9 +10,10 @@
  *
  * Modifications:
  * 
- * Created: October 3, 2007
+ * 2008 Aug 11: Fixes for bug 2574
+ * 2007 Oct 03: Initial version
  *
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,42 +36,60 @@
  */
 package org.opennms.netmgt.protocols.ssh;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.NoRouteToHostException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
-
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 /**
  * 
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
-public class Ssh {
-    // 30 second timeout
-    public static final int DEFAULT_TIMEOUT = 30000;
+public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
     
     // SSH port is 22
     public static final int DEFAULT_PORT = 22;
+
+    // Default to 1.99 (v1 + v2 support)
+    public static final String DEFAULT_CLIENT_BANNER = "SSH-1.99-OpenNMS_1.5";
+
+    protected int m_port = DEFAULT_PORT;
+    protected String m_username;
+    protected String m_password;
+    protected String m_banner = DEFAULT_CLIENT_BANNER;
+    protected String m_serverBanner = "";
+    protected InetAddress m_address;
+    protected Throwable m_error;
     
-    JSch m_jsch = new JSch();
-    private Session m_session;
-    private Throwable m_exception;
-    private String m_serverVersion;
-    private InetAddress m_address;
-    private int m_port = DEFAULT_PORT;
-    private int m_timeout = DEFAULT_TIMEOUT;
-    private File m_keydir;
-    private String m_username;
-    private String m_password;
+    private Socket m_socket = null;
+    private BufferedReader m_reader = null;
+    private OutputStream m_writer = null;
+
+    public Ssh() { }
+    
+    public Ssh(InetAddress address) {
+        setAddress(address);
+    }
+    
+    public Ssh(InetAddress address, int port) {
+        setAddress(address);
+        setPort(port);
+    }
+    
+    public Ssh(InetAddress address, int port, int timeout) {
+        setAddress(address);
+        setPort(port);
+        setTimeout(timeout);
+    }
 
     /**
      * Set the address to connect to.
@@ -102,39 +121,10 @@ public class Ssh {
      * @return the port
      */
     public int getPort() {
+        if (m_port == 0) {
+            return 22;
+        }
         return m_port;
-    }
-    
-    /**
-     * Set the timeout in milliseconds. 
-     * @param milliseconds the timeout
-     */
-    public void setTimeout(int milliseconds) {
-        m_timeout = milliseconds;
-    }
-
-    /**
-     * Get the timeout in milliseconds.
-     * @return the timeout
-     */
-    public int getTimeout() {
-        return m_timeout;
-    }
-    
-    /**
-     * Set the directory to search for SSH keys.
-     * @param directory the directory
-     */
-    public void setKeyDirectory(File directory) {
-        m_keydir = directory;
-    }
-    
-    /**
-     * Get the directory to search for SSH keys.
-     * @return the directory
-     */
-    public File getKeyDirectory() {
-        return m_keydir;
     }
     
     /**
@@ -168,23 +158,39 @@ public class Ssh {
     public String getPassword() {
         return m_password;
     }
+
+    /**
+     * Set the banner string to use when connecting
+     * @param banner the banner
+     */
+    public void setClientBanner(String banner) {
+        m_banner = banner;
+    }
+
+    /**
+     * Get the banner string used when connecting
+     * @return the banner
+     */
+    public String getClientBanner() {
+        return m_banner;
+    }
     
     /**
      * Get the SSH server version banner.
      * @return the version string
      */
-    public String getServerVersion() {
-        return m_serverVersion;
+    public String getServerBanner() {
+        return m_serverBanner;
     }
 
-    /**
-     * Get the Jsch session object.
-     * @return the session
-     */
-    protected Session getSession() {
-        return m_session;
+    protected void setError(Throwable t) {
+        m_error = t;
     }
     
+    protected Throwable getError() {
+        return m_error;
+    }
+
     /**
      * Attempt to connect, based on the parameters which have been set in
      * the object.
@@ -192,58 +198,95 @@ public class Ssh {
      * @return true if it is able to connect
      * @throws InsufficientParametersException
      */
-    protected boolean connect() throws InsufficientParametersException {
+    protected boolean tryConnect() throws InsufficientParametersException {
         if (getAddress() == null) {
             throw new InsufficientParametersException("you must specify an address");
         }
-        
-        m_exception = null;
-        m_serverVersion = null;
-        m_session = null;
+
         try {
-            m_session = m_jsch.getSession("opennms", getAddress().getHostAddress(), getPort());
-            m_session.connect(getTimeout());
-            m_serverVersion = m_session.getServerVersion();
+            m_socket = new Socket();
+            m_socket.setTcpNoDelay(true);
+            m_socket.connect(new InetSocketAddress(getAddress(), getPort()), getTimeout());
+            
+            m_reader = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
+            m_writer = m_socket.getOutputStream();
+
+            // read the banner
+            m_serverBanner = m_reader.readLine();
+
+            // write our own
+            m_writer.write((getClientBanner() + "\r\n").getBytes());
+
+            // then, disconnect
+            disconnect();
+
             return true;
-        } catch (JSchException e) {
-            m_exception = e;
-            if (e.getCause() != null) {
-                Class cause = e.getCause().getClass();
-                if (cause == ConnectException.class) {
-                    log().debug("connection refused", e);
-                    return false;
-                } else if (cause == NoRouteToHostException.class) {
-                    log().debug("no route to host", e);
-                    return false;
-                } else if (cause == InterruptedIOException.class) {
-                    log().debug("connection timeout", e);
-                    return false;
-                } else if (cause == IOException.class) {
-                    log().debug("An I/O exception occurred", e);
-                    return false;
-                } else if (e.getMessage().matches("^.*(connection is closed by foreign host).*$")) {
-                    log().debug("JSCH failed", e);
-                    return false;
-                }
-            } else {
-                // ugh, string parse, maybe we can get him to fix this in a newer jsch release
-                if (e.getMessage().matches("^.*(socket is not established|connection is closed by foreign host|java.io.(IOException|InterruptedIOException)|java.net.(ConnectException|NoRouteToHostException)).*$")) {
-                    log().debug("did not connect enough to verify SSH server", e);
-                    return false;
-                }
+        } catch (NumberFormatException e) {
+            log().debug("unable to parse server version", e);
+            setError(e);
+            disconnect();
+        } catch (Exception e) {
+            log().debug("connection failed", e);
+            setError(e);
+            disconnect();
+        }
+        return false;
+    }
+
+    protected void disconnect() {
+        if (m_writer != null) {
+            try {
+                m_writer.close();
+            } catch (IOException e) {
+                log().warn("error disconnecting output stream", e);
             }
-            if (m_session != null) {
-                if (m_session.isConnected()) {
-                    m_serverVersion = m_session.getServerVersion();
-                }
+        }
+        if (m_reader != null) {
+            try {
+                m_reader.close();
+            } catch (IOException e) {
+                log().warn("error disconnecting input stream", e);
             }
-            log().debug("valid SSH server is listening: " + e.getMessage());
-            return true;
+        }
+        if (m_socket != null) {
+            try {
+                m_socket.close();
+            } catch (IOException e) {
+                log().warn("error disconnecting socket", e);
+            }
         }
     }
 
-    protected Throwable getError() {
-        return m_exception;
+    public PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException {
+        tracker.startAttempt();
+        boolean isAvailable = tryConnect();
+        double responseTime = tracker.elapsedTimeInMillis();
+
+        PollStatus ps = PollStatus.unavailable();
+        
+        String errorMessage = "";
+        if (getError() != null) {
+            errorMessage = getError().getMessage();
+            ps.setReason(errorMessage);
+        }
+
+        if (isAvailable) {
+            ps = PollStatus.available(responseTime);
+        } else if (errorMessage.matches("^.*Authentication:.*$")) {
+            ps = PollStatus.unavailable("authentication failed");
+        } else if (errorMessage.matches("^.*java.net.NoRouteToHostException.*$")) {
+            ps = PollStatus.unavailable("no route to host");
+        } else if (errorMessage.matches("^.*(timeout: socket is not established|java.io.InterruptedIOException|java.net.SocketTimeoutException).*$")) {
+            ps = PollStatus.unavailable("connection timed out");
+        } else if (errorMessage.matches("^.*(connection is closed by foreign host|java.net.ConnectException).*$")) {
+            ps = PollStatus.unavailable("connection exception");
+        } else if (errorMessage.matches("^.*NumberFormatException.*$")) {
+            ps = PollStatus.unavailable("an error occurred parsing the server version number");
+        } else if (errorMessage.matches("^.*java.io.IOException.*$")) {
+            ps = PollStatus.unavailable("I/O exception");
+        }
+        
+        return ps;
     }
 
     private Category log() {

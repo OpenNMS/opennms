@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -36,8 +36,12 @@ package org.opennms.netmgt.protocols;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.opennms.netmgt.protocols.ssh.Poll;
+import org.opennms.netmgt.poller.monitors.TimeoutTracker;
+import org.opennms.netmgt.protocols.ssh.Ssh;
 
 import junit.framework.TestCase;
 
@@ -47,18 +51,24 @@ import junit.framework.TestCase;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
 public class SshTest extends TestCase {
-    private static final String GOOD_HOST = "127.0.0.1";
+    private static final String GOOD_HOST = "www.opennms.org";
     private static final String BAD_HOST = "1.1.1.1";
     private static final int PORT = 22;
-    private static final int TIMEOUT = 30000;
-
-    Poll p;
+    private static final int TIMEOUT = 2000;
+    private TimeoutTracker tt;
+    Ssh ssh;
     InetAddress good, bad;
     
     public void setUp() throws Exception {
-        p = new Poll();
-        p.setPort(PORT);
-        p.setTimeout(TIMEOUT);
+        Map<String, String> parameters = new HashMap<String,String>();
+        parameters.put("retries", "0");
+        parameters.put("port", "22");
+        parameters.put("timeout", Integer.toString(TIMEOUT));
+        
+        tt = new TimeoutTracker(parameters, 0, TIMEOUT);
+        ssh = new Ssh();
+        ssh.setPort(PORT);
+        ssh.setTimeout(TIMEOUT);
 
         try {
             good = InetAddress.getByName(GOOD_HOST);
@@ -68,13 +78,19 @@ public class SshTest extends TestCase {
         }
     }
     
-    public void testSshGoodHost() throws Exception {
-        p.setAddress(good);
-        assertTrue(p.poll().isAvailable());
+    public void testSshGood() throws Exception {
+        ssh.setAddress(good);
+        assertTrue(ssh.poll(tt).isAvailable());
     }
     
-    public void testSshBadHost() throws Exception {
-        p.setAddress(bad);
-        assertFalse(p.poll().isAvailable());
+    public void testSshBad() throws Exception {
+        Date start = new Date();
+        ssh.setAddress(bad);
+        assertFalse(ssh.poll(tt).isAvailable());
+        Date end = new Date();
+
+        // give it 2.5 seconds to time out
+        assertTrue(end.getTime() - start.getTime() < 2500);
     }
+    
 }
