@@ -124,6 +124,28 @@ END
     return
 }
 
+getPid(){
+	test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE
+}
+
+getTempFile(){
+	mktemp=`which mktemp 2>/dev/null`
+
+	test -z "$TMPDIR" && TMPDIR=/tmp
+
+	local TEMPFILE=""
+	test -n "$mktemp" && {
+		TEMPFILE=`mktemp $TMPDIR/opennmsXXXXXX`
+	}
+	test -z "$mktemp" && {
+		TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
+	}
+
+	rm "$TEMPFILE"
+	(umask 077 && touch "$TEMPFILE")
+	echo "$TEMPFILE"
+}
+		
 checkXmlFiles(){
 	XMLLINT=`which xmllint 2>/dev/null || :`
 	FAILED_XML=0
@@ -327,11 +349,19 @@ doStop() {
 	    return 0
 	fi
 
-	if [ -z "$NOEXECUTE" ]; then
-	    APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	    APP_PARMS_BEFORE="-u $INVOKE_URL stop $SERVICE"
-	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	pid=`getPid`
+	if [ -n "$pid" ]; then
+		echo "=== OpenNMS Complimentary Thread Dump ===" >> $REDIRECT
+		kill -3 "$pid" >> $REDIRECT 2>&1
 	fi
+
+	STOP_ATTEMPTS=0
+	while [ $STOP_ATTEMPTS -lt 5 ]; do
+		doStatus
+		if [ $? -eq 3 ]; then
+			echo "" > "$OPENNMS_PIDFILE"
+			return 0
+		fi
 
 	sleep 5
 
@@ -348,10 +378,11 @@ doKill(){
 	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
     fi
 
-    pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
-    if [ x"$pid" != x"" ]; then
-	if /bin/ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
-	    kill -9 $pid > /dev/null 2>&1
+	pid=`getPid`
+	if [ x"$pid" != x"" ]; then
+		if /bin/ps -p "$pid" | grep "^$RUNAS" > /dev/null; then
+			kill -9 $pid > /dev/null 2>&1
+		fi
 	fi
     fi
 
