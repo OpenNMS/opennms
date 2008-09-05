@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!DOCTYPE myData [
+    <!ENTITY auml    "&#228;" >
+    <!ENTITY ouml    "&#246;" >
+    <!ENTITY uuml    "&#252;" >
+    <!ENTITY szlig   "&#223;" >
+  ]>
+<this:model-import xmlns:this="http://www.example.org/model-import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalLocation="http://www.example.org/model-import model-import.xsd" date-stamp="2008-07-27T00:16:37" foreign-source="OSS-J_Test_Import">
+	<this:node node-label="localhost"  foreign-id="1000">
+		<this:category name="localhost"/>
+		<this:interface ip-addr="127.0.0.1" status="1" snmp-primary="S" descr="dummy OSS/J node">
+             	<this:monitored-service service-name="ICMP"/>
+             	<this:monitored-service service-name="HTTP"/>
+             	<this:monitored-service service-name="SNMP"/>
+		</this:interface>
+	</this:node>
+	<this:node node-label="openoss1"  foreign-id="1001">
+		<this:category name="openoss1"/>
+		<this:interface ip-addr="192.168.30.80" status="1" snmp-primary="S" descr="dummy OSS/J node">
+		</this:interface>
+	</this:node>
+	<this:node node-label="openoss2"  foreign-id="1002">
+		<this:category name="openoss2"/>
+		<this:interface ip-addr="192.168.30.81" status="1" snmp-primary="S" descr="dummy OSS/J node">
+		</this:interface>
+	</this:node>
+	<this:node node-label="openoss3"  foreign-id="1003">
+		<this:interface ip-addr="192.168.30.82" status="1" snmp-primary="S" descr="dummy OSS/J node">
+		</this:interface>
+	</this:node>
+
+	<!--outstations these are stations from which OSS/J alarms can arrive-->
+	<this:node node-label="Outstation_OpenOSS1"  foreign-id="2001">
+		<this:interface ip-addr="192.168.30.90" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+
+<!-- not used in demo
+	<this:node node-label="Outstation_OpenOSS2"  foreign-id="2002">
+		<this:interface ip-addr="192.168.30.91" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS3"  foreign-id="2003">
+		<this:interface ip-addr="192.168.30.92" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS4"  foreign-id="2004">
+		<this:interface ip-addr="192.168.30.93" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS5"  foreign-id="2005">
+		<this:interface ip-addr="192.168.30.94" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS6"  foreign-id="2006">
+		<this:interface ip-addr="192.168.30.95" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS7"  foreign-id="2007">
+		<this:interface ip-addr="192.168.30.96" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS8"  foreign-id="2008">
+		<this:interface ip-addr="192.168.30.97" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS9"  foreign-id="2009">
+		<this:interface ip-addr="192.168.30.98" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+	<this:node node-label="Outstation_OpenOSS10"  foreign-id="2010">
+		<this:interface ip-addr="192.168.30.99" status="1" snmp-primary="S" descr="dummy OSS/J outstation">
+		</this:interface>
+	</this:node>
+-->
+
+</this:model-import>

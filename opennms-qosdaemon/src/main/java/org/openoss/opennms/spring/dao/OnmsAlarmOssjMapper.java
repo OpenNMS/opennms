@@ -204,7 +204,7 @@ public class OnmsAlarmOssjMapper {
 	 *
 	 * @param defaultUpdateNodeLabel name of node to be updated if almUpdateBehaviour==SPECIFY_OUTSTATION
 	 * 
-	 * @return the OnmsAlarm populaed with OSS/J NotifyNewAlarmEvent data
+	 * @return the OnmsAlarm populated with OSS/J NotifyNewAlarmEvent data
 	 */
 	public  OnmsAlarm populateOnmsAlarmFromOssjAlarm(OnmsAlarm onmsAlarm, AlarmValue alarmValue, Integer almUpdateBehaviour, String defaultUpdateNodeLabel  )throws IllegalArgumentException, UnsupportedAttributeException {
 		Logger log = getLog();
@@ -489,29 +489,33 @@ public class OnmsAlarmOssjMapper {
 		if (!isQoSDrxAlarm ) { // if is locally generated alarm
 			try
 			{
-				node=ossDao.findNodeByID(_openNMSalarm.getNode().getId());
+				// some opennms alarms don't have node information
+				// set default values if no node information present
+				if (_openNMSalarm.getNode()!=null) {
+					node=ossDao.findNodeByID(_openNMSalarm.getNode().getId());
 
-				asset =node.getAssetRecord();
+					asset =node.getAssetRecord();
 
-//				alarmIP = _openNMSalarm.getIpAddr(); // Not read
-//				if (node != null) {
+//					alarmIP = _openNMSalarm.getIpAddr(); // Not read
+//					if (node != null) {
 //					nodelabel = node.getLabel(); // Not read
-//				}
-				if (asset != null) {
-//					if (asset.getManufacturer()!= null) mftr = asset.getManufacturer(); // Not read
-//					if (asset.getModelNumber()!= null) modelNo = asset.getModelNumber(); // Not read
-//					if (asset.getSerialNumber()!= null) assetserno = asset.getSerialNumber(); // Not read
-					if (asset.getDescription()!= null) assetDescription = asset.getDescription();  // TODO was used for managed object class as is 128 char long
-					if (asset.getAddress2()!= null) assetAddress2 = asset.getAddress2();        // TODO was used for managed object instance - as is 256 char long string
-					if (asset.getManagedObjectInstance()!= null) assetManagedObjectInstance = asset.getManagedObjectInstance();
-					if (asset.getManagedObjectType()!= null) assetManagedObjectType = asset.getManagedObjectType();
+//					}
+					if (asset != null) {
+//						if (asset.getManufacturer()!= null) mftr = asset.getManufacturer(); // Not read
+//						if (asset.getModelNumber()!= null) modelNo = asset.getModelNumber(); // Not read
+//						if (asset.getSerialNumber()!= null) assetserno = asset.getSerialNumber(); // Not read
+						if (asset.getDescription()!= null) assetDescription = asset.getDescription();  // TODO was used for managed object class as is 128 char long
+						if (asset.getAddress2()!= null) assetAddress2 = asset.getAddress2();        // TODO was used for managed object instance - as is 256 char long string
+						if (asset.getManagedObjectInstance()!= null) assetManagedObjectInstance = asset.getManagedObjectInstance();
+						if (asset.getManagedObjectType()!= null) assetManagedObjectType = asset.getManagedObjectType();
+					}
+
+					managedObjectInstance= assetManagedObjectInstance;
+					managedObjectType = assetManagedObjectType;
+
+					if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm=FALSE  OpenNMS type and instance not set. Using from Node Asset record: ManagedObjectInstance: "
+							+ managedObjectInstance +" ManagedObjectType:"+managedObjectType);
 				}
-
-				managedObjectInstance= assetManagedObjectInstance;
-				managedObjectType = assetManagedObjectType;
-
-				if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm=FALSE  OpenNMS type and instance not set. Using from Node Asset record: ManagedObjectInstance: "
-						+ managedObjectInstance +" ManagedObjectType:"+managedObjectType);
 			}
 			catch(Exception ex) {
 				log.error(logheader+": Problem getting node and asset information", ex);
@@ -578,8 +582,14 @@ public class OnmsAlarmOssjMapper {
 				Integer alarmid= _openNMSalarm.getId();
 				Integer counter= _openNMSalarm.getCounter();
 				String reductionkey= _openNMSalarm.getReductionKey();
-				Integer nodeid= _openNMSalarm.getNode().getId();
-				String onmsnodelabel= _openNMSalarm.getNode().getLabel();
+				
+				// note some OnmsAlarms can have null nodes - we use a default value of 0 for ID
+				Integer nodeid=0;
+				String onmsnodelabel="";
+				if (_openNMSalarm.getNode()!= null) {
+					nodeid= _openNMSalarm.getNode().getId();
+					onmsnodelabel= _openNMSalarm.getNode().getLabel();
+				}
 				String ipaddress= _openNMSalarm.getIpAddr();
 				String x733AlarmType= _openNMSalarm.getX733AlarmType();
 				String x733ProbableCause;
