@@ -11,6 +11,15 @@
   <name>OpenNMS Remote Poller</name>
   <url>http://maven.apache.org</url>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/webstart</directory>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
