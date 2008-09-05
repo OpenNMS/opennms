@@ -43,6 +43,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	import="org.opennms.web.WebSecurityUtils,
+		org.opennms.web.element.*,
+		org.opennms.web.MissingParameterException"
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -54,6 +57,20 @@
   <jsp:param name="breadcrumb" value="Manage/Unmanage Interfaces Finish" />
 </jsp:include>
 
+<%
+
+	Node node = null;
+	String nodeIdString = request.getParameter("node");
+	if (nodeIdString != null) {
+		try {
+			int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
+			node = NetworkElementFactory.getNode(nodeId);
+		} catch (NumberFormatException e) {
+			// ignore this, we just won't put a link if it fails
+		}
+	}
+%>
+
 <h3>Finished updating the database for the manage/unmanaged changes</h3>
 
 <p>
@@ -64,5 +81,11 @@
   Changes for a specific node will become effective upon execution of
   a forced rescan on that node (node must not be down when rescanned).
 </p>
+
+<% if (node != null) { %>
+<p>
+  <a href="element/node.jsp?node=<%= node.getNodeId() %>">Back to Node.</a>
+</p>
+<% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
