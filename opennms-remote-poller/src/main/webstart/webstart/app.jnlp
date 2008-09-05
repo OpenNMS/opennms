@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.5+" codebase="$$codebase" href="$$name">
+  <information>
+    <title>OpenNMS Remote Poller (GUI)</title>
+    <vendor>The OpenNMS Group</vendor>
+    <homepage>http://www.opennms.org/</homepage>
+    <description>Remote Poller UI for OpenNMS Distributed Monitoring</description>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+"/>
+    <extension name="remote-poller" href="remote-poller.jnlp" />
+    <jar href="opennms-remote-poller-${project.version}.jar" main="true"/>
+  </resources>
+  <application-desc main-class="org.opennms.poller.remote.Main">
+    <argument>--gui</argument>
+    <argument>--url</argument>
+    <argument>$$context</argument>
+  </application-desc>
+</jnlp> 

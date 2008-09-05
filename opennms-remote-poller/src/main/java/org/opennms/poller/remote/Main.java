@@ -35,7 +35,18 @@ package org.opennms.poller.remote;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -52,9 +63,10 @@ public class Main {
     PollerFrontEnd m_frontEnd;
     String m_url;
     String m_locationName;
-    boolean m_shuttingDown = false;;
-    
-    
+    boolean m_shuttingDown = false;
+    boolean m_gui = false;
+    CommandLine m_cl;
+
     private Main(String[] args) {
         m_args = args;
     }
@@ -62,35 +74,85 @@ public class Main {
     private void run() {
         
         try {
-        
             parseArguments();
-        
+
             createAppContext();
-        
             registerShutDownHook();
 
-            if (!m_frontEnd.isRegistered()) {
-                m_frontEnd.register(m_locationName);
-            }    
+            if (!m_gui) {
+                if (!m_frontEnd.isRegistered()) {
+                    if (m_locationName == null) {
+                        log().fatal("No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        System.exit(27);
+                    } else {
+                        m_frontEnd.register(m_locationName);
+                    }
+                }
+            }
             
         } catch(Exception e) {
             // a fatal exception occurred
-            ThreadCategory.getInstance(getClass()).fatal("Exception occurred during registration!", e);
+            log().fatal("Exception occurred during registration!", e);
             System.exit(27);
         }
         
     }
 
-    private void parseArguments() {
-        if (m_args.length < 2) {
-            usage();
-        }
-        
-        m_url = m_args[0];
-        m_locationName = m_args[1];
-        
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
+    private void parseArguments() throws ParseException {
+        Options options = new Options();
+        
+        options.addOption("h", "help", false, "this help");
+        options.addOption("g", "gui", false, "start a GUI (default: false)");
+        options.addOption("l", "location", true, "the location name of this remote poller");
+        options.addOption("u", "url", true, "the RMI URL for OpenNMS (rmi://server-name/)");
+
+        CommandLineParser parser = new PosixParser();
+        m_cl = parser.parse(options, m_args);
+
+        if (m_cl.hasOption("h")) {
+            usage(options);
+            System.exit(1);
+        }
+
+        if (m_cl.hasOption("l")) {
+            m_locationName = m_cl.getOptionValue("l");
+        }
+        if (m_cl.hasOption("u")) {
+            String arg = m_cl.getOptionValue("u").toLowerCase();
+            if (arg.startsWith("http")) {
+                try {
+                    URL url = new URL(arg);
+                    m_url = "rmi://"+url.getHost();
+                    
+                } catch (MalformedURLException e) {
+                    usage(options);
+                    e.printStackTrace();
+                    System.exit(2);
+                }
+                
+            } else {
+                m_url = arg;
+            }
+
+        } else {
+            usage(options);
+            System.exit(3);
+        }
+        
+        if (m_cl.hasOption("g")) {
+            m_gui = true;
+        }
+    }
+
+    private void usage(Options o) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("usage: ", o);
+    }
+    
     private void registerShutDownHook() {
         Thread shutdownHook = new Thread() {
             public void run() {
@@ -109,18 +171,23 @@ public class Main {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
 
-        System.err.println("user.home.url = "+homeUrl);
+        log().debug("user.home.url = "+homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
-        System.err.println("opennms.poller.server.url = "+m_url);
+        log().debug("opennms.poller.server.url = "+m_url);
         System.setProperty("opennms.poller.server.url", m_url);
+
+        log().debug("location name = " + m_locationName);
         
-        String[] configs = {
-                "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
-                "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml"
-        };
+        List<String> configs = new ArrayList<String>();
+        configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml");
+        configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
+
+        if (m_gui) {
+            configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
+        }
         
-        m_context = new ClassPathXmlApplicationContext(configs);
+        m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
         
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
@@ -145,25 +212,13 @@ public class Main {
 
             public void propertyChange(PropertyChangeEvent e) {
                 if (!m_shuttingDown && shouldExit(e)) {
-                    System.exit(1);
+                    System.exit(10);
                 }
             }
             
         });
     }
 		
-    private void usage() {
-        System.err.println("The remote poller is not registered with the server.");
-        System.err.println("Register it by running this command:");
-        System.err.println("\tjava -jar opennms-remote-poller.jar <server URL> <location name>");
-        System.err.println("where:");
-        System.err.println("\t<server URL>    is URL of the RMI service on the OpenNMS server,");
-        System.err.println("\t                usually 'rmi://<server name>'.");
-        System.err.println("\t<location name> is name of a configured monitoring location");
-        System.err.println("\t                definition on the OpenNMS server.");
-        System.exit(1);
-    }
-
     public static void main(String[] args) {
         
         new Main(args).run();
