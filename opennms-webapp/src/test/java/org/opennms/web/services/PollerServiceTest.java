@@ -31,7 +31,13 @@
 //
 package org.opennms.web.services;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.getCurrentArguments;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.netmgt.EventConstants;
@@ -44,8 +50,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
-
-import junit.framework.TestCase;
 
 public class PollerServiceTest extends TestCase {
 	
@@ -85,7 +89,7 @@ public class PollerServiceTest extends TestCase {
 				assertEquals("Incorrect uei for demandPollService event", EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, event.getUei());
 				assertEquals("Incorrect nodeid for demandPollService event", monSvc.getNodeId().longValue(), event.getNodeid());
 				assertEquals("Incorrect ipadr for demandPollService event", monSvc.getIpAddress(), event.getInterface());
-				assertEquals("Incorrect ifIndex for demandPollService event", monSvc.getIfIndex().toString(), event.getIfIndex());
+				assertEquals("Incorrect ifIndex for demandPollService event", monSvc.getIfIndex(), Integer.valueOf(event.getIfIndex()));
 				assertEquals("Incorrect service for demandPollService event", monSvc.getServiceType().getName(), event.getService());
 				EventUtils.requireParm(event, EventConstants.PARM_DEMAND_POLL_ID);
 				assertEquals(expectedPolldId, EventUtils.getIntParm(event, EventConstants.PARM_DEMAND_POLL_ID, -1));
