@@ -12,7 +12,6 @@
 //
 // Modifications:
 //
-// 2008 Aug 31: Use new alarm list URL. - dj@opennms.org
 // 2008 May 20: Remove the extra box around the interfaces table. - dj@opennms.org
 // 2007 Nov 12: change interfaces box to table
 // 2007 Jun 02: Refactor to MVC pattern and pull reusable code into
@@ -221,7 +220,7 @@
       <a href="${eventLink}">View Events</a>
     </li>
 
-    <c:url var="alarmLink" value="alarm/list.htm">
+    <c:url var="alarmLink" value="alarm/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
     <li>
