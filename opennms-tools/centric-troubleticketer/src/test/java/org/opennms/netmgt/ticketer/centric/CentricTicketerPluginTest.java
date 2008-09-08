@@ -5,7 +5,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.ticketd.Ticket;
+import org.opennms.api.integration.ticketing.Ticket;
 
 public class CentricTicketerPluginTest extends TestCase {
     
@@ -80,7 +80,7 @@ public class CentricTicketerPluginTest extends TestCase {
         assertEquals(ticket.getState(), newTicket.getState());
         assertEquals(ticket.getSummary(), newTicket.getSummary());
         
-        //TODO: Implement this later when we need 2 way retrievel of commments/details
+        //TODO: Implement this later when we need 2 way retrieval of comments/details
         //assertEquals(ticket.getDetails(), newTicket.getDetails());
     }
     
@@ -94,7 +94,7 @@ public class CentricTicketerPluginTest extends TestCase {
         assertEquals(ticketId, newTicket.getId());
         assertTrue(newTicket.getSummary().startsWith("A Ticket at"));
         
-        //TODO: Implement this later when we need 2 way retrievel of commments/details
+        //TODO: Implement this later when we need 2 way retrieval of comments/details
         //assertEquals("These are the details", newTicket.getDetails());
         
     }

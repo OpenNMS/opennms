@@ -54,9 +54,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ticketd.Ticket;
-import org.opennms.netmgt.ticketd.TicketerPlugin;
-import org.opennms.netmgt.ticketd.Ticket.State;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.Ticket.State;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.util.Assert;
@@ -75,7 +75,7 @@ import com.intuit.quickbase.util.QuickBaseException;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class QuickBaseTicketerPlugin implements TicketerPlugin {
+public class QuickBaseTicketerPlugin implements Plugin {
     
     Properties m_properties;
     
