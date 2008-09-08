@@ -48,7 +48,6 @@
                   }
                   ant.genkey(args)
                 }
-              </source>
             </configuration>
           </execution>
           <execution>
@@ -65,9 +64,9 @@
         <version>1.0-alpha-2</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>process-resources</phase>
             <goals>
-              <goal>jnlp-single</goal>
+              <goal>jnlp-download-servlet</goal>
             </goals>
           </execution>
         </executions>
@@ -83,38 +82,37 @@
             <keypass>${webstart.keypass}</keypass>
             <storepass>${webstart.storepass}</storepass>
             <alias>${webstart.keyalias}</alias>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-            <!-- <dnameL>${webstart.dnameL}</dnameL>
-            <dnameSt>${webstart.dnameSt}</dnameSt>
-            <dnameC>${webstart.dnameC}</dnameC> -->
-            <verify>true</verify>
-          </sign>
-          <keystoreConfig>
-            <delete>${webstart.keystore.delete}</delete>
-            <gen>${webstart.keygen}</gen>
-          </keystoreConfig>
-          <verbose>false</verbose>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>attached</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.opennms.poller.remote.Main</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+            <dnameCn>${webstart.dnameCn}</dnameCn><!--<dnameL>${webstart.dnameL}</dnameL>
+          <dnameSt>${webstart.dnameSt}</dnameSt>
+          <dnameC>${webstart.dnameC}</dnameC>-->
+          <verify>true</verify>
+        </sign>
+        <keystoreConfig>
+          <delete>${webstart.keystore.delete}</delete>
+          <gen>${webstart.keygen}</gen>
+        </keystoreConfig>
+        <verbose>false</verbose>
+      </configuration>
+    </plugin>
+    <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>attached</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>org.opennms.poller.remote.Main</mainClass>
+          </manifest>
+        </archive>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
         <tarLongFileMode>gnu</tarLongFileMode>
       </configuration>
     </plugin>
