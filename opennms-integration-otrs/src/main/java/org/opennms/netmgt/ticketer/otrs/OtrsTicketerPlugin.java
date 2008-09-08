@@ -48,8 +48,8 @@ import org.opennms.integration.otrs.ticketservice.TicketStateUpdate;
 import org.opennms.integration.otrs.ticketservice.TicketWithArticles;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.ticketd.Ticket;
-import org.opennms.netmgt.ticketd.TicketerPlugin;
+
+import org.opennms.api.integration.ticketing.*;
 import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -60,7 +60,7 @@ import org.opennms.netmgt.xml.event.Event;
  * 
  */
 
-public class OtrsTicketerPlugin implements TicketerPlugin {
+public class OtrsTicketerPlugin implements Plugin {
 	
 	static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
 	

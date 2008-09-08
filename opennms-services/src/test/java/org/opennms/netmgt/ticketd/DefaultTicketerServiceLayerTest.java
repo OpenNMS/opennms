@@ -47,6 +47,8 @@ import org.opennms.test.mock.MockLogAppender;
 
 import org.opennms.api.integration.ticketing.*;
 
+import org.opennms.api.integration.ticketing.*;
+
 import junit.framework.TestCase;
 
 /**
