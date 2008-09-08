@@ -65,9 +65,9 @@
         <version>1.0-alpha-2</version>
         <executions>
           <execution>
-            <phase>process-resources</phase>
+            <phase>package</phase>
             <goals>
-              <goal>jnlp-download-servlet</goal>
+              <goal>jnlp-single</goal>
             </goals>
           </execution>
         </executions>
