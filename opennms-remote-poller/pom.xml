@@ -82,9 +82,12 @@
             <keypass>${webstart.keypass}</keypass>
             <storepass>${webstart.storepass}</storepass>
             <alias>${webstart.keyalias}</alias>
-            <dnameCn>${webstart.dnameCn}</dnameCn><!--<dnameL>${webstart.dnameL}</dnameL>
-          <dnameSt>${webstart.dnameSt}</dnameSt>
-          <dnameC>${webstart.dnameC}</dnameC>-->
+            <dnameCn>${webstart.dnameCn}</dnameCn>
+            <!--
+              <dnameL>${webstart.dnameL}</dnameL>
+              <dnameSt>${webstart.dnameSt}</dnameSt>
+              <dnameC>${webstart.dnameC}</dnameC>
+            -->
           <verify>true</verify>
         </sign>
         <keystoreConfig>
