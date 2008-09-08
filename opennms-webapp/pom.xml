@@ -20,12 +20,16 @@
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
-            <fileset><directory>.gwt-cache</directory></fileset>
-            <fileset><directory>tomcat</directory></fileset>
+            <fileset>
+              <directory>.gwt-cache</directory>
+            </fileset>
+            <fileset>
+              <directory>tomcat</directory>
+            </fileset>
           </filesets>
         </configuration>
-     </plugin> 
-     <plugin>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>dependency-maven-plugin</artifactId>
         <executions>
@@ -37,13 +41,13 @@
             </goals>
             <configuration>
               <artifactItems>
-               <artifactItem>
-                 <groupId>org.opennms</groupId>
-                 <artifactId>opennms-remote-poller</artifactId>
-                 <version>${project.version}</version>
-                 <type>zip</type>
-                 <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart</outputDirectory>
-               </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-remote-poller</artifactId>
+                  <version>${project.version}</version>
+                  <type>zip</type>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart</outputDirectory>
+                </artifactItem>
               </artifactItems>
               <excludes>**/*</excludes>
               <includes>*.jar,*.jnlp</includes>
@@ -71,7 +75,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
@@ -87,7 +90,6 @@
           </webResources>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
@@ -99,7 +101,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
@@ -108,7 +109,6 @@
           <port>${tomcat.port}</port>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-jspc-plugin</artifactId>
@@ -124,14 +124,13 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
-	<configuration>
+        <configuration>
           <additionalBuildcommands>
             <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-          </additionalBuildcommands> 
+          </additionalBuildcommands>
           <additionalProjectnatures>
             <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
           </additionalProjectnatures>
@@ -140,10 +139,7 @@
     </plugins>
   </build>
   <dependencies>
-    <!--
-         Sort dependencies by groupId then artifactId, but put dependencies
-         with a groupId of org.opennms first.
-      -->
+    <!-- Sort dependencies by groupId then artifactId, but put dependencies with a groupId of org.opennms first. -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-acegi</artifactId>
@@ -266,7 +262,6 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
       <version>${gwtVersion}</version>
-      <!--  scope>runtime</scope -->
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -280,7 +275,6 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-
     <!-- XXX used by the new "webapp-ng"/"secret" stuff directly -->
     <dependency>
       <groupId>org.jrobin</groupId>
@@ -349,13 +343,6 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
-<!--
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
--->
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
