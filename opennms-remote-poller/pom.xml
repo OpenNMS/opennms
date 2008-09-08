@@ -48,6 +48,7 @@
                   }
                   ant.genkey(args)
                 }
+              </source>
             </configuration>
           </execution>
           <execution>
