@@ -144,10 +144,6 @@ public class JavaMailer {
         
         //Now set the properties into the session
         m_session = Session.getInstance(getMailProps(), createAuthenticator());
-        
-        m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
-        m_session.setDebug(isDebug());
-        
     }
 
     /**
@@ -628,6 +624,10 @@ public class JavaMailer {
 
     public void setDebug(boolean debug) {
         m_debug = debug;
+        if (isDebug()) {
+            m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
+        }
+        m_session.setDebug(isDebug());
     }
 
     /**
