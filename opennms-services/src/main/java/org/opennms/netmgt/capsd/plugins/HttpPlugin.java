@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -236,7 +237,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
 		    int maxRetCode = config.getKeyedInteger("max-ret-code", 399);
 		    if ( (DEFAULT_URL.equals(config.getKeyedString("url", DEFAULT_URL))) || (config.getKeyedBoolean("check-return-code", true) == false) )
 		    {
-			maxRetCode = 600;
+		        maxRetCode = 600;
 		    }	
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
@@ -248,6 +249,9 @@ public class HttpPlugin extends AbstractTcpPlugin {
                     isAServer = true;
                 }
             }
+        } catch (SocketException e) {
+            log.debug(getPluginName() + ": a protocol error occurred talking to host " + config.getInetAddress().getHostAddress(), e);
+            isAServer = false;
         } catch (NumberFormatException e) {
             log.debug(getPluginName() + ": failed to parse response code from host " + config.getInetAddress().getHostAddress(), e);
             isAServer = false;
