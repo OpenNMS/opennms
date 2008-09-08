@@ -65,7 +65,7 @@ public class ControllerTest extends TestCase {
         
         final Controller c = new Controller();
         c.setInvokeUrl(Controller.DEFAULT_INVOKER_URL.replaceAll(":8181", ":" + server.getLocalPort()));
-        c.setHttpRequestReadTimeout(1000);
+        c.setHttpRequestReadTimeout(2000);
         
         Thread clientThread = new Thread(new Runnable() {
             public void run() {
