@@ -379,10 +379,12 @@ public class CollectdTest extends TestCase {
         return isA(Collection.class);
     }
 
+    /*
     @SuppressWarnings("unchecked")
     private <K> List<K> isAList(Class<K> innerClass) {
         return isA(List.class);
     }
+    */
 
     @SuppressWarnings("unchecked")
     private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {

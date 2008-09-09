@@ -301,8 +301,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     		// Was the collection successful?
     		verifySuccessfulWalk(walker);
-                m_status=ServiceCollector.COLLECTION_SUCCEEDED;
 
+                m_status=ServiceCollector.COLLECTION_SUCCEEDED;
     	} catch (InterruptedException e) {
     		Thread.currentThread().interrupt();
             throw new CollectionWarning("collect: Collection of node SNMP "

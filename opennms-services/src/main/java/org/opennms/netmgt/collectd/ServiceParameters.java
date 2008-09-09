@@ -152,7 +152,12 @@ public class ServiceParameters {
     }
 
     String getSnmpReadCommunity(String current) {
-        return ParameterMap.getKeyedString(getParameters(), "read-community", current);
+        String readCommunity = ParameterMap.getKeyedString(getParameters(), "read-community", null);
+        if (readCommunity == null) {
+            // incase someone is using an ancient config file
+            readCommunity = ParameterMap.getKeyedString(m_parameters, "readCommunity", current);
+        }
+        return readCommunity;
     }
 
     String getSnmpWriteCommunity(String current) {
@@ -190,7 +195,12 @@ public class ServiceParameters {
     }
 
     int getSnmpMaxRepetitions(int current) {
-        return ParameterMap.getKeyedInteger(getParameters(), "max-repetitions", current);
+        int maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "max-repetitions", -1);
+        if (maxRepetitions == -1) {
+            // incase someone is using an ancient config file
+            maxRepetitions = ParameterMap.getKeyedInteger(m_parameters, "maxRepetitions", current);
+        }
+        return maxRepetitions;
     }
 
     int getSnmpMaxRequestSize(int current) {
