@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Aug 31: Make makeQueryString work when the query string it produces is empty. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -488,9 +492,11 @@ public abstract class Util extends Object {
         }
 
         // removes the first & from the buffer
-        buffer.deleteCharAt(0);
+        if (buffer.length() > 0 && buffer.charAt(0) == '&') {
+            buffer.deleteCharAt(0);
+        }
 
-        return (buffer.toString());
+        return buffer.toString();
     }
 
     public static class IgnoreType extends Object {

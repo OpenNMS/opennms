@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 31: Clean up imports and add "display" parameter. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventQueryParms.java
 //
@@ -39,6 +40,8 @@ package org.opennms.web.alarm;
 
 import java.util.List;
 
+import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
+import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.Filter;
 
 /**
@@ -48,15 +51,17 @@ import org.opennms.web.alarm.filter.Filter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AlarmQueryParms extends Object {
-    public AlarmFactory.SortStyle sortStyle;
+    public SortStyle sortStyle;
 
-    public AlarmFactory.AcknowledgeType ackType;
+    public AcknowledgeType ackType;
 
     public List<Filter> filters;
 
     public int limit;
 
     public int multiple;
+    
+    public String display;
 
     /**
      * Convert the internal (and useful) ArrayList filters object into an array
