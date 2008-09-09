@@ -10,21 +10,141 @@
     <section>
       <title>New Features</title>
 
-      <para>foobar</para>
+      <itemizedlist>
+        <listitem>
+          <para>OpenNMS now has provisional support for PostgreSQL 8.3.  All known bugs
+          have been fixed, but there may be some corner cases left that aren't covered by
+          unit tests.  To use OpenNMS with PostgreSQL 8.3, you will need to run the install
+          tool with the "-Q" option. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2613">#2613</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>OpenNMS now automatically writes a thread dump to output.log on
+          shutdown, for easier debugging. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2181">#2181</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>SNMP parameters can now be set in the Collectd configuration. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2195">#2195</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>Relative thresholds can now use negative numbers.  Additionally, you can
+          now threshold on absolute changes as well (loss in dB on fiber links, etc.) (Bugs
+          <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2275">#2275</ulink> and
+          <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2604">#2604</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>XmlRpcNotifier now allows a timeout parameter. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2342">#2342</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>The java web start remote poller can now be run in a headless mode.
+          See <ulink url="http://www.opennms.org/index.php/Remote_Poller">this page</ulink>
+          for configuration details. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2354">#2354</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>Asset comments now retain formatting.  In addition, the exporter creates
+          real CSV files, so you can have asset data with commas in them. ;) (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2363">#2363</ulink>)</para>
+        </listitem>
+
+        <listitem>
+	      <para>The OSS/J QoS interface has been enhanced in a number of ways, mostly
+	      related to documentation and simplifying importing.  See <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2618">bug #2618</ulink>
+	      for details.</para>
+	    </listitem>
+	    
+	    <listitem>
+	      <para>A new ticketing plugin for <ulink
+	      url="http://otrs.org/">OTRS</ulink> has been added.  (Bug <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2658">#2658</ulink>)</para>
+	    </listitem>
+	    
+	    <listitem>
+	      <para>Initial support was added for interfacing with devices that speak
+         Transactional Language 1, or TL-1.  (Bug <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2693">#2693</ulink>)</para>
+	    </listitem>
+
+        <listitem>	
+	      <para>Support for new Cisco, Citrix, Compaq, McAfee, Polycom, Radlan,
+	      and UPS-MIB traps (Bugs <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2511">#2511</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2542">#2542</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2554">#2554</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2566">#2566</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2581">#2581</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2598">#2598</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2599">#2599</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2643">#2643</ulink>,
+	      and <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2671">#2671</ulink>)</para>
+	    </listitem>
+	    
+	    <listitem>
+	      <para>Support for new Brocade, Citrix, Dell, HP-UX, Kyocera, Liebert,
+	      Novell, and SNMP Informant data collections (Bugs <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2370">#2370</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2371">#2371</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2391">#2391</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2511">#2511</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2579">#2579</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2624">#2624</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2629">#2629</ulink>,
+	      <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2663">#2663</ulink>,
+          and <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2686">#2686</ulink>)</para>
+        </listitem>
+      </itemizedlist>
+
     </section>
 
     <section>
       <title>Bug Fixes</title>
 
-      <para>foobar</para>
+      <para>A large number of bugs have been fixed since 1.5.93, in the process
+      of preparing for 1.6.0.  A full list of bugs fixed in the release can be
+      found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.94+%281.6+beta+5%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+
+      <para>A number of cross-site scripting (XSS) security issues have been fixed.  (Bugs
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2631">#2631</ulink>,
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2633">#2633</ulink>,
+      and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2634">#2634</ulink>)
+      </para>
+
     </section>
 
     <section>
+    
       <title>Changes</title>
 
       <para>In the plugins for capsd and the monitors for the service poller,
       the correct parameter to use for retries is "retry" however some used
-      "retries". This has been corrected, but on upgrading one may need to
+      "retries". This has been corrected, but on upgrading one may want to
       change the configuration files if they have been customized. Those
       changed were:</para>
 
@@ -75,7 +195,20 @@
           </itemizedlist>
         </listitem>
       </itemizedlist>
+
+      <para>The default RRD roll-up schedule for data collected using the
+      NSClient Collector has been changed to match that used for some time by
+      the SNMP Collector. When upgrading to release 1.5.94, users who rely on
+      NSClient data collection and do not wish to lose any historical data must
+      take care to preserve the existing roll-up schedule in the
+      nsclient-datacollection-config.xml file. Users who are not concerned with
+      keeping historical NSClient performance data can adopt the new roll-up
+      schedule, but will need to delete all RRD files created while the old
+      roll-up schedule was in effect. Failure to do so will result in new data
+      not being stored.</para>
+
     </section>
+    
   </section>
 
   <section>
