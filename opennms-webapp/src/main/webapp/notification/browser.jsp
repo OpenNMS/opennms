@@ -78,9 +78,11 @@
 %>
 
 <%
+	XssRequestWrapper req = new XssRequestWrapper(request);
+
     //required attributes
-    Notification[] notices = (Notification[])request.getAttribute( "notices" );
-    NoticeQueryParms parms = (NoticeQueryParms)request.getAttribute( "parms" );
+    Notification[] notices = (Notification[])req.getAttribute( "notices" );
+    NoticeQueryParms parms = (NoticeQueryParms)req.getAttribute( "parms" );
 
     if( notices == null || parms == null ) {
         throw new ServletException( "Missing either the notices or parms request attribute." );
@@ -218,9 +220,9 @@
 <% } %>
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
-          <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-          <%=org.opennms.web.Util.makeHiddenTags(request)%>        
-	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+          <%=org.opennms.web.Util.makeHiddenTags(req)%>        
+	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <p><input TYPE="reset" />
 						<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
 						<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
@@ -248,7 +250,7 @@
         %>
         <tr class="<%=eventSeverity%>">
           <td class="divider noWrap" rowspan="2"><% if((parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) && 
-		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+		!(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
           <% } %> 
 						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
@@ -316,7 +318,7 @@
       </table>
       <p><%=notices.length%> notices &nbsp;
 
-        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input TYPE="reset" />
             <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
             <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
