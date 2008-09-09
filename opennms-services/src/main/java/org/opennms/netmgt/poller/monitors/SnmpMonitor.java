@@ -211,6 +211,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
         String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
         String matchstr = ParameterMap.getKeyedString(parameters, "match-all", "true");
+        int countMin = ParameterMap.getKeyedInteger(parameters, "minimum", 0);
+        int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
 
         // set timeout and retries on SNMP peer object
         //
@@ -245,6 +247,29 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         }
                     }
                 }
+
+            // This if block will count the number of matches within a walk and mark the service
+            // as up if it is between the minimum and maximum number, down if otherwise. Setting
+            // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
+            } else if ("count".equals(matchstr)) {
+		int matchCount = 0;
+                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
+                for(SnmpValue result : results) {
+
+                    if (result != null) {
+                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                        if (meetsCriteria(result, operator, operand)) {
+				matchCount++;
+                        }
+                    }
+                }
+                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
+                if ((matchCount < countMax) && (matchCount > countMin)) {
+                    status = PollStatus.available();
+                } else {
+                    status = logDown(Level.DEBUG, "Value: " + matchCount + " outside of range Min: " + countMin + " to Max: " + countMax);
+                    return status;
+		}
 
             } else {
 
