@@ -128,7 +128,7 @@
 
       <para>A large number of bugs have been fixed since 1.5.93, in the process
       of preparing for 1.6.0.  A full list of bugs fixed in the release can be
-      found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.93+%281.6+beta+4%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+      found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.94+%281.6+beta+5%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
 
       <para>A number of cross-site scripting (XSS) security issues have been fixed.  (Bugs
       <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2631">#2631</ulink>,
