@@ -40,7 +40,34 @@ public class OtrsTicketerPluginTest extends TestCase {
 	Ticket m_ticket;
 	
 	private MockEventIpcManager m_eventIpcManager;
-	
+
+    /**
+     * Don't run this test unless the runPingTests property
+     * is set to "true".
+     */
+    @Override
+    protected void runTest() throws Throwable {
+        if (!isRunTest()) {
+            System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
+            return;
+        }
+            
+        try {
+            System.err.println("------------------- begin "+getName()+" ---------------------");
+            super.runTest();
+        } finally {
+            System.err.println("------------------- end "+getName()+" -----------------------");
+        }
+    }
+
+    private boolean isRunTest() {
+        return Boolean.getBoolean(getRunTestProperty());
+    }
+
+    private String getRunTestProperty() {
+        return "runPingTests";
+    }
+
 	 @Override
 	 protected void setUp() throws Exception {
 
