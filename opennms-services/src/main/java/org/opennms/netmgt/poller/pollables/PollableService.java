@@ -145,7 +145,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     public PollStatus poll() {
         PollStatus newStatus = m_pollConfig.poll();
-        updateStatus(newStatus);
+        if (!newStatus.isUnknown()) { 
+            updateStatus(newStatus);
+        }
         return getStatus();
     }
 
@@ -206,6 +208,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public String toString() { return getInterface()+":"+getSvcName(); }
 
     public void processStatusChange(Date date) {
+        
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus().equals(PollStatus.unresponsive())) {
                 getContext().sendEvent(createUnresponsiveEvent(date));
