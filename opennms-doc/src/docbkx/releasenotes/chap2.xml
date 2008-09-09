@@ -10,6 +10,9 @@
     <section>
       <title>New Features</title>
 
+      <para>Release 1.5.94 includes initial support for interfacing with devices
+      that speak Transactional Language 1 or TL-1.</para>
+
       <para>foobar</para>
     </section>
 
