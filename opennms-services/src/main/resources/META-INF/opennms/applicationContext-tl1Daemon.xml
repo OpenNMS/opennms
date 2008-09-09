@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+       
+       
+  <bean id="tl1dConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
+    <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml" />
+  </bean>
+  
+  <bean id="daemon" class="org.opennms.netmgt.tl1d.Tl1d">
+    <property name="eventManager" ref="eventIpcManager" />
+    <property name="configurationDao" ref="tl1dConfigurationDao" />
+  </bean>
+  
+</beans>

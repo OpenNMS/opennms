@@ -1645,6 +1645,25 @@
     <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="1" auto-clean="true"/>
   </event> 
   
+  <event> 
+    <uei>uei.opennms.org/api/tl1d/message/autonomous</uei>
+    <event-label>OpenNMS-defined Autonomous TL1 message</event-label>
+    <descr>
+      This is a TL1 autonomous message delivered for host: %host%.&lt;p&gt;
+
+      &lt;p&gt;Message: %parm[raw-message]% &lt;/p&gt;
+      &lt;p&gt;Alarm Code: %parm[alarm-code]% &lt;/p&gt;
+      &lt;p&gt;ATAG: %parm[atag]% &lt;/p&gt;
+      &lt;p&gt;Verb: %parm[verb]% &lt;/p&gt;
+      &lt;p&gt;Auto Block: %parm[autoblock]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;TL1 Alert: %parm[verb]% &lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%host%" alarm-type="1" auto-clean="false"/>
+  </event> 
+  
   <event-file>events/ia.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>

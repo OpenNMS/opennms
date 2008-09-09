@@ -228,4 +228,5 @@
   <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
     <property name="configResource" ref="statsdConfigResource" />
   </bean>
+  
 </beans>
