@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 14: Sanitize input
 // 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
 // 2003 Sep 04: Added a check to allow for deleted node events to display.
@@ -50,7 +51,10 @@
 		java.util.*,
 		java.sql.SQLException,
 		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.event.filter.*
+		org.opennms.web.event.filter.*,
+		org.opennms.web.SafeHtmlUtil,
+		org.opennms.web.XssRequestWrapper
+		
 	"
 %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -66,9 +70,11 @@
 --%>
 
 <%
+	XssRequestWrapper req = new XssRequestWrapper(request);
+
     //required attributes
-    Event[] events = (Event[])request.getAttribute( "events" );
-    EventQueryParms parms = (EventQueryParms)request.getAttribute( "parms" );
+    Event[] events = (Event[])req.getAttribute( "events" );
+    EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
 
     if( events == null || parms == null ) {
 	throw new ServletException( "Missing either the events or parms request attribute." );
@@ -179,9 +185,9 @@
       <ul>
         <li><a href="<%=this.makeLink( parms, new ArrayList<org.opennms.web.event.filter.Filter>())%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a href="<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp">Severity Legend</a></li>
+        <li><a href="<%=org.opennms.web.Util.calculateUrlBase(req)%>/event/severity.jsp">Severity Legend</a></li>
       
-      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
         <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
         <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
         <% } else { %>
@@ -195,9 +201,9 @@
 
       <!-- hidden form for acknowledging the result set --> 
       <form action="event/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
-        <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+        <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="action" value="<%=action%>" />
-        <%=org.opennms.web.Util.makeHiddenTags(request)%>
+        <%=org.opennms.web.Util.makeHiddenTags(req)%>
       </form>      
 
       <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
@@ -224,16 +230,16 @@
                   <% } %>
 									<% for( int i=0; i < length; i++ ) { %>
 									  <% org.opennms.web.event.filter.Filter filter = (org.opennms.web.event.filter.Filter)parms.filters.get(i); %>
-									    &nbsp; <span class="filter"><%=filter.getTextDescription()%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>                    
+									    &nbsp; <span class="filter"><%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>                    
 									<% } %>
               </p>           
             <% } %>
 
-    <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+    <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
       <form action="event/acknowledge" method="POST" name="acknowledge_form">
-        <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+        <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="action" value="<%=action%>" />
-        <%=org.opennms.web.Util.makeHiddenTags(request)%>
+        <%=org.opennms.web.Util.makeHiddenTags(req)%>
     <% } %>
 		<jsp:include page="/includes/key.jsp" flush="false" />
       <table>
@@ -254,7 +260,7 @@
         pageContext.setAttribute("event", event);
       %>
         <tr class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
-          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <td><input type="checkbox" name="event" value="<%=events[i].getId()%>" /></td>
             <% } %>
           <td class="noWrap"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
@@ -343,7 +349,7 @@
       <% } /*end for*/%>
       </table>
         <hr />
-        <p style="margin-top:10px;"><% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <p style="margin-top:10px;"><% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
 							<input TYPE="reset" />
 							<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
@@ -358,7 +364,7 @@
       </form>
 
       <%--<br>
-      <% if(request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
+      <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>
 

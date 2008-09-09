@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 14: Sanitize input
 // 2006 Aug 17: fix some HTML. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -44,13 +45,17 @@
 	import="java.util.*,
 		org.opennms.web.Util,
 		org.opennms.web.outage.*,
-		org.opennms.web.outage.filter.Filter
+		org.opennms.web.outage.filter.Filter,
+		org.opennms.web.XssRequestWrapper,
+		org.opennms.web.SafeHtmlUtil
 	"
 %>
 
 <%
+	XssRequestWrapper req = new XssRequestWrapper(request);
+
     //required attribute parms
-    OutageQueryParms parms = (OutageQueryParms)request.getAttribute( "parms" );
+    OutageQueryParms parms = (OutageQueryParms)req.getAttribute( "parms" );
 
     if( parms == null ) {
         throw new ServletException( "Missing the outage parms request attribute." );
@@ -61,7 +66,7 @@
 
 <!-- acknowledged/outstanding row -->
 <form action="outage/list" method="GET" name="outage_search_constraints_box_outtype_form">
-  <%=Util.makeHiddenTags(request, new String[] {"outtype"})%>
+  <%=Util.makeHiddenTags(req, new String[] {"outtype"})%>
     
   <p>
     Outage type:
@@ -82,10 +87,10 @@
 </form>    
 
 <% if( length > 0 ) { %>
-  <p>Search contraints: 
+  <p>Search constraints: 
       <% for(int i=0; i < length; i++) { %>
         <% Filter filter = (Filter)parms.filters.get(i); %> 
-        &nbsp; <span class="filter"><%=filter.getTextDescription()%> <a href="<%=OutageUtil.makeLink(request, parms, filter, false)%>">[-]</a></span>
+        &nbsp; <span class="filter"><%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>">[-]</a></span>
       <% } %>   
   </p>    
 <% } %>  
