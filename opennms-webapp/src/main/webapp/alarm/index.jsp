@@ -60,7 +60,8 @@
             <input type="submit" value="Get details"/></p>                
         </form>
         <ul class="plain">
-          <li><a href="alarm/list" title="View all outstanding alarms">All alarms</a></li>
+          <li><a href="alarm/list" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
+          <li><a href="alarm/listlong" title="Detailed view of all outstanding alarms">All alarms (detail)</a></li>
           <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         </ul>  
       </div>
