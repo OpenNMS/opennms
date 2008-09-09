@@ -75,6 +75,18 @@
           </itemizedlist>
         </listitem>
       </itemizedlist>
+
+      <para>The default RRD roll-up schedule for data collected using the
+      NSClient Collector has been changed to match that used for some time by
+      the SNMP Collector. When upgrading to release 1.5.94, users who rely on
+      NSClient data collection and do not wish to lose any historical data must
+      take care to preserve the existing roll-up schedule in the
+      nsclient-datacollection-config.xml file. Users who are not concerned with
+      keeping historical NSClient performance data can adopt the new roll-up
+      schedule, but will need to delete all RRD files created while the old
+      roll-up schedule was in effect. Failure to do so will result in new data
+      not being stored.</para>
+
     </section>
   </section>
 
