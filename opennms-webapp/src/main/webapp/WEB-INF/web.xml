@@ -220,11 +220,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/alarm/list</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/alarm/listlong</url-pattern>
+    <url-pattern>/alarm/list.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-30</filter-name>
@@ -450,14 +446,6 @@
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
     </init-param>    
-  </servlet>
-  <servlet>
-    <servlet-name>filterAlarm</servlet-name>
-    <servlet-class>org.opennms.web.alarm.AlarmFilterServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>filterAlarmlong</servlet-name>
-    <servlet-class>org.opennms.web.alarm.AlarmFilterLongServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>queryAlarm</servlet-name>
@@ -869,14 +857,6 @@
     <servlet-name>acknowledgeAlarmByFilter</servlet-name>
     <url-pattern>/alarm/acknowledgeByFilter</url-pattern>
   </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>filterAlarm</servlet-name>
-    <url-pattern>/alarm/list</url-pattern>
-  </servlet-mapping>    
-  <servlet-mapping>
-    <servlet-name>filterAlarmlong</servlet-name>
-    <url-pattern>/alarm/listlong</url-pattern>
-  </servlet-mapping>    
   <servlet-mapping>
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>

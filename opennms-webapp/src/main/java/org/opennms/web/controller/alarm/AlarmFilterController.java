@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Aug 31: Created AlarmFilterController from AlarmFilterServlet. - dj@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventFilterServlet.java
 //
@@ -35,39 +36,49 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.alarm;
+package org.opennms.web.controller.alarm;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.alarm.Alarm;
+import org.opennms.web.alarm.AlarmFactory;
+import org.opennms.web.alarm.AlarmQueryParms;
+import org.opennms.web.alarm.AlarmUtil;
+import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
+import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
- * A servlet that handles querying the event table by using filters to create an
+ * A controller that handles querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display.
  * 
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AlarmFilterLongServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
-    public static final int DEFAULT_LIMIT = 10;
-
+public class AlarmFilterController extends AbstractController implements InitializingBean {
     public static final int DEFAULT_MULTIPLE = 0;
 
-    public static final AlarmFactory.SortStyle DEFAULT_SORT_STYLE = AlarmFactory.SortStyle.ID;
+    private String m_successView;
 
-    public static final AlarmFactory.AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = AlarmFactory.AcknowledgeType.UNACKNOWLEDGED;
+    private Integer m_defaultShortLimit;
+
+    private Integer m_defaultLongLimit;
+    
+    private AcknowledgeType m_defaultAcknowledgeType = AcknowledgeType.UNACKNOWLEDGED;
+
+    private SortStyle m_defaultSortStyle = SortStyle.ID;
+
 
     /**
      * Parses the query string to determine what types of event filters to use
@@ -80,24 +91,27 @@ public class AlarmFilterLongServlet extends HttpServlet {
      * the forwardee JSP (or whatever gets called).
      * </p>
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String display = request.getParameter("display");
+
         // handle the style sort parameter
         String sortStyleString = request.getParameter("sortby");
-        AlarmFactory.SortStyle sortStyle = DEFAULT_SORT_STYLE;
+        SortStyle sortStyle = m_defaultSortStyle;
         if (sortStyleString != null) {
-            Object temp = AlarmUtil.getSortStyle(sortStyleString);
+            SortStyle temp = AlarmUtil.getSortStyle(sortStyleString);
             if (temp != null) {
-                sortStyle = (AlarmFactory.SortStyle) temp;
+                sortStyle = temp;
             }
         }
 
         // handle the acknowledgement type parameter
         String ackTypeString = request.getParameter("acktype");
-        AlarmFactory.AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
+        AcknowledgeType ackType = m_defaultAcknowledgeType;
         if (ackTypeString != null) {
-            Object temp = AlarmUtil.getAcknowledgeType(ackTypeString);
+            AcknowledgeType temp = AlarmUtil.getAcknowledgeType(ackTypeString);
             if (temp != null) {
-                ackType = (AlarmFactory.AcknowledgeType) temp;
+                ackType = temp;
             }
         }
 
@@ -115,7 +129,7 @@ public class AlarmFilterLongServlet extends HttpServlet {
 
         // handle the optional limit parameter
         String limitString = request.getParameter("limit");
-        int limit = DEFAULT_LIMIT;
+        int limit = "long".equals(display) ? getDefaultLongLimit() : getDefaultShortLimit();
 
         if (limitString != null) {
             try {
@@ -146,21 +160,66 @@ public class AlarmFilterLongServlet extends HttpServlet {
             parms.filters = filterArray;
             parms.limit = limit;
             parms.multiple = multiple;
+            parms.display = display;
 
             // query the alarms with the new filters array
             Alarm[] alarms = AlarmFactory.getAlarms(sortStyle, ackType, parms.getFilters(), limit, multiple * limit);
-
-            // add the necessary data to the request so the
-            // JSP (or whatever gets called) can create the view correctly
-            request.setAttribute("alarms", alarms);
-            request.setAttribute("parms", parms);
-
-            // forward the request for proper display
-            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/alarm/list-long.jsp");
-            dispatcher.forward(request, response);
+            
+            ModelAndView modelAndView = new ModelAndView(getSuccessView());
+            modelAndView.addObject("alarms", alarms);
+            modelAndView.addObject("parms", parms);
+            return modelAndView;
         } catch (SQLException e) {
             throw new ServletException("", e);
         }
+    }
+
+    private Integer getDefaultShortLimit() {
+        return m_defaultShortLimit;
+    }
+
+    public void setDefaultShortLimit(Integer limit) {
+        m_defaultShortLimit = limit;
+    }
+
+    private Integer getDefaultLongLimit() {
+        return m_defaultLongLimit;
+    }
+
+    public void setDefaultLongLimit(Integer limit) {
+        m_defaultLongLimit = limit;
+    }
+
+    private String getSuccessView() {
+        return m_successView;
+    }
+
+    public void setSuccessView(String successView) {
+        m_successView = successView;
+    }
+
+    public void afterPropertiesSet() {
+        Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
+        Assert.isTrue(m_defaultShortLimit > 0, "property defaultShortLimit must be set to a value greater than 0");
+        Assert.notNull(m_defaultLongLimit, "property defaultLongLimit must be set to a value greater than 0");
+        Assert.isTrue(m_defaultLongLimit > 0, "property defaultLongLimit must be set to a value greater than 0");
+        Assert.notNull(m_successView, "property successView must be set");
+    }
+
+    public AcknowledgeType getDefaultAcknowledgeType() {
+        return m_defaultAcknowledgeType;
+    }
+
+    public void setDefaultAcknowledgeType(AcknowledgeType defaultAcknowledgeType) {
+        m_defaultAcknowledgeType = defaultAcknowledgeType;
+    }
+
+    public SortStyle getDefaultSortStyle() {
+        return m_defaultSortStyle;
+    }
+
+    public void setDefaultSortStyle(SortStyle defaultSortStyle) {
+        m_defaultSortStyle = defaultSortStyle;
     }
 
 }

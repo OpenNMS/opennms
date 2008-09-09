@@ -196,7 +196,15 @@
   	<property name="troubleTicketProxy" ref="troubleTicketProxy" />
   </bean>
   <bean name="/alarm/ticket/close.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
-  	<property name="troubleTicketProxy" ref="troubleTicketProxy" />
+    <property name="troubleTicketProxy" ref="troubleTicketProxy" />
+  </bean>
+  
+  <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController">
+    <property name="successView" value="alarm/list" />
+    <property name="defaultShortLimit" value="20" />
+    <property name="defaultLongLimit" value="10" />
+    <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
+    <property name="defaultSortStyle" value="ID" />
   </bean>
   
   <bean name="/admin/distributed/locationMonitorResume.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
