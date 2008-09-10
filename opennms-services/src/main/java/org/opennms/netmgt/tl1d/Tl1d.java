@@ -98,6 +98,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
                 client.setTl1Queue(m_tl1Queue);
                 client.setMessageProcessor((Tl1AutonomousMessageProcessor) Class.forName(element.getTl1MessageParser()).newInstance());
                 client.setLog(log());
+                client.setReconnectionDelay(element.getReconnectDelay());
                 m_tl1Clients.add(client);
             } catch (InstantiationException e) {
                 log().error("onInit: could not instantiate specified class.", e);
@@ -140,15 +141,21 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
         EventBuilder bldr = new EventBuilder(Tl1AutonomousMessage.UEI, "Tl1d");
         bldr.setHost(message.getHost());
+        bldr.setInterface(message.getHost()); //interface is the IP
+        bldr.setService("TL-1"); //Service it TL-1
+        bldr.setSeverity(message.getId().getHighestSeverity());
+        
         bldr.setTime(message.getTimestamp());
         bldr.addParam("raw-message", message.getRawMessage());
         bldr.addParam("alarm-code", message.getId().getAlarmCode());
         bldr.addParam("atag", message.getId().getAlarmTag());
         bldr.addParam("verb", message.getId().getVerb());
         bldr.addParam("autoblock", message.getAutoBlock().getBlock());
+        bldr.addParam("aid",message.getAutoBlock().getAid());
+        bldr.addParam("additionalParams",message.getAutoBlock().getAdditionalParams());
         
         m_eventManager.sendNow(bldr.getEvent());
-        log().debug("processMessage: Message processed: "+message);
+        log().debug("processMessage: Message processed: "+ message);
     }
 
 

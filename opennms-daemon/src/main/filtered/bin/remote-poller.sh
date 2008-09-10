@@ -10,7 +10,7 @@
 #JAVA_HOME="/usr/java/jdk1.6.0_02"
 #RMI_LOCATION="RDU"
 #RMI_HOST="demo.opennms.org"
-MONITOR_JAR="@install.dir@/lib/opennms-remote-poller.jar"
+MONITOR_JAR="@install.dir@/bin/remote-poller.jar"
 RMI_PORT=1099
 
 

@@ -35,7 +35,6 @@
  */
 package org.opennms.netmgt.tl1d;
 
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Category;
@@ -56,6 +55,9 @@ public interface Tl1Client {
 
 	int getPort();
 	void setPort(int port);
+
+	long getReconnectionDelay();
+	void setReconnectionDelay(long reconnectionDelay);
 
 	BlockingQueue<Tl1AutonomousMessage> getTl1Queue();
 	void setTl1Queue(BlockingQueue<Tl1AutonomousMessage> queue);
