@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Aug 31: Make makeQueryString work when the query string it produces is empty. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -492,11 +491,9 @@ public abstract class Util extends Object {
         }
 
         // removes the first & from the buffer
-        if (buffer.length() > 0 && buffer.charAt(0) == '&') {
-            buffer.deleteCharAt(0);
-        }
+        buffer.deleteCharAt(0);
 
-        return buffer.toString();
+        return (buffer.toString());
     }
 
     public static class IgnoreType extends Object {
