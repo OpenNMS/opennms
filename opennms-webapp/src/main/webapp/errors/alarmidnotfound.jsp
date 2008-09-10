@@ -12,7 +12,6 @@
 //
 // Modifications:
 //
-// 2008 Aug 31: Use new alarm list URL. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -34,8 +33,7 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.opennms.com/
-//
+//      http://www.opennms.com///
 
 --%>
 
@@ -73,7 +71,7 @@
 <p>
   The alarm ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
   <br/>
-  You can re-enter it here or <a href="alarm/list.htm?acktyp=unack">browse all
+  You can re-enter it here or <a href="alarm/list?acktyp=unack">browse all
   of the alarms</a> to find the alarm you are looking for.
 </p>
 

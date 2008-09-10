@@ -490,11 +490,9 @@ public abstract class Util extends Object {
         }
 
         // removes the first & from the buffer
-        if (buffer.length() > 0 && buffer.charAt(0) == '&') {
-            buffer.deleteCharAt(0);
-        }
+        buffer.deleteCharAt(0);
 
-        return buffer.toString();
+        return (buffer.toString());
     }
 
     public static class IgnoreType extends Object {

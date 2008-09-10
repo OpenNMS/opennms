@@ -54,6 +54,7 @@
 		org.opennms.web.alarm.filter.*,
 		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.XssRequestWrapper
+		
 		"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -306,17 +307,17 @@
 
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-              <td class="divider" rowspan="1">
+              <td class="divider" valign="top" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
                 </nobr>
           <% } else { %>
-            <td rowspan="1" class="divider">&nbsp;
+            <td valign="top" rowspan="1" class="divider">&nbsp;
           <% } %>
           </td>
 
           
-          <td class="divider bright" rowspan="1">
+          <td class="divider bright" valign="top" rowspan="1">
             
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
           </td>
@@ -333,10 +334,25 @@
                 </nobr>
               <% } %>
             <% } %>
+          <br />
+            <% if(alarms[i].getServiceName() != null && alarms[i].getServiceName() != "") { %>
+              <% org.opennms.web.alarm.filter.Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
+              <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
+                <a href="element/service.jsp?node=<%=alarms[i].getNodeId()%>&intf=<%=alarms[i].getIpAddress()%>&service=<%=alarms[i].getServiceId()%>" title="More info on this service"><%=alarms[i].getServiceName()%></a>
+              <% } else { %>
+                <%=alarms[i].getServiceName()%>
+              <% } %>
+              <% if( !parms.filters.contains( serviceFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+                </nobr>
+              <% } %>                            
+            <% } %>
+            </c:if>
           </td>          
-          <td class="divider" rowspan="1" >
-	    <% if(alarms[i].getId() > 0 ) { %>
-              <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
+          <td class="divider" valign="top" rowspan="1" >
+	    <% if(alarms[i].getId() > 0 ) { %>           
                 <nobr>
                   <a href="event/list?sortby=id&acktype=unack&filter=alarm=<%=alarms[i].getId()%>"><%=alarms[i].getCount()%></a>
                 </nobr>
