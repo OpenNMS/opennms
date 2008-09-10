@@ -163,7 +163,6 @@
 -->
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-jspc-plugin</artifactId>
