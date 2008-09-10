@@ -7,6 +7,12 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
+    <title>OpenNMS 1.5.94 Known Issues</title>
+
+    <para>No known issues.</para>
+  </section>
+
+  <section>
     <title>OpenNMS 1.5.93 Known Issues</title>
 
     <para>OpenNMS is still not 100% compatible with PostgreSQL 8.3, because of
