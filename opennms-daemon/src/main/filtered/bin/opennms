@@ -157,14 +157,14 @@ checkXmlFiles(){
 				echo "ERROR: XML validation failed: $FILE"
 				echo "	   run '$XMLLINT $FILE' for details"
 			fi
-			done >"$TEMPFILE"
-			cat "$TEMPFILE"
-			FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
-			rm "$TEMPFILE"
-			if [ $FAILCOUNT -gt 0 ]; then
-				echo "Validation failed on $FAILCOUNT XML files.  Exiting."
-				exit 1
-			fi
+		done >"$TEMPFILE"
+		cat "$TEMPFILE"
+		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
+		rm "$TEMPFILE"
+		if [ $FAILCOUNT -gt 0 ]; then
+			echo "Validation failed on $FAILCOUNT XML files.  Exiting."
+			exit 1
+		fi
 	fi
 		 
 	return 0
