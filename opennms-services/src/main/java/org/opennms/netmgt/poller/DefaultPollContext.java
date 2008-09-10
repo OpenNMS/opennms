@@ -98,9 +98,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         synchronized (m_pendingPollEvents) {
             m_pendingPollEvents.add(pollEvent);
         }
-
-        log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService());
-
+        //log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
         m_poller.getEventManager().sendNow(event);
         return pollEvent;
     }
