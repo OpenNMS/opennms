@@ -62,7 +62,8 @@ public class Tl1ClientImpl implements Tl1Client {
     private TimeoutSleeper m_sleeper;
     private Category m_log;
     private Tl1AutonomousMessageProcessor m_messageProcessor;
-    private long m_reconnectionDelay;
+    private long m_reconnectionDelay = 30000;
+    private int m_reconnectTries = 0;
     
     
     public Tl1ClientImpl() {
@@ -84,7 +85,8 @@ public class Tl1ClientImpl implements Tl1Client {
      * @see org.opennms.netmgt.tl1d.Tl1Client#start()
      */
     public void start() {
-        m_log.info("Starting TL1 client: "+m_host+":"+String.valueOf(m_port));
+        m_log.info("Starting: TL1 client: "+m_host+":"+String.valueOf(m_port));
+        m_log.info("Start:Connection delay = " + m_reconnectionDelay );
         m_started = true;
 
         m_socketReader = new Thread("TL1-Socket-Reader") {
@@ -123,7 +125,8 @@ public class Tl1ClientImpl implements Tl1Client {
                 resetTimeout();
                 return reader;
             } catch (IOException e) {
-                e.printStackTrace();
+                m_log.error("TL1 Connection Failed to " + m_host + ":" + m_port);
+                m_log.debug(e);
                 waitUntilNextConnectTime();
             } 
         }
@@ -131,15 +134,26 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     private void resetTimeout() {
+        m_log.debug("Resetting timeout Thread");
+        m_reconnectTries = 0;
         m_sleeper = null;
     }
 
     private void waitUntilNextConnectTime() {
+        long waitTime = m_reconnectionDelay;
+        m_log.debug("waitUntilNextConnectTime");
         if (m_started) {
             if (m_sleeper == null) {
                 m_sleeper = new TimeoutSleeper();
             }
-            try { m_sleeper.sleep(); } catch (InterruptedException e) { }
+            m_reconnectTries++;
+            /* If the system is not responding, we want to wait longer and longer for the retry */
+            if(m_reconnectTries > 5)
+                waitTime = m_reconnectionDelay * 5;
+            else if (m_reconnectTries > 10)
+                waitTime = m_reconnectionDelay * 10;
+            m_log.info("Waiting " + waitTime + " ms......");
+            try { m_sleeper.sleep(waitTime); } catch (InterruptedException e) {}
         }
     }
 
@@ -246,6 +260,20 @@ public class Tl1ClientImpl implements Tl1Client {
         m_port = port;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#getReconnectionDelay()
+     */
+     public long getReconnectionDelay() {
+        return m_reconnectionDelay;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.tl1d.Tl1Client#setReconnectionDelay(long)
+     */
+    public void setReconnectionDelay(long reconnectionDelay) {
+        m_reconnectionDelay = reconnectionDelay;
+    }
+
     public BlockingQueue<Tl1AutonomousMessage> getTl1Queue() {
         return m_tl1Queue;
     }
@@ -270,6 +298,10 @@ public class Tl1ClientImpl implements Tl1Client {
 
         public void sleep() throws InterruptedException {
             Thread.sleep(m_reconnectionDelay);
+        }
+
+        public void sleep(long sleepTime) throws InterruptedException {
+            Thread.sleep(sleepTime);
         }
     }
 }

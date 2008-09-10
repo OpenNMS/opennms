@@ -149,10 +149,58 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
                 String line = (String) lineParser.nextElement();
                 if (line != null && !(line.equals(message.getTerminator()))) {
                     foundId = true;
-                    message.getAutoBlock().setBlock(line.trim());
+                    foundId = parseAutoBlock(line.trim(), message);
+                    //message.getAutoBlock().setBlock(line.trim());
                 }
             }
         }
     }
+    
+    /* Auto block of an Alarm always has the follow form
+     *  aid:ntfcncde, followed by additional comma separated parms.
+     * ntfcncde may be in the form ntfcncde=code or just the code 
+     * where the code is CR, MJ, MN, CL for the severity.
+     */
+    private boolean parseAutoBlock(String line, Tl1AutonomousMessage message) {
+        
+        message.getAutoBlock().setBlock(line);
 
+        StringTokenizer autoBlockParser = new StringTokenizer(line,",");
+        
+        System.out.println("parseAutoBlock: Autoblock: " + line);
+        
+        // should count tokens and see if only aid:code;
+        // for now I am assuming more than one parm.
+        // Also we could have muliple messages in this block. Need to handle later.
+        String aidAndCode = autoBlockParser.nextToken().trim();
+        System.out.println("parseAutoBlock: aidAndCode: " + aidAndCode);
+        
+        StringTokenizer aidParser = new StringTokenizer(aidAndCode,":");
+        //get the aid. Trimoff the begining "
+        message.getAutoBlock().setAid(aidParser.nextToken().substring(1));
+        
+        //Two forms nftcncde= code and code.
+        String ntfcncde = aidParser.nextToken().trim();
+        StringTokenizer codeParser = new StringTokenizer(ntfcncde,"=");
+        if(codeParser.hasMoreTokens()) {
+            //We have an = so we parse out the code
+            codeParser.nextToken();
+            ntfcncde = codeParser.nextToken().trim();
+        }
+          
+        message.getAutoBlock().setNtfcncde(ntfcncde);
+        
+        //build other params.
+        //This needs to be configuarable or able to override.
+        String addParms = null;
+        while (autoBlockParser.hasMoreTokens())
+        {
+            addParms = addParms + autoBlockParser.nextToken() + ",";
+            
+        }
+
+        message.getAutoBlock().setAdditionalParams(addParms.trim());
+   
+        return true;
+    }
 }
