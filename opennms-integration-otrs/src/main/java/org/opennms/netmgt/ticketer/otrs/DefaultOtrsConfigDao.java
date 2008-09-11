@@ -156,4 +156,24 @@ public class DefaultOtrsConfigDao {
 		
 		return intList;
 	}
+
+	String getTicketOpenedMessage() {
+		return getProperties().getString("otrs.ticketopenedmessage");
+	}
+
+	String getTicketClosedMessage() {
+		return getProperties().getString("otrs.ticketclosedmessage");
+	}
+
+	String getTicketCancelledMessage() {
+		return getProperties().getString("otrs.ticketcancelledmessage");
+	}
+
+	String getTicketUpdatedMessage() {
+		return getProperties().getString("otrs.ticketupdatedmessage");
+	}
+
+	String getArticleUpdateSubject() {
+		return getProperties().getString("otrs.articleupdatesubject");
+	}
 }
