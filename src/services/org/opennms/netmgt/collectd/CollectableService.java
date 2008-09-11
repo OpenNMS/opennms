@@ -99,7 +99,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
     /**
      * The last time the collector was scheduled for collection.
      */
-    private long m_lastScheduledCollectionTime;
+    volatile private long m_lastScheduledCollectionTime;
 
     /**
      * The scheduler for collectd
