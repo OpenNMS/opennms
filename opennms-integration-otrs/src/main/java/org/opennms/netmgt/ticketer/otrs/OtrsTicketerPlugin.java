@@ -137,6 +137,7 @@ public class OtrsTicketerPlugin implements Plugin {
 			log().debug("Retrieved ticket state : " + otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
 			
 			// add all the article details from the OTRS ticket
+			// this is not strictly essential as we have no way of viewing this atm.
 			
 			String opennmsTicketDetails = "";
 
