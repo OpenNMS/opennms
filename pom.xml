@@ -934,6 +934,16 @@
         <version>1.4</version>
       </dependency>
       <dependency>
+        <groupId>axis</groupId>
+        <artifactId>axis-jaxrpc</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>axis</groupId>
+        <artifactId>axis-saaj</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
         <groupId>batik</groupId>
         <artifactId>batik-dom</artifactId>
         <version>1.5</version>

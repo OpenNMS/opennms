@@ -132,7 +132,8 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         }
         
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), "A" };
+        String status = svc.getMgmtStatus().toDbString();
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
     

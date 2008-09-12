@@ -10,6 +10,10 @@
  *
  * Modifications:
  * 
+ * September 10, 2008
+ * Walt Bowers
+ * - Added a computation for connection attempts
+ * 
  * Created August 1, 2008
  *
  * Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
@@ -62,9 +66,9 @@ public class Tl1ClientImpl implements Tl1Client {
     private TimeoutSleeper m_sleeper;
     private Category m_log;
     private Tl1AutonomousMessageProcessor m_messageProcessor;
-    private long m_reconnectionDelay = 30000;
-    private int m_reconnectTries = 0;
-    
+    //private long m_reconnectionDelay = 30000;
+    private long m_reconnectionDelay;  //see configuration xsd for default and set by Tl1d after instantiation
+    private int m_reconnectAttempts = 0;
     
     public Tl1ClientImpl() {
     }
@@ -85,8 +89,8 @@ public class Tl1ClientImpl implements Tl1Client {
      * @see org.opennms.netmgt.tl1d.Tl1Client#start()
      */
     public void start() {
-        m_log.info("Starting: TL1 client: "+m_host+":"+String.valueOf(m_port));
-        m_log.info("Start:Connection delay = " + m_reconnectionDelay );
+        m_log.info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
+        m_log.info("start:Connection delay = " + m_reconnectionDelay );
         m_started = true;
 
         m_socketReader = new Thread("TL1-Socket-Reader") {
@@ -134,27 +138,35 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     private void resetTimeout() {
-        m_log.debug("Resetting timeout Thread");
-        m_reconnectTries = 0;
+        m_log.debug("resetTimeout: Resetting timeout Thread");
+        m_reconnectAttempts = 0;
         m_sleeper = null;
     }
 
     private void waitUntilNextConnectTime() {
-        long waitTime = m_reconnectionDelay;
-        m_log.debug("waitUntilNextConnectTime");
+        m_log.debug("waitUntilNextConnectTime: current connection attempts: "+m_reconnectAttempts);
         if (m_started) {
             if (m_sleeper == null) {
                 m_sleeper = new TimeoutSleeper();
             }
-            m_reconnectTries++;
+            
+            m_reconnectAttempts++;
             /* If the system is not responding, we want to wait longer and longer for the retry */
-            if(m_reconnectTries > 5)
-                waitTime = m_reconnectionDelay * 5;
-            else if (m_reconnectTries > 10)
-                waitTime = m_reconnectionDelay * 10;
-            m_log.info("Waiting " + waitTime + " ms......");
+            long waitTime = computeWait();
+            m_log.info("waitUntilNextConnectTime: Waiting " + waitTime + " ms......");
             try { m_sleeper.sleep(waitTime); } catch (InterruptedException e) {}
         }
+    }
+
+    private long computeWait() {
+        long waitTime = m_reconnectionDelay;
+        
+        if (m_reconnectAttempts > 5) {
+            waitTime = m_reconnectionDelay * 5;
+        } else if (m_reconnectAttempts > 10) {
+            waitTime = m_reconnectionDelay * 10;
+        }
+        return waitTime;
     }
 
     private void readMessages() {
