@@ -417,6 +417,9 @@ public class WillItUnmarshalTest extends TestCase {
     public void testExampleViewsDisplay() throws Exception {
         unmarshalExample("viewsdisplay.xml", Viewinfo.class);
     }
+    public void testExampleTl1dConfiguration() throws Exception {
+        unmarshalExample("tl1d-configuration.xml", Tl1dConfiguration.class);
+    }
     
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
@@ -448,7 +451,9 @@ public class WillItUnmarshalTest extends TestCase {
         findConfigurationFilesInDirectory(examplesDir, null, allXml);
         
         allXml.removeAll(m_exampleFilesTested);
-        
+        allXml.remove("correlation-engine.xml");
+        allXml.remove("drools-engine.xml");
+        allXml.remove("nodeParentRules-context.xml");
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);
