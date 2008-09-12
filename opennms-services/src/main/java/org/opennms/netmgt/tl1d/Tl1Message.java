@@ -79,7 +79,7 @@ public abstract class Tl1Message {
     }
     
     public String toString() {
-        return m_rawMessage;
+        return "Message from: "+m_host+"\n"+m_rawMessage;
     }
         
 }
