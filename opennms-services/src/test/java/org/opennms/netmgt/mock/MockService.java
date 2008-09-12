@@ -49,6 +49,37 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class MockService extends MockElement implements MonitoredService {
+    
+    public static enum SvcMgmtStatus {
+        ACTIVE("A"),
+        DELETED("D"),
+        UNMANAGED("U"),
+        FORCE_UNMANAGED("F"),
+        NOT_POLLED("N"),
+        REMOTE_ONLY("X");
+        
+        private final String m_dbString;
+        
+        SvcMgmtStatus(String dbString) {
+            m_dbString = dbString;
+        }
+        
+        public String toDbString() {
+            return m_dbString;
+        }
+        
+        public static SvcMgmtStatus fromDbString(String dbString) {
+            if (dbString == null) {
+                return null;
+            }
+            for (SvcMgmtStatus status : SvcMgmtStatus.values()) {
+                if (status.toDbString().equals(dbString)) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException(dbString + "is not an legal SvcMgmtStatus string");
+        }
+     }
 
     private int m_pollCount;
     
@@ -57,6 +88,8 @@ public class MockService extends MockElement implements MonitoredService {
     private int m_serviceId;
 
     private String m_svcName;
+    
+    private SvcMgmtStatus m_mgmtStatus = SvcMgmtStatus.ACTIVE;
 
     private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
 
@@ -129,6 +162,14 @@ public class MockService extends MockElement implements MonitoredService {
     // test
     public PollStatus getPollStatus() {
         return m_pollStatus;
+    }
+    
+    public SvcMgmtStatus getMgmtStatus() {
+        return m_mgmtStatus;
+    }
+    
+    public void setMgmtStatus(SvcMgmtStatus mgmtStatus) {
+        m_mgmtStatus = mgmtStatus;
     }
 
     // test
