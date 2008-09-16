@@ -97,7 +97,7 @@ function addIncludeUrl() {
  </tr>
 </table>
 
-<input type="button" name="addIncludeUrl" id="addIncludeUrl" value="Add" onclick="addIncludeUrl();" />
+<input type="submit" name="addIncludeUrl" id="addIncludeUrl" value="Add" onclick="addIncludeUrl();" />
 <input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
   <hr />

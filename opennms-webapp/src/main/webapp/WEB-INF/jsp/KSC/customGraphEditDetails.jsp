@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -239,7 +239,7 @@
                     <input type="button" value="Cancel edits to this graph" onclick="cancelGraph()" alt="Cancel this graph configuration"/>
                     <input type="button" value="Refresh sample view" onclick="updateGraph()" alt="Update changes to sample graph"/>
                     <input type="button" value="Choose different resource" onclick="chooseResource()" alt="Choose a different resource to graph"/>
-                    <input type="button" value="Done with edits to this graph" onclick="saveGraph()" alt="Done with this graph configuration"/>
+                    <input type="submit" value="Done with edits to this graph" onclick="saveGraph()" alt="Done with this graph configuration"/>
       </form>
       </div>
 

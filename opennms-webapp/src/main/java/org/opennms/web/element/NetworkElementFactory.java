@@ -951,6 +951,8 @@ public class NetworkElementFactory extends Object {
             node.m_nodeSysContact = rs.getString("nodeSysContact");
             node.m_label = rs.getString("nodelabel");
             node.m_operatingSystem = rs.getString("operatingsystem");
+            node.m_foreignSource = rs.getString("foreignSource");
+            node.m_foreignSourceId = rs.getString("foreignSourceId");
 
             nodes.add(node);
         }
@@ -2462,7 +2464,9 @@ public class NetworkElementFactory extends Object {
                                     on.getSysLocation(),
                                     on.getSysContact(),
                                     on.getType().charAt(0),
-                                    on.getOperatingSystem()));
+                                    on.getOperatingSystem(),
+                                    on.getForeignId(),
+                                    on.getForeignSource()));
 
         }
         
