@@ -115,10 +115,12 @@
     Configure SNMP Data Collection per Interface</a>
   </p>
 
+  <% if (node_db.getForeignSource() == null || node_db.getForeignSource().length() == 0) { %>
   <p>
     <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete
     Node</a>
   </p>
+  <% } %>
 
   <p>
     <a href="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>">

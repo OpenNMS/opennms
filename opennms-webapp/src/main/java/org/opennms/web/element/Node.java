@@ -35,30 +35,22 @@ package org.opennms.web.element;
 import org.opennms.web.Util;
 
 public class Node implements Comparable<Node> {
+
     int m_nodeId;
-
     int m_nodeParent;
-
     String m_label;
-
     String m_dpname;
-
     String m_nodeCreateTime;
-
     String m_nodeSysId;
-
     String m_nodeSysName;
-
     String m_nodeSysDescr;
-
     String m_nodeSysLocn;
-
     String m_nodeSysContact;
-
     char m_nodeType;
-
     String m_operatingSystem;
-
+    String m_foreignSource;
+    String m_foreignSourceId;
+    
     /* package-protected so only the NetworkElementFactory can instantiate */
     Node() {
     }
@@ -77,6 +69,24 @@ public class Node implements Comparable<Node> {
         m_nodeSysContact = nodeSysContact;
         m_nodeType = nodeType;
         m_operatingSystem = operatingSystem;
+    }
+
+    /* package-protected so only the NetworkElementFactory can instantiate */
+    Node(int nodeId, int nodeParent, String label, String dpname, String nodeCreateTime, String nodeSysId, String nodeSysName, String nodeSysDescr, String nodeSysLocn, String nodeSysContact, char nodeType, String operatingSystem, String foreignSourceId, String foreignSource) {
+        m_nodeId = nodeId;
+        m_nodeParent = nodeParent;
+        m_label = label;
+        m_dpname = dpname;
+        m_nodeCreateTime = nodeCreateTime;
+        m_nodeSysId = nodeSysId;
+        m_nodeSysName = nodeSysName;
+        m_nodeSysDescr = nodeSysDescr;
+        m_nodeSysLocn = nodeSysLocn;
+        m_nodeSysContact = nodeSysContact;
+        m_nodeType = nodeType;
+        m_operatingSystem = operatingSystem;
+        m_foreignSourceId = foreignSourceId;
+        m_foreignSource = foreignSource;
     }
 
     public int getNodeId() {
@@ -127,6 +137,14 @@ public class Node implements Comparable<Node> {
         return Util.htmlify(m_operatingSystem);
     }
 
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+    
+    public String getForeignSourceId() {
+        return m_foreignSourceId;
+    }
+    
     public String toString() {
         StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n");
         str.append("Node Parent = " + m_nodeParent + "\n");

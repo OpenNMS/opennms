@@ -118,23 +118,28 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     }
 
     private void doSql(String contents) {
-        String sql = getSql();
-        if (sql == null) {
-            log().info("send: sql argument is null.");
+        if (getSql() == null) {
+            log().info("send: optional sql argument is null.");
+            return;
+        }
+
+        if (contents == null) {
+            log().info("doSql: HTTP reply is null");
+            return;
+        }
+
+        log().debug("send: compiling expression: "+getSwitchValue("result-match"));
+        Pattern p = Pattern.compile(getSwitchValue("result-match"));
+        Matcher m = p.matcher(contents);
+        if (m.matches()) {
+            log().debug("send: compiled expression ready to run sql: "+getSql());
+            MatchTable matches = new MatchTable(m);
+            String sqlString = PropertiesUtils.substitute(getSql(), matches);
+            log().debug("send: running sql: "+sqlString);
+            JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());
+            template.execute(sqlString);
         } else {
-            log().info("send: compiling expression: "+getSwitchValue("result-match"));
-            Pattern p = Pattern.compile(getSwitchValue("result-match"));
-            Matcher m = p.matcher(contents);
-            if (m.matches()) {
-                log().info("send: compiled expression ready to run sql: "+sql);
-                MatchTable matches = new MatchTable(m);
-                String sqlString = PropertiesUtils.substitute(sql, matches);
-                log().info("send: running sql: "+sqlString);
-                JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());
-                template.execute(sqlString);
-            } else {
-                log().warn("send: result didn't match, not running sql");
-            }
+            log().info("send: result didn't match, not running sql");
         }
     }
 
