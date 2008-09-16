@@ -38,6 +38,7 @@ public class Outage {
     int m_nodeId;
     String m_ipAddr;
     int m_serviceId;
+    String m_serviceName;
     int m_lostEventId;
     int m_regainedEventId;
     Timestamp m_lostEventTime;
@@ -74,7 +75,7 @@ public class Outage {
     }
     
     public String toString() {
-        return "Outage["+m_nodeId+"/"+m_ipAddr+"/"+m_serviceId+"]";
+        return "Outage["+m_nodeId+"/"+m_ipAddr+"/"+(m_serviceName == null ? ""+m_serviceId : m_serviceName)+" cause: "+m_lostEventId+" ]";
     }
     
     public boolean equals(Object o) {
@@ -104,6 +105,14 @@ public class Outage {
                 m_regainedEventId + ":" +
                 m_regainedEventTime + 
                 "]";
+    }
+
+    public int getServiceId() {
+        return m_serviceId;
+    }
+    
+    public void setServiceName(String svcName) {
+        m_serviceName = svcName;
     }
     
     

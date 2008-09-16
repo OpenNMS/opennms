@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -153,7 +153,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <input type="hidden" id="erend" name="erend" value=""/>
 
 
-      <input type="button" value="Save and Restart Discovery" onclick="restartDiscovery();">
+      <input type="submit" value="Save and Restart Discovery" onclick="restartDiscovery();">
 
 <h3>General settings</h3>
 			    
@@ -381,7 +381,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 		  	</tr>
 		    </table>     
 			
-			<input type="button" value="Save and Restart Discovery" onclick="restartDiscovery();">
+			<input type="submit" value="Save and Restart Discovery" onclick="restartDiscovery();">
 </FORM>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
