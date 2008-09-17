@@ -324,7 +324,7 @@ openNMS-tl1AutonomousMessageTrap	TRAP-TYPE
 		openNMS-event-severity,
 		tl1amRawMessage,
 		tl1amAlarmCode,
-		tl1amAlarmTag,
+		tl1amAutonomousTag,
 		tl1amVerb,
 		tl1amAutoBlock,
 		tl1amAID,
