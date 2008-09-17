@@ -41,6 +41,8 @@ package org.opennms.netmgt.poller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -180,7 +182,7 @@ public class PollerTest extends TestCase {
 
 		m_poller = new Poller();
 		m_poller.setEventManager(m_eventMgr);
-		m_poller.setDbConnectionFactory(m_db);
+		m_poller.setDataSource(m_db);
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesConfig(m_pollerConfig);
 
@@ -756,7 +758,7 @@ public class PollerTest extends TestCase {
 
     }
     
-    public void testNodeGainedServiceWhileNodeAndServiceDown() {
+    public void testNodeGainedServiceWhileNodeAndServiceUp() {
         
         // get node 2... bring it down
         // when the poller knows its down add down service and send nodeGainedService event
@@ -765,6 +767,7 @@ public class PollerTest extends TestCase {
         startDaemons();
         
         MockNode node = m_network.getNode(4);
+        MockService svc = m_network.getService(4, "192.168.1.6", "SNMP");
         
         anticipateDown(node);
         
@@ -774,56 +777,22 @@ public class PollerTest extends TestCase {
         
         resetAnticipated();
         
-        MockService svc = m_network.addService(4, "192.168.1.6", "SMTP");
+        anticipateUp(node);
+        anticipateDown(svc, true);
         
-        svc.bringDown();
+        MockService newSvc = m_network.addService(4, "192.168.1.6", "SMTP");
         
-        m_db.writeService(svc);
+        m_db.writeService(newSvc);
         
-        Event e = MockEventUtil.createNodeGainedServiceEvent("Test", svc);
+        Event e = MockEventUtil.createNodeGainedServiceEvent("Test", newSvc);
         m_eventMgr.sendEventToListeners(e);
         
-        
         sleep(5000);
-        
         System.err.println(m_db.getOutages());
+        
         verifyAnticipated(8000);
-
         
         
-//        MockNode node = m_network.addNode(99, "TestNode");
-//        m_db.writeNode(node);
-//        MockInterface iface = m_network.addInterface(99, "10.1.1.1");
-//        m_db.writeInterface(iface);
-//        MockService element = m_network.addService(99, "10.1.1.1", svcName);
-//        m_db.writeService(element);
-//        m_pollerConfig.addService(element);
-//        MockService smtp = m_network.addService(99, "10.1.1.1", "HTTP");
-//        m_db.writeService(smtp);
-//        m_pollerConfig.addService(smtp);
-//
-//        MockVisitor gainSvcSender = new MockVisitorAdapter() {
-//            public void visitService(MockService svc) {
-//                Event event = MockEventUtil
-//                        .createNodeGainedServiceEvent("Test", svc);
-//                m_eventMgr.sendEventToListeners(event);
-//            }
-//        };
-//        node.visit(gainSvcSender);
-//
-//        PollAnticipator anticipator = new PollAnticipator();
-//        element.addAnticipator(anticipator);
-//
-//        anticipator.anticipateAllServices(element);
-//
-//        assertEquals(0, anticipator.waitForAnticipated(10000).size());
-//
-//        anticipateDown(element);
-//
-//        element.bringDown();
-//
-//        verifyAnticipated(10000);
-
     }
 
     // test open outages for unmanaged services
@@ -923,29 +892,33 @@ public class PollerTest extends TestCase {
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
 		startDaemons();
-		testSendNodeGainedService("SMTP");
+		testSendNodeGainedService("SMTP", "HTTP");
 	}
 
 	public void testSendNodeGainedServiceNodeOutages() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
 		startDaemons();
-		testSendNodeGainedService("SMTP");
+		testSendNodeGainedService("SMTP", "HTTP");
 	}
 
-	public void testSendNodeGainedService(String svcName) {
+	public void testSendNodeGainedService(String... svcNames) {
+	    assertNotNull(svcNames);
+	    assertTrue(svcNames.length > 0);
 
 		MockNode node = m_network.addNode(99, "TestNode");
 		m_db.writeNode(node);
 		MockInterface iface = m_network.addInterface(99, "10.1.1.1");
 		m_db.writeInterface(iface);
-		MockService element = m_network.addService(99, "10.1.1.1", svcName);
-		m_db.writeService(element);
-		m_pollerConfig.addService(element);
-		MockService smtp = m_network.addService(99, "10.1.1.1", "HTTP");
-		m_db.writeService(smtp);
-		m_pollerConfig.addService(smtp);
-
+		
+		List<MockService> services = new ArrayList<MockService>();
+		for(String svcName : svcNames) {
+		    MockService svc = m_network.addService(99, "10.1.1.1", svcName);
+		    m_db.writeService(svc);
+		    m_pollerConfig.addService(svc);
+		    services.add(svc);
+		}
+		
 		MockVisitor gainSvcSender = new MockVisitorAdapter() {
 			public void visitService(MockService svc) {
 				Event event = MockEventUtil
@@ -954,17 +927,19 @@ public class PollerTest extends TestCase {
 			}
 		};
 		node.visit(gainSvcSender);
+		
+		MockService svc1 = services.get(0);
 
 		PollAnticipator anticipator = new PollAnticipator();
-		element.addAnticipator(anticipator);
+		svc1.addAnticipator(anticipator);
 
-		anticipator.anticipateAllServices(element);
+		anticipator.anticipateAllServices(svc1);
 
 		assertEquals(0, anticipator.waitForAnticipated(10000).size());
 
-		anticipateDown(element);
+		anticipateDown(svc1);
 
-		element.bringDown();
+		svc1.bringDown();
 
 		verifyAnticipated(10000);
 
@@ -1006,7 +981,7 @@ public class PollerTest extends TestCase {
 				+ m_db.getServiceID("MyDNS").toString());
 
 		m_anticipator.reset();
-		testSendNodeGainedService("MyDNS");
+		testSendNodeGainedService("MyDNS", "HTTP");
 
 	}
 
@@ -1050,6 +1025,7 @@ public class PollerTest extends TestCase {
 		if (m_daemonsStarted) {
 			m_poller.stop();
 			// m_outageMgr.stop();
+			m_daemonsStarted = false;
 		}
 	}
 

@@ -31,20 +31,30 @@
 //
 package org.opennms.netmgt.poller;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -69,21 +79,33 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.poller.pollables.PollContext#getCriticalServiceName()
      */
     public String getCriticalServiceName() {
-        return m_poller.getPollerConfig().getCriticalService();
+        return getPollerConfig().getCriticalService();
+    }
+
+    public PollerConfig getPollerConfig() {
+        return m_poller.getPollerConfig();
+    }
+
+    public QueryManager getQueryManager() {
+        return m_poller.getQueryMgr();
+    }
+
+    public EventIpcManager getEventManager() {
+        return m_poller.getEventManager();
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#isNodeProcessingEnabled()
      */
     public boolean isNodeProcessingEnabled() {
-        return m_poller.getPollerConfig().nodeOutageProcessingEnabled();
+        return getPollerConfig().nodeOutageProcessingEnabled();
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#isPollingAllIfCritServiceUndefined()
      */
     public boolean isPollingAllIfCritServiceUndefined() {
-        return m_poller.getPollerConfig().pollAllIfNoCriticalServiceDefined();
+        return getPollerConfig().pollAllIfNoCriticalServiceDefined();
     }
 
     /* (non-Javadoc)
@@ -91,7 +113,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     public PollEvent sendEvent(Event event) {
         if (!m_listenerAdded) {
-            m_poller.getEventManager().addEventListener(this);
+            getEventManager().addEventListener(this);
             m_listenerAdded = true;
         }
         PendingPollEvent pollEvent = new PendingPollEvent(event);
@@ -99,11 +121,11 @@ public class DefaultPollContext implements PollContext, EventListener {
             m_pendingPollEvents.add(pollEvent);
         }
         //log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
-        m_poller.getEventManager().sendNow(event);
+        getEventManager().sendNow(event);
         return pollEvent;
     }
 
-    private Category log() {
+    Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -111,7 +133,59 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date)
      */
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        return m_poller.createEvent(uei, nodeId, address, svcName, date, reason);
+        Category log = ThreadCategory.getInstance(this.getClass());
+        
+        if (log.isDebugEnabled())
+            log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
+        
+        EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
+        bldr.setNodeid(nodeId);
+        if (address != null) {
+            bldr.setInterface(address.getHostAddress());
+        }
+        if (svcName != null) {
+            bldr.setService(svcName);
+        }
+        bldr.setHost(this.getLocalHost());
+        
+        if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
+                && this.getPollerConfig().pathOutageEnabled()) {
+            String[] criticalPath = this.getQueryManager().getCriticalPath(nodeId);
+            
+            if (criticalPath[0] != null && !criticalPath[0].equals("")) {
+                if (!this.testCriticalPath(criticalPath)) {
+                    log.debug("Critical path test failed for node " + nodeId);
+                    
+                    // add eventReason, criticalPathIp, criticalPathService
+                    // parms
+                    
+                    bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, EventConstants.PARM_VALUE_PATHOUTAGE);
+                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_IP, criticalPath[0]);
+                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, criticalPath[1]);
+                    
+                } else {
+                    log.debug("Critical path test passed for node " + nodeId);
+                }
+            } else {
+                log.debug("No Critical path to test for node " + nodeId);
+            }
+        }
+        
+        if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
+            bldr.addParam(EventConstants.PARM_LOCATION_MONITOR_ID, (reason == null ? "Unknown" : reason));
+        }
+        
+        // For node level events (nodeUp/nodeDown) retrieve the
+        // node's nodeLabel value and add it as a parm
+        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
+                || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+        
+            String nodeLabel = this.getNodeLabel(nodeId);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+            
+        }
+        
+        return bldr.getEvent();
     }
 
     public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
@@ -122,8 +196,9 @@ public class DefaultPollContext implements PollContext, EventListener {
         Runnable r = new Runnable() {
             public void run() {
                 log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
-                m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
+                getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
             }
+
         };
         if (svcLostEvent instanceof PendingPollEvent) {
             ((PendingPollEvent)svcLostEvent).addPending(r);
@@ -162,7 +237,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.poller.pollables.PollContext#isServiceUnresponsiveEnabled()
      */
     public boolean isServiceUnresponsiveEnabled() {
-        return m_poller.getPollerConfig().serviceUnresponsiveEnabled();
+        return getPollerConfig().serviceUnresponsiveEnabled();
     }
 
     /* (non-Javadoc)
@@ -177,7 +252,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     public void onEvent(Event e) {
         synchronized (m_pendingPollEvents) {
-            log().debug("onEvent: Opening outage for event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
+            log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
             for (Iterator it = m_pendingPollEvents .iterator(); it.hasNext();) {
                 PendingPollEvent pollEvent = (PendingPollEvent) it.next();
                 log().debug("onEvent: comparing events to poll event: "+pollEvent);
@@ -199,6 +274,70 @@ public class DefaultPollContext implements PollContext, EventListener {
             }
         }
         
+    }
+
+    boolean testCriticalPath(String[] criticalPath) {
+        // TODO: Generalize the service
+        InetAddress addr = null;
+        boolean result = true;
+    
+        Category log = log();
+        log.debug("Test critical path IP " + criticalPath[0]);
+        try {
+            addr = InetAddress.getByName(criticalPath[0]);
+        } catch (UnknownHostException e) {
+            log.error(
+                        "failed to convert string address to InetAddress "
+                                + criticalPath[0]);
+            return true;
+        }
+        try {
+            IcmpPlugin p = new IcmpPlugin();
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put(
+                    "retry",
+                    new Long(
+                             OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
+            map.put(
+                    "timeout",
+                    new Long(
+                             OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
+    
+            result = p.isProtocolSupported(addr, map);
+        } catch (IOException e) {
+            log.error("IOException when testing critical path " + e);
+        }
+        return result;
+    }
+
+    String getLocalHost() {
+        String localhost;
+        try {
+            localhost = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException uhE) {
+            log().warn("Failed to resolve local hostname", uhE);
+            localhost = "unresolved.host";
+        }
+        return localhost;
+    }
+
+    String getNodeLabel(int nodeId) {
+        String nodeLabel = null;
+        try {
+            nodeLabel = getQueryManager().getNodeLabel(nodeId);
+        } catch (SQLException sqlE) {
+            // Log a warning
+            log().warn("Failed to retrieve node label for nodeid " + nodeId,
+                     sqlE);
+        }
+    
+        if (nodeLabel == null) {
+            // This should never happen but if it does just
+            // use nodeId for the nodeLabel so that the
+            // event description has something to display.
+            nodeLabel = String.valueOf(nodeId);
+        }
+        return nodeLabel;
     }
 
 }

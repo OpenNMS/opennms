@@ -75,7 +75,7 @@ public class Outage {
     }
     
     public String toString() {
-        return "Outage["+m_nodeId+"/"+m_ipAddr+"/"+(m_serviceName == null ? ""+m_serviceId : m_serviceName)+" cause: "+m_lostEventId+" ]";
+        return "Outage["+m_nodeId+"/"+m_ipAddr+"/"+(m_serviceName == null ? ""+m_serviceId : m_serviceName)+" cause: "+m_lostEventId+" resolution: "+m_regainedEventId+" ]";
     }
     
     public boolean equals(Object o) {

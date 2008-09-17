@@ -106,7 +106,7 @@ public abstract class NotificationManager {
     public static final String PARAM_NUM_PAGER_PIN = "-np";
     
     NotifdConfigManager m_configManager;
-    private DataSource m_dbConnectionFactory;
+    private DataSource m_dataSource;
     
     
     /**
@@ -116,7 +116,7 @@ public abstract class NotificationManager {
      */
     protected NotificationManager(NotifdConfigManager configManager, DataSource dcf) {
         m_configManager = configManager;
-        m_dbConnectionFactory = dcf;
+        m_dataSource = dcf;
     }
 
     public synchronized void parseXML(Reader reader) throws MarshalException, ValidationException {
@@ -267,7 +267,7 @@ public abstract class NotificationManager {
      * @throws SQLException
      */
     private Connection getConnection() throws SQLException {
-        return m_dbConnectionFactory.getConnection();
+        return m_dataSource.getConnection();
     }
 
     /**
@@ -849,7 +849,7 @@ public abstract class NotificationManager {
      */
     public Map<String, String> rebuildParamterMap(int notifId, final String resolutionPrefix) throws Exception {
         final Map<String, String> parmMap = new HashMap<String, String>();
-        Querier querier = new Querier(m_dbConnectionFactory, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
+        Querier querier = new Querier(m_dataSource, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
             public void processRow(ResultSet rs) throws SQLException {
                 
                 /*
@@ -905,7 +905,7 @@ public abstract class NotificationManager {
      * @return
      */
     public void forEachUserNotification(int notifId, final RowProcessor rp) {
-        Querier querier = new Querier(m_dbConnectionFactory, "select * from usersNotified where notifyId = ? order by notifytime", rp);
+        Querier querier = new Querier(m_dataSource, "select * from usersNotified where notifyId = ? order by notifytime", rp);
         querier.execute(new Integer(notifId));
     }
 
@@ -914,7 +914,7 @@ public abstract class NotificationManager {
      * @return
      */
     public String getQueueForNotification(int notifId) {
-        SingleResultQuerier querier = new SingleResultQuerier(m_dbConnectionFactory, "select queueID from notifications where notifyId = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select queueID from notifications where notifyId = ?");
         querier.execute(new Integer(notifId));
         return (String)querier.getResult();
     }
@@ -940,7 +940,7 @@ public abstract class NotificationManager {
      */
     public Event getEvent(int eventid) {
         final Event event = new Event();
-        Querier querier = new Querier(m_dbConnectionFactory, "select * from events where eventid = ?", new RowProcessor() {
+        Querier querier = new Querier(m_dataSource, "select * from events where eventid = ?", new RowProcessor() {
 
             public void processRow(ResultSet rs) throws SQLException {
                 event.setDbid(rs.getInt("eventid"));
@@ -962,7 +962,7 @@ public abstract class NotificationManager {
             }
 
             private String getServiceName(int serviceid) {
-                SingleResultQuerier querier = new SingleResultQuerier(m_dbConnectionFactory, "select servicename from service where serviceid = ?");
+                SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select servicename from service where serviceid = ?");
                 return (String)querier.getResult();
             }
             

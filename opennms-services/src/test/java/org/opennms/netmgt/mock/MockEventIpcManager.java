@@ -131,7 +131,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
 
     public void broadcastNow(Event event) {
         MockUtil.println("Sending: " + new EventWrapper(event));
-        for (ListenerKeeper k : m_listeners) {
+        List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
+        for (ListenerKeeper k : listeners) {
             k.sendEventIfAppropriate(event);
         }
     }
@@ -246,7 +247,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         
     }
 
-    public void setDbConnectionFactory(DataSource instance) {
+    public void setDataSource(DataSource instance) {
         // TODO Auto-generated method stub
         
     }

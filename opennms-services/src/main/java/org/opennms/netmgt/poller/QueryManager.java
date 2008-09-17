@@ -110,7 +110,10 @@ public interface QueryManager {
     /**
      * @param connectionFactory
      */
-    public void setDbConnectionFactory(DataSource connectionFactory);
+    public void setDataSource(DataSource dataSource);
+    
+    @Deprecated
+    public DataSource getDataSource();
 
     /**
      * @param nodeId
@@ -136,4 +139,8 @@ public interface QueryManager {
      * @param newNodeId
      */
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
+    
+    
+
+    public String[] getCriticalPath(int nodeId);
 }
