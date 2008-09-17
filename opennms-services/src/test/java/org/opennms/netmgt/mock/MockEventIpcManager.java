@@ -241,7 +241,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         
     }
 
-    public void setDbConnectionFactory(DataSource instance) {
+    public void setDataSource(DataSource instance) {
         // TODO Auto-generated method stub
         
     }

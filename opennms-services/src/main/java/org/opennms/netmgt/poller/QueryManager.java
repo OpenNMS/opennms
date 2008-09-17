@@ -110,7 +110,7 @@ public interface QueryManager {
     /**
      * @param connectionFactory
      */
-    public void setDbConnectionFactory(DataSource connectionFactory);
+    public void setDataSource(DataSource connectionFactory);
 
     /**
      * @param nodeId

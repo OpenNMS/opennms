@@ -108,7 +108,7 @@ public class Poller extends AbstractServiceDaemon {
 
     private EventIpcManager m_eventMgr;
 
-    private DataSource m_dbConnectionFactory;
+    private DataSource m_dataSource;
 
     public Poller() {
     	super("OpenNMS.Poller");
@@ -117,8 +117,8 @@ public class Poller extends AbstractServiceDaemon {
     protected void onInit() {
 
         // get the category logger
-        // set the DbConnectionFactory in the QueryManager
-        m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
+        // set the DataSource in the QueryManager
+        m_queryMgr.setDataSource(m_dataSource);
 
         // serviceUnresponsive behavior enabled/disabled?
         log().debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
@@ -169,11 +169,11 @@ public class Poller extends AbstractServiceDaemon {
         Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
 
         final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
-        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
         svcUpdater.execute(closeTime);
         
         final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
-        Updater ifUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
+        Updater ifUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
         ifUpdater.execute(closeTime);
         
 
@@ -183,21 +183,21 @@ public class Poller extends AbstractServiceDaemon {
     public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_NODE);
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_NODE);
         svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId));
     }
     
     public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_IFACE);
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_IFACE);
         svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr);
     }
     
     public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_SERVICE);
+        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_SERVICE);
         svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr, serviceName);
     }
 
@@ -356,7 +356,7 @@ public class Poller extends AbstractServiceDaemon {
        
         
         
-        Querier querier = new Querier(m_dbConnectionFactory, sql) {
+        Querier querier = new Querier(m_dataSource, sql) {
             public void processRow(ResultSet rs) throws SQLException {
                 scheduleService(rs.getInt("nodeId"), rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"), 
                                 (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
@@ -536,8 +536,8 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * @param instance
      */
-    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
-        m_dbConnectionFactory = dbConnectionFactory;
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
     }
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date, String reason) {

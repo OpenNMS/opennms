@@ -46,7 +46,7 @@ import org.opennms.netmgt.poller.QueryManager;
 
 public class MockQueryManager implements QueryManager {
 
-    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
+    public void setDataSource(DataSource dataSource) {
         // Don't do anything because this one doesn't use the database.
     }
 

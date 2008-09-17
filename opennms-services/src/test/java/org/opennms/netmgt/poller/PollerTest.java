@@ -180,7 +180,7 @@ public class PollerTest extends TestCase {
 
 		m_poller = new Poller();
 		m_poller.setEventManager(m_eventMgr);
-		m_poller.setDbConnectionFactory(m_db);
+		m_poller.setDataSource(m_db);
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesConfig(m_pollerConfig);
 

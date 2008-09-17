@@ -105,7 +105,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
         m_psk = new PassiveStatusKeeper();
         m_psk.setEventManager(m_eventMgr);
-        m_psk.setDbConnectionFactory(m_db);
+        m_psk.setDataSource(m_db);
         
         PassiveStatusKeeper.setInstance(m_psk);
         
@@ -238,7 +238,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_psk.stop();
         
         m_psk.setEventManager(m_eventMgr);
-        m_psk.setDbConnectionFactory(m_db);
+        m_psk.setDataSource(m_db);
         m_psk.init();
         m_psk.start();
         
