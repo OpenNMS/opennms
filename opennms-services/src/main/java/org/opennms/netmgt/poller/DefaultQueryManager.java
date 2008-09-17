@@ -150,10 +150,6 @@ public class DefaultQueryManager implements QueryManager {
         return false;
     }
 
-    private Connection getConnection() throws SQLException {
-        return m_dataSource.getConnection();
-    }
-
     /**
      * @param ipaddr
      * @return
