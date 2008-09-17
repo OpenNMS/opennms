@@ -552,6 +552,8 @@ public class EventConstants {
     public final static String TROUBLETICKET_UPDATE_UEI = "uei.opennms.org/troubleTicket/update";
     public final static String TROUBLETICKET_CLOSE_UEI = "uei.opennms.org/troubleTicket/close";
     public final static String TROUBLETICKET_CANCEL_UEI = "uei.opennms.org/troubleTicket/cancel";
+    
+    public final static String TL1_AUTONOMOUS_MESSAGE_UEI = "uei.opennms.org/api/tl1d/message/autonomous";
 
     //
     // end eventUEIs
