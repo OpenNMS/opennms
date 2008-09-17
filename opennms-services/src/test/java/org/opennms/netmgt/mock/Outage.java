@@ -115,5 +115,8 @@ public class Outage {
         m_serviceName = svcName;
     }
     
+    public void setServiceName(String svcName) {
+        m_serviceName = svcName;
+    }
     
 }
