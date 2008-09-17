@@ -70,6 +70,14 @@ public class PollableNetwork extends PollableContainer {
         return node;
     }
     
+    public PollableNode createNodeIfNecessary(int nodeId, String nodeLabel) {
+        synchronized (this) {
+            PollableNode node = getNode(nodeId);
+            return (node != null ? node : createNode(nodeId, nodeLabel));
+        }
+
+    }
+    
     public PollableNode getNode(int nodeId) {
         return (PollableNode)getMember(new Integer(nodeId));
     }
@@ -79,10 +87,7 @@ public class PollableNetwork extends PollableContainer {
     }
     
     public PollableInterface createInterface(int nodeId, String nodeLabel, InetAddress addr) {
-        PollableNode node = getNode(nodeId);
-        if (node == null)
-            node = createNode(nodeId, nodeLabel);
-        return node.createInterface(addr);
+        return createNodeIfNecessary(nodeId, nodeLabel).createInterface(addr);
     }
 
     public PollableInterface getInterface(int nodeId, InetAddress addr) {
@@ -91,14 +96,7 @@ public class PollableNetwork extends PollableContainer {
     }
 
     public PollableService createService(int nodeId, String nodeLabel, InetAddress addr, String svcName) {
-        PollableNode node;
-        synchronized(this) {
-            node = getNode(nodeId);
-            if (node == null)
-                node = createNode(nodeId, nodeLabel);
-        }
-        return node.createService(addr, svcName);
-        
+        return createNodeIfNecessary(nodeId, nodeLabel).createService(addr, svcName);
     }
 
     public PollableService getService(int nodeId, InetAddress addr, String svcName) {
@@ -138,15 +136,19 @@ public class PollableNetwork extends PollableContainer {
             m_log = log;
         }
         public void visitNode(PollableNode pNode) {
-            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + pNode.getStatus());
+            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + getStatusString(pNode));
         }
 
         public void visitInterface(PollableInterface pIf) {;
-            m_log.debug("     interface=" + pIf.getIpAddr() + " status=" + pIf.getStatus());
+            m_log.debug("     interface=" + pIf.getIpAddr() + " status=" + getStatusString(pIf));
         }
 
         public void visitService(PollableService pSvc) {
-            m_log.debug("         service=" + pSvc.getSvcName() + " status=" + pSvc.getStatus());
+            m_log.debug("         service=" + pSvc.getSvcName() + " status=" + getStatusString(pSvc));
+        }
+        
+        private String getStatusString(PollableElement e) {
+            return (e.getStatus().isUp() ? e.getStatus().toString() : e.getStatus().toString()+"("+e.getCause().getEventId()+")");
         }
     }
 

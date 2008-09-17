@@ -84,7 +84,7 @@ public class PassiveStatusd implements PassiveStatusdMBean {
 
         PassiveStatusKeeper keeper = getPassiveStatusKeeper();
         keeper.setEventManager(mgr);
-        keeper.setDbConnectionFactory(DataSourceFactory.getInstance());
+        keeper.setDataSource(DataSourceFactory.getInstance());
         keeper.init();
     }
 

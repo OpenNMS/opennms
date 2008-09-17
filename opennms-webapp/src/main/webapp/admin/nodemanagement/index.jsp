@@ -152,8 +152,14 @@
   </p>
         
   <p>
+    <% if (node_db.getForeignSource() == null || node_db.getForeignSource().length() == 0) { %>
     <b>Delete Node</b> allows you to permanently delete a current node
-    from database.
+    from the database.
+    <% } else { %>
+    This node was imported via a Provisioning Group or the Model Importer and
+    must therefore be deleted from its provisioning source rather than through
+    this interface. Otherwise, <b>Delete Node</b> would appear on this page.
+    <% } %>
   </p>
         
   <p>

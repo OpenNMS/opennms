@@ -952,7 +952,7 @@ public class NetworkElementFactory extends Object {
             node.m_label = rs.getString("nodelabel");
             node.m_operatingSystem = rs.getString("operatingsystem");
             node.m_foreignSource = rs.getString("foreignSource");
-            node.m_foreignSourceId = rs.getString("foreignSourceId");
+            node.m_foreignId = rs.getString("foreignId");
 
             nodes.add(node);
         }

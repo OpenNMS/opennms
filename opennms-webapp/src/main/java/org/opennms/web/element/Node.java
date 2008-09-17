@@ -49,7 +49,7 @@ public class Node implements Comparable<Node> {
     char m_nodeType;
     String m_operatingSystem;
     String m_foreignSource;
-    String m_foreignSourceId;
+    String m_foreignId;
     
     /* package-protected so only the NetworkElementFactory can instantiate */
     Node() {
@@ -72,7 +72,7 @@ public class Node implements Comparable<Node> {
     }
 
     /* package-protected so only the NetworkElementFactory can instantiate */
-    Node(int nodeId, int nodeParent, String label, String dpname, String nodeCreateTime, String nodeSysId, String nodeSysName, String nodeSysDescr, String nodeSysLocn, String nodeSysContact, char nodeType, String operatingSystem, String foreignSourceId, String foreignSource) {
+    Node(int nodeId, int nodeParent, String label, String dpname, String nodeCreateTime, String nodeSysId, String nodeSysName, String nodeSysDescr, String nodeSysLocn, String nodeSysContact, char nodeType, String operatingSystem, String foreignId, String foreignSource) {
         m_nodeId = nodeId;
         m_nodeParent = nodeParent;
         m_label = label;
@@ -85,7 +85,7 @@ public class Node implements Comparable<Node> {
         m_nodeSysContact = nodeSysContact;
         m_nodeType = nodeType;
         m_operatingSystem = operatingSystem;
-        m_foreignSourceId = foreignSourceId;
+        m_foreignId = foreignId;
         m_foreignSource = foreignSource;
     }
 
@@ -141,8 +141,8 @@ public class Node implements Comparable<Node> {
         return m_foreignSource;
     }
     
-    public String getForeignSourceId() {
-        return m_foreignSourceId;
+    public String getForeignId() {
+        return m_foreignId;
     }
     
     public String toString() {
