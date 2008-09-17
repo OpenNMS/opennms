@@ -38,6 +38,7 @@ public class Outage {
     int m_nodeId;
     String m_ipAddr;
     int m_serviceId;
+    String m_serviceName;
     int m_lostEventId;
     int m_regainedEventId;
     Timestamp m_lostEventTime;
@@ -105,6 +106,13 @@ public class Outage {
                 m_regainedEventTime + 
                 "]";
     }
+
+    public int getServiceId() {
+        return m_serviceId;
+    }
     
+    public void setServiceName(String svcName) {
+        m_serviceName = svcName;
+    }
     
 }

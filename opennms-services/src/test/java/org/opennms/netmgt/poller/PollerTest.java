@@ -41,6 +41,8 @@ package org.opennms.netmgt.poller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -68,6 +70,7 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
+import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
@@ -141,6 +144,9 @@ public class PollerTest extends TestCase {
 		m_network.addInterface("192.168.1.5");
 		m_network.addService("SMTP");
 		m_network.addService("HTTP");
+		m_network.addNode(4, "DownNode");
+		m_network.addInterface("192.168.1.6");
+		m_network.addService("SNMP");
 
 		m_db = new MockDatabase();
 		m_db.populate(m_network);
@@ -711,46 +717,127 @@ public class PollerTest extends TestCase {
 
 	}
 
-	// test open outages for unmanaged services
-	public void testUnmangedWithOpenOutageAtStartup() {
-		// before we start we need to initialize the database
+    // test open outages for unmanaged services
+    public void testUnmangedWithOpenOutageAtStartup() {
+        // before we start we need to initialize the database
 
-		// create an outage for the service
-		MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
-		MockInterface iface = m_network.getInterface(1, "192.168.1.2");
+        // create an outage for the service
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        MockInterface iface = m_network.getInterface(1, "192.168.1.2");
 
-		Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", svc);
-		m_db.writeEvent(svcLostEvent);
-		createOutages(svc, svcLostEvent);
+        Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", svc);
+        m_db.writeEvent(svcLostEvent);
+        createOutages(svc, svcLostEvent);
 
-		Event ifaceDownEvent = MockEventUtil.createInterfaceDownEvent("Test", iface);
-		m_db.writeEvent(ifaceDownEvent);
-		createOutages(iface, ifaceDownEvent);
+        Event ifaceDownEvent = MockEventUtil.createInterfaceDownEvent("Test", iface);
+        m_db.writeEvent(ifaceDownEvent);
+        createOutages(iface, ifaceDownEvent);
 
-		// mark the service as unmanaged
-		m_db.setServiceStatus(svc, 'U');
-		m_db.setInterfaceStatus(iface, 'U');
+        // mark the service as unmanaged
+        m_db.setServiceStatus(svc, 'U');
+        m_db.setInterfaceStatus(iface, 'U');
 
-		// assert that we have an open outage
-		assertEquals(1, m_db.countOpenOutagesForService(svc));
-		assertEquals(1, m_db.countOutagesForService(svc));
+        // assert that we have an open outage
+        assertEquals(1, m_db.countOpenOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
 
-		assertEquals(iface.getServices().size(), m_db
-				.countOutagesForInterface(iface));
-		assertEquals(iface.getServices().size(), m_db
-				.countOpenOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db
+                .countOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db
+                .countOpenOutagesForInterface(iface));
 
-		startDaemons();
+        startDaemons();
 
-		// assert that we have no open outages
-		assertEquals(0, m_db.countOpenOutagesForService(svc));
-		assertEquals(1, m_db.countOutagesForService(svc));
+        // assert that we have no open outages
+        assertEquals(0, m_db.countOpenOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
 
-		assertEquals(0, m_db.countOpenOutagesForInterface(iface));
-		assertEquals(iface.getServices().size(), m_db
-				.countOutagesForInterface(iface));
+        assertEquals(0, m_db.countOpenOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db
+                .countOutagesForInterface(iface));
 
-	}
+    }
+    
+    public void testNodeGainedServiceWhileNodeAndServiceUp() {
+        
+        // get node 2... bring it down
+        // when the poller knows its down add down service and send nodeGainedService event
+        // expect?
+        
+        startDaemons();
+        
+        MockNode node = m_network.getNode(4);
+        MockService svc = m_network.getService(4, "192.168.1.6", "SNMP");
+        
+        anticipateDown(node);
+        
+        node.bringDown();
+        
+        verifyAnticipated(5000);
+        
+        resetAnticipated();
+        
+        anticipateUp(node);
+        anticipateDown(svc, true);
+        
+        MockService newSvc = m_network.addService(4, "192.168.1.6", "SMTP");
+        
+        m_db.writeService(newSvc);
+        
+        Event e = MockEventUtil.createNodeGainedServiceEvent("Test", newSvc);
+        m_eventMgr.sendEventToListeners(e);
+        
+        sleep(5000);
+        System.err.println(m_db.getOutages());
+        
+        verifyAnticipated(8000);
+        
+        
+    }
+
+    // test open outages for unmanaged services
+    public void testMissingOutagesOnStartup() {
+        
+        //fail("we need to write this one still");
+        
+        // before we start we need to initialize the database
+
+        // create an outage for the service
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        MockInterface iface = m_network.getInterface(1, "192.168.1.2");
+
+        Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", svc);
+        m_db.writeEvent(svcLostEvent);
+        createOutages(svc, svcLostEvent);
+
+        Event ifaceDownEvent = MockEventUtil.createInterfaceDownEvent("Test", iface);
+        m_db.writeEvent(ifaceDownEvent);
+        createOutages(iface, ifaceDownEvent);
+
+        // mark the service as unmanaged
+        m_db.setServiceStatus(svc, 'U');
+        m_db.setInterfaceStatus(iface, 'U');
+
+        // assert that we have an open outage
+        assertEquals(1, m_db.countOpenOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
+
+        assertEquals(iface.getServices().size(), m_db
+                .countOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db
+                .countOpenOutagesForInterface(iface));
+
+        startDaemons();
+
+        // assert that we have no open outages
+        assertEquals(0, m_db.countOpenOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
+
+        assertEquals(0, m_db.countOpenOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db
+                .countOutagesForInterface(iface));
+
+    }
 
 	public void testReparentCausesStatusChange() {
 
@@ -805,29 +892,33 @@ public class PollerTest extends TestCase {
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
 		startDaemons();
-		testSendNodeGainedService("SMTP");
+		testSendNodeGainedService("SMTP", "HTTP");
 	}
 
 	public void testSendNodeGainedServiceNodeOutages() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
 		startDaemons();
-		testSendNodeGainedService("SMTP");
+		testSendNodeGainedService("SMTP", "HTTP");
 	}
 
-	public void testSendNodeGainedService(String svcName) {
+	public void testSendNodeGainedService(String... svcNames) {
+	    assertNotNull(svcNames);
+	    assertTrue(svcNames.length > 0);
 
 		MockNode node = m_network.addNode(99, "TestNode");
 		m_db.writeNode(node);
 		MockInterface iface = m_network.addInterface(99, "10.1.1.1");
 		m_db.writeInterface(iface);
-		MockService element = m_network.addService(99, "10.1.1.1", svcName);
-		m_db.writeService(element);
-		m_pollerConfig.addService(element);
-		MockService smtp = m_network.addService(99, "10.1.1.1", "HTTP");
-		m_db.writeService(smtp);
-		m_pollerConfig.addService(smtp);
-
+		
+		List<MockService> services = new ArrayList<MockService>();
+		for(String svcName : svcNames) {
+		    MockService svc = m_network.addService(99, "10.1.1.1", svcName);
+		    m_db.writeService(svc);
+		    m_pollerConfig.addService(svc);
+		    services.add(svc);
+		}
+		
 		MockVisitor gainSvcSender = new MockVisitorAdapter() {
 			public void visitService(MockService svc) {
 				Event event = MockEventUtil
@@ -836,17 +927,19 @@ public class PollerTest extends TestCase {
 			}
 		};
 		node.visit(gainSvcSender);
+		
+		MockService svc1 = services.get(0);
 
 		PollAnticipator anticipator = new PollAnticipator();
-		element.addAnticipator(anticipator);
+		svc1.addAnticipator(anticipator);
 
-		anticipator.anticipateAllServices(element);
+		anticipator.anticipateAllServices(svc1);
 
 		assertEquals(0, anticipator.waitForAnticipated(10000).size());
 
-		anticipateDown(element);
+		anticipateDown(svc1);
 
-		element.bringDown();
+		svc1.bringDown();
 
 		verifyAnticipated(10000);
 
@@ -888,7 +981,7 @@ public class PollerTest extends TestCase {
 				+ m_db.getServiceID("MyDNS").toString());
 
 		m_anticipator.reset();
-		testSendNodeGainedService("MyDNS");
+		testSendNodeGainedService("MyDNS", "HTTP");
 
 	}
 
@@ -932,6 +1025,7 @@ public class PollerTest extends TestCase {
 		if (m_daemonsStarted) {
 			m_poller.stop();
 			// m_outageMgr.stop();
+			m_daemonsStarted = false;
 		}
 	}
 
@@ -1015,7 +1109,9 @@ public class PollerTest extends TestCase {
 	private void createOutages(MockElement element, final Event event) {
 		MockVisitor outageCreater = new MockVisitorAdapter() {
 			public void visitService(MockService svc) {
-				m_db.createOutage(svc, event);
+			    if (svc.getMgmtStatus().equals(SvcMgmtStatus.ACTIVE)) {
+			        m_db.createOutage(svc, event);
+			    }
 			}
 		};
 		element.visit(outageCreater);

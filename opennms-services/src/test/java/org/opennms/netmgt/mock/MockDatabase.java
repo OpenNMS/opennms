@@ -132,7 +132,8 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         }
         
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), "A" };
+        String status = svc.getMgmtStatus().toDbString();
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
     
@@ -343,7 +344,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public Collection<Outage> getOutages(String criteria, Object... values) {
         String critSql = (criteria == null ? "" : " where "+criteria);
         final List<Outage> outages = new LinkedList<Outage>();
-        Querier loadExisting = new Querier(this, "select * from outages"+critSql) {
+        Querier loadExisting = new Querier(this, "select * from outages "+critSql) {
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
                 outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
@@ -354,7 +355,23 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 outages.add(outage);
             }
         };
+
         loadExisting.execute(values);
+        
+        Querier setServiceNames = new Querier(this, "select * from service") {
+            public void processRow(ResultSet rs) throws SQLException {
+                int serviceId = rs.getInt("serviceId");
+                String serviceName = rs.getString("serviceName");
+                for(Outage outage : outages) {
+                    if (outage.getServiceId() == serviceId) {
+                        outage.setServiceName(serviceName);
+                    }
+                }
+            }
+        };
+        
+        setServiceNames.execute();
+        
         return outages;
     }
     
