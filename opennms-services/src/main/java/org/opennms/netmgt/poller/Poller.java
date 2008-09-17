@@ -40,19 +40,14 @@
 
 package org.opennms.netmgt.poller;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -60,9 +55,6 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -83,10 +75,6 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.Updater;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 public class Poller extends AbstractServiceDaemon {
 
@@ -540,116 +528,6 @@ public class Poller extends AbstractServiceDaemon {
         m_dataSource = dataSource;
     }
 
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date, String reason) {
-        Category log = ThreadCategory.getInstance(getClass());
-    
-        if (log.isDebugEnabled())
-            log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
-    
-        // create the event to be sent
-        Event newEvent = new Event();
-        newEvent.setUei(uei);
-        newEvent.setSource(getName());
-        newEvent.setNodeid((long) nodeId);
-        if (address != null)
-            newEvent.setInterface(address.getHostAddress());
-    
-        if (svcName != null)
-            newEvent.setService(svcName);
-    
-        try {
-            newEvent.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            newEvent.setHost("unresolved.host");
-            log.warn("Failed to resolve local hostname", uhE);
-        }
-    
-        // Set event time
-        newEvent.setTime(EventConstants.formatToString(date));
-    
-        // For service lost events (nodeLostService) retrieve the 
-        // reason parameter
-        Parms eventParms = new Parms();
-        Parm eventParm = new Parm();
-        Value parmValue = new Value();
-
-        if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI) && getPollerConfig().pathOutageEnabled()) {
-            String[] criticalPath = getCriticalPath(nodeId);
-            if(criticalPath[0] != null && !criticalPath[0].equals("")) {
-                if(!testCriticalPath(criticalPath)) {
-                    log.debug("Critical path test failed for node " + nodeId);
-                    // add eventReason, criticalPathIp, criticalPathService parms
-                    eventParm = new Parm();
-                    eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
-                    parmValue = new Value();
-                    parmValue.setContent(EventConstants.PARM_VALUE_PATHOUTAGE);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-
-                    eventParm = new Parm();
-                    eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_IP);
-                    parmValue = new Value();
-                    parmValue.setContent(criticalPath[0]);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-
-                    eventParm = new Parm();
-                    eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_SVC);
-                    parmValue = new Value();
-                    parmValue.setContent(criticalPath[1]);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-                } else {
-                    log.debug("Critical path test passed for node " + nodeId);
-                }
-            } else {
-                log.debug("No Critical path to test for node " + nodeId);
-            }
-        }
-
-        
-        if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
-            parmValue = new Value();
-            parmValue.setContent(reason == null ? "Unknown" : reason);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-        }
-        
-        // For node level events (nodeUp/nodeDown) retrieve the
-        // node's nodeLabel value and add it as a parm
-        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI) || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
-            String nodeLabel = null;
-            try {
-                nodeLabel = getQueryMgr().getNodeLabel(nodeId);
-            } catch (SQLException sqlE) {
-                // Log a warning
-                log.warn("Failed to retrieve node label for nodeid " + nodeId, sqlE);
-            }
-    
-            if (nodeLabel == null) {
-                // This should never happen but if it does just
-                // use nodeId for the nodeLabel so that the
-                // event description has something to display.
-                nodeLabel = String.valueOf(nodeId);
-            }
-    
-            // Add nodelabel parm
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-            parmValue = new Value();
-            parmValue.setContent(nodeLabel);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);    
-        }
-        // Add Parms to the event
-        if (eventParms.getParmCount() > 0)
-            newEvent.setParms(eventParms);
-    
-        return newEvent;
-    }
-
     public void refreshServicePackages() {
 	PollableVisitor visitor = new PollableVisitorAdaptor() {
 		public void visitService(PollableService service) {
@@ -657,66 +535,6 @@ public class Poller extends AbstractServiceDaemon {
 		}
 	};
 	m_network.visit(visitor);
-    }
-
-    private String[] getCriticalPath(int nodeId) {
-        Category log = ThreadCategory.getInstance(getClass());
-        String SQL_DB_RETRIEVE_PATHOUTAGE = "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?";
-        String[] cpath = new String[2];
-	Connection dbc = null;
-        try {
-            dbc = DataSourceFactory.getInstance().getConnection();
-            PreparedStatement stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_PATHOUTAGE);
-            stmt.setLong(1, nodeId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                cpath[0] = rs.getString(1);
-                cpath[1] = rs.getString(2);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            log.error("getCriticalPath: SQLException " + sqlE);
-        } finally {
-            try {
-                dbc.close();
-            } catch (Exception e) {
-                log.error("getCriticalPath: Exception on close" + e);
-            }
-        }
-
-        if (cpath[0] == null || cpath[0].equals("")) {
-            cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-            cpath[1] = "ICMP";
-        }
-        if (cpath[1] == null || cpath[1].equals("")) {
-            cpath[1] = "ICMP";
-        }
-        return cpath;
-    }
-
-    private boolean testCriticalPath(String[] criticalPath) {
-        //TODO: Generalize the service
-        InetAddress addr = null;
-        boolean result = true;
-        log().debug("Test critical path IP " + criticalPath[0]);
-        try {
-            addr = InetAddress.getByName(criticalPath[0]);
-        } catch (UnknownHostException e ) {
-            log().error("failed to convert string address to InetAddress " + criticalPath[0]);
-            return true;
-        }
-        try {
-            IcmpPlugin p = new IcmpPlugin();
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("retry", new Long(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
-            map.put("timeout", new Long(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
-
-            result = p.isProtocolSupported(addr, map);
-        } catch (IOException e) {
-            log().error("IOException when testing critical path " + e);
-        }
-        return result;
     }
 
 }
