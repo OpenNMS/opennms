@@ -239,11 +239,11 @@ tl1amAlarmCode	OBJECT-TYPE
 	::= { tl1AutonomousMessage 2 }
 
 tl1amAutonomousTag	OBJECT-TYPE
-	SYNTAX			Unsigned32
+	SYNTAX			DisplayString
 	ACCESS			read-only
 	STATUS			mandatory
 	DESCRIPTION
-				"The numeric autonomous-tag for this TL1 autonomous message."
+				"The ASCII autonomous-tag for this TL1 autonomous message."
 	::= { tl1AutonomousMessage 3 }
 
 tl1amVerb		OBJECT-TYPE
