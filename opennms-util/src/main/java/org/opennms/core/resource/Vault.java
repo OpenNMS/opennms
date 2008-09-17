@@ -55,8 +55,6 @@ import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.resource.db.DbConnectionFactory;
-
 /**
  * The Vault handles policies for allocating/deallocating scarce resources and
  * stores application configuration properties.
@@ -113,19 +111,7 @@ public class Vault extends Object {
     }
     
     /**
-     * Retrieve a database connection from the database connection factory.
-     * Depending on the implementation of the delegate
-     * {@link DbConnectionFactory DbConnectionFactory}, this method may wait
-     * until a connection is available.
-     * 
-     * @return A database connection.
-     * @throws SQLException
-     *             If a SQL error occurs while requesting or allocating the
-     *             connection. This depends on the implementation of
-     *             {@link DbConnectionFactory DbConnectionFactory}being used.
-     * @throws IllegalStateException
-     *             If no {@link DbConnectionFactory DbConnectionFactory} has
-     *             been specified.
+     * Retrieve a database connection from the datasource.
      */
     public static Connection getDbConnection() throws SQLException {
         if (s_dataSource == null) {

@@ -68,7 +68,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     private EventIpcManager m_eventMgr;
     private boolean m_initialized = false;
 
-    private DataSource m_dbConnectionFactory;
+    private DataSource m_dataSource;
 
     
     public PassiveStatusKeeper() {
@@ -103,7 +103,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
                 "JOIN service ON outages.serviceId = service.serviceId " +
                 "WHERE outages.ifRegainedService is NULL";
         
-        Querier querier = new Querier(m_dbConnectionFactory, sql) {
+        Querier querier = new Querier(m_dataSource, sql) {
         
             public void processRow(ResultSet rs) throws SQLException {
                
@@ -125,8 +125,8 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     private void checkPreRequisites() {
         if (m_eventMgr == null)
             throw new IllegalStateException("eventManager has not been set");
-        if (m_dbConnectionFactory == null)
-            throw new IllegalStateException("dbConnectionFactory has not been set");
+        if (m_dataSource == null)
+            throw new IllegalStateException("dataSource has not been set");
     }
 
     protected void onStop() {
@@ -203,11 +203,11 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     }
     
     public DataSource getDbConnectoinFactory() {
-        return m_dbConnectionFactory;
+        return m_dataSource;
     }
     
-    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
-        m_dbConnectionFactory = dbConnectionFactory;
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
     }
     
 }
