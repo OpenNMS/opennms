@@ -85,7 +85,7 @@ public class DefaultQueryManager implements QueryManager {
      */
     final static String SQL_FETCH_IFSERVICES_TO_POLL = "SELECT if.serviceid FROM ifservices if, service s WHERE if.serviceid = s.serviceid AND if.status = 'A' AND if.ipaddr = ?";
 
-    private DataSource m_dbConnectionFactory;
+    private DataSource m_dataSource;
 
     /**
      * @param whichEvent
@@ -136,7 +136,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     private Connection getConnection() throws SQLException {
-        return m_dbConnectionFactory.getConnection();
+        return m_dataSource.getConnection();
     }
 
     /**
@@ -430,8 +430,8 @@ public class DefaultQueryManager implements QueryManager {
     
     
 
-    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
-        m_dbConnectionFactory = dbConnectionFactory;
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
     }
     
     public Timestamp convertEventTimeToTimeStamp(String time) {
@@ -454,7 +454,7 @@ public class DefaultQueryManager implements QueryManager {
             try {
                 log().info("openOutage: opening outage for "+nodeId+":"+ipAddr+":"+svcName+" with cause "+dbId+":"+time);
                 
-                SingleResultQuerier srq = new SingleResultQuerier(m_dbConnectionFactory, outageIdSQL);
+                SingleResultQuerier srq = new SingleResultQuerier(m_dataSource, outageIdSQL);
                 srq.execute();
                 Object outageId = srq.getResult();
                 
@@ -471,7 +471,7 @@ public class DefaultQueryManager implements QueryManager {
                         new Integer(serviceId),
                         convertEventTimeToTimeStamp(time),
                 };
-                Updater updater = new Updater(m_dbConnectionFactory, sql);
+                Updater updater = new Updater(m_dataSource, sql);
                 updater.execute(values);
                 notUpdated = false;
             } catch (Exception e) {
@@ -503,7 +503,7 @@ public class DefaultQueryManager implements QueryManager {
                         ipAddr,
                         new Integer(serviceId),
                 };
-                Updater updater = new Updater(m_dbConnectionFactory, sql);
+                Updater updater = new Updater(m_dataSource, sql);
                 updater.execute(values);
                 notUpdated = false;
             } catch (Exception e) {
@@ -527,7 +527,7 @@ public class DefaultQueryManager implements QueryManager {
                     new Integer(oldNodeId),
                     ipAddr,
                 };
-            Updater updater = new Updater(m_dbConnectionFactory, sql);
+            Updater updater = new Updater(m_dataSource, sql);
             updater.execute(values);
         } catch (Exception e) {
             log().fatal(" Error reparenting outage for "+oldNodeId+":"+ipAddr+" to "+newNodeId, e);
@@ -537,7 +537,7 @@ public class DefaultQueryManager implements QueryManager {
 
     public int getServiceID(String serviceName) {
         if (serviceName == null) return -1;
-        SingleResultQuerier querier = new SingleResultQuerier(m_dbConnectionFactory, "select serviceId from service where serviceName = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select serviceId from service where serviceName = ?");
         querier.execute(serviceName);
         final Integer result = (Integer)querier.getResult();
         return result == null ? -1 : result.intValue();

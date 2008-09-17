@@ -110,7 +110,7 @@ public class PollContextTest extends TestCase {
         m_db.populate(m_mNetwork);
         
         DefaultQueryManager qm = new DefaultQueryManager();
-        qm.setDbConnectionFactory(m_db);
+        qm.setDataSource(m_db);
         
         m_pollerConfig = new MockPollerConfig(m_mNetwork);
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -135,7 +135,7 @@ public class PollContextTest extends TestCase {
         
         m_poller = new Poller();
         m_poller.setPollerConfig(m_pollerConfig);
-        m_poller.setDbConnectionFactory(m_db);
+        m_poller.setDataSource(m_db);
         m_poller.setQueryMgr(qm);
         m_poller.setEventManager(m_eventMgr);
         

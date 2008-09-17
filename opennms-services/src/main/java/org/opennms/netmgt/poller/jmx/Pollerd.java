@@ -83,7 +83,7 @@ public class Pollerd implements PollerdMBean {
         org.opennms.netmgt.poller.Poller poller = getPoller();
         poller.setPollerConfig(PollerConfigFactory.getInstance());
         poller.setPollOutagesConfig(PollOutagesConfigFactory.getInstance());
-        poller.setDbConnectionFactory(DataSourceFactory.getInstance());
+        poller.setDataSource(DataSourceFactory.getInstance());
 
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
