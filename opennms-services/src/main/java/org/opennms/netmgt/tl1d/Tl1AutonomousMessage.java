@@ -142,6 +142,11 @@ public class Tl1AutonomousMessage extends Tl1Message {
         private String m_alarmCode;
         private String m_alarmTag;
         private String m_verb;
+        private String m_verbModifier1;
+        private String m_verbModifier2;
+        private String m_highestSeverity; //derived from alarmCode
+       
+        
         public String getRawMessage() {
             return m_rawMessage;
         }
@@ -152,8 +157,24 @@ public class Tl1AutonomousMessage extends Tl1Message {
             return m_alarmCode;
         }
         public void setAlarmCode(String alarmCode) {
-            m_alarmCode = alarmCode;
+            m_alarmCode = alarmCode;   
+            
+            /* The highest alarm Severity is based on the AlarmCode. */        
+            if(m_alarmCode.equals("*C"))
+                m_highestSeverity = "Critical";
+            else if(m_alarmCode.equals("**"))
+                m_highestSeverity = "Major";
+            else if(m_alarmCode.equals("*"))
+                m_highestSeverity = "Minor";
+            else if(m_alarmCode.equals("A"))
+                m_highestSeverity = "Cleared";
+          
         }
+        
+        public String getHighestSeverity() {
+            return m_highestSeverity;
+        }
+       
         public String getAlarmTag() {
             return m_alarmTag;
         }
@@ -174,6 +195,10 @@ public class Tl1AutonomousMessage extends Tl1Message {
     protected class AutoBlock {
         
         private String m_block;
+        private String m_aid;
+        private String m_ntfcncde;
+        private String m_severity;
+        private String m_additionalParams;
 
         public String getBlock() {
             return m_block;
@@ -182,6 +207,30 @@ public class Tl1AutonomousMessage extends Tl1Message {
         public void setBlock(String block) {
             m_block = block;
         }
+        
+       public void setAid(String aid) {
+           m_aid = aid;
+       }
+       
+       public String getAid() {
+           return m_aid;
+       }
+       
+       public void setNtfcncde(String ntfcncde) {
+           m_ntfcncde = ntfcncde;
+       }
+       
+       public String getNtfcncde() {
+           return m_ntfcncde;
+       }
+       
+       public void setAdditionalParams(String additionalParams){
+           m_additionalParams = additionalParams;
+       }
+       
+       public String getAdditionalParams(){
+           return m_additionalParams;
+       }
         
         public String toString() {
             return m_block;
@@ -208,7 +257,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
         return m_autoBlock;
     }
 
-    public void setAuotBlock(AutoBlock block) {
+    public void setAutoBlock(AutoBlock block) {
         m_autoBlock = block;
     }
 
