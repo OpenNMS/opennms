@@ -72,6 +72,7 @@ import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
@@ -179,10 +180,24 @@ public class PollerTest extends TestCase {
 		m_eventMgr.setEventAnticipator(m_anticipator);
 		m_eventMgr.addEventListener(m_outageAnticipator);
 		m_eventMgr.setSynchronous(false);
+		
+		QueryManager queryManager = new DefaultQueryManager();
+		queryManager.setDataSource(m_db);
+		
+		DefaultPollContext pollContext = new DefaultPollContext();
+		pollContext.setEventManager(m_eventMgr);
+		pollContext.setLocalHostName("localhost");
+		pollContext.setName("Test.DefaultPollContext");
+		pollContext.setPollerConfig(m_pollerConfig);
+		pollContext.setQueryManager(queryManager);
+		
+		PollableNetwork network = new PollableNetwork(pollContext);
 
 		m_poller = new Poller();
+        m_poller.setDataSource(m_db);
 		m_poller.setEventManager(m_eventMgr);
-		m_poller.setDataSource(m_db);
+		m_poller.setNetwork(network);
+		m_poller.setQueryManager(queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesConfig(m_pollerConfig);
 
