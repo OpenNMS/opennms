@@ -29,18 +29,22 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class EventBuilderTest extends TestCase {
+public class EventBuilderTest {
 
 	/**
-	 * Test method for {@link org.opennms.netmgt.utils.EventBuilder#getEvent()}.
+	 * Test method for {@link org.opennms.netmgt.model.events.EventBuilder#getEvent()}.
 	 */
+    @Test
 	public final void testGetEvent() {
 		EventBuilder builder = new EventBuilder("uei.opennms.org/test", "test");
 		builder.setSeverity("Warning");

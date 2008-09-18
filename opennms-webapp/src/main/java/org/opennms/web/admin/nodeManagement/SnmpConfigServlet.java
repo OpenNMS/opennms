@@ -48,8 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.utils.EventBuilder;
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.Util;
 

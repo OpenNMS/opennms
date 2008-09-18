@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.utils.annotations;
+package org.opennms.netmgt.model.events.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

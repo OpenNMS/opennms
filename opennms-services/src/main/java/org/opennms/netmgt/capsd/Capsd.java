@@ -48,7 +48,7 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.utils.StoppableEventListener;
+import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.springframework.util.Assert;
 
 /**

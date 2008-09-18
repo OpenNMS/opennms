@@ -39,7 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -155,6 +156,14 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
 
     public void removeEventListener(EventListener listener) {
         m_eventIpcManager.removeEventListener(listener);
+    }
+    
+    public void send(Event event) throws EventProxyException {
+        sendNow(event);
+    }
+
+    public void send(Log eventLog) throws EventProxyException {
+        sendNow(eventLog);
     }
 
     public void sendNow(Event event) {
