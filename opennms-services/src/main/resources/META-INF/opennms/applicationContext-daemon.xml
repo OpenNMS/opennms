@@ -39,7 +39,7 @@
     <property name="eventConfDao" ref="eventConfDao"/>
   </bean>
 
-  <bean id="eventIpcManager" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+  <bean id="eventIpcManager" name="eventSubscriptionService" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
     <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
     <property name="eventHandler" ref="eventdEventHandler"/>
   </bean>
