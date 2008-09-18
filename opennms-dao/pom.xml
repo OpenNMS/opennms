@@ -85,6 +85,16 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-snmp-api</artifactId>
+    </dependency>
+    
+    <!--  This is needed for the IPv4Address class - should probably move that -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>jicmp-api</artifactId>
+    </dependency>
 
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
