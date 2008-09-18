@@ -64,7 +64,14 @@
         <additionalConfig>
           <file>
             <name>.settings/org.codehaus.groovy.eclipse.preferences.prefs</name>
-            <content><![CDATA[#Added by maven-eclipse-plugin eclipse.preferences.version=1 groovy.compiler.output.path=target/classes ]]></content>
+            <content>
+<!-- note the newlines in this are important please don't format -->
+<![CDATA[
+#Added by maven-eclipse-plugin
+eclipse.preferences.version=1
+groovy.compiler.output.path=target/classes
+]]>
+	    </content>
           </file>
         </additionalConfig>
       </configuration>
