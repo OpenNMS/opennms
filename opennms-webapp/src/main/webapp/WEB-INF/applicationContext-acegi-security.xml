@@ -44,6 +44,7 @@
         <!--
         <ref local="ldapAuthenticationProvider"/>
         -->
+        <!--<ref local="radiusAuthenticationProvider"/>-->
         <ref local="anonymousAuthenticationProvider"/>
       </list>
     </property>
@@ -153,6 +154,43 @@
     </constructor-arg>
   </bean>
    -->
+
+  <!-- ====================== RADIUS AUTHENTICATION ===================== -->
+  <!--
+       To use Radius Authentication, uncomment the following section to enable
+       the radiusAuthenticationProvider, and uncomment the reference to
+       radiusAuthenticationProvider in the authenticationManager bean above.
+
+       The first constructor argument to radiusAuthenticationProvider is the
+       Radius Server to authenticate against, the second constructor argument
+       is the Shared Secret to use during authentication. The port, timeout,
+       retries, authTypeClass, and defaultRoles properties are optional and
+       default to the values shown.
+
+       If you would like to use a Radius Attribute to assign roles to users,
+       set the rolesAttribute property to the name of the attribute. Your
+       Radius server should be configured to return a comma-separated string of
+       roles (such as "ROLE_USER, ROLE_ADMIN") in this attribute in the
+       authentication reply. To specify a locally-defined vendor-specific Radius
+       Attribute, use "Unknown-VSAttribute(<Vendor ID>:<Attribute Number>)".
+       If the reply from the radius server does not actually contain the
+       specified attribute, the user will be assigned the roles specified by
+       the defaultRoles property.
+  -->
+  <!--
+  <bean id="radiusAuthenticationProvider" class="org.opennms.web.acegisecurity.RadiusAuthenticationProvider">
+    <constructor-arg value="128.8.5.2"/>
+    <constructor-arg value="onisecret!"/>
+  -->
+    <!--<property name="port" value="1812"/>-->
+    <!--<property name="timeout" value="5"/>-->
+    <!--<property name="retries" value="3"/>-->
+    <!--<property name="authTypeClass"><bean class="net.jradius.client.auth.PAPAuthenticator"/></property>-->
+    <!--<property name="defaultRoles" value="ROLE_USER"/>-->
+    <!--<property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
+  <!--
+  </bean>
+  -->
 
   <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
 
