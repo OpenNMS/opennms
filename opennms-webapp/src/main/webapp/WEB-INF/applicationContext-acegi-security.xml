@@ -39,6 +39,8 @@
 
        If you have enabled LDAP or Radius authentication and wish to disable
        the passwords in users.xml, comment out the daoAuthenticationProvider.
+       Note that your LDAP/Radius server will need to allow the 'rtc' user to
+       authenticate.
    -->
   <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
     <property name="providers">
