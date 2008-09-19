@@ -179,8 +179,8 @@
   -->
   <!--
   <bean id="radiusAuthenticationProvider" class="org.opennms.web.acegisecurity.RadiusAuthenticationProvider">
-    <constructor-arg value="128.8.5.2"/>
-    <constructor-arg value="onisecret!"/>
+    <constructor-arg value="%%% Radius Server %%%"/>
+    <constructor-arg value="%%% Shared Secret %%%"/>
   -->
     <!--<property name="port" value="1812"/>-->
     <!--<property name="timeout" value="5"/>-->
