@@ -10,7 +10,7 @@
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
         /rss.jsp*=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
-		/rest/**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
+        /rest/**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
         /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor
       </value>
     </property>
@@ -50,7 +50,7 @@
       </list>
     </property>
   </bean>
-   
+
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
     <property name="usersConfigurationFile"
@@ -72,9 +72,9 @@
     <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
     <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
   </bean>
-  
+
   <!-- ======================= LDAP AUTHENTICATION ====================== -->
-  <!-- 
+  <!--
        To use LDAP Authentication, uncomment the following section to enable
        the ldapAuthenticationProvider, and uncomment the reference to
        ldapAuthenticationProvider in the authenticationManager bean above.
@@ -83,7 +83,7 @@
        "%%%put LDAP server address here%%%" and that you set the attribute
        in the user's entry that you store OpenNMS roles in where it says
        "%%%put role attribute here%%%".
-       
+
        If you would like to use LDAP groups to assign roles to users, use bean
        groupLdapAuthoritiesPopulator and reference it in bean
        ldapAuthenticationProvider instead of the default
@@ -91,7 +91,7 @@
        rtcGroups, readonlyGroups, and dashboardGroups properties may be used
        to associate LDAP groups with OpenNMS roles.
    -->
-  <!-- 
+  <!--
   <bean id="initialDirContextFactory"
         class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
     <constructor-arg value="ldap://%%%put LDAP server address here%%%:389/"/>
@@ -112,7 +112,7 @@
       <value>true</value>
     </property>
   </bean>
-  
+
   <bean id="userAttributeLdapAuthoritiesPopulator"
         class="org.opennms.web.acegisecurity.UserAttributeLdapAuthoritiesPopulator">
     <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
@@ -177,12 +177,12 @@
        If the reply from the radius server does not actually contain the
        specified attribute, the user will be assigned the roles specified by
        the defaultRoles property.
-  -->
+   -->
   <!--
   <bean id="radiusAuthenticationProvider" class="org.opennms.web.acegisecurity.RadiusAuthenticationProvider">
     <constructor-arg value="%%% Radius Server %%%"/>
     <constructor-arg value="%%% Shared Secret %%%"/>
-  -->
+   -->
     <!--<property name="port" value="1812"/>-->
     <!--<property name="timeout" value="5"/>-->
     <!--<property name="retries" value="3"/>-->
@@ -191,7 +191,7 @@
     <!--<property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
   <!--
   </bean>
-  -->
+   -->
 
   <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
 
@@ -296,7 +296,7 @@
   <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
     <property name="key"><value>foobar</value></property>
   </bean>
-  
+
   <bean class="org.opennms.web.acegisecurity.AcegiAuthenticationEventOnmsEventBuilder">
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
