@@ -47,5 +47,15 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.jradius</groupId>
+      <artifactId>jradius-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.jradius</groupId>
+      <artifactId>jradius-dictionary</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
