@@ -1213,6 +1213,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>net.sf.jradius</groupId>
+        <artifactId>jradius-client</artifactId>
+        <version>20040211</version>
+      </dependency>
+      <dependency>
         <groupId>org.jrobin</groupId>
         <artifactId>jrobin</artifactId>
         <version>1.5.9</version>
@@ -1260,11 +1265,6 @@
         <groupId>mx4j</groupId>
         <artifactId>mx4j-tools</artifactId>
         <version>3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jradius</groupId>
-        <artifactId>jradius-client</artifactId>
-        <version>20040211</version>
       </dependency>
       <dependency>
         <groupId>openldap</groupId>
