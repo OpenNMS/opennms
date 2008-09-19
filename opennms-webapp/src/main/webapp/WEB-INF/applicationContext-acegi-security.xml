@@ -31,19 +31,20 @@
   </bean>
 
   <!-- ========================== AUTHENTICATION ======================== -->
+  <!--
+       The authentication providers listed below will be tried in order.
+
+       You can enable LDAP and/or Radius authentication by uncommenting the
+       appropriate providers here and uncommenting their associated beans below.
+
+       If you have enabled LDAP or Radius authentication and wish to disable
+       the passwords in users.xml, comment out the daoAuthenticationProvider.
+   -->
   <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
     <property name="providers">
       <list>
         <ref local="daoAuthenticationProvider"/>
-        <!--
-             Uncomment the following reference to ldapAuthenticationProvider
-             and comment-out the above reference to the
-             daoAuthenticationProvider if you want to use LDAP.  You'll also
-             need to uncomment the LDAP AUTHENTICATION section below, as well.
-          -->
-        <!--
-        <ref local="ldapAuthenticationProvider"/>
-        -->
+        <!--<ref local="ldapAuthenticationProvider"/>-->
         <!--<ref local="radiusAuthenticationProvider"/>-->
         <ref local="anonymousAuthenticationProvider"/>
       </list>
@@ -74,21 +75,21 @@
   
   <!-- ======================= LDAP AUTHENTICATION ====================== -->
   <!-- 
-       If you want to use LDAP, uncomment the following section to enable the
-       ldapAuthenticationProvider, and in the authenticationManager bean above
-       uncomment the reference to the ldapAuthenticationProvider.  Make sure
-       that you set the LDAP server hostname below where it says
+       To use LDAP Authentication, uncomment the following section to enable
+       the ldapAuthenticationProvider, and uncomment the reference to
+       ldapAuthenticationProvider in the authenticationManager bean above.
+
+       Make sure that you set the LDAP server hostname below where it says
        "%%%put LDAP server address here%%%" and that you set the attribute
        in the user's entry that you store OpenNMS roles in where it says
-       "%%%put role attribute here%%%". :-)
+       "%%%put role attribute here%%%".
        
-        If you want to use groups to grant access use bean groupLdapAuthoritiesPopulator
-        and reference it in bean ldapAuthenticationProvider against default userAttributeLdapAuthoritiesPopulator
-		you have to set property: userGroups,adminGroups,rtcGroups,readonlyGroups,dashboardGroups
-		and list groups that are granted access with role:
-		ROLE_USER,ROLE_ADMIN,ROLE_RTC_ROLE_READONLY,ROLE_DASHBOARD
-	
-       
+       If you would like to use LDAP groups to assign roles to users, use bean
+       groupLdapAuthoritiesPopulator and reference it in bean
+       ldapAuthenticationProvider instead of the default
+       userAttributeLdapAuthoritiesPopulator.  The userGroups, adminGroups,
+       rtcGroups, readonlyGroups, and dashboardGroups properties may be used
+       to associate LDAP groups with OpenNMS roles.
    -->
   <!-- 
   <bean id="initialDirContextFactory"
