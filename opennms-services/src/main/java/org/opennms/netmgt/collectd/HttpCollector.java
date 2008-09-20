@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -476,26 +475,31 @@ public class HttpCollector implements ServiceCollector {
     }
 
     private URI buildUri(final HttpCollectionSet collectionSet) throws URIException {
+        HashMap<String,String> substitutions = new HashMap<String,String>();
+        substitutions.put("ipaddr", collectionSet.getAgent().getInetAddress().getHostAddress());
+        substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
+        
         return new URI(collectionSet.getUriDef().getUrl().getScheme(),
                 collectionSet.getUriDef().getUrl().getUserInfo(),
-                determineHost(collectionSet.getAgent().getInetAddress(), collectionSet.getUriDef()),
+                substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"),
                 collectionSet.getUriDef().getUrl().getPort(),
-                collectionSet.getUriDef().getUrl().getPath(),
-                collectionSet.getUriDef().getUrl().getQuery(),
-                collectionSet.getUriDef().getUrl().getFragment());
+                substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"),
+                substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery"),
+                substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
     }
     
-    //note: trouble deciding here on getHost() vs. getIpAddress() or 
-    //getCanonicalHost() even.
-    private String determineHost(final InetAddress address, final Uri uriDef) {
-        String host;
-        if ("${ipaddr}".equals(uriDef.getUrl().getHost())) {
-            host = address.getHostName();
-        } else {
-            host = uriDef.getUrl().getHost();
+    private String substituteKeywords(final HashMap<String,String> substitutions, final String urlFragment, final String desc) {
+        String newFragment = urlFragment;
+        if (newFragment != null)
+        {
+            for (String key : substitutions.keySet()) {
+                newFragment = newFragment.replaceAll("\\$\\{" + key + "\\}", substitutions.get(key));
+            }
+            if (log().isDebugEnabled() && newFragment.compareTo(urlFragment) != 0) {
+                log().debug("doSubs: "+desc+" substituted as \""+newFragment+"\"");
+            }
         }
-        log().debug("determineHost: host for URI is set to: "+host);
-        return host;
+        return newFragment;
     }
 
     
