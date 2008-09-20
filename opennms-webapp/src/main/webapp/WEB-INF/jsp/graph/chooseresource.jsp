@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -185,7 +185,7 @@
       
         <br/>
         <br/>
-        <input type="button" value="Submit" onclick="submitForm(document.report.resourceId, document.report, 'resource')" />
+        <input type="submit" value="Submit" onclick="submitForm(document.report.resourceId, document.report, 'resource')" />
         <input type="button" value="Select All" onclick="selectAll('resourceId', true)" />
         <input type="button" value="Unselect All" onclick="selectAll('resourceId', false)" />
       </form>

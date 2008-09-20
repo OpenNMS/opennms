@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -117,7 +117,7 @@
 
   <h3>Create a new Destination Path or edit an existing path.</h3>
 
-  <input type="button" value="New Path" onclick="javascript:newPath()"/>
+  <input type="submit" value="New Path" onclick="javascript:newPath()"/>
 
   <h4>Existing Paths</h4>
  

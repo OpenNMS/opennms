@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -120,7 +120,7 @@ function addSpecific(){
  </tr>
 </table>
 
-<input type="button" name="addSpecific" id="addSpecific" value="Add" onclick="addSpecific();" />
+<input type="submit" name="addSpecific" id="addSpecific" value="Add" onclick="addSpecific();" />
 <input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
   <hr />
