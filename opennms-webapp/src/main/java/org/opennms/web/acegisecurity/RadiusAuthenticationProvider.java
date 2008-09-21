@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Sep 20: Don't use Java 6 String.isEmpty(). - dj@opennms.org
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -179,13 +183,13 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     protected UserDetails retrieveUser(String username,
             UsernamePasswordAuthenticationToken token)
             throws AuthenticationException {
-        if (username.isEmpty()) {
+        if (username.length() == 0) {
             logger.info("Authentication attempted with empty username");
             throw new BadCredentialsException(messages.getMessage("RadiusAuthenticationProvider.emptyUsername",
                 "Username cannot be empty"));
         }
         String password = (String) token.getCredentials();
-        if (password.isEmpty()) {
+        if (password.length() == 0) {
             logger.info("Authentication attempted with empty password");
             throw new BadCredentialsException(messages.getMessage(
                 "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
@@ -229,7 +233,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         logger.debug("Received AccessAccept message from "+serverIP.getHostAddress()+":"+port+" for user "+username+" with attributes:\n"+reply.getAttributes().toString());
 
         String roles = null;
-        if (rolesAttribute == null || rolesAttribute.isEmpty()) {
+        if (rolesAttribute == null || rolesAttribute.length() == 0) {
             logger.debug("rolesAttribute not set, using default roles ("+defaultRoles+") for user "+username);
             roles = new String(defaultRoles);
         } else {
