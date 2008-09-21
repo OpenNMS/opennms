@@ -183,13 +183,13 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     protected UserDetails retrieveUser(String username,
             UsernamePasswordAuthenticationToken token)
             throws AuthenticationException {
-        if (username.length() == 0) {
+        if (!StringUtils.hasLength(username)) {
             logger.info("Authentication attempted with empty username");
             throw new BadCredentialsException(messages.getMessage("RadiusAuthenticationProvider.emptyUsername",
                 "Username cannot be empty"));
         }
         String password = (String) token.getCredentials();
-        if (password.length() == 0) {
+        if (!StringUtils.hasLength(password)) {
             logger.info("Authentication attempted with empty password");
             throw new BadCredentialsException(messages.getMessage(
                 "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
@@ -233,7 +233,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         logger.debug("Received AccessAccept message from "+serverIP.getHostAddress()+":"+port+" for user "+username+" with attributes:\n"+reply.getAttributes().toString());
 
         String roles = null;
-        if (rolesAttribute == null || rolesAttribute.length() == 0) {
+        if (!StringUtils.hasLength(rolesAttribute)) {
             logger.debug("rolesAttribute not set, using default roles ("+defaultRoles+") for user "+username);
             roles = new String(defaultRoles);
         } else {
