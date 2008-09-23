@@ -137,6 +137,7 @@ public class OtrsTicketerPlugin implements Plugin {
 			log().debug("Retrieved ticket state : " + otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
 			
 			// add all the article details from the OTRS ticket
+			// this is not strictly essential as we have no way of viewing this atm.
 			
 			String opennmsTicketDetails = "";
 
@@ -205,16 +206,16 @@ public class OtrsTicketerPlugin implements Plugin {
 				
 				log().debug("updating existing ticket : " + currentTicket.getId());
 				
-				// Add an article with existing ticket details
-				
-				newOTRSArticle(Long.parseLong(currentTicket.getId()), newTicket, port, creds);
-				
-				// Update state only if it's changed
-				
 				if (currentTicket.getState() != newTicket.getState()) {
 					
 					updateOTRSState(newTicket, port, creds);
+					updateOTRSArticle(Long.parseLong(currentTicket.getId()), newTicket, port, creds);
 					
+				} else {
+		
+					// There is no else at the moment
+					// Tickets are _only_ updated with new state
+
 				}
 				
 			}
@@ -312,6 +313,60 @@ public class OtrsTicketerPlugin implements Plugin {
 		}
 		
 		newOtrsArticle.setSubject(newTicket.getSummary());
+		
+		// All OTRS article fields from defaults
+			
+		newOtrsArticle.setArticleType(m_configDao.getArticleType());
+		newOtrsArticle.setSenderType(m_configDao.getArticleSenderType());
+		newOtrsArticle.setContentType(m_configDao.getArticleContentType());
+		newOtrsArticle.setHistoryType(m_configDao.getArticleHistoryType());
+		newOtrsArticle.setHistoryComment(m_configDao.getArticleHistoryComment());
+
+		port.articleCreate(newOtrsArticle, creds);
+		
+	}
+
+	private void updateOTRSArticle(Long otrsTicketNumber, Ticket newTicket, TicketServicePort_PortType port,
+			Credentials creds) throws RemoteException {
+		
+		ArticleCore newOtrsArticle = new ArticleCore();
+
+		// All OTRS article fields from ticket
+		
+		log().debug("Adding a new article to ticket: " + otrsTicketNumber);
+		
+		switch (newTicket.getState()) {
+
+            	    case OPEN:
+                        // ticket is new
+			newOtrsArticle.setBody(m_configDao.getTicketOpenedMessage());
+                        break;
+                    case CANCELLED:
+                        // not sure how often we see this
+                        newOtrsArticle.setBody(m_configDao.getTicketCancelledMessage());
+                        break;
+                    case CLOSED:
+                        // closed successful
+                        newOtrsArticle.setBody(m_configDao.getTicketClosedMessage());
+                        break;
+                    default:
+                        log().debug("No valid OpenNMS state on ticket");
+                        newOtrsArticle.setBody(m_configDao.getTicketUpdatedMessage());
+        	}
+
+		newOtrsArticle.setTicketNumber(otrsTicketNumber);
+		
+		// TODO: Could remove this once we have the userid reliably in the the ticket
+		
+		newOtrsArticle.setFrom(m_configDao.getArticleFrom());
+		
+		if (newTicket.getUser() != null) {
+			newOtrsArticle.setUser(newTicket.getUser());
+		} else {
+			newOtrsArticle.setUser(m_configDao.getDefaultUser());
+		}
+		
+		newOtrsArticle.setSubject(m_configDao.getArticleUpdateSubject());
 		
 		// All OTRS article fields from defaults
 			
