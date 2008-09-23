@@ -30,28 +30,24 @@
   </bean>
 
   <!-- ========================== AUTHENTICATION ======================== -->
-  <!--
-       The authentication providers listed below will be tried in order.
-
-       You can enable LDAP and/or Radius authentication by uncommenting the
-       appropriate providers here and uncommenting their associated beans below.
-
-       If you have enabled LDAP or Radius authentication and wish to disable
-       the passwords in users.xml, comment out the daoAuthenticationProvider.
-       Note that your LDAP/Radius server will need to allow the 'rtc' user to
-       authenticate.
-   -->
   <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
     <property name="providers">
       <list>
         <ref local="daoAuthenticationProvider"/>
-        <!--<ref local="ldapAuthenticationProvider"/>-->
-        <!--<ref local="radiusAuthenticationProvider"/>-->
+        <!--
+             Uncomment the following reference to ldapAuthenticationProvider
+             and comment-out the above reference to the
+             daoAuthenticationProvider if you want to use LDAP.  You'll also
+             need to uncomment the LDAP AUTHENTICATION section below, as well.
+          -->
+        <!--
+        <ref local="ldapAuthenticationProvider"/>
+        -->
         <ref local="anonymousAuthenticationProvider"/>
       </list>
     </property>
   </bean>
-
+   
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->
   <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
     <property name="usersConfigurationFile"
@@ -73,26 +69,26 @@
     <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
     <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
   </bean>
-
+  
   <!-- ======================= LDAP AUTHENTICATION ====================== -->
-  <!--
-       To use LDAP Authentication, uncomment the following section to enable
-       the ldapAuthenticationProvider, and uncomment the reference to
-       ldapAuthenticationProvider in the authenticationManager bean above.
-
-       Make sure that you set the LDAP server hostname below where it says
+  <!-- 
+       If you want to use LDAP, uncomment the following section to enable the
+       ldapAuthenticationProvider, and in the authenticationManager bean above
+       uncomment the reference to the ldapAuthenticationProvider.  Make sure
+       that you set the LDAP server hostname below where it says
        "%%%put LDAP server address here%%%" and that you set the attribute
        in the user's entry that you store OpenNMS roles in where it says
-       "%%%put role attribute here%%%".
-
-       If you would like to use LDAP groups to assign roles to users, use bean
-       groupLdapAuthoritiesPopulator and reference it in bean
-       ldapAuthenticationProvider instead of the default
-       userAttributeLdapAuthoritiesPopulator.  The userGroups, adminGroups,
-       rtcGroups, readonlyGroups, and dashboardGroups properties may be used
-       to associate LDAP groups with OpenNMS roles.
+       "%%%put role attribute here%%%". :-)
+       
+        If you want to use groups to grant access use bean groupLdapAuthoritiesPopulator
+        and reference it in bean ldapAuthenticationProvider against default userAttributeLdapAuthoritiesPopulator
+		you have to set property: userGroups,adminGroups,rtcGroups,readonlyGroups,dashboardGroups
+		and list groups that are granted access with role:
+		ROLE_USER,ROLE_ADMIN,ROLE_RTC_ROLE_READONLY,ROLE_DASHBOARD
+	
+       
    -->
-  <!--
+  <!-- 
   <bean id="initialDirContextFactory"
         class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
     <constructor-arg value="ldap://%%%put LDAP server address here%%%:389/"/>
@@ -113,7 +109,7 @@
       <value>true</value>
     </property>
   </bean>
-
+  
   <bean id="userAttributeLdapAuthoritiesPopulator"
         class="org.opennms.web.acegisecurity.UserAttributeLdapAuthoritiesPopulator">
     <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
@@ -154,43 +150,6 @@
     <constructor-arg>
       <ref bean="userAttributeLdapAuthoritiesPopulator"/>
     </constructor-arg>
-  </bean>
-   -->
-
-  <!-- ====================== RADIUS AUTHENTICATION ===================== -->
-  <!--
-       To use Radius Authentication, uncomment the following section to enable
-       the radiusAuthenticationProvider, and uncomment the reference to
-       radiusAuthenticationProvider in the authenticationManager bean above.
-
-       The first constructor argument to radiusAuthenticationProvider is the
-       Radius Server to authenticate against, the second constructor argument
-       is the Shared Secret to use during authentication. The port, timeout,
-       retries, authTypeClass, and defaultRoles properties are optional and
-       default to the values shown.
-
-       If you would like to use a Radius Attribute to assign roles to users,
-       set the rolesAttribute property to the name of the attribute. Your
-       Radius server should be configured to return a comma-separated string of
-       roles (such as "ROLE_USER, ROLE_ADMIN") in this attribute in the
-       authentication reply. To specify a locally-defined vendor-specific Radius
-       Attribute, use "Unknown-VSAttribute(<Vendor ID>:<Attribute Number>)".
-       If the reply from the radius server does not actually contain the
-       specified attribute, the user will be assigned the roles specified by
-       the defaultRoles property.
-   -->
-  <!--
-  <bean id="radiusAuthenticationProvider" class="org.opennms.web.acegisecurity.RadiusAuthenticationProvider">
-    <constructor-arg value="%%% Radius Server %%%"/>
-    <constructor-arg value="%%% Shared Secret %%%"/>
-   -->
-    <!--<property name="port" value="1812"/>-->
-    <!--<property name="timeout" value="5"/>-->
-    <!--<property name="retries" value="3"/>-->
-    <!--<property name="authTypeClass"><bean class="net.jradius.client.auth.PAPAuthenticator"/></property>-->
-    <!--<property name="defaultRoles" value="ROLE_USER"/>-->
-    <!--<property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
-  <!--
   </bean>
    -->
 
@@ -297,7 +256,7 @@
   <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
     <property name="key"><value>foobar</value></property>
   </bean>
-
+  
   <bean class="org.opennms.web.acegisecurity.AcegiAuthenticationEventOnmsEventBuilder">
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
