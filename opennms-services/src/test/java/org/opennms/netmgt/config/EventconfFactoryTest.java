@@ -96,6 +96,8 @@ public class EventconfFactoryTest {
         daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
 
+        super.setUp();
+        
         EventconfFactory.init();
     }
 

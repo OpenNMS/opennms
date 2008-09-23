@@ -55,7 +55,6 @@ import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.utils.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -164,7 +163,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         if (log.isDebugEnabled())
             log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
         
-        EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
+        EventBuilder bldr = new EventBuilder(uei, this.getName());
         bldr.setNodeid(nodeId);
         if (address != null) {
             bldr.setInterface(address.getHostAddress());
