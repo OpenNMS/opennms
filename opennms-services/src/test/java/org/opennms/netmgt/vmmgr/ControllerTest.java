@@ -35,6 +35,9 @@
  */
 package org.opennms.netmgt.vmmgr;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -43,23 +46,24 @@ import java.net.ServerSocket;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Level;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.test.mock.MockLogAppender;
 
-public class ControllerTest extends TestCase {
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+public class ControllerTest {
+
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
     }
     
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
-        
+    @After
+    public void runTest() throws Throwable {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @Test
     public void testClientTimeout() throws Exception {
         final ServerSocket server = new ServerSocket(0);
         
@@ -69,7 +73,7 @@ public class ControllerTest extends TestCase {
         
         Thread clientThread = new Thread(new Runnable() {
             public void run() {
-                c.invokeOperation(getName());
+                c.invokeOperation("testClientTimeout");
             }
         });
         
@@ -99,7 +103,7 @@ public class ControllerTest extends TestCase {
         
         acceptThread.start();
         
-        acceptThread.join(200);
+        acceptThread.join(1000);
         assertFalse("the accept thread should have stopped because it should have received a connection", acceptThread.isAlive());
 
         clientThread.join(c.getHttpRequestReadTimeout() * 2);
