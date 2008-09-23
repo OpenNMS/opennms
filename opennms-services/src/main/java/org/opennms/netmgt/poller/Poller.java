@@ -84,11 +84,11 @@ public class Poller extends AbstractServiceDaemon {
 
     private LegacyScheduler m_scheduler = null;
 
-    private PollerEventProcessor m_receiver;
+    private PollerEventProcessor m_eventProcessor;
 
-    private PollableNetwork m_network = new PollableNetwork(new DefaultPollContext(this));
+    private PollableNetwork m_network;
 
-    private QueryManager m_queryMgr = new DefaultQueryManager();
+    private QueryManager m_queryManager;
 
     private PollerConfig m_pollerConfig;
 
@@ -102,12 +102,69 @@ public class Poller extends AbstractServiceDaemon {
     	super("OpenNMS.Poller");
     }
 
+    /* Getters/Setters used for dependency injection */
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
+    }
+
+    public EventIpcManager getEventManager() {
+        return m_eventMgr;
+    }
+
+    public void setEventManager(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
+
+    public PollerEventProcessor getEventProcessor() {
+        return m_eventProcessor;
+    }
+
+    public void setEventProcessor(PollerEventProcessor eventProcessor) {
+        m_eventProcessor = eventProcessor;
+    }
+
+    public PollableNetwork getNetwork() {
+        return m_network;
+    }
+
+    public void setNetwork(PollableNetwork network) {
+        m_network = network;
+    }
+    
+    public void setQueryManager(QueryManager queryManager) {
+        m_queryManager = queryManager;
+    }
+
+    public QueryManager getQueryManager() {
+        return m_queryManager;
+    }
+    
+    public PollerConfig getPollerConfig() {
+        return m_pollerConfig;
+    }
+
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        m_pollerConfig = pollerConfig;
+    }
+
+    public PollOutagesConfig getPollOutagesConfig() {
+        return m_pollOutagesConfig;
+    }
+
+    public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
+        m_pollOutagesConfig = pollOutagesConfig;
+    }
+
+    public Scheduler getScheduler() {
+        return m_scheduler;
+    }
+
+    public void setScheduler(LegacyScheduler scheduler) {
+        m_scheduler = scheduler;
+    }
+
     protected void onInit() {
-
-        // get the category logger
-        // set the DataSource in the QueryManager
-        m_queryMgr.setDataSource(m_dataSource);
-
+        
         // serviceUnresponsive behavior enabled/disabled?
         log().debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
@@ -139,7 +196,7 @@ public class Poller extends AbstractServiceDaemon {
         try {
             log().debug("start: Creating event broadcast event processor");
 
-            m_receiver = new PollerEventProcessor(this);
+            setEventProcessor(new PollerEventProcessor(this));
         } catch (Throwable t) {
             log().fatal("start: Failed to initialized the broadcast event receiver", t);
 
@@ -197,7 +254,7 @@ public class Poller extends AbstractServiceDaemon {
         try {
             log.debug("init: Creating poller scheduler");
 
-            m_scheduler = new LegacyScheduler("Poller", getPollerConfig().getThreads());
+            setScheduler(new LegacyScheduler("Poller", getPollerConfig().getThreads()));
         } catch (RuntimeException e) {
             log.fatal("init: Failed to create poller scheduler", e);
             throw e;
@@ -212,7 +269,7 @@ public class Poller extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("start: Starting poller scheduler");
 
-            m_scheduler.start();
+            getScheduler().start();
         } catch (RuntimeException e) {
             if (log().isEnabledFor(Level.FATAL))
                 log().fatal("start: Failed to start scheduler", e);
@@ -221,15 +278,15 @@ public class Poller extends AbstractServiceDaemon {
 	}
 
     protected void onStop() {
-        if(m_scheduler!=null) {
-            m_scheduler.stop();
+        if(getScheduler()!=null) {
+            getScheduler().stop();
         }
-        if(m_receiver!=null) {
-            m_receiver.close();
+        if(getEventProcessor()!=null) {
+            getEventProcessor().close();
         }
 
         releaseServiceMonitors();
-        m_scheduler = null;
+        setScheduler(null);
 	}
 
 	private void releaseServiceMonitors() {
@@ -237,27 +294,19 @@ public class Poller extends AbstractServiceDaemon {
 	}
 
 	protected void onPause() {
-		m_scheduler.pause();
+		getScheduler().pause();
 	}
 
     protected void onResume() {
-		m_scheduler.resume();
+		getScheduler().resume();
 	}
 
     public static Poller getInstance() {
         return m_singleton;
     }
 
-    public Scheduler getScheduler() {
-        return m_scheduler;
-    }
-
     public ServiceMonitor getServiceMonitor(String svcName) {
         return getPollerConfig().getServiceMonitor(svcName);
-    }
-
-    public PollableNetwork getNetwork() {
-        return m_network;
     }
 
     static private class InitCause extends PollableVisitorAdaptor {
@@ -278,14 +327,14 @@ public class Poller extends AbstractServiceDaemon {
         
         scheduleMatchingServices(null);
         
-        m_network.recalculateStatus();
-        m_network.resetStatusChanged();
+        getNetwork().recalculateStatus();
+        getNetwork().resetStatusChanged();
         
         // Debug dump pollable network
         //
         if (log.isDebugEnabled()) {
             log.debug("scheduleExistingServices: dumping content of pollable network: ");
-            m_network.dump();
+            getNetwork().dump();
         }
         
 
@@ -299,10 +348,10 @@ public class Poller extends AbstractServiceDaemon {
              * add its service and schedule it
              */
             PollableNode node;
-            synchronized (m_network) {
-                node = m_network.getNode(nodeId);
+            synchronized (getNetwork()) {
+                node = getNetwork().getNode(nodeId);
                 if (node == null) {
-                    node = m_network.createNode(nodeId, nodeLabel);
+                    node = getNetwork().createNode(nodeId, nodeLabel);
                 }
             }
 
@@ -312,6 +361,7 @@ public class Poller extends AbstractServiceDaemon {
                     int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
                     if (matchCount > 0) {
                         svcNode.recalculateStatus();
+                        // TODO: change this to processStatusChanged to fix test after fix PollableElement
                         svcNode.resetStatusChanged();
                     } else {
                         log.warn("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
@@ -381,12 +431,12 @@ public class Poller extends AbstractServiceDaemon {
             return;
         }
         
-        PollableService svc = m_network.createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, m_scheduler);
+        PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, getScheduler());
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {
-                Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
+                Schedule schedule = new Schedule(svc, pollConfig, getScheduler());
                 svc.setSchedule(schedule);
             }
         }
@@ -415,7 +465,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration en = m_pollerConfig.enumeratePackage();
+        Enumeration<Package> en = m_pollerConfig.enumeratePackage();
         Package lastPkg = null;
         
         while (en.hasMoreElements()) {
@@ -476,65 +526,13 @@ public class Poller extends AbstractServiceDaemon {
         return true;
     }
 
-    /**
-     * @return
-     */
-    PollerConfig getPollerConfig() {
-        return m_pollerConfig;
-    }
-
-    /**
-     * @param instance
-     */
-    public void setPollerConfig(PollerConfig pollerConfig) {
-        m_pollerConfig = pollerConfig;
-    }
-
-    PollOutagesConfig getPollOutagesConfig() {
-        return m_pollOutagesConfig;
-    }
-
-    public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
-        m_pollOutagesConfig = pollOutagesConfig;
-    }
-
-    public EventIpcManager getEventManager() {
-        return m_eventMgr;
-    }
-
-    public void setEventManager(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
-    }
-
-    /**
-     * @param queryMgr
-     *            The queryMgr to set.
-     */
-    void setQueryMgr(QueryManager queryMgr) {
-        m_queryMgr = queryMgr;
-    }
-
-    /**
-     * @return Returns the queryMgr.
-     */
-    QueryManager getQueryMgr() {
-        return m_queryMgr;
-    }
-
-    /**
-     * @param instance
-     */
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
-
     public void refreshServicePackages() {
 	PollableVisitor visitor = new PollableVisitorAdaptor() {
 		public void visitService(PollableService service) {
 			service.refreshConfig();
 		}
 	};
-	m_network.visit(visitor);
+	getNetwork().visit(visitor);
     }
 
 }

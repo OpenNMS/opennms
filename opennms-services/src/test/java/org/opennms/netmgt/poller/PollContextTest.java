@@ -66,7 +66,6 @@ public class PollContextTest extends TestCase {
     private DefaultPollContext m_pollContext;
     private PollableNetwork m_pNetwork;
     private PollableService m_pSvc;
-    private Poller m_poller;
     private MockService m_mSvc;
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
@@ -133,19 +132,15 @@ public class PollContextTest extends TestCase {
         m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         
-        m_poller = new Poller();
-        m_poller.setPollerConfig(m_pollerConfig);
-        m_poller.setDataSource(m_db);
-        m_poller.setQueryMgr(qm);
-        m_poller.setEventManager(m_eventMgr);
+        m_pollContext = new DefaultPollContext();
+        m_pollContext.setEventManager(m_eventMgr);
+        m_pollContext.setLocalHostName("localhost");
+        m_pollContext.setName("PollContextTest.DefaultPollContext");
+        m_pollContext.setPollerConfig(m_pollerConfig);
+        m_pollContext.setQueryManager(qm);
         
-        
-        m_pollContext = new DefaultPollContext(m_poller);
-        
-        m_pNetwork = new PollableNetwork(m_pollContext);
-        m_pSvc = m_pNetwork.createService(1, "Router", InetAddress.getByName("192.168.1.1"), "ICMP");
-
-        m_poller.init();
+       m_pNetwork = new PollableNetwork(m_pollContext);
+       m_pSvc = m_pNetwork.createService(1, "Router", InetAddress.getByName("192.168.1.1"), "ICMP");
 
     }
 

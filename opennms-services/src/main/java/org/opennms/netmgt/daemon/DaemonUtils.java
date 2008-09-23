@@ -51,8 +51,21 @@ public class DaemonUtils {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(DaemonUtils.class).warn("getLocalHostAddress: Could not lookup the host name for the local host machine, address set to localhost: " + e, e);
-            return "localhost";
+            ThreadCategory.getInstance(DaemonUtils.class).warn("getLocalHostAddress: Could not lookup the host address for the local host machine, address set to 127.0.0.1: " + e, e);
+            return "127.0.0.1";
         }
     }
+    
+    public static String getLocalHostName() {
+        String localhost;
+        try {
+            localhost = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            ThreadCategory.getInstance(DaemonUtils.class).warn("getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost': " + e, e);
+            localhost = "localhost";
+        }
+        return localhost;
+    }
+
+
 }
