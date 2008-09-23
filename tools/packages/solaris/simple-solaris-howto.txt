@@ -1,69 +1,51 @@
 to make packages on solaris:
 
-1. install everything into a destroot somewhere
-   (for example, with postgresql, I did "make install DESTDIR=/tmp/pgsql")
-   
-   I use the command:
+0. Make sure the path includes /usr/local/bin for the GNU tools.
 
-   ./build.sh -Dproduct.release=1 -Dproduct.snapshot=false -Dinstall.prefix=/tmp/opennms/ -Dinstall.dir=/usr/local/opennms -Dbuild.rrdtool.include.dir=/usr/local/rrdtool/include/ -Dbuild.postgresql.include.dir=/usr/local/pgsql/include/server -Dbuild.rrdtool.lib.dir=/usr/local/rrdtool/lib/ -Dbuild.rrdtool.bin=/usr/local/rrdtool/bin/rrdtool install
+1. Check out the code and build it with:
 
-1a: Run:
+./build.sh -Dopennms.home=/opt/opennms install assembly:attached
 
-./build.sh docs
+2. mkdir -p /tmp/opennms/opt/opennms
 
-2a: Run:
+3. cd /tmp/opennms/opt/opennms
 
-cp -pr work/docs /tmp/opennms/usr/local/opennms/
+4.
 
-2b. go into your directory and walk down to /usr/local (install things in
-   /usr/local just to fit with sunfreeware)
+/usr/local/bin/tar zxvf ~/svn/1.6-testing/target/opennms-1.5.94-testing-SNAPSHOT.tar.gz
 
-3. in the opennms package, don't forget to make jar symlinks for tomcat
-   *before* you run the prototype generator
+(Modify it to point to your svn path and make sure to use GNU tar)
 
-   # cd /tmp/opennms/usr/local/
-   # mkdir -p tomcat/server/lib
-   # cd tomcat/server/lib
-   # ln -s ../../../opennms/lib/castor*.jar .
-   # ln -s ../../../opennms/lib/log4j*.jar .
-   # ln -s ../../../opennms/lib/opennms_*.jar .
-   # cd ../..
-   # mkdir webapps
-   # cd webapps
-   # ln -s ../../opennms/webapps/opennms.xml .
+5. cd /tmp/opennms/opt/
 
-4. put the packaging files from the package dir here in that directory
-   (so, for opennms you'd copy the pkginfo and postinstall scripts to
-   /tmp/opennms/usr/local/ and then make /tmp/opennms/usr/local/etc and put
-   the profile in there)
+6. cp ~/svn/1.6-testing/tools/packages/solaris/opennms/p* .
 
-4a. Edit the pkginfo file.
+This will move the pkginfo and postinstall files to the proper place.
 
-5. generate the file list from /usr/local/
+7. Edit pkginfo and postinstall as needed.
 
-   # cd /tmp/opennms/usr/local
+8. generate the file list from /opt
+
+   # cd /tmp/opennms/opt
    # find . -print | pkgproto > prototype
 
-6. add the following line to the prototype file:
+9. Edit the prototype file and add the following at the top:
 
-   i pkginfo=./pkginfo
+i pkginfo=./pkginfo
+i postinstall=./postinstall
 
-7. if there's pre/postinstall scripts, do the same for them:
-
-   i postinstall=./postinstall
-
-7a. Edit the prototype file, go to the bottom and remove the references 
+10. Edit the prototype file, go to the bottom and remove the references 
     to postinstall, pkginfo and prototype.
 
-8. fix permissions -- it's best to change your username stuff to "bin bin"
+11. fix permissions -- it's best to change your username stuff to "bin bin"
 
-   # perl -pi -e 's,root other,bin bin,' prototype
+   # perl -pi -e 's,root root,bin bin,' prototype
 
-9. put the package into the system package archive
+12. put the package into the system package archive
 
    # pkgmk -r `pwd`
 
-10. generate a package file from the system archive
+13. generate a package file from the system archive
 
    # cd /var/spool/pkg
-   # pkgtrans -s `pwd` /tmp/opennms-1.3.0-1-sol8-sparc-local
+   # pkgtrans -s `pwd` /tmp/opennms-1.6.0-1-sol10-sparc-opt

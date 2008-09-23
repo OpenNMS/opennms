@@ -35,11 +35,11 @@
  */
 package org.opennms.netmgt.poller.pollables;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.opennms.netmgt.model.PollStatus;
@@ -53,10 +53,10 @@ import org.opennms.netmgt.model.PollStatus;
  */
 abstract public class PollableContainer extends PollableElement {
 
-    private Map m_members = new HashMap();
+    private Map<Object, PollableElement> m_members = new HashMap<Object, PollableElement>();
 
-    public PollableContainer(PollableContainer parent) {
-        super(parent);
+    public PollableContainer(PollableContainer parent, Scope scope) {
+        super(parent, scope);
     }
 
     /**
@@ -71,8 +71,8 @@ abstract public class PollableContainer extends PollableElement {
         return m_members.size();
     }
     
-    protected synchronized Collection getMembers() {
-        return new LinkedList(m_members.values());
+    protected synchronized Collection<PollableElement> getMembers() {
+        return new ArrayList<PollableElement>(m_members.values());
     }
     
     /**
@@ -104,9 +104,9 @@ abstract public class PollableContainer extends PollableElement {
     public void delete() {
         Runnable r = new Runnable() {
             public void run() {
-                Collection members = getMembers();
-                for (Iterator it = members.iterator(); it.hasNext();) {
-                    PollableElement member = (PollableElement) it.next();
+                Collection<PollableElement> members = getMembers();
+                for (Iterator<PollableElement> it = members.iterator(); it.hasNext();) {
+                    PollableElement member = it.next();
                     member.delete();
                 }
                 PollableContainer.super.delete();
@@ -130,8 +130,8 @@ abstract public class PollableContainer extends PollableElement {
      * @param v
      */
     protected void visitMembers(PollableVisitor v) {
-        for (Iterator it = getMembers().iterator(); it.hasNext();) {
-            PollableElement element = (PollableElement) it.next();
+        for (Iterator<PollableElement> it = getMembers().iterator(); it.hasNext();) {
+            PollableElement element = it.next();
             element.visit(v);
         }
         
@@ -141,25 +141,59 @@ abstract public class PollableContainer extends PollableElement {
         public void forEachElement(PollableElement element);
     }
     
-    abstract protected class SimpleIter implements Iter {
-        private Object result;
-        public SimpleIter(Object initial) { result = initial; }
+    abstract protected class SimpleIter<T> implements Iter {
+        private T result;
+        public SimpleIter(T initial) { result = initial; }
         public SimpleIter() { this(null); }
-        public Object getResult() { return result; }
-        public void setResult(Object newResult) { result = newResult; }
+        public T getResult() { return result; }
+        public void setResult(T newResult) { result = newResult; }
     }
     
+    abstract protected class Accumulator<T> extends SimpleIter<T> {
+        public Accumulator(T initial) { super(initial); }
+        public Accumulator() { super(null); }
+        public void forEachElement(PollableElement element) {
+            setResult(processNextMember(element, getResult()));
+        }
+        abstract T processNextMember(PollableElement member, T currentValue);
+    }
+    
+    
+    
     protected void forEachMember(Iter iter) {
-        for (Iterator it = getMembers().iterator(); it.hasNext(); ) {
-            PollableElement element = (PollableElement) it.next();
-            iter.forEachElement(element);
+        forEachMember(false, iter);
+    }
+    
+    protected <T> T deriveValueFromMembers(SimpleIter<T> iter) {
+        return deriveValueFromMembers(false, iter);
+    }
+    
+    protected <T> T deriveValueFromMembers(boolean withTreeLock, SimpleIter<T> iter) {
+        forEachMember(withTreeLock, iter);
+        return iter.getResult();
+    }
+    
+    protected void forEachMember(boolean withTreeLock, final Iter iter) {
+        Runnable r = new Runnable() {
+            public void run() {
+                for (Iterator<PollableElement> it = getMembers().iterator(); it.hasNext(); ) {
+                    PollableElement element = it.next();
+                    iter.forEachElement(element);
+                }
+            }
+        };
+        
+        if (withTreeLock) {
+            withTreeLock(r);
+        } else {
+            r.run();
         }
     }
     
     public void recalculateStatus() {
         Runnable r = new Runnable() {
             public void run() {
-                SimpleIter iter = new SimpleIter(PollStatus.down()) {
+                SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
                     public void forEachElement(PollableElement elem) {
                         elem.recalculateStatus();
                         if (elem.getStatus().isUp())
@@ -218,7 +252,7 @@ abstract public class PollableContainer extends PollableElement {
      * @return
      */
     public PollStatus pollRemainingMembers(final PollableElement member) {
-        SimpleIter iter = new SimpleIter(member.getStatus()) {
+        SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(member.getStatus()) {
             public void forEachElement(PollableElement elem) {
                 if (elem != member) {
                     if (elem.poll().isUp())
@@ -227,11 +261,11 @@ abstract public class PollableContainer extends PollableElement {
             }
         };
         forEachMember(iter);
-        return (PollStatus)iter.getResult();
+        return iter.getResult();
     }
     
     public PollStatus getMemberStatus() {
-        SimpleIter iter = new SimpleIter(PollStatus.down()) {
+        SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
             public void forEachElement(PollableElement elem) {
                 if (elem.getStatus().isUp())
                     setResult(PollStatus.up());
@@ -239,7 +273,7 @@ abstract public class PollableContainer extends PollableElement {
             
         };
         forEachMember(iter);
-        return (PollStatus)iter.getResult();
+        return iter.getResult();
     }
     
     public PollStatus poll() {
@@ -326,4 +360,45 @@ abstract public class PollableContainer extends PollableElement {
         forEachMember(iter);
     }
 
+    @Override
+    protected PollEvent doExtrapolateCause() {
+
+        // find the member cause with the largest scope
+        PollEvent cause = extrapolateMemberCauseWithLargestScope();
+
+        // use this largest scope as the cause for the container
+        setCause(cause);
+        if (cause != null) {
+            // we must be down set set status appropriately
+            updateStatus(PollStatus.down());
+        }
+        
+        // return the cause to parent container
+        return cause;
+    }
+
+    private PollEvent extrapolateMemberCauseWithLargestScope() {
+        PollEvent cause = null;
+        for(PollableElement member : getMembers()) {
+            PollEvent memberCause = member.extrapolateCause();
+            if (memberCause != null && !memberCause.hasScopeSmallerThan(getScope())) {
+                // a cause has been found that exceeds the scope of the members
+                // choose between the current scope and the newly found scope be taking
+                // the cause with the largest scope
+                cause = PollEvent.withLargestScope(cause, memberCause);
+                
+            }
+        }
+        return cause;
+    }
+
+    @Override
+    protected void doInheritParentalCause() {
+        super.doInheritParentalCause();
+        for(PollableElement member : getMembers()) {
+            member.inheritParentalCause();
+        }
+        
+    }
+    
 }

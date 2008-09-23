@@ -38,15 +38,68 @@ package org.opennms.netmgt.poller.pollables;
 import java.util.Date;
 
 
+
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 abstract public class PollEvent {
+    
+    Scope m_scope;
+    
+    protected PollEvent(Scope scope) {
+        m_scope = scope;
+    }
+    
+    public Scope getScope() {
+        return m_scope;
+    }
 
     abstract public int getEventId();
 
     abstract public Date getDate();
+    
+    public boolean isNodeDown() {
+        return getScope().equals(Scope.NODE); 
+    }
+
+    public boolean isInterfaceDown() {
+        return getScope().equals(Scope.INTERFACE);
+    }
+    
+    public boolean isNodeLostService() {
+        return getScope().equals(Scope.SERVICE);
+    }
+    
+    public boolean hasLargerScopeThan(PollEvent e) {
+        return Scope.isLargerThan(this.getScope(), e.getScope());
+    }
+    
+    public boolean hasSmallerScopeThan(PollEvent e) {
+        return Scope.isSmallerThan(this.getScope(), e.getScope());
+    }
+    
+    public boolean hasScopeLargerThan(Scope scope) {
+        return Scope.isLargerThan(this.getScope(), scope);
+    }
+    
+    public boolean hasScopeSmallerThan(Scope scope) {
+        return Scope.isSmallerThan(this.getScope(), scope);
+    }
+    
+    public boolean hasSameScope(PollEvent e) {
+        return this.getScope() == e.getScope();
+    }
+    
+    public static PollEvent withLargestScope(PollEvent a, PollEvent b) {
+        if (a == null) return b;
+        if (b == null) return a;
+        if (b.hasLargerScopeThan(a)) {
+            return b;
+        } else {
+            return a;
+        }
+    }
 
 
 }

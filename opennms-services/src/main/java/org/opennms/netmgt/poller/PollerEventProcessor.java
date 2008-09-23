@@ -208,7 +208,7 @@ final class PollerEventProcessor implements EventListener {
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         
         try {
-            nodeLabel = getPoller().getQueryMgr().getNodeLabel(nodeId);
+            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId);
         } catch (Exception e) {
             log.error("Unable to retrieve nodeLabel for node "+nodeId, e);
         }
