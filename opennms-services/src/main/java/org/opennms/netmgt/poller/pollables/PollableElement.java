@@ -36,8 +36,9 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -53,19 +54,28 @@ abstract public class PollableElement {
     private PollStatus m_status = PollStatus.unknown();
     private boolean m_statusChanged = false;
     private PollEvent m_cause;
+    private Scope m_scope; 
     private boolean m_deleted;
 
 
-    protected PollableElement(PollableContainer parent) {
+    protected PollableElement(PollableContainer parent, Scope scope) {
         m_parent = parent;
+	    if (parent != null) {
+	        m_cause = parent.getCause();
+	    }
+        m_scope = scope;
     }
 
-    protected PollableContainer getParent() {
+    public PollableContainer getParent() {
         return m_parent;
     }
     
     protected void setParent(PollableContainer newParent) {
         m_parent = newParent;
+    }
+
+    public Scope getScope() {
+        return m_scope;
     }
 
     public void visit(PollableVisitor v) {
@@ -89,9 +99,10 @@ abstract public class PollableElement {
         m_statusChanged = statusChanged;
     }
     public void updateStatus(PollStatus newStatus) {
-        if (!getStatus().equals(newStatus)) {
+        PollStatus oldStatus = getStatus();
+        if (!oldStatus.equals(newStatus)) {
             
-            ThreadCategory.getInstance(getClass()).info("Changing status of PollableElement "+this+" from "+getStatus()+" to "+newStatus);
+            ThreadCategory.getInstance(getClass()).info("Changing status of PollableElement "+this+" from "+oldStatus+" to "+newStatus);
             setStatus(newStatus);
             setStatusChanged(true);
         }
@@ -139,16 +150,27 @@ abstract public class PollableElement {
         withTreeLock(r, 0);
     }
     
+    public <T> T withTreeLock(Callable<T> c) {
+        return withTreeLock(c, 0);
+    }
+    
+    
     public void withTreeLock(Runnable r, long timeout) {
+        withTreeLock(Executors.callable(r), timeout);
+    }
+
+    public <T> T withTreeLock(Callable<T> c, long timeout) {
         try {
-            Category log = ThreadCategory.getInstance(getClass());
-            PollableElement lock = getLockRoot();
             obtainTreeLock(timeout);
-            r.run();
+            return c.call();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             releaseTreeLock();
         }
     }
+
+    
 
     /**
      * 
@@ -221,8 +243,10 @@ abstract public class PollableElement {
     }
 
     protected void processComingUp(Date date) {
-        PollEvent resolution = getContext().sendEvent(createUpEvent(date));
-        processResolution(getCause(), resolution);
+        if (getCause() != null) {
+            PollEvent resolution = getContext().sendEvent(createUpEvent(date));
+            processResolution(getCause(), resolution);
+        }
     }
 
     protected void processResolution(PollEvent cause, PollEvent resolution) {
@@ -269,6 +293,49 @@ abstract public class PollableElement {
         } else if (getStatus().isUp() && !resolvedCause.equals(getCause())) {
             processComingUp(resolution.getDate());
         }
+    }
+
+    public PollEvent extrapolateCause() {
+        return withTreeLock(new Callable<PollEvent>() {
+            public PollEvent call() throws Exception {
+                return doExtrapolateCause();
+            }
+        });
+    }
+
+
+    protected PollEvent doExtrapolateCause() {
+        return getCause();
+    }
+    
+    public void inheritParentalCause() {
+        withTreeLock(new Runnable() {
+
+            public void run() {
+                doInheritParentalCause();
+            }
+            
+        });
+    }
+    
+    protected void doInheritParentalCause() {
+        if (getParent() == null) return;
+            
+        PollEvent parentalCause = getParent().getCause();
+        PollStatus parentalStatus = getParent().getStatus();
+        if (parentalCause == null) {
+            // parent has no cause so no need to do anything here
+            return;
+        }
+        
+        if (getCause() == null || getCause().hasScopeLargerThan(getScope())) { 
+            // I have no cause but my parent is down.. mark me as down as well
+            // I already have a cause that's larger than myself then inherit as well
+            setCause(parentalCause);
+            updateStatus(parentalStatus);
+        }
+        
+        
     }
     
 

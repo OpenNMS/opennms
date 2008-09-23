@@ -37,6 +37,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
@@ -52,7 +53,7 @@ public class PollableInterface extends PollableContainer {
     private InetAddress m_addr;
 
     public PollableInterface(PollableNode node, InetAddress addr) {
-        super(node);
+        super(node, Scope.INTERFACE);
         m_addr = addr;
     }
 
@@ -89,17 +90,16 @@ public class PollableInterface extends PollableContainer {
     }
 
     public PollableService createService(final String svcName) {
-        
-        final PollableService[] retVal = new PollableService[1];
-        Runnable r = new Runnable() {
-            public void run() {
+        return withTreeLock(new Callable<PollableService>() {
+            public PollableService call() {
+
                 PollableService svc = new PollableService(PollableInterface.this, svcName);
                 addMember(svc);
-                retVal[0] = svc;
+                return svc;
+
             }
-        };
-        withTreeLock(r);
-        return retVal[0];
+            
+        });
         
     }
 
@@ -126,7 +126,7 @@ public class PollableInterface extends PollableContainer {
             super.recalculateStatus();
         }
     }
-
+    
     /**
      * @return
      */

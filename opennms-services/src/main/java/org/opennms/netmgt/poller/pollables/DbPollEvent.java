@@ -46,9 +46,11 @@ import java.util.Date;
 public class DbPollEvent extends PollEvent {
     
     int m_eventId;
+    String m_uei;
     Date m_date;
     
-    public DbPollEvent(int eventId, Date date) {
+    public DbPollEvent(int eventId, String uei, Date date) {
+        super(Scope.fromUei(uei));
         m_eventId = eventId;
         m_date = date;
     }
@@ -72,6 +74,10 @@ public class DbPollEvent extends PollEvent {
         if (o instanceof PollEvent)
             return equals((PollEvent)o);
         return false;
+    }
+    
+    public String toString() {
+        return "DbPollEvent[ id: "+getEventId()+" ]";
     }
 
 }

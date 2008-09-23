@@ -1,11 +1,11 @@
 PKG="NMSopennms"
 NAME="opennms"
 ARCH="sparc"
-VERSION="1.3.0"
+VERSION="1.6.0-1"
 CATEGORY="application"
 VENDOR="OpenNMS"
 EMAIL="tarus@opennms.org"
 PSTAMP="Tarus Balog"
-BASEDIR="/usr/local"
+BASEDIR="/opt"
 CLASSES="none"
 
