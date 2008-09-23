@@ -29,13 +29,12 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
 
 import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -54,26 +53,20 @@ public class EventBuilder {
     private Event m_event;
 
     public EventBuilder(String uei, String source) {
-        this(uei, source, new Date());
-    }
-
-    public EventBuilder(Event event) {
-        this(event, new Date());
-	}
-    
-    public EventBuilder(Event event, Date date) {
-        m_event = event;
-        setTime(date);
-        setCreationTime(date);
-    }
-    
-    public EventBuilder(String uei, String source, Date date) {
         m_event = new Event();
         m_event.setUei(uei);
+        Date date = new Date();
         setTime(date);
         setCreationTime(date);
         setSource(source);
     }
+
+    public EventBuilder(Event event) {
+    	m_event = event;
+	    Date date = new Date();
+	    setTime(date);
+	    setCreationTime(date);
+	}
 
 	public Event getEvent() {
         return m_event;
@@ -96,7 +89,7 @@ public class EventBuilder {
     }
     
     public EventBuilder setSeverity(String severity) {
-    	m_event.setSeverity(Constants.getSeverityString(Constants.getSeverity(severity)));
+    	m_event.setSeverity(EventConstants.getSeverityString(EventConstants.getSeverity(severity)));
     	return this;
     }
 

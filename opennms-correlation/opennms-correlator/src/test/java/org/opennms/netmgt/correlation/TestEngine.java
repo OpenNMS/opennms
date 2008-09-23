@@ -38,7 +38,7 @@ package org.opennms.netmgt.correlation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 public class TestEngine extends AbstractCorrelationEngine {

@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockUtil;
 

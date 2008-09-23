@@ -65,7 +65,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.Attrib;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 

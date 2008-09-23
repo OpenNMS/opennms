@@ -53,7 +53,7 @@ import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.mock.EventConfWrapper;
 import org.opennms.netmgt.mock.EventWrapper;
-import org.opennms.netmgt.utils.EventBuilder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.eventconf.Logmsg;

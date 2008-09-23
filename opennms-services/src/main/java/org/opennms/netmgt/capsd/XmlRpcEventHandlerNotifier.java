@@ -56,7 +56,7 @@ public class XmlRpcEventHandlerNotifier {
     @Pointcut("execution(* org.opennms.netmgt.capsd.BroadcastEventProcessor.*(..))")
     public void capsdMethod() {}
     
-    @Pointcut("@annotation(org.opennms.netmgt.utils.annotations.EventHandler)")
+    @Pointcut("@annotation(org.opennms.netmgt.model.events.annotations.EventHandler)")
     public void eventHandler() {}
     
     @Pointcut("capsdMethod() && eventHandler()")

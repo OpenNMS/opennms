@@ -51,10 +51,10 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

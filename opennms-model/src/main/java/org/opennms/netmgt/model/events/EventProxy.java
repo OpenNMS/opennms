@@ -32,26 +32,41 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.model.events;
 
-// castor generated event class
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
- * The interface to be implemented by all services that wish to receive events
- * from Eventd.
+ * This is the interface used to send events into the event subsystem - It is
+ * typically used by the poller framework plugins that perform service
+ * monitoring to send out aprropriate events. Can also be used by capsd,
+ * discovery etc.
  * 
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public interface EventListener {
+public interface EventProxy {
     /**
-     * Return the id of the listener
+     * This method is called to send the event out
+     * 
+     * @param event
+     *            the event to be sent out
+     * 
+     * @exception EventProxyException
+     *                thrown if the send fails for any reason
      */
-    public String getName();
+    public void send(Event event) throws EventProxyException;
 
     /**
-     * Process a sent event.
+     * This method is called to send an event log containing multiple events out
+     * 
+     * @param eventLog
+     *            the events to be sent out
+     * 
+     * @exception EventProxyException
+     *                thrown if the send fails for any reason
      */
-    public void onEvent(Event e);
+    public void send(Log eventLog) throws EventProxyException;
 }
