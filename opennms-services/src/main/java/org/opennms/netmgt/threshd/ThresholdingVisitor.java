@@ -420,6 +420,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         thresholdingFinished(true);
     }
     
+    /*
+     * Handle the difference between counters and gauges;  for the former, the value we threshold on
+     * is the difference (current-last), for the latter, it's the absolute value.  
+     */
     private Double getValue(CollectionResource resource, String ds) {
         if (m_numericAttributeValues.get(ds) == null) {
             log().warn("getValue: can't find attribute called " + ds + " on " + resource);
