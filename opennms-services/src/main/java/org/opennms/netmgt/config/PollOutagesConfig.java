@@ -40,6 +40,18 @@ package org.opennms.netmgt.config;
  * Preferences - Java - Code Style - Code Templates
  */
 public interface PollOutagesConfig {
+    
+    /**
+     * Return if the node represented by the nodeid is part of specified outage.
+     * 
+     * @param lnodeid
+     *            the nodeid to be checked
+     * @param outName
+     *            the outage name
+     * 
+     * @return the node is part of the specified outage
+     */
+    public abstract boolean isNodeIdInOutage(long lnodeid, String outName);
 
     /**
      * Return if interfaces is part of specified outage.
