@@ -56,7 +56,7 @@ public class PollableNetwork extends PollableContainer {
     private PollContext m_context;
 
     public PollableNetwork(PollContext context) {
-        super(null);
+        super(null, Scope.NETWORK);
         m_context = context;
     }
     
@@ -199,4 +199,24 @@ public class PollableNetwork extends PollableContainer {
     }
     public void releaseTreeLock() {
     }
+
+    @Override
+    public PollEvent extrapolateCause() {
+
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                elem.extrapolateCause();
+            }
+        };
+        forEachMember(iter);
+        return null;
+
+    }
+    
+    public void propagateInitialCause() {
+        extrapolateCause();
+        inheritParentalCause();
+    }
+    
+    
 }

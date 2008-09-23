@@ -82,7 +82,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * 
      */
     public PollableService(PollableInterface iface, String svcName) {
-        super(iface);
+        super(iface, Scope.SERVICE);
         m_svcName = svcName;
         m_netInterface = new IPv4NetworkInterface(iface.getAddress());
     }
@@ -178,6 +178,8 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             return poll();
         }
     }
+    
+
     
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());

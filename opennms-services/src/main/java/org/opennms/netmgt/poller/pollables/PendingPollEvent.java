@@ -57,6 +57,7 @@ public class PendingPollEvent extends PollEvent {
     private List m_pendingOutages = new LinkedList();
 
     public PendingPollEvent(Event event) {
+        super(Scope.fromUei(event.getUei()));
         m_event = event;
     }
 
