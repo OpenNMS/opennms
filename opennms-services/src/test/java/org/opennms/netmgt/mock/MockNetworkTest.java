@@ -525,6 +525,8 @@ public class MockNetworkTest extends TestCase {
 
         m_pollerConfig.addScheduledOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
         m_pollerConfig.addScheduledOutage("outage2", now - tenMinutes, now, "192.168.1.2");
+        m_pollerConfig.addScheduledOutage("outage3", now - tenMinutes, now, 1);
+        m_pollerConfig.addScheduledOutage("outage4", now - tenMinutes, now, 2);
         
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
 
@@ -545,6 +547,10 @@ public class MockNetworkTest extends TestCase {
         assertTrue(m_pollerConfig.isCurTimeInOutage("outage1"));
         assertFalse(m_pollerConfig.isCurTimeInOutage("outage2"));
 
+        // test isNodeIdInOutage
+        assertFalse(m_pollerConfig.isNodeIdInOutage(1, "outage1"));
+        assertTrue(m_pollerConfig.isNodeIdInOutage(1, "outage3"));
+        assertFalse(m_pollerConfig.isNodeIdInOutage(1, "outage4"));
     }
 
     private void testServicePoll(MockElement element) throws UnknownHostException {

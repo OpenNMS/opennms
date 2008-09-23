@@ -429,7 +429,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 		if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
 			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName))) {
                     if (log().isDebugEnabled())
-                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_service);
+                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be thresholded for " + m_service);
                     outageFound = true;
                     break;
                 }
