@@ -140,6 +140,10 @@
       <artifactId>commons-httpclient</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.sf.jradius</groupId>
+      <artifactId>jradius-client</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-core</artifactId>
     </dependency>
