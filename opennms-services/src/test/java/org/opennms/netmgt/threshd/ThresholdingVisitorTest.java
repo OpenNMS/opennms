@@ -135,7 +135,7 @@ public class ThresholdingVisitorTest extends TestCase {
 
         CollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
-        MibObject mibObject = createMibObject("counter");
+        MibObject mibObject = createMibObject("counter", "freeMem");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
@@ -170,6 +170,52 @@ public class ThresholdingVisitorTest extends TestCase {
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
     
+    /**
+     * This bug has not been replicated, but this code covers the apparent scenario, and can be adapted to match
+     * any scenario which can actually replicate the reported issue
+     * @throws Exception
+     */
+    public void testBug2746() throws Exception{
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug2746.xml");
+
+        ThresholdingVisitor visitor = createVisitor();
+
+        CollectionAgent agent = createCollectionAgent();
+        NodeResourceType resourceType = createNodeResourceType(agent);
+        MibObject mibObject = createMibObject("gauge", "bug2746");
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+
+        // Collect Step 1 : Initialize counter cache
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(20));
+        resource.visit(visitor);
+        
+        //Repeat a couple of times with the same value, to replicate a steady state
+        resource.visit(visitor);
+        resource.visit(visitor);
+        resource.visit(visitor);
+
+        // Collect Step 2 : Trigger
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(60));
+        resource.visit(visitor);
+
+        // Collect Step 3 : Don't rearm, but do drop
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(45));
+        resource.visit(visitor);
+
+        // Collect Step 4 : Shouldn't trigger again
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(55));
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+    
     public void testReload() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
@@ -195,7 +241,7 @@ public class ThresholdingVisitorTest extends TestCase {
     private void runGaugeDataTest(ThresholdingVisitor visitor, long value) {
         CollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);        
-        MibObject mibObject = createMibObject("gauge");
+        MibObject mibObject = createMibObject("gauge", "freeMem");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(value));
@@ -217,10 +263,10 @@ public class ThresholdingVisitorTest extends TestCase {
         return new NodeResourceType(agent, collection);
     }
 
-    private MibObject createMibObject(String type) {
+    private MibObject createMibObject(String type, String alias) {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
-        mibObject.setAlias("freeMem");
+        mibObject.setAlias(alias);
         mibObject.setType(type);
         mibObject.setInstance("0");
         mibObject.setMaxval(null);
