@@ -9,13 +9,47 @@
     <property name="staticMethod"><value>org.opennms.netmgt.daemon.DaemonUtils.getLocalHostAddress</value></property>
   </bean>
   
+  <bean id="localHostName" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.daemon.DaemonUtils.getLocalHostName</value></property>
+  </bean>
+  
   <!--  Instead of doing all of the work to create an EventIpcManagerDefaultImpl class
         here including all of its dependencies, we create a late-initializing proxy here
         and let eventd do the setup for the EventIpcManagerDefaultImpl and initialize
         the proxy with a pointer to the "real" eventIpcManager. -->
   <bean id="eventIpcManager" name="eventSubscriptionService" class="org.opennms.netmgt.eventd.EventIpcManagerProxy"/>
+
+  <bean id="eventdConfigManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="eventdConfigManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventdConfigManager-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.getInstance</value></property>
+  </bean>
   
-  <!-- FIXME: This should go away once we can use dependency injection for all of the daemons. -->
+  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
+    <property name="configResource"><value>file:${opennms.home}/etc/eventconf.xml</value></property>
+    <property name="reloadCheckInterval" value="-1" />
+  </bean>
+
+  <bean id="eventconfFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.EventconfFactory.setInstance</value></property>
+    <property name="arguments">
+      <list>
+        <ref local="eventConfDao"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="eventExpander" class="org.opennms.netmgt.eventd.processor.EventExpander">
+    <property name="eventConfDao" ref="eventConfDao"/>
+  </bean>
+
+  <bean id="eventIpcManagerHandlerPoolSize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="eventdConfigManager"/>
+    <property name="targetMethod" value="getReceivers"/>
+  </bean>
+
   <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.setIpcManager</value></property>
     <property name="arguments">

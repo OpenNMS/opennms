@@ -64,15 +64,52 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class DefaultPollContext implements PollContext, EventListener {
     
-    private Poller m_poller;
+    private PollerConfig m_pollerConfig;
+    private QueryManager m_queryManager;
+    private EventIpcManager m_eventManager;
+    private String m_name;
+    private String m_localHostName;
     private boolean m_listenerAdded = false;
-    private List m_pendingPollEvents = new LinkedList();
+    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
 
-    /**
-     * @param poller
-     */
-    public DefaultPollContext(Poller poller) {
-        m_poller = poller;
+    public EventIpcManager getEventManager() {
+        return m_eventManager;
+    }
+    
+    public void setEventManager(EventIpcManager eventManager) {
+        m_eventManager = eventManager;
+    }
+    
+    public void setLocalHostName(String localHostName) {
+        m_localHostName = localHostName;
+    }
+    
+    public String getLocalHostName() {
+        return m_localHostName;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+
+    public PollerConfig getPollerConfig() {
+        return m_pollerConfig;
+    }
+
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        m_pollerConfig = pollerConfig;
+    }
+
+    public QueryManager getQueryManager() {
+        return m_queryManager;
+    }
+
+    public void setQueryManager(QueryManager queryManager) {
+        m_queryManager = queryManager;
     }
 
     /* (non-Javadoc)
@@ -80,18 +117,6 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     public String getCriticalServiceName() {
         return getPollerConfig().getCriticalService();
-    }
-
-    public PollerConfig getPollerConfig() {
-        return m_poller.getPollerConfig();
-    }
-
-    public QueryManager getQueryManager() {
-        return m_poller.getQueryMgr();
-    }
-
-    public EventIpcManager getEventManager() {
-        return m_poller.getEventManager();
     }
 
     /* (non-Javadoc)
@@ -146,7 +171,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         if (svcName != null) {
             bldr.setService(svcName);
         }
-        bldr.setHost(this.getLocalHost());
+        bldr.setHost(this.getLocalHostName());
         
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
                 && this.getPollerConfig().pathOutageEnabled()) {
@@ -218,7 +243,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         final String svcName = svc.getSvcName();
         Runnable r = new Runnable() {
             public void run() {
-                m_poller.getQueryMgr().resolveOutage(nodeId, ipAddr, svcName, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
+                getQueryManager().resolveOutage(nodeId, ipAddr, svcName, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
             }
         };
         if (svcRegainEvent instanceof PendingPollEvent) {
@@ -230,7 +255,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
     
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        m_poller.getQueryMgr().reparentOutages(ipAddr, oldNodeId, newNodeId);
+        getQueryManager().reparentOutages(ipAddr, oldNodeId, newNodeId);
     }
 
     /* (non-Javadoc)
@@ -241,20 +266,13 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventListener#getName()
-     */
-    public String getName() {
-        return m_poller.getName()+".DefaultPollContext";
-    }
-
-    /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
     public void onEvent(Event e) {
         synchronized (m_pendingPollEvents) {
             log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
-            for (Iterator it = m_pendingPollEvents .iterator(); it.hasNext();) {
-                PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+            for (Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
+                PendingPollEvent pollEvent = it.next();
                 log().debug("onEvent: comparing events to poll event: "+pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
                     log().debug("onEvent: completing pollevent: "+pollEvent);
@@ -262,8 +280,8 @@ public class DefaultPollContext implements PollContext, EventListener {
                 }
             }
             
-            for (Iterator it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
-                PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+            for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
+                PendingPollEvent pollEvent = it.next();
                 log().debug("onEvent: determining if pollEvent is pending: "+pollEvent);
                 if (pollEvent.isPending()) continue;
                 
@@ -308,17 +326,6 @@ public class DefaultPollContext implements PollContext, EventListener {
             log.error("IOException when testing critical path " + e);
         }
         return result;
-    }
-
-    String getLocalHost() {
-        String localhost;
-        try {
-            localhost = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException uhE) {
-            log().warn("Failed to resolve local hostname", uhE);
-            localhost = "unresolved.host";
-        }
-        return localhost;
     }
 
     String getNodeLabel(int nodeId) {

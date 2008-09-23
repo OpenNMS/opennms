@@ -140,9 +140,12 @@
       <artifactId>commons-httpclient</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.jradius</groupId>
-      <artifactId>jradius-client</artifactId>
-      <scope>compile</scope>
+      <groupId>net.jradius</groupId>
+      <artifactId>jradius-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.jradius</groupId>
+      <artifactId>jradius-dictionary</artifactId>
     </dependency>
     <dependency>
       <groupId>org.dhcp.jdhcp</groupId>
