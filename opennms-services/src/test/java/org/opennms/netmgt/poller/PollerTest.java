@@ -38,14 +38,21 @@
 //
 package org.opennms.netmgt.poller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -81,7 +88,7 @@ import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class PollerTest extends TestCase {
+public class PollerTest {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
             + "   delete-propagation-enabled=\"true\">\n"
@@ -112,14 +119,12 @@ public class PollerTest extends TestCase {
 	// SetUp and TearDown
 	//
 
-    @Override
-	protected void setUp() throws Exception {
-        super.setUp();
+	@Before
+	public void setUp() throws Exception {
         
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
-		MockUtil.println("------------ Begin Test " + getName()
-				+ " --------------------------");
+		MockUtil.println("------------ Begin Test  --------------------------");
 		MockLogAppender.setupLogging();
 
 		m_network = new MockNetwork();
@@ -213,6 +218,7 @@ public class PollerTest extends TestCase {
 
 	}
 
+	@After
 	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
@@ -220,14 +226,13 @@ public class PollerTest extends TestCase {
 		MockLogAppender.assertNoWarningsOrGreater();
 		DataSourceFactory.setInstance(null);
 		m_db.drop();
-		MockUtil.println("------------ End Test " + getName()
-				+ " --------------------------");
+		MockUtil.println("------------ End Test  --------------------------");
 	}
 
 	//
 	// Tests
 	//
-    
+    @Test
     public void testIsRemotePackage() {
         Package pkg = new Package();
         pkg.setName("SFO");
@@ -253,6 +258,8 @@ public class PollerTest extends TestCase {
 //
 //	}
 
+    @Test
+    @Ignore
 	public void FIXMEtestBug1564() {
 		// NODE processing = true;
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -331,6 +338,7 @@ public class PollerTest extends TestCase {
 
 	}
 
+    @Test
 	public void testBug709() {
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -394,6 +402,7 @@ public class PollerTest extends TestCase {
 		m_outageAnticipator.reset();
 	}
 
+    @Test
 	public void testNodeLostServiceWithReason() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -404,6 +413,7 @@ public class PollerTest extends TestCase {
 		assertEquals("Service Not Responding.", val);
 	}
 
+    @Test
 	public void testCritSvcStatusPropagation() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -418,6 +428,7 @@ public class PollerTest extends TestCase {
 		verifyAnticipated(8000);
 	}
 
+    @Test
 	public void testInterfaceWithNoCriticalService() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -443,6 +454,7 @@ public class PollerTest extends TestCase {
 	}
 
 	// what about scheduled outages?
+    @Test
 	public void testDontPollDuringScheduledOutages() {
 		long start = System.currentTimeMillis();
 
@@ -497,18 +509,21 @@ public class PollerTest extends TestCase {
 	}
 
 	// serviceDeleted: EventConstants.SERVICE_DELETED_EVENT_UEI
+    @Test
 	public void testServiceDeleted() {
 		MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
 		testElementDeleted(svc);
 	}
 
 	// interfaceDeleted: EventConstants.INTERFACE_DELETED_EVENT_UEI
+    @Test
 	public void testInterfaceDeleted() {
 		MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 		testElementDeleted(iface);
 	}
 
 	// nodeDeleted: EventConstants.NODE_DELETED_EVENT_UEI
+    @Test
 	public void testNodeDeleted() {
 		MockNode node = m_network.getNode(1);
 		testElementDeleted(node);
@@ -535,23 +550,27 @@ public class PollerTest extends TestCase {
 
 	}
 
+    @Test
 	public void testServiceOutagesClosedOnDelete() {
 		MockService element = m_network.getService(1, "192.168.1.1", "SMTP");
 		testOutagesClosedOnDelete(element);
 
 	}
 
+    @Test
 	public void testInterfaceOutagesClosedOnDelete() {
 		MockInterface element = m_network.getInterface(1, "192.168.1.1");
 		testOutagesClosedOnDelete(element);
 	}
 
+    @Test
 	public void testNodeOutagesClosedOnDelete() {
 		MockNode element = m_network.getNode(1);
 		testOutagesClosedOnDelete(element);
 	}
 
 	// interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
+    @Test
 	public void testInterfaceReparented() {
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -600,6 +619,7 @@ public class PollerTest extends TestCase {
 	}
 
 	// test to see that node lost/regained service events come in
+    @Test
 	public void testNodeOutageProcessingDisabled() throws Exception {
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
@@ -625,6 +645,7 @@ public class PollerTest extends TestCase {
 	}
 
 	// test whole node down
+    @Test
 	public void testNodeOutageProcessingEnabled() throws Exception {
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -654,17 +675,20 @@ public class PollerTest extends TestCase {
 
 	}
 
+    @Test
 	public void testNodeLostRegainedService() throws Exception {
 
 		testElementDownUp(m_network.getService(1, "192.168.1.1", "SMTP"));
 
 	}
 
+    @Test
 	public void testInterfaceDownUp() {
 
 		testElementDownUp(m_network.getInterface(1, "192.168.1.1"));
 	}
 
+    @Test
 	public void testNodeDownUp() {
 		testElementDownUp(m_network.getNode(1));
 	}
@@ -693,6 +717,7 @@ public class PollerTest extends TestCase {
 		verifyAnticipated(8000);
 	}
 
+    @Test
 	public void testNoEventsOnNoOutages() throws Exception {
 
 		testElementDownUp(m_network.getService(1, "192.168.1.1", "SMTP"));
@@ -702,6 +727,7 @@ public class PollerTest extends TestCase {
 
 	}
 
+    @Test
 	public void testPolling() throws Exception {
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
@@ -733,6 +759,7 @@ public class PollerTest extends TestCase {
 	}
 
     // test open outages for unmanaged services
+    @Test
     public void testUnmangedWithOpenOutageAtStartup() {
         // before we start we need to initialize the database
 
@@ -773,11 +800,8 @@ public class PollerTest extends TestCase {
 
     }
     
-    public void testNodeGainedServiceWhileNodeAndServiceUp() {
-        
-        // get node 2... bring it down
-        // when the poller knows its down add down service and send nodeGainedService event
-        // expect?
+    @Test
+    public void testNodeGainedServiceWhileNodeDownAndServiceUp() {
         
         startDaemons();
         
@@ -810,50 +834,48 @@ public class PollerTest extends TestCase {
         
     }
 
-    // test open outages for unmanaged services
-    public void testMissingOutagesOnStartup() {
+    @Test
+    public void testNodeGainedServiceWhileNodeDownAndServiceDown() {
         
-        //fail("we need to write this one still");
-        
-        // before we start we need to initialize the database
-
-        // create an outage for the service
-        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
-        MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-
-        Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", svc);
-        m_db.writeEvent(svcLostEvent);
-        createOutages(svc, svcLostEvent);
-
-        Event ifaceDownEvent = MockEventUtil.createInterfaceDownEvent("Test", iface);
-        m_db.writeEvent(ifaceDownEvent);
-        createOutages(iface, ifaceDownEvent);
-
-        // mark the service as unmanaged
-        m_db.setServiceStatus(svc, 'U');
-        m_db.setInterfaceStatus(iface, 'U');
-
-        // assert that we have an open outage
-        assertEquals(1, m_db.countOpenOutagesForService(svc));
-        assertEquals(1, m_db.countOutagesForService(svc));
-
-        assertEquals(iface.getServices().size(), m_db
-                .countOutagesForInterface(iface));
-        assertEquals(iface.getServices().size(), m_db
-                .countOpenOutagesForInterface(iface));
-
         startDaemons();
-
-        // assert that we have no open outages
-        assertEquals(0, m_db.countOpenOutagesForService(svc));
-        assertEquals(1, m_db.countOutagesForService(svc));
-
-        assertEquals(0, m_db.countOpenOutagesForInterface(iface));
-        assertEquals(iface.getServices().size(), m_db
-                .countOutagesForInterface(iface));
-
+        
+        MockNode node = m_network.getNode(4);
+        MockService svc = m_network.getService(4, "192.168.1.6", "SNMP");
+        
+        anticipateDown(node);
+        
+        node.bringDown();
+        
+        verifyAnticipated(5000);
+        
+        resetAnticipated();
+        
+        MockService newSvc = m_network.addService(4, "192.168.1.6", "SMTP");
+        
+        m_db.writeService(newSvc);
+        
+        newSvc.bringDown();
+        
+        Event e = MockEventUtil.createNodeGainedServiceEvent("Test", newSvc);
+        m_eventMgr.sendEventToListeners(e);
+        
+        sleep(5000);
+        System.err.println(m_db.getOutages());
+        
+        verifyAnticipated(8000);
+        
+        anticipateUp(node);
+        anticipateDown(svc, true);
+        
+        newSvc.bringUp();
+        
+        verifyAnticipated(5000);
+        
+        
     }
 
+    // test open outages for unmanaged services
+    @Test
 	public void testReparentCausesStatusChange() {
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -903,6 +925,7 @@ public class PollerTest extends TestCase {
 
 	// send a nodeGainedService event:
 	// EventConstants.NODE_GAINED_SERVICE_EVENT_UEI
+    @Test
 	public void testSendNodeGainedService() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
@@ -910,6 +933,7 @@ public class PollerTest extends TestCase {
 		testSendNodeGainedService("SMTP", "HTTP");
 	}
 
+    @Test
 	public void testSendNodeGainedServiceNodeOutages() {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -960,6 +984,7 @@ public class PollerTest extends TestCase {
 
 	}
 
+    @Test
 	public void testNodeGainedDynamicService() throws Exception {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -1000,6 +1025,7 @@ public class PollerTest extends TestCase {
 
 	}
 
+    @Test
 	public void testSuspendPollingResumeService() {
 
 		MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
@@ -1204,8 +1230,5 @@ public class PollerTest extends TestCase {
 
 	// TODO: test over lapping poll outages
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(PollerTest.class);
-	}
 
 }

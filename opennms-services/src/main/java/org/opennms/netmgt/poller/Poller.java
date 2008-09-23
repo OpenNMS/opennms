@@ -54,7 +54,6 @@ import javax.sql.DataSource;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -63,7 +62,6 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
-import org.opennms.netmgt.poller.pollables.PollableElement;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
@@ -309,26 +307,15 @@ public class Poller extends AbstractServiceDaemon {
         return getPollerConfig().getServiceMonitor(svcName);
     }
 
-    static private class InitCause extends PollableVisitorAdaptor {
-        private PollEvent m_cause;
-
-        public void setCause(PollEvent cause) {
-            m_cause = cause;
-        }
-        
-        public void visitElement(PollableElement element) {
-            if (!element.hasOpenOutage())
-                element.setCause(m_cause);
-        }
-    }
-
     private void scheduleExistingServices() throws Exception {
         Category log = ThreadCategory.getInstance(getClass());
         
         scheduleMatchingServices(null);
         
         getNetwork().recalculateStatus();
+        getNetwork().propagateInitialCause();
         getNetwork().resetStatusChanged();
+        
         
         // Debug dump pollable network
         //
@@ -361,8 +348,7 @@ public class Poller extends AbstractServiceDaemon {
                     int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
                     if (matchCount > 0) {
                         svcNode.recalculateStatus();
-                        // TODO: change this to processStatusChanged to fix test after fix PollableElement
-                        svcNode.resetStatusChanged();
+                        svcNode.processStatusChange(new Date());
                     } else {
                         log.warn("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
                     }
@@ -443,21 +429,18 @@ public class Poller extends AbstractServiceDaemon {
         
         
         if (svcLostEventId == null) 
-            svc.updateStatus(PollStatus.up());
+            if (svc.getParent().getStatus().isUnknown()) {
+                svc.updateStatus(PollStatus.up());
+            } else {
+                svc.updateStatus(svc.getParent().getStatus());
+            }
         else {
             svc.updateStatus(PollStatus.down());
             
-            InitCause causeSetter = new InitCause();
-            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), date);
-            causeSetter.setCause(cause);
-            
-            if (EventConstants.NODE_LOST_SERVICE_EVENT_UEI.equals(svcLostUei)) {
-                svc.visit(causeSetter);
-            } else if (EventConstants.INTERFACE_DOWN_EVENT_UEI.equals(svcLostUei)) {
-                svc.getInterface().visit(causeSetter);
-            } else if (EventConstants.NODE_DOWN_EVENT_UEI.equals(svcLostUei)) {
-                svc.getNode().visit(causeSetter);
-            }
+            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), svcLostUei, date);
+
+            svc.setCause(cause);
+
         }
         
         svc.schedule();

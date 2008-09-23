@@ -117,7 +117,7 @@ public class PollableNode extends PollableContainer {
     private Lock m_lock = new Lock();
 
     public PollableNode(PollableNetwork network, int nodeId, String nodeLabel) {
-        super(network);
+        super(network, Scope.NODE);
         m_nodeId = nodeId;
         m_nodeLabel = nodeLabel;
     }
