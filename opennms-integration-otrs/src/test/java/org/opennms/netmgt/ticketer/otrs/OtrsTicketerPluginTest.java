@@ -129,40 +129,47 @@ public class OtrsTicketerPluginTest extends TestCase {
 		
 	}
 	
-	public void testUpdate() {
-		
-		String firstArticle = new String("First Article");
-		String secondArticle = new String("Second Article");
-		
-		// save with first article
-		
-		m_ticket.setDetails(firstArticle);
-		
-		m_ticketer.saveOrUpdate(m_ticket);
-		
-		// update with first article
-		
-		m_ticket.setDetails(secondArticle);
-		
-		m_ticketer.saveOrUpdate(m_ticket);
-		
-		// get a clean copy from the ID
-		
-		Ticket retrievedTicket = m_ticketer.get(m_ticket.getId());
-		
-		// compare the opennms ticket to one retrieved from OTRS
-		
-		assertTicketEquals(m_ticket, retrievedTicket);
-		
-		// should also have the first article as history
-		
-		// ensure that old ticket details still exist somewhere in the OTRS ticket
-		
-		if (retrievedTicket.getDetails().indexOf(firstArticle) <= 0 ) {
-        	fail("could not find " + firstArticle + " in " + retrievedTicket.getDetails());
-        }
-		
-	}
+/*	
+ *	This test deliberately removed.
+ *	As there is no two way update, there is no need to ensure that 
+ *      the OTRS ticket contents and the OpenNMS ticket contents match
+ *	after the initial save.
+ *
+ *	public void testUpdate() {
+ *		
+ *		String firstArticle = new String("First Article");
+ *		String secondArticle = new String("Second Article");
+ *		
+ *		// save with first article
+ *		
+ *		m_ticket.setDetails(firstArticle);
+ *		
+ *		m_ticketer.saveOrUpdate(m_ticket);
+ *		
+ *		// update with first article
+ *		
+ *		m_ticket.setDetails(secondArticle);
+ *		
+ *		m_ticketer.saveOrUpdate(m_ticket);
+ *		
+ *		// get a clean copy from the ID
+ *		
+ *		Ticket retrievedTicket = m_ticketer.get(m_ticket.getId());
+ *		
+ *		// compare the opennms ticket to one retrieved from OTRS
+ *		
+ *		assertTicketEquals(m_ticket, retrievedTicket);
+ *		
+ *		// should also have the first article as history
+ *		
+ *		// ensure that old ticket details still exist somewhere in the OTRS ticket
+ *		
+ *		if (retrievedTicket.getDetails().indexOf(firstArticle) <= 0 ) {
+ *        		fail("could not find " + firstArticle + " in " + retrievedTicket.getDetails());
+ *        	}
+ *		
+ *	}
+ */
 	
 	public void testStateUpdate() throws InterruptedException {
 		
