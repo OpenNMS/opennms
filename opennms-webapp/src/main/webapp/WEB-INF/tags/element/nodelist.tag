@@ -1,5 +1,5 @@
 <%@ attribute name="nodes" type="java.util.List" rtexprvalue="true" required="true" %>
-<%@ attribute name="isIfAliasSearch"  type="java.lang.Boolean" rtexprvalue="true" required="true" %>
+<%@ attribute name="snmpParm" type="java.lang.String" rtexprvalue="true" required="true" %>
 <%@ attribute name="isMaclikeSearch"  type="java.lang.Boolean" rtexprvalue="true" required="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -37,30 +37,57 @@
                   </c:choose>
                   <a href="${interfaceLink}">${label}</a> : ${interface.snmpInterface.physAddr}
                 </c:when>
-                <c:when test="${isIfAliasSearch}">
+                <c:when test="${snmpParm == ('ifAlias')}">
                   <c:choose>
                     <c:when test="${interface.ipAddress == '0.0.0.0'}">
                       <c:choose>
                         <c:when test="${interface.snmpInterface.ifName != null}">
                           <a href="${interfaceLink}">${interface.snmpInterface.ifName}</a> : ${interface.snmpInterface.ifAlias}
-                        </c:when>
-                        
+                        </c:when>   
                         <c:when test="${interface.snmpInterface.ifDescr != null}">
                           <a href="${interfaceLink}">${interface.snmpInterface.ifDescr}</a> : ${interface.snmpInterface.ifAlias}
                         </c:when>
-                        
                         <c:otherwise>
                           <a href="${interfaceLink}">ifIndex ${interface.snmpInterface.ifIndex}</a> : ${interface.snmpInterface.ifAlias}
                         </c:otherwise>
                       </c:choose>
                     </c:when>
-                    
                     <c:otherwise>
                       <a href="${interfaceLink}">${interface.ipAddress}</a> : ${interface.snmpInterface.ifAlias}
                     </c:otherwise>
                   </c:choose>
+                </c:when>        
+                <c:when test="${snmpParm == ('ifName')}">
+                  <c:choose>
+                    <c:when test="${interface.ipAddress == '0.0.0.0'}">
+                      <c:choose>
+                        <c:when test="${interface.snmpInterface.ifName != null}">
+                          <a href="${interfaceLink}">${interface.snmpInterface.ifName}</a>
+                        </c:when>
+                      </c:choose>
+                    </c:when>
+                    <c:otherwise>
+                      <a href="${interfaceLink}">${interface.ipAddress}</a> : ${interface.snmpInterface.ifName}
+                    </c:otherwise>
+                  </c:choose>
+                </c:when>   
+                 <c:when test="${snmpParm == ('ifDescr')}">
+                  <c:choose>
+                    <c:when test="${interface.ipAddress == '0.0.0.0'}">
+                      <c:choose>
+                        <c:when test="${interface.snmpInterface.ifName != null}">
+                          <a href="${interfaceLink}">${interface.snmpInterface.ifName}</a> : ${interface.snmpInterface.ifDescr}
+                        </c:when>                  
+                        <c:when test="${interface.snmpInterface.ifDescr != null}">
+                          <a href="${interfaceLink}">${interface.snmpInterface.ifDescr}</a>
+                        </c:when>
+                      </c:choose>
+                    </c:when>
+                    <c:otherwise>
+                      <a href="${interfaceLink}">${interface.ipAddress}</a> : ${interface.snmpInterface.ifDescr}
+                    </c:otherwise>
+                  </c:choose>
                 </c:when>
-                
                 <c:otherwise>
                   <a href="${interfaceLink}">${interface.ipAddress}</a>
                 </c:otherwise>
