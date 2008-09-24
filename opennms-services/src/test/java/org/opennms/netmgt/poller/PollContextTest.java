@@ -33,11 +33,17 @@
 
 package org.opennms.netmgt.poller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -58,7 +64,7 @@ import org.opennms.test.mock.MockLogAppender;
  *
  * @author brozow
  */
-public class PollContextTest extends TestCase {
+public class PollContextTest {
 
     private MockNetwork m_mNetwork;
     private MockDatabase m_db;
@@ -71,15 +77,8 @@ public class PollContextTest extends TestCase {
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(PollContextTest.class);
-    }
-
-    /*
-     * @see TestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         
         MockLogAppender.setupLogging();
         
@@ -144,13 +143,7 @@ public class PollContextTest extends TestCase {
 
     }
 
-    /*
-     * @see TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testGetCriticalServiceName() {
         assertEquals("ICMP", m_pollContext.getCriticalServiceName());
         
@@ -159,6 +152,7 @@ public class PollContextTest extends TestCase {
         assertEquals("HTTP", m_pollContext.getCriticalServiceName());
     }
 
+    @Test
     public void testIsNodeProcessingEnabled() {
         assertTrue(m_pollContext.isNodeProcessingEnabled());
         
@@ -168,6 +162,7 @@ public class PollContextTest extends TestCase {
         
     }
 
+    @Test
     public void testIsPollingAllIfCritServiceUndefined() {
         assertTrue(m_pollContext.isPollingAllIfCritServiceUndefined());
         
@@ -176,6 +171,7 @@ public class PollContextTest extends TestCase {
         assertFalse(m_pollContext.isPollingAllIfCritServiceUndefined());
     }
 
+    @Test
     public void testSendEvent() {
        
         m_anticipator.anticipateEvent(m_mSvc.createDownEvent());
@@ -192,31 +188,33 @@ public class PollContextTest extends TestCase {
         
     }
 
+    @Test
     public void testCreateEvent() throws Exception {
-        Date date = new Date();
+        Date date = new Date(1222222222000L);
         Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
         assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, nodeEvent.getUei());
         assertEquals(1L, nodeEvent.getNodeid());
-        assertEquals(null, nodeEvent.getInterface());
-        assertEquals(null, nodeEvent.getService());
-        assertEquals(date.toString(), EventConstants.parseToDate(nodeEvent.getTime()).toString());
+        assertNull(nodeEvent.getInterface());
+        assertNull(nodeEvent.getService());
+        assertEquals("Unexpected time for event",date.toString(), EventConstants.parseToDate(nodeEvent.getTime()).toString());
         
         Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), null, date, null);
         assertEquals(EventConstants.INTERFACE_UP_EVENT_UEI, ifEvent.getUei());
         assertEquals(1L, ifEvent.getNodeid());
         assertEquals("192.168.1.1", ifEvent.getInterface());
-        assertEquals(null, ifEvent.getService());
-        assertEquals(date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
+        assertNull(ifEvent.getService());
+        assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
         
         Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), "ICMP", date, null);
         assertEquals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svcEvent.getUei());
         assertEquals(1L, svcEvent.getNodeid());
         assertEquals("192.168.1.1", svcEvent.getInterface());
         assertEquals("ICMP", svcEvent.getService());
-        assertEquals(date.toString(), EventConstants.parseToDate(svcEvent.getTime()).toString());
+        assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(svcEvent.getTime()).toString());
         
     }
 
+    @Test
     public void testOpenResolveOutage() throws Exception {
         Event downEvent = m_mSvc.createDownEvent();
         m_outageAnticipator.anticipateOutageOpened(m_mSvc, downEvent);
@@ -264,6 +262,7 @@ public class PollContextTest extends TestCase {
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
     }
 
+    @Test
     public void testIsServiceUnresponsiveEnabled() {
         assertFalse(m_pollContext.isServiceUnresponsiveEnabled());
         
