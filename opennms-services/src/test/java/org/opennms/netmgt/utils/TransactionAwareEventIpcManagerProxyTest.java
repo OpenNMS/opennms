@@ -53,11 +53,10 @@ public class TransactionAwareEventIpcManagerProxyTest extends AbstractTransactio
     private int m_eventNumber = 1;
     private MockEventIpcManager m_eventIpcManager;
     
-    public TransactionAwareEventIpcManagerProxyTest() {
-        super();
-        
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
+    @Override
+    protected void setUpConfiguration() throws Exception {
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.afterPropertiesSet();
     }
 
     @Override

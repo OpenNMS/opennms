@@ -55,15 +55,12 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
     
     private SiteStatusViewService m_aggregateService;
     
-    /*
-     *  This is a total hack and should be moved into a Spring bean file
-     *  for integration testing.
-     */
-    public DefaultSiteStatusServiceIntegrationTest() throws Exception {
+    @Override
+    protected void setUpConfiguration() {
         WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
         webAppTestConfig.afterPropertiesSet();
     }
-    
+
     /**
      * This parm gets autowired from the application context by TDSCT (the base class for this test)
      * pretty cool Spring Framework trickery

@@ -50,7 +50,13 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
 
     private MockDatabase m_db;
 
-    public AvailabilityReportSchedulerServiceTest() throws Exception {
+    @Override
+    public void runBare() throws Throwable {
+        setUpConfiguration();
+        super.runBare();
+    }
+
+    private void setUpConfiguration() throws Exception {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.setRelativeHomeDirectory("src/test/opennms-home");
         bean.afterPropertiesSet();
@@ -58,6 +64,8 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
         m_db = new MockDatabase();
         DataSourceFactory.setInstance(m_db);
     }
+
+
 
     @Override
     protected String[] getConfigLocations() {

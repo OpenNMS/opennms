@@ -36,10 +36,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.Reader;
+import java.util.List;
 
 import junit.framework.TestCase;
 
-import java.util.List;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -50,13 +50,12 @@ import org.opennms.test.DaoTestConfigBean;
 public class SyslogdConfigFactoryTest extends TestCase {
     private SyslogdConfigFactory m_factory;
     
-    public SyslogdConfigFactoryTest() {
+    protected void setUp() throws Exception {
+
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
-    }
 
-    protected void setUp() throws Exception {
         super.setUp();
 
         MockNetwork network = new MockNetwork();

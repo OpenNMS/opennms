@@ -38,13 +38,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
-
-import org.opennms.api.integration.ticketing.*;
 
 /**
  * 
@@ -55,14 +55,22 @@ public class DefaultTicketerServiceLayerIntegrationTest extends
 
     private TicketerServiceLayer m_ticketerServiceLayer;
     private TestTicketerPlugin m_ticketerPlugin;
-
+    
+    
     @Override
-    protected String[] getConfigLocations() {
+    protected void setUpConfiguration() {
         
+        super.setUpConfiguration();
+
         System.setProperty("opennms.ticketer.plugin", TestTicketerPlugin.class.getName());
         
         // TODO I hate this
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
+        
+    }
+
+    @Override
+    protected String[] getConfigLocations() {
         
         String[] configs = new String[] {
             "classpath:/META-INF/opennms/applicationContext-daemon.xml",

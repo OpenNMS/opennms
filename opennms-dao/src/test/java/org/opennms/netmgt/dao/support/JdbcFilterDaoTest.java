@@ -62,10 +62,9 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     private NodeDao m_nodeDao;
     private JdbcFilterDao m_dao;
     private DatabasePopulator m_populator;
-
-    public JdbcFilterDaoTest() {
-        super();
-
+    
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
     }

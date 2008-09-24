@@ -46,9 +46,9 @@ import org.opennms.test.DaoTestConfigBean;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class StatsdTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    public StatsdTest() {
-        super();
-
+    
+    @Override
+    protected void setUpConfiguration() throws Exception {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
     }

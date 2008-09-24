@@ -63,13 +63,11 @@ public class SyslogdTest extends OpenNMSTestCase {
 
     private Syslogd m_syslogd;
 
-    public SyslogdTest() {
+    protected void setUp() throws Exception {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
-    }
 
-    protected void setUp() throws Exception {
         super.setUp();
 
         MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
