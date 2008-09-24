@@ -76,9 +76,15 @@
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2693">#2693</ulink>)</para>
 	    </listitem>
 
+	    <listitem>
+	      <para>The HTTP Collector can now substitute IP addresses in URLs it's
+	      collecting from  (Bug <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2590">#2590</ulink>)</para>
+	    </listitem>
+
         <listitem>	
-	      <para>Support for new Cisco, Citrix, Compaq, McAfee, Polycom, Radlan,
-	      and UPS-MIB traps (Bugs <ulink
+	      <para>Support for new Aedilis, Cisco, Citrix, Compaq, McAfee, Polycom,
+	      Radlan, and UPS-MIB traps (Bugs <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2511">#2511</ulink>,
 	      <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2542">#2542</ulink>,
@@ -94,13 +100,15 @@
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2599">#2599</ulink>,
 	      <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2643">#2643</ulink>,
+	      <ulink
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2671">#2671</ulink>,
 	      and <ulink
-	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2671">#2671</ulink>)</para>
+	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2722">#2722</ulink>)</para>
 	    </listitem>
 	    
 	    <listitem>
-	      <para>Support for new Brocade, Citrix, Dell, HP-UX, Kyocera, Liebert,
-	      Novell, and SNMP Informant data collections (Bugs <ulink
+	      <para>Support for new Brocade, Citrix, Dell, Fortinet, HP-UX, Kyocera,
+	      Liebert, Novell, and SNMP Informant data collections (Bugs <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2370">#2370</ulink>,
 	      <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2371">#2371</ulink>,
@@ -116,8 +124,10 @@
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2629">#2629</ulink>,
 	      <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2663">#2663</ulink>,
+          <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2686">#2686</ulink>,
           and <ulink
-          url="http://bugzilla.opennms.org/show_bug.cgi?id=2686">#2686</ulink>)</para>
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2700">#2700</ulink>)</para>
         </listitem>
       </itemizedlist>
 
@@ -126,7 +136,12 @@
     <section>
       <title>Bug Fixes</title>
 
-      <para>A large number of bugs have been fixed since 1.5.93, in the process
+      <para>A rare but insidious bug in the poller that caused some outages to not
+      be properly resolved was fixed.  (Bug
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2702">#2702</ulink>)
+      </para>
+      
+      <para>A large number of other bugs have been fixed since 1.5.93, in the process
       of preparing for 1.6.0.  A full list of bugs fixed in the release can be
       found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.94+%281.6+beta+5%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
 
