@@ -48,13 +48,13 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
     
     private SurveillanceService m_surveillanceService;
     
-    public DefaultSurveillanceServiceIntegrationTest() throws Exception {
+    @Override
+    protected void setUpConfiguration() {
         WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
         webAppTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
         webAppTestConfig.afterPropertiesSet();
     }
-    
-    
+
     /**
      * This parm gets autowired from the application context by TDSCT (the base class for this test)
      * pretty cool Spring Framework trickery

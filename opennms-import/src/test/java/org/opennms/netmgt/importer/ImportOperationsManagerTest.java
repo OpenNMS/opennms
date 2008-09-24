@@ -82,7 +82,8 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     private CategoryDao m_categoryDao;
     private IpInterfaceDao m_ipInterfaceDao;
     
-    public ImportOperationsManagerTest() {
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
     }

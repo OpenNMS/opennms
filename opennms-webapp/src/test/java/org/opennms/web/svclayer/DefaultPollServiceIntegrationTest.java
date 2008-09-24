@@ -47,12 +47,14 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalTemp
 
 	private DemandPollService m_demandPollService;
         
-	public DefaultPollServiceIntegrationTest() throws Exception {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.afterPropertiesSet();
-	}
 	
 	@Override
+    protected void setUpConfiguration() {
+        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
+        webAppTestConfig.afterPropertiesSet();
+    }
+
+    @Override
 	protected String[] getConfigLocations() {
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",

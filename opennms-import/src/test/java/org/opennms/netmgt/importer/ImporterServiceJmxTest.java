@@ -45,10 +45,13 @@ import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 
 public class ImporterServiceJmxTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    public ImporterServiceJmxTest() {
+
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
     }
+
 
     @Override
     protected void onSetUpInTransactionIfEnabled() throws Exception {

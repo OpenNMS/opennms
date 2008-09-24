@@ -57,11 +57,12 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
     private PollerBackEnd m_backEnd;
     private SessionFactory m_sessionFactory;
     
-    public PollerBackEndIntegrationTest() {
+    @Override
+    protected void setUpConfiguration() {
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
         
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.afterPropertiesSet();
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
     }
     
     @Override

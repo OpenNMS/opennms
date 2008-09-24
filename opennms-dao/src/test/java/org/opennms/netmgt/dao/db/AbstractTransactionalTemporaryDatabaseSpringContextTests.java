@@ -207,6 +207,27 @@ public abstract class AbstractTransactionalTemporaryDatabaseSpringContextTests e
             setDirty();
         }
     }
+    
+    
+    
+    
+    /**
+     * Added this since when running with JUnit4 running JUnit3 style tests
+     * the constructors for the tests are called more than just once per test
+     * and not in the same order as the tests are run.  I created this so
+     * DaoTestConfigBean could be called prior to running any other test harness
+     * code to set opennms.home and such.  All tests that did configuration in constructor
+     * and derive from this TestCase has had its initializtion moved to an overridden
+     * setUpConfiguration method.
+     */
+    @Override
+    public void runBare() throws Throwable {
+        setUpConfiguration();
+        super.runBare();
+    }
+
+    protected void setUpConfiguration() throws Exception {
+    }
 
     /**
      * If tests are enabled, this calls our super's onTearDownInTransaction()
