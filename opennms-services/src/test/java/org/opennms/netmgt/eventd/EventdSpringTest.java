@@ -58,9 +58,8 @@ public class EventdSpringTest extends AbstractTransactionalTemporaryDatabaseSpri
     private Eventd m_daemon;
     private EventIpcManager m_eventIpcManager;
     
-    public EventdSpringTest() {
-        super();
-
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
         

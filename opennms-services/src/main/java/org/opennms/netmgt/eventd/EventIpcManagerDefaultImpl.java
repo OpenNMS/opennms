@@ -135,7 +135,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
          */
         private volatile boolean m_shutdown = true;
 
-        /**Ê
+        /**
          * Constructor
          */
         ListenerThread(EventListener listener) {

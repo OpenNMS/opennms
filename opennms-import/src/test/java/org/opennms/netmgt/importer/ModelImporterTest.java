@@ -72,11 +72,12 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
 
     private ModelImporter m_importer;
     
-    public ModelImporterTest() {
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
     }
-    
+
     @Override
     protected String[] getConfigLocations() {
         return new String[] {

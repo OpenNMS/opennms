@@ -11,8 +11,9 @@ import org.opennms.test.DaoTestConfigBean;
 public class DroolsCorrelationEngineBuilderTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private DroolsCorrelationEngineBuilder m_droolsCorrelationEngineBuilder;
     private CorrelationEngineRegistrar m_mockCorrelator;
-
-    public DroolsCorrelationEngineBuilderTest() {
+    
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.setRelativeHomeDirectory("src/test/opennms-home");
         daoTestConfig.afterPropertiesSet();
@@ -20,6 +21,7 @@ public class DroolsCorrelationEngineBuilderTest extends AbstractTransactionalTem
 
     @Override
     protected String[] getConfigLocations() {
+
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",

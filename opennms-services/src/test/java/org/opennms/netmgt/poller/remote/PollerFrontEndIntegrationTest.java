@@ -55,7 +55,8 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
     private PollerSettings m_settings;
     private ClassPathXmlApplicationContext m_frontEndContext;
     
-    public PollerFrontEndIntegrationTest() throws IOException {
+    @Override
+    protected void setUpConfiguration() throws IOException {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
         
@@ -63,7 +64,9 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         
         System.setProperty("opennms.poller.configuration.resource", m_fileAnticipator.expecting("remote-poller.configuration").toURL().toString());
     }
-    
+
+
+
     @Override
     protected String[] getConfigLocations() {
         return new String[] {

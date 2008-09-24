@@ -47,8 +47,6 @@ import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.NotifdConfigManager;
-import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -61,11 +59,10 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
     
-    public NotificationManagerTest() {
-        super();
-        
-        DaoTestConfigBean configBean = new DaoTestConfigBean();
-        configBean.afterPropertiesSet();
+    @Override
+    protected void setUpConfiguration() {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
     }
 
     @Override

@@ -50,7 +50,8 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
     private MockEventIpcManager m_eventIpcMgr;
     private ImporterService m_daemon;
 
-    public ImporterServiceTest() {
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
     }
