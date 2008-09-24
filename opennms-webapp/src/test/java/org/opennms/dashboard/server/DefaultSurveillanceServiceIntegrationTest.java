@@ -53,7 +53,8 @@ import org.opennms.test.WebAppTestConfigBean;
 public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private SurveillanceService m_gwtSurveillanceService;
 
-    public DefaultSurveillanceServiceIntegrationTest() throws Exception {
+    @Override
+    protected void setUpConfiguration() {
         WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
         webAppTestConfig.afterPropertiesSet();
     }

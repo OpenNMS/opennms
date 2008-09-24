@@ -55,16 +55,17 @@ public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTe
     private OutageDao m_outageDao;
     private DatabasePopulator m_databasePopulator;
         
-	public DefaultOutageServiceIntegrationTest() throws Exception {
-        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
-        webAppTestConfig.afterPropertiesSet();
-	}
-
 	public void setOutageService(OutageService outageService) {
 		this.m_outageService = outageService;
 	}
 	
 	@Override
+    protected void setUpConfiguration() {
+        WebAppTestConfigBean webAppTestConfig = new WebAppTestConfigBean();
+        webAppTestConfig.afterPropertiesSet();
+    }
+
+    @Override
 	protected String[] getConfigLocations() {
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",

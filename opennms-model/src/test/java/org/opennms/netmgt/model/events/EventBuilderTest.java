@@ -33,7 +33,11 @@ package org.opennms.netmgt.model.events;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
+
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.xml.event.Event;
 
 
 /**
@@ -53,5 +57,16 @@ public class EventBuilderTest {
 		builder.setSeverity("Waning");
 		assertEquals("Indeterminate", builder.getEvent().getSeverity());
 	}
+    
+    @Test
+    public final void testUsingPassedInDate() throws Exception {
+        Date date = new Date(12345);
+        
+        EventBuilder builder = new EventBuilder("uei.opennms.org/test", "test", date);
+        Event ifEvent = builder.getEvent();
+        assertEquals(date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
+        
+        
+    }
 
 }

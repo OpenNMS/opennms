@@ -48,11 +48,10 @@ public class OpenNmsDaemonApplicationContextTest extends AbstractTransactionalTe
     private EventIpcManager m_eventIpcManager;
     
     
-    public OpenNmsDaemonApplicationContextTest() {
-        super();
-
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.afterPropertiesSet();
+    @Override
+    protected void setUpConfiguration() {
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
     }
 
     @Override
