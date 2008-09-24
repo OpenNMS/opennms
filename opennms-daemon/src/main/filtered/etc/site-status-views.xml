@@ -7,17 +7,14 @@
   <views>
     <view name="default" >
       <rows>
-        <row-def label="Router">
-          <category name="Router"/>
+        <row-def label="Routers">
+          <category name="Routers"/>
         </row-def>
-        <row-def label="Firewall">
-          <category name="Firewall"/>
+        <row-def label="Switches">
+          <category name="Switches"/>
         </row-def>
-        <row-def label="Switch">
-          <category name="Switch"/>
-        </row-def>
-        <row-def label="Web Server">
-          <category name="WebServer"/>
+        <row-def label="Servers">
+          <category name="Servers"/>
         </row-def>
       </rows>
     </view>
