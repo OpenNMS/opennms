@@ -123,8 +123,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForService(criteria, command.getService());
         } else if (command.hasMaclike()) {
             addCriteriaForMaclike(criteria, command.getMaclike());
-        } else if (command.hasIfAlias()) {
-            addCriteriaForIfalias(criteria, command.getIfAlias());
+        } else if (command.hasSnmpParm() &&command.hasSnmpParmValue() && command.hasSnmpParmMatchType()) {
+            addCriteriaForSnmpParm(criteria, command.getSnmpParm(), command.getSnmpParmValue(), command.getSnmpParmMatchType());
         } else if (command.hasCategory1() && command.hasCategory2()) {
             addCriteriaForCategories(criteria, command.getCategory1(), command.getCategory2());
         } else if (command.hasCategory1()) {
@@ -137,6 +137,20 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
         if (command.getNodesWithOutages()) {
             addCriteriaForCurrentOutages(criteria);
+        }
+    }
+
+    private void addCriteriaForSnmpParm(OnmsCriteria criteria,
+            String snmpParm, String snmpParmValue, String snmpParmMatchType) {
+        criteria.createAlias("node.ipInterfaces", "ipInterface");
+        criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
+
+        criteria.createAlias("node.ipInterfaces.snmpInterface", "snmpInterface");
+        if(snmpParmMatchType.equals("contains")) {
+            criteria.add(Restrictions.ilike("snmpInterface.".concat(snmpParm), snmpParmValue, MatchMode.ANYWHERE));
+        } else if(snmpParmMatchType.equals("equals")) {
+            snmpParmValue = snmpParmValue.toLowerCase();
+            criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where lower(snmp" + snmpParm + ") = '" + snmpParmValue + "')"));
         }
     }
 
@@ -177,14 +191,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.createAlias("node.ipInterfaces.monitoredServices", "monitoredService");
         criteria.createAlias("node.ipInterfaces.monitoredServices.serviceType", "serviceType");
         criteria.add(Restrictions.eq("serviceType.id", serviceId));
-    }
-
-    private void addCriteriaForIfalias(OnmsCriteria criteria, String ifAlias) {
-        criteria.createAlias("node.ipInterfaces", "ipInterface");
-        criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
-
-        criteria.createAlias("node.ipInterfaces.snmpInterface", "snmpInterface");
-        criteria.add(Restrictions.ilike("snmpInterface.ifAlias", ifAlias, MatchMode.ANYWHERE));
     }
 
     private void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
@@ -278,7 +284,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         return categories;
     }
 
-
     private NodeListModel createModelForNodes(NodeListCommand command, Collection<OnmsNode> onmsNodes) {
         int interfaceCount = 0;
         List<NodeModel> displayNodes = new LinkedList<NodeModel>();
@@ -286,11 +291,45 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             List<OnmsIpInterface> displayInterfaces = new LinkedList<OnmsIpInterface>();
             List<OnmsArpInterface> displayArpInterfaces = new LinkedList<OnmsArpInterface>();
             if (command.getListInterfaces()) {
-                if (command.hasIfAlias()) {
-                    String ifAliasMatchString = (".*" + command.getIfAlias().toLowerCase().replaceAll("([\\W])", "\\\\$0").replaceAll("_", ".") + ".*"); 
-                    for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                        if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().toLowerCase().matches(ifAliasMatchString)) {
-                            displayInterfaces.add(intf);
+                if (command.hasSnmpParm() && command.getSnmpParmMatchType().equals("contains")) {
+                    String parmValueMatchString = (".*" + command.getSnmpParmValue().toLowerCase().replaceAll("([\\W])", "\\\\$0").replaceAll("\\\\%", ".*").replaceAll("_", ".") + ".*");
+                    if (command.getSnmpParm().equals("ifAlias")) { 
+                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                            if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().toLowerCase().matches(parmValueMatchString)) {
+                                displayInterfaces.add(intf);
+                            }
+                        }
+                    } else if (command.getSnmpParm().equals("ifName")) {
+                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfName() != null && intf.getSnmpInterface().getIfName().toLowerCase().matches(parmValueMatchString)) {
+                                displayInterfaces.add(intf);
+                            }
+                        }
+                    } else if (command.getSnmpParm().equals("ifDescr")) {
+                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfDescr() != null && intf.getSnmpInterface().getIfDescr().toLowerCase().matches(parmValueMatchString)) {
+                                displayInterfaces.add(intf);
+                            }
+                        }
+                    }
+                } else if (command.hasSnmpParm() && command.getSnmpParmMatchType().equals("equals")) {
+                    if (command.getSnmpParm().equals("ifAlias")) {
+                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                            if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().equalsIgnoreCase(command.getSnmpParmValue())) {
+                                displayInterfaces.add(intf);
+                            }
+                        }
+                    } else if (command.getSnmpParm().equals("ifName")) {
+                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfName() != null && intf.getSnmpInterface().getIfName().equalsIgnoreCase(command.getSnmpParmValue())) {
+                                displayInterfaces.add(intf);
+                            }
+                        }
+                    } else if (command.getSnmpParm().equals("ifDescr")) {
+                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
+                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfDescr() != null && intf.getSnmpInterface().getIfDescr().equalsIgnoreCase(command.getSnmpParmValue())) {
+                                displayInterfaces.add(intf);
+                            }
                         }
                     }
                 } else if (command.hasMaclike()) {

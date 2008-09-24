@@ -293,7 +293,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         for (String iface : ifaces) {
             OnmsResource resource = getResourceByDomainAndInterface(domain, iface); 
             try {
-                resource.setLink("element/nodeList.htm?listInterfaces=true&ifAlias=" + URLEncoder.encode(iface, "UTF-8"));
+                resource.setLink("element/nodeList.htm?listInterfaces=true&snmpParm=ifAlias&snmpParmMatchType=contains&snmpParmValue=" + URLEncoder.encode(iface, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 throw new IllegalStateException("URLEncoder.encode complained about UTF-8. " + e, e);
             }

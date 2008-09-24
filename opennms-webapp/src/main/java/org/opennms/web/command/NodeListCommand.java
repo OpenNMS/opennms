@@ -44,7 +44,9 @@ public class NodeListCommand {
     private String m_iplike = null;
     private String m_maclike = null;
     private Integer m_service = null;
-    private String m_ifAlias = null;
+    private String m_snmpParm = null;
+    private String m_snmpParmValue = null;
+    private String m_snmpParmMatchType = null;
     private String[] m_category1 = null;
     private String[] m_category2 = null;
     private String m_statusViewName = null;
@@ -94,14 +96,32 @@ public class NodeListCommand {
         return m_service != null;
     }
     
-    public void setIfAlias(String ifAlias) {
-        m_ifAlias = ifAlias;
+    public void setSnmpParm(String snmpParm) {
+        m_snmpParm = snmpParm;
     }
-    public String getIfAlias() {
-        return m_ifAlias;
+    public String getSnmpParm() {
+        return m_snmpParm;
     }
-    public boolean hasIfAlias() {
-        return m_ifAlias != null;
+    public boolean hasSnmpParm() {
+        return m_snmpParm != null;
+    }
+    public void setSnmpParmValue(String snmpParmValue) {
+        m_snmpParmValue = snmpParmValue;
+    }
+    public String getSnmpParmValue() {
+        return m_snmpParmValue;
+    }
+    public boolean hasSnmpParmValue() {
+        return m_snmpParmValue != null;
+    }
+    public void setSnmpParmMatchType(String snmpParmMatchType) {
+        m_snmpParmMatchType = snmpParmMatchType;
+    }
+    public String getSnmpParmMatchType() {
+        return m_snmpParmMatchType;
+    }
+    public boolean hasSnmpParmMatchType() {
+        return m_snmpParmMatchType != null;
     }
         
     public void setCategory1(String[] category1) {
