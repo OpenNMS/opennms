@@ -87,9 +87,18 @@
             </form>
 
             <form action="element/nodeList.htm" method="GET">
-					<p align="right">IfAlias containing:          
+					<p align="right">
+					    <select name="snmpParm" size="1">
+                            <option>ifAlias</option> 
+                            <option>ifName</option>
+                            <option>ifDescr</option>
+                        </select>
+                        <select name="snmpParmMatchType" size="1">
+                            <option>contains</option> 
+                            <option>equals</option>
+                        </select>:        
 						<input type="hidden" name="listInterfaces" value="false"/>
-						<input type="text" name="ifAlias" />
+						<input type="text" name="snmpParmValue" />
 						<input type="submit" value="Search"/></p>                
             </form>
 
@@ -156,7 +165,8 @@
       <p>Searching by name is a case-insensitive, inclusive search. For example,
         searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
         <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
-	character acts as a wildcard.
+        character acts as a single character wildcard. The percent character acts as a multiple
+        character wildcard.
       </p>
         
       <p>Searching by TCP/IP address uses a very flexible search format, allowing you
@@ -177,10 +187,10 @@
             <li>192.168.0,1,2,3-255.*
         </ul>
 
-      <p>A search by ifAlias will find nodes with interfaces that match the given
-        search string. This is a case-insensitive inclusive search, and the underscore
-	character acts as a wildcard. A list of nodes with matching interfaces will
-	be displayed.
+      <p>A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces
+        that match the given search string. This is a case-insensitive inclusive search
+        similar to the "name" search described above. If the search modifier is "equals" rather
+         than "contains" an exact match must be found.
       </p>
 
       <p>To search by Service, click the down arrow and select the service you would

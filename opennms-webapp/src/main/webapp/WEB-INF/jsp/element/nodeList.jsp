@@ -44,8 +44,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="element" tagdir="/WEB-INF/tags/element" %>
 
-<c:if test="${model.nodeCount == 1}">
+<c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
+</c:if>
+<c:if test="${model.interfaceCount == 1 && (command.snmpParm != null || command.maclike != null)}">
+  <jsp:forward page="/element/interface.jsp?ipinterfaceid=${model.nodes[0].interfaces[0].id}"/>
 </c:if>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -76,11 +79,11 @@
 
     <c:otherwise>
       <div class="TwoColLeft">
-        <element:nodelist nodes="${model.nodesLeft}" isIfAliasSearch="${command.ifAlias != null}" isMaclikeSearch="${command.maclike != null}"/>
-      </div>
+        <element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
+             </div>
         
       <div class="TwoColRight">
-        <element:nodelist nodes="${model.nodesRight}" isIfAliasSearch="${command.ifAlias != null}" isMaclikeSearch="${command.maclike != null}"/>
+        <element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
       </div>
 
       <div class="spacer"><!-- --></div>
@@ -129,8 +132,10 @@
     <c:if test="${command.service != null}">
       <c:param name="service" value="${command.service}"/>
     </c:if>
-    <c:if test="${command.ifAlias != null}">
-      <c:param name="ifAlias" value="${command.ifAlias}"/>
+    <c:if test="${command.snmpParm != null}">
+      <c:param name="snmpParm" value="${command.snmpParm}"/>
+      <c:param name="snmpParmValue" value="${command.snmpParmValue}"/>
+      <c:param name="snmpParmMatchType" value="${command.snmpParmMatchType}"/>
     </c:if>
     <c:if test="${command.maclike != null}">
       <c:param name="maclike" value="${command.maclike}"/>
