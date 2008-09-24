@@ -46,8 +46,6 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 
-import org.opennms.api.integration.ticketing.*;
-
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>

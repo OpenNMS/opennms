@@ -59,7 +59,6 @@ public class EventBuilder {
     public EventBuilder(String uei, String source, Date date) {
         m_event = new Event();
         m_event.setUei(uei);
-        Date date = new Date();
         setTime(date);
         setCreationTime(date);
         setSource(source);
@@ -76,8 +75,11 @@ public class EventBuilder {
 	}
 
     public EventBuilder(Event event) {
+        this(event, new Date());
+    }
+
+    public EventBuilder(Event event, Date date) {
     	m_event = event;
-	    Date date = new Date();
 	    setTime(date);
 	    setCreationTime(date);
 	}
