@@ -43,7 +43,6 @@ import java.net.InetAddress;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
@@ -55,16 +54,15 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
     private Trapd m_trapd = new Trapd();
     private MockEventIpcManager m_mockEventIpcManager;
 
-    public TrapdTest() throws Exception {
-        super();
-
+    @Override
+    protected void setUpConfiguration() throws Exception {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
         
         Reader rdr = ConfigurationTestUtils.getReaderForResourceWithReplacements(this, "trapd-configuration.xml", new String[] { "@snmp-trap-port@", Integer.toString(m_port) });
         TrapdConfigFactory.setInstance(new TrapdConfigFactory(rdr));
     }
-    
+
 
     @Override
     protected String[] getConfigLocations() {

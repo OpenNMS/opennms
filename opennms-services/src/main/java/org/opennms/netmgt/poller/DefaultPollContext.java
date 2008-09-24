@@ -163,7 +163,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         if (log.isDebugEnabled())
             log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
         
-        EventBuilder bldr = new EventBuilder(uei, this.getName());
+        EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
         if (address != null) {
             bldr.setInterface(address.getHostAddress());

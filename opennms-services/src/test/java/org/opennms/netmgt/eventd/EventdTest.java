@@ -54,14 +54,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class EventdTest extends OpenNMSTestCase {
 
-    public EventdTest() {
+    @Override
+    protected void setUp() throws Exception {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.setRelativeHomeDirectory("src/test/resources");
         daoTestConfig.afterPropertiesSet();
-    }
 
-    @Override
-    protected void setUp() throws Exception {
         super.setUp();
     }
 

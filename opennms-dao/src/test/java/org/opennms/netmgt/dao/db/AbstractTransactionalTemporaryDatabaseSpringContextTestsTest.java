@@ -49,14 +49,14 @@ public class AbstractTransactionalTemporaryDatabaseSpringContextTestsTest
         };
     }
     
-    public void testNothing() {
+    public void testLoading() {
     }
     
     /**
      * Make sure that we're calling setDirty()
      *
      */
-    public void testNothingAgain() {
+    public void testReloading() {
     }
     
     public void testGetConnectionFromDataSource() throws SQLException {

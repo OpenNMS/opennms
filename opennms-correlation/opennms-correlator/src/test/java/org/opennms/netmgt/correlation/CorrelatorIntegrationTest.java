@@ -50,8 +50,11 @@ import org.opennms.test.DaoTestConfigBean;
 public class CorrelatorIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
     private MockEventIpcManager m_eventIpcMgr;
+    
+    
 
-    public CorrelatorIntegrationTest() {
+    @Override
+    protected void setUpConfiguration() {
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.setRelativeHomeDirectory("src/test/opennms-home");
         bean.afterPropertiesSet();
