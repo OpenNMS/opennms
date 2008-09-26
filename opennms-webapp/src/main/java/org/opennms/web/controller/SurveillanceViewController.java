@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
@@ -83,17 +84,18 @@ public class SurveillanceViewController extends AbstractController implements In
     protected ModelAndView handleRequestInternal(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {
 
-        if ( ! m_service.isViewName(req.getParameter(VIEW_NAME_PARAMETER)) ) {
-            SurveillanceViewError viewError = createSurveillanceViewError( req.getParameter(VIEW_NAME_PARAMETER) );
+        XssRequestWrapper r = new XssRequestWrapper(req);
+        if ( ! m_service.isViewName(r.getParameter(VIEW_NAME_PARAMETER)) ) {
+            SurveillanceViewError viewError = createSurveillanceViewError( r.getParameter(VIEW_NAME_PARAMETER) );
             return new ModelAndView("surveillanceViewError", "error", viewError);
         }
 
-        HttpSession session = req.getSession();
-        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(req.getParameter(VIEW_NAME_PARAMETER)));
+        HttpSession session = r.getSession();
+        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(r.getParameter(VIEW_NAME_PARAMETER)));
         ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(PROGRESS_MONITOR_KEY);
 
         if (progressMonitor == null) {
-            progressMonitor = createProgressMonitor(req.getParameter(VIEW_NAME_PARAMETER));
+            progressMonitor = createProgressMonitor(r.getParameter(VIEW_NAME_PARAMETER));
             session.setAttribute(PROGRESS_MONITOR_KEY, progressMonitor);
         }
 
