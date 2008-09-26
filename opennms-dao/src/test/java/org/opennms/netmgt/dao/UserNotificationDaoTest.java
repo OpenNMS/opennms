@@ -46,11 +46,7 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
 
 public class UserNotificationDaoTest extends AbstractTransactionalDaoTestCase {
-    public void testBogus() {
-        // do nothing... we're here so JUnit doesn't complain
-    }
-    
-    public void FIXMEtestSaveUserNotification() {
+    public void testSaveUserNotification() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getDistPollerDao().load("localhost"));
         event.setEventCreateTime(new Date());
