@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Sep 26: Use new Severity enum. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,20 +39,20 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.web.alarm.AlarmUtil;
+import org.opennms.web.alarm.Alarm.Severity;
 
 /** Encapsulates severity filtering functionality. */
 public class SeverityFilter extends Object implements Filter {
     public static final String TYPE = "severity";
 
-    protected int severity;
+    private Severity m_severity;
 
-    public SeverityFilter(int severity) {
-        this.severity = severity;
+    public SeverityFilter(Severity severity) {
+        m_severity = severity;
     }
 
     public String getSql() {
-        return (" SEVERITY=" + this.severity);
+        return (" SEVERITY=" + m_severity.getId());
     }
     
     public String getParamSql() {
@@ -56,16 +60,16 @@ public class SeverityFilter extends Object implements Filter {
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.severity);
+    	ps.setInt(parameterIndex, m_severity.getId());
     	return 1;
     }
 
     public String getDescription() {
-        return (TYPE + "=" + this.severity);
+        return (TYPE + "=" + m_severity.getId());
     }
 
     public String getTextDescription() {
-        return (TYPE + "=" + AlarmUtil.getSeverityLabel(this.severity));
+        return (TYPE + "=" + m_severity.getLabel());
     }
 
     public String toString() {
@@ -73,7 +77,7 @@ public class SeverityFilter extends Object implements Filter {
     }
 
     public int getSeverity() {
-        return (this.severity);
+        return m_severity.getId();
     }
 
     public boolean equals(Object obj) {

@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Sep 27: Use Java 5 enums for sort style and acknowledge type and
+//              use new Severity enum from Alarm. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventFactory.java
 //
@@ -43,18 +45,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.alarm.Alarm.Severity;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.springframework.util.Assert;
 
 /**
  * Encapsulates all querying functionality for alarms.
@@ -66,136 +71,204 @@ import org.opennms.web.alarm.filter.SeverityFilter;
 public class AlarmFactory extends Object {
 
     /** Convenience class to determine sort style of a query. */
-    public static class SortStyle extends Object {
-        /* CORBA-style enumeration */
-        public static final int _SEVERITY = 1;
+    public static enum SortStyle {
+        SEVERITY("severity"),
+        LASTEVENTTIME("lasteventtime"),
+        FIRSTEVENTTIME("firsteventtime"),
+        NODE("node"),
+        INTERFACE("interface"),
+        SERVICE("service"),
+        POLLER("poller"),
+        ID("id"),
+        COUNT("count"),
+        REVERSE_SEVERITY("rev_severity"),
+        REVERSE_LASTEVENTTIME("rev_lasteventtime"),
+        REVERSE_FIRSTEVENTTIME("rev_firsteventtime"),
+        REVERSE_NODE("rev_node"),
+        REVERSE_INTERFACE("rev_interface"),
+        REVERSE_SERVICE("rev_service"),
+        REVERSE_POLLER("rev_poller"),
+        REVERSE_ID("rev_id"),
+        REVERSE_COUNT("rev_count");
 
-        public static final int _LASTEVENTTIME = 2;
-
-        public static final int _FIRSTEVENTTIME = 3;
-
-        public static final int _NODE = 4;
-
-        public static final int _INTERFACE = 5;
-
-        public static final int _SERVICE = 6;
-
-        public static final int _POLLER = 7;
-
-        public static final int _ID = 8;
-
-        public static final int _COUNT = 9;
-
-        public static final SortStyle SEVERITY = new SortStyle("SEVERITY", _SEVERITY);
-
-        public static final SortStyle LASTEVENTTIME = new SortStyle("LASTEVENTTIME", _LASTEVENTTIME);
-
-        public static final SortStyle FIRSTEVENTTIME = new SortStyle("FIRSTEVENTTIME", _FIRSTEVENTTIME);
-
-        public static final SortStyle NODE = new SortStyle("NODE", _NODE);
-
-        public static final SortStyle INTERFACE = new SortStyle("INTERFACE", _INTERFACE);
-
-        public static final SortStyle SERVICE = new SortStyle("SERVICE", _SERVICE);
-
-        public static final SortStyle POLLER = new SortStyle("POLLER", _POLLER);
-
-        public static final SortStyle ID = new SortStyle("ID", _ID);
-
-        public static final SortStyle COUNT = new SortStyle("COUNT", _COUNT);
-
-        public static final int _REVERSE_SEVERITY = 101;
-
-        public static final int _REVERSE_LASTEVENTTIME = 102;
-
-        public static final int _REVERSE_FIRSTEVENTTIME = 103;
-
-        public static final int _REVERSE_NODE = 104;
-
-        public static final int _REVERSE_INTERFACE = 105;
-
-        public static final int _REVERSE_SERVICE = 106;
-
-        public static final int _REVERSE_POLLER = 107;
-
-        public static final int _REVERSE_ID = 108;
-
-        public static final int _REVERSE_COUNT = 109;
-
-        public static final SortStyle REVERSE_SEVERITY = new SortStyle("REVERSE_SEVERITY", _REVERSE_SEVERITY);
-
-        public static final SortStyle REVERSE_LASTEVENTTIME = new SortStyle("REVERSE_LASTEVENTTIME", _REVERSE_LASTEVENTTIME);
-
-        public static final SortStyle REVERSE_FIRSTEVENTTIME = new SortStyle("REVERSE_FIRSTEVENTTIME", _REVERSE_FIRSTEVENTTIME);
-
-        public static final SortStyle REVERSE_NODE = new SortStyle("REVERSE_NODE", _REVERSE_NODE);
-
-        public static final SortStyle REVERSE_INTERFACE = new SortStyle("REVERSE_INTERFACE", _REVERSE_INTERFACE);
-
-        public static final SortStyle REVERSE_SERVICE = new SortStyle("REVERSE_SERVICE", _REVERSE_SERVICE);
-
-        public static final SortStyle REVERSE_POLLER = new SortStyle("REVERSE_POLLER", _REVERSE_POLLER);
-
-        public static final SortStyle REVERSE_ID = new SortStyle("REVERSE_ID", _REVERSE_ID);
-
-        public static final SortStyle REVERSE_COUNT = new SortStyle("REVERSE_COUNT", _REVERSE_COUNT);
-
-        protected String name;
-
-        protected int id;
-
-        private SortStyle(String name, int id) {
-            this.name = name;
-            this.id = id;
+        private static final Map<String, SortStyle> m_sortStylesString;
+        
+        private String m_shortName;
+        
+        static {
+            m_sortStylesString = new HashMap<String, SortStyle>();
+            for (SortStyle sortStyle : SortStyle.values()) {
+                m_sortStylesString.put(sortStyle.getShortName(), sortStyle);
+                
+            }
+        }
+        
+        private SortStyle(String shortName) {
+            m_shortName = shortName;
         }
 
         public String toString() {
-            return ("Alarm.SortStyle." + this.name);
+            return ("SortStyle." + getName());
         }
 
         public String getName() {
-            return (this.name);
+            return name();
         }
 
-        public int getId() {
-            return (this.id);
+        public String getShortName() {
+            return m_shortName;
+        }
+
+        public static SortStyle getSortStyle(String sortStyleString) {
+            Assert.notNull(sortStyleString, "Cannot take null parameters.");
+
+            return m_sortStylesString.get(sortStyleString.toLowerCase());
+        }
+
+        /**
+         * Convenience method for getting the SQL <em>ORDER BY</em> clause related
+         * to a given sort style.
+         */
+        protected String getOrderByClause() {
+            String clause = null;
+        
+            switch (this) {
+            case SEVERITY:
+                clause = " ORDER BY SEVERITY DESC";
+                break;
+        
+            case REVERSE_SEVERITY:
+                clause = " ORDER BY SEVERITY ASC";
+                break;
+        
+            case LASTEVENTTIME:
+                clause = " ORDER BY LASTEVENTTIME DESC";
+                break;
+        
+            case REVERSE_LASTEVENTTIME:
+                clause = " ORDER BY LASTEVENTTIME ASC";
+                break;
+        
+            case FIRSTEVENTTIME:
+                clause = " ORDER BY FIRSTEVENTTIME DESC";
+                break;
+        
+            case REVERSE_FIRSTEVENTTIME:
+                clause = " ORDER BY FIRSTEVENTTIME ASC";
+                break;
+        
+            case NODE:
+                clause = " ORDER BY NODELABEL ASC";
+                break;
+        
+            case REVERSE_NODE:
+                clause = " ORDER BY NODELABEL DESC";
+                break;
+        
+            case INTERFACE:
+                clause = " ORDER BY IPADDR ASC";
+                break;
+        
+            case REVERSE_INTERFACE:
+                clause = " ORDER BY IPADDR DESC";
+                break;
+        
+            case SERVICE:
+                clause = " ORDER BY SERVICENAME ASC";
+                break;
+        
+            case REVERSE_SERVICE:
+                clause = " ORDER BY SERVICENAME DESC";
+                break;
+        
+            case POLLER:
+                clause = " ORDER BY EVENTDPNAME ASC";
+                break;
+        
+            case REVERSE_POLLER:
+                clause = " ORDER BY EVENTDPNAME DESC";
+                break;
+        
+            case ID:
+                clause = " ORDER BY ALARMID DESC";
+                break;
+        
+            case REVERSE_ID:
+                clause = " ORDER BY ALARMID ASC";
+                break;
+        
+            case COUNT:
+                clause = " ORDER BY COUNTER DESC";
+                break;
+        
+            case REVERSE_COUNT:
+                clause = " ORDER BY COUNTER ASC";
+                break;
+        
+            default:
+                throw new IllegalArgumentException("Unknown SortStyle: " + this);
+            }
+        
+            return clause;
         }
     }
 
     /** Convenience class to determine what sort of alarms to include in a query. */
-    public static class AcknowledgeType extends Object {
-        /* CORBA-style enumeration */
-        public static final int _ACKNOWLEDGED = 1;
+    public static enum AcknowledgeType {
+        ACKNOWLEDGED("ack"), UNACKNOWLEDGED("unack"), BOTH("both");
 
-        public static final int _UNACKNOWLEDGED = 2;
+        private static final Map<String, AlarmFactory.AcknowledgeType> s_ackTypesString;
+        
+        private String m_shortName;
 
-        public static final int _BOTH = 3;
+        static {
+            s_ackTypesString = new HashMap<String, AcknowledgeType>();
 
-        public static final AcknowledgeType ACKNOWLEDGED = new AcknowledgeType("ACKNOWLEDGED", _ACKNOWLEDGED);
+            for (AcknowledgeType ackType : AcknowledgeType.values()) {
+                s_ackTypesString.put(ackType.getShortName(), ackType);
+            }
+        }
 
-        public static final AcknowledgeType UNACKNOWLEDGED = new AcknowledgeType("UNACKNOWLEDGED", _UNACKNOWLEDGED);
-
-        public static final AcknowledgeType BOTH = new AcknowledgeType("BOTH", _BOTH);
-
-        protected String name;
-
-        protected int id;
-
-        private AcknowledgeType(String name, int id) {
-            this.name = name;
-            this.id = id;
+        private AcknowledgeType(String shortName) {
+            m_shortName = shortName;
         }
 
         public String toString() {
-            return ("Alarm.AcknowledgeType." + this.name);
+            return "AcknowledgeType." + getName();
         }
 
         public String getName() {
-            return (this.name);
+            return name();
         }
 
-        public int getId() {
-            return (this.id);
+        public String getShortName() {
+            return m_shortName;
+        }
+        
+        /**
+         * Convenience method for getting the SQL <em>ORDER BY</em> clause related
+         * this sort style.
+         */
+        protected String getAcknowledgeTypeClause() {
+            switch (this) {
+            case ACKNOWLEDGED:
+                return " ALARMACKUSER IS NOT NULL";
+        
+            case UNACKNOWLEDGED:
+                return " ALARMACKUSER IS NULL";
+        
+            case BOTH:
+                return " (ALARMACKUSER IS NULL OR ALARMACKUSER IS NOT NULL)";
+                
+            default:
+                throw new IllegalArgumentException("Cannot get clause for AcknowledgeType " + this);
+            }
+        }
+
+        public static AcknowledgeType getAcknowledgeType(String ackTypeString) {
+            Assert.notNull(ackTypeString, "Cannot take null parameters.");
+
+            return s_ackTypesString.get(ackTypeString.toLowerCase());
         }
     }
 
@@ -227,7 +300,7 @@ public class AlarmFactory extends Object {
 
         try {
             StringBuffer select = new StringBuffer("SELECT COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
-            select.append(getAcknowledgeTypeClause(ackType));
+            select.append(ackType.getAcknowledgeTypeClause());
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND ");
@@ -275,7 +348,7 @@ public class AlarmFactory extends Object {
 
         try {
             StringBuffer select = new StringBuffer("SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
-            select.append(getAcknowledgeTypeClause(ackType));
+            select.append(ackType.getAcknowledgeTypeClause());
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND ");
@@ -408,7 +481,7 @@ public class AlarmFactory extends Object {
 
         try {
             StringBuffer select = new StringBuffer("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING(NODEID) LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
-            select.append(getAcknowledgeTypeClause(ackType));
+            select.append(ackType.getAcknowledgeTypeClause());
 
             for (int i = 0; i < filters.length; i++) {
                 select.append(" AND ");
@@ -416,7 +489,7 @@ public class AlarmFactory extends Object {
             }
 
 //            select.append(" AND ALARMDISPLAY='Y' ");
-            select.append(getOrderByClause(sortStyle));
+            select.append(sortStyle.getOrderByClause());
 
             if (useLimits) {
                 select.append(" LIMIT ");
@@ -692,7 +765,7 @@ public class AlarmFactory extends Object {
     }
 
     public static Alarm[] getAlarmsForSeverity(int severity, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
-        return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[] { new SeverityFilter(severity) }));
+        return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[] { new SeverityFilter(Severity.getById(severity)) }));
     }
 
     /**
@@ -827,7 +900,7 @@ public class AlarmFactory extends Object {
         }
 
         StringBuffer update = new StringBuffer("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE");
-        update.append(getAcknowledgeTypeClause(AcknowledgeType.UNACKNOWLEDGED));
+        update.append(AcknowledgeType.UNACKNOWLEDGED.getAcknowledgeTypeClause());
 
         for (int i = 0; i < filters.length; i++) {
             update.append(" AND ");
@@ -943,7 +1016,7 @@ public class AlarmFactory extends Object {
         }
 
         StringBuffer update = new StringBuffer("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE");
-        update.append(getAcknowledgeTypeClause(AcknowledgeType.ACKNOWLEDGED));
+        update.append(AcknowledgeType.ACKNOWLEDGED.getAcknowledgeTypeClause());
 
         for (int i = 0; i < filters.length; i++) {
             update.append(" AND ");
@@ -988,237 +1061,78 @@ public class AlarmFactory extends Object {
      * containing event information into an array of <code>Alarm</code>
      * objects.
      */
-    // FIXME: Don't reuse the same "element" variable for different objects
     protected static Alarm[] rs2Alarms(ResultSet rs) throws SQLException {
-        Alarm[] alarms = null;
         Vector<Alarm> vector = new Vector<Alarm>();
 
         while (rs.next()) {
             Alarm alarm = new Alarm();
 
-            Object element = new Integer(rs.getInt("alarmID"));
-            alarm.id = ((Integer) element).intValue();
+            alarm.id = rs.getInt("alarmID");
 
-            element = rs.getString("eventUei");
-            alarm.uei = (String) element;
+            alarm.uei = rs.getString("eventUei");
 
-            element = rs.getString("dpName");
-            alarm.dpName = (String) element;
+            alarm.dpName = rs.getString("dpName");
 
-            // node id can be null
-            element = rs.getObject("nodeID");
-            if (element == null) {
-                alarm.nodeID = new Integer(0);
-            } else {
-                alarm.nodeID = (Integer) element;
-            }
+            // node id can be null, in which case nodeID will be 0
+            alarm.nodeID = new Integer(rs.getInt("nodeID"));
 
-            element = rs.getString("ipAddr");
-            alarm.ipAddr = (String) element;
+            alarm.ipAddr = rs.getString("ipAddr");
 
-            element = rs.getObject("serviceID");
-            alarm.serviceID = (Integer) element;
+            // This causes serviceID to be null if the column in the database is null
+            alarm.serviceID = ((Integer) rs.getObject("serviceID"));
 
-            element = rs.getString("reductionKey");
-            alarm.reductionKey = (String) element;
+            alarm.reductionKey = rs.getString("reductionKey");
 
-            element = rs.getObject("counter");
-            alarm.count = ((Integer) element).intValue();
+            alarm.count = rs.getInt("counter");
 
-            element = new Integer(rs.getInt("severity"));
-            alarm.severity = ((Integer) element).intValue();
+            alarm.severity = Severity.getById(rs.getInt("severity"));
 
-            element = new Integer(rs.getInt("lastEventID"));
-            alarm.lastEventID = ((Integer) element).intValue();
+            alarm.lastEventID = rs.getInt("lastEventID");
 
-            element = rs.getTimestamp("firsteventtime");
-            alarm.firsteventtime = new Date(((Timestamp) element).getTime());
+            alarm.firsteventtime = new Date(rs.getTimestamp("firsteventtime").getTime());
 
-            element = rs.getTimestamp("lasteventtime");
-            alarm.lasteventtime = new Date(((Timestamp) element).getTime());
+            alarm.lasteventtime = new Date(rs.getTimestamp("lasteventtime").getTime());
 
-            element = rs.getString("description");
-            alarm.description = (String) element;
+            alarm.description = rs.getString("description");
 
-            element = rs.getString("logmsg");
-            alarm.logMessage = (String) element;
+            alarm.logMessage = rs.getString("logmsg");
 
-            element = rs.getString("OperInstruct");
-            alarm.operatorInstruction = (String) element;
+            alarm.operatorInstruction = rs.getString("OperInstruct");
 
-            element = rs.getString("TTicketID");
-            alarm.troubleTicket = (String) element;
-
-            Integer stateCode = (Integer)rs.getObject("TTicketState");
+            alarm.troubleTicket = rs.getString("TTicketID");
+            
+            Integer stateCode = (Integer) rs.getObject("TTicketState");
             for (TroubleTicketState state : TroubleTicketState.values()) {
                 if (stateCode != null && state.ordinal() == stateCode.intValue()) {
                     alarm.troubleTicketState = state;
                 }
             }
 
-            element = rs.getString("MouseOverText");
-            alarm.mouseOverText = (String) element;
+            alarm.mouseOverText = rs.getString("MouseOverText");
 
-            element = rs.getTimestamp("suppressedUntil");
-            alarm.suppressedUntil = new Date(((Timestamp) element).getTime());
+            alarm.suppressedUntil = new Date(rs.getTimestamp("suppressedUntil").getTime());
 
-            element = rs.getString("suppressedUser");
-            alarm.suppressedUser = (String) element;
+            alarm.suppressedUser = rs.getString("suppressedUser");
 
-            element = rs.getTimestamp("suppressedTime");
-            alarm.suppressedTime = new Date(((Timestamp) element).getTime());
+            alarm.suppressedTime = new Date(rs.getTimestamp("suppressedTime").getTime());
 
-            element = rs.getString("alarmAckUser");
-            alarm.acknowledgeUser = (String) element;
+            alarm.acknowledgeUser = rs.getString("alarmAckUser");
 
-            element = rs.getTimestamp("alarmAckTime");
-            if (element != null) {
-                alarm.acknowledgeTime = new Date(((Timestamp) element).getTime());
+            Timestamp alarmAckTime = rs.getTimestamp("alarmAckTime");
+            if (alarmAckTime != null) {
+                alarm.acknowledgeTime = new Date(alarmAckTime.getTime());
             }
 
-            element = rs.getString("nodeLabel");
-            alarm.nodeLabel = (String) element;
+            alarm.nodeLabel = rs.getString("nodeLabel");
 
-            element = rs.getString("serviceName");
-            alarm.serviceName = (String) element;
+            alarm.serviceName = rs.getString("serviceName");
 
             vector.addElement(alarm);
         }
 
-        alarms = new Alarm[vector.size()];
-
-        for (int i = 0; i < alarms.length; i++) {
-            alarms[i] = vector.elementAt(i);
-        }
-
-        return alarms;
+        return vector.toArray(new Alarm[vector.size()]);
     }
 
-    /**
-     * Convenience method for getting the SQL <em>ORDER BY</em> clause related
-     * to a given sort style.
-     */
-    protected static String getOrderByClause(SortStyle sortStyle) {
-        if (sortStyle == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String clause = null;
-
-        switch (sortStyle.getId()) {
-        case SortStyle._SEVERITY:
-            clause = " ORDER BY SEVERITY DESC";
-            break;
-
-        case SortStyle._REVERSE_SEVERITY:
-            clause = " ORDER BY SEVERITY ASC";
-            break;
-
-        case SortStyle._LASTEVENTTIME:
-            clause = " ORDER BY LASTEVENTTIME DESC";
-            break;
-
-        case SortStyle._REVERSE_LASTEVENTTIME:
-            clause = " ORDER BY LASTEVENTTIME ASC";
-            break;
-
-        case SortStyle._FIRSTEVENTTIME:
-            clause = " ORDER BY FIRSTEVENTTIME DESC";
-            break;
-
-        case SortStyle._REVERSE_FIRSTEVENTTIME:
-            clause = " ORDER BY FIRSTEVENTTIME ASC";
-            break;
-
-        case SortStyle._NODE:
-            clause = " ORDER BY NODELABEL ASC";
-            break;
-
-        case SortStyle._REVERSE_NODE:
-            clause = " ORDER BY NODELABEL DESC";
-            break;
-
-        case SortStyle._INTERFACE:
-            clause = " ORDER BY IPADDR ASC";
-            break;
-
-        case SortStyle._REVERSE_INTERFACE:
-            clause = " ORDER BY IPADDR DESC";
-            break;
-
-        case SortStyle._SERVICE:
-            clause = " ORDER BY SERVICENAME ASC";
-            break;
-
-        case SortStyle._REVERSE_SERVICE:
-            clause = " ORDER BY SERVICENAME DESC";
-            break;
-
-        case SortStyle._POLLER:
-            clause = " ORDER BY EVENTDPNAME ASC";
-            break;
-
-        case SortStyle._REVERSE_POLLER:
-            clause = " ORDER BY EVENTDPNAME DESC";
-            break;
-
-        case SortStyle._ID:
-            clause = " ORDER BY ALARMID DESC";
-            break;
-
-        case SortStyle._REVERSE_ID:
-            clause = " ORDER BY ALARMID ASC";
-            break;
-
-        case SortStyle._COUNT:
-            clause = " ORDER BY COUNTER DESC";
-            break;
-
-        case SortStyle._REVERSE_COUNT:
-            clause = " ORDER BY COUNTER ASC";
-            break;
-
-        default:
-            throw new IllegalArgumentException("Unknown AlarmFactory.SortStyle: " + sortStyle.getName());
-        }
-
-        return clause;
-    }
-
-    /**
-     * Convenience method for getting the SQL <em>ORDER BY</em> clause related
-     * to a given sort style.
-     * 
-     * @param ackType
-     *            the acknowledge type to map to a clause
-     */
-    protected static String getAcknowledgeTypeClause(AcknowledgeType ackType) {
-        if (ackType == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String clause = null;
-
-        switch (ackType.getId()) {
-        case AcknowledgeType._ACKNOWLEDGED:
-            clause = " ALARMACKUSER IS NOT NULL";
-            break;
-
-        case AcknowledgeType._UNACKNOWLEDGED:
-            clause = " ALARMACKUSER IS NULL";
-            break;
-
-        case AcknowledgeType._BOTH:
-            clause = " (ALARMACKUSER IS NULL OR ALARMACKUSER IS NOT NULL)";
-            break;
-
-        default:
-            throw new IllegalArgumentException("Unknown AlarmFactory.AcknowledgeType: " + ackType.getName());
-        }
-
-        return clause;
-    }
-    
     /**
      * Escalate a list of alarms using the given username and the current time
      * @throws SQLException 
@@ -1270,17 +1184,16 @@ public class AlarmFactory extends Object {
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, OnmsAlarm.CLEARED_SEVERITY);
-                stmt.setInt(2, OnmsAlarm.WARNING_SEVERITY);
-                stmt.setInt(3, OnmsAlarm.CRITICAL_SEVERITY);
-                stmt.setInt(4, OnmsAlarm.CRITICAL_SEVERITY);
-                stmt.setInt(5, OnmsAlarm.PROBLEM_TYPE);
-                stmt.setInt(6, OnmsAlarm.RESOLUTION_TYPE);
-                stmt.setInt(7, OnmsAlarm.CLEARED_SEVERITY);
-                stmt.setInt(8, OnmsAlarm.PROBLEM_TYPE);
-                stmt.setInt(9, OnmsAlarm.NORMAL_SEVERITY);
-                stmt.setInt(10, OnmsAlarm.CRITICAL_SEVERITY);
-
+                stmt.setInt(1, Severity.CLEARED.getId());
+                stmt.setInt(2, Severity.WARNING.getId());
+                stmt.setInt(3, Severity.CRITICAL.getId());
+                stmt.setInt(4, Severity.CRITICAL.getId());
+                stmt.setInt(5, Alarm.PROBLEM_TYPE);
+                stmt.setInt(6, Alarm.RESOLUTION_TYPE);
+                stmt.setInt(7, Severity.CLEARED.getId());
+                stmt.setInt(8, Alarm.PROBLEM_TYPE);
+                stmt.setInt(9, Severity.NORMAL.getId());
+                stmt.setInt(10, Severity.CRITICAL.getId());
                 stmt.executeUpdate();
                 stmt.close();
             } finally {
@@ -1325,11 +1238,10 @@ public class AlarmFactory extends Object {
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, OnmsAlarm.CLEARED_SEVERITY);
-                stmt.setInt(2, OnmsAlarm.RESOLUTION_TYPE);
-                stmt.setInt(3, OnmsAlarm.NORMAL_SEVERITY);
-                stmt.setInt(4, OnmsAlarm.CRITICAL_SEVERITY);
-
+                stmt.setInt(1, Severity.CLEARED.getId());
+                stmt.setInt(2, Alarm.RESOLUTION_TYPE);
+                stmt.setInt(3, Severity.NORMAL.getId());
+                stmt.setInt(4, Severity.CRITICAL.getId());
                 stmt.executeUpdate();
                 stmt.close();
             } finally {

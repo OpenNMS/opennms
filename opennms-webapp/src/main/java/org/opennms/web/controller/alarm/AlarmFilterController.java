@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2008 Sep 27: getSortStyle and getAcknowledgeType moved.  Also get the
+//              alarm count and pass it in the model, removing the last
+//              call to AlarmFactory from the JSP. - dj@opennms.org
 // 2008 Aug 31: Created AlarmFilterController from AlarmFilterServlet. - dj@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventFilterServlet.java
@@ -99,7 +102,7 @@ public class AlarmFilterController extends AbstractController implements Initial
         String sortStyleString = request.getParameter("sortby");
         SortStyle sortStyle = m_defaultSortStyle;
         if (sortStyleString != null) {
-            SortStyle temp = AlarmUtil.getSortStyle(sortStyleString);
+            SortStyle temp = SortStyle.getSortStyle(sortStyleString);
             if (temp != null) {
                 sortStyle = temp;
             }
@@ -109,7 +112,7 @@ public class AlarmFilterController extends AbstractController implements Initial
         String ackTypeString = request.getParameter("acktype");
         AcknowledgeType ackType = m_defaultAcknowledgeType;
         if (ackTypeString != null) {
-            AcknowledgeType temp = AlarmUtil.getAcknowledgeType(ackTypeString);
+            AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
             if (temp != null) {
                 ackType = temp;
             }
@@ -162,8 +165,13 @@ public class AlarmFilterController extends AbstractController implements Initial
             // query the alarms with the new filters array
             Alarm[] alarms = AlarmFactory.getAlarms(sortStyle, ackType, parms.getFilters(), limit, multiple * limit);
             
+            // get the total alarm count
+            int alarmCount = AlarmFactory.getAlarmCount(ackType, parms.getFilters());  
+
+            
             ModelAndView modelAndView = new ModelAndView(getSuccessView());
             modelAndView.addObject("alarms", alarms);
+            modelAndView.addObject("alarmCount", alarmCount);
             modelAndView.addObject("parms", parms);
             return modelAndView;
         } catch (SQLException e) {
