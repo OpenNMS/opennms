@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2008 Sep 27: Move code related to new enum classes into those classes
+//              and use new constructor signatures for severity filters. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventUtil.java
 //
@@ -37,20 +39,16 @@
 
 package org.opennms.web.alarm;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.alarm.Alarm.Severity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
-import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
-import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
+import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
+import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.IPLikeFilter;
@@ -71,152 +69,11 @@ import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 
 public abstract class AlarmUtil extends Object {
-    protected static final Map<Integer, String> colors;
-
-    protected static final Map<Integer, String> labels;
-
-    protected static final Map<AlarmFactory.SortStyle, String> sortStyles;
-    
-    protected static final Map<String, AlarmFactory.SortStyle> sortStylesString;
-
-    protected static final Map<AlarmFactory.AcknowledgeType, String> ackTypes;
-
-    protected static final Map<String, AlarmFactory.AcknowledgeType> ackTypesString;
-
-    protected static final List<Integer> severities;
-
     public static final String ANY_SERVICES_OPTION = "Any";
 
     public static final String ANY_SEVERITIES_OPTION = "Any";
 
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
-
-    static {
-        severities = new ArrayList<Integer>();
-        severities.add(new Integer(OnmsAlarm.INDETERMINATE_SEVERITY));
-        severities.add(new Integer(OnmsAlarm.CLEARED_SEVERITY));
-        severities.add(new Integer(OnmsAlarm.NORMAL_SEVERITY));
-        severities.add(new Integer(OnmsAlarm.WARNING_SEVERITY));
-        severities.add(new Integer(OnmsAlarm.MINOR_SEVERITY));
-        severities.add(new Integer(OnmsAlarm.MAJOR_SEVERITY));
-        severities.add(new Integer(OnmsAlarm.CRITICAL_SEVERITY));
-
-        colors = new HashMap<Integer, String>();
-        colors.put(new Integer(OnmsAlarm.INDETERMINATE_SEVERITY), "lightblue");
-        colors.put(new Integer(OnmsAlarm.CLEARED_SEVERITY), "white");
-        colors.put(new Integer(OnmsAlarm.NORMAL_SEVERITY), "green");
-        colors.put(new Integer(OnmsAlarm.WARNING_SEVERITY), "cyan");
-        colors.put(new Integer(OnmsAlarm.MINOR_SEVERITY), "yellow");
-        colors.put(new Integer(OnmsAlarm.MAJOR_SEVERITY), "orange");
-        colors.put(new Integer(OnmsAlarm.CRITICAL_SEVERITY), "red");
-
-        labels = new HashMap<Integer, String>();
-        labels.put(new Integer(OnmsAlarm.INDETERMINATE_SEVERITY), "Indeterminate");
-        labels.put(new Integer(OnmsAlarm.CLEARED_SEVERITY), "Cleared");
-        labels.put(new Integer(OnmsAlarm.NORMAL_SEVERITY), "Normal");
-        labels.put(new Integer(OnmsAlarm.WARNING_SEVERITY), "Warning");
-        labels.put(new Integer(OnmsAlarm.MINOR_SEVERITY), "Minor");
-        labels.put(new Integer(OnmsAlarm.MAJOR_SEVERITY), "Major");
-        labels.put(new Integer(OnmsAlarm.CRITICAL_SEVERITY), "Critical");
-
-        sortStylesString = new HashMap<String, AlarmFactory.SortStyle>();
-        sortStylesString.put("severity", AlarmFactory.SortStyle.SEVERITY);
-        sortStylesString.put("lasteventtime", AlarmFactory.SortStyle.LASTEVENTTIME);
-        sortStylesString.put("firsteventtime", AlarmFactory.SortStyle.FIRSTEVENTTIME);
-        sortStylesString.put("node", AlarmFactory.SortStyle.NODE);
-        sortStylesString.put("interface", AlarmFactory.SortStyle.INTERFACE);
-        sortStylesString.put("service", AlarmFactory.SortStyle.SERVICE);
-        sortStylesString.put("poller", AlarmFactory.SortStyle.POLLER);
-        sortStylesString.put("id", AlarmFactory.SortStyle.ID);
-        sortStylesString.put("count", AlarmFactory.SortStyle.COUNT);
-        sortStylesString.put("rev_severity", AlarmFactory.SortStyle.REVERSE_SEVERITY);
-        sortStylesString.put("rev_lasteventtime", AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME);
-        sortStylesString.put("rev_firsteventtime", AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME);
-        sortStylesString.put("rev_node", AlarmFactory.SortStyle.REVERSE_NODE);
-        sortStylesString.put("rev_interface", AlarmFactory.SortStyle.REVERSE_INTERFACE);
-        sortStylesString.put("rev_service", AlarmFactory.SortStyle.REVERSE_SERVICE);
-        sortStylesString.put("rev_poller", AlarmFactory.SortStyle.REVERSE_POLLER);
-        sortStylesString.put("rev_id", AlarmFactory.SortStyle.REVERSE_ID);
-        sortStylesString.put("rev_count", AlarmFactory.SortStyle.REVERSE_COUNT);
-
-        sortStyles = new HashMap<AlarmFactory.SortStyle, String>();
-        sortStyles.put(AlarmFactory.SortStyle.SEVERITY, "severity");
-        sortStyles.put(AlarmFactory.SortStyle.LASTEVENTTIME, "lasteventtime");
-        sortStyles.put(AlarmFactory.SortStyle.FIRSTEVENTTIME, "firsteventtime");
-        sortStyles.put(AlarmFactory.SortStyle.NODE, "node");
-        sortStyles.put(AlarmFactory.SortStyle.INTERFACE, "interface");
-        sortStyles.put(AlarmFactory.SortStyle.SERVICE, "service");
-        sortStyles.put(AlarmFactory.SortStyle.POLLER, "poller");
-        sortStyles.put(AlarmFactory.SortStyle.ID, "id");
-        sortStyles.put(AlarmFactory.SortStyle.COUNT, "count");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_SEVERITY, "rev_severity");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME, "rev_lasteventtime");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME, "rev_firsteventtime");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_NODE, "rev_node");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_INTERFACE, "rev_interface");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_SERVICE, "rev_service");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_POLLER, "rev_poller");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_ID, "rev_id");
-        sortStyles.put(AlarmFactory.SortStyle.REVERSE_COUNT, "rev_count");
-
-        ackTypesString = new HashMap<String, AlarmFactory.AcknowledgeType>();
-        ackTypesString.put("ack", AlarmFactory.AcknowledgeType.ACKNOWLEDGED);
-        ackTypesString.put("unack", AlarmFactory.AcknowledgeType.UNACKNOWLEDGED);
-        ackTypesString.put("both", AlarmFactory.AcknowledgeType.BOTH);
-
-        ackTypes = new HashMap<AlarmFactory.AcknowledgeType, String>();
-        ackTypes.put(AlarmFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
-        ackTypes.put(AlarmFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
-        ackTypes.put(AlarmFactory.AcknowledgeType.BOTH, "both");
-    }
-
-    public static List<Integer> getSeverityList() {
-        return severities;
-    }
-
-    public static int getSeverityId(int index) {
-        return severities.get(index).intValue();
-    }
-
-    public static String getSeverityColor(int severity) {
-        return colors.get(new Integer(severity));
-    }
-
-    public static String getSeverityLabel(int severity) {
-        return labels.get(new Integer(severity));
-    }
-
-    public static AlarmFactory.SortStyle getSortStyle(String sortStyleString) {
-        if (sortStyleString == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return sortStylesString.get(sortStyleString.toLowerCase());
-    }
-
-    public static String getSortStyleString(AlarmFactory.SortStyle sortStyle) {
-        if (sortStyle == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return sortStyles.get(sortStyle);
-    }
-
-    public static AlarmFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
-        if (ackTypeString == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return ackTypesString.get(ackTypeString.toLowerCase());
-    }
-
-    public static String getAcknowledgeTypeString(AlarmFactory.AcknowledgeType ackType) {
-        if (ackType == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return ackTypes.get(ackType);
-    }
 
     public static Filter getFilter(String filterString) {
         if (filterString == null) {
@@ -230,7 +87,7 @@ public abstract class AlarmUtil extends Object {
         String value = tokens.nextToken();
 
         if (type.equals(SeverityFilter.TYPE)) {
-            filter = new SeverityFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new SeverityFilter(Severity.getById(WebSecurityUtils.safeParseInt(value)));
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
@@ -246,7 +103,7 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(AcknowledgedByFilter.TYPE)) {
             filter = new AcknowledgedByFilter(value);
         } else if (type.equals(NegativeSeverityFilter.TYPE)) {
-            filter = new NegativeSeverityFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NegativeSeverityFilter(Severity.getById(WebSecurityUtils.safeParseInt(value)));
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {

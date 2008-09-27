@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 27: Comment-out unused code. - dj@opennms.org
 // 2003 Feb 01: Disallowed null alarm search text. Bug #536.
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,24 +41,21 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.alarm.*
-	"
+	import="org.opennms.web.alarm.AlarmUtil"
 %>
 
 <%
     //get the service names, in alpha order
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
+//    Map serviceNameMap = new TreeMap(NetworkElementFactory.getServiceNameToIdMap());
+//    Set serviceNameSet = serviceNameMap.keySet();
+//    Iterator serviceNameIterator = serviceNameSet.iterator();
     
     //get the severity names, in severity order
-    List severities = AlarmUtil.getSeverityList();
-    Iterator severityIterator = severities.iterator();
+//    List severities = AlarmUtil.getSeverityList();
+//    Iterator severityIterator = severities.iterator();
 
     //get the current time
-    Calendar now = Calendar.getInstance();
+//    Calendar now = Calendar.getInstance();
 %>
 
 <script type="text/javascript">

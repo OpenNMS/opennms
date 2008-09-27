@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 27: Use new Severity enum. - dj@opennms.org
 // 2007 Feb 20: Make the style match that of the event page. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -45,7 +46,7 @@
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 			org.opennms.web.alarm.*,
-			org.opennms.netmgt.model.OnmsAlarm,
+			org.opennms.web.alarm.Alarm.Severity,
 	        org.opennms.web.acegisecurity.Authentication"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -106,10 +107,10 @@
     
     String escalateAction = AlarmSeverityChangeServlet.ESCALATE_ACTION;
     String clearAction = AlarmSeverityChangeServlet.CLEAR_ACTION;
-    if (alarm.getSeverity() == OnmsAlarm.CLEARED_SEVERITY || (alarm.getSeverity() > OnmsAlarm.NORMAL_SEVERITY && alarm.getSeverity() < OnmsAlarm.CRITICAL_SEVERITY)) {
+    if (alarm.getSeverity() == Severity.CLEARED || (alarm.getSeverity().greaterThan(Severity.NORMAL) && alarm.getSeverity().lessThan(Severity.CRITICAL))) {
     	showEscalate=true;
     }
-    if  (alarm.getSeverity() >= OnmsAlarm.NORMAL_SEVERITY && alarm.getSeverity() <= OnmsAlarm.CRITICAL_SEVERITY) {
+    if  (alarm.getSeverity().greaterThanOrEqualTo(Severity.NORMAL) && alarm.getSeverity().lessThanOrEqualTo(Severity.CRITICAL)) {
     	showClear=true;
     }
 %>
@@ -126,9 +127,9 @@
       <h3>Alarm <%=alarm.getId()%></h3>
  
       <table>
-        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+        <tr class="<%=alarm.getSeverity().getLabel()%>">
           <th width="10%">Severity</th>
-          <td class="divider"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
+          <td class="divider"><%=alarm.getSeverity().getLabel()%></td>
           <th width="10%">Node</th>
           <td class="divider">
             <% if( alarm.getNodeId() > 0 ) { %>
@@ -140,7 +141,7 @@
           <th width="10%">Acknowledged&nbsp;By</th>
           <td class="divider"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
-        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+        <tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>Last Event</th>
           <td><span title="Event <%= alarm.getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID() %>"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></a></span></td>
           <th>Interface</th>
@@ -158,7 +159,7 @@
           <th>Time&nbsp;Acknowledged</th>
           <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
-        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+        <tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>First Event</th>
           <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
           <th>Service</th>
@@ -181,7 +182,7 @@
               <% } %>
           </td>
           </tr> 
-          <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <tr class="<%=alarm.getSeverity().getLabel()%>">
           	<th>Count</th>
 	        <td><%=alarm.getCount()%></td>
           	<th>UEI</th>
@@ -200,7 +201,7 @@
               <% } %>
           </td>
         </tr>
-        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+        <tr class="<%=alarm.getSeverity().getLabel()%>">
           	<th>Reduct. Key</th>
           	<td colspan="5">
           	<% if( alarm.getReductionKey() != null ) { %>
@@ -213,30 +214,30 @@
       </table>
 
       <table>
-	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>Log Message</th>
         </tr>
-	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <td><%=alarm.getLogMessage()%></td>
         </tr>
       </table>
 
       <table>
-	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>Description</th>
         </tr>
-	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <td><%=alarm.getDescription()%></td>
         </tr>
       </table>
       
       
       <table>
-	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>Operator Instructions</th>
         </tr>
 	
-	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <td>
 	    <%if (alarm.getOperatorInstruction()==null) { %>
               No instructions available
@@ -250,10 +251,10 @@
 <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) {     %>
       <table>
       <tbody>
-      <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+      <tr class="<%=alarm.getSeverity().getLabel()%>">
       <th colspan="2">Acknowledgement and Severity Actions</th>
       </tr>
-      <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+      <tr class="<%=alarm.getSeverity().getLabel()%>">
       <td>
       <form method="post" action="alarm/acknowledge">
         <input type="hidden" name="actionCode" value="<%=action%>" />
@@ -266,7 +267,7 @@
       </tr>
       
       <%if (showEscalate || showClear) { %>
-      <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+      <tr class="<%=alarm.getSeverity().getLabel()%>">
       <td>
       <form method="post" action="alarm/changeSeverity">
 	  <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
