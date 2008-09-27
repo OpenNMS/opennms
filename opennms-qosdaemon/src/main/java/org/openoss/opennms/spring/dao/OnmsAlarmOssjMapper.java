@@ -245,7 +245,7 @@ public class OnmsAlarmOssjMapper {
 						onmsseverity= ossjSeveritytoOnmsSeverity(alarmValue.getPerceivedSeverity());
 					} catch (IllegalArgumentException iae){
 						log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
-						onmsseverity=new Integer(org.opennms.web.alarm.Alarm.WARNING_SEVERITY);
+						onmsseverity=new Integer(OnmsAlarm.WARNING_SEVERITY);
 					}
 					onmsAlarm.setSeverity(onmsseverity); 
 
@@ -434,7 +434,7 @@ public class OnmsAlarmOssjMapper {
 			// if the alarm is cleared, then set the alarm cleared time
 			// to that of the lasteventtime as this must be the time
 			// the clear occured.
-			if(_openNMSalarm.getSeverity() == org.opennms.web.alarm.Alarm.CLEARED_SEVERITY) {
+			if(_openNMSalarm.getSeverity() == OnmsAlarm.CLEARED_SEVERITY) {
 				// OnmsAlarm can contain java.sql.Timestamp - convert to Date
 				alarmValueSpecification.setAlarmClearedTime(new Date(_openNMSalarm.getLastEventTime().getTime()));
 			}
@@ -686,23 +686,23 @@ public class OnmsAlarmOssjMapper {
 
 		switch(ossjseverity)
 		{
-		case javax.oss.fm.monitor.PerceivedSeverity.INDETERMINATE : 
-			onmsseverity =org.opennms.web.alarm.Alarm.INDETERMINATE_SEVERITY; // was '1'
+		case javax.oss.fm.monitor.PerceivedSeverity.INDETERMINATE:
+			onmsseverity = OnmsAlarm.INDETERMINATE_SEVERITY;
 			break;
-		case javax.oss.fm.monitor.PerceivedSeverity.CLEARED :
-			onmsseverity =org.opennms.web.alarm.Alarm.CLEARED_SEVERITY ; // was '2' 
+		case javax.oss.fm.monitor.PerceivedSeverity.CLEARED:
+			onmsseverity = OnmsAlarm.CLEARED_SEVERITY;
 			break;
-		case javax.oss.fm.monitor.PerceivedSeverity.WARNING :
-			onmsseverity =org.opennms.web.alarm.Alarm.WARNING_SEVERITY  ; // was 4
+		case javax.oss.fm.monitor.PerceivedSeverity.WARNING:
+			onmsseverity = OnmsAlarm.WARNING_SEVERITY;
 			break;
-		case javax.oss.fm.monitor.PerceivedSeverity.MINOR :
-			onmsseverity =org.opennms.web.alarm.Alarm.MINOR_SEVERITY ; // was 5
+		case javax.oss.fm.monitor.PerceivedSeverity.MINOR:
+			onmsseverity = OnmsAlarm.MINOR_SEVERITY;
 			break;
-		case javax.oss.fm.monitor.PerceivedSeverity.MAJOR :
-			onmsseverity =org.opennms.web.alarm.Alarm.MAJOR_SEVERITY ; // was 6
+		case javax.oss.fm.monitor.PerceivedSeverity.MAJOR:
+			onmsseverity = OnmsAlarm.MAJOR_SEVERITY;
 			break;
-		case javax.oss.fm.monitor.PerceivedSeverity.CRITICAL :
-			onmsseverity =org.opennms.web.alarm.Alarm.CRITICAL_SEVERITY ; // was 7
+		case javax.oss.fm.monitor.PerceivedSeverity.CRITICAL:
+			onmsseverity = OnmsAlarm.CRITICAL_SEVERITY;
 			break;
 		default: throw new IllegalArgumentException("invalid OSS/J severity value:"+ossjseverity);
 		}
@@ -734,25 +734,25 @@ public class OnmsAlarmOssjMapper {
 
 		switch(onmsSeverity)
 		{
-		case org.opennms.web.alarm.Alarm.INDETERMINATE_SEVERITY : // was '1'
+		case OnmsAlarm.INDETERMINATE_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.INDETERMINATE; 
 			break;
-		case org.opennms.web.alarm.Alarm.CLEARED_SEVERITY : // was '2' 
+		case OnmsAlarm.CLEARED_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.CLEARED;
 			break;
-		case org.opennms.web.alarm.Alarm.NORMAL_SEVERITY  : // was 3
+		case OnmsAlarm.NORMAL_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.WARNING;
 			break;
-		case org.opennms.web.alarm.Alarm.WARNING_SEVERITY : // was 4
+		case OnmsAlarm.WARNING_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.WARNING;
 			break;
-		case org.opennms.web.alarm.Alarm.MINOR_SEVERITY : // was 5
+		case OnmsAlarm.MINOR_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.MINOR;
 			break;
-		case org.opennms.web.alarm.Alarm.MAJOR_SEVERITY : // was 6
+		case OnmsAlarm.MAJOR_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.MAJOR;
 			break;
-		case org.opennms.web.alarm.Alarm.CRITICAL_SEVERITY : // was 7
+		case OnmsAlarm.CRITICAL_SEVERITY:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.CRITICAL;
 			break;
 		default: throw new IllegalArgumentException("invalid OpenNMS severity value:"+onmsSeverity);
