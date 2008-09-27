@@ -291,7 +291,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					onmsseverity= onmsAlarmOssjMapper.ossjSeveritytoOnmsSeverity(nnae.getPerceivedSeverity());
 				} catch (IllegalArgumentException iae){
 					log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
-					onmsseverity=new Integer(org.opennms.web.alarm.Alarm.WARNING_SEVERITY);
+					onmsseverity=new Integer(OnmsAlarm.WARNING_SEVERITY);
 				}
 				alarm.setSeverity(onmsseverity); 
 
@@ -418,7 +418,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				//alarm.setAlarmAckTime(arg0);
 				
 				//TODO added for new alarm field
-				HashMap<String, String> m_details = new HashMap();
+				HashMap<String, String> m_details = new HashMap<String, String>();
 				alarm.setDetails(m_details);
 
 				try {
@@ -482,7 +482,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					//alarm.setSuppressedUser(arg0);
 					//alarm.setSuppressedUntil(arg0);
 					//alarm.setSuppressedTime(arg0);
-					alarm.setSeverity(org.opennms.web.alarm.Alarm.CLEARED_SEVERITY);  //TODO need mapping for severity
+					alarm.setSeverity(OnmsAlarm.CLEARED_SEVERITY);  //TODO need mapping for severity
 					//alarm.setServiceType(arg0);
 					//alarm.setReductionKey(arg0);
 					//alarm.setOssPrimaryKey(arg0);

@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
@@ -92,31 +93,31 @@ public abstract class AlarmUtil extends Object {
 
     static {
         severities = new ArrayList<Integer>();
-        severities.add(new Integer(Alarm.INDETERMINATE_SEVERITY));
-        severities.add(new Integer(Alarm.CLEARED_SEVERITY));
-        severities.add(new Integer(Alarm.NORMAL_SEVERITY));
-        severities.add(new Integer(Alarm.WARNING_SEVERITY));
-        severities.add(new Integer(Alarm.MINOR_SEVERITY));
-        severities.add(new Integer(Alarm.MAJOR_SEVERITY));
-        severities.add(new Integer(Alarm.CRITICAL_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.INDETERMINATE_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.CLEARED_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.NORMAL_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.WARNING_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.MINOR_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.MAJOR_SEVERITY));
+        severities.add(new Integer(OnmsAlarm.CRITICAL_SEVERITY));
 
         colors = new HashMap<Integer, String>();
-        colors.put(new Integer(Alarm.INDETERMINATE_SEVERITY), "lightblue");
-        colors.put(new Integer(Alarm.CLEARED_SEVERITY), "white");
-        colors.put(new Integer(Alarm.NORMAL_SEVERITY), "green");
-        colors.put(new Integer(Alarm.WARNING_SEVERITY), "cyan");
-        colors.put(new Integer(Alarm.MINOR_SEVERITY), "yellow");
-        colors.put(new Integer(Alarm.MAJOR_SEVERITY), "orange");
-        colors.put(new Integer(Alarm.CRITICAL_SEVERITY), "red");
+        colors.put(new Integer(OnmsAlarm.INDETERMINATE_SEVERITY), "lightblue");
+        colors.put(new Integer(OnmsAlarm.CLEARED_SEVERITY), "white");
+        colors.put(new Integer(OnmsAlarm.NORMAL_SEVERITY), "green");
+        colors.put(new Integer(OnmsAlarm.WARNING_SEVERITY), "cyan");
+        colors.put(new Integer(OnmsAlarm.MINOR_SEVERITY), "yellow");
+        colors.put(new Integer(OnmsAlarm.MAJOR_SEVERITY), "orange");
+        colors.put(new Integer(OnmsAlarm.CRITICAL_SEVERITY), "red");
 
         labels = new HashMap<Integer, String>();
-        labels.put(new Integer(Alarm.INDETERMINATE_SEVERITY), "Indeterminate");
-        labels.put(new Integer(Alarm.CLEARED_SEVERITY), "Cleared");
-        labels.put(new Integer(Alarm.NORMAL_SEVERITY), "Normal");
-        labels.put(new Integer(Alarm.WARNING_SEVERITY), "Warning");
-        labels.put(new Integer(Alarm.MINOR_SEVERITY), "Minor");
-        labels.put(new Integer(Alarm.MAJOR_SEVERITY), "Major");
-        labels.put(new Integer(Alarm.CRITICAL_SEVERITY), "Critical");
+        labels.put(new Integer(OnmsAlarm.INDETERMINATE_SEVERITY), "Indeterminate");
+        labels.put(new Integer(OnmsAlarm.CLEARED_SEVERITY), "Cleared");
+        labels.put(new Integer(OnmsAlarm.NORMAL_SEVERITY), "Normal");
+        labels.put(new Integer(OnmsAlarm.WARNING_SEVERITY), "Warning");
+        labels.put(new Integer(OnmsAlarm.MINOR_SEVERITY), "Minor");
+        labels.put(new Integer(OnmsAlarm.MAJOR_SEVERITY), "Major");
+        labels.put(new Integer(OnmsAlarm.CRITICAL_SEVERITY), "Critical");
 
         sortStylesString = new HashMap<String, AlarmFactory.SortStyle>();
         sortStylesString.put("severity", AlarmFactory.SortStyle.SEVERITY);

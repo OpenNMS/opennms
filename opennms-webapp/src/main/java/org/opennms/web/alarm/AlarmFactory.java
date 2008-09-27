@@ -48,6 +48,7 @@ import java.util.Vector;
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
@@ -1269,16 +1270,16 @@ public class AlarmFactory extends Object {
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, Alarm.CLEARED_SEVERITY);
-                stmt.setInt(2, Alarm.WARNING_SEVERITY);
-                stmt.setInt(3, Alarm.CRITICAL_SEVERITY);
-                stmt.setInt(4, Alarm.CRITICAL_SEVERITY);
-                stmt.setInt(5, Alarm.PROBLEM_TYPE);
-                stmt.setInt(6, Alarm.RESOLUTION_TYPE);
-                stmt.setInt(7, Alarm.CLEARED_SEVERITY);
-                stmt.setInt(8, Alarm.PROBLEM_TYPE);
-                stmt.setInt(9, Alarm.NORMAL_SEVERITY);
-                stmt.setInt(10, Alarm.CRITICAL_SEVERITY);
+                stmt.setInt(1, OnmsAlarm.CLEARED_SEVERITY);
+                stmt.setInt(2, OnmsAlarm.WARNING_SEVERITY);
+                stmt.setInt(3, OnmsAlarm.CRITICAL_SEVERITY);
+                stmt.setInt(4, OnmsAlarm.CRITICAL_SEVERITY);
+                stmt.setInt(5, OnmsAlarm.PROBLEM_TYPE);
+                stmt.setInt(6, OnmsAlarm.RESOLUTION_TYPE);
+                stmt.setInt(7, OnmsAlarm.CLEARED_SEVERITY);
+                stmt.setInt(8, OnmsAlarm.PROBLEM_TYPE);
+                stmt.setInt(9, OnmsAlarm.NORMAL_SEVERITY);
+                stmt.setInt(10, OnmsAlarm.CRITICAL_SEVERITY);
 
                 stmt.executeUpdate();
                 stmt.close();
@@ -1324,10 +1325,10 @@ public class AlarmFactory extends Object {
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, Alarm.CLEARED_SEVERITY);
-                stmt.setInt(2, Alarm.RESOLUTION_TYPE);
-                stmt.setInt(3, Alarm.NORMAL_SEVERITY);
-                stmt.setInt(4, Alarm.CRITICAL_SEVERITY);
+                stmt.setInt(1, OnmsAlarm.CLEARED_SEVERITY);
+                stmt.setInt(2, OnmsAlarm.RESOLUTION_TYPE);
+                stmt.setInt(3, OnmsAlarm.NORMAL_SEVERITY);
+                stmt.setInt(4, OnmsAlarm.CRITICAL_SEVERITY);
 
                 stmt.executeUpdate();
                 stmt.close();
