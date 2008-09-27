@@ -46,24 +46,6 @@ import org.opennms.netmgt.model.TroubleTicketState;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class Alarm extends Object {
-    public static final int INDETERMINATE_SEVERITY = 1;
-
-    public static final int CLEARED_SEVERITY = 2;
-
-    public static final int NORMAL_SEVERITY = 3;
-
-    public static final int WARNING_SEVERITY = 4;
-
-    public static final int MINOR_SEVERITY = 5;
-
-    public static final int MAJOR_SEVERITY = 6;
-
-    public static final int CRITICAL_SEVERITY = 7;
-    
-    public static final int PROBLEM_TYPE = 1;
-    
-    public static final int RESOLUTION_TYPE = 2;
-
     /** Unique identifier for the alarm, cannot be null */
     protected int id;
 
