@@ -393,7 +393,7 @@
     <init-param>
       <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
-      <param-value>list</param-value>
+      <param-value>list.htm</param-value>
     </init-param>
   </servlet>
   <servlet>
@@ -402,7 +402,7 @@
     <init-param>
       <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
-      <param-value>list</param-value>
+      <param-value>list.htm</param-value>
     </init-param>
   </servlet>
   <servlet>
@@ -420,7 +420,7 @@
     <init-param>
       <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
-      <param-value>list</param-value>
+      <param-value>list.htm</param-value>
     </init-param>
   </servlet>
 
@@ -476,7 +476,7 @@
     <init-param>
       <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
-      <param-value>list</param-value>
+      <param-value>list.htm</param-value>
     </init-param>    
   </servlet>
   <servlet>
