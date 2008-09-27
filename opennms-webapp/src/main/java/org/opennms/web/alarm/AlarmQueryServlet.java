@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 27: Use new SeverityFilter signature that requires a Severity. - dj@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventQueryServlet.java
 //
@@ -54,6 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.alarm.Alarm.Severity;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
@@ -139,7 +141,7 @@ public class AlarmQueryServlet extends HttpServlet {
         // convenient syntax for SeverityFilter
         String severity = request.getParameter("severity");
         if (severity != null && !severity.equals(AlarmUtil.ANY_SEVERITIES_OPTION)) {
-            filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
+            filterArray.add(new SeverityFilter(Severity.getById(WebSecurityUtils.safeParseInt(severity))));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time
