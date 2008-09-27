@@ -60,6 +60,8 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="alarms")
 public class OnmsAlarm implements Serializable {
+    private static final long serialVersionUID = 7275548439687562161L;
+
     public static final int INDETERMINATE_SEVERITY = 1;
 
     public static final int CLEARED_SEVERITY = 2;
@@ -77,8 +79,6 @@ public class OnmsAlarm implements Serializable {
     public static final int PROBLEM_TYPE = 1;
     
     public static final int RESOLUTION_TYPE = 2;
-
-    private static final long serialVersionUID = -1342362989494090682L;
 
     /** identifier field */
     private Integer m_id;
