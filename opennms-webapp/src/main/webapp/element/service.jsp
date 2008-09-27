@@ -114,15 +114,15 @@ function doDelete() {
             <h3>General</h3>
             <table>
               <tr>
-                <td>Node</td> 
+                <th>Node</th> 
                 <td><a href="element/node.jsp?node=<%=service.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service.getNodeId())%></a></td>
               </tr>
               <tr>
-                <td>Interface</td> 
+                <th>Interface</th> 
                 <td><a href="element/interface.jsp?node=<%=service.getNodeId()%>&intf=<%=service.getIpAddress()%>"><%=service.getIpAddress()%></a></td>
               </tr>              
               <tr>
-                <td>Polling Status</td>
+                <th>Polling Status</th>
                 <td><%=ElementUtil.getServiceStatusString(service)%></td>
               </tr>
             </table>
