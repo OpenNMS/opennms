@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 15 Sep 2008: Add serialVersionUID (eliminate warnings) and indent. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,16 +36,21 @@
 package org.opennms.netmgt.model.events;
 
 public class EventProxyException extends Exception {
+    private static final long serialVersionUID = 1L;
+    
     public EventProxyException() {
-	super();
+        super();
     }
+    
     public EventProxyException(String message) {
-	super(message);
+        super(message);
     }
+    
     public EventProxyException(String message, Throwable cause) {
-	super(message, cause);
+        super(message, cause);
     }
+    
     public EventProxyException(Throwable cause) {
-	super(cause);
+        super(cause);
     }
 }
