@@ -75,7 +75,7 @@ if [ -z "$SKIP_SETUP" ]; then
 	install -d -m 755 "$WORKDIR"/{BUILD,RPMS/{i386,i686,noarch},SOURCES,SPECS,SRPMS}
 
 	echo "=== Copying Source to Source Directory ==="
-	$RSYNC -aqr --exclude=.svn --exclude=target --delete "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/"
+	$RSYNC -aqr --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/"
 
 	echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
 
