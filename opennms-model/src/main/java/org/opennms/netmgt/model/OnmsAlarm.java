@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 26: Move some of the alarm "constant" information into here
 // 2007 Apr 05: Make annotation nullability and default values match what's in create.sql. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -58,16 +59,29 @@ import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
-
 @XmlRootElement
 @Entity
 @Table(name="alarms")
 public class OnmsAlarm implements Serializable {
+    private static final long serialVersionUID = 7275548439687562161L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1342362989494090682L;
+    public static final int INDETERMINATE_SEVERITY = 1;
+
+    public static final int CLEARED_SEVERITY = 2;
+
+    public static final int NORMAL_SEVERITY = 3;
+
+    public static final int WARNING_SEVERITY = 4;
+
+    public static final int MINOR_SEVERITY = 5;
+
+    public static final int MAJOR_SEVERITY = 6;
+
+    public static final int CRITICAL_SEVERITY = 7;
+    
+    public static final int PROBLEM_TYPE = 1;
+    
+    public static final int RESOLUTION_TYPE = 2;
 
     /** identifier field */
     private Integer m_id;

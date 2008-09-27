@@ -44,11 +44,8 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class EventDaoTest extends AbstractTransactionalDaoTestCase {
-    public void testBogus() {
-        // do nothing... we're here so JUnit doesn't complain
-    }
     
-    public void FIXMEtestSave() {
+    public void testSave() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getDistPollerDao().load("localhost"));
         event.setEventCreateTime(new Date());

@@ -45,6 +45,7 @@
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 			org.opennms.web.alarm.*,
+			org.opennms.netmgt.model.OnmsAlarm,
 	        org.opennms.web.acegisecurity.Authentication"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -105,10 +106,10 @@
     
     String escalateAction = AlarmSeverityChangeServlet.ESCALATE_ACTION;
     String clearAction = AlarmSeverityChangeServlet.CLEAR_ACTION;
-    if (alarm.getSeverity() == Alarm.CLEARED_SEVERITY || (alarm.getSeverity() > Alarm.NORMAL_SEVERITY && alarm.getSeverity() < Alarm.CRITICAL_SEVERITY)) {
+    if (alarm.getSeverity() == OnmsAlarm.CLEARED_SEVERITY || (alarm.getSeverity() > OnmsAlarm.NORMAL_SEVERITY && alarm.getSeverity() < OnmsAlarm.CRITICAL_SEVERITY)) {
     	showEscalate=true;
     }
-    if  (alarm.getSeverity() >= Alarm.NORMAL_SEVERITY && alarm.getSeverity() <= Alarm.CRITICAL_SEVERITY) {
+    if  (alarm.getSeverity() >= OnmsAlarm.NORMAL_SEVERITY && alarm.getSeverity() <= OnmsAlarm.CRITICAL_SEVERITY) {
     	showClear=true;
     }
 %>
