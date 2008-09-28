@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -51,7 +52,8 @@
         org.opennms.netmgt.model.OnmsResource,
         org.opennms.web.svclayer.ResourceService,
         org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
+        org.springframework.web.context.support.WebApplicationContextUtils,
+        org.opennms.web.XssRequestWrapper"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -79,18 +81,18 @@
         "resourceId"
     };
 
-    
+    HttpServletRequest req = new XssRequestWrapper(request);
     for (String requiredParameter : requiredParameters) {
-        if (request.getParameter(requiredParameter) == null) {
+        if (req.getParameter(requiredParameter) == null) {
             throw new MissingParameterException(requiredParameter,
                                                 requiredParameters);
         }
     }
 
-    if (request.getParameterValues("resourceId").length > 1) {
+    if (req.getParameterValues("resourceId").length > 1) {
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
-        String resourceId = request.getParameter("resourceId");
+        String resourceId = req.getParameter("resourceId");
         OnmsResource resource = m_resourceService.getResourceById(resourceId, true);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);
