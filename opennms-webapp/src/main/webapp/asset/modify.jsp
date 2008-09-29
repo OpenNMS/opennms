@@ -278,11 +278,6 @@
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
       </form>
 
-<p>
-  Note that all commas and end of line markers will be removed when 
-  submitted.  Please try to format your comments and other values without
-  commas or hitting the return key to add new lines.
-</p>
       <% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
