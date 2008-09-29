@@ -69,6 +69,8 @@ public final class ThresholdEntity implements Cloneable {
         s_thresholdEvaluators = new LinkedList<ThresholdEvaluator>();
         s_thresholdEvaluators.add(new ThresholdEvaluatorHighLow());
         s_thresholdEvaluators.add(new ThresholdEvaluatorRelativeChange());
+        s_thresholdEvaluators.add(new ThresholdEvaluatorAbsoluteChange());
+        s_thresholdEvaluators.add(new ThresholdEvaluatorRearmingAbsoluteChange());
     }
 
     /**
