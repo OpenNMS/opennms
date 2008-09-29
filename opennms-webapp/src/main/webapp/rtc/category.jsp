@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Fixed XSS security issues. - ranger@opennms.org
 // 2004 Nov 18: Fixed problem with category display when nodeLabel can't be found. Bill Ayres.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -48,7 +49,8 @@
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.MissingParameterException,
 		java.util.*,
-		org.opennms.netmgt.xml.rtc.Node
+		org.opennms.netmgt.xml.rtc.Node,
+		org.opennms.web.XssRequestWrapper
 		"
 %>
 
@@ -73,7 +75,8 @@
 %>
 
 <%
-    String categoryName = request.getParameter("category");
+   HttpServletRequest req = new XssRequestWrapper(request);
+   String categoryName = req.getParameter("category");
 
     if (categoryName == null) {
         throw new MissingParameterException("category");
@@ -124,7 +127,7 @@
 <form name="showoutages">
   <p>
     Show interfaces:
-	<% String showoutages = request.getParameter("showoutages"); %>
+	<% String showoutages = req.getParameter("showoutages"); %>
 
         <%  
         if(showoutages == null ) {
@@ -132,15 +135,15 @@
         } %>
 
               <input type="radio" name="showout" <%=(showoutages.equals("all") ? "checked" : "")%>
-               onclick="top.location = '<%=org.opennms.web.Util.calculateUrlBase( request )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=all'" ></input>All
+               onclick="top.location = '<%=org.opennms.web.Util.calculateUrlBase( req )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=all'" ></input>All
 
 
               <input type="radio" name="showout" <%=(showoutages.equals("outages") ? "checked" : "")%>
-               onclick="top.location = '<%=org.opennms.web.Util.calculateUrlBase( request )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=outages'" ></input>With outages
+               onclick="top.location = '<%=org.opennms.web.Util.calculateUrlBase( req )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=outages'" ></input>With outages
 
 
               <input type="radio" name="showout" <%=(showoutages.equals("avail") ? "checked" : "")%>
-               onclick="top.location = '<%=org.opennms.web.Util.calculateUrlBase( request )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=avail'" ></input>With availability &lt; 100% 
+               onclick="top.location = '<%=org.opennms.web.Util.calculateUrlBase( req )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=avail'" ></input>With availability &lt; 100% 
 
   </p>
 </form>
