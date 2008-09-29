@@ -147,19 +147,24 @@
 </form>
 <h3>Help</h3>
 <p>
-<b>Type</b>: A "high" threshold triggers when the value of the data source exceeds the "value", and is re-armed when it drops below the "re-arm" value.<BR>
-Conversely, a "low" threshold triggers when the value of the data source drops below the "value", and is re-armed when it exceeds the "re-arm" value<br>
-"relativeChange" is for thresholds that trigger when the change in data source value from one collection to the next is greater than "value" percent.<br>
-<b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br>
-<b>Data source type</b>: "node" for node-level data items, "if" for interface-level items, or any Generic Resource Type defined on datacollection-config.xml. Node-level will ignore filter configuration.<br>
-<b>Datasource label</b>: The name of the collected "string" type data item to use as a label when reporting this threshold<br>
-<b>Value</b>: Use depends on the type of threshold<br>
-<b>Re-arm</b>: Use depends on the type of threshold; it is unused/ignored for relativeChange thresholds<br>
-<b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br>
-<b>Triggered UEI</b>: A custom UEI to send into the events system when this threshold is triggered.  If left blank, it defaults to the standard thresholds UEIs.<br>
-<b>Rearmed UEI</b>: A custom UEI to send into the events system when this threshold is re-armed.  If left blank, it defaults to the standard thresholds UEIs.<br>
-<b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds,<br>
-you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you.<br>
+<b>Type</b>:<br/>
+&nbsp;&nbsp;<b>high</b>: Triggers when the value of the data source exceeds the "value", and is re-armed when it drops below the "re-arm" value.<br/>
+&nbsp;&nbsp;<b>low</b>: Triggers when the value of the data source drops below the "value", and is re-armed when it exceeds the "re-arm" value.<br/>
+&nbsp;&nbsp;<b>relativeChange</b>: Triggers when the change in data source value from one collection to the next is greater than "value" percent.
+  Re-arm and trigger are not used.<br/>
+&nbsp;&nbsp;<b>absoluteChange</b>: Triggers when the value changes by more than the specified amount.  Re-arm and trigger are not used.<br/>
+&nbsp;&nbsp;<b>rearmingAbsoluteChange</b>: Like absoluteChange, Triggers when the value changes by more than the specified amount.  However,
+  the "trigger" is used to re-arm the event after so many iterations with an unchanged delta.  Re-arm is not used.<br/>
+<b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br/>
+<b>Data source type</b>: "node" for node-level data items, "if" for interface-level items, or any Generic Resource Type defined on datacollection-config.xml. Node-level will ignore filter configuration.<br/>
+<b>Datasource label</b>: The name of the collected "string" type data item to use as a label when reporting this threshold<br/>
+<b>Value</b>: Use depends on the type of threshold<br/>
+<b>Re-arm</b>: Use depends on the type of threshold; it is unused/ignored for relativeChange thresholds<br/>
+<b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br/>
+<b>Triggered UEI</b>: A custom UEI to send into the events system when this threshold is triggered.  If left blank, it defaults to the standard thresholds UEIs.<br/>
+<b>Rearmed UEI</b>: A custom UEI to send into the events system when this threshold is re-armed.  If left blank, it defaults to the standard thresholds UEIs.<br/>
+<b>Example UEIs</b>: A typical UEI is of the format <i>"uei.opennms.org/&lt;category&gt;/&lt;name&gt;"</i>.  It is recommended that when creating custom UEIs for thresholds,<br/>
+you use a one-word version of your company name as the category to avoid name conflicts.  The "name" portion is up to you.<br/>
 <b>Filters</b>: Only apply for interfaces and Generic Resources. They are applied in order. If the resource match any of them, the threshold will be processed.
 </p>
 <jsp:include page="/includes/footer.jsp" flush="false"/>
