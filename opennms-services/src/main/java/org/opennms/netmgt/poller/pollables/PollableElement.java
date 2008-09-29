@@ -163,6 +163,8 @@ abstract public class PollableElement {
         try {
             obtainTreeLock(timeout);
             return c.call();
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

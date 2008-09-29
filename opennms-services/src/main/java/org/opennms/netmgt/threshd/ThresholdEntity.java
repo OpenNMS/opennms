@@ -65,10 +65,13 @@ public final class ThresholdEntity implements Cloneable {
     // in the Constructor.  Note that this means we must use a null-key capable map like HashMap
     private Map<String,List<ThresholdEvaluatorState>> m_thresholdEvaluatorStates = new HashMap<String,List<ThresholdEvaluatorState>>();
 
+    // the commands for these need to be listed in ThresholdController as well
     static {
         s_thresholdEvaluators = new LinkedList<ThresholdEvaluator>();
         s_thresholdEvaluators.add(new ThresholdEvaluatorHighLow());
         s_thresholdEvaluators.add(new ThresholdEvaluatorRelativeChange());
+        s_thresholdEvaluators.add(new ThresholdEvaluatorAbsoluteChange());
+        s_thresholdEvaluators.add(new ThresholdEvaluatorRearmingAbsoluteChange());
     }
 
     /**
