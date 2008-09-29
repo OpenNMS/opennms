@@ -133,7 +133,7 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
                 if(uei==null || "".equals(uei)) {
-                    uei="uei.opennms.org/threshold/rearmingAbsoluteChangeExceeded";
+                    uei=EventConstants.REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI;
                 }
                 return createBasicEvent(uei, date, dsValue);
             }
@@ -141,7 +141,7 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             if (status == Status.RE_ARMED) {
                 String uei=getThresholdConfig().getRearmedUEI();
                 if(uei==null || "".equals(uei)) {
-                    uei="uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
+                    uei=EventConstants.REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI;
                 }
                 return createBasicEvent(uei, date, dsValue);
             } 

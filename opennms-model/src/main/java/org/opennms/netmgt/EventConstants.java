@@ -346,6 +346,16 @@ public class EventConstants {
     public final static String ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/absoluteChangeExceeded";
 
     /**
+     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI
+     */
+    public final static String REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeExceeded";
+    
+    /**
+     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI
+     */
+    public final static String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
+    
+    /**
      * The interface index changed event
      */
     public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
