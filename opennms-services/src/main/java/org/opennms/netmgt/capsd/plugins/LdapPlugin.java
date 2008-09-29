@@ -184,7 +184,7 @@ public final class LdapPlugin extends AbstractPlugin {
         } catch (NoRouteToHostException e) {
             // No route to host!! No need to perform retries.
             e.fillInStackTrace();
-            log.warn(getClass().getName() + ": No route to host " + host.getHostAddress(), e);
+            log.info(getClass().getName() + ": No route to host " + host.getHostAddress(), e);
             throw new UndeclaredThrowableException(e);
         } catch (InterruptedIOException e) {
             // Connection failed, retry until attempts exceeded
