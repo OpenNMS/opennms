@@ -213,10 +213,10 @@ public final class IfCollector implements Runnable {
                 Throwable t = utE.getUndeclaredThrowable();
                 if (t instanceof NoRouteToHostException) {
                     if (CapsdConfigFactory.getInstance().getAbortProtocolScansFlag()) {
-                        log().warn("IfCollector: No route to host " + logAddr + ", aborting protocol scans.");
+                        log().info("IfCollector: No route to host " + logAddr + ", aborting protocol scans.");
                         break; // Break out of plugin loop
                     } else {
-                        log().warn("IfCollector: No route to host " + logAddr + ", continuing protocol scans.");
+                        log().info("IfCollector: No route to host " + logAddr + ", continuing protocol scans.");
                     }
                 } else {
                     log().warn("IfCollector: Caught undeclared throwable exception when testing for protocol " + plugins[i].getProtocol() + " on host " + logAddr, utE);
