@@ -66,7 +66,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
             String[] snzVals = new String[rawVals.length];
             for (int i=0; i < rawVals.length; i++) 
             {
-                snzVals[i] = SafeHtmlUtil.sanitize(rawVals[i]);
+                snzVals[i] = WebSecurityUtils.sanitizeString(rawVals[i]);
             }
             res.put(key, snzVals);
         }           

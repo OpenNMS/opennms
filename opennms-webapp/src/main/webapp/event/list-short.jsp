@@ -52,7 +52,7 @@
 		java.sql.SQLException,
 		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.filter.*,
-		org.opennms.web.SafeHtmlUtil,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.XssRequestWrapper
 		
 	"
@@ -230,7 +230,7 @@
                   <% } %>
 									<% for( int i=0; i < length; i++ ) { %>
 									  <% org.opennms.web.event.filter.Filter filter = (org.opennms.web.event.filter.Filter)parms.filters.get(i); %>
-									    &nbsp; <span class="filter"><%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>                    
+									    &nbsp; <span class="filter"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>                    
 									<% } %>
               </p>           
             <% } %>
