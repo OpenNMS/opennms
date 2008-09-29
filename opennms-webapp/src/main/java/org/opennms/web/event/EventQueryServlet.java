@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS scripting issues - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -53,6 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
 import org.opennms.web.event.filter.Filter;
@@ -102,45 +104,46 @@ public class EventQueryServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<Filter>();
+        HttpServletRequest req = new XssRequestWrapper(request);
 
         // convenient syntax for LogMessageSubstringFilter
-        String msgSubstring = request.getParameter("msgsub");
+        String msgSubstring = req.getParameter("msgsub");
         if (msgSubstring != null && msgSubstring.length() > 0) {
             filterArray.add(new LogMessageSubstringFilter(msgSubstring));
         }
 
         // convenient syntax for LogMessageMatchesAnyFilter
-        String msgMatchAny = request.getParameter("msgmatchany");
+        String msgMatchAny = req.getParameter("msgmatchany");
         if (msgMatchAny != null && msgMatchAny.length() > 0) {
             filterArray.add(new LogMessageMatchesAnyFilter(msgMatchAny));
         }
 
         // convenient syntax for NodeNameContainingFilter
-        String nodeNameLike = request.getParameter("nodenamelike");
+        String nodeNameLike = req.getParameter("nodenamelike");
         if (nodeNameLike != null && nodeNameLike.length() > 0) {
             filterArray.add(new NodeNameLikeFilter(nodeNameLike));
         }
 
         // convenient syntax for ServiceFilter
-        String service = request.getParameter("service");
+        String service = req.getParameter("service");
         if (service != null && !service.equals(EventUtil.ANY_SERVICES_OPTION)) {
             filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
         }
 
         // convenient syntax for IPLikeFilter
-        String ipLikePattern = request.getParameter("iplike");
+        String ipLikePattern = req.getParameter("iplike");
         if (ipLikePattern != null && !ipLikePattern.equals("")) {
             filterArray.add(new IPLikeFilter(ipLikePattern));
         }
 
         // convenient syntax for SeverityFilter
-        String severity = request.getParameter("severity");
+        String severity = req.getParameter("severity");
         if (severity != null && !severity.equals(EventUtil.ANY_SEVERITIES_OPTION)) {
             filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time
-        String relativeTime = request.getParameter("relativetime");
+        String relativeTime = req.getParameter("relativetime");
         if (relativeTime != null && !relativeTime.equals(EventUtil.ANY_RELATIVE_TIMES_OPTION)) {
             try {
                 filterArray.add(EventUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
@@ -150,10 +153,10 @@ public class EventQueryServlet extends HttpServlet {
             }
         }
 
-        String useBeforeTime = request.getParameter("usebeforetime");
+        String useBeforeTime = req.getParameter("usebeforetime");
         if (useBeforeTime != null && useBeforeTime.equals("1")) {
             try {
-                filterArray.add(this.getBeforeDateFilter(request));
+                filterArray.add(this.getBeforeDateFilter(req));
             } catch (IllegalArgumentException e) {
                 // ignore the before time if it is an illegal value
                 this.log("Illegal before time value", e);
@@ -162,10 +165,10 @@ public class EventQueryServlet extends HttpServlet {
             }
         }
 
-        String useAfterTime = request.getParameter("useaftertime");
+        String useAfterTime = req.getParameter("useaftertime");
         if (useAfterTime != null && useAfterTime.equals("1")) {
             try {
-                filterArray.add(this.getAfterDateFilter(request));
+                filterArray.add(this.getAfterDateFilter(req));
             } catch (IllegalArgumentException e) {
                 // ignore the after time if it is an illegal value
                 this.log("Illegal after time value", e);
@@ -187,9 +190,9 @@ public class EventQueryServlet extends HttpServlet {
             Map<String, Object> paramAdditions = new HashMap<String, Object>();
             paramAdditions.put("filter", filterStrings);
 
-            queryString = Util.makeQueryString(request, paramAdditions, IGNORE_LIST);
+            queryString = Util.makeQueryString(req, paramAdditions, IGNORE_LIST);
         } else {
-            queryString = Util.makeQueryString(request, IGNORE_LIST);
+            queryString = Util.makeQueryString(req, IGNORE_LIST);
         }
 
         response.sendRedirect(this.redirectUrl + "?" + queryString);

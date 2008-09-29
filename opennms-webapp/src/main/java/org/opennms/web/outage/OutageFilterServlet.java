@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -48,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.outage.filter.Filter;
 
 /**
@@ -76,8 +78,9 @@ public class OutageFilterServlet extends HttpServlet {
      * </p>
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpServletRequest req = new XssRequestWrapper(request);
         // handle the style sort parameter
-        String sortStyleString = request.getParameter("sortby");
+        String sortStyleString = req.getParameter("sortby");
         OutageFactory.SortStyle sortStyle = OutageFactory.DEFAULT_SORT_STYLE;
         if (sortStyleString != null) {
             Object temp = OutageUtil.getSortStyle(sortStyleString);
@@ -90,7 +93,7 @@ public class OutageFilterServlet extends HttpServlet {
         
  // handle the suppress parameter
         
-        String outageSuppressTimeString = request.getParameter("suppressTime");
+        String outageSuppressTimeString = req.getParameter("suppressTime");
         if (outageSuppressTimeString != null){
             // timetosuppress
             
@@ -98,18 +101,18 @@ public class OutageFilterServlet extends HttpServlet {
           
         // handle the suppresstime parameter
         
-        String outageIdString = request.getParameter("outageID");        
+        String outageIdString = req.getParameter("outageID");        
         if (outageIdString != null) {
             // Outage we are going to suppress
         }
         
-        String outageSupressedByString = request.getParameter("suppressedBy");
+        String outageSupressedByString = req.getParameter("suppressedBy");
         if (outageSupressedByString != null) {
             
         }
 
         // handle the acknowledgement type parameter
-        String outTypeString = request.getParameter("outtype");
+        String outTypeString = req.getParameter("outtype");
         OutageFactory.OutageType outType = OutageFactory.OutageType.BOTH;
         if (outTypeString != null) {
             Object temp = OutageUtil.getOutageType(outTypeString);
@@ -119,7 +122,7 @@ public class OutageFilterServlet extends HttpServlet {
         }
 
         // handle the filter parameters
-        String[] filterStrings = request.getParameterValues("filter");
+        String[] filterStrings = req.getParameterValues("filter");
         List<Filter> filterArray = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
@@ -131,7 +134,7 @@ public class OutageFilterServlet extends HttpServlet {
         }
 
         // handle the optional limit parameter
-        String limitString = request.getParameter("limit");
+        String limitString = req.getParameter("limit");
         int limit = DEFAULT_LIMIT;
         if (limitString != null) {
             try {
@@ -141,7 +144,7 @@ public class OutageFilterServlet extends HttpServlet {
         }
 
         // handle the optional multiple parameter
-        String multipleString = request.getParameter("multiple");
+        String multipleString = req.getParameter("multiple");
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
@@ -169,7 +172,7 @@ public class OutageFilterServlet extends HttpServlet {
 
             // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/outage/list.jsp");
-            dispatcher.forward(request, response);
+            dispatcher.forward(req, response);
         } catch (SQLException e) {
             throw new ServletException("Error while querying database for outages", e);
         }
