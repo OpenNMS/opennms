@@ -34,6 +34,7 @@
  */
 package org.opennms.web;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -48,6 +49,18 @@ public class WebSecurityUtils {
 	
 	private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
+    private final static Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
+
+    public static String sanitizeString(String raw)
+    {
+        if (raw==null || raw.length()==0)
+            return raw;
+
+        Matcher scriptMatcher = scriptPattern.matcher(raw);
+        String next = scriptMatcher.replaceAll("&#x73;cript");
+        return next.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
 	public static int safeParseInt(String dirty) throws NumberFormatException {
 		String clean = ILLEGAL_IN_INTEGER.matcher(dirty).replaceAll("");
 		return Integer.parseInt(clean);
@@ -71,4 +84,5 @@ public class WebSecurityUtils {
     public static String sanitizeDbColumnName(String dirty) {
         return ILLEGAL_IN_COLUMN_NAME_PATTERN.matcher(dirty).replaceAll("");
     }
+
 }
