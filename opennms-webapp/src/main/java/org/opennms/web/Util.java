@@ -310,7 +310,8 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter not in the ignore list.
      */
     public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
-        if (request == null || additions == null || ignores == null || ignoreType == null) {
+        HttpServletRequest req = new XssRequestWrapper(request);
+        if (req == null || additions == null || ignores == null || ignoreType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
@@ -321,11 +322,11 @@ public abstract class Util extends Object {
             ignoreList.add(ignores[i]);
         }
 
-        Enumeration names = request.getParameterNames();
+        Enumeration names = req.getParameterNames();
 
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();
-            String[] values = request.getParameterValues(name);
+            String[] values = req.getParameterValues(name);
 
             if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
                 for (int i = 0; i < values.length; i++) {

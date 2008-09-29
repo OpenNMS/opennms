@@ -61,7 +61,7 @@ public class ChooseResourceController extends AbstractController implements Init
             if (request.getParameter("parentResourceType") == null) {
                 throw new MissingParameterException("parentResourceType", requiredParameters);
             }
-            if (request.getParameter("parentResource") == null) {
+            if (req.getParameter("parentResource") == null) {
                 throw new MissingParameterException("parentResource", requiredParameters);
             }
             

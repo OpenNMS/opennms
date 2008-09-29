@@ -61,13 +61,14 @@ public class GraphResultsController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpServletRequest req = new XssRequestWrapper(request);
         String[] requiredParameters = new String[] {
                 "resourceId",
                 "reports"
         };
         
         for (String requiredParameter : requiredParameters) {
-            if (request.getParameter(requiredParameter) == null) {
+            if (req.getParameter(requiredParameter) == null) {
                 throw new MissingParameterException(requiredParameter,
                                                     requiredParameters);
             }
@@ -131,7 +132,7 @@ public class GraphResultsController extends AbstractController implements Initia
             };
             
             for (String requiredParameter : ourRequiredParameters) {
-                if (request.getParameter(requiredParameter) == null) {
+                if (req.getParameter(requiredParameter) == null) {
                     throw new MissingParameterException(requiredParameter,
                                                         ourRequiredParameters);
                 }

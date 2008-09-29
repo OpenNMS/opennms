@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -58,7 +59,8 @@ public class FormProcGraphController extends AbstractController implements Initi
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
+        HttpServletRequest req = new XssRequestWrapper(request);
+        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), true);
         
         // Get The Customizable (Working) Graph 
         Graph graph = editor.getWorkingGraph();

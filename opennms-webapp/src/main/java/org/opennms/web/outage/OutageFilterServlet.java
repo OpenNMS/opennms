@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.outage.filter.Filter;
 
 /**
@@ -77,6 +78,7 @@ public class OutageFilterServlet extends HttpServlet {
      * </p>
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpServletRequest req = new XssRequestWrapper(request);
         // handle the style sort parameter
         String sortStyleString = WebSecurityUtils.sanitizeString(request.getParameter("sortby"));
         OutageFactory.SortStyle sortStyle = OutageFactory.DEFAULT_SORT_STYLE;
@@ -98,7 +100,7 @@ public class OutageFilterServlet extends HttpServlet {
         }
 
         // handle the filter parameters
-        String[] filterStrings = request.getParameterValues("filter");
+        String[] filterStrings = req.getParameterValues("filter");
         List<Filter> filterArray = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
@@ -110,7 +112,7 @@ public class OutageFilterServlet extends HttpServlet {
         }
 
         // handle the optional limit parameter
-        String limitString = request.getParameter("limit");
+        String limitString = req.getParameter("limit");
         int limit = DEFAULT_LIMIT;
         if (limitString != null) {
             try {
@@ -123,7 +125,7 @@ public class OutageFilterServlet extends HttpServlet {
         }
 
         // handle the optional multiple parameter
-        String multipleString = request.getParameter("multiple");
+        String multipleString = req.getParameter("multiple");
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
@@ -151,7 +153,7 @@ public class OutageFilterServlet extends HttpServlet {
 
             // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/outage/list.jsp");
-            dispatcher.forward(request, response);
+            dispatcher.forward(req, response);
         } catch (SQLException e) {
             throw new ServletException("Error while querying database for outages", e);
         }

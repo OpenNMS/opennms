@@ -64,23 +64,23 @@ public class FormProcMainController extends AbstractController implements Initia
             throw new MissingParameterException("report_action");
         }
 
-        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
+        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), false);
         
         if (action.equals("Customize")) {
-            editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
+            editor.loadWorkingReport(getKscReportFactory(), getReportIndex(req));
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (action.equals("CreateFrom")) {
-            editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
+            editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(req));
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (action.equals("Delete")) {
-            getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
+            getKscReportFactory().deleteReportAndSave(getReportIndex(req)); 
             return new ModelAndView("redirect:/KSC/index.htm");
         } else if (action.equals("Create")) {
             editor.loadNewWorkingReport();
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (action.equals("View")) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
-            modelAndView.addObject("report", getReportIndex(request));
+            modelAndView.addObject("report", getReportIndex(req));
             modelAndView.addObject("type", "custom");
             return modelAndView;
         } else {
