@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
@@ -64,8 +65,9 @@ public class CustomReportController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpServletRequest req = new XssRequestWrapper(request);
         // Get Form Variables
-        Report report = KscReportEditor.getFromSession(request.getSession(), true).getWorkingReport();
+        Report report = KscReportEditor.getFromSession(req.getSession(), true).getWorkingReport();
         if (report == null) {
             throw new IllegalStateException("There is no working report");
         }

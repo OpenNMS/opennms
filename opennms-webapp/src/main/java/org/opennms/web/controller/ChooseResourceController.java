@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.support.ChooseResourceModel;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,16 +52,17 @@ public class ChooseResourceController extends AbstractController implements Init
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] { "parentResourceId or", "parentResourceType and parentResource" };
 
-        String endUrl = request.getParameter("endUrl");
+        HttpServletRequest req = new XssRequestWrapper(request);
+        String endUrl = req.getParameter("endUrl");
 
-        String resourceId = request.getParameter("parentResourceId");
+        String resourceId = req.getParameter("parentResourceId");
         if (resourceId == null) {
-            String resourceType = request.getParameter("parentResourceType");
-            String resource = request.getParameter("parentResource");
-            if (request.getParameter("parentResourceType") == null) {
+            String resourceType = req.getParameter("parentResourceType");
+            String resource = req.getParameter("parentResource");
+            if (req.getParameter("parentResourceType") == null) {
                 throw new MissingParameterException("parentResourceType", requiredParameters);
             }
-            if (request.getParameter("parentResource") == null) {
+            if (req.getParameter("parentResource") == null) {
                 throw new MissingParameterException("parentResource", requiredParameters);
             }
             

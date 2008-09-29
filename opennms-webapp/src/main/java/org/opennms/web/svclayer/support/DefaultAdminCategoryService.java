@@ -37,6 +37,7 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
@@ -226,7 +227,11 @@ public class DefaultAdminCategoryService implements
         Collection<OnmsCategory> categories = m_categoryDao.findAll();
         List<OnmsCategory> sortedCategories =
             new ArrayList<OnmsCategory>(categories);
-        Collections.sort(sortedCategories);
+        Collections.sort(sortedCategories, new Comparator<OnmsCategory>() {
+            public int compare(OnmsCategory o1, OnmsCategory o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
 
         return sortedCategories;
     }

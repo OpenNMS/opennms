@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS scripting issues. - ranger@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
 //              for tracking editing state in the user's session.  Format code. - dj@opennms.org
 //
@@ -46,6 +47,7 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -63,33 +65,34 @@ public class FormProcViewController extends AbstractController implements Initia
         int report_index = -1; 
         String override_timespan = null;
         String override_graphtype = null;
-        String report_action = request.getParameter("action");
-        String domain = request.getParameter("domain");
+        HttpServletRequest req = new XssRequestWrapper(request);
+        String report_action = req.getParameter("action");
+        String domain = req.getParameter("domain");
         if (report_action == null) {
             throw new MissingParameterException ("action", new String[] {"action", "report", "type"});
         }
-        String report_type = request.getParameter("type");
+        String report_type = req.getParameter("type");
         if (report_type == null) {
             throw new MissingParameterException ("type", new String[] {"action", "report", "type"});
         }
 
         if (report_action.equals("Customize") || report_action.equals("Update")) {
-            String r_index = request.getParameter("report");
+            String r_index = req.getParameter("report");
             if (r_index != null && !r_index.equals("null")) {
                report_index = WebSecurityUtils.safeParseInt(r_index); 
             } else if (domain == null) {
                 throw new MissingParameterException("report or domain", new String[] {"report or domain" , "type"});
             }
-            override_timespan = request.getParameter("timespan");
+            override_timespan = req.getParameter("timespan");
             if ((override_timespan == null) || override_timespan.equals("null")) {
                 override_timespan = "none";
             }
-            override_graphtype = request.getParameter("graphtype");
+            override_graphtype = req.getParameter("graphtype");
             if (override_graphtype == null || override_graphtype.equals("null")) {
                 override_graphtype = "none";
             }
             if (report_action.equals("Customize")) {
-                KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
+                KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), false);
                 
                 if (report_type.equals("node")) {
                     editor.loadWorkingReport(m_kscReportService.buildNodeReport(report_index)); 

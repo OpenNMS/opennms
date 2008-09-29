@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues - ranger@opennms.org
 // 2007 Apr 05: Implement InitializingBean, make m_periods static, and eliminate
 //              RrdStrategy (the needed data is in GraphResults). - dj@opennms.org
 //
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.GraphResultsService;
@@ -59,36 +61,37 @@ public class GraphResultsController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpServletRequest req = new XssRequestWrapper(request);
         String[] requiredParameters = new String[] {
                 "resourceId",
                 "reports"
         };
         
         for (String requiredParameter : requiredParameters) {
-            if (request.getParameter(requiredParameter) == null) {
+            if (req.getParameter(requiredParameter) == null) {
                 throw new MissingParameterException(requiredParameter,
                                                     requiredParameters);
             }
         }
 
-        String[] resourceIds = request.getParameterValues("resourceId");
-        String[] reports = request.getParameterValues("reports");
+        String[] resourceIds = req.getParameterValues("resourceId");
+        String[] reports = req.getParameterValues("reports");
         
         // see if the start and end time were explicitly set as params
-        String start = request.getParameter("start");
-        String end = request.getParameter("end");
+        String start = req.getParameter("start");
+        String end = req.getParameter("end");
 
-        String relativeTime = request.getParameter("relativetime");
+        String relativeTime = req.getParameter("relativetime");
         
-        String startMonth = request.getParameter("startMonth");
-        String startDate = request.getParameter("startDate");
-        String startYear = request.getParameter("startYear");
-        String startHour = request.getParameter("startHour");
+        String startMonth = req.getParameter("startMonth");
+        String startDate = req.getParameter("startDate");
+        String startYear = req.getParameter("startYear");
+        String startHour = req.getParameter("startHour");
 
-        String endMonth = request.getParameter("endMonth");
-        String endDate = request.getParameter("endDate");
-        String endYear = request.getParameter("endYear");
-        String endHour = request.getParameter("endHour");
+        String endMonth = req.getParameter("endMonth");
+        String endDate = req.getParameter("endDate");
+        String endYear = req.getParameter("endYear");
+        String endHour = req.getParameter("endHour");
         
         long startLong;
         long endLong;
@@ -129,7 +132,7 @@ public class GraphResultsController extends AbstractController implements Initia
             };
             
             for (String requiredParameter : ourRequiredParameters) {
-                if (request.getParameter(requiredParameter) == null) {
+                if (req.getParameter(requiredParameter) == null) {
                     throw new MissingParameterException(requiredParameter,
                                                         ourRequiredParameters);
                 }
