@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS scripting issues. - ranger@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
 //              for tracking editing state in the user's session. - dj@opennms.org
 //
@@ -46,6 +47,7 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -59,19 +61,20 @@ public class FormProcReportController extends AbstractController implements Init
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
+        HttpServletRequest req = new XssRequestWrapper(request);
+        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), true);
         
         // Get The Customizable Report 
         Report report = editor.getWorkingReport();
 
         // Get Form Variables
-        String action = request.getParameter("action");
-        String report_title = request.getParameter("report_title");
-        String show_timespan = request.getParameter("show_timespan");
-        String show_graphtype = request.getParameter("show_graphtype");
-        String g_index = request.getParameter("graph_index");
+        String action = req.getParameter("action");
+        String report_title = req.getParameter("report_title");
+        String show_timespan = req.getParameter("show_timespan");
+        String show_graphtype = req.getParameter("show_graphtype");
+        String g_index = req.getParameter("graph_index");
         int graph_index = WebSecurityUtils.safeParseInt(g_index);
-        int graphs_per_line = WebSecurityUtils.safeParseInt(request.getParameter("graphs_per_line"));
+        int graphs_per_line = WebSecurityUtils.safeParseInt(req.getParameter("graphs_per_line"));
      
         // Save the global variables into the working report
         report.setTitle(report_title);

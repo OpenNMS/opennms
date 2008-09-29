@@ -1,13 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS scripting issues. - ranger@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
 //              for tracking editing state in the user's session. - dj@opennms.org
 //
@@ -44,6 +45,7 @@ import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -57,17 +59,18 @@ public class FormProcGraphController extends AbstractController implements Initi
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
+        HttpServletRequest req = new XssRequestWrapper(request);
+        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), true);
         
         // Get The Customizable (Working) Graph 
         Graph graph = editor.getWorkingGraph();
 
         // Get Form Variables
-        String action = request.getParameter("action");
-        String timespan = request.getParameter("timespan");
-        String graphtype = request.getParameter("graphtype");
-        String title = request.getParameter("title");
-        String g_index = request.getParameter("graphindex");
+        String action = req.getParameter("action");
+        String timespan = req.getParameter("timespan");
+        String graphtype = req.getParameter("graphtype");
+        String title = req.getParameter("title");
+        String g_index = req.getParameter("graphindex");
         int graph_index = (WebSecurityUtils.safeParseInt(g_index));
         graph_index--; 
      

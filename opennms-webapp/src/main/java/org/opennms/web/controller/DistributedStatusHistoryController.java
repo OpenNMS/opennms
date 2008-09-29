@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -34,6 +34,7 @@ package org.opennms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.support.DistributedStatusHistoryModel;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,11 +54,12 @@ public class DistributedStatusHistoryController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        String locationName = request.getParameter("location");
-        String monitorId = request.getParameter("monitorId");
-        String applicationName = request.getParameter("application");
-        String timeSpan = request.getParameter("timeSpan");
-        String previousLocation = request.getParameter("previousLocation");
+        HttpServletRequest req = new XssRequestWrapper(request);
+        String locationName = req.getParameter("location");
+        String monitorId = req.getParameter("monitorId");
+        String applicationName = req.getParameter("application");
+        String timeSpan = req.getParameter("timeSpan");
+        String previousLocation = req.getParameter("previousLocation");
         DistributedStatusHistoryModel model =
             m_distributedStatusService.createHistoryModel(locationName,
                                                           monitorId,

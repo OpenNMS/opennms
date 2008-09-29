@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.report.availability.AvailabilityReportViewerService;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -51,8 +52,9 @@ public class SimpleXMLReportController extends AbstractController {
     private AvailabilityReportViewerService m_viewerService;
 
     @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest req,
+    protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse res) throws Exception {
+        HttpServletRequest req = new XssRequestWrapper(request);
         String[] requiredParameters = new String[] { "format", "reportid" };
 
         for (String requiredParameter : requiredParameters) {

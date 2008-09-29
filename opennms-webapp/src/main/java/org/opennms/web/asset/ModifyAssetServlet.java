@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2008 Sep 28: handle XSS scripting issues - ranger@opennms.org
 // 2007 Jul 24: Organize imports. - dj@opennms.org
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added support for Display, Notify, Poller and Threshold Categories
@@ -50,6 +51,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 
 public class ModifyAssetServlet extends HttpServlet {
     private static final long serialVersionUID = 9203659232262966182L;
@@ -61,8 +63,9 @@ public class ModifyAssetServlet extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String nodeIdString = request.getParameter("node");
-        String isNewString = request.getParameter("isnew");
+        HttpServletRequest req = new XssRequestWrapper(request);
+        String nodeIdString = req.getParameter("node");
+        String isNewString = req.getParameter("isnew");
 
         if (nodeIdString == null) {
             throw new MissingParameterException("node", new String[] { "node", "isnew" });
@@ -75,7 +78,7 @@ public class ModifyAssetServlet extends HttpServlet {
         int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
         boolean isNew = Boolean.valueOf(isNewString).booleanValue();
 
-        Asset asset = this.parms2Asset(request, nodeId);
+        Asset asset = this.parms2Asset(req, nodeId);
 
         Event evnt = EventUtils.createAssetInfoChangedEvent("OpenNMS.WebUI", nodeId, -1L);
         sendEvent(evnt);

@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -47,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 
 /**
  * A servlet that handles querying the notifications table and and then forwards
@@ -74,8 +76,9 @@ public class NoticeQueryServlet extends HttpServlet {
      * </p>
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpServletRequest req = new XssRequestWrapper(request);
         // handle the style sort parameter
-        String sortStyleString = request.getParameter("sortby");
+        String sortStyleString = req.getParameter("sortby");
         NoticeFactory.SortStyle sortStyle = NoticeFactory.SortStyle.ID;
         if (sortStyleString != null) {
             Object temp = NoticeUtil.getSortStyle(sortStyleString);
@@ -85,7 +88,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the acknowledgement type parameter
-        String ackTypeString = request.getParameter("acktype");
+        String ackTypeString = req.getParameter("acktype");
         NoticeFactory.AcknowledgeType ackType = NoticeFactory.AcknowledgeType.UNACKNOWLEDGED;
         if (ackTypeString != null) {
             Object temp = NoticeUtil.getAcknowledgeType(ackTypeString);
@@ -95,7 +98,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the filter parameters
-        String[] filterStrings = request.getParameterValues("filter");
+        String[] filterStrings = req.getParameterValues("filter");
         List<NoticeFactory.Filter> filterArray = new ArrayList<NoticeFactory.Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
@@ -107,7 +110,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the optional limit parameter
-        String limitString = request.getParameter("limit");
+        String limitString = req.getParameter("limit");
         int limit = DEFAULT_LIMIT;
         if (limitString != null) {
             try {
@@ -117,7 +120,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the optional multiple parameter
-        String multipleString = request.getParameter("multiple");
+        String multipleString = req.getParameter("multiple");
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
@@ -145,7 +148,7 @@ public class NoticeQueryServlet extends HttpServlet {
 
             // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/notification/browser.jsp");
-            dispatcher.forward(request, response);
+            dispatcher.forward(req, response);
         } catch (SQLException e) {
             throw new ServletException("", e);
         }
