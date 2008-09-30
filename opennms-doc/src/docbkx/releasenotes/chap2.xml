@@ -5,6 +5,61 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <section>
+    <title>Changes in OpenNMS 1.5.96</title>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>An exception introduced into the notification browser as part of the
+          XSS security fixes was made unexceptional.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2776">#2776</ulink>)</para>
+        </listitem>
+
+      </itemizedlist>
+    </section>
+  </section>
+      
+  <section>
+    <title>Changes in OpenNMS 1.5.95</title>
+
+    <section>
+      <title>New Features</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>Nodes in category list are now sorted by name.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2708">#2708</ulink>)</para>
+        </listitem>
+
+      </itemizedlist>
+    </section>
+    
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>A bug in the poller that would cause failed services to be shown
+      as available was fixed.  (Bug
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2769">#2769</ulink>)
+      </para>
+      
+      <para>A few other bugs have been fixed since 1.5.94, in the process
+      of preparing for 1.6.0.  A full list of bugs fixed in the release can be
+      found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.95+%281.6+beta+6%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+
+      <para>A number of security issues have been fixed.  (Bug
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2760">#2760</ulink>)
+      </para>
+
+    </section>
+
+    
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.5.94</title>
 
     <section>
