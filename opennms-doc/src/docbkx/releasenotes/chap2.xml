@@ -25,7 +25,7 @@
 
       <para>A bug in the poller that would cause failed services to be shown
       as available was fixed.  (Bug
-      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2702">#2702</ulink>)
+      <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2769">#2769</ulink>)
       </para>
       
       <para>A few other bugs have been fixed since 1.5.94, in the process
