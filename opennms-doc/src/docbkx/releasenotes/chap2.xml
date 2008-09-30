@@ -5,6 +5,24 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <section>
+    <title>Changes in OpenNMS 1.5.96</title>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>An exception introduced into the notification browser as part of the
+          XSS security fixes was made unexceptional.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2776">#2776</ulink>)</para>
+        </listitem>
+
+      </itemizedlist>
+    </section>
+  </section>
+      
+  <section>
     <title>Changes in OpenNMS 1.5.95</title>
 
     <section>
@@ -14,7 +32,7 @@
 
         <listitem>
           <para>Nodes in category list are now sorted by name.  (Bug <ulink
-          url="http://bugzilla.opennms.org/show_bug.cgi?id=2763">#2708</ulink>)</para>
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2708">#2708</ulink>)</para>
         </listitem>
 
       </itemizedlist>
