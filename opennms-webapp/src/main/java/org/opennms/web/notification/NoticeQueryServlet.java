@@ -54,8 +54,8 @@ import org.opennms.web.XssRequestWrapper;
  * A servlet that handles querying the notifications table and and then forwards
  * the query's result to a JSP for display.
  * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class NoticeQueryServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -77,6 +77,7 @@ public class NoticeQueryServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpServletRequest req = new XssRequestWrapper(request);
+
         // handle the style sort parameter
         String sortStyleString = req.getParameter("sortby");
         NoticeFactory.SortStyle sortStyle = NoticeFactory.SortStyle.ID;
@@ -87,7 +88,7 @@ public class NoticeQueryServlet extends HttpServlet {
             }
         }
 
-        // handle the acknowledgement type parameter
+        // handle the acknowledgment type parameter
         String ackTypeString = req.getParameter("acktype");
         NoticeFactory.AcknowledgeType ackType = NoticeFactory.AcknowledgeType.UNACKNOWLEDGED;
         if (ackTypeString != null) {
@@ -143,8 +144,8 @@ public class NoticeQueryServlet extends HttpServlet {
 
             // add the necessary data to the request so the
             // JSP (or whatever gets called) can create the view correctly
-            request.setAttribute("notices", notices);
-            request.setAttribute("parms", parms);
+            req.setAttribute("notices", notices);
+            req.setAttribute("parms", parms);
 
             // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/notification/browser.jsp");

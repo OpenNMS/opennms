@@ -40,6 +40,7 @@ package org.opennms.netmgt.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -66,7 +67,24 @@ public class EventAnticipator implements EventListener {
      * 
      */
     public void anticipateEvent(Event event) {
-        m_anticipatedEvents.add(new EventWrapper(event));
+        anticipateEvent(event, false);
+    }
+    
+    public synchronized void anticipateEvent(Event event, boolean checkUnanticipatedList) {
+        EventWrapper w = new EventWrapper(event);
+        if (checkUnanticipatedList) {
+            for(Iterator<Event> it = m_unanticipatedEvents.iterator(); it.hasNext(); ) {
+                Event unE = it.next();
+                EventWrapper unW = new EventWrapper(unE);
+                if (unW.equals(w)) {
+                    it.remove();
+                    notifyAll();
+                    return;
+                }
+            }
+        } 
+        m_anticipatedEvents.add(w);
+        notifyAll();
     }
 
     /**
@@ -154,13 +172,13 @@ public class EventAnticipator implements EventListener {
             }
         }
 
-        if (missingEvents.size() != anticipatedSize) {
+        if (anticipatedSize >= 0 && missingEvents.size() != anticipatedSize) {
             problems.append(missingEvents.size() +
                     " expected events still outstanding (expected " +
                     anticipatedSize + "):\n");
             problems.append(listEvents("\t", missingEvents));
         }
-        if (unanticipatedEvents().size() != unanticipatedSize) {
+        if (unanticipatedSize >= 0 && unanticipatedEvents().size() != unanticipatedSize) {
             problems.append(unanticipatedEvents().size() +
                     " unanticipated events received (expected " +
                     unanticipatedSize + "):\n");
