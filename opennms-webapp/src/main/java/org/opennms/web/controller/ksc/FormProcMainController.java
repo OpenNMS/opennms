@@ -58,30 +58,29 @@ public class FormProcMainController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
-        String action = req.getParameter("report_action");
-        
+        String action = WebSecurityUtils.sanitizeString(request.getParameter("report_action"));
+
         if (action == null) {
             throw new MissingParameterException("report_action");
         }
 
-        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), false);
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
         
         if (action.equals("Customize")) {
-            editor.loadWorkingReport(getKscReportFactory(), getReportIndex(req));
+            editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (action.equals("CreateFrom")) {
-            editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(req));
+            editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (action.equals("Delete")) {
-            getKscReportFactory().deleteReportAndSave(getReportIndex(req)); 
+            getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
             return new ModelAndView("redirect:/KSC/index.htm");
         } else if (action.equals("Create")) {
             editor.loadNewWorkingReport();
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (action.equals("View")) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
-            modelAndView.addObject("report", getReportIndex(req));
+            modelAndView.addObject("report", getReportIndex(request));
             modelAndView.addObject("type", "custom");
             return modelAndView;
         } else {
@@ -90,7 +89,7 @@ public class FormProcMainController extends AbstractController implements Initia
     }
 
     private int getReportIndex(HttpServletRequest request) {
-        String report = request.getParameter("report");
+        String report = WebSecurityUtils.sanitizeString(request.getParameter("report"));
         if (report == null) {
             throw new MissingParameterException("report");
         } 

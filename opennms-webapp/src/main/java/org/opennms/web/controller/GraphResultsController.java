@@ -61,37 +61,36 @@ public class GraphResultsController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
         String[] requiredParameters = new String[] {
                 "resourceId",
                 "reports"
         };
         
         for (String requiredParameter : requiredParameters) {
-            if (req.getParameter(requiredParameter) == null) {
+            if (request.getParameter(requiredParameter) == null) {
                 throw new MissingParameterException(requiredParameter,
                                                     requiredParameters);
             }
         }
 
-        String[] resourceIds = req.getParameterValues("resourceId");
-        String[] reports = req.getParameterValues("reports");
+        String[] resourceIds = WebSecurityUtils.sanitizeString(request.getParameterValues("resourceId"));
+        String[] reports = WebSecurityUtils.sanitizeString(request.getParameterValues("reports"));
         
         // see if the start and end time were explicitly set as params
-        String start = req.getParameter("start");
-        String end = req.getParameter("end");
+        String start = WebSecurityUtils.sanitizeString(request.getParameter("start"));
+        String end = WebSecurityUtils.sanitizeString(request.getParameter("end"));
 
-        String relativeTime = req.getParameter("relativetime");
+        String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
         
-        String startMonth = req.getParameter("startMonth");
-        String startDate = req.getParameter("startDate");
-        String startYear = req.getParameter("startYear");
-        String startHour = req.getParameter("startHour");
+        String startMonth = WebSecurityUtils.sanitizeString(request.getParameter("startMonth"));
+        String startDate = WebSecurityUtils.sanitizeString(request.getParameter("startDate"));
+        String startYear = WebSecurityUtils.sanitizeString(request.getParameter("startYear"));
+        String startHour = WebSecurityUtils.sanitizeString(request.getParameter("startHour"));
 
-        String endMonth = req.getParameter("endMonth");
-        String endDate = req.getParameter("endDate");
-        String endYear = req.getParameter("endYear");
-        String endHour = req.getParameter("endHour");
+        String endMonth = WebSecurityUtils.sanitizeString(request.getParameter("endMonth"));
+        String endDate = WebSecurityUtils.sanitizeString(request.getParameter("endDate"));
+        String endYear = WebSecurityUtils.sanitizeString(request.getParameter("endYear"));
+        String endHour = WebSecurityUtils.sanitizeString(request.getParameter("endHour"));
         
         long startLong;
         long endLong;
@@ -132,7 +131,7 @@ public class GraphResultsController extends AbstractController implements Initia
             };
             
             for (String requiredParameter : ourRequiredParameters) {
-                if (req.getParameter(requiredParameter) == null) {
+                if (request.getParameter(requiredParameter) == null) {
                     throw new MissingParameterException(requiredParameter,
                                                         ourRequiredParameters);
                 }

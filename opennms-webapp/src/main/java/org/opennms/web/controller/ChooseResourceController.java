@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.XssRequestWrapper;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.support.ChooseResourceModel;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,17 +52,16 @@ public class ChooseResourceController extends AbstractController implements Init
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] { "parentResourceId or", "parentResourceType and parentResource" };
 
-        HttpServletRequest req = new XssRequestWrapper(request);
-        String endUrl = req.getParameter("endUrl");
+        String endUrl = WebSecurityUtils.sanitizeString(request.getParameter("endUrl"));
 
-        String resourceId = req.getParameter("parentResourceId");
+        String resourceId = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceId"));
         if (resourceId == null) {
-            String resourceType = req.getParameter("parentResourceType");
-            String resource = req.getParameter("parentResource");
-            if (req.getParameter("parentResourceType") == null) {
+            String resourceType = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceType"));
+            String resource = WebSecurityUtils.sanitizeString(request.getParameter("parentResource"));
+            if (request.getParameter("parentResourceType") == null) {
                 throw new MissingParameterException("parentResourceType", requiredParameters);
             }
-            if (req.getParameter("parentResource") == null) {
+            if (request.getParameter("parentResource") == null) {
                 throw new MissingParameterException("parentResource", requiredParameters);
             }
             
