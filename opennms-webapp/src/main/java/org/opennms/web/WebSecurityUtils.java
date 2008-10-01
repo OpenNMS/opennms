@@ -51,6 +51,13 @@ public class WebSecurityUtils {
 	
     private final static Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
+    public static String[] sanitizeString(String[] raw) {
+        for (int i = 0; i < raw.length; i++) {
+            raw[i] = sanitizeString(raw[i]);
+        }
+        return raw;
+    }
+    
     public static String sanitizeString(String raw)
     {
         if (raw==null || raw.length()==0)
