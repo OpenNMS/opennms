@@ -34,7 +34,7 @@ package org.opennms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.XssRequestWrapper;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.support.DistributedStatusHistoryModel;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,12 +54,11 @@ public class DistributedStatusHistoryController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
-        String locationName = req.getParameter("location");
-        String monitorId = req.getParameter("monitorId");
-        String applicationName = req.getParameter("application");
-        String timeSpan = req.getParameter("timeSpan");
-        String previousLocation = req.getParameter("previousLocation");
+        String locationName = WebSecurityUtils.sanitizeString(request.getParameter("location"));
+        String monitorId = WebSecurityUtils.sanitizeString(request.getParameter("monitorId"));
+        String applicationName = WebSecurityUtils.sanitizeString(request.getParameter("application"));
+        String timeSpan = WebSecurityUtils.sanitizeString(request.getParameter("timeSpan"));
+        String previousLocation = WebSecurityUtils.sanitizeString(request.getParameter("previousLocation"));
         DistributedStatusHistoryModel model =
             m_distributedStatusService.createHistoryModel(locationName,
                                                           monitorId,

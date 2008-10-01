@@ -88,7 +88,7 @@ Summary:	The core OpenNMS backend.
 Group:		Applications/System
 Requires:	jicmp
 Requires:	%{jdk}
-Obsoletes:	opennms < %{version}-%{release}
+Obsoletes:	opennms < 1.3.11
 
 %description core
 The core OpenNMS backend.  This package contains the main OpenNMS
@@ -132,7 +132,7 @@ Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
 Requires:	opennms-core = %{version}-%{release}
 Provides:	opennms-webui = %{version}-%{release}
-Obsoletes:	opennms-webapp < %{version}-%{release}
+Obsoletes:	opennms-webapp < 1.3.11
 
 %description webapp-jetty
 The web UI for OpenNMS.  This is the Jetty version, which runs
@@ -143,7 +143,7 @@ Summary:	Standalone web interface for OpenNMS
 Group:		Applications/System
 Requires:	opennms-core = %{version}-%{release}
 Provides:	opennms-webui = %{version}-%{release}
-Obsoletes:	opennms-webapp < %{version}-%{release}
+Obsoletes:	opennms-webapp < 1.3.11
 
 %description webapp-standalone
 The web UI for OpenNMS.  This is the standalone version, suitable for

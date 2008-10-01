@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -59,18 +58,17 @@ public class FormProcGraphController extends AbstractController implements Initi
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
-        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), true);
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
         
         // Get The Customizable (Working) Graph 
         Graph graph = editor.getWorkingGraph();
 
         // Get Form Variables
-        String action = req.getParameter("action");
-        String timespan = req.getParameter("timespan");
-        String graphtype = req.getParameter("graphtype");
-        String title = req.getParameter("title");
-        String g_index = req.getParameter("graphindex");
+        String action = WebSecurityUtils.sanitizeString(request.getParameter("action"));
+        String timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+        String graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
+        String title = WebSecurityUtils.sanitizeString(request.getParameter("title"));
+        String g_index = WebSecurityUtils.sanitizeString(request.getParameter("graphindex"));
         int graph_index = (WebSecurityUtils.safeParseInt(g_index));
         graph_index--; 
      

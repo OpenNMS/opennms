@@ -47,7 +47,6 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -65,34 +64,33 @@ public class FormProcViewController extends AbstractController implements Initia
         int report_index = -1; 
         String override_timespan = null;
         String override_graphtype = null;
-        HttpServletRequest req = new XssRequestWrapper(request);
-        String report_action = req.getParameter("action");
-        String domain = req.getParameter("domain");
+        String report_action = WebSecurityUtils.sanitizeString(request.getParameter("action"));
+        String domain = WebSecurityUtils.sanitizeString(request.getParameter("domain"));
         if (report_action == null) {
             throw new MissingParameterException ("action", new String[] {"action", "report", "type"});
         }
-        String report_type = req.getParameter("type");
+        String report_type = WebSecurityUtils.sanitizeString(request.getParameter("type"));
         if (report_type == null) {
             throw new MissingParameterException ("type", new String[] {"action", "report", "type"});
         }
 
         if (report_action.equals("Customize") || report_action.equals("Update")) {
-            String r_index = req.getParameter("report");
+            String r_index = WebSecurityUtils.sanitizeString(request.getParameter("report"));
             if (r_index != null && !r_index.equals("null")) {
                report_index = WebSecurityUtils.safeParseInt(r_index); 
             } else if (domain == null) {
                 throw new MissingParameterException("report or domain", new String[] {"report or domain" , "type"});
             }
-            override_timespan = req.getParameter("timespan");
+            override_timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
             if ((override_timespan == null) || override_timespan.equals("null")) {
                 override_timespan = "none";
             }
-            override_graphtype = req.getParameter("graphtype");
+            override_graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
             if (override_graphtype == null || override_graphtype.equals("null")) {
                 override_graphtype = "none";
             }
             if (report_action.equals("Customize")) {
-                KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), false);
+                KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
                 
                 if (report_type.equals("node")) {
                     editor.loadWorkingReport(m_kscReportService.buildNodeReport(report_index)); 
