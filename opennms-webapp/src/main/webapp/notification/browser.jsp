@@ -54,7 +54,7 @@
 		org.opennms.web.event.*,
 		org.opennms.web.event.filter.*,
 		org.opennms.web.XssRequestWrapper,
-		org.opennms.web.SafeHtmlUtil
+		org.opennms.web.WebSecurityUtils
 	"
 %>
 
@@ -214,7 +214,7 @@
     Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
 		<span class="filter"><% NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); %>
-				<%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
+				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove all]</a>
   </p>
