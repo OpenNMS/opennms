@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.web.XssRequestWrapper;
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
@@ -84,18 +84,17 @@ public class SurveillanceViewController extends AbstractController implements In
     protected ModelAndView handleRequestInternal(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {
 
-        XssRequestWrapper r = new XssRequestWrapper(req);
-        if ( ! m_service.isViewName(r.getParameter(VIEW_NAME_PARAMETER)) ) {
-            SurveillanceViewError viewError = createSurveillanceViewError( r.getParameter(VIEW_NAME_PARAMETER) );
+        if ( ! m_service.isViewName(req.getParameter(VIEW_NAME_PARAMETER)) ) {
+            SurveillanceViewError viewError = createSurveillanceViewError( WebSecurityUtils.sanitizeString(req.getParameter(VIEW_NAME_PARAMETER)) );
             return new ModelAndView("surveillanceViewError", "error", viewError);
         }
 
-        HttpSession session = r.getSession();
-        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(r.getParameter(VIEW_NAME_PARAMETER)));
+        HttpSession session = req.getSession();
+        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(WebSecurityUtils.sanitizeString(req.getParameter(VIEW_NAME_PARAMETER))));
         ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(PROGRESS_MONITOR_KEY);
 
         if (progressMonitor == null) {
-            progressMonitor = createProgressMonitor(r.getParameter(VIEW_NAME_PARAMETER));
+            progressMonitor = createProgressMonitor(WebSecurityUtils.sanitizeString(req.getParameter(VIEW_NAME_PARAMETER)));
             session.setAttribute(PROGRESS_MONITOR_KEY, progressMonitor);
         }
 
