@@ -60,7 +60,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
@@ -82,17 +81,16 @@ public class CustomViewController extends AbstractController implements Initiali
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
         String[] requiredParameters = new String[] { "report or domain", "type" };
       
         // Get Form Variable
-        String report_type = req.getParameter("type");
+        String report_type = WebSecurityUtils.sanitizeString(request.getParameter("type"));
         if (report_type == null) {
             throw new MissingParameterException("type", requiredParameters);
         }
       
-        String r_index = req.getParameter("report");
-        String domain = req.getParameter("domain");
+        String r_index = WebSecurityUtils.sanitizeString(request.getParameter("report"));
+        String domain = WebSecurityUtils.sanitizeString(request.getParameter("domain"));
         int report_index = 0;
         if (r_index != null) {
             report_index = WebSecurityUtils.safeParseInt(r_index);
@@ -100,8 +98,8 @@ public class CustomViewController extends AbstractController implements Initiali
             throw new MissingParameterException("report or domain", requiredParameters);
         }
       
-        String override_timespan = req.getParameter("timespan");
-        String override_graphtype = req.getParameter("graphtype");
+        String override_timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+        String override_graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
         if ((override_timespan == null) || (override_timespan.equals("null"))) {
             override_timespan = "none";
         }
@@ -244,7 +242,7 @@ public class CustomViewController extends AbstractController implements Initiali
             modelAndView.addObject("graphType", null);
         }
         
-        modelAndView.addObject("showCustomizeButton", !req.isUserInRole(Authentication.READONLY_ROLE));
+        modelAndView.addObject("showCustomizeButton", !request.isUserInRole(Authentication.READONLY_ROLE));
 
         if (report.getGraphs_per_line() > 0) {
             modelAndView.addObject("graphsPerLine", report.getGraphs_per_line());
