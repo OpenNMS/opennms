@@ -54,7 +54,7 @@
 		org.opennms.web.event.filter.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.XssRequestWrapper,
-		org.opennms.web.SafeHtmlUtil
+		org.opennms.web.WebSecurityUtils
 	"
 %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -243,7 +243,7 @@
                     <% org.opennms.web.event.filter.Filter filter = (org.opennms.web.event.filter.Filter)parms.filters.get(i); %>
                     &nbsp;
                     <span class="filter">
-                      <%= SafeHtmlUtil.sanitize(filter.getTextDescription()) %>
+                      <%= WebSecurityUtils.sanitizeString(filter.getTextDescription()) %>
                       <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a>
                     </span>
                   <% } %>

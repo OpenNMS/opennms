@@ -47,7 +47,7 @@
 		org.opennms.web.outage.*,
 		org.opennms.web.outage.filter.Filter,
 		org.opennms.web.XssRequestWrapper,
-		org.opennms.web.SafeHtmlUtil
+		org.opennms.web.WebSecurityUtils
 	"
 %>
 
@@ -90,7 +90,7 @@
   <p>Search constraints: 
       <% for(int i=0; i < length; i++) { %>
         <% Filter filter = (Filter)parms.filters.get(i); %> 
-        &nbsp; <span class="filter"><%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>">[-]</a></span>
+        &nbsp; <span class="filter"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>">[-]</a></span>
       <% } %>   
   </p>    
 <% } %>  
