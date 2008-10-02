@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mail-transport-test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance ">
+<mail-transport-test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 <!--  Example end2end test sending to localhost and reading from gmail.  In an
       end2end test, mail is sent to the specified host and read from the specified host.

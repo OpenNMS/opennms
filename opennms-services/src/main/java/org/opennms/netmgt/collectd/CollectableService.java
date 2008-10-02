@@ -85,7 +85,7 @@ final class CollectableService implements ReadyRunnable {
     /**
      * The last time the collector was scheduled for collection.
      */
-    private long m_lastScheduledCollectionTime;
+    volatile private long m_lastScheduledCollectionTime;
 
     /**
      * The scheduler for collectd

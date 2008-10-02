@@ -45,16 +45,16 @@ public class Schedule {
 
 	public static final Random random = new Random();
 	
-    private ReadyRunnable m_schedulable;
-    private ScheduleInterval m_interval;
-    private ScheduleTimer m_timer;
-    private int m_currentExpirationCode;
-    private long m_currentInterval;
-    private boolean m_scheduled = false;
+    private final ReadyRunnable m_schedulable;
+    private final ScheduleInterval m_interval;
+    private final ScheduleTimer m_timer;
+    private volatile int m_currentExpirationCode;
+    private volatile long m_currentInterval;
+    private volatile boolean m_scheduled = false;
 	
     
     class ScheduleEntry implements ReadyRunnable {
-        private int m_expirationCode;
+        private final int m_expirationCode;
 
         public ScheduleEntry(int expirationCode) {
             m_expirationCode = expirationCode;
