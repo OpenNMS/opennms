@@ -81,9 +81,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6</developerConnection>
-    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/playground/rangerrick/svntest/trunk</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/playground/rangerrick/svntest/trunk</developerConnection>
+    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/playground/rangerrick/svntest/trunk</url>
   </scm>
   <modules>
     <module>dependencies</module>
