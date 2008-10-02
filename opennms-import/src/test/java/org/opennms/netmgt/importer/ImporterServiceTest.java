@@ -91,13 +91,14 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
 
         // we wait a while here because the start up time could be long
         // this will end as soon as the event is received so no harm in waiting
-        waitForImportStarted(60000);
+        waitForImportStarted(300000);
 
         expectImportSuccessful();
 
         getDaemon().destroy();
         
-        waitForImportSuccessful(20000);
+        // this will end as soon as the event is received so no harm in waiting
+        waitForImportSuccessful(300000);
     }
 
     private void expectImportSuccessful() {
