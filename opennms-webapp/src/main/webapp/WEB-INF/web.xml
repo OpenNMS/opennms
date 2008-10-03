@@ -270,13 +270,10 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-
-  <!-- Remove this as it causes hangs on shutdown of opennms
-       Needs to be reworked 
+  
   <listener>
     <listener-class>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
   </listener>
-  -->
 
   <!--  RESTful Web Services -->
   <servlet>

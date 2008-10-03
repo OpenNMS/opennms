@@ -79,7 +79,7 @@ public class Jsr160ConnectionFactory {
                 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
             } catch(Exception e) {
-                log.error("Unable to get MBeanServerConnection: " + url);
+                log.warn("Unable to get MBeanServerConnection: " + url);
             }
         }
         else if (factory.equals("PASSWORD-CLEAR")) {

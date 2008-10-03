@@ -144,9 +144,7 @@ public final class RTCConfigFactory {
             throw new IllegalArgumentException("RTC: Value " + rolling + " - format incorrect");
         }
 
-        long ret = ((hours * 3600) + (min * 60) + sec) * 1000;
-
-        return ret;
+        return (long) ((hours * 3600) + (min * 60) + sec) * 1000;
     }
 
     /**
