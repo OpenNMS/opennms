@@ -85,7 +85,9 @@ public class KSC_PerformanceReportFactory {
             "1_hour",
             "2_hour",
             "4_hour",
+            "6_hour",
             "8_hour",
+            "12_hour",
             "1_day",
             "2_day",
             "7_day",
@@ -303,8 +305,12 @@ public class KSC_PerformanceReportFactory {
             begin_time.add(Calendar.HOUR, -2);
         } else if (interval.equals("4_hour")) {
             begin_time.add(Calendar.HOUR, -4);
+        } else if (interval.equals("6_hour")) {
+            begin_time.add(Calendar.HOUR, -6);
         } else if (interval.equals("8_hour")) {
             begin_time.add(Calendar.HOUR, -8);
+        } else if (interval.equals("12_hour")) {
+            begin_time.add(Calendar.HOUR, -12);
         } else if (interval.equals("1_day")) {
             begin_time.add(Calendar.DATE, -1);
         } else if (interval.equals("2_day")) {
