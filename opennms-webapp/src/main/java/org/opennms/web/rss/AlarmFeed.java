@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Oct 04: Severity -> OnmsSeverity name change. - dj@opennms.org
  * 2008 Sep 27: Use new Severity enum. - dj@opennms.org
  * 2008 Aug 31: Update alarm list URL. - dj@opennms.org
  * 
@@ -41,10 +42,10 @@ package org.opennms.web.rss;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmFactory;
-import org.opennms.web.alarm.Alarm.Severity;
 import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.Filter;
@@ -82,7 +83,7 @@ public class AlarmFeed extends AbstractFeed {
             }
             if (this.getRequest().getParameter("severity") != null) {
                 String sev = this.getRequest().getParameter("severity");
-                for (Severity severity : Severity.values()) {
+                for (OnmsSeverity severity : OnmsSeverity.values()) {
                     if (severity.getLabel().toLowerCase().equals(sev)) {
                         filters.add(new SeverityFilter(severity));
                     }

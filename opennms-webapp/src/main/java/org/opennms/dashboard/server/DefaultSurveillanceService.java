@@ -9,6 +9,9 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Oct 04: Use new OnmsSeverity object from Alarm which lets us get the
+ *              severity label instead of figuring it out ourselves. - dj@opennms.org
  * 
  * Created: February 20, 2007
  *
@@ -222,24 +225,11 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         int index = 0;
         for (OnmsAlarm alarm : alarms) {
-            alarmArray[index] = new Alarm(getSeverityString(alarm.getSeverity()), alarm.getNode().getLabel(), alarm.getLogMsg(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
+            alarmArray[index] = new Alarm(alarm.getSeverity().getLabel(), alarm.getNode().getLabel(), alarm.getLogMsg(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
             index++;
         }
         
         return alarmArray;
-    }
-    
-    private String getSeverityString(Integer severity) {
-        switch(severity) {
-        case 1: return "Indeterminate";
-        case 2: return "Cleared";
-        case 3: return "Normal";
-        case 4: return "Warning";
-        case 5: return "Minor";
-        case 6: return "Major";
-        case 7: return "Critical";
-        default: return "Unknown";
-        }
     }
 
     public String[] getNodeNames(SurveillanceSet set) {
