@@ -133,17 +133,17 @@ getTempFile(){
 
 	test -z "$TMPDIR" && TMPDIR=/tmp
 
-	local TEMPFILE=""
+	__TEMPFILE=""
 	test -n "$mktemp" && {
-		TEMPFILE=`mktemp $TMPDIR/opennmsXXXXXX`
+		__TEMPFILE=`mktemp $TMPDIR/opennmsXXXXXX`
 	}
 	test -z "$mktemp" && {
-		TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
+		__TEMPFILE="$TMPDIR/xmllint.$RANDOM.$RANDOM.$RANDOM.$$"
 	}
 
-	rm "$TEMPFILE"
-	(umask 077 && touch "$TEMPFILE")
-	echo "$TEMPFILE"
+	rm "$__TEMPFILE"
+	(umask 077 && touch "$__TEMPFILE")
+	echo "$__TEMPFILE"
 }
 		
 checkXmlFiles(){
