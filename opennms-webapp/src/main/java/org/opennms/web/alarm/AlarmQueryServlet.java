@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 04: Class name change from Severity -> OnmsSeverity and some method name changes; organize imports. - dj@opennms.org
 // 2008 Sep 27: Use new SeverityFilter signature that requires a Severity. - dj@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // 2005 Apr 18: This file created from EventQueryServlet.java
@@ -52,14 +53,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.alarm.Alarm.Severity;
-import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
-import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
+import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.IPLikeFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
@@ -67,6 +68,7 @@ import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.event.EventFilterServlet;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to
@@ -141,7 +143,7 @@ public class AlarmQueryServlet extends HttpServlet {
         // convenient syntax for SeverityFilter
         String severity = request.getParameter("severity");
         if (severity != null && !severity.equals(AlarmUtil.ANY_SEVERITIES_OPTION)) {
-            filterArray.add(new SeverityFilter(Severity.getById(WebSecurityUtils.safeParseInt(severity))));
+            filterArray.add(new SeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(severity))));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time

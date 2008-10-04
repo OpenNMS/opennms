@@ -1,5 +1,9 @@
 // This file is part of the OpenNMS(R) QoSD OSS/J interface.
 //
+// Modifications:
+//
+// 2008 Oct 04: Use new OnmsSeverity object on OnmsAlarms. - dj@opennms.org
+//
 // Copyright (C) 2006-2007 Craig Gallen, 
 //                         University of Southampton,
 //                         School of Electronics and Computer Science
@@ -518,7 +522,7 @@ public class OssDaoOpenNMSImpl {
 				"\n\t\tapplicationDN \t"+ alarm.getApplicationDN() //applicationDN
 				+"\t\tossPrimaryKey \t" + alarm.getOssPrimaryKey() //ossPrimaryKey
 				+"\t\talarmID " 		+ alarm.getId() //alarmID
-				+"\t\tSeverity():"		+ alarm.getSeverity()
+				+"\t\tSeverity():"		+ alarm.getSeverity().getId()
 				+"\t\tAlarmAckUser():"	+ alarm.getAlarmAckUser()
 				+"\t\tAlarmAckTime():"	+ alarm.getAlarmAckTime();
 		}
@@ -547,7 +551,7 @@ public class OssDaoOpenNMSImpl {
 				"\t\treductionKey \t" + 	alarm.getReductionKey()+"\n"+ //reductionKey
 				"\t\talarmType \t" + 	alarm.getAlarmType()+"\n"+ //alarmType
 				"\t\tcounter \t" + 	alarm.getCounter()+"\n"+ //counter
-				"\t\tseverity \t" + 	alarm.getSeverity()+"\n"+ //severity
+				"\t\tseverity \t" + 	alarm.getSeverity().getId()+"\n"+ //severity
 				"\t\tlastEventID \t" + 	(alarm.getLastEvent() == null ? null : alarm.getLastEvent().getId())+"\n"+ //lastEventID
 				"\t\tfirstEventTime \t" + 	alarm.getFirstEventTime()+"\n"+ //firstEventTime
 				"\t\tlastEventTime \t" + 	alarm.getLastEventTime()+"\n"+ //lastEventTime

@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 04: Severity -> OnmsSeverity name change. - dj@opennms.org
 // 2008 Sep 27: Use new Severity enum. - dj@opennms.org
 // 2007 Feb 20: Make the style match that of the event page. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -46,7 +47,7 @@
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 			org.opennms.web.alarm.*,
-			org.opennms.web.alarm.Alarm.Severity,
+			org.opennms.netmgt.model.OnmsSeverity,
 	        org.opennms.web.acegisecurity.Authentication"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -107,10 +108,10 @@
     
     String escalateAction = AlarmSeverityChangeServlet.ESCALATE_ACTION;
     String clearAction = AlarmSeverityChangeServlet.CLEAR_ACTION;
-    if (alarm.getSeverity() == Severity.CLEARED || (alarm.getSeverity().greaterThan(Severity.NORMAL) && alarm.getSeverity().lessThan(Severity.CRITICAL))) {
+    if (alarm.getSeverity() == OnmsSeverity.CLEARED || (alarm.getSeverity().isGreaterThan(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThan(OnmsSeverity.CRITICAL))) {
     	showEscalate=true;
     }
-    if  (alarm.getSeverity().greaterThanOrEqualTo(Severity.NORMAL) && alarm.getSeverity().lessThanOrEqualTo(Severity.CRITICAL)) {
+    if  (alarm.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThanOrEqual(OnmsSeverity.CRITICAL)) {
     	showClear=true;
     }
 %>

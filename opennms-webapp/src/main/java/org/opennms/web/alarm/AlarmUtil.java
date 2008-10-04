@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 04: Severity -> OnmsSeverity name change and some method name changes. - dj@opennms.org
 // 2008 Sep 27: Move code related to new enum classes into those classes
 //              and use new constructor signatures for severity filters. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
@@ -42,8 +43,8 @@ package org.opennms.web.alarm;
 import java.util.Calendar;
 import java.util.StringTokenizer;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.alarm.Alarm.Severity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
@@ -87,7 +88,7 @@ public abstract class AlarmUtil extends Object {
         String value = tokens.nextToken();
 
         if (type.equals(SeverityFilter.TYPE)) {
-            filter = new SeverityFilter(Severity.getById(WebSecurityUtils.safeParseInt(value)));
+            filter = new SeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(value)));
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
@@ -103,7 +104,7 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(AcknowledgedByFilter.TYPE)) {
             filter = new AcknowledgedByFilter(value);
         } else if (type.equals(NegativeSeverityFilter.TYPE)) {
-            filter = new NegativeSeverityFilter(Severity.getById(WebSecurityUtils.safeParseInt(value)));
+            filter = new NegativeSeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(value)));
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {

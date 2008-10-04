@@ -9,6 +9,8 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Oct 04: Use new OnmsSeverity object when setting alarm severity. - dj@opennms.org
  * 
  * Created: April 5, 2007
  *
@@ -49,6 +51,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -232,7 +235,7 @@ public class DatabasePopulator {
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         alarm.setUei(event.getEventUei());
         alarm.setCounter(1);
-        alarm.setSeverity(0);
+        alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setLastEvent(event);
         getAlarmDao().save(alarm);
         getAlarmDao().flush();

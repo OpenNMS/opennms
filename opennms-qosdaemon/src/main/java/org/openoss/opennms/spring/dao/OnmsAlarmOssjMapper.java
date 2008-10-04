@@ -2,6 +2,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 04: Use new OnmsSeverity object on OnmsAlarms. - dj@opennms.org
 // 2007 Jun 24: Organize imports, comment-out (and tag with FIXME)
 //              unused variables, and mark unread fields as "unused".
 //              - dj@opennms.org
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.openoss.opennms.spring.qosdrx.QoSDrx;
 import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
 
@@ -240,12 +242,12 @@ public class OnmsAlarmOssjMapper {
 					onmsAlarm.setSuppressedUntil(new Date()); // needed?
 					onmsAlarm.setSuppressedTime(new Date()); // needed?
 
-					Integer onmsseverity;
+					OnmsSeverity onmsseverity;
 					try{
 						onmsseverity= ossjSeveritytoOnmsSeverity(alarmValue.getPerceivedSeverity());
 					} catch (IllegalArgumentException iae){
 						log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
-						onmsseverity=new Integer(OnmsAlarm.WARNING_SEVERITY);
+						onmsseverity=OnmsSeverity.WARNING;
 					}
 					onmsAlarm.setSeverity(onmsseverity); 
 
@@ -434,7 +436,7 @@ public class OnmsAlarmOssjMapper {
 			// if the alarm is cleared, then set the alarm cleared time
 			// to that of the lasteventtime as this must be the time
 			// the clear occured.
-			if(_openNMSalarm.getSeverity() == OnmsAlarm.CLEARED_SEVERITY) {
+			if(_openNMSalarm.getSeverity() == OnmsSeverity.CLEARED) {
 				// OnmsAlarm can contain java.sql.Timestamp - convert to Date
 				alarmValueSpecification.setAlarmClearedTime(new Date(_openNMSalarm.getLastEventTime().getTime()));
 			}
@@ -680,33 +682,33 @@ public class OnmsAlarmOssjMapper {
 	 * @param ossjseverity the severity value according to ossj / X733
 	 * @return the severity value according to opennms
 	 */
-	public Integer ossjSeveritytoOnmsSeverity(short ossjseverity) throws IllegalArgumentException{
+	public OnmsSeverity ossjSeveritytoOnmsSeverity(short ossjseverity) throws IllegalArgumentException{
 
-		int onmsseverity=0;
+		OnmsSeverity onmsseverity;
 
 		switch(ossjseverity)
 		{
 		case javax.oss.fm.monitor.PerceivedSeverity.INDETERMINATE:
-			onmsseverity = OnmsAlarm.INDETERMINATE_SEVERITY;
+			onmsseverity = OnmsSeverity.INDETERMINATE;
 			break;
 		case javax.oss.fm.monitor.PerceivedSeverity.CLEARED:
-			onmsseverity = OnmsAlarm.CLEARED_SEVERITY;
+			onmsseverity = OnmsSeverity.CLEARED;
 			break;
 		case javax.oss.fm.monitor.PerceivedSeverity.WARNING:
-			onmsseverity = OnmsAlarm.WARNING_SEVERITY;
+			onmsseverity = OnmsSeverity.WARNING;
 			break;
 		case javax.oss.fm.monitor.PerceivedSeverity.MINOR:
-			onmsseverity = OnmsAlarm.MINOR_SEVERITY;
+			onmsseverity = OnmsSeverity.MINOR;
 			break;
 		case javax.oss.fm.monitor.PerceivedSeverity.MAJOR:
-			onmsseverity = OnmsAlarm.MAJOR_SEVERITY;
+			onmsseverity = OnmsSeverity.MAJOR;
 			break;
 		case javax.oss.fm.monitor.PerceivedSeverity.CRITICAL:
-			onmsseverity = OnmsAlarm.CRITICAL_SEVERITY;
+			onmsseverity = OnmsSeverity.CRITICAL;
 			break;
 		default: throw new IllegalArgumentException("invalid OSS/J severity value:"+ossjseverity);
 		}
-		return new Integer(onmsseverity);
+		return onmsseverity;
 	}
 
 	/**
@@ -726,7 +728,7 @@ public class OnmsAlarmOssjMapper {
 	 * @return  the severity value according to ossj / X733
 	 * 
 	 */
-	public short onmsSeverityToOssjSeverity(Integer onmsSeverity ) throws IllegalArgumentException{
+	public short onmsSeverityToOssjSeverity(OnmsSeverity onmsSeverity ) throws IllegalArgumentException{
 
 		short ossjseverity=0;
 
@@ -734,25 +736,25 @@ public class OnmsAlarmOssjMapper {
 
 		switch(onmsSeverity)
 		{
-		case OnmsAlarm.INDETERMINATE_SEVERITY:
+		case INDETERMINATE:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.INDETERMINATE; 
 			break;
-		case OnmsAlarm.CLEARED_SEVERITY:
+		case CLEARED:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.CLEARED;
 			break;
-		case OnmsAlarm.NORMAL_SEVERITY:
+		case NORMAL:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.WARNING;
 			break;
-		case OnmsAlarm.WARNING_SEVERITY:
+		case WARNING:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.WARNING;
 			break;
-		case OnmsAlarm.MINOR_SEVERITY:
+		case MINOR:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.MINOR;
 			break;
-		case OnmsAlarm.MAJOR_SEVERITY:
+		case MAJOR:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.MAJOR;
 			break;
-		case OnmsAlarm.CRITICAL_SEVERITY:
+		case CRITICAL:
 			ossjseverity=javax.oss.fm.monitor.PerceivedSeverity.CRITICAL;
 			break;
 		default: throw new IllegalArgumentException("invalid OpenNMS severity value:"+onmsSeverity);

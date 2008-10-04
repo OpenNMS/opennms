@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 04: Use OnmsAlarm.setSeverityId() instead of setSeverity (which now takes an OnmsSeverity object). - dj@opennms.org
 // 2007 Apr 05: Convert to use AbstractTransactionalDaoTestCase, reorganized testSave(), added a test for the case where distPoller is not set. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -62,7 +63,7 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         
         alarm.setNode(node);
         alarm.setUei(event.getEventUei());
-        alarm.setSeverity(event.getEventSeverity());
+        alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(new Integer(1));
@@ -94,7 +95,7 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         
         alarm.setNode(node);
         alarm.setUei(event.getEventUei());
-        alarm.setSeverity(event.getEventSeverity());
+        alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(new Integer(1));

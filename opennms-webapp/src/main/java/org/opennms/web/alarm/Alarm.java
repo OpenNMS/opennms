@@ -8,6 +8,7 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2008 Oct 04: Move Severity inner class into sharable OnmsSeverity model class. - dj@opennms.org
 // 2008 Sep 27: Move Severity-related code here in a Java 5 enum class
 //              from AlarmUtil and use new class internally. - dj@opennms.org
 // 2005 Apr 18: This file was created from Event.java
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
 /**
@@ -52,68 +54,6 @@ import org.opennms.netmgt.model.TroubleTicketState;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class Alarm extends Object {
-    public static enum Severity {
-        INDETERMINATE(1, "Indeterminate"),
-        CLEARED(2, "Cleared"),
-        NORMAL(3, "Normal"),
-        WARNING(4, "Warning"),
-        MINOR(5, "Minor"),
-        MAJOR(6, "Major"),
-        CRITICAL(7, "Critical");
-        
-        private static final Map<Integer, Severity> m_idMap; 
-        private static final List<Integer> m_ids; 
-        
-        private int m_id;
-        private String m_label;
-        
-        static {
-            m_ids = new ArrayList<Integer>(values().length);
-            m_idMap = new HashMap<Integer, Severity>(values().length);
-            for (Severity severity : values()) {
-                m_ids.add(severity.getId());
-                m_idMap.put(severity.getId(), severity);
-            }
-        }
-
-        private Severity(int id, String label) {
-            m_id = id;
-            m_label = label;
-        }
-        
-        public int getId() {
-            return m_id;
-        }
-        
-        public String getLabel() {
-            return m_label;
-        }
-        
-        public boolean lessThan(Severity other) {
-            return getId() < other.getId();
-        }
-
-        public boolean lessThanOrEqualTo(Severity other) {
-            return getId() <= other.getId();
-        }
-        
-        public boolean greaterThan(Severity other) {
-            return getId() > other.getId();
-        }
-
-        public boolean greaterThanOrEqualTo(Severity other) {
-            return getId() >= other.getId();
-        }
-        
-        public static Severity getById(int id) {
-            return m_idMap.get(id);
-        }
-        
-        public static List<Integer> getIds() {
-            return m_ids;
-        }
-    }
-    
     public static final int PROBLEM_TYPE = 1;
     
     public static final int RESOLUTION_TYPE = 2;
@@ -156,7 +96,7 @@ public class Alarm extends Object {
      *  
      * </pre>
      */
-    protected Severity severity;
+    protected OnmsSeverity severity;
 
     /** The last event to be reduced by this alarm */
     protected int lastEventID;
@@ -248,7 +188,7 @@ public class Alarm extends Object {
         this.lasteventtime = lasteventtime;
         this.firsteventtime = firsteventtime;
         this.count = count;
-        this.severity = Severity.getById(severityId);
+        this.severity = OnmsSeverity.get(severityId);
     }
 
     /**
@@ -276,7 +216,7 @@ public class Alarm extends Object {
         this.lasteventtime = lasteventtime;
         this.firsteventtime = firsteventtime;
 	this.count = count;
-        this.severity = Severity.getById(severityId);
+        this.severity = OnmsSeverity.get(severityId);
 
         // optional fields
     	this.nodeID = nodeID;
@@ -325,7 +265,7 @@ public class Alarm extends Object {
         return (this.count);
     }
 
-    public Severity getSeverity() {
+    public OnmsSeverity getSeverity() {
         return severity;
     }
     
