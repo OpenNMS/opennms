@@ -9,10 +9,8 @@
 		
 		<service name="SNMP" interval="300000" user-defined="false" status="on">
 			<parameter key="thresholding-group" value="default-snmp"/>
-                        <parameter key="range" value="600000"/>
 		</service>
 	</package>
 	
-	<thresholder service="SNMP" 	class-name="org.opennms.netmgt.threshd.SnmpThresholder"/>
 </threshd-configuration>
 

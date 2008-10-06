@@ -9,6 +9,7 @@
 		
 		<service name="SNMP" interval="300000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
+                        <parameter key="thresholding-enabled" value="true"/>
 		</service>
 
 	</package>
