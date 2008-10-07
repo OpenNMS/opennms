@@ -126,7 +126,7 @@
                               <c:if test="${!empty resultSet.resource.parent}">
                                 ${resultSet.resource.parent.resourceType.label}:
                                 <c:choose>
-                                  <c:when test="${!empty resultSet.resource.parent.link}">
+                                  <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
                                     <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
                                   </c:when>
                                   <c:otherwise>
@@ -138,7 +138,7 @@
                           
                               ${resultSet.resource.resourceType.label}:
                               <c:choose>
-                                <c:when test="${!empty resultSet.resource.link}">
+                                <c:when test="${(!empty resultSet.resource.link) && loggedIn}">
                                   <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
                                 </c:when>
                                 <c:otherwise>

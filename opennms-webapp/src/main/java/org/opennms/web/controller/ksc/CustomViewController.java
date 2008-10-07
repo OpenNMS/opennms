@@ -201,6 +201,7 @@ public class CustomViewController extends AbstractController implements Initiali
         
         ModelAndView modelAndView = new ModelAndView("KSC/customView");
 
+        modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
         modelAndView.addObject("reportType", report_type);
         if (report != null) {
             modelAndView.addObject("report", r_index);
@@ -242,7 +243,7 @@ public class CustomViewController extends AbstractController implements Initiali
             modelAndView.addObject("graphType", null);
         }
         
-        modelAndView.addObject("showCustomizeButton", !request.isUserInRole(Authentication.READONLY_ROLE));
+        modelAndView.addObject("showCustomizeButton", !request.isUserInRole(Authentication.READONLY_ROLE) && (request.getRemoteUser() != null));
 
         if (report.getGraphs_per_line() > 0) {
             modelAndView.addObject("graphsPerLine", report.getGraphs_per_line());

@@ -177,7 +177,11 @@ public class GraphResultsController extends AbstractController implements Initia
                                               reports, startLong,
                                               endLong, relativeTime);
 
-        return new ModelAndView("/graph/results", "results", model);
+        ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
+
+        modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
+        
+        return modelAndView;
     }
 
     public GraphResultsService getGraphResultsService() {
