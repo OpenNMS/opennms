@@ -60,12 +60,12 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where suspectInterface events are enqueued for processing.
      */
-    private FifoQueue m_suspectQ;
+    private final FifoQueue m_suspectQ;
 
     /**
      * The Vulnscand rescan scheduler
      */
-    private Object m_scheduler;
+    private final Object m_scheduler;
 
     /**
      * Create message selector to set to the subscription

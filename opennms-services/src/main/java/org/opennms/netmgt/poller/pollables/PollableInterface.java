@@ -50,7 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PollableInterface extends PollableContainer {
 
-    private InetAddress m_addr;
+    private final InetAddress m_addr;
 
     public PollableInterface(PollableNode node, InetAddress addr) {
         super(node, Scope.INTERFACE);

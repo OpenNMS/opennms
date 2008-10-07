@@ -47,8 +47,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
 public class BroadcastEventProcessor implements EventListener {
-    private EventIpcManager m_eventIpcManager;
-    private EventConfDao m_eventConfDao;
+    private final EventIpcManager m_eventIpcManager;
+    private final EventConfDao m_eventConfDao;
     
     public BroadcastEventProcessor(EventIpcManager eventIpcManager, EventConfDao eventConfDao) {
         Assert.notNull(eventIpcManager, "argument eventIpcManager must not be null");

@@ -31,8 +31,8 @@
   </bean>
   
   <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
-    <property name="eventManager" ref="eventIpcManager"/>
-    <property name="trapdIpMgr" ref="trapdIpMgr"/>
+    <constructor-arg ref="eventIpcManager" />
+    <constructor-arg ref="trapdIpMgr" />
   </bean>
   
   <bean id="backlogQ" class="org.opennms.core.queue.FifoQueueImpl"/>

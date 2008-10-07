@@ -63,30 +63,32 @@ import org.springframework.util.ClassUtils;
  */
 public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
     
-    private String m_name = null;
-    private Object m_annotatedListener;
-    private EventSubscriptionService m_subscriptionService;
-    private Map<String, Method> m_ueiToHandlerMap;
-    private Set<String> m_subscribedEvents;
-    private List<Method> m_eventPreProcessors;
-    private List<Method> m_eventPostProcessors;
-    private SortedSet<Method> m_exceptionHandlers;
+    private volatile String m_name;
+    private final Object m_annotatedListener;
+    private final EventSubscriptionService m_subscriptionService;
+    private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
+    private volatile Set<String> m_subscribedEvents;
+    private volatile List<Method> m_eventPreProcessors;
+    private volatile List<Method> m_eventPostProcessors;
+    private volatile SortedSet<Method> m_exceptionHandlers;
     
     public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService) {
+        this(name, annotatedListener, subscriptionService, true);
+    }
+    
+    public AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService, boolean complete) {
         m_name = name;
         m_annotatedListener = annotatedListener;
         m_subscriptionService = subscriptionService;
-        afterPropertiesSet();
+        if (complete) {
+            afterPropertiesSet();
+        }
     }
     
     public AnnotationBasedEventListenerAdapter(Object annotatedListener, EventSubscriptionService subscriptionService) {
         this(null, annotatedListener, subscriptionService);
     }
     
-    public AnnotationBasedEventListenerAdapter() {
-        // this is here to support dependency injection style 
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#getName()
      */
@@ -97,7 +99,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     public void setName(String name) {
         m_name = name;
     }
-
+    
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
@@ -165,10 +167,6 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
-    public void setAnnotatedListener(Object annotatedListener) {
-        m_annotatedListener = annotatedListener;
-    }
-
     public void afterPropertiesSet() {
         Assert.state(m_subscriptionService != null, "subscriptionService must be set");        
         Assert.state(m_annotatedListener != null, "must set the annotatedListener property");
@@ -176,7 +174,6 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         EventListener listenerInfo = findEventListenerAnnotation(m_annotatedListener);
         
         Assert.state(listenerInfo != null, "value of annotatedListener property of class "+m_annotatedListener.getClass()+" must be annotated as "+EventListener.class.getName());
-        
         
         if (m_name == null) {
             m_name = listenerInfo.name();
@@ -277,7 +274,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     private void constructUeiToHandlerMap() {
-        m_ueiToHandlerMap = new HashMap<String, Method>();
+
         Method[] methods = m_annotatedListener.getClass().getMethods();
         
         for(Method method : methods) {
@@ -307,8 +304,5 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         stop();
     }
 
-    public void setEventSubscriptionService(EventSubscriptionService subscriptionService) {
-        m_subscriptionService = subscriptionService;
-    }
 
 }
