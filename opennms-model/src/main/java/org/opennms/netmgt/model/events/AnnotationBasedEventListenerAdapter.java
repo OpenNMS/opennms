@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -63,32 +62,30 @@ import org.springframework.util.ClassUtils;
  */
 public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
     
-    private volatile String m_name;
-    private final Object m_annotatedListener;
-    private final EventSubscriptionService m_subscriptionService;
+    private volatile String m_name = null;
+    private volatile Object m_annotatedListener;
+    private volatile EventSubscriptionService m_subscriptionService;
+
     private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
-    private volatile Set<String> m_subscribedEvents;
-    private volatile List<Method> m_eventPreProcessors;
-    private volatile List<Method> m_eventPostProcessors;
-    private volatile SortedSet<Method> m_exceptionHandlers;
+    private final List<Method> m_eventPreProcessors = new LinkedList<Method>();
+    private final List<Method> m_eventPostProcessors = new LinkedList<Method>();
+    private final SortedSet<Method> m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
     
     public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService) {
-        this(name, annotatedListener, subscriptionService, true);
-    }
-    
-    public AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService, boolean complete) {
         m_name = name;
         m_annotatedListener = annotatedListener;
         m_subscriptionService = subscriptionService;
-        if (complete) {
-            afterPropertiesSet();
-        }
+        afterPropertiesSet();
     }
     
     public AnnotationBasedEventListenerAdapter(Object annotatedListener, EventSubscriptionService subscriptionService) {
         this(null, annotatedListener, subscriptionService);
     }
     
+    public AnnotationBasedEventListenerAdapter() {
+        // this is here to support dependency injection style 
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#getName()
      */
@@ -99,7 +96,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     public void setName(String name) {
         m_name = name;
     }
-    
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
@@ -167,6 +164,10 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
+    public void setAnnotatedListener(Object annotatedListener) {
+        m_annotatedListener = annotatedListener;
+    }
+
     public void afterPropertiesSet() {
         Assert.state(m_subscriptionService != null, "subscriptionService must be set");        
         Assert.state(m_annotatedListener != null, "must set the annotatedListener property");
@@ -175,21 +176,20 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         
         Assert.state(listenerInfo != null, "value of annotatedListener property of class "+m_annotatedListener.getClass()+" must be annotated as "+EventListener.class.getName());
         
+        
         if (m_name == null) {
             m_name = listenerInfo.name();
         }
         
-        constructPreProcessorList();
+        populatePreProcessorList();
         
-        constructUeiToHandlerMap();
+        populateUeiToHandlerMap();
         
-        constructPostProcessorList();
+        populatePostProcessorList();
         
-        constructExeptionHandlersSet();
+        populateExeptionHandlersSet();
         
-        m_subscribedEvents = new HashSet<String>(m_ueiToHandlerMap.keySet());
-        
-        m_subscriptionService.addEventListener(this, m_subscribedEvents);
+        m_subscriptionService.addEventListener(this, new HashSet<String>(m_ueiToHandlerMap.keySet()));
 
     }
 
@@ -197,8 +197,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         return annotatedListener.getClass().getAnnotation(EventListener.class);
     }
 
-    private void constructExeptionHandlersSet() {
-        m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
+    private void populateExeptionHandlersSet() {
         
         Method[] methods = m_annotatedListener.getClass().getMethods();
         for(Method method : methods) {
@@ -248,8 +247,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
 
     }
 
-    private void constructPostProcessorList() {
-        m_eventPostProcessors = new LinkedList<Method>();
+    private void populatePostProcessorList() {
         
         Method[] methods = m_annotatedListener.getClass().getMethods();
         for(Method method : methods) {
@@ -260,8 +258,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
-    private void constructPreProcessorList() {
-        m_eventPreProcessors = new LinkedList<Method>();
+    private void populatePreProcessorList() {
         
         Method[] methods = m_annotatedListener.getClass().getMethods();
         for(Method method : methods) {
@@ -273,8 +270,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
-    private void constructUeiToHandlerMap() {
-
+    private void populateUeiToHandlerMap() {
         Method[] methods = m_annotatedListener.getClass().getMethods();
         
         for(Method method : methods) {
@@ -304,5 +300,8 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         stop();
     }
 
+    public void setEventSubscriptionService(EventSubscriptionService subscriptionService) {
+        m_subscriptionService = subscriptionService;
+    }
 
 }

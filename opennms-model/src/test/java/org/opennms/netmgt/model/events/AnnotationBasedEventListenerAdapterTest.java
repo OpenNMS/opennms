@@ -125,7 +125,9 @@ public class AnnotationBasedEventListenerAdapterTest {
         m_eventIpcMgr = m_mockUtils.createMock(EventSubscriptionService.class);
 
         m_annotatedListener = new AnnotatedListener();
-        m_adapter = new AnnotationBasedEventListenerAdapter(null, m_annotatedListener, m_eventIpcMgr, false);
+        m_adapter = new AnnotationBasedEventListenerAdapter();
+        m_adapter.setAnnotatedListener(m_annotatedListener);
+        m_adapter.setEventSubscriptionService(m_eventIpcMgr);
         
         m_subscriptions = new HashSet<String>();
         
@@ -141,10 +143,7 @@ public class AnnotationBasedEventListenerAdapterTest {
     @Test
     public void testDerivedClass() throws Exception {
         
-        // setup the derivied listener
-        DerivedListener derivedListener = new DerivedListener();
-
-        AnnotationBasedEventListenerAdapter adapter = new AnnotationBasedEventListenerAdapter(null, derivedListener, m_eventIpcMgr, false);
+        AnnotationBasedEventListenerAdapter adapter = new AnnotationBasedEventListenerAdapter();
 
         // expect a subscription for the new adapter
         m_eventIpcMgr.addEventListener(adapter, m_subscriptions);
@@ -154,8 +153,15 @@ public class AnnotationBasedEventListenerAdapterTest {
         // finish expectations for the old adapter
         m_adapter.afterPropertiesSet();
 
+        
+        // setup the derivied listener
+        DerivedListener derivedListener = new DerivedListener();
+        
+        adapter.setAnnotatedListener(derivedListener);
+        adapter.setEventSubscriptionService(m_eventIpcMgr);
         adapter.afterPropertiesSet();
         
+
         assertEquals(0, derivedListener.preProcessedEvents);
         assertEquals(0, derivedListener.receivedEventCount);
         assertEquals(0, derivedListener.postProcessedEvents);
