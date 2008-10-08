@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -393,17 +394,19 @@ public abstract class GroupManager {
         } else {
             Map<String, Group> map = new LinkedHashMap<String, Group>();
             
-        	for (Group group : m_groups.values()) {
-        		for (String name : group.getUserCollection()) {
-                    if (name.equals(oldName)) {
-                        group.removeUser(oldName);
-                        group.addUser(newName);
-                    }
-                }
-                map.put(group.getName(), group);
-            }
-            m_groups.clear();
-            m_groups.putAll(map);
+        	for (Group group : m_groups.values()) {        	   
+        	   for(ListIterator<String> userList = group.getUserCollection().listIterator(); userList.hasNext();){
+        	       String name = userList.next();
+        	       
+        	       if(name.equals(oldName)){
+        	          userList.set(newName); 
+        	       }
+        	   }
+        	   map.put(group.getName(), group);
+        	}
+        	
+        	m_groups.clear();
+        	m_groups.putAll(map);
 
             for (Role role : m_roles.values()) {
             	for (Schedule sched : role.getScheduleCollection()) {
