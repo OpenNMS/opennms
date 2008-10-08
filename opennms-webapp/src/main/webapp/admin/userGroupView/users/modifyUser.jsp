@@ -202,13 +202,32 @@
         String comments = null;
         Boolean isReadOnly = false;
         try {
-            email = userFactory.getEmail(user);
-            pagerEmail = userFactory.getPagerEmail(user);
-            xmppAddress = userFactory.getXMPPAddress(user);
-            numericPage = userFactory.getNumericPage(user);
-            numericPin = userFactory.getNumericPin(user);
-            textPage = userFactory.getTextPage(user);
-            textPin = userFactory.getTextPin(user);
+            User usertemp = userFactory.getUser(userid);
+            if (usertemp != null) {
+                    email = userFactory.getEmail(userid);
+                    pagerEmail = userFactory.getPagerEmail(userid);
+                    xmppAddress = userFactory.getXMPPAddress(userid);
+                    numericPage = userFactory.getNumericPage(userid);
+                    numericPin = userFactory.getNumericPin(userid);
+                    textPage = userFactory.getTextPage(userid);
+                    textPin = userFactory.getTextPin(userid);
+            } else {
+                    Contact[] contact = user.getContact();
+                    for (int i = 0; i < contact.length; i++) {
+                            Contact tempContact = contact[i];
+                            if (contact[i].getType().equals("email")) {
+                                    email = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("pagerEmail")) {
+                                    pagerEmail = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("xmppAddress")) {
+                                    xmppAddress = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("numericPage")) {
+                                    numericPage = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("textPage")) {
+                                    textPage = contact[i].getInfo();
+                            }
+                    }
+            }
             fullName = user.getFullName();
             comments = user.getUserComments();
             isReadOnly = user.isReadOnly();

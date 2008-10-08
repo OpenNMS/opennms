@@ -1145,6 +1145,17 @@
     </logmsg>
     <severity>Warning</severity>
   </event>
+  <event>
+    <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: relativeChangeExceeded</event-label>
+    <descr>
+      &lt;p&gt;Relative change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      Relative change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
     <event>
       <uei>uei.opennms.org/threshold/absoluteChangeExceeded</uei>
       <event-label>OpenNMS-defined threshold event: absoluteChangeExceeded</event-label>

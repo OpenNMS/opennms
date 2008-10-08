@@ -55,8 +55,8 @@ public class ScheduleTest extends TestCase {
     }
     
     class MockSchedulable implements ReadyRunnable {
-        private int runCount = 0;
-        private boolean m_callingAdjustSchedule;
+        private volatile int runCount = 0;
+        private volatile boolean m_callingAdjustSchedule;
         
         public boolean isReady() {
             return true;

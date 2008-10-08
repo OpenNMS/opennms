@@ -3,12 +3,8 @@
 <capsd-configuration 
 	rescan-frequency="86400000" 
 	initial-sleep-time="30000" 
-	management-policy="managed" 
 	max-suspect-thread-pool-size="6"
-    max-rescan-thread-pool-size="3" 
-    abort-protocol-scans-if-no-route="false" 
-    delete-propagation-enabled="true" 
-    xmlrpc="false">
+        max-rescan-thread-pool-size="3"> 
 
     <protocol-plugin protocol="ICMP" class-name="org.opennms.netmgt.capsd.plugins.IcmpPlugin" scan="on" user-defined="false">
         <property key="timeout" value="2000" />

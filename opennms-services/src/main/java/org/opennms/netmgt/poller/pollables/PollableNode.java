@@ -57,8 +57,8 @@ public class PollableNode extends PollableContainer {
      * @author brozow
      */
     public class Lock {
-        Thread m_owner = null;
-        int m_obtainCount = 0;
+        private Thread m_owner = null;
+        private int m_obtainCount = 0;
         
         public synchronized void obtain() {
             Category log = ThreadCategory.getInstance(getClass());
@@ -112,9 +112,10 @@ public class PollableNode extends PollableContainer {
         }
 
     }
-    private int m_nodeId;
-    private String m_nodeLabel;
-    private Lock m_lock = new Lock();
+    
+    private final int m_nodeId;
+    private final String m_nodeLabel;
+    private final Lock m_lock = new Lock();
 
     public PollableNode(PollableNetwork network, int nodeId, String nodeLabel) {
         super(network, Scope.NODE);

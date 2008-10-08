@@ -73,36 +73,36 @@ public class NotificationTask extends Thread {
     /**
      * The User object the notification needs to go out to
      */
-    private User m_user;
+    private volatile User m_user;
 
     /**The autoNotify info for the usersnotified table
      */
-    private String m_autoNotify;
+    private volatile String m_autoNotify;
 
     /**
      * The row id that will be used for the row inserted into the notifications
      * table
      */
-    private int m_notifyId;
+    private volatile int m_notifyId;
 
     /**
      * The console command that will be issued to send the actual notification.
      */
-    private Command[] m_commands;
+    private volatile Command[] m_commands;
 
     /**
      */
-    private Map<String, String> m_params;
+    private final Map<String, String> m_params;
 
     /**
      */
-    private long m_sendTime;
+    private final long m_sendTime;
 
-    private boolean m_started = false;
+    private volatile boolean m_started = false;
 
-    private NotificationManager m_notificationManager;
+    private final NotificationManager m_notificationManager;
 
-    private UserManager m_userManager;
+    private final UserManager m_userManager;
 
     /**
      * Constructor, initializes some information

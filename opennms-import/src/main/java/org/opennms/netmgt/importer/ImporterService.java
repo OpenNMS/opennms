@@ -66,9 +66,9 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	
 	public static final String NAME = "ModelImporter";
 
-	private Resource m_importResource;
-	private EventIpcManager m_eventManager;
-	private ImporterStats m_stats;
+	private volatile Resource m_importResource;
+	private volatile EventIpcManager m_eventManager;
+	private volatile ImporterStats m_stats;
 
             
 	public void doImport() {

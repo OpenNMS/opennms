@@ -60,12 +60,13 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     /*
      * The last status sent to the service control manager.
      */
-    private int m_status = START_PENDING;
-    private BlockingQueue<Tl1AutonomousMessage> m_tl1Queue;
-    private Thread m_tl1MesssageProcessor;
-    private ArrayList<Tl1Client> m_tl1Clients;
-    private EventIpcManager m_eventManager;
-	private Tl1ConfigurationDao m_configurationDao;
+    private volatile int m_status = START_PENDING;
+    private volatile Thread m_tl1MesssageProcessor;
+    private volatile EventIpcManager m_eventManager;
+	private volatile Tl1ConfigurationDao m_configurationDao;
+
+    private final BlockingQueue<Tl1AutonomousMessage> m_tl1Queue = new LinkedBlockingQueue<Tl1AutonomousMessage>();
+    private final List<Tl1Client> m_tl1Clients = new ArrayList<Tl1Client>();
 
     public Tl1d() {
         super("OpenNMS.Tl1d");
@@ -82,14 +83,11 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
     public synchronized void onInit() {
         log().info("onInit: Initializing Tl1d connections." );
-        m_tl1Queue = new LinkedBlockingQueue<Tl1AutonomousMessage>();
     
         //initialize a factory of configuration
     
         List<Tl1Element> configElements = m_configurationDao.getElements();
     
-        m_tl1Clients = new ArrayList<Tl1Client>();
-        
         for(Tl1Element element : configElements) {
             try {
                 Tl1Client client = (Tl1Client) Class.forName(element.getTl1ClientApi()).newInstance();
