@@ -75,33 +75,34 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * The map for holding different notice queues
      */
-    private Map<String, NoticeQueue> m_noticeQueues;
+    private final Map<String, NoticeQueue> m_noticeQueues = new HashMap<String, NoticeQueue>();
 
     /**
      * 
      */
-    private Map<String, NotifdQueueHandler> m_queueHandlers;
+    private final Map<String, NotifdQueueHandler> m_queueHandlers = new HashMap<String, NotifdQueueHandler>();
 
     /**
      * The broadcast event receiver.
      */
-    private BroadcastEventProcessor m_eventReader;
+    private volatile BroadcastEventProcessor m_eventReader;
 
-    private EventIpcManager m_eventManager;
+    // Would be better if these were final but the are initialized in setters 
+    private volatile EventIpcManager m_eventManager;
 
-    private NotifdConfigManager m_configManager;
+    private volatile NotifdConfigManager m_configManager;
 
-    private NotificationManager m_notificationManager;
+    private volatile NotificationManager m_notificationManager;
     
-    private GroupManager m_groupManager;
+    private volatile GroupManager m_groupManager;
 
-    private UserManager m_userManager;
+    private volatile UserManager m_userManager;
 
-    private DestinationPathManager m_destinationPathManager;
+    private volatile DestinationPathManager m_destinationPathManager;
 
-    private NotificationCommandManager m_notificationCommandManager;
+    private volatile NotificationCommandManager m_notificationCommandManager;
 
-    private PollOutagesConfigManager m_pollOutagesConfigManager;
+    private volatile PollOutagesConfigManager m_pollOutagesConfigManager;
 
     /**
      * Constructs a new Notifd service daemon.
@@ -111,10 +112,9 @@ public final class Notifd extends AbstractServiceDaemon {
     }
 
     protected void onInit() {
-        m_noticeQueues = new HashMap<String, NoticeQueue>();
-        m_queueHandlers = new HashMap<String, NotifdQueueHandler>();
-        m_eventReader = new BroadcastEventProcessor();
         
+        m_eventReader = new BroadcastEventProcessor();
+
         try {
             log().info("Notification status = " + getConfigManager().getNotificationStatus());
 
@@ -122,7 +122,7 @@ public final class Notifd extends AbstractServiceDaemon {
             for (Queue queue : queues) {
                 NoticeQueue curQueue = new NoticeQueue();
 
-                Class handlerClass = Class.forName(queue.getHandlerClass().getName());
+                Class<?> handlerClass = Class.forName(queue.getHandlerClass().getName());
                 NotifdQueueHandler handlerQueue = (NotifdQueueHandler) handlerClass.newInstance();
 
                 handlerQueue.setQueueID(queue.getQueueId());

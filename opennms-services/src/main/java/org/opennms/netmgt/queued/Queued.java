@@ -57,8 +57,8 @@ import org.springframework.util.StringUtils;
 
 public class Queued extends AbstractServiceDaemon implements EventListener {
     
-    private EventIpcManager m_eventMgr; 
-    private RrdStrategy m_rrdStrategy;
+    private volatile EventIpcManager m_eventMgr; 
+    private volatile RrdStrategy m_rrdStrategy;
 
     public Queued() {
         super("OpenNMS.Queued");

@@ -75,17 +75,17 @@ final class CollectableService implements ReadyRunnable {
     /**
      * Interface's parent node identifier
      */
-    private int m_nodeId;
+    private volatile int m_nodeId;
 
     /**
      * Last known/current status
      */
-    private int m_status;
+    private volatile int m_status;
 
     /**
      * The last time the collector was scheduled for collection.
      */
-    volatile private long m_lastScheduledCollectionTime;
+    private volatile long m_lastScheduledCollectionTime;
 
     /**
      * The scheduler for collectd
@@ -95,30 +95,30 @@ final class CollectableService implements ReadyRunnable {
     /**
      * Service updates
      */
-    private CollectorUpdates m_updates;
+    private final CollectorUpdates m_updates;
 
     /**
      * The thresholdvisitor for this collectable service; called 
      */
-    private ThresholdingVisitor m_thresholdVisitor;
+    private final ThresholdingVisitor m_thresholdVisitor;
     /**
      * 
      */
     private static final boolean ABORT_COLLECTION = true;
 
-	private CollectionSpecification m_spec;
+	private final CollectionSpecification m_spec;
 
-	private SchedulingCompletedFlag m_schedulingCompletedFlag;
+	private final SchedulingCompletedFlag m_schedulingCompletedFlag;
 
-	private CollectionAgent m_agent;
+	private volatile CollectionAgent m_agent;
 
-	private PlatformTransactionManager m_transMgr;
+	private final PlatformTransactionManager m_transMgr;
 
-    private IpInterfaceDao m_ifaceDao;
+    private final IpInterfaceDao m_ifaceDao;
 
-    private ServiceParameters m_params;
+    private final ServiceParameters m_params;
     
-    private RrdRepository m_repository;
+    private final RrdRepository m_repository;
     /**
      * Constructs a new instance of a CollectableService object.
      * @param iface The interface on which to collect data
@@ -166,13 +166,6 @@ final class CollectableService implements ReadyRunnable {
      */
     public int getNodeId() {
         return m_nodeId;
-    }
-
-    /**
-     * Set node nodentifier
-     */
-    public void setNodeId(int nodeId) {
-        m_nodeId = nodeId;
     }
 
     /**
