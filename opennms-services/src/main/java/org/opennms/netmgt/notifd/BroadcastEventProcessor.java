@@ -101,15 +101,15 @@ import org.opennms.netmgt.xml.event.Value;
 public final class BroadcastEventProcessor implements EventListener {
     /**
      */
-    private Map<String, NoticeQueue> m_noticeQueues;
-    private EventIpcManager m_eventManager;
-    private PollOutagesConfigManager m_pollOutagesConfigManager;
-    private NotificationManager m_notificationManager;
-    private NotifdConfigManager m_notifdConfigManager;
-    private DestinationPathManager m_destinationPathManager;
-    private UserManager m_userManager;
-    private GroupManager m_groupManager;
-    private NotificationCommandManager m_notificationCommandManager;
+    private volatile Map<String, NoticeQueue> m_noticeQueues;
+    private volatile EventIpcManager m_eventManager;
+    private volatile PollOutagesConfigManager m_pollOutagesConfigManager;
+    private volatile NotificationManager m_notificationManager;
+    private volatile NotifdConfigManager m_notifdConfigManager;
+    private volatile DestinationPathManager m_destinationPathManager;
+    private volatile UserManager m_userManager;
+    private volatile GroupManager m_groupManager;
+    private volatile NotificationCommandManager m_notificationCommandManager;
 
     /**
      * A regular expression for matching an expansion parameter delimited by

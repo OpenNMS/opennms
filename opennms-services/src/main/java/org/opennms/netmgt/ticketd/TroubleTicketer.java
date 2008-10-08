@@ -56,14 +56,14 @@ import org.springframework.util.Assert;
  */
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
-    private boolean m_initialized = false;
+    private volatile boolean m_initialized = false;
     
     /**
      * Typically wired in by Spring (applicationContext-troubleTicketer.xml)
      * @param eventIpcManager
      */
-	private EventIpcManager m_eventIpcManager;
-    private TicketerServiceLayer m_ticketerServiceLayer;
+	private volatile EventIpcManager m_eventIpcManager;
+    private volatile TicketerServiceLayer m_ticketerServiceLayer;
 
 	/**
 	 * @param eventIpcManager

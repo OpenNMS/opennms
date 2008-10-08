@@ -53,7 +53,7 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PollableNetwork extends PollableContainer {
     
-    private PollContext m_context;
+    private final PollContext m_context;
 
     public PollableNetwork(PollContext context) {
         super(null, Scope.NETWORK);

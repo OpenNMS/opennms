@@ -58,7 +58,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where executable events are enqueued to be executed.
      */
-    private FifoQueue<String> m_execQ;
+    private final FifoQueue<String> m_execQ;
 
     /**
      * This constructor subscribes to eventd for all events

@@ -50,12 +50,13 @@ import org.opennms.netmgt.xml.event.Event;
  */
 abstract public class PollableElement {
     
-    private PollableContainer m_parent;
-    private PollStatus m_status = PollStatus.unknown();
-    private boolean m_statusChanged = false;
-    private PollEvent m_cause;
-    private Scope m_scope; 
-    private boolean m_deleted;
+    private final Scope m_scope; 
+
+    private volatile PollableContainer m_parent;
+    private volatile PollStatus m_status = PollStatus.unknown();
+    private volatile boolean m_statusChanged = false;
+    private volatile PollEvent m_cause;
+    private volatile boolean m_deleted;
 
 
     protected PollableElement(PollableContainer parent, Scope scope) {

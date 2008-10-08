@@ -76,8 +76,8 @@ import org.opennms.netmgt.xml.event.Value;
  */
 final class PollerEventProcessor implements EventListener {
 
-    private Poller m_poller;
-	private DemandPollDao m_demandPollDao;
+    private final Poller m_poller;
+	private volatile DemandPollDao m_demandPollDao;
 	
 	
 

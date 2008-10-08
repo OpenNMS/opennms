@@ -120,10 +120,7 @@ public class Discovery extends AbstractServiceDaemon {
         initializeConfiguration();
         EventIpcManagerFactory.init();
         
-        AnnotationBasedEventListenerAdapter listener = new AnnotationBasedEventListenerAdapter();
-        listener.setAnnotatedListener(this);
-        listener.setEventSubscriptionService(EventIpcManagerFactory.getIpcManager());
-        listener.afterPropertiesSet();
+        AnnotationBasedEventListenerAdapter listener = new AnnotationBasedEventListenerAdapter(this, EventIpcManagerFactory.getIpcManager());
 
     }
 

@@ -53,7 +53,7 @@ import org.opennms.netmgt.model.PollStatus;
  */
 abstract public class PollableContainer extends PollableElement {
 
-    private Map<Object, PollableElement> m_members = new HashMap<Object, PollableElement>();
+    private final Map<Object, PollableElement> m_members = new HashMap<Object, PollableElement>();
 
     public PollableContainer(PollableContainer parent, Scope scope) {
         super(parent, scope);

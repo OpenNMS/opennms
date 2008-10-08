@@ -58,9 +58,9 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     
     private static EventTranslator s_instance = new EventTranslator();
 
-    private EventIpcManager m_eventMgr;
-    private EventTranslatorConfig m_config;
-    private boolean m_initialized = false;
+    private volatile EventIpcManager m_eventMgr;
+    private volatile EventTranslatorConfig m_config;
+    private volatile boolean m_initialized = false;
 
     private DataSource m_dataSource;
 

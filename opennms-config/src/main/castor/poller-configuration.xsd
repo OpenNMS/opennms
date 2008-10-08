@@ -47,7 +47,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="nextOutageId" type="string" use="required">
+      <attribute name="nextOutageId" type="string" use="optional" default="SELECT nextval('outageNxtId')">
         <annotation>
           <documentation>SQL query for getting the next outage
           ID.</documentation>
@@ -122,7 +122,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="pollAllIfNoCriticalServiceDefined" use="required">
+      <attribute name="pollAllIfNoCriticalServiceDefined" use="optional" default="true">
         <annotation>
           <documentation>Defines behavior of node outage processing when a
           service has changed status to DOWN and a critical service is not
