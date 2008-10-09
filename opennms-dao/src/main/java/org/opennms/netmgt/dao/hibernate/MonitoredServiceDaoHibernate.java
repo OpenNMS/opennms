@@ -66,7 +66,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 
 	public OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
 		return findUnique("from OnmsMonitoredService as svc " +
-			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.ifIndex = ? and svc.serviceType.id = ?",
+			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
 			   nodeId, ipAddr, ifIndex, serviceId);
 	}
 
