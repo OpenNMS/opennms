@@ -1673,7 +1673,7 @@ public class PollablesTest {
     public void testComputeScheduledOutageTime() {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+               PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
         
         m_timer.setCurrentTime(2000L);
         
@@ -1689,6 +1689,62 @@ public class PollablesTest {
     @Test
     public void testScheduledOutage() {
         m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "first", 3000, 5000, "192.168.1.1");
+
+        pDot1Smtp.getSchedule().schedule();
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(0);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(1000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(2000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(3000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(4000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(5000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(6000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+    }
+    
+    @Test
+    public void testScheduledOutageOnNode() {
+        m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "first", 3000, 5000, pNode1.getNodeId());
 
         pDot1Smtp.getSchedule().schedule();
         
