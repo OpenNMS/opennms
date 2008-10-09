@@ -282,10 +282,10 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
 </xsl:template>
 
 <xsl:template match="classicTable">
-        <fo:block start-indent="0.75in">
+        <fo:block start-indent="0.20in">
                 <fo:table>
                         <xsl:for-each select="col/colTitle">
-                                <fo:table-column column-width="2in"/>
+                                <fo:table-column column-width="2.7in"/>
                         </xsl:for-each>
                         <fo:table-body>
                                 <xsl:apply-templates select="col"/>
