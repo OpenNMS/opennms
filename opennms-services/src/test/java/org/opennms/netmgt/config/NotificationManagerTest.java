@@ -176,7 +176,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
     }
 
     // FIXME... do we really want to return true if the rule is wrong?????
-    public void FIXMEtestRuleBogus() {
+    public void testRuleBogus() {
         doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
                                            1, "192.168.1.1", "HTTP",
                                            "(aklsdfjweklj89jaikj)",

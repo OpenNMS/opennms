@@ -207,7 +207,7 @@ public class JavaMailerTest extends TestCase {
     }
 
     // FIXME: took this out a david's suggestion
-    public final void FIXMEtestJavaMailerUsingMTAExplicitly() throws Exception {
+    public final void testJavaMailerUsingMTAExplicitly() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA explicitly");
 
         if (jm.isSmtpSsl()) {
@@ -219,7 +219,7 @@ public class JavaMailerTest extends TestCase {
     }
 
     // FIXME: took this out a david's suggestion
-    public final void FIXMEtestJavaMailerUsingMTAByTransport() throws Exception {
+    public final void testJavaMailerUsingMTAByTransport() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA by transport");
 
         if (jm.isSmtpSsl()) {

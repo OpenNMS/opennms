@@ -52,7 +52,7 @@ public class SpringLoaderTest extends TestCase {
             // an empty test so that JUnit doesn't complain that there aren't any tests
         }
 	
-	public void FIXMEtestStart() {
+	public void testStart() {
 		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
 		SpringLoader.main(new String[] { "start" });
 
@@ -65,7 +65,7 @@ public class SpringLoaderTest extends TestCase {
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
-	public void FIXMEtestContexts() {
+	public void testContexts() {
 		SpringLoader.main(new String[] { "start" });
 		
 		
@@ -74,11 +74,11 @@ public class SpringLoaderTest extends TestCase {
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
-    public void FIXMEtestStatus() {
+    public void testStatus() {
 		SpringLoader.main(new String[] { "status" });
     }
 	
-	public void FIXMEtestStop() {
+	public void testStop() {
 		SpringLoader.main(new String[] { "stop" });
 	}
 	

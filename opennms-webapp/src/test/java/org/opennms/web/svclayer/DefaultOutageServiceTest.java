@@ -98,7 +98,7 @@ public class DefaultOutageServiceTest extends TestCase {
 
 	}
 
-	public void FIXMEtestSuppressedOutageCount() {
+	public void testSuppressedOutageCount() {
 
 		fail("Needs to be upgraded to hibernate");
 //		Integer expectedCount = new Integer(1);
@@ -127,7 +127,7 @@ public class DefaultOutageServiceTest extends TestCase {
 		assertTrue("Current Outages", current.equals(expectedOutages));
 	}
 
-	public void FIXMEtestSuppressedOutages() {
+	public void testSuppressedOutages() {
 		
 		fail("Needs to be upgraded to hibernate");
 
@@ -144,7 +144,7 @@ public class DefaultOutageServiceTest extends TestCase {
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 	}
 
-	public void FIXMEtestOpenAndResolved() {
+	public void testOpenAndResolved() {
 
 		fail("Needs to be upgraded to hibernate");
 
@@ -182,7 +182,7 @@ public class DefaultOutageServiceTest extends TestCase {
 		assertTrue("Current Outages", outages.equals(expectedOutages));
 	}
 
-	public void FIXMEtestSuppressedByRange() {
+	public void testSuppressedByRange() {
 
 		fail("Needs to be upgraded to hibernate");
 
@@ -200,7 +200,7 @@ public class DefaultOutageServiceTest extends TestCase {
 
 	}
 
-	public void FIXMEtestGetOpenAndResolvedByRange() {
+	public void testGetOpenAndResolvedByRange() {
 
 		fail("Needs to be upgraded to hibernate");
 

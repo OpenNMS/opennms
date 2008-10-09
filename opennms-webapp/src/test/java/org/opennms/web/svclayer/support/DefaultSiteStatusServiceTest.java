@@ -75,7 +75,7 @@ public class DefaultSiteStatusServiceTest extends TestCase {
         // Empty test so JUnit doesn't complain about not having any tests to run
     }
     
-    public void FIXMEtestCreateAggregateStatusUsingNodeId() {
+    public void testCreateAggregateStatusUsingNodeId() {
         Collection<AggregateStatus> aggrStati;
         Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
         
@@ -147,7 +147,7 @@ public class DefaultSiteStatusServiceTest extends TestCase {
         assertNotNull(aggrStati);
     }
     
-    public void FIXMEtestCreateAggregateStatusUsingBuilding() {
+    public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;
         Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
