@@ -17,6 +17,12 @@
         <directory>src/main/filtered</directory>
       </resource>
     </resources>
+    <testResources>
+      <testResource>
+      	<filtering>true</filtering>
+      	<directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
