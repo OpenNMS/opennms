@@ -108,6 +108,7 @@ public class Installer {
     boolean m_ignore_not_null = false;
     boolean m_ignore_database_version = false;
     boolean m_do_not_revert = false;
+    boolean m_remove_database = false;
 
     String m_etc_dir = "";
     String m_tomcat_conf = null;
@@ -168,11 +169,12 @@ public class Installer {
          * make sure we can load the ICMP library before we go any farther
          */
 
-        String icmp_path = findLibrary("jicmp", m_library_search_path, true);
-        String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
-
-        writeLibraryConfig(icmp_path, jrrd_path);
-
+        if (!Boolean.getBoolean("skip-native")) {
+            String icmp_path = findLibrary("jicmp", m_library_search_path, true);
+            String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
+            writeLibraryConfig(icmp_path, jrrd_path);
+        }
+        
         /*
          * Everything needs to use the administrative data source until we
          * verify that the opennms database is created below (and where we
@@ -239,11 +241,6 @@ public class Installer {
             m_installerDb.createTables();
             m_installerDb.closeColumnReplacements();
 
-            // createIndexes();
-            // createFunctions(m_cfunctions); // Unused, not in create.sql
-            // createLanguages(); // Unused, not in create.sql
-            // createFunctions(m_functions); // Unused, not in create.sql
-
             m_installerDb.fixData();
         }
 
@@ -272,6 +269,11 @@ public class Installer {
         }
 
         m_installerDb.closeConnection();
+
+        if (m_update_database && m_remove_database) {
+            m_installerDb.databaseRemoveDB();
+        }
+        
         m_installerDb.closeAdminConnection();
 
         if (m_update_database) {
@@ -347,6 +349,9 @@ public class Installer {
         options.addOption("d", "do-database", false,
                           "perform database actions");
 
+        options.addOption("Z", "remove-database", false,
+                          "remove the OpenNMS database");
+        
         options.addOption("u", "username", true,
                           "username of the database account (default: 'opennms')");
         options.addOption("p", "password", true,
@@ -367,7 +372,7 @@ public class Installer {
         options.addOption("s", "stored-procedure", false,
                           "add the IPLIKE stored procedure if it's missing");
         options.addOption("U", "unicode", false,
-                          "convert the database to Unicode if it is not already");
+                          "upgrade the database to Unicode (deprecated, does nothing)");
         options.addOption("v", "vacuum", false,
                           "vacuum (optimize) the database");
         options.addOption("f", "vacuum-full", false,
@@ -439,6 +444,7 @@ public class Installer {
         m_fix_constraint = m_commandLine.hasOption("C");
         m_fix_constraint_name = m_commandLine.getOptionValue("C");
         m_update_database = m_commandLine.hasOption("d");
+        m_remove_database = m_commandLine.hasOption("Z");
         m_do_full_vacuum = m_commandLine.hasOption("f");
         m_do_inserts = m_commandLine.hasOption("i");
         m_library_search_path = m_commandLine.getOptionValue("l",
@@ -823,8 +829,7 @@ public class Installer {
     }
 
     @SuppressWarnings("unchecked")
-    public String findLibrary(String libname, String path, boolean isRequired)
-            throws Exception {
+    public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
         String fullname = System.mapLibraryName(libname);
 
         ArrayList<String> searchPaths = new ArrayList<String>();
