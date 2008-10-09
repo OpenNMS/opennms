@@ -1935,13 +1935,24 @@ public class InstallerDb {
     public void databaseAddDB() throws Exception {
         assertUserSet();
 
+        m_out.print("- creating database '" + m_databaseName + "'... ");
         Statement st = getAdminConnection().createStatement();
         st.execute("CREATE DATABASE \"" + m_databaseName + "\" WITH ENCODING='UNICODE'");
         st.execute("GRANT ALL ON DATABASE \"" + m_databaseName + "\" TO \"" + m_user + "\"");
-        
         st.close();
+        m_out.print("DONE");
     }
     
+    public void databaseRemoveDB() throws SQLException {
+        assertUserSet();
+
+        m_out.print("- removing database '" + m_databaseName + "'... ");
+        Statement st = getAdminConnection().createStatement();
+        st.execute("DROP DATABASE \"" + m_databaseName + "\"");
+        st.close();
+        m_out.print("DONE");
+    }
+
     public void addIndexesForTable(String table) throws SQLException {
         List<Index> indexes =
             getIndexDao().getIndexesForTable(table.toLowerCase());
@@ -1975,34 +1986,6 @@ public class InstallerDb {
         
         m_out.println("DONE");
     }
-
-    /*
-     * -- Not used, nothing in create.sql... public void createFunctions(List
-     * functions) throws Exception { Statement st =
-     * m_dbconnection.createStatement(); ResultSet rs; Iterator i =
-     * functions.iterator(); while (i.hasNext()) { String function = (String)
-     * i.next(); String functionSql = getFunctionFromSQL(function); Matcher m =
-     * Pattern.compile("\\s*\\((.+?)\\).*").matcher(functionSql); String
-     * columns = m.group(1); if (m_force) { // XXX this doesn't check to see
-     * if the function exists // before it drops it, so it will fail and throw
-     * an // exception if the function doesn't exist. m_out.print("- removing
-     * function \"" + function + "\" if it exists... "); String dropSql =
-     * "DROP FUNCTION \"" + function + "\" (" + columns + ");";
-     * st.execute(dropSql); m_out.println("REMOVED"); } // XXX this doesn't
-     * check to see if the function exists before // it tries to create it, so
-     * it will fail and throw an // exception if the function does exist.
-     * m_out.print("- creating function \"" + function + "\"... ");
-     * st.execute("CREATE FUNCTION \"" + function + "\" " + functionSql);
-     * m_out.println("OK"); } } public void createLanguages() throws Exception {
-     * Statement st = m_dbconnection.createStatement(); ResultSet rs; Iterator
-     * i = m_languages.iterator(); while (i.hasNext()) { String language =
-     * (String) i.next(); String languageSql = getLanguageFromSQL(language); //
-     * XXX this doesn't check to see if the language exists before // it tries
-     * to create it, so it will fail and throw an // exception if the language
-     * does already exist. m_out.print("- creating language reference \"" +
-     * language + "\"... "); st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE '" +
-     * language + "' " + languageSql); m_out.println("OK"); } }
-     */
 
     public void fixData() throws Exception {
         Statement st = getConnection().createStatement();
@@ -2044,25 +2027,40 @@ public class InstallerDb {
     public void checkUnicode() throws Exception {
         assertUserSet();
 
-        Statement st = getAdminConnection().createStatement();
-        ResultSet rs;
+        m_out.print("- checking if database \"" + m_databaseName + "\" is unicode... ");
 
-        m_out.print("- checking if database \"" + m_databaseName
-                + "\" is unicode... ");
+        Statement st = null;
+        ResultSet rs = null;
 
-        rs = st.executeQuery("SELECT encoding FROM pg_database WHERE "
-                + "datname='" + m_databaseName.toLowerCase() + "'");
-        rs.next();
-        if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
-            m_out.println("ALREADY UNICODE");
-            return;
+        try {
+            try {
+                st = getAdminConnection().createStatement();
+                
+                try {
+                    rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + m_databaseName.toLowerCase() + "'");
+                    if (rs.next()) {
+                        if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
+                            m_out.println("ALREADY UNICODE");
+                            return;
+                        }
+                    }
+                    m_out.println("NOT UNICODE");
+                    
+                    throw new Exception("OpenNMS requires a Unicode database.  Please delete and recreate your\ndatabase and try again.");
+                } finally {
+                    if (rs != null) {
+                        rs.close();
+                    }
+                }
+            } finally {
+                if (st != null) {
+                    st.close();
+                }
+            }
+        } finally {
+            closeConnection();
+            closeAdminConnection();
         }
-
-        m_out.println("NOT UNICODE");
-        closeConnection();
-        closeAdminConnection();
-        
-        throw new Exception("OpenNMS requires a Unicode database.  Please delete and recreate your\ndatabase and try again.");
     }
 
 
