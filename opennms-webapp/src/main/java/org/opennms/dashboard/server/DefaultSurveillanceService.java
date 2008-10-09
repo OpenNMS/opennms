@@ -458,10 +458,6 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         return nodeRtc;
     }
-    
-    public void getOutagesForSet(SurveillanceSet set) {
-        throw new UnsupportedOperationException("method not implemented");
-    }
 
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
