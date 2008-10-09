@@ -75,7 +75,7 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalTemp
 	}
     
     // FIXME
-	public void FIXMEtestPollMonitoredService() {
+	public void testPollMonitoredService() {
 		PollerService api = createMock(PollerService.class);
 		((DefaultDemandPollService)m_demandPollService).setPollerAPI(api);
 		

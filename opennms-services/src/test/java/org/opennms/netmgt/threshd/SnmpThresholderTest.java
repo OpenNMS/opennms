@@ -157,7 +157,7 @@ public class SnmpThresholderTest extends TestCase {
 
     // FIXME: This doesn't work now that config has been moved into SnmpThresholdNetworkInterface 
     @SuppressWarnings("deprecation")
-    public void FIXMEtestCheckNodeDirNullThresholdConfiguration() {
+    public void testCheckNodeDirNullThresholdConfiguration() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("thresholdConfiguration argument cannot be null"));
         
@@ -197,7 +197,7 @@ public class SnmpThresholderTest extends TestCase {
     
     // FIXME: This doesn't work because the nodeId underneath is now an int, not an Integer
     @SuppressWarnings("deprecation")
-    public void FIXMEtestCheckNodeDirNullSnmpIfaceNodeId() throws Exception {
+    public void testCheckNodeDirNullSnmpIfaceNodeId() throws Exception {
         ThresholdNetworkInterface intf = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(0, InetAddress.getByName("192.168.1.1"));
         SnmpThresholdNetworkInterface snmpIface = new SnmpThresholdNetworkInterface(m_thresholdsDao, intf, m_params);
         //snmpIface.setNodeId(null);
@@ -215,7 +215,7 @@ public class SnmpThresholderTest extends TestCase {
     
     // FIXME: This doesn't work because of an NPE in SnmpThresholdInterface.getIpAddress() 
     @SuppressWarnings("deprecation")
-    public void FIXMEtestCheckNodeDirNullSnmpIfaceInetAddress() {
+    public void testCheckNodeDirNullSnmpIfaceInetAddress() {
 //        IPv4NetworkInterface intf = new IPv4NetworkInterface(null);
         ThresholdNetworkInterface intf = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(1, null);
         SnmpThresholdNetworkInterface snmpIface = new SnmpThresholdNetworkInterface(m_thresholdsDao, intf, m_params);

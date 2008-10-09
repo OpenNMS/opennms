@@ -61,7 +61,7 @@ public class JniRrdStrategyTest extends TestCase {
         
         MockLogAppender.setupLogging();
         
-        // FIXME: This is disabled.  See FIXMEtestGraph for details.
+        // FIXME: This is disabled.  See testGraph for details.
         if (false) {
             System.setProperty("opennms.library.jrrd", findJrrdLibrary().getAbsolutePath());
             
@@ -78,7 +78,7 @@ public class JniRrdStrategyTest extends TestCase {
      * FIXME: This is disabled since the test doesn't work if building from
      * scratch.  This should likely be moved into the platform modules.
      */
-    public void FIXMEtestGraph() throws Exception {
+    public void testGraph() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
         String[] command = new String[] {

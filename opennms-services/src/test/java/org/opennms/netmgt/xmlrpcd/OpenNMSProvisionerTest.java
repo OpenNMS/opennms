@@ -316,7 +316,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
     // TODO: Add test for exception on save of XML file
     
-    public void FIXMEtestAddServiceDatabase() throws Exception {
+    public void testAddServiceDatabase() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
 
@@ -326,7 +326,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         verifyEvents();
     }
     
-    public void FIXMEtestAddServiceDNS() throws Exception {
+    public void testAddServiceDNS() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
         m_provisioner.addServiceDNS("MyDNS", 11, 1111, 11111, 111, 111111, 101, "www.opennms.org");
@@ -334,7 +334,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         verifyEvents();
     }
 
-    public void FIXMEtestAddServiceHTTP() throws Exception {
+    public void testAddServiceHTTP() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
         m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "200-203", "Home", "/index.html", "user", "passwd", null);
@@ -342,7 +342,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         verifyEvents();
     }
 
-    public void FIXMEtestAddServiceHTTPNoResponseCode() throws Exception {
+    public void testAddServiceHTTPNoResponseCode() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
         m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "", "Home", "/index.html", "user", "pw", "");
@@ -363,7 +363,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         return configParams;
     }
 
-    public void FIXMEtestAddServiceHTTPS() throws Exception {
+    public void testAddServiceHTTPS() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
         m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, "opennms.com", 313, "303", "Secure", "/secure.html", "user", "pw", "");
@@ -375,7 +375,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         return checkHTTPConfiguration(pkgName, svcName, retries, timeout, interval, downtimeInterval, downtimeDuration, hostName, port, responseCode, contentCheck, url, user, passwd, agent);
     }
     
-    public void FIXMEtestAddServiceTCP() throws Exception {
+    public void testAddServiceTCP() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
         m_provisioner.addServiceTCP("MyTCP", 4, 44, 444, 4444, 44444, 404, "HELO");
@@ -391,8 +391,8 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         m_eventManager.getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
     }
 
-    public void FIXMEtestReaddServiceTCP() throws Exception {
-        FIXMEtestAddServiceTCP();
+    public void testReaddServiceTCP() throws Exception {
+        testAddServiceTCP();
         expectUpdateEvent();
         m_provisioner.addServiceTCP("MyTCP", 5, 55, 555, 5555, 55555, 505, "AHOY");
         checkTCPConfiguration("MyTCP", "MyTCP", 5, 55, 555, 5555, 55555, 505, "AHOY");

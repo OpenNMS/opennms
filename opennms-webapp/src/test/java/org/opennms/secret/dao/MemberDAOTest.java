@@ -109,7 +109,7 @@ public class MemberDAOTest extends TestCase {
         // Empty test so that JUnit doesn't complain about not having any tests
     }
 
-    public void FIXMEtestCreate() throws InterruptedException {
+    public void testCreate() throws InterruptedException {
         OGPMember member = new OGPMember();
         member.setFirstName("David");
         member.setLastName("Hustace");

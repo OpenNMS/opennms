@@ -56,7 +56,7 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
     	
     }
     
-    public void FIXMEtestGetByCompositeId() {
+    public void testGetByCompositeId() {
     	OnmsMonitoredService monSvc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
     	assertNotNull(monSvc);
     	

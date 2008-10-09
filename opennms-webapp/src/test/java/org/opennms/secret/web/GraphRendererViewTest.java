@@ -69,7 +69,7 @@ public class GraphRendererViewTest extends TestCase {
     protected void tearDown() throws Exception {
     }
 
-    public void FIXMEtestRender() throws Exception {
+    public void testRender() throws Exception {
         m_view.render(new HashMap(), m_request, m_response);
     }
 

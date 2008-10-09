@@ -52,7 +52,7 @@ public class InstallerIpLikeTest extends TestCase {
     }
 
     // FIXME: this test modifies the "opennms" database.
-    public void FIXMEtestIpLike() throws Exception {
+    public void testIpLike() throws Exception {
     	String[] args = {"-d", "-i", "-s", "-U" };
     	m_installer.install(args);
     }

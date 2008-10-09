@@ -93,7 +93,7 @@ public class GraphCartTileContollerTest extends TestCase {
     protected void tearDown() throws Exception {
     }
     
-    public void FIXMEtestCreateGraph() throws Exception {    
+    public void testCreateGraph() throws Exception {    
         callController();
         assertGraph();
         GraphDefinition firstGraphDef = m_graphDef;
@@ -150,15 +150,15 @@ public class GraphCartTileContollerTest extends TestCase {
         // Do nothing.  This is here so JUnit doesn't complain.
     }
     
-    public void FIXMEtestAddParameter() throws Exception {
+    public void testAddParameter() throws Exception {
         addDatasource(m_testDataSource, true);
     }
     
-    public void FIXMEtestAddBogusParameter() throws Exception {
+    public void testAddBogusParameter() throws Exception {
         addDatasource(new DataSource("bogus", "bogus", "bogus", "bogus"), false);
     }
     
-    public void FIXMEtestRemoveParameter() throws Exception {
+    public void testRemoveParameter() throws Exception {
         GraphDataElement dataElement = addDatasource(m_testDataSource, true);
         
         resetRequestResponse();
@@ -166,7 +166,7 @@ public class GraphCartTileContollerTest extends TestCase {
         removeDatasource(dataElement, true);
     }
     
-    public void FIXMEtestRemoveBogusParameter() throws Exception {
+    public void testRemoveBogusParameter() throws Exception {
         addDatasource(m_testDataSource, true);
         
         resetRequestResponse();
@@ -177,7 +177,7 @@ public class GraphCartTileContollerTest extends TestCase {
         removeDatasource(dataElement, false);
     }
     
-    public void FIXMEtestClearParameter() throws Exception {
+    public void testClearParameter() throws Exception {
         addDatasource(m_testDataSource, true);
         
         resetRequestResponse();
