@@ -64,9 +64,9 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     
     private static final String PASSIVE_STATUS_UEI = "uei.opennms.org/services/passiveServiceStatus";
 
-    private Map m_statusTable = null;
-    private EventIpcManager m_eventMgr;
-    private boolean m_initialized = false;
+    private volatile Map m_statusTable = null;
+    private volatile EventIpcManager m_eventMgr;
+    private volatile boolean m_initialized = false;
 
     private DataSource m_dataSource;
 

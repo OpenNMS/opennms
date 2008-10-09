@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -63,14 +62,14 @@ import org.springframework.util.ClassUtils;
  */
 public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
     
-    private String m_name = null;
-    private Object m_annotatedListener;
-    private EventSubscriptionService m_subscriptionService;
-    private Map<String, Method> m_ueiToHandlerMap;
-    private Set<String> m_subscribedEvents;
-    private List<Method> m_eventPreProcessors;
-    private List<Method> m_eventPostProcessors;
-    private SortedSet<Method> m_exceptionHandlers;
+    private volatile String m_name = null;
+    private volatile Object m_annotatedListener;
+    private volatile EventSubscriptionService m_subscriptionService;
+
+    private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
+    private final List<Method> m_eventPreProcessors = new LinkedList<Method>();
+    private final List<Method> m_eventPostProcessors = new LinkedList<Method>();
+    private final SortedSet<Method> m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
     
     public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService) {
         m_name = name;
@@ -182,17 +181,15 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             m_name = listenerInfo.name();
         }
         
-        constructPreProcessorList();
+        populatePreProcessorList();
         
-        constructUeiToHandlerMap();
+        populateUeiToHandlerMap();
         
-        constructPostProcessorList();
+        populatePostProcessorList();
         
-        constructExeptionHandlersSet();
+        populateExeptionHandlersSet();
         
-        m_subscribedEvents = new HashSet<String>(m_ueiToHandlerMap.keySet());
-        
-        m_subscriptionService.addEventListener(this, m_subscribedEvents);
+        m_subscriptionService.addEventListener(this, new HashSet<String>(m_ueiToHandlerMap.keySet()));
 
     }
 
@@ -200,8 +197,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         return annotatedListener.getClass().getAnnotation(EventListener.class);
     }
 
-    private void constructExeptionHandlersSet() {
-        m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
+    private void populateExeptionHandlersSet() {
         
         Method[] methods = m_annotatedListener.getClass().getMethods();
         for(Method method : methods) {
@@ -251,8 +247,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
 
     }
 
-    private void constructPostProcessorList() {
-        m_eventPostProcessors = new LinkedList<Method>();
+    private void populatePostProcessorList() {
         
         Method[] methods = m_annotatedListener.getClass().getMethods();
         for(Method method : methods) {
@@ -263,8 +258,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
-    private void constructPreProcessorList() {
-        m_eventPreProcessors = new LinkedList<Method>();
+    private void populatePreProcessorList() {
         
         Method[] methods = m_annotatedListener.getClass().getMethods();
         for(Method method : methods) {
@@ -276,8 +270,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
-    private void constructUeiToHandlerMap() {
-        m_ueiToHandlerMap = new HashMap<String, Method>();
+    private void populateUeiToHandlerMap() {
         Method[] methods = m_annotatedListener.getClass().getMethods();
         
         for(Method method : methods) {

@@ -62,7 +62,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	
 	private class EngineAdapter implements EventListener {
 		
-		private CorrelationEngine m_engine;
+		private final CorrelationEngine m_engine;
 
 		public EngineAdapter(CorrelationEngine engine) {
 			m_engine = engine;
