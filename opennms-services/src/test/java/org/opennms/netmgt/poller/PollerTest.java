@@ -260,7 +260,7 @@ public class PollerTest {
 
     @Test
     @Ignore
-	public void FIXMEtestBug1564() {
+	public void testBug1564() {
 		// NODE processing = true;
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 		MockNode node = m_network.getNode(2);

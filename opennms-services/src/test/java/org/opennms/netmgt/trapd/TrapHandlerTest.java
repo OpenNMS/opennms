@@ -207,7 +207,7 @@ public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTes
 
     // FIXME: these exist to provide testing for the new Textual Convention feature
     // See EventConfDataTest for the other part of this testing
-    public void FIXMEtestV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
+    public void testV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
     throws Exception {
         SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
 
@@ -219,7 +219,7 @@ public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTes
     }
 
     // FIXME: these exist to provide testing for the new Textual Convention feature
-    public void FIXMEtestV2EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
+    public void testV2EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
     throws Exception {
         SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
 

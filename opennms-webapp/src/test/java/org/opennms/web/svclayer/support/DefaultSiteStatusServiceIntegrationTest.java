@@ -83,7 +83,7 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         // Empty test so JUnit doesn't complain about not having any tests to run
     }
     
-    public void FIXMEtestCreateAggregateStatusView() {
+    public void testCreateAggregateStatusView() {
         
         AggregateStatusView view = m_aggregateService.createAggregateStatusView(null);
         
@@ -91,12 +91,12 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         assertFalse(view.getStatusDefinitions().isEmpty());
     }
     
-    public void FIXMEtestCreateAggregateStatusUsingNodeId() {
+    public void testCreateAggregateStatusUsingNodeId() {
         Collection<AggregateStatus> aggrStati = m_aggregateService.createAggregateStatusesUsingNodeId(1, "building");
         assertNotNull(aggrStati);
     }
     
-    public void FIXMEtestCreateAggregateStatusUsingBuilding() {
+    public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;
         Collection<AggregateStatusDefinition> defs = new ArrayList<AggregateStatusDefinition>();

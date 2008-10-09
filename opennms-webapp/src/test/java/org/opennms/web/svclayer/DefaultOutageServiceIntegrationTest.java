@@ -89,7 +89,7 @@ public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTe
 	
 	// More tests should be defined for these
 	
-	public void FIXMEtestGetSupressedOutages() {
+	public void testGetSupressedOutages() {
 		Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
 		assertTrue("Collection should be emtpy ", outages.isEmpty());
 		
@@ -100,12 +100,12 @@ public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTe
 	    assertTrue("We loaded one outage ",outage.getId().equals(1));
 	}
 	
-	public void FIXMEtestNoOfSuppressedOutages(){
+	public void testNoOfSuppressedOutages(){
 		Integer outages = m_outageService.getSuppressedOutageCount();
 		assertTrue("We should find suppressed messages ", outages == 0);
 	}
 
-	public void FIXMEtestSuppression() {
+	public void testSuppression() {
 		Date time = new Date();
 		//Load Outage manipulate and save it.
 		OnmsOutage myOutage = m_outageService.load(new Integer(1));

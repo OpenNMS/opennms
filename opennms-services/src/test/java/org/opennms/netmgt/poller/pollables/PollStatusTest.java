@@ -64,7 +64,7 @@ public class PollStatusTest extends TestCase {
     /*
      * Test method for 'org.opennms.netmgt.poller.pollables.PollStatus.PollStatus(int, String, String)'
      */
-    public void FIXMEtestPollStatus() {
+    public void testPollStatus() {
         
         //Compare construction via constant
         PollStatus statusDown1 = PollStatus.down("test down 1");

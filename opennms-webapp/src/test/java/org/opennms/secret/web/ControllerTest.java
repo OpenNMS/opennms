@@ -105,7 +105,7 @@ public class ControllerTest extends TestCase {
 		super.tearDown();
 	}
 	
-	public void FIXMEtestNodeService() throws Exception {
+	public void testNodeService() throws Exception {
 		assertNotNull("nodeMaV was not null", nodeMaV);
 		
 		assertTrue(viewName + " did not match", nodeMaV.getViewName().equals(viewName));

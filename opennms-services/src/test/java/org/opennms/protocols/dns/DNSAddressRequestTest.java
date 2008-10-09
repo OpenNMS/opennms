@@ -83,7 +83,7 @@ public class DNSAddressRequestTest extends TestCase {
     }
 
     // FIXME: This generates an IOException because the response is a server failed response; is this what we want?
-    public void FIXMEtestServerFailed() throws IOException {
+    public void testServerFailed() throws IOException {
         m_request.m_reqID = 24212;
         m_request.verifyResponse(responseBytes, responseBytes.length);
     }

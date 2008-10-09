@@ -404,7 +404,7 @@ public class ThresholdEvaluatorHighLowTest extends TestCase {
     }
     
     // FIXME: This doesn't work because all allow ThresholdTypeType values are currently checked for in the if statement
-    public void FIXMEtestIsThresholdExceededBogusType() {
+    public void testIsThresholdExceededBogusType() {
         Threshold threshold = new Threshold();
         threshold.setType("relativeChange");
         threshold.setDsName("ds-name");
@@ -504,7 +504,7 @@ public class ThresholdEvaluatorHighLowTest extends TestCase {
     }
 
     // FIXME: This doesn't work because all allow ThresholdTypeType values are currently checked for in the if statement
-    public void FIXMEtestIsRearmExceededBogusType() {
+    public void testIsRearmExceededBogusType() {
         Threshold threshold = new Threshold();
         threshold.setType("relativeChange");
         threshold.setDsName("ds-name");

@@ -77,7 +77,7 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
     }
     
     // FIXME
-    public void FIXMEtestCreateSurveillanceServiceTableUsingViewName() {
+    public void testCreateSurveillanceServiceTableUsingViewName() {
         String viewName = "default";
         SimpleWebTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
 
