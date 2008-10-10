@@ -285,6 +285,10 @@
               <value>${opennms.library.jrrd}</value>
             </property>
             <property>
+              <name>install.rrdtool.bin</name>
+              <value>${install.rrdtool.bin}</value>
+            </property>
+            <property>
               <name>runOtrsTests</name>
               <value>${runOtrsTests}</value>
             </property>
@@ -1236,7 +1240,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.5</version>
+        <version>4.4</version>
       </dependency>
       <dependency>
         <groupId>jwebunit</groupId>
