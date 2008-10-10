@@ -2058,8 +2058,7 @@ public class InstallerDb {
                 }
             }
         } finally {
-            closeConnection();
-            closeAdminConnection();
+            this.disconnect();
         }
     }
 
@@ -2199,6 +2198,16 @@ public class InstallerDb {
         }
         m_adminConnection.close();
         m_adminConnection = null;
+    }
+
+    /**
+     * Close all connections to the database.
+     * @throws SQLException
+     */
+    public void disconnect() throws SQLException {
+        this.closeColumnReplacements();
+        this.closeConnection();
+        this.closeAdminConnection();
     }
 
     private void rethrowDatabaseConnectionException(DataSource ds, SQLException e, String msg) throws SQLException {
