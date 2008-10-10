@@ -269,14 +269,11 @@ public class Installer {
         }
 
         if (m_update_database && m_remove_database) {
-            m_installerDb.closeColumnReplacements();
-            m_installerDb.closeConnection();
-            m_installerDb.closeAdminConnection();
+            m_installerDb.disconnect();
             m_installerDb.databaseRemoveDB();
         }
-        
-        m_installerDb.closeConnection();
-        m_installerDb.closeAdminConnection();
+
+        m_installerDb.disconnect();
 
         if (m_update_database) {
             createConfiguredFile();
