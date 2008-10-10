@@ -268,12 +268,13 @@ public class Installer {
             m_installerDb.updateIplike();
         }
 
-        m_installerDb.closeConnection();
-
         if (m_update_database && m_remove_database) {
+            m_installerDb.closeConnection();
+            m_installerDb.closeAdminConnection();
             m_installerDb.databaseRemoveDB();
         }
         
+        m_installerDb.closeConnection();
         m_installerDb.closeAdminConnection();
 
         if (m_update_database) {

@@ -49,6 +49,7 @@ public class InstallerIpLikeTest {
         System.setProperty("skip-native", "true");
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.setRelativeHomeDirectory("target/test-classes");
+        System.setProperty("install.dir", "target/test-classes");
         System.setProperty("install.etc.dir", "target/test-classes/etc");
         bean.afterPropertiesSet();
         m_installer = new Installer();
