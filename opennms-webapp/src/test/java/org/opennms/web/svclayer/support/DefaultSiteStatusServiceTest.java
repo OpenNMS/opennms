@@ -42,7 +42,10 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.*;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
@@ -56,25 +59,20 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
 
-import junit.framework.TestCase;
-
-public class DefaultSiteStatusServiceTest extends TestCase {
+public class DefaultSiteStatusServiceTest {
     
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SiteStatusViewConfigDao m_siteStatusViewConfigDao;
     
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         m_nodeDao = createMock(NodeDao.class);
         m_categoryDao = createMock(CategoryDao.class);
         m_siteStatusViewConfigDao = createMock(SiteStatusViewConfigDao.class);
     }
     
-    public void testBogus() {
-        // Empty test so JUnit doesn't complain about not having any tests to run
-    }
-    
+    @Test
     public void testCreateAggregateStatusUsingNodeId() {
         Collection<AggregateStatus> aggrStati;
         Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
@@ -123,7 +121,6 @@ public class DefaultSiteStatusServiceTest extends TestCase {
         rowDef.addCategory(category);
         rows.addRowDef(rowDef);
         
-        rows = new Rows();
         rowDef = new RowDef();
         category = new Category();
         category.setName("switches");
@@ -147,6 +144,7 @@ public class DefaultSiteStatusServiceTest extends TestCase {
         assertNotNull(aggrStati);
     }
     
+    @Test
     public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;
@@ -174,7 +172,7 @@ public class DefaultSiteStatusServiceTest extends TestCase {
         replay(m_nodeDao);
         
         AggregateStatusView view = new AggregateStatusView();
-        view.setName("building");
+        view.setColumnName("building");
         view.setColumnValue("HQ");
         view.setTableName("assets");
         view.setStatusDefinitions(new LinkedHashSet<AggregateStatusDefinition>(defs));
