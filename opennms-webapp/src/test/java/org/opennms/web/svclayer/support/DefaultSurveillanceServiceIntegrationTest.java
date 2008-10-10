@@ -38,6 +38,7 @@
 
 package org.opennms.web.svclayer.support;
 
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.test.WebAppTestConfigBean;
 import org.opennms.web.svclayer.ProgressMonitor;
@@ -47,6 +48,7 @@ import org.opennms.web.svclayer.SurveillanceService;
 public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     
     private SurveillanceService m_surveillanceService;
+    private DatabasePopulator m_databasePopulator; 
     
     @Override
     protected void setUpConfiguration() {
@@ -63,32 +65,33 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
     public void setSurveillanceService(SurveillanceService svc) {
         m_surveillanceService = svc;
     }
+    
+    public void setDatabasePopulator(DatabasePopulator databasePopulator){
+        m_databasePopulator = databasePopulator;
+    }
 
     @Override
     protected String[] getConfigLocations() {
         return new String[] {
                 "META-INF/opennms/applicationContext-dao.xml",
+                "META-INF/opennms/applicationContext-databasePopulator.xml",
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml",
         };
     }
     
-    public void testBogus() {
-        // Empty test so JUnit doesn't complain about not having any tests to run
-    }
-    
-    // FIXME
     public void testCreateSurveillanceServiceTableUsingViewName() {
+       assertNotNull(m_databasePopulator);
+       m_databasePopulator.populateDatabase();
+       
         String viewName = "default";
         SimpleWebTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
 
 			public void beginNextPhase(String string) {
-				// TODO Auto-generated method stub
-				
+							
 			}
 
 			public void setPhaseCount(int i) {
-				// TODO Auto-generated method stub
-				
+								
 			}
         	
         });
