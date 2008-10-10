@@ -293,6 +293,10 @@
               <value>${runOtrsTests}</value>
             </property>
             <property>
+              <name>runMailTests</name>
+              <value>${runMalTests}</value>
+            </property>
+            <property>
               <name>runPingTests</name>
               <value>${runPingTests}</value>
             </property>
@@ -542,6 +546,8 @@
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
+
+    <runMailTests>true</runMailTests>
   
     <!-- rpm specific -->
     <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
