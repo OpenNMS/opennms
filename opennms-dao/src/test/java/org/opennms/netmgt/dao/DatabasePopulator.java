@@ -107,9 +107,23 @@ public class DatabasePopulator {
         OnmsCategory mid = new OnmsCategory("IMP_mid");
         OnmsCategory ops = new OnmsCategory("OPS_Online");
         
+        OnmsCategory catRouter = new OnmsCategory("Routers");
+        OnmsCategory catSwitches = new OnmsCategory("Switches");
+        OnmsCategory catServers = new OnmsCategory("Servers");
+        OnmsCategory catProduction = new OnmsCategory("Production");
+        OnmsCategory catTest = new OnmsCategory("Test");
+        OnmsCategory catDevelopment = new OnmsCategory("Development");
+        
         getCategoryDao().save(ac);
         getCategoryDao().save(mid);
         getCategoryDao().save(ops);
+        
+        getCategoryDao().save(catRouter);
+        getCategoryDao().save(catSwitches);
+        getCategoryDao().save(catServers);
+        getCategoryDao().save(catProduction);
+        getCategoryDao().save(catTest);
+        getCategoryDao().save(catDevelopment);
 
         getCategoryDao().flush();
 

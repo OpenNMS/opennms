@@ -4,5 +4,29 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd ">
   <views>
+	  <view name="default" refresh-seconds="300" >
+		  <rows>
+		  	<row-def row="1" label="Routers" >
+	          <category name="Routers"/>
+	        </row-def>
+	        <row-def row="2" label="Switches" >
+	          <category name="Switches" />
+	        </row-def>
+	        <row-def row="3" label="Servers" >
+	          <category name="Servers" />
+	        </row-def>
+	      </rows>
+	      <columns>
+	        <column-def col="1" label="PROD" >
+	          <category name="Production" />
+	        </column-def>
+	        <column-def col="2" label="TEST" >
+	          <category name="Test" />
+	        </column-def>
+	        <column-def col="3" label="DEV" >
+	          <category name="Development" />
+	        </column-def>
+	      </columns>
+	  </view>
   </views>
 </surveillance-view-configuration>
