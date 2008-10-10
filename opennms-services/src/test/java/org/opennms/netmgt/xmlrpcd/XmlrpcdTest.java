@@ -403,7 +403,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         nodeOneEvent.setService("ICMP");
         getEventIpcManager().sendNow(nodeOneEvent);
 
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         
         m_anticipator1.verifyAnticipated();
         m_anticipator1.shutdown();
@@ -419,7 +419,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         nodeTwoEvent.setService("SNMP");
         getEventIpcManager().sendNow(nodeTwoEvent);
         
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         m_anticipator2.verifyAnticipated();
         m_anticipator2.shutdown();
@@ -438,7 +438,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         nodeThreeEvent.setService("Telnet");
         getEventIpcManager().sendNow(nodeThreeEvent);
         
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         m_xmlrpcd.stop();
         Thread.sleep(2000);
