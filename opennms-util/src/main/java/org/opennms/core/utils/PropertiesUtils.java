@@ -62,7 +62,7 @@ public class PropertiesUtils {
      * This recursively substitutes occurrences ${property.name} in initialString with the value of 
      * the property property.name taken from the supplied properties object. If 
      * property.name is not defined in properties that the substitution is not done. 
-     * @param initialString the string to preform the substitions in
+     * @param initialString the string to perform the substitutions in
      * @param properties the properties to take the values from
      * @return The string with appropriate substitutions made.
      */
