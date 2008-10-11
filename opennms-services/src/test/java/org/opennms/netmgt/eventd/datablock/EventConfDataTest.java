@@ -41,13 +41,18 @@
 //
 package org.opennms.netmgt.eventd.datablock;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
@@ -61,9 +66,10 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
-public class EventConfDataTest extends TestCase {
+public class EventConfDataTest {
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging(false);
 
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
@@ -77,10 +83,12 @@ public class EventConfDataTest extends TestCase {
     public void finishUp() {
     }
 
+    @After
     public void tearDown() {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @Test
     public void testEventValuePassesMaskValue() {
         List<String> maskList = new ArrayList<String>(1);
         String eventValue = "George Clinton, father of funk";
@@ -94,19 +102,23 @@ public class EventConfDataTest extends TestCase {
         assertTrue(ecd.eventValuePassesMaskValue(eventValue, maskList));
     }
 
+    @Test
     public void testV1TrapNewSuspect() throws Exception {
         anticipateAndSend(null, "v1", null, 6, 1);
     }
 
+    @Test
     public void testV2TrapNewSuspect() throws Exception {
         anticipateAndSend(null, "v2c", null, 6, 1);
     }
 
+    @Test
     public void testV1EnterpriseIdAndGenericMatch() throws Exception {
         anticipateAndSend("uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v1",
                 ".1.3.6.1.2.1.15.7", 6, 1);
     }
 
+    @Test
     public void testV2EnterpriseIdAndGenericAndSpecificMatch() throws Exception {
         anticipateAndSend("uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
                 ".1.3.6.1.2.1.15.7", 6, 1);
@@ -120,71 +132,86 @@ public class EventConfDataTest extends TestCase {
 	}
      */
 
+    @Test
     public void testV2EnterpriseIdAndGenericAndSpecificMissWithExtraZeros() throws Exception {
         anticipateAndSend(null, "v2c",
                 ".1.3.6.1.2.1.15.7.0.0", 6, 1);
     }
 
+    @Test
     public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongGeneric() throws Exception {
         anticipateAndSend(null, "v1",
                 ".1.3.6.1.2.1.15.7", 5, 1);
     }
 
+    @Test
     public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongSpecific() throws Exception {
         anticipateAndSend(null, "v1",
                 ".1.3.6.1.2.1.15.7", 6, 50);
     }
 
+    @Test
     public void testV1GenericMatch() throws Exception {
         anticipateAndSend("uei.opennms.org/generic/traps/SNMP_Cold_Start",
                 "v1", null, 0, 0);
     }
 
+    @Test
     public void testV2GenericMatch() throws Exception {
         anticipateAndSend("uei.opennms.org/generic/traps/SNMP_Cold_Start",
                 "v2c", ".1.3.6.1.6.3.1.1.5.1", 0, 0);
     }
 
+    @Test
     public void testV1TrapDroppedEvent() throws Exception {
         anticipateAndSend(null, "v1", ".1.3.6.1.2.1.15.7", 6, 2);
     }
 
+    @Test
     public void testV2TrapDroppedEvent() throws Exception {
         anticipateAndSend(null, "v2c", ".1.3.6.1.2.1.15.7", 6, 2);
     }
 
+    @Test
     public void testV1TrapDefaultEvent() throws Exception {
         anticipateAndSend(null, "v1", null, 6, 1);
     }
 
+    @Test
     public void testV2TrapDefaultEvent() throws Exception {
         anticipateAndSend(null, "v2c", null, 6, 1);
     }
 
+    @Test
     public void testV1TrapDroppedIPEvent() throws Exception {
         anticipateAndSend(null, "v1", null, 0, 0, "192.168.1.1");
     }
 
+    @Test
     public void testV1TrapNotDroppedIPOffEvent() throws Exception {
         anticipateAndSend("uei.opennms.org/generic/traps/SNMP_Cold_Start",
                 "v1", null, 0, 0, "192.168.1.2");
     }
 
+    @Test
     public void testV1TrapDroppedNetwork1Event() throws Exception {
         anticipateAndSend(null, "v1", ".1.3.6.1.2.1.15.7", 6, 1, "192.168.1.1");
     }
 
+    @Test
     public void testV1TrapDroppedNetwork2Event() throws Exception {
         anticipateAndSend(null,
                 "v1", ".1.3.6.1.2.1.15.7", 6, 1, "192.168.1.2");
     }
 
+    @Test
     public void testV1TrapNotDroppedNetworkOffEvent() throws Exception {
         anticipateAndSend("uei.opennms.org/IETF/BGP/traps/bgpEstablished",
                 "v1", ".1.3.6.1.2.1.15.7", 6, 1, "192.168.2.1");
     }
 
     // FIXME
+    @Test
     public void testV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
     throws Exception {
 
