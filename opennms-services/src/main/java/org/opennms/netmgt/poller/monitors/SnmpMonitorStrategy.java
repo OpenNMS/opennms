@@ -120,7 +120,9 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
     private Boolean checkStringCriteria(String operator, String operand, String value) {
         Boolean retVal = null;
         
-        if (value.startsWith(".")) {
+        if (value == null) {
+            value = "";
+        } else if (value.startsWith(".")) {
             value = value.substring(1);
         }
         

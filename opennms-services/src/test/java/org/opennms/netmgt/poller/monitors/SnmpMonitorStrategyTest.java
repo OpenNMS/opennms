@@ -45,10 +45,14 @@
  */
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -70,7 +74,8 @@ import org.opennms.test.mock.MockLogAppender;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class SnmpMonitorStrategyTest extends TestCase {
+public class SnmpMonitorStrategyTest {
+
     private SnmpMonitorStrategy monitor = new SnmpMonitorStrategy() {
         @Override
         public PollStatus poll(MonitoredService svc, Map parameters) {
@@ -78,22 +83,24 @@ public class SnmpMonitorStrategyTest extends TestCase {
         }
     };
 
-    @Override
+    @Before
     public void setUp() {
         MockLogAppender.setupLogging();
     }
 
+    @Test
     public void testMeetsCriteriaWithNullResult() {
         SnmpValue result = null;
         assertFalse(monitor.meetsCriteria(result, null, null));
     }
 
-    // FIXME
+    @Test
     public void testMeetsCriteriaWithSnmpNull() {
         SnmpValue result = TestSnmpValue.NULL_VALUE;
         testSyntaxEquals(result, "", "1");
     }
 
+    @Test
     public void testMeetsCriteriaWithString() {
         StringSnmpValue result = new StringSnmpValue("A Test String");
         testSyntaxEquals(result, "A Test String", "a test string");
@@ -101,23 +108,27 @@ public class SnmpMonitorStrategyTest extends TestCase {
         testSyntaxMatches(result, "^A Test String$", "^A Test$");
     }
 
+    @Test
     public void testMeetsCriteriaWithObjectID() {
         OidSnmpValue result = new OidSnmpValue(".1.2.3.4.5.6.7.8.9");
         testSyntaxEquals(result, ".1.2.3.4.5.6.7.8.9", "..1.2.3.4.5.6.7.8.9");
         testSyntaxMatches(result, "\\.7\\.", "\\.11\\.");
     }
 
+    @Test
     public void testMeetsCriteriaWithIPAddr() throws Exception {
         IpAddressSnmpValue result = new IpAddressSnmpValue("10.1.1.1");
         testSyntaxEquals(result, "10.1.1.1", "10.1.1.2");
         testSyntaxMatches(result, "10\\.1\\.1\\.[1-5]", "10\\.1\\.1\\.[02-9]");
     }
 
+    @Test
     public void testNumericString() {
         StringSnmpValue result = new StringSnmpValue("12345");
         testOrderOperations(result, 12345);
     }
 
+    @Test
     public void testMeetsCriteriaWithInteger() {
         Integer32SnmpValue result = new Integer32SnmpValue(1234);
         testSyntaxEquals(result, "1234", "2234");
@@ -125,19 +136,21 @@ public class SnmpMonitorStrategyTest extends TestCase {
         testSyntaxMatches(result, "23", "14");
     }
 
+    @Test
     public void testMeetsCriteriaWithCounter32() {
         Counter32SnmpValue result = new Counter32SnmpValue(1);
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
+    @Test
     public void testMeetsCriteriaWithGauge32() {
         Gauge32SnmpValue result = new Gauge32SnmpValue(1);
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
-    // FIXME
+    @Test
     public void testMeetsCriteriaWithTimeTicks() {
         TimeticksSnmpValue result = new TimeticksSnmpValue("1");
         testSyntaxEquals(result, "0d 0h 0m 0s 10ms", "1d 1h 1m 1s 10ms");
@@ -145,12 +158,14 @@ public class SnmpMonitorStrategyTest extends TestCase {
         testOrderOperations(result, 1);
     }
 
+    @Test
     public void testMeetsCriteriaWithCounter64() {
         Counter64SnmpValue result = new Counter64SnmpValue(1);
         testSyntaxEquals(result, "1", "2");
         testOrderOperations(result, 1);
     }
 
+    @Test
     public void testErrorConditions() {
         Integer32SnmpValue result = new Integer32SnmpValue(1);
         
@@ -164,6 +179,7 @@ public class SnmpMonitorStrategyTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    @Test
     public void testErrorConditions2() {
         Integer32SnmpValue result = new Integer32SnmpValue(1);
 
