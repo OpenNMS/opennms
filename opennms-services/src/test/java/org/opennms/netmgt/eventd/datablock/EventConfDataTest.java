@@ -52,6 +52,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.config.DefaultEventConfDao;
@@ -210,8 +211,8 @@ public class EventConfDataTest {
                 "v1", ".1.3.6.1.2.1.15.7", 6, 1, "192.168.2.1");
     }
 
-    // FIXME
     @Test
+    @Ignore("This is a test for unwritten functionality.. see comment in test")
     public void testV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
     throws Exception {
 
