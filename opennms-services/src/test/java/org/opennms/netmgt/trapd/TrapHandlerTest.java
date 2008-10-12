@@ -62,7 +62,7 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTests {
     public static TestSuite suite() {
-        Class testClass = TrapHandlerTest.class;
+        Class<?> testClass = TrapHandlerTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
         suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
@@ -121,7 +121,7 @@ public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTes
 
     public void finishUp() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             // do nothing
         }
@@ -427,8 +427,7 @@ public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTes
 
         if (newSuspectOnTrap) {
             // Note: the nodeId will be zero because the node is not known
-            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
-                    m_ip, 0);
+            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect", m_ip, 0);
         }
 
         if (event != null) {
@@ -500,10 +499,10 @@ public class TrapHandlerTest extends AbstractDependencyInjectionSpringContextTes
         pdu.setSpecific(specific);
         pdu.setTimeStamp(0);
         pdu.setAgentAddress(m_localhost);
-        Iterator it = varbinds.entrySet().iterator();
+        Iterator<Map.Entry<String,SnmpValue>> it = varbinds.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            pdu.addVarBind(SnmpObjId.get((String) pairs.getKey()), (SnmpValue) pairs.getValue());
+            Map.Entry<String,SnmpValue> pairs = it.next();
+            pdu.addVarBind(SnmpObjId.get(pairs.getKey()), pairs.getValue());
         }
         pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
     }
