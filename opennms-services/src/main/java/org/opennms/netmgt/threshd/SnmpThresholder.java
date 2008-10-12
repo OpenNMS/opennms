@@ -120,6 +120,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *                plug-in from functioning.
      * 
      */
+    @SuppressWarnings("unchecked")
     public void initialize(Map parameters) {
 
         m_serviceName = (String)parameters.get("svcName");
@@ -180,6 +181,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *            interface belongs..
      * 
      */
+    @SuppressWarnings("unchecked")
     public void initialize(ThresholdNetworkInterface netIface, Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, netIface, parms);
         m_snmpThresholdNetworkInterfaces.put(netIface, snmpThresholdNetworkInterface);
@@ -244,6 +246,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *            Key/value pairs from the package to which the interface
      *            belongs.
      */
+    @SuppressWarnings("unchecked")
     public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = m_snmpThresholdNetworkInterfaces.get(netIface);
         if (snmpThresholdNetworkInterface == null) {
