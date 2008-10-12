@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -31,18 +31,19 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.StringReader;
 
-import junit.framework.TestCase;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Test;
 import org.opennms.test.ThrowableAnticipator;
 
-public class DataCollectionConfigFactoryTest extends TestCase {
+public class DataCollectionConfigFactoryTest {
 
-    private String m_xml = "<?xml version=\"1.0\"?>\n" + 
+    private static String m_xml = "<?xml version=\"1.0\"?>\n" + 
             "<datacollection-config\n" + 
             "   rrdRepository = \"/wonka/rrd/snmp/\">\n" + 
             "   <snmp-collection name=\"default\"\n" + 
@@ -97,24 +98,26 @@ public class DataCollectionConfigFactoryTest extends TestCase {
             "";
 
     private String m_brocadeXmlFragment = 
-    "       <resourceType name=\"brocadeIndex\">\n" +
+    "       <resourceType name=\"brocadeIndex\" label=\"Brocade Switches\">\n" +
     "         <persistenceSelectorStrategy class=\"foo\"/>\n" +
     "         <storageStrategy class=\"foo\"/>\n" +
     "       </resourceType>\n";
 
-    
+    @Test
     public void testSetInstance() throws MarshalException, ValidationException, IOException {
         DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(m_xml)));
         DataCollectionConfigFactory.init();
         assertEquals("/wonka/rrd/snmp", DataCollectionConfigFactory.getInstance().getRrdPath());
     }
     
+    @Test
     public void testValidResourceType() throws MarshalException, ValidationException, IOException {
     	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex").replaceFirst("<groups", m_brocadeXmlFragment + "<groups");
     	
     	DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(modifiedXml)));
     }
     
+    @Test
     public void testInvalidResourceType() throws MarshalException, ValidationException, IOException {
     	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
     	ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -127,13 +130,5 @@ public class DataCollectionConfigFactoryTest extends TestCase {
     	}
         ta.verifyAnticipated();
     }
-
-//    public void testInit() {
-//        fail("Not yet implemented");
-//    }
-//
-//    public void testReload() {
-//        fail("Not yet implemented");
-//    }
 
 }
