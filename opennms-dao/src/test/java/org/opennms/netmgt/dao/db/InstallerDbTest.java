@@ -2081,7 +2081,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     
     public void testCreateTableWithCheckConstraint() throws Exception {
     	final String cname="setfilter_type_valid";
-    	final String checkexpression="(((\"type\" >= 0) AND (\"type\" <= 2)))";
+    	final String checkexpression="(((type >= 0) AND (type <= 2)))";
         final String sql = "create table setFilter ( id integer, type integer, " +
         		"constraint "+cname+" check "+checkexpression+");\n";
         getInstallerDb().readTables(new StringReader(sql));
@@ -2095,7 +2095,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     
     public void testUpgradeAddCheckConstraint() throws Exception {
        	final String cname="setfilter_type_valid";
-    	final String checkexpression="(((\"type\" >= 0) AND (\"type\" <= 2)))";
+    	final String checkexpression="(((type >= 0) AND (type <= 2)))";
         final String sql_start = "create table setFilter ( id integer, type integer);\n";
         executeSQL(sql_start);
         
@@ -2110,7 +2110,11 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     	assertTrue(constraints.size()==1);
     	Constraint constraint=constraints.get(0);
     	assertTrue(cname.equals(constraint.getName()));
-    	assertTrue(checkexpression.equals("("+constraint.getCheckExpression()+")"));
+        System.err.println("X: "+checkexpression);
+        System.err.println("X: "+constraint);
+        System.err.println("X: ("+constraint.getCheckExpression()+")");
+        assertEquals(checkexpression, "("+constraint.getCheckExpression()+")");
+        //assertTrue(checkexpression.equals("("+constraint.getCheckExpression()+")"));
   	
     }
 
