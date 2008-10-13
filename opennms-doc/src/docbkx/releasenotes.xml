@@ -10,41 +10,40 @@
 <!ENTITY __chap4__ SYSTEM "releasenotes/chap4.xml">
 ]>
 <book>
-  <title><trademark class="registered">OpenNMS</trademark>
-    Release Notes</title>
+  <title><trademark class="registered">OpenNMS</trademark> Release Notes</title>
 
   <bookinfo>
     <date>8 Oct 2008</date>
 
-    <subtitle>Information About OpenNMS Release
-      @product.version@-@product.release@</subtitle>
+    <subtitle>Information About OpenNMS Release @product.version@-@product.release@</subtitle>
 
     <authorgroup>
       <corpauthor>OpenNMS Development Team</corpauthor>
 
       <author>
-        <surname>Tarus Balog</surname>
-
+      	<firstname>Tarus</firstname>
+        <surname>Balog</surname>
         <email>tarus@opennms.org</email>
       </author>
 
       <author>
-        <surname>Matt Brozowski</surname>
-
+      	<firstname>Matt</firstname>
+        <surname>Brozowski</surname>
         <email>brozow@opennms.org</email>
       </author>
 
       <author>
-        <surname>David Hustace</surname>
-
+      	<firstname>David</firstname>
+        <surname>Hustace</surname>
         <email>david@opennms.org</email>
       </author>
 
       <author>
-        <surname>Ben Reed</surname>
-
-        <email>ben@opennms.org</email>
+      	<firstname>Benjamin</firstname>
+        <surname>Reed</surname>
+        <email>ranger@opennms.org</email>
       </author>
+
     </authorgroup>
 
     &__copyright;
