@@ -7,11 +7,68 @@
     <version>1.5.97-testing-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-doc</artifactId>
-  <packaging>tgz</packaging>
+  <!-- <packaging>tgz</packaging> -->
   <name>OpenNMS Documentation</name>
   <description>Various Guides for using OpenNMS</description>
   <build>
     <plugins>
+            <plugin>
+                <groupId>com.agilejava.docbkx</groupId>
+                <artifactId>docbkx-maven-plugin</artifactId>
+                <version>2.0.8</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-html</goal>
+                            <goal>generate-pdf</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.docbook</groupId>
+                        <artifactId>docbook-xml</artifactId>
+                        <version>4.4</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <chunkedOutput>false</chunkedOutput>
+                    <htmlStylesheet>common/html.css</htmlStylesheet>
+                    <xincludeSupported>true</xincludeSupported>
+                    <!-- <htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization> -->
+                    <foCustomization>src/docbkx/common/fopdf.xsl</foCustomization>
+                    <entities>
+                        <entity>
+                            <name>version</name>
+                            <value>${pom.version}</value>
+                        </entity>
+                    </entities>
+                    <postProcess>
+                    	<copy todir="target/docbkx/html/common">
+                    		<fileset dir="src/docbkx/common">
+                    			<include name="*.css" />
+                    		</fileset>
+                    		<fileset dir="src/docbkx/images">
+                    			<include name="*.gif" />
+                    			<include name="*.png" />
+                    		</fileset>
+                    	</copy>
+                        <copy todir="target/site/reference">
+                            <fileset dir="target/docbkx">
+                                <include name="**/*.css" />
+                                <include name="**/*.png" />
+                                <include name="**/*.gif" />
+                                <include name="**/*.jpg" />
+                                <include name="**/*.html" />
+                                <include name="**/*.pdf" />
+                            </fileset>
+                        </copy>
+                    </postProcess>
+                </configuration>
+            </plugin>
+<!--
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>opennms-docbook-plugin</artifactId>
@@ -57,6 +114,7 @@
           <appendAssemblyId>false</appendAssemblyId>
         </configuration>
       </plugin>
+-->
     </plugins>
   </build>
   <repositories>
