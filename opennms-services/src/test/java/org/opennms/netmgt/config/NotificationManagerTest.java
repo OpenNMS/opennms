@@ -50,6 +50,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
@@ -135,7 +136,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
     }
 
     public void testNoElement() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, null,
                                            "(ipaddr IPLIKE *.*.*.*)",
                                            true);
@@ -146,7 +147,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
      * the IP address is in the database on *some* node.
      */
     public void testNoNodeIdWithIpAddr() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.1", null,
                                            "(ipaddr == '192.168.1.1')",
                                            true);
@@ -158,7 +159,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
      * database.  This shouldn't send an event.
      */
     public void testNoNodeIdWithIpAddrNotInDb() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.2", null,
                                            "(ipaddr == '192.168.1.1')",
                                            false);
@@ -169,7 +170,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
      * the IP address and service is in the database on *some* node.
      */
     public void testNoNodeIdWithService() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, "HTTP",
                                            "(ipaddr == '192.168.1.1')",
                                            true);
@@ -177,56 +178,61 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
 
     // FIXME... do we really want to return true if the rule is wrong?????
     public void testRuleBogus() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
-                                           1, "192.168.1.1", "HTTP",
-                                           "(aklsdfjweklj89jaikj)",
-                                           false);
+        try {
+            doTestNodeInterfaceServiceWithRule("node/interface/service match",
+                                               1, "192.168.1.1", "HTTP",
+                                               "(aklsdfjweklj89jaikj)",
+                                               false);
+            fail("Expected exception to be thrown!");
+        } catch (FilterParseException e) {
+            // I expected this
+        }
     }
     
     public void testIplikeAllStars() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
                                            "(ipaddr IPLIKE *.*.*.*)",
                                            true);
     }
 
     public void testNodeOnlyMatch() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, null, null,
                                            "(ipaddr == '192.168.1.1')",
                                            true);
     }
     
     public void testNodeOnlyMatchZeroesIpAddr() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "0.0.0.0", null,
                                            "(ipaddr == '192.168.1.1')",
                                            true);
     }
     
     public void testNodeOnlyNoMatch() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            3, null, null,
                                            "(ipaddr == '192.168.1.1')",
                                            false);
     }
     
     public void testWrongNodeId() throws InterruptedException {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
                                            "(nodeid == 1)",
                                            false);
     }
     
     public void testIpAddrSpecificPass() throws InterruptedException {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
                                            "(ipaddr == '192.168.1.1')",
                                            true);
     }
     
     public void testIpAddrSpecificFail() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be false",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
                                            "(ipaddr == '192.168.1.2')",
                                            false);
@@ -234,42 +240,42 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
     
 
     public void testIpAddrServiceSpecificPass() throws InterruptedException {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
                                            "(ipaddr == '192.168.1.1')",
                                            true);
     }
     
     public void testIpAddrServiceSpecificFail() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be false",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
                                            "(ipaddr == '192.168.1.2')",
                                            false);
     }
     
     public void testIpAddrServiceSpecificWrongService() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be false",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "ICMP",
                                            "(ipaddr == '192.168.1.1')",
                                            false);
     }
 
     public void testIpAddrServiceSpecificWrongIP() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be false",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.2", "HTTP",
                                            "(ipaddr == '192.168.1.1')",
                                            false);
     }
     
     public void testMultipleCategories() {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
                                            "(catincCategoryOne) & (catincCategoryTwo) & (catincCategoryThree)",
                                            true);
     }
     
     public void testMultipleCategoriesNotMember() throws InterruptedException {
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be true",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
                                            "(catincCategoryOne) & (catincCategoryTwo) & (catincCategoryThree)",
                                            false);
@@ -306,7 +312,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
          * Note: the nodeLabel for nodeId=3/ipAddr=192.168.1.2 is 'node 3'
          * which shouldn't match the filter.
          */
-        doTestNodeInterfaceServiceWithRule("was expecting the node/interface/service match to be false",
+        doTestNodeInterfaceServiceWithRule("node/interface/service match",
                 3, "192.168.1.2", "HTTP",
                 "(nodelabel=='node 1') | (nodelabel=='node 2')",
                 false);
