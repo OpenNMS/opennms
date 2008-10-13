@@ -139,9 +139,11 @@ public class DatabasePopulator {
         builder.addCategory(ac);
         builder.addCategory(mid);
         builder.addCategory(ops);
+        builder.addCategory(catRouter);
+        builder.setBuilding("HQ");
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
-        getNodeDao().save(builder.getCurrentNode());
-        getNodeDao().flush();
+        //getNodeDao().save(builder.getCurrentNode());
+        //getNodeDao().flush();
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
         builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1).addSnmpInterface("192.168.1.2", 2).setIfSpeed(10000000);
@@ -154,6 +156,8 @@ public class DatabasePopulator {
         
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
         builder.addCategory(mid);
+        builder.addCategory(catServers);
+        builder.setBuilding("HQ");
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -194,6 +198,7 @@ public class DatabasePopulator {
         //This node purposely doesn't have a foreignId style assetNumber
         builder.addNode("alternate-node1").getAssetRecord().setAssetNumber("5");
         builder.addCategory(ac);
+        builder.addCategory(catSwitches);
         builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
