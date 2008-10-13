@@ -255,10 +255,7 @@ public abstract class NotificationManager {
             return FilterDaoFactory.getInstance().isRuleMatching(rule);
         } catch (FilterParseException e) {
             log().error("Invalid filter rule for notification " + notif.getName() + ": " + notif.getRule(), e);
-            return true;
-        } catch (Throwable t) {
-            log().error("Filter query threw exception: " + notif.getName() + ": " + notif.getRule(), t);
-            return true;
+            throw e;
         }
     }
 
