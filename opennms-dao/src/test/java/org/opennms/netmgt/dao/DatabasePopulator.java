@@ -139,7 +139,7 @@ public class DatabasePopulator {
         builder.addCategory(ac);
         builder.addCategory(mid);
         builder.addCategory(ops);
-        builder.addCategory(catRouter);
+        builder.addCategory(catRouter); 
         builder.setBuilding("HQ");
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         //getNodeDao().save(builder.getCurrentNode());
