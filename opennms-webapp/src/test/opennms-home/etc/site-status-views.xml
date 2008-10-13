@@ -7,7 +7,7 @@
   <views>
     <view name="default" >
       <rows>
-        <row-def label="LB/Router">
+      	<!--<row-def label="LB/Router">
           <category name="DEV_ROUTER"/>
           <category name="DEV_LOADBAL"/>
         </row-def>
@@ -22,7 +22,16 @@
         </row-def>
         <row-def label="Access Points">
           <category name="DEV_AC"/>
+        </row-def>-->
+        <row-def label="Routers">
+          <category name="Routers"/>
         </row-def>
+        <row-def label="Switches">
+          <category name="Switches"/>
+        </row-def>
+        <row-def label="Servers">
+          <category name="Servers"/>
+        </row-def>        
       </rows>
     </view>
   </views>
