@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter id="chap3">
 	<title>Known Issues and Caveats</title>
-	<subtitle>Known Problems and Workarounds in This Release</subtitle>
 
 	<para>Here is the list of known issues in this release of OpenNMS.</para>
 
