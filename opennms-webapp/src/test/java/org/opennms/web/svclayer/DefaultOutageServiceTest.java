@@ -45,8 +45,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.aspectj.lang.annotation.*;
+import static org.junit.Assert.*;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -55,19 +60,23 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.DefaultOutageService;
 
-public class DefaultOutageServiceTest extends TestCase {
+public class DefaultOutageServiceTest {
 
 	DefaultOutageService outageService = new DefaultOutageService();
 
 	private OutageDao outageDao;
-
+	
+	@Before
 	public void setUp() throws Exception {
-		super.setUp();
 		outageDao = createMock(OutageDao.class);
 		outageService.setDao(outageDao);
 	}
-
+	
+	@Test
 	public void testLoadOneOutage() {
+	    assertNotNull(outageService);
+	    assertNotNull(outageDao);
+	    
 		Integer outageId = new Integer(505);
 		OnmsOutage outage = new OnmsOutage();
 
@@ -83,10 +92,11 @@ public class DefaultOutageServiceTest extends TestCase {
 
 	}
 
-	
-
+	@Test
 	public void testGetCurrentOutageCount() {
-
+	    assertNotNull(outageService);
+	    assertNotNull(outageDao);
+	    
 		Integer expectedCount = new Integer(1);
 
 		expect(outageDao.currentOutageCount()).andReturn(expectedCount);
@@ -98,6 +108,7 @@ public class DefaultOutageServiceTest extends TestCase {
 
 	}
 
+	@Ignore("The features here have yet been implemented")
 	public void testSuppressedOutageCount() {
 
 		fail("Needs to be upgraded to hibernate");
@@ -111,9 +122,13 @@ public class DefaultOutageServiceTest extends TestCase {
 //		assertTrue("All is suppressed ", count.equals(1));
 
 	}
-
+	
+	@Test
 	public void testCurrentOutages() {
-		Collection<OnmsOutage> expectedOutages = new HashSet<OnmsOutage>();
+	    assertNotNull(outageService);
+	    assertNotNull(outageDao);
+        
+	    Collection<OnmsOutage> expectedOutages = new HashSet<OnmsOutage>();
 		OnmsOutage expectedCurrent = new OnmsOutage();
 		expectedCurrent.setId(1);
 		expectedOutages.add(expectedCurrent);
@@ -126,7 +141,8 @@ public class DefaultOutageServiceTest extends TestCase {
         
 		assertTrue("Current Outages", current.equals(expectedOutages));
 	}
-
+	
+	@Ignore("The features here have yet been implemented")
 	public void testSuppressedOutages() {
 		
 		fail("Needs to be upgraded to hibernate");
@@ -143,7 +159,8 @@ public class DefaultOutageServiceTest extends TestCase {
 //		verify(outageDao);
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 	}
-
+	
+	@Ignore("The features here have yet been implemented")
 	public void testOpenAndResolved() {
 
 		fail("Needs to be upgraded to hibernate");
@@ -161,9 +178,13 @@ public class DefaultOutageServiceTest extends TestCase {
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 
 	}
-
+	
+	@Test
 	public void testCurrentByRange() {
-		List<OnmsOutage> expectedOutages = new LinkedList<OnmsOutage>();
+		assertNotNull(outageService);
+		assertNotNull(outageDao);
+		
+	    List<OnmsOutage> expectedOutages = new LinkedList<OnmsOutage>();
 		OnmsOutage expectedCurrent = new OnmsOutage();
 		expectedCurrent.setId(1);
                 expectedCurrent.setMonitoredService(new OnmsMonitoredService());
@@ -181,7 +202,8 @@ public class DefaultOutageServiceTest extends TestCase {
                 
 		assertTrue("Current Outages", outages.equals(expectedOutages));
 	}
-
+	
+	@Ignore("The features here have yet been implemented")
 	public void testSuppressedByRange() {
 
 		fail("Needs to be upgraded to hibernate");
@@ -199,7 +221,8 @@ public class DefaultOutageServiceTest extends TestCase {
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 
 	}
-
+	
+	@Ignore("The features here have yet been implemented")
 	public void testGetOpenAndResolvedByRange() {
 
 		fail("Needs to be upgraded to hibernate");
