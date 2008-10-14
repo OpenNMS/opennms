@@ -86,7 +86,7 @@ public class InstallerDb {
 
     public static final float POSTGRES_MIN_VERSION = 7.3f;
     
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.3f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.4f;
 
     private static final int s_fetch_size = 1024;
     
