@@ -2110,11 +2110,9 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     	assertTrue(constraints.size()==1);
     	Constraint constraint=constraints.get(0);
     	assertTrue(cname.equals(constraint.getName()));
-        System.err.println("X: "+checkexpression);
-        System.err.println("X: "+constraint);
-        System.err.println("X: ("+constraint.getCheckExpression()+")");
-        assertEquals(checkexpression, "("+constraint.getCheckExpression()+")");
-        //assertTrue(checkexpression.equals("("+constraint.getCheckExpression()+")"));
+    	// postgresql8.2 has quotes in the resulting expression
+    	// postgresql8.3 has none... remove the quotes (if there are any) before comparing
+        assertEquals(checkexpression, "("+constraint.getCheckExpression().replaceAll("\"type\"", "type")+")");
   	
     }
 
