@@ -37,7 +37,7 @@
           <chunkedOutput>false</chunkedOutput>
           <htmlStylesheet>common/html.css</htmlStylesheet>
           <xincludeSupported>true</xincludeSupported>
-          <foCustomization>src/docbkx/common/fopdf.xsl</foCustomization>
+          <foCustomization>${basedir}/src/docbkx/common/fopdf.xsl</foCustomization>
           <entities>
             <entity>
               <name>version</name>
