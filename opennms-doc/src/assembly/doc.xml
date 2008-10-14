@@ -9,5 +9,9 @@
       <directory>target/docbkx/html</directory>
       <outputDirectory>docs</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>target/docbkx/pdf</directory>
+      <outputDirectory>docs</outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>

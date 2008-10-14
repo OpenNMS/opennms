@@ -34,7 +34,7 @@
 			<parameter key="version" value="3"/>
 			<parameter key="searchbase" value="DC=example,DC=org,OU=users"/>
 			<parameter key="searchfilter" value="CN=testuser"/>
-			<parameter key="dn" value="DC=example,DC=org,OU=users,CN=opennms"/>
+			<parameter key="dn" value="DN=example,DN=org,OU=users,CN=opennms"/>
 			<parameter key="password" value="passwordforopennmsuser"/>
             <parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>

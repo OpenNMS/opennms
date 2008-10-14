@@ -11,4 +11,4 @@ $WGET_PATH --save-cookies="$TMP_PATH/cookies" --keep-session-cookies \
  --post-data="j_username=$HYPERIC_USER&j_password=$HYPERIC_PW" $HYPERIC_URL/j_security_check.do
 
 $WGET_PATH --load-cookies="$TMP_PATH/cookies" --output-document="$OPENNMS_HOME/etc/imports-HQ.xml" \
-$HYPERIC_URL/hqu/opennms/exporter/index.hqu
+$HYPERIC_URL/hqu/opennms/exporter/list.hqu

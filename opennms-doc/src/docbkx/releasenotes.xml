@@ -1,63 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
-<!ENTITY __copyright SYSTEM "common/copyright.xml">
-<!ENTITY __legalnotice SYSTEM "common/legalnotice.xml">
-<!ENTITY __preface SYSTEM "common/preface.xml">
-<!ENTITY __chap1__ SYSTEM "releasenotes/chap1.xml">
-<!ENTITY __chap2__ SYSTEM "releasenotes/chap2.xml">
-<!ENTITY __chap3__ SYSTEM "releasenotes/chap3.xml">
-<!ENTITY __chap4__ SYSTEM "releasenotes/chap4.xml">
-]>
-<book>
-  <title><trademark class="registered">OpenNMS</trademark>
-    Release Notes</title>
+<book version="5.0" xml:id="opennms-releasenotes" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
+	<title><trademark class="registered">OpenNMS</trademark> Release Notes</title>
 
-  <bookinfo>
-    <date>1 May 2008</date>
+	<bookinfo>
+		<date>8 Oct 2008</date>
 
-    <subtitle>Information About OpenNMS Release
-      @product.version@-@product.release@</subtitle>
+		<authorgroup>
+			<corpauthor>OpenNMS Development Team</corpauthor>
 
-    <authorgroup>
-      <corpauthor>OpenNMS Development Team</corpauthor>
+			<author>
+				<firstname>Tarus</firstname>
+				<surname>Balog</surname>
+				<email>tarus@opennms.org</email>
+			</author>
 
-      <author>
-        <surname>Tarus Balog</surname>
+			<author>
+				<firstname>Matt</firstname>
+				<surname>Brozowski</surname>
+				<email>brozow@opennms.org</email>
+			</author>
 
-        <email>tarus@opennms.org</email>
-      </author>
+			<author>
+				<firstname>David</firstname>
+				<surname>Hustace</surname>
+				<email>david@opennms.org</email>
+			</author>
 
-      <author>
-        <surname>Matt Brozowski</surname>
+			<author>
+				<firstname>Benjamin</firstname>
+				<surname>Reed</surname>
+				<email>ranger@opennms.org</email>
+			</author>
 
-        <email>brozow@opennms.org</email>
-      </author>
+		</authorgroup>
 
-      <author>
-        <surname>David Hustace</surname>
+		<xi:include href="common/copyright.xml" />
+		<xi:include href="common/legalnotice.xml" />
+	</bookinfo>
 
-        <email>david@opennms.org</email>
-      </author>
+	<xi:include href="common/preface.xml" />
+	<xi:include href="releasenotes/chap1.xml" />
+	<xi:include href="releasenotes/chap2.xml" />
+	<xi:include href="releasenotes/chap3.xml" />
+	<xi:include href="releasenotes/chap4.xml" />
 
-      <author>
-        <surname>Ben Reed</surname>
-
-        <email>ben@opennms.org</email>
-      </author>
-    </authorgroup>
-
-    &__copyright;
-    &__legalnotice;
-  </bookinfo>
-
-  &__preface;
-
-  &__chap1__;
-
-  &__chap2__;
-
-  &__chap3__;
-
-  &__chap4__;
 </book>
