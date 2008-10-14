@@ -76,7 +76,7 @@ public class TimeoutTrackerTest extends TestCase {
     
     public void testElapsedTime() throws InterruptedException {
         
-        long sleepTime = 100L;
+        long sleepTime = 200L;
         
         TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 0, 3000);
 

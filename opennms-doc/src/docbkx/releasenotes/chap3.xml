@@ -1,296 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter id="chap3">
-  <title>Known Issues and Caveats</title>
+	<title>Known Issues and Caveats</title>
 
-  <subtitle>Known Problems And Workarounds In This Release</subtitle>
+	<para>Here is the list of known issues in this release of OpenNMS.</para>
 
-  <para>Here is the list of known issues in this release of OpenNMS.</para>
 
-  <section>
-    <title>OpenNMS 1.5.96 Known Issues</title>
+	<section>
+		<title>Current Release</title>
+		<para>There are no known issues in OpenNMS 1.5.97.</para>
+	</section>
+	
+	<section>
+		<title>Previous Releases</title>
+		<itemizedlist>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.5.93</title>
+					<para>OpenNMS is still not 100% compatible with PostgreSQL 8.3, because of
+					a change in behavior regarding implicit casts.  Until we can fix our code to
+					not rely on implicit casts, a workaround is available
+					<ulink url="http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html">here</ulink>,
+					but it is recommended that you stick with PostgreSQL 7.4 to 8.2 for production
+					environments until this issue is resolved.</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.5.90 Known Issues</title>
+					<para>Editing scheduled outages in the web UI has a number of bugs.</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.3.10 Known Issues</title>
+					<para>Events that reference an IP address that exists on more than one
+					node will not be processed. Fixed in 1.3.11.</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.3.9 Known Issues</title>
+					<para>The User Account Self-Service window (i.e. the page that allows
+					users to change their passwords) will cause a warning that the application
+					is trying to close a window on IE6.</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.3.8 Known Issues</title>
 
-    <para>No known issues.</para>
+					<para>The order of elements in some of the XML configuration files is
+					enforced more strictly than before. This change may cause problems with
+					customized OpenNMS configuration files (especially event definitions) that
+					worked fine with previous releases. Correcting the ordering of elements in
+					these files against the XML schema definitions (available from the <ulink
+					url="http://www.opennms.org/">wiki</ulink>) may be necessary.</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.3.7 Known Issues</title>
+
+					<para>The zoom feature will not work on Windows using IE or Opera. The
+					 workaround is to use Firefox. (corrected in 1.3.8)</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>OpenNMS 1.3.5 Known Issues</title>
+
+					<para>Notification on the "newSuspect" event will fail. Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=1954">#1954</ulink></para>
+				</formalpara>
+			</listitem>
+		</itemizedlist>
   </section>
 
-  <section>
-    <title>OpenNMS 1.5.95 Known Issues</title>
-
-    <para>No known issues.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.5.94 Known Issues</title>
-
-    <para>No known issues.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.5.93 Known Issues</title>
-
-    <para>OpenNMS is still not 100% compatible with PostgreSQL 8.3, because of
-    a change in behavior regarding implicit casts.  Until we can fix our code to
-    not rely on implicit casts, a workaround is available
-    <ulink url="http://people.planetpostgresql.org/peter/index.php?/archives/18-Readding-implicit-casts-in-PostgreSQL-8.3.html">here</ulink>,
-    but it is recommended that you stick with PostgreSQL 7.4 to 8.2 for production
-    environments until this issue is resolved.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.5.92 Known Issues</title>
-
-    <para>No known issues.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.5.91 Known Issues</title>
-
-    <para>No known issues.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.5.90 Known Issues</title>
-
-    <para>Editing scheduled outages in the web UI has a number of bugs.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.11 Known Issues</title>
-
-    <para>No known issues, but then YMMV.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.10 Known Issues</title>
-
-    <para>Events that reference an IP address that exists on more than one
-    node will not be processed. Fixed in 1.3.11.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.9 Known Issues</title>
-
-    <para>The User Account Self-Service window (i.e. the page that allows
-    users to change their passwords) will cause a warning that the application
-    is trying to close a window on IE6.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.8 Known Issues</title>
-
-    <para>The order of elements in some of the XML configuration files is
-    enforced more strictly than before. This change may cause problems with
-    customized OpenNMS configuration files (especially event definitions) that
-    worked fine with previous releases. Correcting the ordering of elements in
-    these files against the XML schema definitions (available from the <ulink
-    url="http://www.opennms.org/">wiki</ulink>) may be necessary.</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.7 Known Issues</title>
-
-    <para>The zoom feature will not work on Windows using IE or Opera. The
-    workaround is to use Firefox. (corrected in 1.3.8)</para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.5 Known Issues</title>
-
-    <para>Notification on the "newSuspect" event will fail. Bug <ulink
-    url="http://bugzilla.opennms.org/show_bug.cgi?id=1954">#1954</ulink></para>
-
-    <para>We are tracking these in <ulink
-    url="http://bugzilla.opennms.org">Bugzilla</ulink> and the OpenNMS
-    wiki:</para>
-
-    <para><ulink
-    url="http://opennms.org/index.php/OpenNMS_1.3#Known_Issues">http://opennms.org/index.php/OpenNMS_1.3#Known_Issues</ulink></para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.3 Known Issues</title>
-
-    <para>We are tracking these in <ulink
-    url="http://bugzilla.opennms.org">Bugzilla</ulink> and the OpenNMS
-    wiki:</para>
-
-    <para><ulink
-    url="http://opennms.org/index.php/OpenNMS_1.3#Known_Issues">http://opennms.org/index.php/OpenNMS_1.3#Known_Issues</ulink></para>
-  </section>
-
-  <section>
-    <title>OpenNMS 1.3.2 Known Issues</title>
-
-    <para>We are tracking these in <ulink
-    url="http://bugzilla.opennms.org">Bugzilla</ulink> and the OpenNMS
-    wiki:</para>
-
-    <para><ulink
-    url="http://opennms.org/index.php/OpenNMS_1.3#Known_Issues">http://opennms.org/index.php/OpenNMS_1.3#Known_Issues</ulink></para>
-  </section>
-
-  <section>
-    <title>OpenNMS Won't Start - Complains about Configuration Files</title>
-
-    <para>If you are upgrading from a 1.2 system to 1.3, we have changed the
-    version of castor and thus any files that are modified via the GUI
-    (including <filename>poller-configuration.xml</filename>,
-    <filename>capsd-configuration.xml</filename>,
-    <filename>users.xml</filename>, <filename>groups.xml</filename>,
-    <filename>notifications.xml</filename>, etc.) will need to be run through
-    the xml parser script before OpenNMS will start without an error.</para>
-
-    <para><programlisting># $OPENNMS_HOME/bin/xml.parser.pl -w [filename]</programlisting></para>
-  </section>
-
-  <section>
-    <title>Tomcat Won't Start</title>
-
-    <para>If you are upgrading from a 1.2 system to 1.3, make sure you run the
-    webapp portion of the installer script. This should correctly set the new
-    symlinks. If not, remove any invalid symlinks from
-    <filename>$TOMCAT4_HOME/server/lib</filename>.</para>
-  </section>
-
-  <section>
-    <title>Invalid Symbolic Link on Some Distros</title>
-
-    <para>On Mandrake 10, and perhaps others, the symbolic link created in
-    <filename>/etc/init.d</filename> for opennms doesn't seem to work. Do the
-    following:</para>
-
-    <para><programlisting># rm /etc/init.d/opennms
-# ln -s /opt/OpenNMS/bin/opennms.sh /etc/init.d/opennms</programlisting></para>
-  </section>
-
-  <section>
-    <title>The Installer is No Longer Automatic as of 1.1.5</title>
-
-    <para>I expect this to be the biggest question on the discussion lists. As
-    of 1.1.5, the installer must be run manually after the packages are
-    installed. Please see the <ulink
-    url="https://sourceforge.net/docman/display_doc.php?docid=23937&amp;group_id=4141">documentation</ulink>
-    for more information.</para>
-  </section>
-
-  <section>
-    <title>Special Note for KSC Report Users</title>
-
-    <para>With 1.1.5 a new format has been created for SNMP graphs in the
-    snmp-graph.properties file. An attempt has been made to organize the
-    different reports, and so default reports like "bits" are now prefixed by
-    "mib2" (i.e. the report is now mib2.bits).</para>
-
-    <para>If you have KSC reports on bits, errors, etc., you will need to edit
-    the <filename>ksc-performance-reports.xml</filename> file and replace the
-    old names with the new ones.</para>
-  </section>
-
-  <section>
-    <title>Necessary Changes to Tomcat for 1.1.4 for Upgrades</title>
-
-    <para>In 1.1.4 the way OpenNMS configures Tomcat4 has changed. All of the
-    necessary configuration information is now in opennms.xml in the Tomcat4
-    webapps directory.</para>
-
-    <para>Unfortunately, if you are upgrading, there are two things you will
-    have to manually do in order to get OpenNMS to work correctly.</para>
-
-    <orderedlist>
-      <listitem>
-        <para>Remove the <filename>opennms</filename> directory (or symbolic
-        link) from the <filename>$TOMCAT4_HOME/webapps</filename>
-        directory.</para>
-
-        <para>Depending on your operating system, you will need to find the
-        <filename>webapps</filename> directory (usually
-        <filename>/var/tomcat4/webapps)</filename>. In that directory should
-        be an <filename>opennms.xml</filename> file and an
-        <filename>opennms</filename> directory (or symlink). Remove it and
-        leave just the <filename>opennms.xml</filename> file.</para>
-      </listitem>
-
-      <listitem>
-        <para>Locate the server.xml file, usually in $TOMCAT4_HOME/conf
-        directory (/var/tomcat4/conf for many distributions). Remove the four
-        &lt;context&gt; lines that refer to OpenNMS:</para>
-
-        <para><programlisting>      &lt;Context path="/opennms" docBase="opennms" debug="0" reloadable="true"&gt;
-        &lt;Logger className="org.opennms.web.log.Log4JLogger" homeDir="/opt/OpenNMS"/&gt;
-        &lt;Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="/opt/OpenNMS"/&gt;
-      &lt;/Context &gt;</programlisting></para>
-      </listitem>
-    </orderedlist>
-
-    <para>You should then be able to restart Tomcat and everything should work
-    just fine. Note that this does not apply to new installs, just
-    upgrades.</para>
-  </section>
-
-  <section id="chap3sect2">
-    <title>New Requirements for Tomcat and PostgreSQL</title>
-
-    <para>Version 1.1.2 and beyond of OpenNMS will require at a minimum Tomcat
-    version 4.1.18 and PostgreSQL 7.2. OpenNMS will no longer supply "onms"
-    versions of these applications, and instead will use main distributions
-    from their maintainers.</para>
-
-    <para>Note that upgrading these programs is not simple.</para>
-
-    <bridgehead>Tomcat4</bridgehead>
-
-    <para>For Tomcat, the best thing to do is uninstall version 4.0 and then
-    install 4.1. Version 4.1 is not seen as an upgrade to 4.0, but is instead
-    seen as a separate product by rpm and apt. You will need to make the
-    following changes to the tomcat4.conf file (located in /etc/tomcat4 on Red
-    Hat):</para>
-
-    <programlisting># you could also override JAVA_HOME here
-# Where your java installation lives
-# JAVA_HOME="/usr/java/jdk"
-# JAVA_HOME="/opt/IBMJava2-131"
-JAVA_HOME="[location of your Java Home dir]"
-
-# What user should run tomcat
-TOMCAT_USER="root"</programlisting>
-
-    <para>You do not have to run Tomcat as root if you change the permissions
-    on <filename>$OPENNMS/logs</filename> and
-    <filename>$OPENNMS/etc</filename> so that the Tomcat user can write to
-    them.</para>
-
-    <bridgehead>PostgreSQL</bridgehead>
-
-    <para>Two main changes need to be made to the Postgres configuration in
-    order to allow OpenNMS to access it properly. Postgres needs to have been
-    started at least once to create the "data" directory that will contain the
-    configuration files.</para>
-
-    <para>Edit <filename>postgresql.conf</filename> (located in
-    <filename>/var/pgsql/data</filename> on Red Hat) and insure the following
-    values exist:<programlisting> tcpip_socket = true 
- max_connections = 256
- shared_buffers = 1024 </programlisting></para>
-
-    <para>Edit <filename>pg_hba.conf</filename> (host based authentication) to
-    allow all users to access the database from the local host by
-    un-commenting and/or adding these lines (do not add the last line if your
-    system does not support IPv6):</para>
-
-    <para><programlisting># TYPE  DATABASE    USER        IP-ADDRESS        IP-MASK           METHOD
-
-local   all         all                                             trust
-host    all         all         127.0.0.1         255.255.255.255   trust
-host    all         all         ::1               ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff    trust</programlisting></para>
-
-    <para>and you may need to uncomment:</para>
-
-    <programlisting># Using sockets credentials for improved security. Not available everywhere,
-# but works on Linux, *BSD (and probably some others)
-
-# local  all    all             ident   sameuser</programlisting>
-
-    <para>Note that this opens up Postgres to all users on the system (as long
-    as they know the database password). Contact your database administrator
-    if you want to limit this to a specific user, like root.</para>
-  </section>
 </chapter>

@@ -2,7 +2,7 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
 "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 	<!ENTITY bookinfo SYSTEM "userguide/bookinfo.xml">
-	<!ENTITY preface SYSTEM "common/preface-old.xml">
+	<!ENTITY preface SYSTEM "common/preface.xml">
 	<!ENTITY chap1 SYSTEM "userguide/chap1.xml">
 	<!ENTITY chap2 SYSTEM "userguide/chap2.xml">
 	<!ENTITY chap3 SYSTEM "userguide/chap3.xml">

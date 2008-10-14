@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# host is required if not connecting of Unix domain socket
+PG_HOST=""
 PG_PORT=5432
 PG_DB=opennms
 PG_ARCH_TABLE=event_archives
@@ -21,7 +23,7 @@ fi
 function runsql() {
 	echo "$1"
 	#time psql -p $PG_PORT -U $PG_USER $PG_DB -c "begin; $1 commit;"
-	time psql -p $PG_PORT -U $PG_USER $PG_DB -c "$1"
+	time psql -h $PG_HOST -p $PG_PORT -U $PG_USER $PG_DB -c "$1"
 }
 
 #
@@ -45,7 +47,7 @@ function runDbMaint() {
   #runsql "DELETE FROM outages where iflostservice < '2007/1/1'::timestamp;"
 
   # Table trimming
-  runsql "DELETE FROM outages where ifregainedservice - iflostservice < now() - interval '60 seconds';"
+  runsql "DELETE FROM outages where (ifregainedservice - iflostservice)::interval < interval '35 seconds;"
   runsql "DELETE FROM notifications WHERE pagetime < now() - interval '3 months';"
   runsql "DELETE 
             FROM events 

@@ -103,11 +103,12 @@ public class HttpCollectorTest extends OpenNMSTestCase {
                 "        <url path=\"/index.php/HttpCollector_UnitTest_${ipaddr}\"\n" + 
                 "             user-agent=\"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) " +
                 "AppleWebKit/412 (KHTML, like Gecko) Safari/412\" \n" + 
-                "             matches=\"(?s).*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*\" " +
+                "             matches=\"(?s).*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*Document Type:\\s+(\\w+).*\" " +
                 "             response-range=\"100-399\" virtual-host=\"www.opennms.org\">\n" + 
                 "        </url>\n" + 
                 "        <attributes>\n" + 
-                "          <attrib alias=\"documentCount\" match-group=\"1\" type=\"counter32\"/>\n" + 
+                "          <attrib alias=\"documentCount\" match-group=\"1\" type=\"counter32\"/>\n" +
+                "          <attrib alias=\"documentType\" match-group=\"3\" type=\"string\"/>\n" + 
                 "        </attributes>\n" + 
                 "      </uri>\n" + 
                 "    </uris>\n" + 
