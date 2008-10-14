@@ -31,11 +31,18 @@
 //
 package org.opennms.secret.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.HashSet;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.secret.dao.impl.DataSourceDaoSimple;
 import org.opennms.secret.dao.impl.NodeDaoSimple;
 import org.opennms.secret.dao.impl.NodeInterfaceDaoSimple;
@@ -51,7 +58,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.servlet.ModelAndView;
 
-public class ControllerTest extends TestCase {
+public class ControllerTest {
 
 	private NodeServiceImpl nodeService;
 	private NodeInterfaceServiceImpl ifService;
@@ -68,7 +75,8 @@ public class ControllerTest extends TestCase {
     private MockHttpServletRequest m_request;
     private MockHttpServletResponse m_response;
 
-	protected void setUp() throws Exception {
+    @Before
+	public void setUp() throws Exception {
 		nodeService = new NodeServiceImpl();
 		nodeService.setNodeDao(new NodeDaoSimple());
         
@@ -101,10 +109,8 @@ public class ControllerTest extends TestCase {
         m_response = new MockHttpServletResponse();
     }
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
+    @Test
+    @Ignore("This is an un implemented feature")
 	public void testNodeService() throws Exception {
 		assertNotNull("nodeMaV was not null", nodeMaV);
 		
@@ -115,6 +121,8 @@ public class ControllerTest extends TestCase {
 		assertNotNull(node.getNodeLabel());
 	}
 	
+    @Test
+    @Ignore("This is an un implemented feature")
 	public void testInterfaceService() throws Exception {
 		ifService = new NodeInterfaceServiceImpl();
 		
