@@ -32,26 +32,34 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.Registry;
 import org.opennms.netmgt.model.ServiceDaemon;
 
-public class SpringLoaderTest extends TestCase {
-
-	protected void setUp() throws Exception {
-		super.setUp();
+public class SpringLoaderTest {
+    
+    @Before
+	public void setUp() throws Exception {
+		
 	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
+    
+    @After
+	public void tearDown() throws Exception {
+		
 	}
-        
-        public void testBogus() {
-            // an empty test so that JUnit doesn't complain that there aren't any tests
-        }
+    
+    @Test
+    public void testBogus() {
+        // an empty test so that JUnit doesn't complain that there aren't any tests
+    }
 	
+    @Ignore
 	public void testStart() {
 		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
 		SpringLoader.main(new String[] { "start" });
@@ -65,6 +73,7 @@ public class SpringLoaderTest extends TestCase {
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
+    @Ignore
 	public void testContexts() {
 		SpringLoader.main(new String[] { "start" });
 		
@@ -74,10 +83,12 @@ public class SpringLoaderTest extends TestCase {
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
+    @Ignore
     public void testStatus() {
 		SpringLoader.main(new String[] { "status" });
     }
 	
+    @Ignore
 	public void testStop() {
 		SpringLoader.main(new String[] { "stop" });
 	}
