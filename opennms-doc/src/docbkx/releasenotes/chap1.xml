@@ -1,263 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter id="chap1">
-  <title>Introduction</title>
-
-  <subtitle>About This Release</subtitle>
-
-  <para>Release 1.5.96 is the seventh beta for OpenNMS 1.6.</para>
-  
-  <para> The code word for 1.5.96 is "Bailout II: Exception Boogaloo"</para>
-
-  <para>Release 1.5.95 is the sixth beta for OpenNMS 1.6.</para>
-  
-  <para> The code word for 1.5.95 is "bailout"</para>
-
-  <para>Release 1.5.94 is the fifth beta for OpenNMS 1.6.</para>
-
-  <para>The code word for 1.5.94 is "collider"</para>
-
-  <para>Release 1.5.93 is the fourth beta for OpenNMS 1.6.</para>
-
-  <para>The code word for 1.5.93 is "Carlin"</para>
-
-  <para>Release 1.5.92 is the third beta for OpenNMS 1.6.</para>
-
-  <para>The code word for 1.5.92 is "marmoset"</para>
-
-  <para>Release 1.5.91 is the second beta for OpenNMS 1.6.</para>
-  
-  <para>The code word for 1.5.91 is "mayday"</para>
-  
-  <para>Release 1.5.90 is the first in a series of betas and release
-  candidates for OpenNMS 1.6.</para>
-
-  <para>The code word for 1.5.90 is "tubeweasel"</para>
-
-  <para>Release 1.3.11 fixes a bug with events in 1.3.10.</para>
-
-  <para>The code word for 1.3.11 is "oopsy"</para>
-
-  <para>Release 1.3.10 is another bug fix/feature release. It contains a lot
-  of bug fixes in preparation for the next stable release 1.6.0, as well as
-  some changes to thresholding. In addition, OpenNMS now supports integration
-  with the Hyperic HQ agent.</para>
-
-  <para>The code word for 1.3.10 is "caucus"</para>
-
-  <para>Release 1.3.9 is a small bug fix/feature release. A bug was fixed that
-  could cause database connections to hang, and some small webUI enhancements
-  were made.</para>
-
-  <para>The code word for 1.3.9 is "thanksgiving"</para>
-
-  <para>Release 1.3.8 is the next step on the road toward 1.8. Lots of bug
-  fixes and some new features. The biggest news is initial support for running
-  OpenNMS on Windows.</para>
-
-  <para>The code word for 1.3.8 is "redmond"</para>
-
-  <para>Release 1.3.7 is probably the best OpenNMS ever released. It removes
-  the need for Tomcat, adds several new features including a SmokePing clone
-  called StrafePing, and includes several performance enhancements.</para>
-
-  <para>The code word for 1.3.7 is "speedy"</para>
-
-  <para>Release 1.3.6 is the first release where the main OpenNMS application
-  is pure Java. All of the C-based JNI code has been moved to packages outside
-  of OpenNMS proper.</para>
-
-  <para>The code word for 1.3.6 is "blink"</para>
-
-  <para>Release 1.3.5 is a replacement for the aborted 1.3.4 release. It
-  really fixes the notifications issue. In addition, some performance
-  enhancements have been made to how data collection is started.</para>
-
-  <para>The code word for 1.3.5 is "expelliarmus"</para>
-
-  <para>Release 1.3.4 is a bugfix release against 1.3.3. Hey, release early
-  and often. It fixes an issue with notifications triggered by trap events not
-  working.</para>
-
-  <para>The code word for 1.3.4 is "ooops"</para>
-
-  <para>Release 1.3.3 is yet another major step toward OpenNMS 2.0. It should
-  be considered much more stable than 1.3.2, so please disregard most of the
-  scary warnings below, but if something should break we reserve the right to
-  point one of them out. This release adds a new read-only Dashboard view
-  using Google Web Toolkit, a new API for integrating with trouble ticketing
-  systems (currently supporting Centric CRM), correlation rules and a number
-  of other features. It also marks the start of our repackaging effort to move
-  all C code out of the main OpenNMS branch, starting with the iplike
-  postgresql function.</para>
-
-  <para>The code word for 1.3.3 is "e-peen"</para>
-
-  <para>Release 1.3.2 is a seriously huge upgrade to the OpenNMS application.
-  It should be considered the pre-Alpha version of OpenNMS 2.0. It will most
-  likely break your network, destroy your sanity, and cause you to put on
-  sackcloth and wander the world as a beggar. That said, several people are
-  using it in production, but please, do so at your own risk. Expect a hard
-  upgrade path from OpenNMS 1.2, although fresh installs should be pretty
-  simple. There are lots of really cool things in 1.3.2, so it is as least
-  worth checking out on a development box. Please, don't use it in production
-  unless you are experienced with OpenNMS and understand the risks.</para>
-
-  <para>The code word for 1.3.2 is "happynewyear"</para>
-
-  <para>Release 1.3.1 is a bug fix release to address an issue with a database
-  connection leak. It also includes more NRPE client code and a new "examples"
-  directory.</para>
-
-  <para>Release 1.3.0 is the first "development" release on the road to
-  version 1.4.0. As a development release, it should be considered unstable
-  for use in production environments, but you are encouraged to try it out. It
-  contains a number of features such as a new alarms subsystem, automations
-  via vacuumd, SNMP version 3 support, JMX data collection and more. Please,
-  please note the "in progress" nature of this release, as large amounts of
-  code have been rewritten. Unless you have a commercial support agreement or
-  are just very brave, don't use it in production.</para>
-
-  <para>The code word for 1.3.0 is "wererabbit"</para>
-
-  <para>Release 1.2.5 is an important maintenance release for the stable
-  branch of OpenNMS. It includes a major bug fix concerning possible polling
-  deadlocks that can cause outages that are never resolved, as well as a large
-  improvement to SNMP data collection speed and startup time.</para>
-
-  <para>The code word for 1.2.5 is "gromit".</para>
-
-  <para>Release 1.2.4 is yet another maintenance release for OpenNMS. It
-  includes a few minor bug fixes, some new configurations, and a couple of
-  small features.</para>
-
-  <para>The code word for 1.2.4 is "wootness".</para>
-
-  <para>Release 1.2.3 is another maintenance release in the OpenNMS stable
-  branch. It addresses a polling issue that may cause polling to stop, as well
-  as adding a final version of the poll-outages calendar. Also included are a
-  number of new events and reports.</para>
-
-  <para>The code word for 1.2.3 is "sith".</para>
-
-  <para>Release 1.2.2 is 1.2.1 with one annoying webUI bug fixed.</para>
-
-  <para>Release 1.2.1 is a maintenance release in the OpenNMS stable branch.
-  It contains a few bug fixes and several small features. "Stable" releases
-  may contain new features, as long as it is determined that they pose a very
-  small risk to current features. Usually, these features will add new
-  functionality without modifying existing feature behavior.</para>
-
-  <para>The code word for 1.2.1 is "luckycharms".</para>
-
-  <para>Release 1.2.0 is the first stable, or production, release of OpenNMS
-  in a long time. It is basically 1.1.5 with numerous bug fixes. With the
-  release of 1.2.0, we will begin development on 1.3 - the next unstable
-  release.</para>
-
-  <para>The code word for 1.2.0 is "valentine".</para>
-
-  <para>Release 1.1.5 is the second release candidate for 1.2. The biggest
-  change involves poller code that has been nearly rewritten. This was in
-  response to a new feature concerning notifications, and while we believe it
-  to be very robust, it does represent a lot of code churn, so if you are
-  using 1.1.4 in production, you may wish to wait a bit before upgrading to
-  1.1.5.</para>
-
-  <para>Also, with this version of the release notes, we are implementing a
-  "code word". We try to make these notes useful, including tips on the
-  majority of issues people will face while using the application, but still
-  people tend to skip reading them. So now, if you want to post a
-  1.1.5-related question on the mailing lists, be sure to include the code
-  word so people will know you have at least read this far into the release
-  notes (grin).</para>
-
-  <para>The code word for 1.1.5 is "monsoon".</para>
-
-  <para>A quick summary of the new changes in 1.1.5, in no particular
-  order:</para>
-
-  <itemizedlist>
-    <listitem>
-      <para>New notification behavior - users can configure OpenNMS to send
-      notices when an event is auto-acknowledged by notifd and they will only
-      be sent to those people who received notice of the outage in the first
-      place.</para>
-    </listitem>
-
-    <listitem>
-      <para>A new RADIUS poller</para>
-    </listitem>
-
-    <listitem>
-      <para>A number of new event definitions, including those from NetBotz,
-      PATROL, Network Appliance and others.</para>
-    </listitem>
-
-    <listitem>
-      <para>Reorganized the <filename>datacollection-config.xml</filename> and
-      <filename>snmp-graph.properties</filename> files to make them easier to
-      manage. Also added a really cool CPU report for Net-SNMP agents.</para>
-    </listitem>
-
-    <listitem>
-      <para>KSC Reports can now be accessed from the main page.</para>
-    </listitem>
-
-    <listitem>
-      <para>Removed the need for a primary SNMP interface (i.e. the ability to
-      map an ifIndex to an IP Address in the ipAddrTable. This will help with
-      data collection from some devices.</para>
-    </listitem>
-
-    <listitem>
-      <para>Added database support for the ifAlias field.</para>
-    </listitem>
-
-    <listitem>
-      <para>Added a MATCH-ANY-UEI event. Useful in notifications, this event
-      will cause a notification on any UEI. Now, for example, all events from
-      a particular IP Address or Node can be sent as notifications.</para>
-    </listitem>
-  </itemizedlist>
-
-  <para>There were also a large number of bug fixes and other small
-  enhancements made to the code. Please test the heck out of this release and
-  be sure to add issues to bugzilla (<ulink
-  url="http://bugzilla.opennms.org">http://bugzilla.opennms.org</ulink>) and
-  we'll get 1.2.0 out as soon as possible.</para>
-
-  <para>Release 1.1.4 is the release candidate for 1.2 - the next stable
-  branch of OpenNMS. It represents a tremendous amount of work in the areas of
-  speed and performance. It incorporates many changes and bug fixes to make
-  OpenNMS more Java centric - including a new installer. Current production
-  users should note that this release contains a lot more changes to the
-  underlying code than any release since 1.1.0, so if you are currently happy
-  with 1.1.3 or an earlier version, you may want to wait a week or two before
-  upgrading, or wait until 1.2.</para>
-
-  <para>OpenNMS 1.1.3 is a major milestone on the way to the next stable
-  release, 1.2. It contains a number of improvements, especially under the
-  covers, and is the first release created under the new build system.</para>
-
-  <para>OpenNMS 1.1.2 adds several new features and bug fixes. New features
-  include a JDBC poller, a script-based poller and script-based event handler,
-  as well as contributed support for a map.</para>
-
-  <para>OpenNMS 1.1.1 is the next step towards the production 1.2 release. It
-  contains a number of new features and bug fixes.</para>
-
-  <para>OpenNMS 1.1 extends the work that was begun with 1.0 to make OpenNMS
-  more powerful and easier to use. Almost all of the new functionality was
-  suggested by current OpenNMS users. It is hoped that these improvements will
-  prove useful, and will lead to even more suggestions on how to improve the
-  product.</para>
-
-  <para>OpenNMS 1.0.2 is a maintenance release that fixes several code
-  issues.</para>
-
-  <para>OpenNMS 1.0.1 is a maintenance release that fixes several code
-  issues.</para>
-
-  <para>Please, let us know if you have any problems at all at the <ulink
-  url="http://bugzilla.opennms.org/">OpenNMS Bugzilla</ulink> page.</para>
+	<title>Introduction</title>
+
+	<subtitle>About This Release</subtitle>
+
+	<para>Release 1.5.97 is the first release candidate for OpenNMS 1.6.</para>
+
+	<para>It's been 3 and a half years since the last OpenNMS stable version, 1.2, was
+	branched and released as production-ready.  In that time, OpenNMS as a project has
+	changed tremendously, the community has grown exponentially, and massive numbers of
+	new features have been incorporated into the "unstable" 1.3.x series.
+	</para>
+
+	<para>In that time, the unstable codebase solidified to the point that The OpenNMS
+	Group supported it as if it were stable; it was <emphasis>at least</emphasis> as
+	stable as 1.2.x was, but many users held off on upgrading because of the unstable
+	moniker.</para>
+
+	<para>After a lot of work, and a renewed focus on getting the next stable release
+	out the door, we are now prepared to declare OpenNMS 1.6 release-candidate-ready.</para>
+
+	<para>Why 1.6 instead of 1.4?  3 years is a lot of time, and a lot has happened
+	in that time.  We're not ready to call it 2.0, we want to redo the web UI first,
+	but 1.4 didn't really do the massive changes since 1.2 justice.  So: 1.6 it is.</para>
+	
+	<para>Since it is a lot easier to do a release than it was in the 1.2 series (now
+	that the native code is moved out into separate packages, and OpenNMS itself is
+	distributed as pure-java sources), the goal is to continue to be on a much faster
+	6-month or year cycle for new releases.</para>
+
+	<para>Please, let us know if you have any problems at all in our <ulink
+	url="http://bugzilla.opennms.org/">Bugzilla bug tracker</ulink>.</para>
 </chapter>

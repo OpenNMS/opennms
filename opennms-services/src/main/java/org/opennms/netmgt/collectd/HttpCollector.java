@@ -262,11 +262,19 @@ public class HttpCollector implements ServiceCollector {
     class HttpCollectionAttribute extends AbstractCollectionAttribute implements AttributeDefinition {
         String m_alias;
         String m_type;
-        Number m_value;
+        Object m_value;
         HttpCollectionResource m_resource;
         HttpCollectionAttributeType m_attribType;
         
         HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) { 
+            m_resource=resource;
+            m_attribType=attribType;
+            m_alias = alias;
+            m_type= type;
+            m_value = value;
+        }
+
+        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, String value) { 
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;
@@ -282,12 +290,23 @@ public class HttpCollector implements ServiceCollector {
             return m_type;
         }
         
-        public Number getValue() {
+        public Object getValue() {
             return m_value;
         }
         
         public String getNumericValue() {
-                return getValue().toString();
+            Object val = getValue();
+            if (val instanceof Number) {
+                return val.toString();
+            } else {
+                try {
+                    return Double.valueOf(val.toString()).toString();
+                } catch (NumberFormatException nfe) { /* Fall through */ }
+            }
+            if (log().isDebugEnabled()) {
+                log().debug("Value for attribute " + this + " does not appear to be a number, skipping");
+            }
+            return null;
         }
              
         public String getStringValue() {
@@ -295,7 +314,11 @@ public class HttpCollector implements ServiceCollector {
         }
         
         public String getValueAsString() {
-            return rrdFormatter.format(m_value);
+            if (m_value instanceof Number) {
+                return rrdFormatter.format(m_value);
+            } else {
+                return m_value.toString();
+            }
         }
 
         @Override
@@ -349,19 +372,31 @@ public class HttpCollector implements ServiceCollector {
             List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
             
             for (Attrib attribDef : attribDefs) {
-                try {
-                    Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
-                    HttpCollectionAttribute bute = 
+                if (! attribDef.getType().matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
+                    try {
+                        Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
+                        HttpCollectionAttribute bute = 
+                            new HttpCollectionAttribute(
+                                                        collectionSet.getResource(),
+                                                        new HttpCollectionAttributeType(attribDef, m_groupType), 
+                                                        attribDef.getAlias(),
+                                                        attribDef.getType(), 
+                                                        num);
+                        log().debug("processResponse: adding found numeric attribute: "+bute);
+                        butes.add(bute);
+                    } catch (ParseException e) {
+                        log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched "+m.group(attribDef.getMatchGroup())+" instead.");
+                    }
+                } else {
+                    HttpCollectionAttribute bute =
                         new HttpCollectionAttribute(
                                                     collectionSet.getResource(),
-                                                    new HttpCollectionAttributeType(attribDef, m_groupType), 
+                                                    new HttpCollectionAttributeType(attribDef, m_groupType),
                                                     attribDef.getAlias(),
-                                                    attribDef.getType(), 
-                                                    num);
-                    log().debug("processResponse: adding found attribute: "+bute);
+                                                    attribDef.getType(),
+                                                    m.group(attribDef.getMatchGroup()));
+                    log().debug("processResponse: adding found string attribute: " + bute);
                     butes.add(bute);
-                } catch (ParseException e) {
-                    log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched "+m.group(attribDef.getMatchGroup())+" instead.");
                 }
             }
         } else {

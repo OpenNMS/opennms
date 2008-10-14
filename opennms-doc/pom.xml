@@ -13,15 +13,16 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>opennms-docbook-plugin</artifactId>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.8</version>
         <executions>
           <execution>
-            <id>generate-html</id>
-            <phase>compile</phase>
             <goals>
               <goal>generate-html</goal>
+              <goal>generate-pdf</goal>
             </goals>
+            <phase>compile</phase>
           </execution>
         </executions>
         <dependencies>
@@ -33,17 +34,39 @@
           </dependency>
         </dependencies>
         <configuration>
+          <chunkedOutput>false</chunkedOutput>
+          <htmlStylesheet>common/html.css</htmlStylesheet>
+          <xincludeSupported>true</xincludeSupported>
+          <foCustomization>${basedir}/src/docbkx/common/fopdf.xsl</foCustomization>
           <entities>
             <entity>
               <name>version</name>
               <value>${pom.version}</value>
             </entity>
-            <entity>
-              <name>project</name>
-              <value>${project.name}</value>
-            </entity>
           </entities>
-          <paperType>A4</paperType>
+          <postProcess>
+            <copy todir="target/docbkx/html/common">
+              <fileset dir="src/docbkx/common">
+                <include name="*.css" />
+              </fileset>
+              <fileset dir="src/docbkx/images">
+                <include name="*.gif" />
+                <include name="*.png" />
+              </fileset>
+            </copy>
+            <!--
+            <copy todir="target/site/reference">
+              <fileset dir="target/docbkx">
+                <include name="**/*.css" />
+                <include name="**/*.png" />
+                <include name="**/*.gif" />
+                <include name="**/*.jpg" />
+                <include name="**/*.html" />
+                <include name="**/*.pdf" />
+              </fileset>
+            </copy>
+            -->
+          </postProcess>
         </configuration>
       </plugin>
       <plugin>

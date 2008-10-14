@@ -7,7 +7,8 @@
     until 2002, when the project administration was passed on to Tarus
     Balog.</para>
 
-    <para>The current corporate sponsor of OpenNMS is The OpenNMS Group,
+    <para>The current corporate sponsor of OpenNMS is
+    <ulink url="http://www.opennms.com/">The OpenNMS Group</ulink>,
     which also owns the OpenNMS trademark.</para>
 
     <para>OpenNMS is a derivative work, containing both original code,
@@ -17,7 +18,7 @@
 
     <para><itemizedlist>
         <listitem>
-          <para><trademark class="copyright">Copyright </trademark> 2002-2005
+          <para><trademark class="copyright">Copyright </trademark> 2002-2008
 	      <ulink url="http://www.opennms.com">The
 		OpenNMS Group, Inc.</ulink>.
 	  </para>
