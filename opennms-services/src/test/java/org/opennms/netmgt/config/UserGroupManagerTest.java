@@ -75,10 +75,6 @@ public class UserGroupManagerTest {
     private Date day;
     private Date sunday;
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(UserGroupManagerTest.class);
-    }
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
