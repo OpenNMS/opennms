@@ -272,7 +272,7 @@
   <listener>
     <listener-class>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
   </listener>
-
+  -->
   <!--  servlet that gwt rpc requests get mapped to -->
    <servlet>
      <servlet-name>gwtDispatcher</servlet-name>
