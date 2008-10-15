@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Interface;
+import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Package;
@@ -110,7 +111,49 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
             downtime.setEnd(end);
         m_currentPkg.addDowntime(downtime);
     }
+    
+    /**
+     * Adds a scehduled outage to pkg from begin to end, for the nodeid
+     * @param pkg - the package to which  
+     * @param outageName - a name, arbitrary
+     * @param begin - time, in seconds since epoch, when the outage starts
+     * @param end - time, in seconds since the epoch, when the outage ends
+     * @param nodeid - the node the outage applies to
+     */
+    public void addScheduledOutage(Package pkg, String outageName, long begin, long end, int nodeid) {
 
+        Outage outage = new Outage();
+        outage.setName(outageName);
+    
+        Node node=new Node();
+        node.setId(nodeid);
+        outage.addNode(node);
+    
+        Time time = new Time();
+        Date beginDate = new Date(begin);
+        Date endDate = new Date(end);
+        time.setBegins(new SimpleDateFormat(BasicScheduleUtils.FORMAT1).format(beginDate));
+        time.setEnds(new SimpleDateFormat(BasicScheduleUtils.FORMAT1).format(endDate));
+    
+        outage.addTime(time);
+    
+        getConfig().addOutage(outage);
+    
+        pkg.addOutageCalendar(outageName);
+    }
+    
+    /**
+     * Adds a scehduled outage from begin to end, for the nodeid 
+     * @param outageName - a name, arbitrary
+     * @param begin - time, in seconds since epoch, when the outage starts
+     * @param end - time, in seconds since the epoch, when the outage ends
+     * @param nodeid - the node the outage applies to
+     */
+    public void addScheduledOutage(String outageName, long begin, long end, int nodeid) {
+        addScheduledOutage(m_currentPkg, outageName, begin, end, nodeid);
+    }
+    
+    
     public void addScheduledOutage(Package pkg, String outageName, long begin, long end, String ipAddr) {
         Outage outage = new Outage();
         outage.setName(outageName);
@@ -462,6 +505,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     public boolean isPolledLocally(String ipaddr, String svcName) {
         throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
+
+ 
 
 
 }
