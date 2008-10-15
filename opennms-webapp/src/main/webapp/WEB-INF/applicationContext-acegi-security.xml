@@ -52,6 +52,9 @@
   <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
     <property name="usersConfigurationFile"
               value="${opennms.home}/etc/users.xml"/>
+    <property name="groupsConfigurationFile"
+              value="${opennms.home}/etc/groups.xml"/>
+    <property name="useGroups" value="true"/>
     <property name="magicUsersConfigurationFile"
               value="${opennms.home}/etc/magic-users.properties"/>
   </bean>
