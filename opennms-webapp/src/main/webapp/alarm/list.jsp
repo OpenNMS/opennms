@@ -362,12 +362,12 @@
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select name="alarmAction">
-          <option value="clear">Clear Alarms</option>
         <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <option value="acknowledge">Acknowledge Alarms</option>
         <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
           <option value="unacknowledge">Unacknowledge Alarms</option>
         <% } %>
+          <option value="clear">Clear Alarms</option>
           <option value="escalate">Escalate Alarms</option>
           </select>
           <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
