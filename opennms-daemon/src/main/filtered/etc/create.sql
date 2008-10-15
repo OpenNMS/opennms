@@ -1112,7 +1112,7 @@ create table assets (
         notifyCategory   varchar(64),
         pollerCategory   varchar(64),
         thresholdCategory   varchar(64),
-        comment         varchar(1024),
+        comment         text,
         managedObjectInstance varchar(512),
         managedObjectType varchar(512),
         
