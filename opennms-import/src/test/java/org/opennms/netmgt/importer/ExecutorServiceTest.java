@@ -31,41 +31,64 @@
 //
 package org.opennms.netmgt.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
-import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class PooledExecutorTest extends TestCase {
+public class ExecutorServiceTest {
 
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
 	public void sleep(long millis) {
 		try { Thread.sleep(millis); } catch(InterruptedException e) {}
 	}
 	
+	private int runs = 0;
+	
+	public synchronized void incr() {
+	    runs++;
+	}
+	
+	public synchronized int getRuns() {
+	    return runs;
+	}
+
+	@Test
 	public void testThreadPool() throws Exception {
-		PooledExecutor threadPool = new PooledExecutor(new LinkedQueue(), 11);
-		threadPool.setMinimumPoolSize(11);
+		ExecutorService threadPool = Executors.newFixedThreadPool(11);
+
 		for(int i = 1; i <= 100; i++) {
 			final int index = i;
 			Runnable r = new Runnable() {
 				public void run() {
 					System.err.println(Thread.currentThread()+": "+new Date()+": "+index);
 					sleep(500);
+					incr();
 				}
 			};
 			threadPool.execute(r);
 		}
-		threadPool.shutdownAfterProcessingCurrentlyQueuedTasks();
-		threadPool.awaitTerminationAfterShutdown();
+		
+
+		shutdownAndWaitForCompletion(threadPool);
+		
+		assertEquals(100, getRuns());
 	}
 
+    public void shutdownAndWaitForCompletion(ExecutorService executorService) {
+        executorService.shutdown();
+        try {
+            while (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                // loop util the await returns false
+            }
+        } catch (InterruptedException e) {
+            fail("Thread Interrupted unexpectedly!!!");
+        }
+    }
+ 
+	
 }
