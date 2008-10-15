@@ -126,7 +126,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     }
 
     public SimpleWebTable createSurveillanceTable() {
-        return createSurveillanceTable("default", null);
+        return createSurveillanceTable("default", new ProgressMonitor());
     }
 
     public class SurveillanceView {
@@ -202,7 +202,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
      * columns and categories.
      */
     public SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor) {
-
+        
         surveillanceViewName = (surveillanceViewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : surveillanceViewName);
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
 
