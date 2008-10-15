@@ -294,7 +294,7 @@
             </property>
             <property>
               <name>runMailTests</name>
-              <value>${runMalTests}</value>
+              <value>${runMailTests}</value>
             </property>
             <property>
               <name>runPingTests</name>
