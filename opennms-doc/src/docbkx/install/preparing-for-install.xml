@@ -346,7 +346,38 @@ sudo apt-get install postgresql-8.1</programlisting>
 			</para>
 			
 		</section>
-		
+
+		<section id="postgresql-windows">
+			<title>Installing PostgreSQL on Windows</title>
+			
+			<para>
+				On Windows, all you should need to do is get the latest Windows installer
+				from <ulink url="http://www.postgresql.org/download/">PostgreSQL.org</ulink>.
+			</para>
+
+			<note>
+				<para>
+					If you are running on a FAT32 filesystem, see the <ulink
+					url="http://www.opennms.org/index.php/Installation:Windows">detailed
+					installation instructions on the wiki</ulink>.
+				</para>
+			</note>
+						
+			<para>
+				First, unpack the installer.  The installer does not run properly from
+				inside a zipped folder, so you will need to extract the ZIP file.  You
+				should be able to just copy the postgresql-X.X.msi and
+				postgresql-X.X-int.msi files to your desktop and run them from there.
+			</para>
+
+			<para>
+				Then, run the postgresql-X.X.msi and follow the instructions.   For the most
+				part, the defaults should be just fine, although if you're allowing the
+				installer to initialize your database, make sure the encoding is set
+				to "UTF-8".
+			</para>
+		</section>
+
 		<section id="postgresql-configure">
 			<title>Configure PostgreSQL</title>
 			

@@ -241,6 +241,34 @@
 				<programlisting>fink install opennms</programlisting>
 			</para>
 		</section>
+		
+		<section id="installing-windows">
+			<title>Installing on Windows</title>
+			
+			<para>
+				OpenNMS is supported on Windows as well, although the lack
+				of true package management makes it a bit more work to maintain.
+			</para>
+			
+			<para>
+				To install on Windows, download the latest
+				<filename>standalone-opennms-installer-X.X.X.jar</filename>
+				file from <ulink
+				url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=4151">the
+				OpenNMS SourceForge download page</ulink>.
+			</para>
+			
+			<para>
+				You should be able to then just double-click the jar file in
+				Explorer, and follow the instructions in the install wizard.
+			</para>
+			
+			<para>
+				Once you're done, you may want to make a pristine copy of the
+				<filename><varname>$OPENNMS_HOME</varname>/etc</filename> directory
+				so it's easy to tell what's changed in later releases later.
+			</para>
+		</section>
 	</section>
 
 	<section id="upgrading">
@@ -374,6 +402,51 @@ sudo apt-get -u install opennms</programlisting>
 			</para>
 		</section>
 
+		<section id="upgrading-to-latest-windows">
+			<title>Upgrading Windows</title>
+			
+			<para>
+				Since there is no automated installation/upgrade procedure for
+				Windows, you will have to do some preparation before installing
+				the latest version.
+			</para>
+			
+			<itemizedlist>
+				<listitem>
+					<para>Back up and then remove <filename><varname>$OPENNMS_HOME</varname>/etc</filename>.</para>
+				</listitem>
+				<listitem>
+					<para>Remove <filename><varname>$OPENNMS_HOME</varname>/lib</filename>.</para>
+				</listitem>
+			</itemizedlist>
+			
+			<para>
+				Once you've cleaned up the etc and lib directories, the next
+				step is to download the latest <filename>standalone-opennms-installer-X.X.X.jar</filename> from <ulink
+				url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=4151">the
+				OpenNMS SourceForge download page</ulink>.
+			</para>
+			
+			<para>
+				Next, run the installer jar, and install over your existing OpenNMS location.
+			</para>
+
+			<para>
+				If you backed up the pristine <code>etc</code> directory on your
+				previous installation, you can compare it to the current one to see
+				if there are any configuration changes you wish to integrate into
+				your new install.
+			</para>
+			
+			<para>
+				Copy your backed up <code>etc</code> directory back into the
+				<filename><varname>$OPENNMS_HOME</varname>/etc</filename> directory.
+			</para>
+			
+			<para>
+				You should now be able to run your upgraded OpenNMS.
+			</para>
+		</section>
 	</section>
 
 	<section id="installing-java-configure">

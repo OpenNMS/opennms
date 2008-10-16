@@ -43,6 +43,7 @@
 	<xi:include href="install/preparing-for-install.xml" />
 	<xi:include href="install/installing.xml" />
 	<xi:include href="install/getting-started.xml" />
+	<xi:include href="install/performance-tuning.xml" />
 	<xi:include href="install/building-from-source.xml" />
 	<xi:include href="install/troubleshooting.xml" />
 
