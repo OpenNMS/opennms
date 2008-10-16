@@ -414,19 +414,20 @@ public class Installer {
         }
 
         options.addOption("u", "username", true,
-                          "username of the database account (default: 'opennms')");
+                          "replaced by opennms-datasources.xml");
         options.addOption("p", "password", true,
-                          "password of the database account (default: 'opennms')");
+                          "replaced by opennms-datasources.xml");
         options.addOption("a", "admin-username", true,
-                          "username of the database administrator (default: 'postgres')");
+                          "replaced by opennms-datasources.xml");
         options.addOption("A", "admin-password", true,
-                          "password of the database administrator (default: '')");
+                          "replaced by opennms-datasources.xml");
         options.addOption("D", "database-url", true,
-                          "JDBC database URL (default: jdbc:postgresql://localhost:5432/");
+                          "replaced by opennms-datasources.xml");
         options.addOption("P", "database-name", true,
-                          "name of the PostgreSQL database (default: opennms)");
+                          "replaced by opennms-datasources.xml");
 
-        if (m_commandLine.hasOption("u") || m_commandLine.hasOption("p")
+        if (m_commandLine.hasOption("u")
+                || m_commandLine.hasOption("p")
                 || m_commandLine.hasOption("a")
                 || m_commandLine.hasOption("A")
                 || m_commandLine.hasOption("D")
@@ -434,7 +435,7 @@ public class Installer {
             usage(
                   options,
                   m_commandLine,
-                  "The 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.",
+                  "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.",
                   null);
             System.exit(1);
         }

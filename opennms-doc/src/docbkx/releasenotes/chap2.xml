@@ -1,13 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="chap2">
+<chapter id="whats-new">
   <title>What's New?</title>
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <section>
+  <section id="opennms-1.5.97">
+    <title>Changes in OpenNMS 1.5.97</title>
+
+    <section id="opennms-1.5.97-features">
+      <title>New Features</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>When searching for a node, if the search returns only a single node,
+          it will redirect directly to the node page.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=1518">#1518</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>Support for new Ricoh/Savin Printer data collections was added. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=1941">#1941</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>The default thresholding behavior has been changed to use the new
+          in-line collectd-based thresholder. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2611">#2611</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>The comment field in assets no longer has a size limit. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2763">#2763</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>The default logging level is now WARN instead of DEBUG.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2796">#2796</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>PostgreSQL 8.3 is now officially supported in the installer.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2808">#2808</ulink>)</para>
+        </listitem>
+        
+      </itemizedlist>
+    </section>
+
+    <section id="opennms-1.5.97-bugfixes">
+      <title>Bug Fixes</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>A bug in the scheduled outages UI was fixed.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2670">#2670</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>A number of thread concurrency issues have been fixed.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2715">#2715</ulink>)</para>
+        </listitem>
+
+        <listitem>
+		  <para>The HTTP collector now handles string attributes correctly.  (Bug <ulink
+		  url="http://bugzilla.opennms.org/show_bug.cgi?id=2806">#2806</ulink>)</para>
+		</listitem>
+		
+		<listitem>
+          <para>
+            A few other bugs have been fixed since 1.5.96, in the process
+            of preparing for 1.6.0.  A full list of bugs fixed in the release can be
+            found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.97+%281.6+beta+8%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.
+          </para>
+        </listitem>
+      
+      </itemizedlist>
+      
+    </section>
+    
+  </section>
+      
+  <section id="opennms-1.5.96">
     <title>Changes in OpenNMS 1.5.96</title>
 
-    <section>
+    <section id="opennms-1.5.96-bugfixes">
       <title>Bug Fixes</title>
 
       <itemizedlist>
@@ -22,10 +99,10 @@
     </section>
   </section>
       
-  <section>
+  <section id="opennms-1.5.95">
     <title>Changes in OpenNMS 1.5.95</title>
 
-    <section>
+    <section id="opennms-1.5.95-features">
       <title>New Features</title>
 
       <itemizedlist>
@@ -38,7 +115,7 @@
       </itemizedlist>
     </section>
     
-    <section>
+    <section id="opennms-1.5.95-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A bug in the poller that would cause failed services to be shown
@@ -59,10 +136,10 @@
     
   </section>
 
-  <section>
+  <section id="opennms-1.5.94">
     <title>Changes in OpenNMS 1.5.94</title>
 
-    <section>
+    <section id="opennms-1.5.94-features">
       <title>New Features</title>
 
       <itemizedlist>
@@ -188,7 +265,7 @@
 
     </section>
 
-    <section>
+    <section id="opennms-1.5.94-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A rare but insidious bug in the poller that caused some outages to not
@@ -208,7 +285,7 @@
 
     </section>
 
-    <section>
+    <section id="opennms-1.5.94-changes">
     
       <title>Changes</title>
 
@@ -281,16 +358,16 @@
     
   </section>
 
-  <section>
+  <section id="opennms-1.5.93">
     <title>Changes in OpenNMS 1.5.93</title>
 
-    <section>
+    <section id="opennms-1.5.93-features">
       <title>New Features</title>
 
       <para>This is a quick bugfix release, no new feature were added.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.5.93-bugfixes">
       <title>Bug Fixes</title>
 
       <para>This release is intended primarily to solve an issue in SNMP4J
@@ -304,10 +381,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.5.92">
     <title>Changes in OpenNMS 1.5.92</title>
 
-    <section>
+    <section id="opennms-1.5.92-features">
       <title>New Features</title>
 
       <para>Xmlrpcd has been improved to allow multicasting events as well as
@@ -359,7 +436,7 @@
       url="http://bugzilla.opennms.org/show_bug.cgi?id=2465">#2465</ulink>)</para>
     </section>
 
-    <section>
+    <section id="opennms-1.5.92-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A full list of bugs fixed in the release can be found in <ulink
@@ -367,10 +444,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.5.91">
     <title>Changes in OpenNMS 1.5.91</title>
 
-    <section>
+    <section id="opennms-1.5.91-features">
       <title>New Features</title>
 
       <para>The scheduled outage web UI improvements that were partially
@@ -381,7 +458,7 @@
       is available at startup.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.5.91-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A number of exceptions and other code errors have been
@@ -395,10 +472,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.5.90">
     <title>Changes in OpenNMS 1.5.90</title>
 
-    <section>
+    <section id="opennms-1.5.90-bugfixes">
       <title>Bug Fixes</title>
 
       <para>NSClient and HTTP collections used to need a "nsclient-collection"
@@ -424,10 +501,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.11">
     <title>Changes in OpenNMS 1.3.11</title>
 
-    <section>
+    <section id="opennms-1.3.11-features">
       <title>New Features</title>
 
       <para>There are no new features in 1.3.11, but there was one that was
@@ -440,7 +517,7 @@
       measuring the response time of mail systems.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.11-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A lot of changes were made under the covers to the eventd process
@@ -451,10 +528,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.10">
     <title>Changes in OpenNMS 1.3.10</title>
 
-    <section>
+    <section id="opennms-1.3.10-features">
       <title>New Features</title>
 
       <para>OpenNMS now supports an integration with the <ulink
@@ -491,7 +568,7 @@
       to RPM.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.10-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A large number of bugs were addressed in this release. Bugzilla
@@ -502,10 +579,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.9">
     <title>Changes in OpenNMS 1.3.9</title>
 
-    <section>
+    <section id="opennms-1.3.9-features">
       <title>New Features</title>
 
       <para>There are a couple of new features in this release:</para>
@@ -527,7 +604,7 @@
       </itemizedlist>
     </section>
 
-    <section>
+    <section id="opennms-1.3.9-bugfixes">
       <title>Bug Fixes</title>
 
       <para>In certain cases the number of allowed database connections could
@@ -536,10 +613,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.8">
     <title>Changes in OpenNMS 1.3.8</title>
 
-    <section>
+    <section id="opennms-1.3.8-features">
       <title>New Features</title>
 
       <para>There are a number of new features in this release:</para>
@@ -588,7 +665,7 @@
       We are testing an installer now and will be releasing it soon.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.8-bugfixes">
       <title>Bug Fixes</title>
 
       <para>As OpenNMS moves closer to the next stable release, the number of
@@ -599,10 +676,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.7">
     <title>Changes in OpenNMS 1.3.7</title>
 
-    <section>
+    <section id="opennms-1.3.7-features">
       <title>New Features</title>
 
       <para><emphasis>Jetty used instead of Tomcat</emphasis>: OpenNMS now
@@ -626,7 +703,7 @@
       url="http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin">CentricCRM</ulink>.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.7-bugfixes">
       <title>Bug Fixes</title>
 
       <para><emphasis>Performance</emphasis>: Data collection performance has
@@ -650,7 +727,7 @@
       url="http://bugzilla.opennms.org/showdependencytree.cgi?id=1918">bugzilla</ulink>.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.7-installinfo">
       <title>New Install Methods</title>
 
       <para>With the removal of the JNI code in release 1.3.6, this has
@@ -663,7 +740,7 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.6">
     <title>Changes in OpenNMS 1.3.6</title>
 
     <para>OpenNMS 1.3.6 is the next step in the accelerating release schedule
@@ -671,7 +748,7 @@
     Dev-Jam developer's conference to provide a good launch point for the
     development that will happen this week.</para>
 
-    <section>
+    <section id="opennms-1.3.6-features">
       <title>New Features</title>
 
       <para>There is a new Data Export feature that will export performance
@@ -701,14 +778,14 @@
       prettier (thanks to Will Fraley).</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.6-bugfixes">
       <title>Bug Fixes</title>
 
       <para>The data collection code has been tweaked yet again to improve
       performance.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.6-jni">
       <title>JNI Code Removal</title>
 
       <para>This release is the first OpenNMS without any JNI code in the
@@ -739,16 +816,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.5">
     <title>Changes in OpenNMS 1.3.5</title>
 
-    <section>
-      <title>New Features</title>
-
-      <para>There are no new features in 1.3.5.</para>
-    </section>
-
-    <section>
+    <section id="opennms-1.3.5-bugfixes">
       <title>Bug Fixes</title>
 
       <para>The reason for this release is a bug involving notifications. Due
@@ -762,13 +833,13 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.4">
     <title>Changes in OpenNMS 1.3.4</title>
 
-    <section>
+    <section id="opennms-1.3.4-features">
       <title>New Features</title>
 
-      <para>The only new feature is the abilty to invert the result of a
+      <para>The only new feature is the ability to invert the result of a
       monitor. By adding the parameter "invert-status" to a monitor, up
       becomes down, and down becomes up. Useful for monitoring things, like an
       ISDN link, that indicate a problem when they are available. This was
@@ -822,7 +893,7 @@
       with every monitor in the application.</para>
     </section>
 
-    <section>
+    <section id="opennms-1.3.4-bugfixes">
       <title>Bug Fixes</title>
 
       <para>The reason for this release is a bug involving notificiations. In
@@ -836,10 +907,10 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.3">
     <title>Changes in OpenNMS 1.3.3</title>
 
-    <section>
+    <section id="opennms-1.3.3-features">
       <title>New Features</title>
 
       <para>In an attempt to get the release out as fast as possible, we've
@@ -868,25 +939,10 @@
 
   </section>
 
-  <section>
+  <section id="opennms-1.3.2">
     <title>Changes in OpenNMS 1.3.2</title>
 
-    <section>
-      <title>New Features</title>
-
-      <para>In an attempt to get the release out as fast as possible, we've
-      decided to track new features on the OpenNMS wiki's <ulink
-      url="http://www.opennms.org/index.php/New_and_noteworthy">New and Noteworthy</ulink>
-      page.</para>
-
-    </section>
-
-  </section>
-
-  <section>
-    <title>Changes in OpenNMS 1.3.2</title>
-
-    <section>
+    <section id="opennms-1.3.2-bugfixes">
       <title>Bug Fixes</title>
 
       <para>SNMP interface descriptions are no longer printed in hex if they
@@ -894,8 +950,8 @@
       Microsoft Windows platforms with the default Windows SNMP daemon.</para>
     </section>
 
-    <section>
-      <title>Features</title>
+    <section id="opennms-1.3.2-features">
+      <title>New Features</title>
 
       <section>
         <title>NSClient support</title>
@@ -1143,18 +1199,18 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.1">
     <title>Changes in OpenNMS 1.3.1</title>
 
-    <section>
+    <section id="opennms-1.3.1-bugfixes">
       <title>Bug Fixes</title>
 
       <para>A potential database connection leak was discovered in 1.3.0 and
       this release was generated to include that fix.</para>
     </section>
 
-    <section>
-      <title>Features</title>
+    <section id="opennms-1.3.1-features">
+      <title>New Features</title>
 
       <para>There are no new features in 1.3.1, but more work was done on the
       NRPE client code.</para>
@@ -1176,10 +1232,18 @@
     </section>
   </section>
 
-  <section>
+  <section id="opennms-1.3.0">
     <title>Changes in OpenNMS 1.3.0</title>
 
-    <section>
+    <section id="opennms-1.3.0-bugfixes">
+      <title>Bug Fixes</title>
+
+      <para>There have been entire sections of OpenNMS rewritten to accomodate
+      the new features and to make the product more scalable. Please visit the
+      <filename>CHANGELOG</filename> for a better list.</para>
+    </section>
+
+    <section id="opennms-1.3.0-features">
       <title>New Features</title>
 
       <para>As with many open source projects, the OpenNMS documentation could
@@ -1295,7 +1359,7 @@
 
       <bridgehead>Zoom Feature for RRDs</bridgehead>
 
-      <para>Borrowed from Cacit, Mike Huot has created the ability to zoom in
+      <para>Borrowed from Cacti, Mike Huot has created the ability to zoom in
       on RRD graphs within OpenNMS. Simply click on a graph to bring it up in
       a new window, and then drag the mouse to highlight the region you want
       to zoom. You can zoom in multiple times. Hit the back button on your
@@ -1308,14 +1372,6 @@
       circles representing the availability level with the actual availability
       number inside the circle. Just choose "Calendar" format when generating
       the reports to see the new style.</para>
-    </section>
-
-    <section>
-      <title>Bug Fixes</title>
-
-      <para>There have been entire sections of OpenNMS rewritten to accomodate
-      the new features and to make the product more scalable. Please visit the
-      <filename>CHANGELOG</filename> for a better list.</para>
     </section>
   </section>
 

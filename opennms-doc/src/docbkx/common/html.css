@@ -1,8 +1,8 @@
 body
 {
 	font-family: "Lucida Grande", Verdana, sans-serif;
-	background: #fff;
-	color: #000;
+	background: #ffffff;
+	color: #000000;
 }
 
 .section
@@ -94,9 +94,6 @@ pre.programlisting
 
 h1
 {
-	color: #ffffff;
-	border: solid 3px #a0a0d0;
-	background-color: #606090;
 	font-variant: small-caps;
 }
 
@@ -107,8 +104,8 @@ h1.title
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: #366903;
-	color: #fff;
-	border: 1px solid #999;
+	color: #ffffff;
+	border: 1px solid #999999;
 	border-bottom: 0;
 	margin-bottom: 0;
 	padding: 5px;
@@ -116,22 +113,19 @@ h1.title
 
 h2
 {
-	color: #ffffff;
-	border: solid 3px #a0a0d0;
-	background-color: #606090;
 	font-variant: small-caps;
 }
 
 h2.title
-{       
+{
 	display: inline;
 	font-size: medium;
 	background-image: url(headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: #366903;
-	color: #fff;
-	border: 1px solid #999;
+	color: #ffffff;
+	border: 1px solid #999999;
 	padding: 5px;
 }
 
@@ -285,7 +279,7 @@ p.c2 {
 
 div.navfooter {
 	color: #000000;
-	background-color: #EFEFF8;
+	background-color: #efeff8;
 	padding: 5px;
 	margin-top: 10px;
 	border: thin solid #a0a0d0;
@@ -293,7 +287,7 @@ div.navfooter {
 
 div.nukefooter {
 	color: #000000;
-	background-color: #B0E0E6;
+	background-color: #b0e0E6;
 	padding: 5px;
 	margin-top: 10px;
 	border: thin solid #a0a0d0;
@@ -301,7 +295,7 @@ div.nukefooter {
 
 div.navheader {
 	color: #000000;
-	background-color: #EFEFF8;
+	background-color: #efeff8;
 	padding: 5px;
 	margin-bottom: 10px;
 	border: thin solid #a0a0d0;
@@ -312,11 +306,11 @@ div.sect1,div.sect2,div.sect3 {
 }
 
 div.example,div.toc {
-	border: thin dotted #70AAE5;
+	border: thin dotted #70aae5;
 	padding-left: 10px;
 	padding-right: 10px;
 	color: #000000;
-	background-color: #EFF8F8;
+	background-color: #eff8f8;
 }
 
 div.toc {

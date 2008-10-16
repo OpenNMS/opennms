@@ -20,7 +20,7 @@
           <execution>
             <goals>
               <goal>generate-html</goal>
-              <goal>generate-pdf</goal>
+              <!-- <goal>generate-pdf</goal> -->
             </goals>
             <phase>compile</phase>
           </execution>
