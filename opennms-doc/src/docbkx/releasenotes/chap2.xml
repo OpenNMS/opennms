@@ -25,7 +25,7 @@
 
         <listitem>
           <para>The default thresholding behavior has been changed to use the new
-          in-process capsd-based thresholder. (Bug <ulink
+          in-line collectd-based thresholder. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2611">#2611</ulink>)</para>
         </listitem>
         
