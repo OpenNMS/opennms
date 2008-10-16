@@ -1,267 +1,436 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter>
-  <title>Installing OpenNMS</title>
+<chapter id="installing">
+	<title>Installing OpenNMS</title>
 
-  <note>
-    <para>You need to be root when you execute the commands in this
-    chapter.</para>
-  </note>
+	<note>
+		<para>
+			You need to be root when running most of the commands in this chapter.
+		</para>
+	</note>
 
-  <para>Follow the instructions in either the fresh install section or the
-  upgrade section, and then continue to the section on running the installer.
-  If you have any errors during the installation process, please see the
-  troubleshooting section of this guide.</para>
+	<section id="installing-data-locations">
+		<title>Where to Find OpenNMS Data</title>
 
-  <section>
-    <title>Installing jicmp</title>
+		<para>OpenNMS stores data in a number of locations:</para>
 
-    <para>Java has never had a really good API for ICMP. Since ICMP is the
-    basis for the "ping" command, it is rather imperative that any Java-based
-    network management platform address the need for ICMP. OpenNMS does this
-    by using some code written in C, and accessing it using the Java Native
-    Interface (JNI). </para>
+		<glosslist>
+			<glossentry>
+				<glossterm>
+					<filename>$OPENNMS_HOME/etc/</filename>
+				</glossterm>
 
-    <para>With OpenNMS 1.3.6, this code has been moved to its own library
-    outside of OpenNMS. This makes the main OpenNMS application pure Java, and
-    as such it only has to be built once, instead of for each platform.</para>
+				<glossdef>
+					<para>OpenNMS configuration files.</para>
+					<para>
+						On some distributions, upstream changes in files in this directory
+						are detected and means are provided for migrating those changes to
+						the new release.
+					</para>
+					<para>
+						On RPM-based distributions, if an OpenNMS configuration file has changed,
+						RPM will create a "<filename>.rpmnew</filename>" file which contains the
+						version of that configuration file that shipped with the new version of
+						OpenNMS. You will need to look at the changes between your file
+						and the new one and merge them manually, at the moment. The command
+						"<code>diff -u &lt;old file&gt; &lt;new file&gt; | less</code>" can
+						assist you in seeing what has changed.
+					</para>
+					<para>
+						On Debian-based distributions, dpkg will automatically prompt you when
+						a configuration file has changed upstream between versions, and will offer
+						you a set of options to deal with it.
+					</para>
+				</glossdef>
+			</glossentry>
 
-    <para>However, now jicmp has to be installed. The goal is to provide
-    packages for most distributions via our online repositories. If packages
-    are not yet available for your distribution, you will need to build jicmp
-    from source. For RPM-based Linux distributions, the source code tarball can
-    be
-    <ulink url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">fetched
-    from Sourceforge</ulink>, and the command</para>
+			<glossentry>
+				<glossterm><filename>$OPENNMS_HOME/share/rrd/</filename></glossterm>
 
-    <para><programlisting>rpmbuild -tb [source tarball filename]</programlisting></para>
+				<glossdef>
+					<para>
+						RRD data files that store response time data and performance data collected
+						from SNMP (and elsewhere).  The installer should not touch the RRD files in
+						<filename>$OPENNMS_HOME/share/rrd</filename>.  Unless you are migrating from
+						RRDTool to jRobin, you should not have to worry about them.
+					</para>
+				</glossdef>
+			</glossentry>
 
-    <para>executed to create an RPM. Otherwise the source tarball can be
-    extracted and the usual "configure; make; make install" run to compile and
-    install it. It should be installed before continuing.</para>
-  </section>
+			<glossentry>
+				<glossterm>
+					<filename>$OPENNMS_HOME/webapps/opennms/</filename> and
+					<filename>$OPENNMS_HOME/jetty-webapps/opennms/</filename>
+				</glossterm>
 
-  <section>
-    <title>Performing a Fresh Install</title>
+				<glossdef>
+					<para>
+						The OpenNMS web application. While data is not stored here, some users may
+						customize the web interface and these customizations should be saved before
+						upgrading OpenNMS.
+					</para>
+				</glossdef>
+			</glossentry>
 
-    <para>Follow the instructions in this section appropriate for your
-    operating system if you are performing a fresh install. If you are
-    upgrading an existing installation of OpenNMS, see the next
-    section.</para>
+			<glossentry>
+				<glossterm><filename>$PGDATA/</filename></glossterm>
 
-    <section>
-      <title>Installing on RPM-based Linux Distributions</title>
+				<glossdef>
+					<para>
+						Data about nodes, services, events, notifications, etc., are stored in the
+						<code>opennms</code> table in PostgreSQL.
+					</para>
+				</glossdef>
+			</glossentry>
+		</glosslist>
+	</section>
 
-      <para>Download the appropriate packages for your Linux distribution from
-      the OpenNMS <ulink
-      url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
-      section on SourceForge.</para>
+	<section id="installing-fresh">
+		<title>Performing a Fresh Install</title>
 
-      <para><programlisting><computeroutput># </computeroutput><command>rpm -i opennms*-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm</command></programlisting></para>
-      <para>Note that as of 1.3.10, you can use the "--relocate" flag to RPM if
-      you wish to put the logs and collection data in an alternate location:</para>
-      <para><programlisting><computeroutput># </computeroutput><command>rpm -i --relocate /var/opennms=/mnt/netapp/opennms-data /var/log/opennms=/mnt/netapp/opennms-logs opennms*.rpm</command></programlisting></para>
-    </section>
+		<para>
+			Follow the instructions in this section appropriate for your operating
+			system if you are performing a fresh install.  If you are upgrading an
+			existing installation of OpenNMS, see the next section.
+		</para>
 
-    <section>
-      <title>Installing on Solaris</title>
+		<section id="installing-rpm">
+			<title>Installing on RPM-Based Distributions</title>
 
-      <para>Download the appropriate package for your Solaris version from the
-      OpenNMS <ulink
-      url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
-      section on SourceForge.</para>
+			<section id="installing-rpm-determine">
+				<title>Determine What to Install</title>
+				
+				<para>
+					As of version 1.6, OpenNMS is packaged in a modular fashion.  The
+					following packages are available for installation:
+				</para>
+				
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis>opennms-core</emphasis>: The core OpenNMS code,
+							responsible for network discovery, polling, data collection,
+							notification, and more.
+						</para>
+					</listitem>
 
-      <para><programlisting><computeroutput># </computeroutput><command>cd /usr/local
-</command><computeroutput># </computeroutput><command>gzip -d opennms-@product.version@-@product.release@-sol&lt;version&gt;-sparc-local.gz
-</command><computeroutput># </computeroutput><command>pkgadd -d `pwd`/opennms-@product.version@-@product.release@-sol&lt;version&gt;-sparc-local</command></programlisting></para>
-    </section>
+					<listitem>
+						<para>
+							<emphasis>opennms-docs</emphasis>: Documentation.
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis>opennms-webapp-jetty</emphasis>: The OpenNMS web
+							UI, designed to be started by the opennms-core engine.
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis>opennms-webapp-standalone</emphasis>: The OpenNMS
+							web UI, designed to be run in Tomcat or another suitable
+							servlet container.
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis>opennms</emphasis>: A convenience package which
+							installs everything you need for a functional OpenNMS
+							installation on a single system.
+						</para>
+					</listitem>
 
-    <section>
-      <title>Installing on Mac OS X</title>
+					<listitem>
+						<para>
+							<emphasis>opennms-remote-poller</emphasis>: The standalone
+							remote poller, which can report back to an OpenNMS instance.
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis>opennms-plugin-ticketer-centric</emphasis>: The
+							<ulink url="http://www.concursive.com/">CentricCRM/Concursive</ulink>
+							ticketer plugin.
+						</para>
+					</listitem>
+							
+				</itemizedlist>
+				
+			</section>
+			
+			<section id="installing-rpm-yum">
+				<title>Installing on RPM-Based Distributions Using Yum</title>
+					
+				<para>
+					As long as Yum is configured to point at the OpenNMS repository,
+					all you should need to run is:
+					<programlisting>sudo yum install <varname>[packages]</varname></programlisting>
+					...where <varname>[packages]</varname> is the list of packages above
+					that you wish to install.
+				</para>
+					
+			</section>
+				
+			<section id="installing-rpm-urpmi">
+				<title>Installing on RPM-Based Distributions Using URPMI</title>
+					
+				<para>
+					If URPMI is configured to point at the OpenNMS repository, you can install
+					by running:
+					<programlisting>sudo urpmi --auto <varname>[packages]</varname></programlisting>
+					...where <varname>[packages]</varname> is the list of packages above
+					that you wish to install.
+				</para>
+			</section>
 
-      <para>OpenNMS is supported on Mac OS X via the <ulink
-      url="http://fink.sourceforge.net/">fink</ulink> project.</para>
-    </section>
-  </section>
+			<section id="installing-rpm-manual">
+				<title>Installing on RPM-Based Distributions Manually</title>
+				
+				<para>
+					Download the packages you wish to install from the <ulink
+					url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=4151">SourceForge
+					download page for OpenNMS</ulink>.
+				</para>
 
-  <section>
-    <title>Upgrading an Existing Installation</title>
+				<para>
+					Then, use <code>rpm -i</code> to install the packages:
+					<programlisting>rpm -ivh opennms*.rpm</programlisting>
+				</para>
+				
+				<note>
+					<para>
+						As of OpenNMS 1.3.10, you can use the <code>--relocate</code> flag to RPM
+						if you wish to put the logs and collection data in an alternate location:
+						<programlisting>rpm -ivh --relocate /var/opennms=/mnt/netapp/opennms-data /var/log/opennms=/mnt/netapp/opennms-logs opennms*.rpm</programlisting>
+					</para>
+				</note>
+			</section>
 
-    <para>Upgrades from a previous version of OpenNMS to a current one usually
-    just involve installing a new package for your particular
-    distribution.</para>
+		</section>
 
-    <para>For RPM-based distributions, this is pretty simple using the
-    "<computeroutput>rpm -Uvh [package name]</computeroutput>" command.</para>
+		<section id="installing-solaris">
+			<title>Installing on Solaris</title>
 
-    <para>In addition, the OpenNMS installer may attempt to make changes to
-    the database. Follow the instructions later in this chapter for executing
-    the installer. The changes should go smoothly, but as with the best laid
-    plans things may go wrong. Make a backup of your PostgreSQL database per
-    the details below before upgrading in case there are problems.</para>
+			<para>
+				Download the appropriate package for your Solaris version from the <ulink
+				url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=4151">SourceForge
+				download page for OpenNMS</ulink>.
+			</para>
 
-    <para>To upgrade from 1.2.x to 1.3.x check out the <ulink
-    url="http://www.opennms.org/index.php/Upgrading_from_1.2.x_to_1.3.x">wiki
-    page</ulink>.</para>
+			<para>
+				Then, install the package using <code>pkgadd</code>:
+				<programlisting><computeroutput># </computeroutput><command>cd /usr/local</command>
+<computeroutput># </computeroutput><command>gzip -d opennms-*-local.gz</command>
+<computeroutput># </computeroutput><command>pkgadd -d `pwd`/opennms-*-local</command></programlisting>
+			</para>
+		</section>
 
-    <section>
-      <title>Basic Locations for OpenNMS Data</title>
+		<section id="installing-macosx">
+			<title>Installing on Mac OS X</title>
 
-      <para>OpenNMS stores data in a number of locations:</para>
+			<para>
+				OpenNMS is supported on Mac OS X via the <ulink
+				url="http://www.finkproject.org/">Fink</ulink> project.
+			</para>
+			
+			<para>
+				Once you've installed Fink, you should be able to install OpenNMS by running:
+				<programlisting>fink install opennms</programlisting>
+			</para>
+		</section>
+	</section>
 
-      <glosslist>
-        <glossentry>
-          <glossterm><filename>$OPENNMS_HOME/etc/</filename></glossterm>
+	<section id="upgrading">
+		<title>Upgrading an Existing Installation</title>
 
-          <glossdef>
-            <para>OpenNMS configuration files. If the default structure of a
-            file in <filename>$OPENNMS_HOME/etc</filename> has changed between
-            versions, RPM will create a
-            "<filename><filename>.rpmnew</filename></filename>" version of
-            that file. You will need to look at the changes between your file
-            and the new one and merge them manually, at the moment. The
-            command "<code>diff -u &lt;old file&gt; &lt;new file&gt; |
-            less</code>" can assist you in seeing what has changed.</para>
-          </glossdef>
-        </glossentry>
+		<section id="upgrading-preparation">
+			<title>Upgrading: Preparation</title>
 
-        <glossentry>
-          <glossterm><filename>$OPENNMS_HOME/share/rrd/</filename></glossterm>
+			<para>
+				There are a number of things you can do that can help ease the transition
+				when doing upgrades.
+			</para>
 
-          <glossdef>
-            <para>RRD data files that store response time data and performance
-            data collected from SNMP. The installer should not touch the RRD
-            files in <filename>$OPENNMS_HOME/share/rrd.</filename> Unless you
-            are moving from RRDTool to jRobin, you should not have to worry
-            about them.</para>
-          </glossdef>
-        </glossentry>
+			<section id="upgrading-preparation-prune-events">
+				<title>Prune Unneeded Events</title>
+				
+				<para>
+					Should you not be doing this already, either using vacuumd or
+					cron, prune away any unneeded events.  The events table will most
+					probably be the largest, and there's no point backing up data that
+					you don't need.
+				</para>
+				
+				<para>
+					For example, to delete any events older than 6 weeks that have no
+					associated outages, you can run, from the <filename>psql</filename>
+					command-line:
+					<programlisting>--# this deletes any events that are not associated with outages
+DELETE FROM events WHERE NOT EXISTS 
+  (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid  
+UNION 
+  SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
+UNION 
+  SELECT eventid FROM notifications WHERE eventid = events.eventid) 
+AND eventtime &lt; now() - interval '6 weeks';</programlisting>
+				</para>
+			</section>
 
-        <glossentry>
-          <glossterm><filename>$OPENNMS_HOME/webapps/opennms/</filename></glossterm>
+			<section id="upgrading-preparation-backup-database">
+				<title>Back Up Your Database</title>
+				
+				<para>
+					Depending on the version you are upgrading <emphasis>from</emphasis> and the
+					version you are upgrading <emphasis>to</emphasis>, you may run into issues with
+					the database upgrade.  It is <emphasis>strongly recommended</emphasis> that
+					you back up the database.
+					<programlisting>pg_dump -U postgres -Fc -C -f opennms-database-backup.pg opennms</programlisting>
+				</para>
+			</section>
 
-          <glossdef>
-            <para>The OpenNMS web application. While data is not stored here,
-            some users may customize the web interface and these
-            customizations should be saved before upgrading OpenNMS.</para>
-          </glossdef>
-        </glossentry>
+			<section id="upgrading-preparation-backup-etc">
+				<title>Back Up Your OpenNMS <filename>etc</filename> Directory</title>
+				
+				<para>
+					Back up your <filename>$OPENNMS_HOME/etc</filename> directory before doing any
+					upgrades, so you can go back to your previous version if something goes wrong, and
+					so you have a reference of your previous configuration when adapting config file
+					changes to the new version.
+					<programlisting>tar -C $OPENNMS_HOME -cvzf /tmp/opennms-etc-backup.tar.gz etc</programlisting>
+				</para>
+			</section>
+			
+			<section id="upgrading-preparation-determine-memory">
+				<title>Assess the Events Table Size</title>
+				
+				<para>
+					If you have a large number of events, you may need to increase the amount
+					of memory passed to the OpenNMS <filename>install</filename> tool.  For example,
+					if you have 250k events, you will need almost 600MB of heap.  When the time comes
+					to run the <filename>install</filename> tool, assuming you have enough available
+					memory, it's probably safe to just use a very large value to pass to
+					<filename>install</filename>, like:
+					<programlisting>install -Xms1024m -Xmx2048m -dis</programlisting>
+				</para>
+				
+			</section>
 
-        <glossentry>
-          <glossterm><filename>$PGDATA/</filename></glossterm>
+		</section>
 
-          <glossdef>
-            <para>Data about nodes, services, events, notifications, etc., are
-            stored in the <code>opennms</code> table in PostgreSQL.</para>
-          </glossdef>
-        </glossentry>
-      </glosslist>
-    </section>
+		<section id="upgrading-to-latest-yum">
+			<title>Upgrading RPM-Based Distributions Using Yum</title>
 
-    <section>
-      <title>Before Upgrading - Make a Backup!</title>
+			<para>
+				If you have the OpenNMS Yum repositories configured, all you should need
+				to do to get the new release is run:
+				<programlisting>sudo yum upgrade opennms</programlisting>
+			</para>
+				
+			<para>
+				If you are comfortable letting your distribution give you OS updates along
+				with OpenNMS, you can just run:
+				<programlisting>sudo yum upgrade</programlisting>
+			</para>
+		</section>
+			
+		<section id="upgrading-to-latest-urpmi">
+			<title>Upgrading RPM-Based Distributions Using URPMI</title>
+			
+			<para>
+				If you have the OpenNMS URPMI repositories configured, you can upgrade by
+				running:
+				<programlisting>sudo urpmi --auto opennms</programlisting>
+			</para>
+				
+			<para>
+				As with Yum, if you are comfortable letting URPMI give OS updates along with
+				OpenNMS, you can run:
+				<programlisting>sudo urpmi --auto --auto-select opennms</programlisting>
+			</para>
+		</section>
 
-      <para>Things can go wrong on upgrades, so it is always a good idea to
-      make a backup of important information before attempting the
-      upgrade.</para>
+		<section id="upgrading-to-latest-rpm-manual">
+			<title>Upgrading RPM-Based Distributions Manually</title>
+			
+			<para>
+				You can upgrade RPM systems manually by downloading the <ulink
+				url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=4151">RPM
+				packages from SourceForge</ulink> and upgrade them by running:
+				<programlisting>sudo rpm -Uvh opennms*.rpm</programlisting>
+			</para>
+		</section>
 
-      <para>For OpenNMS, you should do a few things:</para>
+		<section id="upgrading-to-latest-debian">
+			<title>Upgrading Debian-Based Distributions</title>
+				
+			<para>
+				If your Debian or Ubuntu system is configured with the OpenNMS Apt
+				repository, you should just need to run:
+				<programlisting>sudo apt-get update
+sudo apt-get -u install opennms</programlisting>
+			</para>
+		</section>
 
-      <orderedlist>
-        <listitem>
-          <para>Copy the contents of the
-          <filename>$OPENNMS_HOME/etc</filename> directory to a safe location.
-          Should an issue arise with any new files, you will want to be able
-          to recover your original.</para>
-        </listitem>
+	</section>
 
-        <listitem>
-          <para>Make a backup of the postgres database. Using the
-          <filename>pg_dumpall</filename> command you can dump the entire
-          contents of the database to a file:</para>
+	<section id="installing-java-configure">
+		<title>Configure Java for OpenNMS</title>
 
-          <para><programlisting><computeroutput># </computeroutput><command>pg_dumpall &gt; old_data</command></programlisting></para>
+		<para>
+			Before you can run the post-install, OpenNMS needs to be configured
+			to use an appropriate Java Runtime Environment (JRE).  The OpenNMS tool
+			<filename>runjava</filename> is used to set this up, and it can either
+			search for a suitable JRE or you can tell it exactly which JRE to use.
+		</para>
 
-          <para>will copy all of the data to a file called
-          <filename>old_data</filename>. You will want to run this as the
-          "postgres" user:</para>
+		<section id="installing-java-search">
+			<title>Search for a JRE (suggested)</title>
 
-          <para><programlisting><computeroutput># </computeroutput><command>sudo -u postgres pg_dumpall &gt; old_data</command></programlisting></para>
+			<para>
+				Execute <filename>runjava</filename> with the "<code>-s</code>"
+				option to search for a JRE:
+			</para>
 
-          <para>To restore, run the command:</para>
+			<programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -s</command></programlisting>
+		</section>
 
-          <para><programlisting><computeroutput># </computeroutput><command>sudo -u postgres psql -U postgres -f old_data template1</command></programlisting></para>
-        </listitem>
+		<section id="installing-java-specify">
+			<title>Configure a specific JRE</title>
 
-        <listitem>
-          <para>If you have made changes to the web application, you will want
-          to save a copy of your changes, as well.</para>
-        </listitem>
-      </orderedlist>
+			<para>
+				Execute runjava with the "<code>-S &lt;path to JRE&gt;</code>"
+				option to specify the exact JRE you want OpenNMS to use:
+				<programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -S &lt;path to JRE's java executable&gt;</command></programlisting>
+			</para>
 
-      <para>As mentioned earlier, there should be no need to backup the RRD
-      files during an upgrade.</para>
-    </section>
-  </section>
+		</section>
+	</section>
 
-  <section>
-    <title>Run the Installer</title>
+	<section id="installing-opennms-install">
+		<title>Run the OpenNMS Installer Application</title>
 
-    <para>No matter which installation method above you choose, and whether
-    you are performing a fresh install or an upgrade, you still need to run
-    the installer. This tool will setup the <code>opennms</code> database
-    within PostgreSQL and also install the OpenNMS web application ("webapp"
-    or the "webUI") into Tomcat.</para>
+		<para>
+			No matter which installation method above you choose, and whether
+			you are performing a fresh install or an upgrade, you still need to run
+			the OpenNMS installer.  This tool will setup the <code>opennms</code> database
+			within PostgreSQL among other things.
+		</para>
 
-    <section>
-      <title>Configure Java for OpenNMS</title>
+		<programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -l /usr/local/lib -dis</command></programlisting>
 
-      <para>Before you execute the installer, OpenNMS needs to be configured
-      to use an appropriate Java Runtime Environment (JRE). The OpenNMS tool
-      <filename>runjava</filename> is used to set this up, and it can either
-      search for a suitable JRE or you can tell it exactly which JRE to
-      use.</para>
+		<para>
+			The "-l" parameter will look for the jicmp and/or jrrd libraries
+			in the location specified. The "-dis" will initialize and check the
+			database.  Note at the end of the output from the installer it will
+			indicate if iplike has been installed properly.
+		</para>
+		<para>
+			For a full list of options the installer accepts, run
+			"<code>$OPENNMS_HOME/bin/install -h</code>".
+		</para>
+	</section>
 
-      <section>
-        <title>Search for a JRE (suggested)</title>
-
-        <para>Execute <filename>runjava</filename> with the "<code>-s</code>"
-        option to search for a JRE:</para>
-
-        <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -s</command></programlisting>
-      </section>
-
-      <section>
-        <title>Configure a specific JRE</title>
-
-        <para>Execute runjava with the "-S &lt;path to JRE&gt;" option to
-        specify the exact JRE you want OpenNMS to use:</para>
-
-        <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -S &lt;path to JRE&gt;</command></programlisting>
-
-        <para>Note that you will need the path to the "java" executable - i.e.
-        the file named "java" - usually in $JAVA_HOME/bin.</para>
-      </section>
-    </section>
-
-    <section>
-      <title>Run the Installer to Setup the PostgreSQL Database and
-      jicmp/jrrd</title>
-
-      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -l /usr/local/lib -dis</command></programlisting>
-
-      <para>The "-l" parameter will look for the jicmp and/or jrrd libraries
-      in the location specified. The "-dis" will initialize and check the
-      database. Note at the end of the output from the installer it will
-      indicate if iplike has been installed properly.</para>
-    </section>
-
-    <section>
-      <title>Run the Installer to Setup the Web Application</title>
-
-      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/conf/Catalina/localhost</command></programlisting>
-
-      <para>$CATALINA_HOME is the base directory of your Tomcat
-      installation.</para>
-    </section>
-  </section>
 </chapter>
