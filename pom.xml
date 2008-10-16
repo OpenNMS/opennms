@@ -100,6 +100,7 @@
     <module>opennms-rrd</module>
     <module>opennms-snmp</module>
     <module>opennms-config</module>
+    <module>opennms-provision</module>
     <module>opennms-services</module>
     <module>opennms-remote-poller</module>
     <module>opennms-integration-otrs</module>
