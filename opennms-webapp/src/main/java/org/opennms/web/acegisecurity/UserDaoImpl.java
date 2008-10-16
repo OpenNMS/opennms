@@ -58,9 +58,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.dao.castor.CastorUtils;
@@ -86,8 +83,6 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     private static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.USER_ROLE);
 
     private String m_usersConfigurationFile;
-    
-    private String m_groupsConfigurationFile;
 	
     /**
      * The set of valid users from users.xml, keyed by userId
@@ -107,9 +102,6 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     
     private long m_magicUsersLastModified;
 
-    private long m_groupsLastModified;
-
-    private boolean m_useGroups;
 
     public UserDaoImpl() {
     }
@@ -165,51 +157,6 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         m_usersLastModified = lastModified; 
         m_users = users;
     }
-    
-    /**
-     * Parses the groups.xml file into mapping roles to users of that role
-     * through group membership.
-     */
-    private Map<String, LinkedList<String>> parseGroupRoles()
-            throws DataRetrievalFailureException {
-        long lastModified = new File(m_groupsConfigurationFile).lastModified();
-        
-        try {
-            GroupFactory.init();
-        } catch (Exception e) {
-            throw new DataRetrievalFailureException("Error reading groups configuration file '" + m_groupsConfigurationFile + "': " + e.getMessage(), e);
-        }
-        GroupManager gm = GroupFactory.getInstance();
-        Map<String, LinkedList<String>> roleMap = new HashMap<String, LinkedList<String>>();
-
-        Collection<Role> roles = gm.getRoles();
-        for (Role role : roles) {
-            String groupname = role.getMembershipGroup();
-            String acegiRole = Authentication.getAcegiRoleFromOldRoleName(role.getName());
-            if (acegiRole != null) {
-                List<String> users;
-                try {
-                    users = gm.getGroup(groupname).getUserCollection();
-                } catch (Exception e) {
-                    throw new DataRetrievalFailureException("Error reading groups configuration file '" + m_groupsConfigurationFile + "': " + e.getMessage(), e);
-                }
-
-                for (String user : users) {
-                    if (roleMap.get(user) == null) {
-                        roleMap.put(user, new LinkedList<String>());
-                    }
-                    LinkedList<String> userRoleList = roleMap.get(user);
-                    userRoleList.add(acegiRole);
-                }
-            }
-        }
-
-        log().debug("Loaded roles from groups.xml file for " + roleMap.size() + " users");
-
-        m_groupsLastModified = lastModified;
-
-        return roleMap;
-    }
 
     /**
      * Parses the magic-users.properties file into two mappings: from magic
@@ -247,9 +194,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         }
 
         String[] configuredRoles = BundleLists.parseBundleList(properties.getProperty("roles"));
-        // Use roles from the groups.xml file if specified in applicationContext-acegi-security.xml
-        Map<String, LinkedList<String>> roleMap = m_useGroups ? parseGroupRoles() 
-                                                              : new HashMap<String, LinkedList<String>>();
+        Map<String, LinkedList<String>> roleMap = new HashMap<String, LinkedList<String>>();
         Map<String, Boolean> roleAddDefaultMap = new HashMap<String, Boolean>();
         for (String role : configuredRoles) {
             String rolename = properties.getProperty("role." + role + ".name");
@@ -347,28 +292,6 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
         return false;
     }
-    
-    /**
-     * Checks the last modified time of the group file against
-     * the last known last modified time. If the times are different, then the
-     * file must be reparsed.
-     * 
-     * <p>
-     * Note that the <code>lastModified</code> variables are not set here.
-     * This is in case there is a problem parsing either file. If we set the
-     * value here, and then try to parse and fail, then we will not try to parse
-     * again until the file changes again. Instead, when we see the file
-     * changes, we continue parsing attempts until the parsing succeeds.
-     * </p>
-     */
-    private boolean isGroupsParseNecessary() {
-
-        if (m_groupsLastModified != new File(m_groupsConfigurationFile).lastModified()) {
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * Checks the last modified time of the magic-users file against
@@ -397,14 +320,6 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
     public void setUsersConfigurationFile(String usersConfigurationFile) {
         m_usersConfigurationFile = usersConfigurationFile;
-    }
-    
-    public void setGroupsConfigurationFile(String groupsConfigurationFile) {
-        m_groupsConfigurationFile = groupsConfigurationFile;
-    }
-    
-    public void setUseGroups(boolean useGroups){
-        m_useGroups = useGroups;
     }
 
     public String getUsersConfigurationFile() {
@@ -443,7 +358,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
             parseUsers();
         }
 
-        if (isMagicUsersParseNecessary() || (m_useGroups && isGroupsParseNecessary())) {
+        if (isMagicUsersParseNecessary()) {
             parseMagicUsers();
         }
     }
@@ -463,17 +378,8 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         return m_usersLastModified;
     }
     
-    public long getGroupsLastModified() {
-        return m_groupsLastModified;
-    }
-    
-    public boolean isUseGroups() {
-        return m_useGroups;
-    }
-    
     public void afterPropertiesSet() {
         Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
-        Assert.state(!m_useGroups || m_groupsConfigurationFile != null, "groupsConfigurationFile parameter must be set to the location of the groups.xml configuration file");
         Assert.state(m_magicUsersConfigurationFile != null, "magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file");
     }
 }
