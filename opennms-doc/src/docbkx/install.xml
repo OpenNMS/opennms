@@ -39,11 +39,11 @@
 	</bookinfo>
 
 	<xi:include href="common/preface.xml" />
-	<xi:include href="install/chapter1.xml" />
-	<xi:include href="install/chapter2.xml" />
-	<xi:include href="install/chapter3.xml" />
-	<xi:include href="install/chapter4.xml" />
-	<xi:include href="install/chapter5.xml" />
-	<xi:include href="install/chapter6.xml" />
+	<xi:include href="install/overview.xml" />
+	<xi:include href="install/preparing-for-install.xml" />
+	<xi:include href="install/installing.xml" />
+	<xi:include href="install/getting-started.xml" />
+	<xi:include href="install/building-from-source.xml" />
+	<xi:include href="install/troubleshooting.xml" />
 
 </book>
