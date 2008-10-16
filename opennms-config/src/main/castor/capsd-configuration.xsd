@@ -115,7 +115,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="delete-propagation-enabled" use="required">
+      <attribute name="delete-propagation-enabled" use="optional" default="true">
         <annotation>
           <documentation>Determine if deleting an service propagates to
           deleting the interface if the service is the only one remaining on

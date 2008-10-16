@@ -80,7 +80,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.
      */
-    private static final String SERVICE_NAME = "SNMP";
+    private static final String SERVICE_NAME = "HOST-RESOURCES";
 
     /**
      * Default OID for the table that represents the name of the software running.

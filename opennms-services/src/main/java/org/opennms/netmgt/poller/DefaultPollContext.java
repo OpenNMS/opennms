@@ -64,13 +64,13 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class DefaultPollContext implements PollContext, EventListener {
     
-    private PollerConfig m_pollerConfig;
-    private QueryManager m_queryManager;
-    private EventIpcManager m_eventManager;
-    private String m_name;
-    private String m_localHostName;
-    private boolean m_listenerAdded = false;
-    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
+    private volatile PollerConfig m_pollerConfig;
+    private volatile QueryManager m_queryManager;
+    private volatile EventIpcManager m_eventManager;
+    private volatile String m_name;
+    private volatile String m_localHostName;
+    private volatile boolean m_listenerAdded = false;
+    private final List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
 
     public EventIpcManager getEventManager() {
         return m_eventManager;

@@ -2,15 +2,14 @@
 <chapter id="chap1" label="1">
 	<title>Chapter 1</title>
 	<subtitle>OpenNMS Basics</subtitle>
-                <para>
-                        Warning: This document is deprecated and refers to old code. 
-                        A new document is being developed, but for now the best source 
-                        of information can be found on 
-                        <ulink url="http://www.opennms.org/">The OpenNMS Wiki</ulink>.
-                        This document may be wrong on a number of important issues, and it
-                        will definitely waste your time.
-                </para>
-
+	<para>
+		Warning: This document is deprecated and refers to old code. 
+		A new document is being developed, but for now the best source 
+		of information can be found on 
+		<ulink url="http://www.opennms.org/">The OpenNMS Wiki</ulink>.
+		This document may be wrong on a number of important issues, and it
+		will definitely waste your time.
+	</para>
 	<para>
 		<emphasis>OpenNMS is a service and network management platform
 		for automatic node discovery, network services monitoring, operator
@@ -52,11 +51,15 @@
 		available for a given interface, it will be represented as a separate node.)
 		</para></formalpara>
 		<formalpara><title>Event</title>
-		<para>Any significant occurrence or happening.
+		<para>Any occurrence or happening.
+		</para></formalpara>
+		<formalpara><title>Alarm</title>
+		<para>Any <emphasis>significant</emphasis> occurrence or happening.  Alarms are based on one or more
+		occurrences of events.
 		</para></formalpara>
 		<formalpara><title>Outage</title>
 		<para>A temporary suspension of operation, signified by an inability to 
-		communicate with a managed service. (a failed poll)
+		communicate with a managed service. (A failed poll.)
 		</para></formalpara>
 		<formalpara><title>Notice</title>
 		<para>A notice is generated when specific events occur.  The notification process 

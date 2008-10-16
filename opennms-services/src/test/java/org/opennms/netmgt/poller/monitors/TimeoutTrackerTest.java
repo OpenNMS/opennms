@@ -76,17 +76,21 @@ public class TimeoutTrackerTest extends TestCase {
     
     public void testElapsedTime() throws InterruptedException {
         
-        long sleepTime = 100L;
+        long sleepTime = 200L;
         
         TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 0, 3000);
 
         tracker.startAttempt();
         
-        Thread.sleep(sleepTime);
+        Thread.sleep(sleepTime, 0);
         
         double elapsedTimeInMillis = tracker.elapsedTimeInMillis();
-        assertTrue("Unexpected value for elapsedTimeInMillis: "+elapsedTimeInMillis, elapsedTimeInMillis > sleepTime);
-        assertTrue("Unexpected value for elapsedTimeInMillis: "+elapsedTimeInMillis, elapsedTimeInMillis < 2 * sleepTime);
+        
+        long minTime = sleepTime;
+        long maxTime = 2 * sleepTime;
+        assertTrue("Expected value for elapsedTimeInMillis to be between "+minTime+" and "+maxTime+" : actual value "+elapsedTimeInMillis,
+                   minTime < elapsedTimeInMillis && elapsedTimeInMillis < maxTime 
+        );
         
     }
 

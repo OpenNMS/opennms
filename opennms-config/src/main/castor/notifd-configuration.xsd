@@ -30,19 +30,21 @@
 
       <attribute name="status" type="string" use="required"/>
 
-      <attribute name="pages-sent" type="string" use="required"/>
+      <attribute name="pages-sent" type="string" use="optional" default="SELECT * FROM notifications"/>
 
-      <attribute name="next-notif-id" type="string" use="required"/>
+      <attribute name="next-notif-id" type="string" use="optional" default="SELECT nextval('notifynxtid')"/>
 
-      <attribute name="next-user-notif-id" type="string" use="required"/>
+      <attribute name="next-user-notif-id" type="string" use="optional" default="SELECT nextval('userNotifNxtId')"/>
 
-      <attribute name="next-group-id" type="string" use="required"/>
+      <attribute name="next-group-id" type="string" use="optional" default="SELECT nextval('notifygrpid')"/>
 
-      <attribute name="outstanding-notices-sql" type="string" use="required"/>
+      <attribute name="service-id-sql" type="string" use="optional" default="SELECT serviceID from service where serviceName = ?"/>
 
-      <attribute name="acknowledge-id-sql" type="string" use="required"/>
+      <attribute name="outstanding-notices-sql" type="string" use="optional" default="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"/>
 
-      <attribute name="acknowledge-update-sql" type="string" use="required"/>
+      <attribute name="acknowledge-id-sql" type="string" use="optional" default="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"/>
+
+      <attribute name="acknowledge-update-sql" type="string" use="optional" default="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"/>
 
       <attribute name="match-all" type="boolean" use="required"/>
       

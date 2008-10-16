@@ -100,7 +100,6 @@ import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
-import org.opennms.netmgt.config.webuiColors.CategoryColors;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -395,9 +394,6 @@ public class WillItUnmarshalTest extends TestCase {
     }
     public void testVulnscandConfiguration() throws Exception {
         unmarshal("vulnscand-configuration.xml", VulnscandConfiguration.class);
-    }
-    public void testWebUiColors() throws Exception {
-        unmarshal("webui-colors.xml", CategoryColors.class);
     }
     public void testXmlrpcdConfiguration() throws Exception {
         unmarshal("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);

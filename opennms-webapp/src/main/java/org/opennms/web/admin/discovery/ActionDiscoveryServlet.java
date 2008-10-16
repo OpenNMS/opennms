@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Aug 29: Use Util.createEventProxy instead of creating a TcpEventProxy
+//              on our own. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -29,8 +34,8 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-
 package org.opennms.web.admin.discovery;
+
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -49,8 +54,9 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
-import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
 
 /**
@@ -214,9 +220,9 @@ public class ActionDiscoveryServlet extends HttpServlet {
         		throw new ServletException(ex);
         	}
         	
-        	TcpEventProxy proxy = null;
+        	EventProxy proxy = null;
         	try {
-    			proxy = new TcpEventProxy();
+    			proxy = Util.createEventProxy();
     		} catch (Exception me) {
     			log.error(me);
     		}
