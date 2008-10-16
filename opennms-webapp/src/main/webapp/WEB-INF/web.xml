@@ -271,9 +271,11 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <!--
   <listener>
     <listener-class>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
   </listener>
+  -->
 
   <!--  RESTful Web Services -->
   <servlet>

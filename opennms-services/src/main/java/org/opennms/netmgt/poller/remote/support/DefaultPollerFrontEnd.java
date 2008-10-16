@@ -37,6 +37,7 @@ package org.opennms.netmgt.poller.remote.support;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -216,6 +217,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
             } catch (Exception e) {
                 log().fatal("Unexpected exception occurred loading the configs", e);
                 setState(new FatalExceptionOccurred());
+            }
+            String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
+            if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
+                File killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
+                if (!killSwitch.exists()) {
+                    log().info("Kill-switch file " + killSwitch.getPath() + " does not exist, stopping.");
+                    doStop();
+                }
             }
         }
         
