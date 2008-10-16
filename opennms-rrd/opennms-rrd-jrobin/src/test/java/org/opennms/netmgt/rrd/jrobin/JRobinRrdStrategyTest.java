@@ -58,7 +58,6 @@ import org.jrobin.graph.RrdGraphDef;
 import org.jrobin.graph.RrdGraphInfo;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.rrd.RrdConfig;
@@ -80,11 +79,6 @@ public class JRobinRrdStrategyTest {
     
     private JRobinRrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
-    
-    @BeforeClass
-    public static void setToolkitProperty() {
-        System.setProperty("java.awt.headless", "true");
-    }
     
     @Before
     public void setUp() throws Exception {
