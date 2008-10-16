@@ -4,6 +4,83 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+  <section id="opennms-1.5.97">
+    <title>Changes in OpenNMS 1.5.97</title>
+
+    <section id="opennms-1.5.97-features">
+      <title>New Features</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>When searching for a node, if the search returns only a single node,
+          it will redirect directly to the node page.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=1518">#1518</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>Support for new Ricoh/Savin Printer data collections was added. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=1941">#1941</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>The default thresholding behavior has been changed to use the new
+          in-process capsd-based thresholder. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2611">#2611</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>The comment field in assets no longer has a size limit. (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2763">#2763</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>The default logging level is now WARN instead of DEBUG.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2796">#2796</ulink>)</para>
+        </listitem>
+        
+        <listitem>
+          <para>PostgreSQL 8.3 is now officially supported in the installer.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2808">#2808</ulink>)</para>
+        </listitem>
+        
+      </itemizedlist>
+    </section>
+
+    <section id="opennms-1.5.97-bugfixes">
+      <title>Bug Fixes</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>A bug in the scheduled outages UI was fixed.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2670">#2670</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>A number of thread concurrency issues have been fixed.  (Bug <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2715">#2715</ulink>)</para>
+        </listitem>
+
+        <listitem>
+		  <para>The HTTP collector now handles string attributes correctly.  (Bug <ulink
+		  url="http://bugzilla.opennms.org/show_bug.cgi?id=2806">#2806</ulink>)</para>
+		</listitem>
+		
+		<listitem>
+          <para>
+            A few other bugs have been fixed since 1.5.96, in the process
+            of preparing for 1.6.0.  A full list of bugs fixed in the release can be
+            found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.97+%281.6+beta+8%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.
+          </para>
+        </listitem>
+      
+      </itemizedlist>
+      
+    </section>
+    
+  </section>
+      
   <section id="opennms-1.5.96">
     <title>Changes in OpenNMS 1.5.96</title>
 

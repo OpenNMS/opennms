@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter>
+<chapter id="troubleshooting">
   <title>Troubleshooting an OpenNMS Installation</title>
 
-  <section>
+  <section id="common-installation-issues">
     <title>Common Installation Issues</title>
 
     <para>The following section contains advice for overcoming common
     installation issues. If your issue is not addressed below, please see the
     section on where to get help.</para>
 
-    <section>
+    <section id="dependency-problems">
       <title>Dependency Problems</title>
 
       <para>To assist with code management, the easiest way to install OpenNMS
@@ -25,7 +25,7 @@
       sources.</para>
     </section>
 
-    <section>
+    <section id="not-finished-starting-up">
       <title>Error: "Started OpenNMS, but it has not finished starting
       up"</title>
 
@@ -86,7 +86,7 @@
       </orderedlist>
     </section>
 
-    <section>
+    <section id="dhcp-poller-wont-start">
       <title>DHCP Poller Won't Start</title>
 
       <para>The OpenNMS DHCP poller will fail to start most operating systems
@@ -116,7 +116,7 @@
       network services as possible.</para>
     </section>
 
-    <section>
+    <section id="runjava-could-not-find-jre">
       <title>Error: "runjava: Could not find an appropriate JRE"</title>
 
       <para>The <code><filename>runjava</filename></code> program is used to
@@ -128,7 +128,7 @@
       to use.</para>
     </section>
 
-    <section>
+    <section id="database-errors-not-in-english">
       <title>Error: "The database server's error messages are not in English
       ..."</title>
 
@@ -154,7 +154,7 @@
       English.</para>
     </section>
 
-    <section>
+    <section id="not-null-constraint-error">
       <title>Error: "Column X in new table has NOT NULL constraint
       ..."</title>
 
@@ -170,7 +170,7 @@
       schema or a really old version of the schema.</para>
     </section>
 
-    <section>
+    <section id="backup-tables-still-exists">
       <title>Error: "One or more backup tables from a previous install still
       exists"</title>
 
@@ -227,7 +227,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       as a (not so simple) exercise for the reader.</para>
     </section>
 
-    <section>
+    <section id="table-violates-new-constraint">
       <title>Error: "Table X contains N rows (out of M) that violate new
       constraint Y"</title>
 
@@ -272,7 +272,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       </orderedlist>
     </section>
 
-    <section>
+    <section id="iplike-permission-denied">
       <title>Error: "- adding iplike database function... &lt;snip&gt;
       org.postgresql.util.PSQLException: ERROR: could not access file
       '&lt;snip&gt;/lib/iplike.so': Permission denied"</title>
@@ -293,7 +293,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       than the owner of the directory access.</para>
     </section>
 
-    <section>
+    <section id="iplike-coult-not-load-library">
       <title>Error: "- adding iplike database function... &lt;snip&gt;
       org.postgresql.util.PSQLException: ERROR: could not load library
       ..."</title>
@@ -324,7 +324,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       post to the discuss list</ulink> for some pointers.</para>
     </section>
 
-    <section>
+    <section id="relation-pg_user-does-not-exist">
       <title>Error: "Exception in thread "main"
       org.postgresql.util.PSQLException: ERROR: relation "pg_user" does not
       exist" when running installer.</title>
@@ -360,7 +360,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       postgresql configuration files and you'll need to redo them.</para>
     </section>
 
-    <section>
+    <section id="filenotfound-exception-permission-denied">
       <title>Error: java.io.FileNotFoundException: ... (Permission
       denied)</title>
 
@@ -378,37 +378,35 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
     </section>
   </section>
 
-  <section>
+  <section id="where-to-get-help">
     <title>Where to Get Help</title>
 
     <para>OpenNMS is a community supported project. Please keep that in mind
     when seeking help on the program, as no one gets paid to work on the
     project (unless it is through a commercial support contract).</para>
 
-    <section>
+    <section id="release-notes">
       <title>The Release Notes</title>
 
-      <para>Check the release notes for this release. They are in the <ulink
+      <para>Check the release notes for this release.  They are in the <ulink
       url="http://sourceforge.net/docman/?group_id=4141">Documentation</ulink>
       section of the OpenNMS project page at SourceForge.</para>
     </section>
 
-    <section>
+    <section id="opennms-web-site">
       <title>The OpenNMS Web Site</title>
 
       <para>The main OpenNMS <ulink url="http://www.opennms.org">site</ulink>
       is a Wiki. As a community project, there is a lot of good advice and
       information available there. In particular, we suggest checking the
       above-mentioned release notes, the <ulink
-      url="http://wiki.opennms.org/tiki-list_faqs.php">FAQ</ulink>, the <ulink
-      url="http://bugzilla.opennms.org/cgi-bin/bugzilla/index.cgi">bug
-      database</ulink> and <ulink url="http://www.google.com/">Google</ulink>
-      before posting to a mailing list. You might also find useful information
-      in the <ulink url="http://faq.opennms.org/">old FAQ</ulink>, but please
-      realize that this information may be out of date.</para>
+      url="http://www.opennms.org/index.php/FAQ">FAQ entries on the wiki</ulink>,
+      the <ulink url="http://bugzilla.opennms.org/">bug database</ulink> and,
+      of course, <ulink url="http://www.google.com/">Google</ulink>,
+      before posting to a mailing list.</para>
     </section>
 
-    <section>
+    <section id="mailing-lists">
       <title>The OpenNMS Mailing Lists</title>
 
       <para>OpenNMS maintains a number of active mailing lists on
@@ -490,12 +488,12 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       url="http://search.gmane.org">gmane.org</ulink>.</para>
     </section>
 
-    <section>
+    <section id="commercial-support">
       <title>Commercial Support</title>
 
       <para>If you are using OpenNMS in a production environment, or are
       considering it, you might be interested in commercial support. The
-      <ulink url="http://www.opennms.com/about/">OpenNMS Group</ulink>
+      <ulink url="http://www.opennms.com/">OpenNMS Group</ulink>
       maintains the OpenNMS project, and we also offer support, training,
       consulting services and custom development.</para>
     </section>
