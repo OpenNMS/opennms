@@ -213,8 +213,8 @@ deb-src http://debian.opennms.org unstable main</programlisting>
 			be sure to install the 64-bit JDK.
 		</para>
 
-		<section id="java-rpm">
-			<title>Installing on RPM-based Distributions Using Yum</title>
+		<section id="java-yum">
+			<title>Installing Java on RPM-based Distributions Using Yum</title>
 
 			<para>
 				The Sun JDK is available in our Yum repository.  If you have configured Yum
@@ -229,6 +229,17 @@ deb-src http://debian.opennms.org unstable main</programlisting>
 				<programlisting>yum --nogpgcheck install jdk</programlisting>
 			</para>
 
+		</section>
+
+		<section id="java-urpmi">
+			<title>Installing Java on RPM-based Distributions Using URPMI</title>
+
+			<para>
+				The Sun JDK is available in our URPMI repository.  If you have configured
+				URPMI as specified above, you just need to run:
+				<programlisting>urpmi --auto jdk</programlisting>
+			</para>
+			
 		</section>
 
 		<section id="java-debian">
@@ -248,7 +259,7 @@ deb-src http://debian.opennms.org unstable main</programlisting>
 		</section>
 
 		<section id="java-other">
-			<title>Everything Else</title>
+			<title>Installing Java on Other Platforms</title>
 
 			<note>
 				<para>
@@ -354,7 +365,7 @@ sudo apt-get install postgresql-8.1</programlisting>
 			<para>Locate the Postgres "data" directory. Often this is <filename>/var/lib/pgsql/data</filename>.
 			You should then find the two files we need to modify in that directory.</para>
 
-			<section>
+			<section id="postgresql.conf">
 				<title>The <filename>postgresql.conf</filename> File</title>
 
 				<para>
@@ -399,118 +410,176 @@ sudo apt-get install postgresql-8.1</programlisting>
 					</listitem>
 				</orderedlist>
 			</section>
+
+			<section id="pg_hba.conf">
+				<title>Customizing the <filename>pg_hba.conf</filename> File</title>
+
+				<para>
+					The <filename>pg_hba.conf</filename> file controls which machines
+					and users can access the database on a given machine via TCP/IP.
+				</para>
+
+				<para>
+					Since that is how OpenNMS accesses the database (via <code>localhost</code>)
+					it is necessary to modify this file to allow OpenNMS to work.  The easiest
+					thing to do is to just allow anyone from the localhost to access the database
+					(do not add the last line if your system does not support IPv6):
+				</para>
+
+				<para>
+					<programlisting># TYPE DATABASE USER IP-ADDRESS IP-MASK METHOD
+local all all trust
+host all all 127.0.0.1 255.255.255.255 trust
+host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting>
+				</para>
+
+				<para>
+					Make sure that no other lines are uncommented in this file.
+				</para>
+
+				<para>
+					You will need to stop and restart Postgres after making these changes.
+				</para>
+			</section>
+
+			<section id="postgresql-create">
+				<title>Creating the PostgreSQL Database</title>
+
+				<para>
+					Most distributions will automatically initialize the default database
+					on first startup, but if yours doesn't (for example, on Solaris), you
+					will need to do so manually.
+				</para>
+
+				<para>
+					As the <code>postgres</code> user, go to the
+					<filename>/usr/local/pgsql/bin</filename> directory (or wherever your PostgreSQL
+					binaries are installed), and run:
+					<programlisting>./initdb -D /usr/local/pgsql/data -E "UNICODE"</programlisting>
+				</para>
+
+				<para>
+					Then you'll need to start the database:
+					<programlisting>./pg_ctl -D /usr/local/pgsql/data start</programlisting>
+				</para>
+
+			</section>
+
+			<section id="postgresql-iplike">
+				<title>Adding the iplike function</title>
+
+				<para>
+					OpenNMS makes heavy use of a stored procedure called "iplike".  Since it is
+					written in C, it has been removed from the main OpenNMS code and placed
+					in its own project.
+				</para>
+
+				<para>
+					If a C-based iplike is not installed, the OpenNMS installer will
+					add a version written in the PostgreSQL command language. It will work,
+					but not as quickly as the compiled iplike will.
+				</para>
+
+				<para>
+					To install iplike, simply download the proper package for your
+					distribution. There should be a package for PostgreSQL versions 7.4-8.1,
+					and one for 8.2+. In addition, there will be separate 32-bit and 64-bit
+					versions. It is also possible to download a tarball from the <ulink
+					url="https://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=235604">OpenNMS
+					SourceForge project page</ulink>, and do the usual "./configure", "make", and "make
+					install".  Once installed it should not be required to update it on every
+					OpenNMS upgrade.
+				</para>
+			</section>
+
 		</section>
 
-		<section>
-			<title>
-				Customizing the
-				<filename>pg_hba.conf</filename>
-				file
-			</title>
+	</section>
+	
+	<section id="installing-jicmp">
+		<title>Prerequisite Package: JICMP</title>
 
+		<para>
+			Java has never had a really good API for ICMP. Since ICMP is the basis for
+			the "ping" command, it is rather imperative that any Java-based network
+			management platform address the need for ICMP.  OpenNMS does this by using
+			some code written in C, and accessing it using the Java Native Interface
+			(JNI).
+		</para>
+
+		<para>
+			As of OpenNMS 1.3.6, the ICMP code has been moved to it's own library
+			outside of OpenNMS.  This makes the main OpenNMS application pure Java, and
+			as such it only has to be built once, instead of for each platform.
+		</para>
+
+		<para>
+			Packages for JICMP are available for most distributions.  If your
+			distribution does not have packages available, you can download the
+			source from <ulink
+			url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">the
+			SourceForge download page for JICMP</ulink>.
+		</para>
+
+		<section id="installing-jicmp-yum">
+			<title>Installing JICMP on RPM-Based Distributions Using Yum</title>
+			
 			<para>
-				The
-				<filename>pg_hba.conf</filename>
-				file controls which machines
-				and users can access the database on a given machine via TCP/IP.
+				On most RPM-Based Distributions, all you should need to run is:
+				<programlisting>yum install jicmp</programlisting>
 			</para>
 
-			<para>
-				Since that is how OpenNMS accesses the database (via
-				<code>localhost</code>
-				) it is necessary to modify this file to allow
-				OpenNMS to work. The easiest thing to do is to just allow anyone from
-				the localhost to access the database (do not add the last line if your
-				system does not support IPv6):
-			</para>
-
-			<para>
-				<programlisting># TYPE DATABASE USER IP-ADDRESS IP-MASK METHOD
-					local all all trust
-					host all all 127.0.0.1 255.255.255.255 trust
-					host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust
-				</programlisting>
-			</para>
-
-			<para>Make sure that no other lines are uncommented in this file.
-			</para>
-
-			<para>You will need to stop and restart Postgres after making
-				these
-				changes.</para>
 		</section>
 
-		<section>
-			<title>Creating the PostgreSQL Database on Solaris</title>
-
+		<section id="installing-jicmp-urpmi">
+			<title>Installing JICMP on RPM-Based Distributions Using URPMI</title>
+		
 			<para>
-				You will need to create an
-				<code>opennms</code>
-				database.
+				On Mandriva, you can install JICMP with the command:
+				<programlisting>urpmi --auto jicmp</programlisting>
 			</para>
-
+		</section>
+	
+		<section id="installing-jicmp-rpm">
+			<title>Installing JICMP on RPM-Based Distributions from Source</title>
+			
 			<para>
-				As the
-				<code>postgres</code>
-				user, go to the
-				<filename>/usr/local/pgsql/bin</filename>
-				directory, and run the
-				following command:
+				If JICMP has not already been compiled on your RPM-based platform, you
+				can build a native RPM from the <ulink
+				url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">source
+				tarball</ulink> like so:
+				<programlisting>rpmbuild -tb <filename>jicmp-X.X.X.tar.gz</filename></programlisting>
 			</para>
-
+			
 			<para>
-				<programlisting>
-					<computeroutput># </computeroutput>
-					<command>./initdb -D /usr/local/pgsql/data -E ""</command>
-				</programlisting>
+				If you are on a 64-bit platform, you can build a 64-bit RPM instead
+				like so:
+				<programlisting>rpmbuild --target=x86_64 <filename>jicmp-X.X.X.tar.gz</filename></programlisting>
 			</para>
-
+		</section>
+			
+		<section id="installing-jicmp-debian">
+			<title>Installing JICMP on Debian-Based Distributions</title>
+			
 			<para>
-				This will create the database. Following the instructions in the
-				section above, modify the
-				<filename>pg_hba.conf</filename>
-				and
-				<filename>postgresql.conf</filename>
-				files.
-			</para>
-
-			<para>Then you'll need to start the database:</para>
-
-			<para>
-				<programlisting>
-					<computeroutput># </computeroutput>
-					<command>./pg_ctl -D /usr/local/pgsql/data start</command>
-				</programlisting>
-			</para>
-
-			<para>
-				Now you are finished as the
-				<code>postgres</code>
-				user.
+				On Debian or Ubuntu, you can install JICMP through apt:
+				<programlisting>sudo apt-get install libicmp-jni</programlisting>
 			</para>
 		</section>
 
-		<section>
-			<title>Adding the iplike function</title>
-
-			<para>OpenNMS makes heavy use of a function called "iplike".
-				Since it is
-				written in C, it has been removed from the main OpenNMS code and placed
-				in its own project.</para>
-
-			<para>If a C-based iplike is not installed, the OpenNMS installer
-				will
-				add a version written in the PostgreSQL command language. It will work,
-				but not as quickly as the compiled iplike will.</para>
-
-			<para>To install iplike, simply download the proper package for
-				your
-				distribution. There should be a package for PostgreSQL versions 7.4-8.1,
-				and one for 8.2+. In addition, there will be separate 32-bit and 64-bit
-				versions. It is also possible to download a tarball and do the usual
-				"configure", "make", and "make install". Once installed it should
-				not be
-				required to update it again.</para>
+		<section id="installing-jicmp-source">
+			<title>Installing JICMP from Source</title>
+			
+			<para>
+				To build from source, download the <ulink
+				url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=240236">latest
+				source tarball from SourceForge</ulink>, unpack it, and run the usual:
+				<programlisting>./configure
+make
+make install</programlisting>
+			</para>
+			
 		</section>
+
 	</section>
 </chapter>
