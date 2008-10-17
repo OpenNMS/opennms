@@ -2,6 +2,7 @@
 <thresholding-config>
         <group name="mib2"
                 rrdRepository = "@install.share.dir@/rrd/snmp/">
+                <threshold type="high" ds-name="tcpInErrors" ds-type="node" ds-label="" value="1" rearm="0" trigger="1"/>
                 <expression type="high" expression="ifInErrors + ifOutErrors" ds-type="if" ds-label="ifName" value="1" rearm="0" trigger="2"/>
                 <expression type="high" expression="ifInDiscards + ifOutDiscards" ds-type="if" ds-label="ifName" value="1" rearm="0" trigger="2"/>
                 <expression type="high" expression="ifInOctets * 8 / 1000000 / ifHighSpeed * 100" ds-type="if" ds-label="ifName" value="90.0" rearm="75.0" trigger="3">
@@ -10,7 +11,6 @@
                 <expression type="high" expression="ifOutOctets * 8 / 1000000 / ifHighSpeed * 100" ds-type="if" ds-label="ifName" value="90.0" rearm="75.0" trigger="3">
                   <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
                 </expression>
-                <threshold type="high" ds-name="tcpInErrors" ds-type="node" ds-label="" value="1" rearm="0" trigger="1"/>
         </group>
         
         <group name="hrstorage"
