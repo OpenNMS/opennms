@@ -1,9 +1,51 @@
 <?xml version="1.0"?>
 <thresholding-config>
-        <group name="default-snmp"
+        <group name="mib2"
                 rrdRepository = "@install.share.dir@/rrd/snmp/">
-                <threshold type="high" ds-name="avgBusy5"  ds-type="node" value="90" rearm="50" trigger="3"/>
-                <threshold type="low" ds-name="freeMem"  ds-type="node" value="1024" rearm="1000000" trigger="3"/>
+                <threshold type="high" ds-name="tcpInErrors" ds-type="node" ds-label="" value="1" rearm="0" trigger="1"/>
+                <expression type="high" expression="ifInErrors + ifOutErrors" ds-type="if" ds-label="ifName" value="1" rearm="0" trigger="2"/>
+                <expression type="high" expression="ifInDiscards + ifOutDiscards" ds-type="if" ds-label="ifName" value="1" rearm="0" trigger="2"/>
+                <expression type="high" expression="ifInOctets * 8 / 1000000 / ifHighSpeed * 100" ds-type="if" ds-label="ifName" value="90.0" rearm="75.0" trigger="3">
+                  <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+                </expression>
+                <expression type="high" expression="ifOutOctets * 8 / 1000000 / ifHighSpeed * 100" ds-type="if" ds-label="ifName" value="90.0" rearm="75.0" trigger="3">
+                  <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+                </expression>
         </group>
+        
+        <group name="hrstorage"
+        		rrdRepository = "@install.share.dir@/rrd/snmp/">
+        		<expression type="high" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="90.0" rearm="75.0" trigger="2">
+        		  <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
+        		</expression>
+        		<expression type="relativeChange" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="0.5" rearm="0.0" trigger="2">
+        		  <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
+        		</expression>
+
+		</group>
+		
+        <group name="cisco"
+                rrdRepository = "@install.share.dir@/rrd/snmp/">
+                <threshold type="high" ds-name="avgBusy5"  ds-type="node" ds-label="" value="80" rearm="50" trigger="3"/>
+                <threshold type="relativeChange" ds-name="cscoMemPoolUtl5Min"  ds-type="ciscoMemoryPoolType" ds-label="cscoMemoryPoolName" value="0.25" rearm="0.0" trigger="1"/>
+                <threshold type="high" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="40.0" rearm="37.0" trigger="3"/>
+                <threshold type="relativeChange" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="0.2" rearm="0.0" trigger="1"/>
+        </group>
+        
+        <group name="netsnmp"
+        		rrdRepository = "@install.share.dir@/rrd/snmp/">
+        		<threshold type="high" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2"/>
+        		<threshold type="high" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2"/>
+        		<threshold type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
+        		<threshold type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
+        		<expression type="high" expression="loadavg5 / 100.0" ds-type="node" ds-label="" value="10.0" rearm="7.5" trigger="2"/>
+        		<expression type="low" expression="memAvailReal / memTotalReal * 100.0" ds-type="node" ds-label="" value="5.0" rearm="10.0" trigger="2"/>
+        		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0" ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="2"/> 
+        </group>
+        
+		<group name="coffee"
+				rrdRepository = "@install.share.dir@/rrd/snmp/">
+				<expression type="low" expression ="coffeePotLevel / coffeePotCapacity * 100.0" ds-type="node" ds-label="" value="25.0" rearm="100.0" trigger="1"/>
+		</group>
 
 </thresholding-config>

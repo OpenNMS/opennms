@@ -25,6 +25,12 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
+    
+    <resourceType name="ciscoMemoryPoolType" label="Cisco Memory Pool"
+                  resourceLabel="${cscoMemoryPoolName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
     <resourceType name="applIndex" label="Network Services Application"
                   resourceLabel="${applDescription} (index ${index})">
@@ -232,6 +238,8 @@
 
       <!-- data from standard (mib-2) sources -->
       <group name="mib2-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.2" instance="ifIndex"  alias="ifDescr"         type="string"  />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.5" instance="ifIndex"  alias="ifSpeed"         type="string"  />
         <mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets"      type="counter" />
         <mibObj oid=".1.3.6.1.2.1.2.2.1.11" instance="ifIndex" alias="ifInUcastpkts"   type="counter" />
         <mibObj oid=".1.3.6.1.2.1.2.2.1.12" instance="ifIndex" alias="ifInNUcastpkts"  type="counter" />
@@ -245,6 +253,8 @@
       </group>
 
       <group name="mib2-X-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.1"  instance="ifIndex" alias="ifName"        type="string"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.15" instance="ifIndex" alias="ifHighSpeed"   type="string"  />
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.6"  instance="ifIndex" alias="ifHCInOctets"  type="counter" />
         <mibObj oid=".1.3.6.1.2.1.31.1.1.1.10" instance="ifIndex" alias="ifHCOutOctets" type="counter" />
       </group>
@@ -279,6 +289,7 @@
       </group>
 
       <group name="mib2-host-resources-storage" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.2" instance="hrStorageIndex" alias="hrStorageType"       type="string" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageIndex" alias="hrStorageDescr"      type="string" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageIndex" alias="hrStorageAllocUnits" type="gauge" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageIndex" alias="hrStorageSize"       type="gauge" />
@@ -531,6 +542,15 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="1" alias="ciscoMemoryPoolUsed" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.6" instance="1" alias="ciscoMemoryPoolFree" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.7" instance="1" alias="ciscoMemoryPoolMax"  type="gauge" />
+      </group>
+      <group name="cisco-memory-pool" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.2" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolUsed" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.6" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolFree" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.7" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolMax"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.1" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl1Min"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.2" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl5Min"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.3" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl10Min"  type="gauge" />
       </group>
       <group name="cisco-pix" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.4"    instance="3" alias="cfwBuff4BBmax"      type="gauge" />
@@ -2053,7 +2073,7 @@
       </systemDef>
 
       <systemDef name="IBM-AIX">
-        <sysoidMask>.1.3.6.1.4.1.2.3.1.2.1.1.3</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.2.3.1.2.1.1.3.</sysoidMask>
         <collect>
           <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
