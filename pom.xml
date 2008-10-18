@@ -233,6 +233,10 @@
         <configuration>
           <systemProperties>
             <property>
+              <name>java.awt.headless</name>
+              <value>true</value>
+            </property>
+            <property>
               <name>mock.logLevel</name>
               <value>${mock.logLevel}</value>
             </property>
