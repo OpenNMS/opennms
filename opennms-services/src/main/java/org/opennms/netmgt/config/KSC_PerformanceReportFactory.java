@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 19: Bug #2817: sort results of getReportList() by title. - dj@opennms.org
 // 2008 Feb 03: A report "index" is now the "id" of the report.  The IDs are
 //              initialized if they don't exist when the configuration file is
 //              loaded.  Pulled the report/graph editing code out of
@@ -39,29 +40,23 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-
-import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.Assert;
 
 public class KSC_PerformanceReportFactory {
@@ -147,12 +142,7 @@ public class KSC_PerformanceReportFactory {
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         s_configFile = ConfigFileConstants.getFile(ConfigFileConstants.KSC_REPORT_FILE_NAME);
 
-        FileReader rdr = new FileReader(s_configFile);
-        try {
-            m_config = CastorUtils.unmarshal(ReportsList.class, rdr);
-        } finally {
-            IOUtils.closeQuietly(rdr);
-        }
+        m_config = CastorUtils.unmarshal(ReportsList.class, new FileSystemResource(s_configFile));
         
         setIdsOnAllReports();
         
@@ -186,18 +176,7 @@ public class KSC_PerformanceReportFactory {
 
         sortByTitle();
         
-        /*
-         * Marshall to a string first, then to file. This way the original
-         * config is not lost if the XML from the marshall is hosed.
-         */
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_config, stringWriter);
-        if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(s_configFile);
-            fileWriter.write(stringWriter.toString());
-            fileWriter.flush();
-            fileWriter.close();
-        }
+        CastorUtils.marshalViaString(m_config, s_configFile);
         
         reload();
     }
@@ -241,7 +220,14 @@ public class KSC_PerformanceReportFactory {
     public Map<Integer, String> getReportList() {
         LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getReportCount());
 
-        for (Report report : m_config.getReportCollection()) {
+        List<Report> reportList = m_config.getReportCollection();
+        Collections.sort(reportList, new Comparator<Report>() {
+            public int compare(Report o1, Report o2) {
+                return o1.getTitle().compareTo(o2.getTitle());
+            }
+        });
+        
+        for (Report report : reportList) {
             reports.put(report.getId(), report.getTitle());
         }
         
