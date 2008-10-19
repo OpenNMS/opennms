@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 19: Remove warning on CastorUtils.unmarshal(Class, Reader). - dj@opennms.org
 // 2008 Feb 03: Pulled the report/graph editing code out of
 //              KSC_PerformanceReportFactory into the new KscReportEditor class.
 //              Made KscReportEditor session-based. - dj@opennms.org
@@ -45,10 +46,10 @@ import javax.servlet.http.HttpSession;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 public class KscReportEditor implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -209,11 +210,12 @@ public class KscReportEditor implements Serializable {
         loadNewWorkingReport();
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T duplicateCastorObject(T object, Class<T> clazz) throws MarshalException, ValidationException {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(object, stringWriter);
         StringReader stringReader = new StringReader(stringWriter.toString());
-        return CastorUtils.unmarshal(clazz, stringReader);
+        return (T) Unmarshaller.unmarshal(clazz, stringReader);
     }
     
     public static KscReportEditor getFromSession(HttpSession session, boolean required) {
