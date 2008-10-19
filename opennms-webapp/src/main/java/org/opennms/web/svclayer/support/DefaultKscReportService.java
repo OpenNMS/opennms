@@ -10,8 +10,10 @@
  *
  * Modifications:
  * 
+ * 2008 Oct 19: Bug #2823: Fix for NullPointerException if a graph doesn't have
+ *              a resourceId, nodeId, or domain. - dj@opennms.org
+ * 
  * Created: January 2, 2007
- *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,9 +100,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
 
     public OnmsResource getResourceFromGraph(Graph graph) {
-        if (graph == null) {
-            throw new IllegalArgumentException("graph argument cannot be null");
-        }
+        Assert.notNull(graph, "graph argument cannot be null");
         
         String resourceId;
         if (graph.getResourceId() != null) {
@@ -114,9 +114,11 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
                 parentResourceTypeName = "node";
                 parentResourceName = graph.getNodeId();
-            } else {
+            } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
                 parentResourceTypeName = "domain";
                 parentResourceName = graph.getDomain();
+            } else {
+                throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
             }
             
             String intf = graph.getInterfaceId();
