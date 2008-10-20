@@ -12,6 +12,7 @@
     <module>opennms-provision-api</module>
     <module>opennms-simple-detectors</module>
 <!--
+    <module>opennms-snmp-scanners</module>
     <module>opennms-simple-detectors</module>
     <module>opennms-simple-detectors</module>
     <module>opennms-scanners</module>
