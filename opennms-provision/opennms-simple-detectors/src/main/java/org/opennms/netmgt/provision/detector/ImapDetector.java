@@ -2,7 +2,7 @@ package org.opennms.netmgt.provision.detector;
 
 public class ImapDetector extends AbstractDetector {
 
-    protected ImapDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+    protected ImapDetector() {
         super(143, 5000, 0);
         
     }
