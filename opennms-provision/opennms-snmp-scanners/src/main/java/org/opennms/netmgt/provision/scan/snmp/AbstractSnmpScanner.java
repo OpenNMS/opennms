@@ -36,13 +36,22 @@
 package org.opennms.netmgt.provision.scan.snmp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.provision.Scanner;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.ColumnTracker;
+import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
@@ -54,6 +63,7 @@ public class AbstractSnmpScanner implements Scanner {
     
     private String m_name = null;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory = null;
+    private List<SnmpExchange> m_exchangeCollection = null;
     
     protected AbstractSnmpScanner(String name) {
         m_name = name;
@@ -103,9 +113,46 @@ public class AbstractSnmpScanner implements Scanner {
      * @param context
      * @return
      */
-    private CollectionTracker createCollectionTracker(ScanContext scanContext) {
-        throw new UnsupportedOperationException("AbstractSnmpScanner.createCollectionTracker is not yet implemented");
-        
+    private CollectionTracker createCollectionTracker(final ScanContext scanContext) {
+        List<Collectable> trackers = new ArrayList<Collectable>();
+        for(SnmpExchange exchange : m_exchangeCollection) {
+            trackers.add(exchange.createTracker(scanContext));
+        }
+        return new AggregateTracker(trackers);
+     }
+    
+    public static interface Storer {
+        public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val);
     }
+    
+    public interface SnmpExchange {
+        public CollectionTracker createTracker(ScanContext context);
+        public void andStoreIn(Storer storer);
+    }
+    
+    protected Storer getSingleInstance(final String base, final String inst) {
+        SnmpExchange exchange = new SnmpExchange() {
+            Storer m_storer;
+            public CollectionTracker createTracker(final ScanContext scanContext) {
+                return new SingleInstanceTracker(base, inst) {
+                    @Override
+                    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                        m_storer.storeResult(scanContext, base, inst, val);
+                    }
+                    
+                };
+            }
+            public void andStoreIn(Storer storer) {
+                m_storer = storer;
+            }
+        };
+        
+        m_exchangeCollection.add(exchange);
+        
+        
+
+    }
+    
+
 
 }
