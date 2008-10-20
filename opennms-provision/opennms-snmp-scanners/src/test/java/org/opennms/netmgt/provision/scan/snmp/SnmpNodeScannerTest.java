@@ -74,6 +74,7 @@ public class SnmpNodeScannerTest {
 
     @After
     public void tearDown() throws Exception {
+        m_agent.shutDownAndWait();
     }
     
     @Test
@@ -84,7 +85,7 @@ public class SnmpNodeScannerTest {
         scanner.init();
         scanner.scan(m_scanContext);
         
-        assertEquals("what should this be?", m_scanContext.getSysObjectId());
+        assertEquals(".1.3.6.1.4.1.8072.3.2.255", m_scanContext.getSysObjectId());
         
     }
 
