@@ -37,14 +37,12 @@ package org.opennms.netmgt.provision.scan.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.provision.Scanner;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpUtilsTest;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
