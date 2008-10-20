@@ -8,7 +8,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +39,8 @@ import java.net.InetAddress;
  */
 public interface ServiceDetector {
     
-    public boolean isServiceDetected(InetAddress address);
+    public void init();
+    
+    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
 
 }
