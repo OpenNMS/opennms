@@ -30,18 +30,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.server;
 
-
-public class Pop3Detector extends AbstractDetector {
-
-    protected Pop3Detector() {
-        super(110, 5000, 1);
-    }
-
+public class Pop3Server extends AbstractSimpleServer {
+    
     public void onInit(){
-        expectBanner(startsWith("+OK"));
-        addRequestReply("QUIT", startsWith("+OK"));
+        setTimeout(3000);
+        setExpectedBanner("+OK");
+        addRequestResponse("QUIT", "+OK");
     }
-
 }
