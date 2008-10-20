@@ -25,6 +25,12 @@
   	</dependency>
   	<dependency>
   		<groupId>org.opennms</groupId>
+  		<artifactId>mock-snmp-agent</artifactId>
+  		<version>${project.version}</version>
+		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.opennms</groupId>
   		<artifactId>opennms-snmp-test</artifactId>
   		<version>${project.version}</version>
 		<scope>test</scope>

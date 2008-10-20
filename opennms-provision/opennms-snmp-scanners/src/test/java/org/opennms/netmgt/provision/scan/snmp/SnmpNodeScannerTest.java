@@ -1,20 +1,17 @@
 package org.opennms.netmgt.provision.scan.snmp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;
-
-import com.mchange.util.AssertException;
+import org.springframework.core.io.ClassPathResource;
 
 public class SnmpNodeScannerTest {
     
@@ -41,6 +38,8 @@ public class SnmpNodeScannerTest {
     private InetAddress m_agentAddress;
     private SnmpAgentConfig m_agentConfig;
     private MockScanContext m_scanContext;
+    private MockSnmpAgent m_agent;
+    private static final Integer AGENT_PORT = 9161;
     
     private SnmpAgentConfigFactory snmpAgentConfigFactory() {
         return snmpAgentConfigFactory(m_agentConfig);
@@ -61,9 +60,13 @@ public class SnmpNodeScannerTest {
     public void setUp() throws Exception {
         m_agentAddress = InetAddress.getLocalHost();
         
-        //MockSnmpAgent m_agent = MockSnmpAgent.
+        m_agent = MockSnmpAgent.createAgentAndRun(
+            new ClassPathResource("org/opennms/netmgt/provision/scan/snmp/snmpTestData1.properties"),
+            m_agentAddress.getHostAddress()+"/"+AGENT_PORT
+        );
         
         m_agentConfig = new SnmpAgentConfig(m_agentAddress);
+        m_agentConfig.setPort(AGENT_PORT);
         
         m_scanContext = new MockScanContext();
 
