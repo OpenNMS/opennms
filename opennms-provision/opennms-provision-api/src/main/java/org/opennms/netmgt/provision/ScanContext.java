@@ -44,4 +44,9 @@ public interface ScanContext {
     public InetAddress getAgentAddress(String agentType);
     
     public void updateSysObjectId(String sysObjectId);
+    public void updateSysName(String sysName);
+    public void updateSysDescription(String sysDescription);
+    public void updateSysLocation(String sysLocation);
+    public void updateSysContact(String sysContact);
+
 }
