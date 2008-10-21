@@ -30,11 +30,13 @@
 package org.opennms.netmgt.provision.scan.snmp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
@@ -48,8 +50,17 @@ public class SnmpNodeScannerTest {
      * @author brozow
      *
      */
-    private final class MockScanContext implements ScanContext {
+    private static class MockScanContext implements ScanContext {
         String m_sysObjectId;
+        String m_sysContact;
+        String m_sysDescription;
+        String m_sysLocation;
+        String m_sysName;
+        InetAddress m_agentAddress;
+
+        public MockScanContext(InetAddress agentAddress) {
+            m_agentAddress = agentAddress;
+        }
 
         public InetAddress getAgentAddress(String agentType) {
             return m_agentAddress;
@@ -62,6 +73,39 @@ public class SnmpNodeScannerTest {
         public String getSysObjectId() {
             return m_sysObjectId;
         }
+
+        public String getSysContact() {
+            return m_sysContact;
+        }
+
+        public void updateSysContact(String sysContact) {
+            m_sysContact = sysContact;
+        }
+
+        public String getSysDescription() {
+            return m_sysDescription;
+        }
+
+        public void updateSysDescription(String sysDescription) {
+            m_sysDescription = sysDescription;
+        }
+
+        public String getSysLocation() {
+            return m_sysLocation;
+        }
+
+        public void updateSysLocation(String sysLocation) {
+            m_sysLocation = sysLocation;
+        }
+
+        public String getSysName() {
+            return m_sysName;
+        }
+
+        public void updateSysName(String sysName) {
+            m_sysName = sysName;
+        }
+
     }
 
     private InetAddress m_agentAddress;
@@ -97,7 +141,7 @@ public class SnmpNodeScannerTest {
         m_agentConfig = new SnmpAgentConfig(m_agentAddress);
         m_agentConfig.setPort(AGENT_PORT);
         
-        m_scanContext = new MockScanContext();
+        m_scanContext = new MockScanContext(m_agentAddress);
 
     }
 
@@ -115,7 +159,27 @@ public class SnmpNodeScannerTest {
         scanner.scan(m_scanContext);
         
         assertEquals(".1.3.6.1.4.1.8072.3.2.255", m_scanContext.getSysObjectId());
-        
+        assertEquals("brozow.local", m_scanContext.getSysName());
+        assertEquals("Darwin brozow.local 7.9.0 Darwin Kernel Version 7.9.0: Wed Mar 30 20:11:17 PST 2005; root:xnu/xnu-517.12.7.obj~1/RELEASE_PPC  Power Macintosh", m_scanContext.getSysDescription());
+        assertEquals("Unknown", m_scanContext.getSysLocation());
+        assertEquals("root@@no.where", m_scanContext.getSysContact());
     }
 
+    @Test
+    @Ignore("this will only work on the OpenNMS internal network ;)")
+    public void testOpennmsRouter() throws Exception {
+        InetAddress agent = InetAddress.getByName("172.20.1.1");
+        MockScanContext context = new MockScanContext(agent);
+        SnmpNodeScanner scanner = new SnmpNodeScanner();
+        SnmpAgentConfig ac = new SnmpAgentConfig(agent);
+        scanner.setSnmpAgentConfigFactory(snmpAgentConfigFactory(ac));
+        scanner.init();
+        scanner.scan(context);
+
+        assertTrue(context.getSysDescription().startsWith("Cisco IOS Software, C870 Software"));
+        assertEquals(".1.3.6.1.4.1.9.1.569", context.getSysObjectId());
+        assertEquals("", context.getSysContact());
+        assertEquals("", context.getSysLocation());
+        assertEquals("internal.opennms.com", context.getSysName());
+    }
 }

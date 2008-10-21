@@ -44,12 +44,48 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
     @Override
     public void onInit() {
         getSingleInstance(".1.3.6.1.2.1.1.2", "0").andStoreIn(sysObjectId());
+        getSingleInstance(".1.3.6.1.2.1.1.5", "0").andStoreIn(sysName());
+        getSingleInstance(".1.3.6.1.2.1.1.1", "0").andStoreIn(sysDescription());
+        getSingleInstance(".1.3.6.1.2.1.1.6", "0").andStoreIn(sysLocation());
+        getSingleInstance(".1.3.6.1.2.1.1.4", "0").andStoreIn(sysContact());
     }
 
     public Storer sysObjectId() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
                 scanContext.updateSysObjectId(val.toDisplayString());
+            }
+        };
+    }
+
+    public Storer sysName() {
+        return new Storer() {
+            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                scanContext.updateSysName(val.toDisplayString());
+            }
+        };
+    }
+
+    public Storer sysDescription() {
+        return new Storer() {
+            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                scanContext.updateSysDescription(val.toDisplayString());
+            }
+        };
+    }
+
+    public Storer sysLocation() {
+        return new Storer() {
+            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                scanContext.updateSysLocation(val.toDisplayString());
+            }
+        };
+    }
+
+    public Storer sysContact() {
+        return new Storer() {
+            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                scanContext.updateSysContact(val.toDisplayString());
             }
         };
     }
