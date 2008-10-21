@@ -51,7 +51,7 @@ import org.opennms.netmgt.provision.ServiceDetector;
 
 /**
  * 
- * @author <a href=mailto;desloge@opennms.com>Donald Desloge</a>
+ * @author <a href=mailto:desloge@opennms.com>Donald Desloge</a>
  *
  */
 
