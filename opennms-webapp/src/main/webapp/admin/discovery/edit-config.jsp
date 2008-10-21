@@ -100,7 +100,7 @@ function deleteIR(i){
 	}
 }
 
-function deleteIR(i){
+function deleteIncludeUrl(i){
     if(confirm("Are you sure to delete the 'Include URL'?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
