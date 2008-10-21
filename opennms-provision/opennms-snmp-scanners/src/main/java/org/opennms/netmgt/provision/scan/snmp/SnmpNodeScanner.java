@@ -29,6 +29,11 @@
  */
 package org.opennms.netmgt.provision.scan.snmp;
 
+import org.opennms.netmgt.provision.ScanContext;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
+
 
 public class SnmpNodeScanner extends AbstractSnmpScanner {
     
@@ -43,9 +48,9 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
 
     public Storer sysObjectId() {
         return new Storer() {
-            public void storeResult(ScanContext context, SnmpObjId base, SnmpObject instId, SnmpValue val) {
-                context.updateSysObjectId(val.toDisplayString());
+            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                scanContext.updateSysObjectId(val.toDisplayString());
             }
-        }
+        };
     }
 }
