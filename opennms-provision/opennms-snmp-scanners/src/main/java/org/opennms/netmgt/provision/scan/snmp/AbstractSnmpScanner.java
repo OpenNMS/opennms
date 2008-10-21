@@ -45,7 +45,6 @@ import org.opennms.netmgt.provision.Scanner;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -67,6 +66,7 @@ public class AbstractSnmpScanner implements Scanner {
     
     protected AbstractSnmpScanner(String name) {
         m_name = name;
+        m_exchangeCollection = new ArrayList<SnmpExchange>();
     }
     
     public String getName() {
@@ -130,7 +130,7 @@ public class AbstractSnmpScanner implements Scanner {
         public void andStoreIn(Storer storer);
     }
     
-    protected Storer getSingleInstance(final String base, final String inst) {
+    protected SnmpExchange getSingleInstance(final String base, final String inst) {
         SnmpExchange exchange = new SnmpExchange() {
             Storer m_storer;
             public CollectionTracker createTracker(final ScanContext scanContext) {
@@ -148,9 +148,7 @@ public class AbstractSnmpScanner implements Scanner {
         };
         
         m_exchangeCollection.add(exchange);
-        
-        
-
+        return exchange;
     }
     
 
