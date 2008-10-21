@@ -416,7 +416,9 @@ sudo apt-get -u install opennms</programlisting>
 					<para>Back up and then remove <filename><varname>$OPENNMS_HOME</varname>/etc</filename>.</para>
 				</listitem>
 				<listitem>
-					<para>Remove <filename><varname>$OPENNMS_HOME</varname>/lib</filename>.</para>
+					<para>Remove <filename><varname>$OPENNMS_HOME</varname>/lib</filename>,
+					<filename><varname>$OPENNMS_HOME</varname>/webapps/opennms/WEB-INF/lib</filename>, and
+					<filename><varname>$OPENNMS_HOME</varname>/jetty-webapps/opennms/WEB-INF/lib</filename>.</para>
 				</listitem>
 			</itemizedlist>
 			
