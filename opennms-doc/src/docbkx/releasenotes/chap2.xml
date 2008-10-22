@@ -4,6 +4,30 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+  <section id="opennms-1.5.98">
+    <title>Changes in OpenNMS 1.5.98</title>
+    
+    <section id="opennms-1.5.98-bugfixes">
+      <title>Bug Fixes</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>A bug in the OTRS integration was fixed.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2835">#2835</ulink>)</para>
+        </listitem>
+
+        <listitem>
+          <para>A critical bug in the poller and HTTP monitor which could cause
+          services from being restored in some cases was fixed.  (Bugs <ulink
+          url="http://bugzilla.opennms.org/show_bug.cgi?id=2841">#2841</ulink> and
+          <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2842">#2842</ulink>)</para>
+        </listitem>
+
+      </itemizedlist>
+    </section>
+  </section>
+    
   <section id="opennms-1.5.97">
     <title>Changes in OpenNMS 1.5.97</title>
 
