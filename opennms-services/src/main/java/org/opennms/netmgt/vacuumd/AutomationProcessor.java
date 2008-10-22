@@ -444,16 +444,15 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         void send() {
-            log().debug("runAutomation: Sending any possible configured event for automation: "+m_automationName);
             
             if (hasEvent()) {
                 //create and send event
-                log().debug("runAutomation: Sending event: "+getUei()+" for automation: "+m_automationName);
+                log().debug("AutoEventProcessor: Sending auto-event "+getUei()+" for automation "+m_automationName);
                 
                 EventBuilder bldr = new EventBuilder(getUei(), "Automation");
                 sendEvent(bldr.getEvent());
             } else {
-                log().debug("runAutomation: No event configured automation: "+m_automationName);             
+                log().debug("AutoEventProcessor: No auto-event for automation "+m_automationName);             
             }
         }
 
@@ -566,15 +565,15 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         void send() {
-            log().debug("runAutomation: Sending any possible configured event for automation: "+m_automationName);
             
             if (hasEvent()) {
                 EventBuilder bldr = new EventBuilder(new Event());
                 buildEvent(bldr, new InvalidSymbolTable());
+                log().debug("ActionEventProcessor: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
                 sendEvent(bldr.getEvent());
                 
             } else {
-                log().debug("runAutomation: No event configured automation: "+m_automationName);             
+                log().debug("ActionEventProcessor: No action-event for automation "+m_automationName);             
             }
         }
 
@@ -589,7 +588,10 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         void processTriggerResults(TriggerResults triggerResults) throws SQLException {
-            if (!hasEvent()) return;
+            if (!hasEvent()) {
+                log().debug("processTriggerResults: No action-event for automation "+m_automationName);
+                return;
+            }
             
             ResultSet triggerResultSet = triggerResults.getResultSet();
             
@@ -606,7 +608,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();
                 }
-
+                log().debug("processTriggerResults: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
                 sendEvent(bldr.getEvent());
             }
 
