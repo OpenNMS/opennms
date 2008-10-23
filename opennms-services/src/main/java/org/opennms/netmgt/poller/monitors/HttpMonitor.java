@@ -421,21 +421,25 @@ public class HttpMonitor extends IPv4Monitor {
 
         private void determineServerInitialResponse() {
             int serverResponseValue = -1;
-            if (m_currentLine.startsWith("HTTP/")) {
-                serverResponseValue = parseHttpResponse();
-                
-                if (SnmpPeerFactory.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
-                    log().debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
-                    m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
-                } else {
-                    m_serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("HTTP response value: ");
-                    sb.append(serverResponseValue);
-                    sb.append(". Expecting: ");
-                    sb.append(determineResponse(m_parameters));
-                    sb.append(".");
-                    m_reason = sb.toString();
+
+            if (m_currentLine != null) {
+
+                if (m_currentLine.startsWith("HTTP/")) {
+                    serverResponseValue = parseHttpResponse();
+
+                    if (SnmpPeerFactory.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
+                        log().debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
+                        m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
+                    } else {
+                        m_serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
+                        StringBuffer sb = new StringBuffer();
+                        sb.append("HTTP response value: ");
+                        sb.append(serverResponseValue);
+                        sb.append(". Expecting: ");
+                        sb.append(determineResponse(m_parameters));
+                        sb.append(".");
+                        m_reason = sb.toString();
+                    }
                 }
             }
             m_serverResponseCode = serverResponseValue;
