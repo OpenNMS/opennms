@@ -69,7 +69,7 @@ public class FormProcGraphController extends AbstractController implements Initi
         String graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
         String title = WebSecurityUtils.sanitizeString(request.getParameter("title"));
         String g_index = WebSecurityUtils.sanitizeString(request.getParameter("graphindex"));
-        int graph_index = (WebSecurityUtils.safeParseInt(g_index));
+        int graph_index = WebSecurityUtils.safeParseInt(g_index);
         graph_index--; 
      
         // Save the modified variables into the working graph 
