@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
  * 2007 Sep 09: Created this file. - dj@opennms.org
  * 
  * Copyright (C) 2007 Daniel J. Gregor, Jr.  All rights reserved.
@@ -119,7 +120,7 @@ public class DefaultStatisticsReportServiceTest extends TestCase {
         expect(m_statisticsReportDao.load(report.getId())).andReturn(report);
         m_statisticsReportDao.initialize(report);
         m_statisticsReportDao.initialize(report.getData());
-        expect(m_resourceDao.getResourceById(resourceRef.getResourceId())).andThrow(new ObjectRetrievalFailureException(OnmsResource.class, "interfaceSnmp/en0", "Could not find child resource 'en0' with resource type 'interfaceSnmp' on resource 'en0'", null));
+        expect(m_resourceDao.loadResourceById(resourceRef.getResourceId())).andThrow(new ObjectRetrievalFailureException(OnmsResource.class, "interfaceSnmp/en0", "Could not find child resource 'en0' with resource type 'interfaceSnmp' on resource 'en0'", null));
         
         m_mocks.replayAll();
         StatisticsReportModel model = m_service.getReport(command, errors);
