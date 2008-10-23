@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
 // 2008 Sep 28: Handle XSS security issues.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -93,7 +94,7 @@
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
         String resourceId = req.getParameter("resourceId");
-        OnmsResource resource = m_resourceService.getResourceById(resourceId, true);
+        OnmsResource resource = m_resourceService.loadResourceById(resourceId);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);
         pageContext.setAttribute("colors", s_colors);

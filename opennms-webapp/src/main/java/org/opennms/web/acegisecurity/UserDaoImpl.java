@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 15: Use Resource-based CastorUtils.unmarshal method. - dj@opennms.org
 // 2008 Jun 14: Use CastorUtils.unmarshal and eliminate a needless
 //              get*Collection method. - dj@opennms.org
 //
@@ -42,8 +43,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -54,8 +53,6 @@ import java.util.Properties;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.GroupFactory;
@@ -65,9 +62,9 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
-
 
 /**
  * Implements the interface to allow Tomcat to check our users.xml file
@@ -115,25 +112,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     }
     
     private Userinfo unmarshallUsers() throws DataRetrievalFailureException {
-        FileInputStream in;
-        try {
-            in = new FileInputStream(m_usersConfigurationFile);
-        } catch (FileNotFoundException e) {
-            throw new DataRetrievalFailureException("Could not find configuration file '" + m_usersConfigurationFile + "': " + e.getMessage(), e);
-        }
-
-        Reader reader = new InputStreamReader(in);
-        return unmarshall(reader);
-    }
-
-    private Userinfo unmarshall(Reader reader) throws DataRetrievalFailureException {
-        try {
-            return CastorUtils.unmarshal(Userinfo.class, reader);
-        } catch (MarshalException e) {
-            throw new DataRetrievalFailureException("Failed unmarshalling configuration: " + e.getMessage(), e);
-        } catch (ValidationException e) {
-            throw new DataRetrievalFailureException("Failed validating configuration: " + e.getMessage(), e);
-        }
+        return CastorUtils.unmarshalWithTranslatedExceptions(Userinfo.class, new FileSystemResource(m_usersConfigurationFile));
     }
 
     /**

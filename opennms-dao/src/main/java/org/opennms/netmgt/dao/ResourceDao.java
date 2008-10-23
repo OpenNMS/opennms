@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Oct 19: Cleanup getResourceById methods, changing to getResourceById
+//              and loadResourceById, for returning null when the resource
+//              isn't found, and throwing an exception, respectively. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -50,8 +56,8 @@ public interface ResourceDao {
     public Collection<OnmsResourceType> getResourceTypes();
     
     public OnmsResource getResourceById(String id);
-    
-    public OnmsResource getResourceById(String id, boolean ignoreErrors);
+
+    public OnmsResource loadResourceById(String id);
     
     public List<OnmsResource> findNodeResources();
 

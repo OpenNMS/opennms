@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Oct 22: Use new getResourceById/loadResourceById methods. - dj@opennms.org
  * 2007 Sep 09: Test getResourceById when the node doesn't exist. - dj@opennms.org
  * 2007 Apr 24: Fix tests and deduplicate node and ipInterface creation. - dj@opennms.org
  * 
@@ -131,14 +132,14 @@ public class DefaultResourceDaoTest extends TestCase {
         rdr.close();
     }
 
-    public void testGetResourceByIdNewEmpty() {
+    public void testLoadResourceByIdNewEmpty() {
         m_easyMockUtils.replayAll();
-        m_resourceDao.getResourceById("");
+        m_resourceDao.loadResourceById("");
         m_easyMockUtils.verifyAll();
     }
    
     
-    public void testGetResourceByIdNewTopLevelOnly() throws Exception {
+    public void testLoadResourceByIdNewTopLevelOnly() throws Exception {
         OnmsNode node = createNode();
         expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);
         //expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -148,13 +149,13 @@ public class DefaultResourceDaoTest extends TestCase {
         m_fileAnticipator.tempFile(nodeDir, "foo" + RrdUtils.getExtension());
         
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById("node[1]");
+        OnmsResource resource = m_resourceDao.loadResourceById("node[1]");
         m_easyMockUtils.verifyAll();
         
         assertNotNull("resource should not be null", resource);
     }
 
-    public void testGetResourceByIdNewTwoLevel() throws Exception {
+    public void testLoadResourceByIdNewTwoLevel() throws Exception {
         OnmsIpInterface ip = createIpInterfaceOnNode();
         expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(3);
 
@@ -166,7 +167,7 @@ public class DefaultResourceDaoTest extends TestCase {
         m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
                 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById("node[1].responseTime[192.168.1.1]");
+        OnmsResource resource = m_resourceDao.loadResourceById("node[1].responseTime[192.168.1.1]");
         m_easyMockUtils.verifyAll();
         
         assertNotNull("resource should not be null", resource);
@@ -292,7 +293,7 @@ public class DefaultResourceDaoTest extends TestCase {
         ta.verifyAnticipated();
     }
     
-    public void testGetResourceDomainInterfaceExists() throws IOException {
+    public void testLoadResourceDomainInterfaceExists() throws IOException {
         File snmp = m_fileAnticipator.tempDir("snmp");
         File domain = m_fileAnticipator.tempDir(snmp, "example1");
         File intf = m_fileAnticipator.tempDir(domain, "server1");
@@ -301,10 +302,28 @@ public class DefaultResourceDaoTest extends TestCase {
         String resourceId = OnmsResource.createResourceId("domain", "example1", "interfaceSnmp", "server1");
         
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.loadResourceById(resourceId);
         m_easyMockUtils.verifyAll();
         
         assertNotNull("Resource should not be null", resource);
+    }
+    
+    public void testLoadResourceNoNode() throws Exception {
+        String resourceId = OnmsResource.createResourceId("node", "1", "nodeSnmp", "");
+        
+        expect(m_nodeDao.get(1)).andReturn(null);
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new ObjectRetrievalFailureException("Could not get resource for resource ID '" + resourceId + "'; nested exception is " + ObjectRetrievalFailureException.class.getName() + ": Top-level resource of resource type node could not be found: 1", null));
+
+        m_easyMockUtils.replayAll();
+        try {
+            m_resourceDao.loadResourceById(resourceId);
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        m_easyMockUtils.verifyAll();
+        ta.verifyAnticipated();
     }
 
     public void testGetResourceNoNode() throws Exception {
@@ -316,15 +335,9 @@ public class DefaultResourceDaoTest extends TestCase {
         ta.anticipate(new ObjectRetrievalFailureException("Could not get resource for resource ID '" + resourceId + "'; nested exception is " + ObjectRetrievalFailureException.class.getName() + ": Top-level resource of resource type node could not be found: 1", null));
 
         m_easyMockUtils.replayAll();
-        try {
-            m_resourceDao.getResourceById(resourceId);
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        m_easyMockUtils.verifyAll();
-        ta.verifyAnticipated();
+        assertNull("Return value from getResourceById should be null", m_resourceDao.getResourceById(resourceId));
     }
-    
+
     public void testFindNodeResourcesWithResponseTime() throws Exception {
         List<OnmsNode> nodes = new LinkedList<OnmsNode>();
         OnmsNode node = createNode();
