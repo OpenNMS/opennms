@@ -9,9 +9,11 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- *  2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
- *  2007 Aug 18: (merged to trunk by ayersw)
- *  2007 May 12: Add getRrdDirectory(). - dj@opennms.org
+ *
+ * 2008 Oct 22: Use new nmes for getResourceById/loadResourceById. - dj@opennms.org
+ * 2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
+ * 2007 Aug 18: (merged to trunk by ayersw)
+ * 2007 May 12: Add getRrdDirectory(). - dj@opennms.org
  *  
  * Created: January 2, 2007
  *
@@ -59,8 +61,8 @@ public interface ResourceService {
     public List<OnmsResource> findNodeChildResources(int nodeId);
     public List<OnmsResource> findDomainChildResources(String domain);
     public List<OnmsResource> findChildResources(OnmsResource resource, String... resourceTypeMatches);
-/*    public OnmsResource getResourceById(String id); */
-    public OnmsResource getResourceById(String id, boolean ignoreErrors);
+    public OnmsResource getResourceById(String id);
+    public OnmsResource loadResourceById(String id);
     public PrefabGraph[] findPrefabGraphsForResource(OnmsResource resource);
     public PrefabGraph getPrefabGraph(String name);
     public PrefabGraph[] findPrefabGraphsForChildResources(OnmsResource resource, String... resourceTypeMatches);

@@ -10,8 +10,8 @@
  *
  * Modifications:
  *
+ * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
  * 2007 Apr 10: Created this file. - dj@opennms.org
- * 
  * 
  * Created: April 10, 2007
  *
@@ -83,7 +83,7 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
             Datum d = new Datum();
             d.setValue(datum.getValue());
             try {
-                d.setResource(m_resourceDao.getResourceById(datum.getResourceId()));
+                d.setResource(m_resourceDao.loadResourceById(datum.getResourceId()));
             } catch (ObjectRetrievalFailureException e) {
                 d.setResourceThrowable(e);
             }

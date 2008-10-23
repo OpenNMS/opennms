@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 22: Lots of cleanup.  - dj@opennms.org
 // 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2008 Feb 03: Use Asserts in afterPropertiesSet() and setDefaultGraphsPerLine().
 //              Use new getReportByIndex method on the KSC factory. - dj@opennms.org
@@ -43,7 +44,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -65,6 +68,7 @@ import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -84,127 +88,130 @@ public class CustomViewController extends AbstractController implements Initiali
         String[] requiredParameters = new String[] { "report or domain", "type" };
       
         // Get Form Variable
-        String report_type = WebSecurityUtils.sanitizeString(request.getParameter("type"));
-        if (report_type == null) {
+        String reportType = WebSecurityUtils.sanitizeString(request.getParameter("type"));
+        if (reportType == null) {
             throw new MissingParameterException("type", requiredParameters);
         }
       
-        String r_index = WebSecurityUtils.sanitizeString(request.getParameter("report"));
+        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter("report"));
         String domain = WebSecurityUtils.sanitizeString(request.getParameter("domain"));
-        int report_index = 0;
-        if (r_index != null) {
-            report_index = WebSecurityUtils.safeParseInt(r_index);
+        int reportId = 0;
+        if (reportIdString != null) {
+            reportId = WebSecurityUtils.safeParseInt(reportIdString);
         } else if (domain == null) {
             throw new MissingParameterException("report or domain", requiredParameters);
         }
       
-        String override_timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
-        String override_graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
-        if ((override_timespan == null) || (override_timespan.equals("null"))) {
-            override_timespan = "none";
+        String overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+        if ("null".equals(overrideTimespan) || "none".equals(overrideTimespan)) {
+            overrideTimespan = null;
         }
-        if ((override_graphtype == null) || (override_graphtype.equals("null"))) {
-            override_graphtype = "none";
+
+        String overrideGraphType = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
+        if ("null".equals(overrideGraphType) || "none".equals(overrideGraphType)) {
+            overrideGraphType = null;
         }
       
         // Load report to view 
         Report report = null;
-        if ("node".equals(report_type)) {
-            report = getKscReportService().buildNodeReport(report_index);
-        } else if ("domain".equals(report_type)) {
+        if ("node".equals(reportType)) {
+            report = getKscReportService().buildNodeReport(reportId);
+        } else if ("domain".equals(reportType)) {
             report = getKscReportService().buildDomainReport(domain);
-        } else if ("custom".equals(report_type)) {
-            report = m_kscReportFactory.getReportByIndex(report_index);
+        } else if ("custom".equals(reportType)) {
+            report = m_kscReportFactory.getReportByIndex(reportId);
         } else {
-            throw new IllegalArgumentException("value to 'type' parameter of '" + report_type + "' is not supported.  Must be one of: node, domain, or custom");
+            throw new IllegalArgumentException("value to 'type' parameter of '" + reportType + "' is not supported.  Must be one of: node, domain, or custom");
         }
       
         if (report == null) {
             throw new ServletException("Report does not exist");
         }
       
-        // Define the possible graph options 
-        PrefabGraph[] graph_options = new PrefabGraph[0];
-      
-        if (report.getGraphCount() > 0) {
-            Set<PrefabGraph> prefabGraphs = new HashSet<PrefabGraph>();
-            
-            for (int i = 0; i < report.getGraphCount(); i++) {
-                Graph graph = report.getGraph(i);
+        // Get the list of available prefabricated graph options 
+        Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
+        if (!report.getGraphCollection().isEmpty()) {
+            for (Graph graph : report.getGraphCollection()) {
                 OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-                prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
-            }
-            
-            graph_options = prefabGraphs.toArray(new PrefabGraph[prefabGraphs.size()]);
-
-            if (graph_options.length > 1) {
-                Arrays.sort(graph_options);
-            }
-
-            /*
-            if ("custom".equals(report_type) && "node".equals(resource.getResourceType().getName())) {
-                graph_options = getResourceService().findPrefabGraphsForChildResources(resource.getParent(), "nodeSnmp", "interfaceSnmp");
-            } else {
-                graph_options = getResourceService().findPrefabGraphsForChildResources(resource.getParent(), "interfaceSnmp");
-            }
-            */
-      
-            // Get default graph type from first element of graph_options
-            if (("node".equals(report_type) || "domain".equals(report_type))
-                    && "none".equals(override_graphtype)
-                    && graph_options.length > 0) {
-                override_graphtype = graph_options[0].getName();
-                if (log().isDebugEnabled()) {
-                    log().debug("custom_view: setting default graph type to "
-                                + override_graphtype);
+                if (resource == null) {
+                    log().debug("Could not get resource for graph " + graph + " in report " + report.getTitle());
+                } else {
+                    prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
                 }
             }
-
-            /*
-            if (graph_options.length > 1) {
-                Arrays.sort(graph_options);
+      
+            // Get default graph type from first element of graph_options
+            // XXX Do we care about the tests on reportType?
+            if (("node".equals(reportType) || "domain".equals(reportType))
+                    && overrideGraphType == null
+                    && !prefabGraphs.isEmpty()) {
+                // Get the name of the first item.  prefabGraphs is sorted.
+                overrideGraphType = prefabGraphs.iterator().next().getName();
+                if (log().isDebugEnabled()) {
+                    log().debug("custom_view: setting default graph type to " + overrideGraphType);
+                }
             }
-            */
         }
         
-        
-        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
-        for (int i = 0; i < report.getGraphCount(); i++) {
-            Graph current_graph = report.getGraph(i);
-            
-            OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);
-            promoteResourceAttributesIfNecessary(resource);
+        List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
+        for (Graph graph : report.getGraphCollection()) {
+            OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+            if (resource != null) {
+                promoteResourceAttributesIfNecessary(resource);
+            }
 
-            String display_graphtype = null;
-            if ("none".equals(override_graphtype)) {
-                display_graphtype = current_graph.getGraphtype();
+            String displayGraphType;
+            if (overrideGraphType == null) {
+                displayGraphType = graph.getGraphtype();
             } else {
-                display_graphtype = override_graphtype;
+                displayGraphType = overrideGraphType;
             }
             
-            PrefabGraph display_graph = getResourceService().getPrefabGraph(display_graphtype);
+            PrefabGraph displayGraph;
+            try {
+                displayGraph = getResourceService().getPrefabGraph(displayGraphType);
+            } catch (ObjectRetrievalFailureException e) {
+                if (log().isDebugEnabled()) {
+                    log().debug("The prefabricated graph '" + displayGraphType + "' does not exist: " + e, e);
+                }
+                displayGraph = null;
+            }
+            
+            boolean foundGraph = false;
+            if (resource != null) {
+                for (PrefabGraph availableGraph : getResourceService().findPrefabGraphsForResource(resource)) {
+                    if (availableGraph.equals(displayGraph)) {
+                        foundGraph = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!foundGraph) {
+                displayGraph = null;
+            }
             
             // gather start/stop time information
-            String display_timespan = null;
-            if ("none".equals(override_timespan)) {
-                display_timespan = current_graph.getTimespan();
+            String displayTimespan = null;
+            if (overrideTimespan == null) {
+                displayTimespan = graph.getTimespan();
             } else {
-                display_timespan = override_timespan;
+                displayTimespan = overrideTimespan;
             }
-            Calendar begin_time = Calendar.getInstance();
-            Calendar end_time = Calendar.getInstance();
-            KSC_PerformanceReportFactory.getBeginEndTime(display_timespan, begin_time, end_time);
+            Calendar beginTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+            KSC_PerformanceReportFactory.getBeginEndTime(displayTimespan, beginTime, endTime);
             
-            KscResultSet resultSet = new KscResultSet(current_graph.getTitle(), begin_time.getTime(), end_time.getTime(), resource, display_graph);
+            KscResultSet resultSet = new KscResultSet(graph.getTitle(), beginTime.getTime(), endTime.getTime(), resource, displayGraph);
             resultSets.add(resultSet);
         }
         
         ModelAndView modelAndView = new ModelAndView("KSC/customView");
 
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
-        modelAndView.addObject("reportType", report_type);
+        modelAndView.addObject("reportType", reportType);
         if (report != null) {
-            modelAndView.addObject("report", r_index);
+            modelAndView.addObject("report", reportIdString);
         }
         if (domain != null) {
             modelAndView.addObject("domain", domain);
@@ -214,10 +221,10 @@ public class CustomViewController extends AbstractController implements Initiali
         modelAndView.addObject("resultSets", resultSets);
         
         if (report.getShow_timespan_button()) {
-            if ("none".equals(override_timespan) || !getKscReportService().getTimeSpans(true).containsKey(override_timespan)) {
+            if (overrideTimespan == null || !getKscReportService().getTimeSpans(true).containsKey(overrideTimespan)) {
                 modelAndView.addObject("timeSpan", "none");
             } else {
-                modelAndView.addObject("timeSpan", override_timespan);
+                modelAndView.addObject("timeSpan", overrideTimespan);
             }
             modelAndView.addObject("timeSpans", getKscReportService().getTimeSpans(true));
         } else {
@@ -228,14 +235,14 @@ public class CustomViewController extends AbstractController implements Initiali
         if (report.getShow_graphtype_button()) {
             LinkedHashMap<String, String> graphTypes = new LinkedHashMap<String, String>();
             graphTypes.put("none", "none");
-            for (PrefabGraph graph_option : graph_options) {
-                graphTypes.put(graph_option.getName(), graph_option.getName());
+            for (PrefabGraph graphOption : prefabGraphs) {
+                graphTypes.put(graphOption.getName(), graphOption.getName());
             }
             
-            if ("none".equals(override_graphtype) || !graphTypes.containsKey(override_graphtype)) {
+            if (overrideGraphType == null || !graphTypes.containsKey(overrideGraphType)) {
                 modelAndView.addObject("graphType", "none");
             } else {
-                modelAndView.addObject("graphType", override_graphtype);
+                modelAndView.addObject("graphType", overrideGraphType);
             }
             modelAndView.addObject("graphTypes", graphTypes);
         } else {

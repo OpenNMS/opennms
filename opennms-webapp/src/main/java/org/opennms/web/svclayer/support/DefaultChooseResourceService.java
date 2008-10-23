@@ -10,9 +10,10 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Oct 22: Use new loadResourceById method. - dj@opennms.org
  * 
  * Created: November 8, 2006
- *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +67,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         ChooseResourceModel model = new ChooseResourceModel();
         model.setEndUrl(endUrl);
         
-        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.loadResourceById(resourceId);
 
         model.setResource(resource);
         Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();

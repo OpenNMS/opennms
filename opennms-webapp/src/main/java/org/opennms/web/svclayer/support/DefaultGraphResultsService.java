@@ -10,11 +10,11 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2008 Oct 22: Use new ResourceDao methods. - dj@opennms.org
  * 2007 Apr 05: Add the graph offets to the model object. - dj@opennms.org
  * 
- * 
  * Created: November 12, 2006
- *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     }
     
     public GraphResultSet createGraphResultSet(String resourceId, String[] reports, GraphResults graphResults) {
-        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.loadResourceById(resourceId);
         GraphResultSet rs = graphResults.new GraphResultSet();
         rs.setResource(resource);
         
