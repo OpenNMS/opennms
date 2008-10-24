@@ -32,11 +32,12 @@
  */
 package org.opennms.netmgt.provision.server;
 
-public class Pop3Server extends AbstractSimpleServer {
+public class Pop3Server extends SimpleServer {
     
     public void onInit(){
         setTimeout(3000);
-        setExpectedBanner("+OK");
-        addRequestResponse("QUIT", "+OK");
+        setBanner("+OK");
+        addResponseHandler(regexMatches("QUIT"), shutdownServer("+OK"));
+        addErrorHandler(errorString("COMMAND NOT VALID"));        
     }
 }
