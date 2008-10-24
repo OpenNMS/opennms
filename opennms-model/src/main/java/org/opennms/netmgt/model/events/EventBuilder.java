@@ -137,11 +137,29 @@ public class EventBuilder {
         
         return this;
     }
+    
+    public EventBuilder setParam(String parmName, String val) {
+        Parms parms = m_event.getParms();
+        if (parms == null) {
+            return addParam(parmName, val);
+        }
+
+        for(Parm parm : parms.getParmCollection()) {
+            if (parm.getParmName().equals(val)) {
+                Value value = new Value();
+                value.setContent(val);
+                parm.setValue(value);
+                return this;
+            }
+        }
+
+        return addParam(parmName, val);
+    }
 
     public EventBuilder addParam(String parmName, long val) {
         return addParam(parmName, Long.toString(val));
     }
-
+    
     public EventBuilder addParam(String parmName, int val) {
         return addParam(parmName, Integer.toString(val));
     }

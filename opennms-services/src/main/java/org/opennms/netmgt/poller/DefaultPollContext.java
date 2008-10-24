@@ -197,7 +197,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
         
         if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
-            bldr.addParam(EventConstants.PARM_LOCATION_MONITOR_ID, (reason == null ? "Unknown" : reason));
+            bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, (reason == null ? "Unknown" : reason));
         }
         
         // For node level events (nodeUp/nodeDown) retrieve the

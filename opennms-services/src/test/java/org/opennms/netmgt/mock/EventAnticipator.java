@@ -54,6 +54,8 @@ import org.opennms.netmgt.xml.event.Event;
 public class EventAnticipator implements EventListener {
 
     List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
+    
+    List<Event> m_anticipatedEventsReceived = new ArrayList<Event>();
 
     List<Event> m_unanticipatedEvents = new ArrayList<Event>();
 
@@ -94,6 +96,7 @@ public class EventAnticipator implements EventListener {
         EventWrapper w = new EventWrapper(event);
         if (m_anticipatedEvents.contains(w)) {
             m_anticipatedEvents.remove(w);
+            m_anticipatedEventsReceived.add(event);
             notifyAll();
         } else {
             m_unanticipatedEvents.add(event);
@@ -107,6 +110,10 @@ public class EventAnticipator implements EventListener {
         }
         return events;
     }
+    
+    public synchronized List<Event> getAnticipatedEventsRecieved() {
+        return new ArrayList<Event>(m_anticipatedEventsReceived);
+    }
 
     public void reset() {
         resetAnticipated();
@@ -119,6 +126,7 @@ public class EventAnticipator implements EventListener {
 
     public void resetAnticipated() {
         m_anticipatedEvents = new ArrayList<EventWrapper>();
+        m_anticipatedEventsReceived = new ArrayList<Event>();
     }
 
     /**

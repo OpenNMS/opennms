@@ -1808,6 +1808,7 @@
   <event-file>events/DPS.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/Fore.events.xml</event-file>
+  <event-file>events/Fortinet.events.xml</event-file>
   <event-file>events/FoundryNetworks.events.xml</event-file>
   <event-file>events/FujitsuSiemens.events.xml</event-file>
   <event-file>events/Groupwise.events.xml</event-file>

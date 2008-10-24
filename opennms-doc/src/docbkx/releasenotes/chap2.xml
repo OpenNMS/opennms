@@ -4,6 +4,24 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+  <section id="opennms-1.5.99">
+    <title>Changes in OpenNMS 1.5.99</title>
+    
+    <section id="opennms-1.5.99-bugfixes">
+      <title>Bug Fixes</title>
+
+      <itemizedlist>
+
+        <listitem>
+          <para>A bug in the poller which caused the reason code not to be associated
+            with node lost service events was fixed.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2846">#2846</ulink>)</para>
+        </listitem>
+
+      </itemizedlist>
+    </section>
+  </section>
+    
   <section id="opennms-1.5.98">
     <title>Changes in OpenNMS 1.5.98</title>
     
