@@ -41,13 +41,9 @@ import java.net.Socket;
 
 import org.opennms.netmgt.provision.conversation.SimpleConversationEndPoint;
 import org.opennms.netmgt.provision.exchange.Exchange;
-import org.opennms.netmgt.provision.exchange.ResponseHandler;
+import org.opennms.netmgt.provision.exchange.RequestHandler;
 
 public class SimpleServer extends SimpleConversationEndPoint {
-    
-    public static interface RequestHandler{
-        public void doRequest(OutputStream out) throws IOException;
-    }
     
     public static class ServerErrorExchange implements Exchange{
         protected RequestHandler m_errorRequest;
@@ -67,38 +63,6 @@ public class SimpleServer extends SimpleConversationEndPoint {
         public boolean sendRequest(OutputStream out) throws IOException {
             m_errorRequest.doRequest(out);
             return false;
-        }
-        
-    }
-    
-    public static class SimpleServerExchange implements Exchange {
-        protected RequestHandler m_requestHandler;
-        protected ResponseHandler m_responseHandler;
-        
-        public SimpleServerExchange(ResponseHandler responseHandler, RequestHandler requestHandler) {
-            m_requestHandler = requestHandler;
-            m_responseHandler = responseHandler;
-        }
-
-        public boolean processResponse(BufferedReader in) throws IOException {
-            String line = in.readLine();
-            
-            if( line == null ) { return false;}
-            
-            return m_responseHandler.matches(line);
-        }
-
-        public boolean sendRequest(OutputStream out) throws IOException {
-            m_requestHandler.doRequest(out);
-            return true;
-        }
-        
-        public boolean matchResponseByString(String response) {
-            return m_responseHandler.matches(response);
-        }
-        
-        public String toString() {
-            return "The responsehandler:" + m_responseHandler + " and the request: " + m_requestHandler;
         }
         
     }
@@ -199,31 +163,8 @@ public class SimpleServer extends SimpleConversationEndPoint {
         return true;
     }
     
-    /**
-     * Add a ResponseHandler by calling one of the three utility methods:
-     * 
-     * startsWith(String prefix);
-     * contains(String phrase);
-     * regexMatches(String regex);
-     * 
-     * Within the extending class's overriding onInit method
-     */
-    protected void addResponseHandler(ResponseHandler responseHandler, RequestHandler requestHandler) {
-        m_conversation.addExchange(new SimpleServerExchange(responseHandler, requestHandler));
-    }
-    
     protected void addErrorHandler(RequestHandler requestHandler) {
         m_conversation.addErrorExchange(new ServerErrorExchange(requestHandler));
-    }
-    
-    protected RequestHandler singleLineReply(final String reply) {
-        return new RequestHandler() {
-
-            public void doRequest(OutputStream out) throws IOException {
-                out.write(String.format("%s\r\n", reply).getBytes());
-            }
-            
-        };
     }
     
     protected RequestHandler errorString(final String error) {
