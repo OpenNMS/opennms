@@ -41,65 +41,57 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 
 public class Pop3ServerTest {
     private Pop3Server m_pop3Server;
-    
-    
+    private Socket m_socket;
+    private BufferedReader m_in;
     
     @Before
     public void setUp() throws Exception{
        m_pop3Server = new Pop3Server();
-       try{
+        try{
            m_pop3Server.init();
+           m_pop3Server.startServer();
+           m_socket = createSocketConnection(m_pop3Server.getInetAddress(), m_pop3Server.getLocalPort(), 1000);
+           m_in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
        }catch(Exception e){
           throw new Exception(e); 
        }
     }
     
+    @After
+    public void tearDown() throws IOException{
+        m_socket.close();
+    }
+    
     @Test
     public void testServerBanner() throws Exception{
-        try{
-            Socket socket = createSocketConnection(m_pop3Server.getInetAddress(), m_pop3Server.getLocalPort(), 3000);
-            
-            // Allocate a line reader
-            //
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            
-            String line = in.readLine();
-            
-            assertTrue(line.equals("+OK"));
-            
-            
-        }catch(Exception e){            
-            throw new Exception(e);
-        }
+       String line = m_in.readLine();
+       assertTrue(line.equals("+OK"));        
     }
     
     @Test
     public void testServerBannerAndResponse() throws Exception{
-        Socket socket = createSocketConnection(m_pop3Server.getInetAddress(), m_pop3Server.getLocalPort(), 10000);
+       
         
-        // Allocate a line reader
-        //
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        
-        String line = in.readLine();
+        String line = m_in.readLine();
         System.out.println("banner: " + line);
         assertTrue(line.equals("+OK"));
         
-        socket.getOutputStream().write("QUIT\r\n".getBytes());
+        m_socket.getOutputStream().write("QUIT\r\n".getBytes());
         System.out.println("writing output QUIT");
         
-        line = in.readLine();
+        line = m_in.readLine();
         System.out.println("request response: " + line);
         assertTrue(line.equals("+OK"));
         
     }
-    
+
     protected Socket createSocketConnection(InetAddress host, int port, int timeout) throws IOException {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(host, port), timeout);
