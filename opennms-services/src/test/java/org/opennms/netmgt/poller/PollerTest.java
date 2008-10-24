@@ -47,12 +47,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -674,11 +677,35 @@ public class PollerTest {
 		verifyAnticipated(10000);
 
 	}
+    
+    @Test
+    public void testNodeLostServiceIncludesReason() throws Exception {
+        MockService element = m_network.getService(1, "192.168.1.1", "SMTP");
+        String expectedReason = "Oh No!! An Outage!!";
+        startDaemons();
+        
+        resetAnticipated();
+        anticipateDown(element);
+        
+        MockUtil.println("Bringing down element: " + element);
+        element.bringDown(expectedReason);
+        MockUtil.println("Finished bringing down element: " + element);
+        
+        verifyAnticipated(8000);
+
+        Collection<Event> receivedEvents = m_anticipator.getAnticipatedEventsRecieved();
+
+        assertEquals(1, receivedEvents.size());
+        
+        Event event = receivedEvents.iterator().next();
+        
+        assertEquals(expectedReason, EventUtils.getParm(event, EventConstants.PARM_LOSTSERVICE_REASON));
+    }
 
     @Test
 	public void testNodeLostRegainedService() throws Exception {
 
-		testElementDownUp(m_network.getService(1, "192.168.1.1", "SMTP"));
+        testElementDownUp(m_network.getService(1, "192.168.1.1", "SMTP"));
 
 	}
 
