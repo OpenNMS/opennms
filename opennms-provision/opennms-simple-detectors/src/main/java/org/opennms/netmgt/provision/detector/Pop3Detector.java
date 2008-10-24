@@ -33,15 +33,16 @@
 package org.opennms.netmgt.provision.detector;
 
 
-public class Pop3Detector extends AbstractDetector {
+public class Pop3Detector extends SimpleDetector {
 
     protected Pop3Detector() {
         super(110, 5000, 1);
     }
 
     public void onInit(){
+        System.out.print("Calling on init");
         expectBanner(startsWith("+OK"));
-        addRequestReply("QUIT", startsWith("+OK"));
+        addRequestHandler(singleLineRequest("QUIT"), startsWith("+OK"));
     }
 
 }

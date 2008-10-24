@@ -29,7 +29,7 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends AbstractDetector {
+public class ImapDetector extends SimpleDetector {
 
     protected ImapDetector() {
         super(143, 5000, 0);
@@ -38,7 +38,9 @@ public class ImapDetector extends AbstractDetector {
     
     public void onInit(){
         expectBanner(startsWith("* OK "));
-        addRequestReply("ONMSCAPSD LOGOUT\r\n", startsWith("ONMSCAPSD OK "));
+        addRequestHandler(singleLineRequest("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
+        //addRequestHandler(singleLineRequest(""), responseHandler)
+        //addRequestReply("ONMSCAPSD LOGOUT\r\n", startsWith("ONMSCAPSD OK "));
     }
 
 }

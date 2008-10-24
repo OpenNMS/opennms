@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -27,48 +28,14 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.exchange;
 
-import java.net.ServerSocket;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-
-public class ImapDetectorTest {
-    private SimpleDetector m_detector;
-    private ServerSocket m_serverSocket = null;
-    private Thread m_serverThread = null;
-    private static int TIMEOUT = 2000; 
-    
-    
-    @Before
-    public void setUp() throws Exception{
-        m_serverSocket = new ServerSocket();
-        m_serverSocket.bind(null);
-        
-        m_detector = new ImapDetector();
-        m_detector.setServiceName("Imap");
-        m_detector.setPort(m_serverSocket.getLocalPort());
-        m_detector.setTimeout(1000);
-        m_detector.init();
-    }
-    
-    @After
-    public void tearDown() throws Exception{
-        if (m_serverSocket != null && !m_serverSocket.isClosed()) {
-            m_serverSocket.close();
-        }
-        
-        if (m_serverThread != null) {
-            m_serverThread.join(1500);
-        }
-    }
-    
-    @Test
-    public void testSuccess(){
-        
-    }
-    
+public interface Exchange {
+    public boolean sendRequest(OutputStream out) throws IOException;
+    public boolean processResponse(BufferedReader in) throws IOException;
+    public boolean matchResponseByString(String response);
 }

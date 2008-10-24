@@ -38,7 +38,7 @@ import org.opennms.netmgt.provision.ServiceDetector;
 
 
 
-public class TcpDetector extends AbstractDetector implements ServiceDetector {
+public class TcpDetector extends SimpleDetector implements ServiceDetector {
     
     public TcpDetector() {
         super(-1, 5000, 1);
