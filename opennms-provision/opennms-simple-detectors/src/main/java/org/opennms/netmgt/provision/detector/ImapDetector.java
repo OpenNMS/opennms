@@ -37,8 +37,8 @@ public class ImapDetector extends SimpleDetector {
     }
     
     public void onInit(){
-        expectBanner(startsWith("* OK "));
-        addRequestHandler(singleLineRequest("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
+        
+        //addRequestHandler(singleLineRequest("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
         //addRequestHandler(singleLineRequest(""), responseHandler)
         //addRequestReply("ONMSCAPSD LOGOUT\r\n", startsWith("ONMSCAPSD OK "));
     }

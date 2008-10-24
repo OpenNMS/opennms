@@ -40,9 +40,8 @@ public class Pop3Detector extends SimpleDetector {
     }
 
     public void onInit(){
-        System.out.print("Calling on init");
-        expectBanner(startsWith("+OK"));
-        addRequestHandler(singleLineRequest("QUIT"), startsWith("+OK"));
+        expectBanner(startsWith("+OK"), singleLineRequest("QUIT")); 
+        addResponseHandler(startsWith("+OK"), closeDetector());
     }
 
 }

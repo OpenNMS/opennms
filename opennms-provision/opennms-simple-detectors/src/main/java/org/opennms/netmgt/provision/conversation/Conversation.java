@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.provision.exchange.Exchange;
@@ -78,6 +79,12 @@ public class Conversation {
                 if(m_conversation.size() == 0) { return; }
                 
                 String line  = in.readLine();
+                
+                if(line == null) {
+                    return;
+                }
+                
+                System.out.println("Server line read: " + line);
                 Exchange ex = findMatchingExchange(line);
                 
                 if(ex == null) {
@@ -96,9 +103,11 @@ public class Conversation {
     }
     
     public boolean attemptClientConversation(BufferedReader in, OutputStream out) throws IOException {
-        String line = in.readLine();
         
-        for(Exchange ex : m_conversation) {
+        for(Iterator<Exchange> it = m_conversation.iterator(); it.hasNext();) {
+            String line  = in.readLine();
+            Exchange ex = it.next();
+            System.out.println("Client Checking line: " + line);
             if(!ex.matchResponseByString(line)) {
                 return false;
             }
@@ -109,6 +118,7 @@ public class Conversation {
         }
         
         return true;
+        
     }
     
     private Exchange findMatchingExchange(String input) throws IOException {
@@ -123,10 +133,6 @@ public class Conversation {
         return null;
     }
     
-    private String getServerErrorString() {
-        return "YOUR REQUEST IS NOT A VALID REQUEST";
-    }
-
     public ResponseHandler startsWith(final String response){
         return new ResponseHandler(){
 

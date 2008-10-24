@@ -43,14 +43,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.conversation.Conversation;
 import org.opennms.netmgt.provision.conversation.SimpleConversationEndPoint;
-import org.opennms.netmgt.provision.exchange.Exchange;
+import org.opennms.netmgt.provision.exchange.RequestHandler;
 import org.opennms.netmgt.provision.exchange.ResponseHandler;
-import org.opennms.netmgt.provision.server.SimpleServer.RequestHandler;
 
 /**
  * 
@@ -59,63 +59,6 @@ import org.opennms.netmgt.provision.server.SimpleServer.RequestHandler;
  */
 
 abstract public class SimpleDetector extends SimpleConversationEndPoint implements ServiceDetector {
-    
-    public static class BannerMatcher implements Exchange {
-        private ResponseHandler m_responseHandler;
-        
-        public BannerMatcher(ResponseHandler responseHandler) {
-            m_responseHandler = responseHandler;
-        }
-        
-        public boolean sendRequest(OutputStream out) { return true; }
-        
-        public boolean processResponse(BufferedReader in) throws IOException {
-            String line = in.readLine();
-            
-            if(line == null) { return false; }
-            
-            return m_responseHandler.matches(line);
-        }
-
-        public boolean matchResponseByString(String response) {
-            return m_responseHandler.matches(response);
-        }
-    }
-    /**
-     * 
-     * @author desloge
-     *
-     */
-    public static class SimpleExchange implements Exchange{
-        private RequestHandler m_requestHandler;
-        private ResponseHandler m_responseHandler;
-        
-        public SimpleExchange(RequestHandler requestHandler, ResponseHandler responseHandler) {
-            m_requestHandler = requestHandler;
-            m_responseHandler = responseHandler;
-
-        }
-
-        public boolean processResponse(BufferedReader in) throws IOException {
-           String line = in.readLine();
-           
-           if(line == null) { return false; }
-           System.out.println("Processing response:" + line);
-           return m_responseHandler.matches(line);
-        }
-
-        public boolean sendRequest(OutputStream out) throws IOException {
-            m_requestHandler.doRequest(out);
-            return true;
-        }
-
-        public boolean matchResponseByString(String response) {
-            
-            return m_responseHandler.matches(response);
-        }
-      
-        
-    }
     
     private int m_port;
     private int m_retries;
@@ -180,7 +123,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         return socket;
     }
     
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor){
+    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
         int port = getPort();
         int retries = getRetries();
         int timeout = getTimeout();
@@ -220,6 +163,8 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
             } catch (Throwable t) {
                 detectorMonitor.failure(this, "%s: Failed to detect %s on address %s", getServiceName(), getServiceName(), address.getHostAddress());
                 detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s", getServiceName(), address.getHostAddress());
+                t.fillInStackTrace();
+                System.out.println("error : " + t.getMessage());
             } finally {
                 try {
                     if (m_socket != null)
@@ -228,7 +173,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
                 }
             }
         }
-
+        
         return false;
     }
     
@@ -236,24 +181,34 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         return m_conversation.attemptClientConversation(in, out);
     }
 
-    protected void expectBanner(ResponseHandler bannerMatcher) {
-        m_conversation.addExchange(new BannerMatcher(bannerMatcher));
-    }
-
-    protected void addRequestHandler(RequestHandler requestHandler, ResponseHandler responseHandler) {
-        m_conversation.addExchange(new SimpleExchange(requestHandler, responseHandler));
+    protected void expectBanner(ResponseHandler bannerMatcher, RequestHandler requestHandler) {
+        m_conversation.addExchange(new SimpleExchange(bannerMatcher, requestHandler));
     }
     
-    protected RequestHandler singleLineRequest(final String request) {
+    protected void addResponseHandler(ResponseHandler responseHandler, RequestHandler requestHandler) {
+        m_conversation.addExchange(new SimpleExchange(responseHandler, requestHandler));
+    }
+    
+    protected RequestHandler closeDetector() {
         return new RequestHandler() {
 
             public void doRequest(OutputStream out) throws IOException {
-                System.out.println("Writing request: " + request);
-                out.write(String.format("%s\r\n", request).getBytes());
+                if(m_socket != null && !m_socket.isClosed()) {
+                    m_socket.close();
+                }
             }
             
         };
     }
     
+    protected ResponseHandler regexFind(final String regex) {
+        return new ResponseHandler() {
+
+            public boolean matches(String input) {
+                return Pattern.compile(regex).matcher(input).find();
+            }
+            
+        };
+    }
     
 }

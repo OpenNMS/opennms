@@ -45,7 +45,7 @@ public class NullDetectorMonitor implements DetectorMonitor{
 
     public void failure(ServiceDetector detector, String format,
             Object... args) {
-        
+                
     }
 
     public void info(ServiceDetector detector, Exception e, String format,
