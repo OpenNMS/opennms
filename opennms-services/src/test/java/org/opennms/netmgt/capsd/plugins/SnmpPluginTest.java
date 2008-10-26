@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 26: Use SnmpTestSuiteUtils to create our TestSuite since the same thing is used in other classes. - dj@opennms.org
 // 2007 Apr 06: Make the tests not complain when a host doesn't have an agent. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,8 +34,6 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
-
 package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.PropertySettingTestSuite;
+import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 
 public class SnmpPluginTest extends OpenNMSTestCase {
 
@@ -68,11 +67,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     private SnmpPlugin m_plugin = null;
     
     public static TestSuite suite() {
-        Class<?> testClass = SnmpPluginTest.class;
-        TestSuite suite = new TestSuite(testClass.getName());
-        suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
-        suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
-        return suite;
+        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SnmpPluginTest.class);
     }
 
     /**

@@ -35,9 +35,9 @@
 //
 package org.opennms.test;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
@@ -52,13 +52,13 @@ public class VersionSettingTestSuite extends TestSuite {
         m_version = version;
     }
     
-    public VersionSettingTestSuite(Class theClass, String name, int version) {
+    public VersionSettingTestSuite(Class<? extends TestCase> theClass, String name, int version) {
         super(theClass, name);
         m_version = version;
         checkForVersionMethod(theClass);
     }
 
-    public VersionSettingTestSuite(Class theClass, int version) {
+    public VersionSettingTestSuite(Class<? extends TestCase> theClass, int version) {
         super(theClass);
         m_version = version;
         checkForVersionMethod(theClass);
@@ -71,15 +71,19 @@ public class VersionSettingTestSuite extends TestSuite {
     
     private void checkForVersionMethod(final Class theClass) {
         try {
-            theClass.getMethod("setVersion", new Class[] { Integer.TYPE });
-        } catch (NoSuchMethodException e) {
+            getSetVersionMethod(theClass);
+        } catch (final NoSuchMethodException e) {
             addTest(new TestCase("warning") {
                 protected void runTest() {
-                    fail("Unable to locate setVersion method in class "+theClass.getName());
+                    fail("Unable to locate setVersion method in class "+theClass.getName() + ": " + e);
                 }
             });
         }
             
+    }
+
+    private Method getSetVersionMethod(final Class theClass) throws NoSuchMethodException {
+        return theClass.getMethod("setVersion", new Class[] { Integer.TYPE });
     }
 
     public void runTest(Test test, TestResult result) {
@@ -89,22 +93,12 @@ public class VersionSettingTestSuite extends TestSuite {
 
     private void setVersion(Test test) {
         try {
-            Method m = test.getClass().getMethod("setVersion", new Class[] { Integer.TYPE });
+            Method m = getSetVersionMethod(test.getClass());
             m.invoke(test, new Object[] { new Integer(m_version) });
-        } catch (NoSuchMethodException e) {
-            
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            AssertionFailedError newE = new AssertionFailedError("Could not call setVersion on " + test.getClass().getName() + ": " + e);
+            newE.initCause(e);
+            throw newE;
         }
     }
-    
-    
-
 }
