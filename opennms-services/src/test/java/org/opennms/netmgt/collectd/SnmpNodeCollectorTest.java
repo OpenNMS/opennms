@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Oct 26: Use SnmpTestSuiteUtils to create our TestSuite since the same thing is used in other classes. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,18 +40,12 @@ import java.net.InetAddress;
 
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.VersionSettingTestSuite;
+import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
     public static TestSuite suite() {
-        Class testClass = SnmpNodeCollectorTest.class;
-        TestSuite suite = new TestSuite(testClass.getName());
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv3 Tests", SnmpAgentConfig.VERSION3));
-        return suite;
+        return SnmpTestSuiteUtils.createSnmpVersionTestSuite(SnmpNodeCollectorTest.class);
     }
 
     public void testZeroVars() throws Exception {
