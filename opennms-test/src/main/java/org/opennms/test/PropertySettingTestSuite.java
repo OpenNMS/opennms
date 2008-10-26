@@ -32,6 +32,7 @@
 package org.opennms.test;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
@@ -46,13 +47,13 @@ public class PropertySettingTestSuite extends TestSuite {
         m_propertyValue = propertyValue;
     }
     
-    public PropertySettingTestSuite(Class theClass, String name, String propertyName, String propertyValue) {
+    public PropertySettingTestSuite(Class<? extends TestCase> theClass, String name, String propertyName, String propertyValue) {
         super(theClass, name);
         m_propertyName = propertyName;
         m_propertyValue = propertyValue;
     }
 
-    public PropertySettingTestSuite(Class theClass, String propertyName, String propertyValue) {
+    public PropertySettingTestSuite(Class<? extends TestCase> theClass, String propertyName, String propertyValue) {
         super(theClass);
         m_propertyName = propertyName;
         m_propertyValue = propertyValue;
