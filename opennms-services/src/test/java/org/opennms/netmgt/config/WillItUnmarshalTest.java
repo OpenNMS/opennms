@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2008 Oct 24: Eliminate warnings when using Readers. - dj@opennms.org
  * 2008 Jun 05: Add discovery-configuration.xml as an example. - dj@opennms.org
  * 2008 Jan 25: Add Hyperic tests and test for subdirectories in examples. - dj@opennms.org
  * 2007 Aug 03: Created this file. - dj@opennms.org
@@ -43,9 +44,8 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,6 +111,7 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -147,7 +148,7 @@ public class WillItUnmarshalTest {
     public void testGoodOrdering() throws Exception {
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-good-ordering.xml"));
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml"));
     }
 
     /**
@@ -158,7 +159,7 @@ public class WillItUnmarshalTest {
     public void testLenientOrdering() throws Exception {
         LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
 
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
     }
 
     /**
@@ -167,7 +168,7 @@ public class WillItUnmarshalTest {
      */
     @Test
     public void testLenientOrderingAsDefault() throws Exception {
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
     }
     
     /**
@@ -182,7 +183,7 @@ public class WillItUnmarshalTest {
         boolean gotException = false;
 
         try {
-            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
+            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
         } catch (MarshalException e) {
             if (e.getMessage().contains(exceptionText)) {
                 gotException = true;
@@ -580,26 +581,26 @@ public class WillItUnmarshalTest {
             try {
                 // Be conservative about what we ship, so don't be lenient
                 LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-                CastorUtils.unmarshal(Events.class, new FileReader(includedEventFile));
+                CastorUtils.unmarshal(Events.class, new FileSystemResource(includedEventFile));
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedEventFile + ": " + t, t);
             }
         }
     }
     
-    private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
+    private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
         return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
     }
 
-    private static <T>T unmarshalExample(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
+    private static <T>T unmarshalExample(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
         return unmarshal(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
     }
 
-    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws MarshalException, ValidationException, FileNotFoundException {
+    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws MarshalException, ValidationException, IOException {
         // Be conservative about what we ship, so don't be lenient
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
-        T config = CastorUtils.unmarshal(clazz, new FileReader(file));
+        T config = CastorUtils.unmarshal(clazz, new FileSystemResource(file));
         
         assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
         testedSet.add(fileName);
