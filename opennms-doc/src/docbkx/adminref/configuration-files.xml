@@ -10,6 +10,45 @@
 			the number of concurrent actions allowed as well as a time out for waiting 
 			on a return.
 		</para>
+		
+		<glosslist>
+			<glossentry>
+				<glossterm>outstanding-actions</glossterm>
+				<glossdef>
+					<para>
+						The maximum number of simultaneous processes launched by Actiond.
+						If the number of launched processes currently running reaches this
+						number, Actiond waits for a process to complete or get terminated
+						before it launches the next process.
+					</para>
+				</glossdef>
+			</glossentry>
+			<glossentry>
+				<glossterm>max-process-time</glossterm>
+				<glossdef>
+					<para>
+						The maximum time that a launched process can take to complete.
+						If execution time exceeds this time, the launched process is
+						terminated.
+					</para>
+				</glossdef>
+			</glossentry>
+		</glosslist>
+		
+		<example>
+			<title>Example <code>actiond-configuration.xml</code></title>
+
+			<para>
+				Here is an example <filename>actiond-configuration.xml</filename>.
+
+				<programlisting>&lt;?xml version="1.0"?&gt;
+&lt;actiond-configuration
+        max-outstanding-actions="10"
+        max-process-time="120000"&gt;
+&lt;/actiond-configuration&gt;</programlisting>
+			</para>
+		</example>
+
 	</section>
 
 	<section id="c3p0.properties">
@@ -17,7 +56,9 @@
 		<para>
 			<ulink url="http://c3p0.sourceforge.net/">C3P0</ulink> is the database connection
 			pooling technology used by OpenNMS.  In most cases you should never have to change
-			this file.
+			this file.  For details on configuration options, see <ulink
+			url="http://www.mchange.com/projects/c3p0/index.html#configuration_properties">the
+			c3p0 configuration properties appendix</ulink> in their documentation.
 		</para>
 	</section>
 
@@ -261,9 +302,192 @@
 	<section id="categories.xml">
 		<title>categories.xml</title>
 		<para>
-			This file defines categories used by RTC for determining availability
-			based on a set of rules.
+			This file allows you to configure the categories of a device based on the
+			mixture of services they run.  You can also set expected error and warning
+			levels for when availability drops below a certain percentage.  These
+			affect availability reports, as well as how the categories are displayed,
+			if they are defined in <filename>viewsdisplay.xml</filename> as well.
 		</para>
+		
+		<section id="categories.xml-categorygroup">
+			<title>Category Groups</title>
+			
+			<para>
+				Technically, the <filename>categories.xml</filename> file can have
+				more than one "group" of categories.  However, the &lt;categorygroup&gt;
+				tag never got fleshed out in the code and it is recommended you do not
+				use more than one &lt;categorygroup&gt; tag.
+			</para>
+		</section>
+		
+		<section id="categories.xml-global">
+			<title>Global Options</title>
+			
+			<para>
+				Inside the category group, there are a number of options that can
+				apply to all categories in the group.
+			</para>
+			
+			<glosslist>
+				<glossentry>
+					<glossterm>name</glossterm>
+					<glossdef>
+						<para>
+							One (and only one) &lt;name&gt; tag should be in each
+							category group.  This is the short name of the
+							category group.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>comment</glossterm>
+					<glossdef>
+						<para>
+							One (and only one) &lt;comment&gt; tag should be in each
+							category group.  This is a longer description of the
+							category group.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>common</glossterm>
+					<glossdef>
+						<para>
+							A common rule that will be applied to every category in
+							the category group, in addition to that category's specific
+							rule.  The &lt;common&gt; tag should contain a single set of
+							&lt;rule&gt; tags.  For example:
+							<programlisting>&lt;common&gt;
+	&lt;rule&gt;&lt;![CDATA[IPADDR != '0.0.0.0']]&gt;&lt;/rule&gt;
+&lt;/common&gt;</programlisting>
+						</para>
+					</glossdef>
+				</glossentry>
+			</glosslist>
+		</section>
+		<section id="categories.xml-categories">
+			<title>Categories</title>
+			
+			<para>
+				Inside the category group, there can be a &lt;categories&gt; tag which
+				can contain one or more &lt;category&gt; tags.  The following tags are
+				allowed in a category.
+			</para>
+
+			<glosslist>
+				<glossentry>
+					<glossterm>label</glossterm>
+					<glossdef>
+						<para>
+							A descriptive label for the category.  This needs to be unique
+							across all categories, and will be displayed in the UI if the
+							category is referenced in <filename>viewsdisplay.xml</filename>.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>comment</glossterm>
+					<glossdef>
+						<para>
+							An optional tag with a detailed comment describing the category.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>normal</glossterm>
+					<glossdef>
+						<para>
+							The normal threshold value for the category in percent.  The
+							UI displays the category in green if the overall availability
+							for the category is equal to or greater than this value.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>warning</glossterm>
+					<glossdef>
+						<para>
+							The warning threshold value for the category in percent.  The
+							UI displays the category in yellow if the overall availability
+							for the category is equal to or greater than this value but
+							less than the normal threshold.  If availability is less than
+							this value, the category is displayed in red.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>service</glossterm>
+					<glossdef>
+						<para>
+							An optional tag specifying the service relevant to this category.
+							For a node ID/IP address/service tuple to be added to a category,
+							it will need to pass the category's rule and the service will need
+							to be in the category service list.  If there are no services
+							defined, all tuples that pass the rule are added to the category.
+						</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>rule</glossterm>
+					<glossdef>
+						<para>
+							The rule that defines what nodes/interfaces/services match the
+							category.  It can match on services (Is<emphasis>SERVICE</emphasis>),
+							IP addresses, and a number of other criteria.
+						</para>
+					</glossdef>
+				</glossentry>
+			</glosslist>
+		</section>
+		
+		<example>
+			<title>Example <filename>categories.xml</filename></title>
+
+			<para>
+				Here is an example <filename>categories.xml</filename> that defines a series
+				of categories.  It defines a global &lt;rule&gt; that makes sure that we get
+				all IP devices in the 192.168 class B, and then individual categories which
+				have more specific rules.
+
+				<programlisting>&lt;catinfo&gt;
+	&lt;header&gt;
+	&lt;/header&gt;
+	&lt;categorygroup&gt;
+		&lt;name&gt;WebConsole&lt;/name&gt;
+		&lt;comment&gt;Service Level Availability by Functional Group&lt;/comment&gt;
+		&lt;common&gt;
+			&lt;rule&gt;&lt;![CDATA[IPADDR IPLIKE '192.168.*.*']]&gt;&lt;/rule&gt;
+		&lt;/common&gt;
+		&lt;categories&gt;
+			&lt;category&gt;
+				&lt;label&gt;&lt;![CDATA[Overall Service Availability]]&gt;&lt;/label&gt;
+				&lt;comment&gt;This category reflects overall availability of every device on the 192.168.*.* network.&lt;/comment&gt;
+				&lt;normal&gt;99.99&lt;/normal&gt;
+				&lt;warning&gt;97&lt;/warning&gt;
+				&lt;rule&gt;&lt;![CDATA[IPADDR != '0.0.0.0']]&gt;&lt;/rule&gt;
+			&lt;/category&gt;
+
+			&lt;category&gt;
+				&lt;label&gt;&lt;![CDATA[Pingable Routers]]&gt;&lt;/label&gt;
+				&lt;comment&gt;This category represents pingable routers with the "Router" service.&lt;/comment&gt;
+				&lt;normal&gt;99.99&lt;/normal&gt;
+				&lt;warning&gt;97&lt;/warning&gt;
+				&lt;service&gt;ICMP&lt;/service&gt;
+				&lt;service&gt;Router&lt;/service&gt;
+				&lt;rule&gt;&lt;![CDATA[(isICMP &amp; isRouter)]]&gt;&lt;/rule&gt;
+			&lt;/category&gt;
+			&lt;category&gt;
+				&lt;label&gt;&lt;![CDATA[VectaStar Elements]]&gt;&lt;/label&gt;
+				&lt;comment&gt;This category includes all managed interfaces which are related to the VectaStar system.&lt;/comment&gt;
+				&lt;normal&gt;99.99&lt;/normal&gt;
+				&lt;warning&gt;97&lt;/warning&gt;
+				&lt;rule&gt;&lt;![CDATA[(nodeSysOID like '.1.3.6.1.4.1.5419.1.3500.%')]]&gt;&lt;/rule&gt;
+			&lt;/category&gt;
+		&lt;/categories&gt;
+	&lt;/categorygroup&gt;
+&lt;/catinfo&gt;</programlisting>
+			</para>
+		</example>
 	</section>
 
 	<section id="chart-configuration.xml">
