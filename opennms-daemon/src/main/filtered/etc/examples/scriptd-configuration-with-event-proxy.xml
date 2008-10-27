@@ -18,7 +18,7 @@
 		//isl.setSharedASCIIString("1234567890");
 		
 		//required properties
-                isl.setCriteriaRestriction("eventuei = 'uei.opennms.org/nodes/nodeDown' and nodeid not in (select nodeid from events where eventuei = 'uei.opennms.org/nodes/nodeUp')");
+                isl.setCriteriaRestriction(" alarmid in (select alarmid from alarms)");
 		isl.start();
 
 	</start-script>
@@ -36,7 +36,7 @@
 		//The following instructions filter events by UEI.
 		if (
                    (event.uei.equals("uei.opennms.org/nodes/nodeUp")) 
-		|| (event.uei.equals("uei.opennms.org/noded/nodeDown"))
+		|| (event.uei.equals("uei.opennms.org/nodes/nodeDown"))
                    )
 		{
 			log.debug("Flushing event "+event.uei+" to client listening");

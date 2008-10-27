@@ -112,4 +112,39 @@ public final class Parameter {
         // return name + Constants.NAME_VAL_DELIM + value + "(" + type +
         // Constants.DB_ATTRIB_DELIM + encoding + ")";
     }
+    
+    public static Parms decode(String eventparms) {
+        if (eventparms == null ) return null;
+        Parms parms = new Parms();
+  
+        String[] paramslistString = eventparms.split(Character.toString(Constants.MULTIPLE_VAL_DELIM));
+        if (paramslistString != null) {
+                for (int i =0; i< paramslistString.length;i++) {
+                    String[] paramEncoded = paramslistString[i].split(Character.toString(Constants.NAME_VAL_DELIM));
+                    if (paramEncoded != null && paramEncoded.length == 2) {
+                                Parm parm = new Parm();
+                                parm.setParmName(paramEncoded[0]);
+                                Value value = new Value();
+                                String[] valueEncoded = paramEncoded[1].split("\\(");
+                                boolean isParmCorrect = false;
+                                if (valueEncoded != null && valueEncoded.length == 2) {
+                                        value.setContent(valueEncoded[0]);
+                                        String[] typeAndEncode = valueEncoded[1].split(Character.toString(Constants.DB_ATTRIB_DELIM));
+                                        if (typeAndEncode != null && typeAndEncode.length == 2) {
+                                                value.setType(typeAndEncode[0]);
+                                                value.setEncoding(typeAndEncode[1].split("\\)")[0]);
+                                                isParmCorrect = true;
+                                        }
+                                }
+                                if (isParmCorrect) {
+                                        parm.setValue(value);
+                                parms.addParm(parm);
+                                }
+                    }
+                }
+        }
+        return parms;
+
+    }
+
 }

@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
+
 import org.apache.log4j.Category;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
@@ -16,15 +18,16 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
+
 import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
+
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -190,10 +193,12 @@ class InsSession extends InsAbstractSession {
 															e.setNodeid(ev
 																	.getNode()
 																	.getId());
-														DateFormat dfInstance = DateFormat
-																.getDateInstance(DateFormat.FULL);
+														DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+													        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+													   //     DateFormat dfInstance = DateFormat
+													   //			.getDateInstance(DateFormat.FULL,DateFormat.FULL);
 														e
-																.setTime(dfInstance
+																.setTime(dateFormat
 																		.format(ev
 																				.getEventTime()));
 														e
@@ -218,25 +223,20 @@ class InsSession extends InsAbstractSession {
 																.setSeverity(Constants
 																		.getSeverityString(ev
 																				.getEventSeverity()));
-														/*
-														Parms parms = new Parms();
-
-														String[] paramslistString = ev.getEventParms().split(";");
-														if (paramslistString != null) {
-															for (int ij =0; ij< paramslistString.length;ij++) {
-															    String[] paramEncoded = paramslistString[ij].split("=");
-															    if (paramEncoded != null && paramEncoded.length == 2) {
-																	Parm parm = new Parm();
-																	parm.setParmName(paramEncoded[0]);
-																	Value value = new Value();
-																	value.setContent(paramEncoded[1]);
-																	parm.setValue(value);
-															    	parms.addParm(parm);
-															    }
-															}
+//TODO FIXME SEND IFINDEX and IFALIAS To INS														
+//														if (ev.getIfIndex() != null) 
+//															e.setIfIndex(ev.getIfIndex().toString());
+														e.setIfIndex("-1");
+//														if (ev.getIfAlias() != null)
+//															e.setIfAlias(ev.getIfAlias());
+														e.setIfAlias("-1");
+														if (ev.getEventOperInstruct() != null)
+															e.setOperinstruct(ev.getEventOperInstruct());
+														if (ev.getEventParms() != null ) {
+														    Parms parms = Parameter.decode(ev.getEventParms());
+														
+														    if (parms != null ) e.setParms(parms);
 														}
-														if (parms != null) e.setParms(parms);
-														*/
 														AlarmData ad = new AlarmData();
 														OnmsAlarm onmsAlarm = ev
 																.getAlarm();
