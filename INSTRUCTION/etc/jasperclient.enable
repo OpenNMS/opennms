@@ -1,0 +1,19 @@
+#
+# This is the configurationfile for Jasperclient
+#
+# To access the JasperServer the following parameter must be set:
+#
+# $OPENNMS_HOME Environment - $OPENNMS_HOME/etc/jasperclient.enable
+#
+# Create a Folder in JasperServer and create your reports on OpenNMS database.
+# For example call it OpenNMS-Reporting 
+# All reports in this folder can accessed from OpenNMS directly.
+#
+# Configure access to your JasperServer Repository
+# 
+# Webservice-Location:
+# --------------------
+# repositoryurl=http://<your-jasperserver-ip>:8080/jasperserver/services/repository
+# jasperuser=<user to access the repository>
+# jasperpassword=<password to access>
+# report_base=/<Folder which contains the reportunits to integrate in OpenNMS, example /OpenNMS-Reporting>

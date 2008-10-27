@@ -12,6 +12,20 @@
   </bean>
 
   <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+  
+  <!-- r.trommer@open-factory.org - Beans for JasperWebservice-Controller -->
+  <bean id="jasperClientController" class="org.opennms.web.controller.jasperws.JasperClientController"/>
+  <bean id="jasperPdfReportController" class="org.opennms.web.controller.jasperws.JasperPdfReportController"/>
+  
+  <!-- r.trommer@open-factory.org - URL-Mapping to controller -->
+  <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <props>
+        <prop key="/jasperws/jsclient.htm">jasperClientController</prop>
+        <prop key="/jasperws/pdfreport.htm">jasperPdfReportController</prop>
+      </props>
+    </property>
+  </bean>
 
   <!-- view resolver to deal with Availability reports -->
   

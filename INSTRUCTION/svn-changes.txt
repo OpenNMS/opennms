@@ -1,0 +1,31 @@
+X      debian
+X      maven
+A      INSTRUCTION
+?      INSTRUCTION/svn-changes.txt
+A      INSTRUCTION/maven-jasperlibs.sh
+A      INSTRUCTION/README.txt
+A      INSTRUCTION/etc
+A      INSTRUCTION/etc/jasperclient.enable
+A      opennms-webapp/src/main/java/org/opennms/web/controller/jasperws
+A      opennms-webapp/src/main/java/org/opennms/web/controller/jasperws/JasperClientController.java
+A      opennms-webapp/src/main/java/org/opennms/web/controller/jasperws/JasperPdfReportController.java
+A      opennms-webapp/src/main/java/org/opennms/web/jasperws
+A      opennms-webapp/src/main/java/org/opennms/web/jasperws/OnmsJasperClient.java
+A      opennms-webapp/src/main/java/org/opennms/web/jasperws/JasperClientConstants.java
+A      opennms-webapp/src/main/java/org/opennms/web/jasperws/JasperConfiguration.java
+A      opennms-webapp/src/main/java/org/opennms/web/jasperws/OnmsJasperReport.java
+A      opennms-webapp/src/main/java/org/opennms/web/jasperws/JasperReportConstants.java
+A      opennms-webapp/src/main/webapp/images/icon-csv.gif
+A      opennms-webapp/src/main/webapp/images/icon-excel.gif
+A      opennms-webapp/src/main/webapp/images/icon-adobe-reader.gif
+M      opennms-webapp/src/main/webapp/report/index.jsp
+A      opennms-webapp/src/main/webapp/WEB-INF/jsp/jasperws
+A      opennms-webapp/src/main/webapp/WEB-INF/jsp/jasperws/reporterror.jsp
+A      opennms-webapp/src/main/webapp/WEB-INF/jsp/jasperws/jsclient.jsp
+A      opennms-webapp/src/main/webapp/WEB-INF/jsp/jasperws/include.jsp
+M      opennms-webapp/src/main/webapp/WEB-INF/dispatcher-servlet.xml
+M      opennms-webapp/pom.xml
+
+Performing status on external item at 'debian'
+
+Performing status on external item at 'maven'

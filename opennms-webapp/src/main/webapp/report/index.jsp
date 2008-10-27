@@ -59,6 +59,7 @@
     <h3>Reports</h3>
     <div class="boxWrapper">
       <ul class="plain">
+        <li><a href="jasperws/jsclient.htm">JasperServer-Reporting</a></li>
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
         <li><a href="KSC/index.htm">KSC Performance, Nodes, Domain</a></li>
         <li><a href="availability/index.jsp">Availability</a></li>

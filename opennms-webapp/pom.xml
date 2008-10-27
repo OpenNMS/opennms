@@ -464,5 +464,56 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
     </dependency>
+    <!-- used by JasperServer Integration -->
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.4patched</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-discovery</groupId>
+      <artifactId>commons-discovery</artifactId>
+      <version>0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>itext</groupId>
+      <artifactId>itext</artifactId>
+      <version>1.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jasperreports</groupId>
+      <artifactId>jasperreports</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jasperserver-common-ws</groupId>
+      <artifactId>jasperserver-common-ws</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jasperserver-ireport-plugin</groupId>
+      <artifactId>jasperserver-ireport-plugin</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jaxrpc</groupId>
+      <artifactId>jaxrpc</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>saaj-api</groupId>
+      <artifactId>saaj-api</artifactId>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>wsdl4j</groupId>
+      <artifactId>wsdl4j</artifactId>
+      <version>1.5.2</version>
+    </dependency>
   </dependencies>
 </project>
