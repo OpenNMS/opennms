@@ -87,9 +87,9 @@ public class SimpleServerTest {
             public void onInit() {
                 setTimeout(1000);
                 setBanner("+OK");
-                addResponseHandler(regexMatches("BING"), singleLineReply("+GOT_BING"));
-                addResponseHandler(regexMatches("QUIT"), shutdownServer("+OK"));
-                addResponseHandler(regexMatches("APPLES"), singleLineReply("+ORANGES"));
+                addResponseHandler(matches("BING"), singleLineReply("+GOT_BING"));
+                addResponseHandler(matches("QUIT"), shutdownServer("+OK"));
+                addResponseHandler(matches("APPLES"), singleLineReply("+ORANGES"));
                 addErrorHandler(errorString("GOT ERROR"));
             }
         };
@@ -130,9 +130,9 @@ public class SimpleServerTest {
             public void onInit() {
                 setTimeout(1000);
                 setBanner("+OK");
-                addResponseHandler(regexMatches("BING"), singleLineReply("+GOT_BING"));
-                addResponseHandler(regexMatches("QUIT"), shutdownServer("+OK"));
-                addResponseHandler(regexMatches("APPLES"), singleLineReply("+ORANGES"));
+                addResponseHandler(matches("BING"), singleLineReply("+GOT_BING"));
+                addResponseHandler(matches("QUIT"), shutdownServer("+OK"));
+                addResponseHandler(matches("APPLES"), singleLineReply("+ORANGES"));
             }
         };
         server.init();
@@ -165,7 +165,7 @@ public class SimpleServerTest {
             public void onInit() {
                 setTimeout(500);
                 setBanner("+OK");
-                addResponseHandler(regexMatches("QUIT"), shutdownServer("+OK"));
+                addResponseHandler(matches("QUIT"), shutdownServer("+OK"));
             }
         };
         server.init();

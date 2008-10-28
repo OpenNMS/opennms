@@ -37,5 +37,5 @@ import java.io.OutputStream;
 public interface Exchange {
     public boolean sendRequest(OutputStream out) throws IOException;
     public boolean processResponse(BufferedReader in) throws IOException;
-    public boolean matchResponseByString(String response);
+    public boolean matchResponseByString(String input);
 }

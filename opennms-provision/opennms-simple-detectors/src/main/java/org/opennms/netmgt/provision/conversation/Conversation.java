@@ -79,12 +79,12 @@ public class Conversation {
                 if(m_conversation.size() == 0) { return; }
                 
                 String line  = in.readLine();
+                System.out.println("Server line read: " + line);
                 
                 if(line == null) {
                     return;
                 }
                 
-                System.out.println("Server line read: " + line);
                 Exchange ex = findMatchingExchange(line);
                 
                 if(ex == null) {
@@ -105,16 +105,16 @@ public class Conversation {
     public boolean attemptClientConversation(BufferedReader in, OutputStream out) throws IOException {
         
         for(Iterator<Exchange> it = m_conversation.iterator(); it.hasNext();) {
-            String line  = in.readLine();
             Exchange ex = it.next();
-            System.out.println("Client Checking line: " + line);
-            if(!ex.matchResponseByString(line)) {
-                return false;
-            }
             
+            if(!ex.processResponse(in)) {
+               return false; 
+            }
+            System.out.println("processed response successfully");
             if(!ex.sendRequest(out)) {
                 return false;
             }
+            System.out.println("send request if there was a request");
         }
         
         return true;
