@@ -37,7 +37,7 @@ public class Pop3Server extends SimpleServer {
     public void onInit(){
         setTimeout(3000);
         setBanner("+OK");
-        addResponseHandler(regexMatches("QUIT"), shutdownServer("+OK"));
+        addResponseHandler(matches("QUIT"), shutdownServer("+OK"));
         addErrorHandler(errorString("COMMAND NOT VALID"));        
     }
 }

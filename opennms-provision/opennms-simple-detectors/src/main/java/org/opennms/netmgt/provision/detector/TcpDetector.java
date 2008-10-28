@@ -46,7 +46,7 @@ public class TcpDetector extends SimpleDetector implements ServiceDetector {
     
     public void onInit() {
         //Using the regex to find a word that gets sent back from TCP. Any word counts.
-        expectBanner(regexFind("\\w"), singleLineRequest("LOGOUT"));
+        expectBanner(find("\\w"), singleLineRequest("LOGOUT"));
     }
 
 

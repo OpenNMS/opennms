@@ -164,6 +164,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
                 detectorMonitor.failure(this, "%s: Failed to detect %s on address %s", getServiceName(), getServiceName(), address.getHostAddress());
                 detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s", getServiceName(), address.getHostAddress());
                 t.fillInStackTrace();
+                t.printStackTrace();
                 System.out.println("error : " + t.getMessage());
             } finally {
                 try {
@@ -178,15 +179,15 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
     }
     
     private boolean attemptConversation(BufferedReader in, OutputStream out) throws IOException {
-        return m_conversation.attemptClientConversation(in, out);
+        return getConversation().attemptClientConversation(in, out);
     }
 
     protected void expectBanner(ResponseHandler bannerMatcher, RequestHandler requestHandler) {
-        m_conversation.addExchange(new SimpleExchange(bannerMatcher, requestHandler));
+        getConversation().addExchange(new SimpleExchange(bannerMatcher, requestHandler));
     }
     
     protected void addResponseHandler(ResponseHandler responseHandler, RequestHandler requestHandler) {
-        m_conversation.addExchange(new SimpleExchange(responseHandler, requestHandler));
+        getConversation().addExchange(new SimpleExchange(responseHandler, requestHandler));
     }
     
     protected RequestHandler closeDetector() {
@@ -201,7 +202,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         };
     }
     
-    protected ResponseHandler regexFind(final String regex) {
+    protected ResponseHandler find(final String regex) {
         return new ResponseHandler() {
 
             public boolean matches(String input) {
@@ -209,6 +210,14 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
             }
             
         };
+    }
+
+    public void setConversation(Conversation conversation) {
+        m_conversation = conversation;
+    }
+
+    public Conversation getConversation() {
+        return m_conversation;
     }
     
 }
