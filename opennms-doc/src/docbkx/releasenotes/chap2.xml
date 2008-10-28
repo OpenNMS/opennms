@@ -4,6 +4,14 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+  <section id="opennms-1.6.0">
+    <title>Changes in OpenNMS 1.6.0</title>
+    
+    <para>
+    	OpenNMS 1.5.99 passed release candidate testing and was re-tagged as 1.6.0.
+    </para>
+  </section>
+
   <section id="opennms-1.5.99">
     <title>Changes in OpenNMS 1.5.99</title>
     
