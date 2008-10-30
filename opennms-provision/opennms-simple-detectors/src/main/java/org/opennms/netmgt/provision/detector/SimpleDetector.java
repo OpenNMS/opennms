@@ -116,7 +116,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
     
     public void onInit() { }
     
-    protected Socket createSocketConnection(InetAddress host, int port, int timeout) throws IOException {
+    protected Socket createSocketConnection(InetAddress host, int port, int timeout) throws Exception {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(host, port), timeout);
         socket.setSoTimeout(timeout);
@@ -149,6 +149,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
                 
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
+                detectorMonitor.info(this, cE, "Attempting to connect to address: %s attempt #%s",address.getHostAddress(),attempts);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                
@@ -165,7 +166,6 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
                 detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s", getServiceName(), address.getHostAddress());
                 t.fillInStackTrace();
                 t.printStackTrace();
-                System.out.println("error : " + t.getMessage());
             } finally {
                 try {
                     if (m_socket != null)

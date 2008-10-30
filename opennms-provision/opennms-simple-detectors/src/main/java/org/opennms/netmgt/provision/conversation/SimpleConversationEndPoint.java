@@ -75,7 +75,7 @@ public class SimpleConversationEndPoint {
     protected Conversation m_conversation;
     private int m_timeout;
     
-    public void init() throws IOException {
+    public void init() throws Exception {
         m_conversation = new Conversation();
     };
     
