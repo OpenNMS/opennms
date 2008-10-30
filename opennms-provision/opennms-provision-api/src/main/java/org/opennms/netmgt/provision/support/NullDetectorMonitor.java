@@ -36,35 +36,37 @@ public class NullDetectorMonitor implements DetectorMonitor{
 
     public void attempt(ServiceDetector detector, int attempt, String format,
             Object... args) {
+        System.out.println(String.format(format, args));
     }
 
     public void error(ServiceDetector detector, Throwable t, String format,
             Object... args) {
+        System.out.println(String.format(format, args));
         
     }
 
     public void failure(ServiceDetector detector, String format,
             Object... args) {
-                
+        System.out.println(String.format(format, args));
     }
 
     public void info(ServiceDetector detector, Exception e, String format,
             Object... args) {
-        
+        System.out.println(String.format(format, args));
     }
 
     public void start(ServiceDetector detector, String format, Object... args) {
-        
+        System.out.println(String.format(format, args));
     }
 
     public void stopped(ServiceDetector detector, String format,
             Object... args) {
-        
+        System.out.println(String.format(format, args));
     }
 
     public void success(ServiceDetector detector, String format,
             Object... args) {
-        
+        System.out.println(String.format(format, args));
     }
 
 }
