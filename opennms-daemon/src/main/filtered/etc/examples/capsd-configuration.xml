@@ -261,6 +261,13 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
+    <!-- Detect the trivial UNIX time protocol on TCP port 37, monitor with TrivialTimeMonitor -->
+    <protocol-plugin protocol="UnixTime" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on" user-defined="false">
+        <property key="banner" value="*" />
+        <property key="port" value="37" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
 <!--- Windows Exchange Service Monitors -->
 <protocol-plugin protocol="MSExchangeSA"
           class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on"
