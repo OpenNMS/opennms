@@ -86,58 +86,70 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @return InetAddress returns the inetaddress from the serversocket.
      */
     public InetAddress getInetAddress(){
-        return m_serverSocket.getInetAddress();
+        return getServerSocket().getInetAddress();
     }
     
     public int getLocalPort() {
-        return m_serverSocket.getLocalPort();
+        return getServerSocket().getLocalPort();
     }
     
     public void setThreadSleepLength(int timeout) {
         m_threadSleepLength = timeout;
     }
     
-    public void init() throws IOException {
+    public int getThreadSleepLength() {
+        return m_threadSleepLength;
+    }
+    
+    public void init() throws Exception {
         super.init();
-        m_serverSocket = new ServerSocket();
-        m_serverSocket.bind(null);
+        setServerSocket(new ServerSocket());
+        getServerSocket().bind(null);
         onInit();
     }
 
     public void onInit() {} 
     
     public void startServer() throws Exception {
-        m_serverThread = new Thread(getRunnable());
-        m_serverThread.start();
+        setServerThread((new Thread(getRunnable())));
+        getServerThread().start();
     }
     
+    @SuppressWarnings("deprecation")
     public void stopServer() throws IOException {
-        if(m_socket != null && !m_socket.isClosed()) { m_socket.close(); }
+
+        if(getServerThread() != null && getServerThread().isAlive()) { 
+            
+            if(getSocket() != null && !getSocket().isClosed()) {
+               getSocket().close();  
+            }
+            
+            getServerSocket().close();
+            getServerThread().stop();
+        }
     }
     
-    private Runnable getRunnable() throws Exception {
+    protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
             public void run(){
                 try{
-                    m_serverSocket.setSoTimeout(getTimeout());
-                    m_socket = m_serverSocket.accept();
+                    getServerSocket().setSoTimeout(getTimeout());
+                    setSocket(getServerSocket().accept());
                     if(m_threadSleepLength > 0) { Thread.sleep(m_threadSleepLength); }
-                    m_socket.setSoTimeout(getTimeout());
+                    getSocket().setSoTimeout(getTimeout());
                     
-                    OutputStream out = m_socket.getOutputStream();
+                    OutputStream out = getSocket().getOutputStream();
                     if(getBanner() != null){sendBanner(out);};
                     
                     
-                    BufferedReader in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
-                    
+                    BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
                     attemptConversation(in, out);
-                    
                 }catch(Exception e){
                     throw new UndeclaredThrowableException(e);
                 } finally {
-                    try {                        
-                        m_socket.close();
+                    try {
+                        stopServer();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -147,7 +159,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
         };
     }
     
-    private void sendBanner(OutputStream out) throws IOException {
+    protected void sendBanner(OutputStream out) throws IOException {
         out.write(String.format("%s\r\n", getBanner()).getBytes());        
     }
     
@@ -183,12 +195,34 @@ public class SimpleServer extends SimpleConversationEndPoint {
             
             public void doRequest(OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", response).getBytes());
-                if(!m_socket.isClosed()) {
-                    m_socket.close();
-                }
+                stopServer();
             }
             
         };
+    }
+    
+    public void setServerSocket(ServerSocket serverSocket) {
+        m_serverSocket = serverSocket;
+    }
+    
+    public ServerSocket getServerSocket() {
+        return m_serverSocket;
+    }
+
+    public void setSocket(Socket socket) {
+        m_socket = socket;
+    }
+
+    public Socket getSocket() {
+        return m_socket;
+    }
+
+    protected void setServerThread(Thread serverThread) {
+        m_serverThread = serverThread;
+    }
+
+    protected Thread getServerThread() {
+        return m_serverThread;
     }
     
 }
