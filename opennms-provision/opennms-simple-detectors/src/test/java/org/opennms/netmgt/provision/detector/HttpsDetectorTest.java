@@ -53,13 +53,6 @@ public class HttpsDetectorTest {
     }
     
     @Test
-    public void testMyDetector() throws Exception {
-        
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(),new NullDetectorMonitor()));
-        
-    }
-    
-    @Test
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(2000);
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(),new NullDetectorMonitor()));
