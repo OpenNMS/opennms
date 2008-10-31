@@ -34,13 +34,8 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.ServiceDetector;
 
-public class IcmpDetector implements ServiceDetector {
-    
-    private int m_timeout;
-    private int m_retries;
-    private String m_serviceName;
+public class IcmpDetector extends AbstractDetector {
     
     protected IcmpDetector() {
         init();
@@ -49,30 +44,6 @@ public class IcmpDetector implements ServiceDetector {
     public void init() {
         setTimeout(Pinger.DEFAULT_TIMEOUT);
         setRetries(Pinger.DEFAULT_RETRIES);
-    }
-
-    public void setTimeout(int timeout) {
-        m_timeout = timeout;
-    }
-
-    public int getTimeout() {
-        return m_timeout;
-    }
-
-    public void setRetries(int retries) {
-        m_retries = retries;
-    }
-
-    public int getRetries() {
-        return m_retries;
-    }
-    
-    public void setServiceName(String serviceName) {
-        m_serviceName = serviceName;
-    }
-    
-    public String getServiceName() {
-        return m_serviceName;
     }
     
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
