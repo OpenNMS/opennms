@@ -97,7 +97,7 @@ public class ImapDetectorTest {
             
             public void onInit() {
                 setBanner("* NOT OK THIS IS A BANNER FOR IMAP");
-                addResponseHandler(contains("LOGOUT"), singleLineReply("* NOT OK"));
+                addResponseHandler(contains("LOGOUT"), singleLineRequest("* NOT OK"));
             }
         };
         

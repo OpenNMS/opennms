@@ -31,6 +31,7 @@
 package org.opennms.netmgt.provision.detector;
 
 
+
 public class SmtpDetector extends SimpleDetector{
     
     /**
@@ -44,9 +45,11 @@ public class SmtpDetector extends SimpleDetector{
     }
 
     public void onInit() {
-        addResponseHandler(startsWith("220"), singleLineReply("HELO LOCALHOST"));
-        addResponseHandler(startsWith("250"), singleLineReply("QUIT"));
-        addResponseHandler(startsWith("221"), null);
+        addMultilineResponseHandler(startsWith("220"), singleLineRequest("HELO LOCALHOST"));
+        addMultilineResponseHandler(startsWith("250"), singleLineRequest("QUIT"));
+        addMultilineResponseHandler(startsWith("221"), null);
     }
+    
+    
     
 }
