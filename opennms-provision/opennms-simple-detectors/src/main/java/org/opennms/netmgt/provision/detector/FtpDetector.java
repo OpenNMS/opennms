@@ -64,7 +64,7 @@ public class FtpDetector extends SimpleDetector implements ServiceDetector {
                 }
             }
             
-            return m_responseHandler.matches(codeString);
+            return getResponseHandler().matches(codeString);
         }
 
         public boolean matchResponseByString(String input) {

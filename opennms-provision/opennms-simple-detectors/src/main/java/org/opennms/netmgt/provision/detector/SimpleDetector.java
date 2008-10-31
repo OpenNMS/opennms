@@ -49,6 +49,7 @@ import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.conversation.Conversation;
 import org.opennms.netmgt.provision.conversation.SimpleConversationEndPoint;
+import org.opennms.netmgt.provision.exchange.Exchange;
 import org.opennms.netmgt.provision.exchange.RequestHandler;
 import org.opennms.netmgt.provision.exchange.ResponseHandler;
 
@@ -59,6 +60,31 @@ import org.opennms.netmgt.provision.exchange.ResponseHandler;
  */
 
 abstract public class SimpleDetector extends SimpleConversationEndPoint implements ServiceDetector {
+    
+    public static class MultilineDetectorExchange extends SimpleExchange implements Exchange {
+        
+        public MultilineDetectorExchange(ResponseHandler responseHandler, RequestHandler requestHandler) {
+            super(responseHandler, requestHandler);
+        }
+        
+        public boolean matchResponseByString(String input) {
+            
+            return false;
+        }
+
+        public boolean processResponse(BufferedReader in) throws IOException {
+           String line = null;
+            do {
+               line = in.readLine();
+               
+               if(!getResponseHandler().matches(line)) { return false; };
+               
+           }while(line !=null && line.length() > 0 && "-".equals(line.substring(3,4)));            
+            
+            return true;
+        }
+        
+    }
     
     private int m_port;
     private int m_retries;
@@ -186,8 +212,16 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         getConversation().addExchange(new SimpleExchange(bannerMatcher, requestHandler));
     }
     
+    /**
+     * Adds a SimpleExchange object to the conversation. Its a reads a single line then compares the line
+     * with the ResponseHandler that was passed in.
+     */
     protected void addResponseHandler(ResponseHandler responseHandler, RequestHandler requestHandler) {
         getConversation().addExchange(new SimpleExchange(responseHandler, requestHandler));
+    }
+    
+    protected void addMultilineResponseHandler(ResponseHandler responseHandler, RequestHandler requestHandler){
+        getConversation().addExchange(new MultilineDetectorExchange(responseHandler, requestHandler)); 
     }
     
     protected RequestHandler closeDetector() {

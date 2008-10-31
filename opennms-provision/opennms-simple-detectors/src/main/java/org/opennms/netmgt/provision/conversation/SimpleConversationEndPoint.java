@@ -43,16 +43,16 @@ import org.opennms.netmgt.provision.exchange.ResponseHandler;
 public class SimpleConversationEndPoint {
     
     public static class SimpleExchange implements Exchange{
-        protected ResponseHandler m_responseHandler;
+        private ResponseHandler m_responseHandler;
         private RequestHandler m_requestHandler;
         
         public SimpleExchange(ResponseHandler responseHandler, RequestHandler requestHandler) {
-            m_responseHandler = responseHandler;
-            m_requestHandler = requestHandler;
+            setResponseHandler(responseHandler);
+            setRequestHandler(requestHandler);
         }
 
         public boolean matchResponseByString(String response) {
-            return m_responseHandler.matches(response);
+            return getResponseHandler().matches(response);
         }
 
         public boolean processResponse(BufferedReader in) throws IOException {
@@ -65,10 +65,26 @@ public class SimpleConversationEndPoint {
         }
 
         public boolean sendRequest(OutputStream out) throws IOException {
-            if(m_requestHandler != null) {
-                m_requestHandler.doRequest(out);
+            if(getRequestHandler() != null) {
+                getRequestHandler().doRequest(out);
             }
             return true;
+        }
+
+        public void setResponseHandler(ResponseHandler responseHandler) {
+            m_responseHandler = responseHandler;
+        }
+
+        public ResponseHandler getResponseHandler() {
+            return m_responseHandler;
+        }
+
+        public void setRequestHandler(RequestHandler requestHandler) {
+            m_requestHandler = requestHandler;
+        }
+
+        public RequestHandler getRequestHandler() {
+            return m_requestHandler;
         }
         
     }
@@ -147,16 +163,6 @@ public class SimpleConversationEndPoint {
         m_conversation.addExchange(new SimpleExchange(responseHandler, requestHandler));
     }
     
-    protected RequestHandler singleLineReply(final String reply) {
-        return new RequestHandler() {
-
-            public void doRequest(OutputStream out) throws IOException {
-                out.write(String.format("%s\r\n", reply).getBytes());
-            }
-            
-        };
-    }
-    
     protected RequestHandler singleLineRequest(final String request) {
       return new RequestHandler() {
 
@@ -165,5 +171,18 @@ public class SimpleConversationEndPoint {
           }
           
       };
-  }
+    }
+    
+    protected RequestHandler multilineLineRequest(final String[] request) {
+        return new RequestHandler() {
+
+            public void doRequest(OutputStream out) throws IOException {
+                for(int i = 0; i < request.length; i++) {
+                    out.write(String.format("%s\r\n", request[i]).getBytes());
+                }
+            }
+          
+            
+        };
+    }
 }

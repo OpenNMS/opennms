@@ -60,7 +60,7 @@ public class HttpDetector extends SimpleDetector implements ServiceDetector {
         }
 
         public boolean processResponse(BufferedReader in) throws IOException {
-            if(m_responseHandler == null) {
+            if(getResponseHandler() == null) {
                 return true;
             }else {
                 try {
@@ -80,7 +80,7 @@ public class HttpDetector extends SimpleDetector implements ServiceDetector {
                             response.append(line);
                         }
                     }
-                    if (response.toString() != null && m_responseHandler.matches(response.toString())) {
+                    if (response.toString() != null && getResponseHandler().matches(response.toString())) {
                         System.out.println("Return from server was: " + response.toString());
                         if (m_checkReturnCode) {
                                                         
