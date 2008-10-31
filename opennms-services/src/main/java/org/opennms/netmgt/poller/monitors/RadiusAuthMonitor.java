@@ -111,6 +111,11 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      */
     public static final String DEFAULT_SECRET = "secret";
 
+    /**
+     * Default NAS-ID
+     */
+    
+    public static final String DEFAULT_NASID ="opennms";
 
     /**
      * Class constructor.
@@ -142,6 +147,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      *            <li>authtype - authentication type to use (pap or chap)
      *            <li>authport - port to poll for radius authentication
      *            <li>acctport - radius accounting port - used by
+     *            <li>nasid - the NAS identifier
      *            </ul>
      * @param iface
      *            The interface to poll
@@ -177,7 +183,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
         String password = ParameterMap.getKeyedString(parameters, "password", DEFAULT_PASSWORD);
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
-
+        String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
 	InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
 
@@ -189,7 +195,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
         } catch(InvalidParameterException ivpex) {
         	return logDown(Level.ERROR, "Radius parameter exception: " + ivpex.getMessage());
         }
-
+       
 
         for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
             try {
@@ -198,9 +204,12 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
                 ChapUtil chapUtil = new ChapUtil();
                 RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
                 RadiusAttribute userNameAttribute;
+                RadiusAttribute nasIdAttribute;
+                nasIdAttribute = new RadiusAttribute(RadiusAttributeValues.NAS_IDENTIFIER,nasid.getBytes());
                 userNameAttribute = new RadiusAttribute(RadiusAttributeValues.USER_NAME,user.getBytes());
                 log.debug(getClass().getName() + ": attempting Radius auth with authType: " + authType);
                 accessRequest.setAttribute(userNameAttribute);
+                accessRequest.setAttribute(nasIdAttribute);
                 if(authType.equalsIgnoreCase("chap")){
                     byte[] chapChallenge = chapUtil.getNextChapChallenge(16);
                     accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_PASSWORD, chapEncrypt(password, chapChallenge, chapUtil)));
