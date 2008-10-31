@@ -30,8 +30,12 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.server.SimpleServer;
@@ -58,17 +62,112 @@ public class SmtpDetectorTest {
         m_detector.setPort(m_server.getLocalPort());
     }
     
+    @After
+    public void tearDown() throws IOException {
+        m_server.stopServer();
+    }
+    
     @Test
-    public void testMyDetector() {
+    public void testDetectorFailWrongCodeExpectedMultilineRequest() throws Exception {
+        SimpleServer tempServer = new SimpleServer() {
+            
+            public void onInit() {
+                String[] multiLine = {"600 First line"};
+                
+                setBanner("220 ewhserver279.edgewebhosting.net");
+                addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
+                addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
+            }
+        };
+        
+        tempServer.init();
+        tempServer.startServer();
+        m_detector.setPort(tempServer.getLocalPort());
+        
+        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorFailIncompleteMultilineResponseFromServer() throws Exception {
+        SimpleServer tempServer = new SimpleServer() {
+            
+            public void onInit() {
+                String[] multiLine = {"250-First line", "400-Bogus second line"};
+                
+                setBanner("220 ewhserver279.edgewebhosting.net");
+                addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
+                addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
+            }
+        };
+        
+        tempServer.init();
+        tempServer.startServer();
+        m_detector.setPort(tempServer.getLocalPort());
+        
+        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorFailBogusSecondLine() throws Exception {
+        SimpleServer tempServer = new SimpleServer() {
+            
+            public void onInit() {
+                String[] multiLine = {"250-First line", "400-Bogus second line", "250 Requested mail action completed"};
+                
+                setBanner("220 ewhserver279.edgewebhosting.net");
+                addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
+                addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
+            }
+        };
+        
+        tempServer.init();
+        tempServer.startServer();
+        m_detector.setPort(tempServer.getLocalPort());
+        
+        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorFailWrongTypeOfBanner() throws Exception {
+        SimpleServer tempServer = new SimpleServer() {
+            
+            public void onInit() {
+                setBanner("Bogus");
+            }
+        };
+        
+        tempServer.init();
+        tempServer.startServer();
+        m_detector.setPort(tempServer.getLocalPort());
+        
+        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorFailServerStopped() throws IOException {
+        m_server.stopServer();
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorFailWrongPort() {
+        m_detector.setPort(1);
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorSucess() {
         assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
     }
     
     private SimpleServer getServer() {
         return new SimpleServer() {
-            
+             
             public void onInit() {
+                String[] multiLine = {"250-First line", "250-Second line", "250 Requested mail action completed"};
+                
                 setBanner("220 ewhserver279.edgewebhosting.net");
-                addResponseHandler(matches("HELO LOCALHOST"), singleLineReply("250-First line"));
+                addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
                 addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
             }
         };
