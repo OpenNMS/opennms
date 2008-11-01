@@ -18,7 +18,7 @@
 		//isl.setSharedASCIIString("1234567890");
 		
 		//required properties
-                isl.setCriteriaRestriction(" alarmid in (select alarmid from alarms)");
+                isl.setCriteriaRestriction(" eventid in (select lasteventid from alarms where alarmtype=1)");
 		isl.start();
 
 	</start-script>
@@ -33,13 +33,10 @@
 	<event-script language="beanshell">
 		event = bsf.lookupBean("event");
 		
-		//The following instructions filter events by UEI.
-		if (
-                   (event.uei.equals("uei.opennms.org/nodes/nodeUp")) 
-		|| (event.uei.equals("uei.opennms.org/nodes/nodeDown"))
-                   )
+		//The following instructions filter events by snmp data.
+		if ( event.snmp == null )
 		{
-			log.debug("Flushing event "+event.uei+" to client listening");
+			//log.debug("Flushing event "+event.uei+" to client listening");
 			isl.flushEvent(event);
 		}
 		
