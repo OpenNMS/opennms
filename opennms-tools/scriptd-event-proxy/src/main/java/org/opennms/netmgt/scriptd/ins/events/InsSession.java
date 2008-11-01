@@ -7,11 +7,14 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
@@ -75,8 +78,11 @@ class InsSession extends InsAbstractSession {
 	private final int DATAFLOW_STATUS = 3;
 
 	private int status = STARTING_SESSION_STATUS;
+	
+	private List<Event> m_events = new ArrayList<Event>();
 
 	InsSession(Socket server) throws IOException {
+	    ThreadCategory.setPrefix("OpenNMS.InsProxy");
 		log = ThreadCategory.getInstance(this.getClass());
 		this.server = server;
 		streamToClient = new PrintStream(server.getOutputStream());
@@ -139,158 +145,38 @@ class InsSession extends InsAbstractSession {
 				if (status == AUTHENTICATED_STATUS || status == DATAFLOW_STATUS) {
 					if (line.equalsIgnoreCase(LIST_CURRENT_ALARM_REQUEST)) {
 						log.debug("Sending alarms to the client");
+						refreshAlarms();
 						status = DATAFLOW_STATUS;
 						synchronized (streamToClient) {
 							streamToClient.println(ACTIVE_ALARM_BEGIN);
-
-							BeanFactoryReference bf = BeanUtils
-									.getBeanFactory("daoContext");
-							final EventDao eventDao = BeanUtils.getBean(bf,
-									"eventDao", EventDao.class);
-
-							TransactionTemplate transTemplate = BeanUtils
-									.getBean(bf, "transactionTemplate",
-											TransactionTemplate.class);
-							final StringWriter sw = (StringWriter) transTemplate
-									.execute(new TransactionCallback() {
-										public Object doInTransaction(
-												final TransactionStatus status) {
-											List<OnmsEvent> events = null;
-											StringWriter sw = new StringWriter();
-											try {
-												// TODO to control the query
-												final OnmsCriteria criteria = new OnmsCriteria(
-														OnmsEvent.class);
-//												criteria
-//														.add(Restrictions
-//																.sqlRestriction("eventuei = '"
-//																		+ alarmUEI
-//																		+ "' and alarmid not in (select alarmid from events where eventuei = '"
-//																		+ clearAlarmUEI
-//																		+ "')"));
-												criteria.add(Restrictions.sqlRestriction(criteriaRestriction));
-												events = eventDao
-														.findMatching(criteria);
-												if (log.isDebugEnabled())
-													log
-															.debug("Found "
-																	+ events
-																			.size()
-																	+ " open event/s (alarms)");
-												Iterator<OnmsEvent> ite = events
-														.iterator();
-												while (ite.hasNext()) {
-													OnmsEvent ev = ite.next();
-													try {
-														Event e = new Event();
-														e.setDbid(ev.getId());
-														e.setUei(ev
-																.getEventUei());
-														e
-																.setSource(ev
-																		.getEventSource());
-														if (ev.getNode() != null)
-															e.setNodeid(ev
-																	.getNode()
-																	.getId());
-														DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-													        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-													   //     DateFormat dfInstance = DateFormat
-													   //			.getDateInstance(DateFormat.FULL,DateFormat.FULL);
-														e
-																.setTime(dateFormat
-																		.format(ev
-																				.getEventTime()));
-														e
-																.setHost(ev
-																		.getEventHost());
-														e.setInterface(ev
-																.getIpAddr());
-														if (ev.getServiceType() != null)
-															e
-																	.setService(ev
-																			.getServiceType()
-																			.getName());
-														e
-																.setDescr(ev
-																		.getEventDescr());
-														Logmsg msg = new Logmsg();
-														msg
-																.setContent(ev
-																		.getEventLogMsg());
-														e.setLogmsg(msg);
-														e
-																.setSeverity(Constants
-																		.getSeverityString(ev
-																				.getEventSeverity()));
-//TODO FIXME SEND IFINDEX and IFALIAS To INS														
-//														if (ev.getIfIndex() != null) 
-//															e.setIfIndex(ev.getIfIndex().toString());
-														e.setIfIndex("-1");
-//														if (ev.getIfAlias() != null)
-//															e.setIfAlias(ev.getIfAlias());
-														e.setIfAlias("-1");
-														if (ev.getEventOperInstruct() != null)
-															e.setOperinstruct(ev.getEventOperInstruct());
-														if (ev.getEventParms() != null ) {
-														    Parms parms = Parameter.decode(ev.getEventParms());
-														
-														    if (parms != null ) e.setParms(parms);
-														}
-														AlarmData ad = new AlarmData();
-														OnmsAlarm onmsAlarm = ev
-																.getAlarm();
-														try {
-															if (onmsAlarm != null) {
-																ad
-																		.setReductionKey(onmsAlarm
-																				.getReductionKey());
-																ad
-																		.setAlarmType(onmsAlarm
-																				.getAlarmType());
-																ad
-																		.setClearKey(onmsAlarm
-																				.getClearKey());
-																e
-																		.setAlarmData(ad);
-															}
-														} catch (ObjectNotFoundException e1) {
-															log
-																	.warn("correlated alarm data not found "
-																			+ e1);
-															log
-																	.debug(
-																			"correlated alarm data not found ",
-																			e1);
-														}
-														e.marshal(sw);
-													} catch (Exception ex) {
-														log
-																.error(
-																		"Error while getting event ",
-																		ex);
-														return null;
-													}
-													sw.flush();
-												}
-											} catch (final RuntimeException e) {
-												log
-														.error(
-																"Error while getting events ",
-																e);
-												return null;
-											}
-											return sw;
-
-										}
-
-									});
-							if (sw != null)
-								streamToClient.print(sw.toString());
-							else
-								break readingFromClient;
-							streamToClient.println(ACTIVE_ALARM_END);
-							continue readingFromClient;
+							List<Event> events = getEvents();
+							if (events != null && events.size() > 0) {
+                                Iterator<Event> ite = events.iterator();
+                                while (ite.hasNext()) {
+                                    StringWriter sw = new StringWriter();
+                                    Event xmlEvent = ite.next();
+                                    try {
+                                        log.info("Marshal Event with id: " + xmlEvent.getDbid()); 
+                                        xmlEvent.marshal(sw);
+                                        log.info("Flushing Event with id: " + xmlEvent.getDbid()); 
+                                        sw.flush();
+                                        log.info("String Writer:" + sw.getBuffer().toString()); 
+                                        if (sw != null) {
+                                            streamToClient.print(sw.toString());
+                                        } else {
+                                            log.warn("String Writer is null");
+//                                          break readingFromClient;
+                                        }
+                                    } catch (MarshalException e) {
+                                        log.error("Marshall Exception: " + e);
+                                    } catch (ValidationException e) {
+                                        log.error("Validation Exception: " + e);
+                                    }
+                                }
+							}
+                            streamToClient.println(ACTIVE_ALARM_END);
+                            continue readingFromClient;
+							
 						}
 					} else {
 						if (line.equalsIgnoreCase(STOP_ALARM_REQUEST)) {
@@ -320,5 +206,194 @@ class InsSession extends InsAbstractSession {
 		else
 			return null;
 	}
+	
+	private Event getXMLEvent(OnmsEvent ev) {
+        log.info("Working on XML Event for id: " + ev.getId()); 
+        log.debug("Setting Event id: " + ev.getId()); 
+        Event e = new Event();
+        e.setDbid(ev.getId());
+
+        //UEI
+        if (ev.getEventUei() != null ) {
+            log.debug("Setting Event uei: " + ev.getEventUei()); 
+            e.setUei(ev.getEventUei());
+        } else {
+            log.warn("No Event uei found: skipping event....");
+            return null;
+        }
+
+        // Source
+        if (ev.getEventSource() != null ) {
+            log.debug("Setting Event source: " + ev.getEventSource()); 
+            e.setSource(ev.getEventSource());
+        } else {
+            log.info("No Event source found."); 
+        }
+
+        //nodeid
+        if (ev.getNode() != null) {
+            log.debug("Setting Event nodeid: " + ev.getNode().getId()); 
+            e.setNodeid(ev.getNode().getId());
+        } else {
+            log.info("No Event node found."); 
+        }
+
+
+        // timestamp
+        if (ev.getEventTime() != null) {
+            log.debug("Setting event date timestamp to GMT");
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            log.debug("Setting Event Time: " + ev.getEventTime()); 
+            e.setTime(dateFormat.format(ev.getEventTime()));
+        } else {
+            log.info("No Event time found."); 
+        }
+        
+        // host
+        if (ev.getEventHost() != null) {
+            log.debug("Setting Event Host: " + ev.getEventHost());
+            e.setHost(ev.getEventHost());
+        } else {
+            log.info("No Event host found.");
+        }
+        
+        // interface
+        if (ev.getIpAddr() != null) {
+            log.debug("Setting Event Interface/ipaddress: " + ev.getIpAddr());
+            e.setInterface(ev
+                           .getIpAddr());
+        } else {
+            log.info("No Event ip address found.");
+        }
+        
+        // Service Name
+        if (ev.getServiceType() != null) {
+            log.debug("Setting Event Service Name: " + ev.getServiceType().getName());
+            e.setService(ev.getServiceType().getName());
+        } else {
+            log.info("No Event service name found.");
+        }
+
+        // Description
+        if (ev.getEventDescr() != null ) {
+            log.debug("Setting Event Description");
+            e.setDescr(ev.getEventDescr());
+        } else {
+            log.info("No Event ip address found.");
+        }
+        
+        // Log message
+        if (ev.getEventLogMsg() != null) {
+            Logmsg msg = new Logmsg();
+            log.debug("Setting Event Log Message");
+            msg.setContent(ev.getEventLogMsg());
+            e.setLogmsg(msg);
+        } else {
+            log.info("No Event log Message found.");
+        }
+
+        // severity
+        if (ev.getEventSeverity() != null) {
+            log.debug("Setting Event Severity");
+            e.setSeverity(Constants.getSeverityString(ev.getEventSeverity()));
+        } else {
+            log.info("No Event severity found.");
+        }
+
+        //TODO FIXME SEND IFINDEX and IFALIAS To INS                                                        
+//          if (ev.getIfIndex() != null) 
+//              e.setIfIndex(ev.getIfIndex().toString());
+        e.setIfIndex("-1");
+//          if (ev.getIfAlias() != null)
+//              e.setIfAlias(ev.getIfAlias());
+        e.setIfAlias("-1");
+        
+        // operator Instruction
+        if (ev.getEventOperInstruct() != null) {
+            log.debug("Setting Event Operator Instruction");
+            e.setOperinstruct(ev.getEventOperInstruct());
+        } else {
+            log.info("No Event operator Instruction found.");
+        }
+
+        // parms
+        if (ev.getEventParms() != null ) {
+            Parms parms = Parameter.decode(ev.getEventParms());
+        
+            if (parms != null ) e.setParms(parms);
+        }
+
+        AlarmData ad = new AlarmData();
+        OnmsAlarm onmsAlarm = ev
+                .getAlarm();
+        try {
+            if (onmsAlarm != null) {
+                ad
+                        .setReductionKey(onmsAlarm
+                                .getReductionKey());
+                ad
+                        .setAlarmType(onmsAlarm
+                                .getAlarmType());
+                ad
+                        .setClearKey(onmsAlarm
+                                .getClearKey());
+                e
+                        .setAlarmData(ad);
+            }
+        } catch (ObjectNotFoundException e1) {
+            log
+                    .warn("correlated alarm data not found "
+                            + e1);
+        }
+        log
+        .info("return Event with id: " + ev.getId()); 
+        return e;
+    }
+	
+	private void refreshAlarms() {
+	    clearEvents();
+	    log.debug("Entering refresh alarms");
+        BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
+        final EventDao eventDao = BeanUtils.getBean(bf,"eventDao", EventDao.class);
+        TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
+        try {
+                transTemplate.execute(new TransactionCallback() {
+                public Object doInTransaction(final TransactionStatus status) {
+                    log.debug("entering transaction call back: selection with criteria: " + criteriaRestriction);
+                    final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
+                    criteria.add(Restrictions.sqlRestriction(criteriaRestriction));
+                    List<OnmsEvent> events = eventDao.findMatching(criteria);
+                    log.info("Found "+ events.size() + " event/s (with criteria): " + criteriaRestriction);
+                    if (events != null && events.size()>0) {
+                        Iterator<OnmsEvent> ite = events.iterator();
+                        while (ite.hasNext()) {
+                            Event xmlEvent = getXMLEvent(ite.next());
+                            if (xmlEvent != null) addEvent(xmlEvent);
+                        }
+                    }
+                    return new Object();
+                }
+
+            });
+        
+        } catch (final RuntimeException e) {
+            log.error("Error while getting events ",e);
+        }
+        
+    }
+	
+	private void addEvent(Event event) {
+	    m_events.add(event);	    
+	}
+	
+    private void clearEvents() {
+        m_events.clear();
+        
+    }
+
+    private List<Event> getEvents() {
+        return m_events;      
+    }
 
 }
