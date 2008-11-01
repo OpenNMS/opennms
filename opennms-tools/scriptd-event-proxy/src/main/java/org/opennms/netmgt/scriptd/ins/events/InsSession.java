@@ -304,10 +304,10 @@ class InsSession extends InsAbstractSession {
         //TODO FIXME SEND IFINDEX and IFALIAS To INS                                                        
 //          if (ev.getIfIndex() != null) 
 //              e.setIfIndex(ev.getIfIndex().toString());
-        e.setIfIndex("-1");
+        e.setIfIndex(-1);
 //          if (ev.getIfAlias() != null)
 //              e.setIfAlias(ev.getIfAlias());
-        e.setIfAlias("-1");
+        e.setIfAlias("ifalias");
         
         // operator Instruction
         if (ev.getEventOperInstruct() != null) {
