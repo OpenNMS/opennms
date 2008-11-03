@@ -100,10 +100,6 @@ public class HttpCollector implements ServiceCollector {
     //copy and the key won't require the service name as  part of the key.
     private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
     
-    //  Group name is arbitrary (there is no such thing as a "group" in the http collection config),
-    //Similarly, collection is always at the node level
-    private AttributeGroupType m_groupType=new AttributeGroupType("httpcollection","all");
-    
     private NumberFormat parser = null;
     
     private NumberFormat rrdFormatter =  null;
@@ -150,7 +146,6 @@ public class HttpCollector implements ServiceCollector {
         HttpCollectionSet(CollectionAgent agent, Map<String, String> parameters) {
             m_agent = agent;
             m_parameters = parameters;
-            m_collectionResource=new HttpCollectionResource(agent);
             m_status=ServiceCollector.COLLECTION_FAILED;
         }
         
@@ -164,6 +159,7 @@ public class HttpCollector implements ServiceCollector {
             List<Uri> uriDefs = collection.getUris().getUriCollection();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
+                m_collectionResource=new HttpCollectionResource(m_agent, uriDef);
                 try {
                     doCollection(this);
                 } catch (HttpCollectorException e) {
@@ -370,6 +366,7 @@ public class HttpCollector implements ServiceCollector {
         if (matches) {
             log().debug("processResponse: found matching attributes: "+matches);
             List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
+            AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
             
             for (Attrib attribDef : attribDefs) {
                 if (! attribDef.getType().matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
@@ -378,7 +375,7 @@ public class HttpCollector implements ServiceCollector {
                         HttpCollectionAttribute bute = 
                             new HttpCollectionAttribute(
                                                         collectionSet.getResource(),
-                                                        new HttpCollectionAttributeType(attribDef, m_groupType), 
+                                                        new HttpCollectionAttributeType(attribDef, groupType), 
                                                         attribDef.getAlias(),
                                                         attribDef.getType(), 
                                                         num);
@@ -391,7 +388,7 @@ public class HttpCollector implements ServiceCollector {
                     HttpCollectionAttribute bute =
                         new HttpCollectionAttribute(
                                                     collectionSet.getResource(),
-                                                    new HttpCollectionAttributeType(attribDef, m_groupType),
+                                                    new HttpCollectionAttributeType(attribDef, groupType),
                                                     attribDef.getAlias(),
                                                     attribDef.getType(),
                                                     m.group(attribDef.getMatchGroup()));
@@ -669,9 +666,9 @@ public class HttpCollector implements ServiceCollector {
         CollectionAgent m_agent;
         AttributeGroup m_attribGroup;
         
-        HttpCollectionResource(CollectionAgent agent) {
+        HttpCollectionResource(CollectionAgent agent, Uri uriDef) {
             m_agent=agent;
-            m_attribGroup=new AttributeGroup(this, m_groupType);
+            m_attribGroup=new AttributeGroup(this, new AttributeGroupType(uriDef.getName(), "all"));
         }
         
         public void storeResults(List<HttpCollectionAttribute> results) {
