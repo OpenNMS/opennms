@@ -184,7 +184,7 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                detectorMonitor.info(this, e, "%s: Did not connec to to address within timeout: %d attempt: %d", getServiceName(), timeout, attempts);
+                detectorMonitor.info(this, e, "%s: Did not connect to to address within timeout: %d attempt: %d", getServiceName(), timeout, attempts);
             } catch (IOException e) {
                 detectorMonitor.info(this, e, "%s: An unexpected I/O exception occured contacting address %s",getServiceName(), address.getHostAddress());
             } catch (Throwable t) {
