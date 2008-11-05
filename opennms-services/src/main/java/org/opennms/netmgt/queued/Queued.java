@@ -41,10 +41,10 @@ package org.opennms.netmgt.queued;
 import java.util.Set;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
