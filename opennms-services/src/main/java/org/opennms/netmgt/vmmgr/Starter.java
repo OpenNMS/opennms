@@ -195,6 +195,18 @@ public class Starter {
             IOUtils.closeQuietly(in);
         }
 
+        try {
+            File versionFile = getVersionFile();
+            if (versionFile.canRead()) {
+                in = new FileInputStream(propertiesFile);
+                props.load(in);
+            }
+        } catch (IOException e) {
+            die("Error trying to read properties file '" + propertiesFile + "': " + e, e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+
         for (Entry<Object, Object> entry : props.entrySet()) {
             String systemValue = System.getProperty(entry.getKey().toString());
             if (systemValue != null) {
@@ -229,6 +241,13 @@ public class Starter {
         String homeDir = System.getProperty("opennms.home");
         File etcDir = new File(homeDir, "etc");
         File propertiesFile = new File(etcDir, "opennms.properties");
+        return propertiesFile;
+    }
+
+    private File getVersionFile() {
+        String homeDir = System.getProperty("opennms.home");
+        File etcDir = new File(homeDir, "etc");
+        File propertiesFile = new File(etcDir, "version.properties");
         return propertiesFile;
     }
 
