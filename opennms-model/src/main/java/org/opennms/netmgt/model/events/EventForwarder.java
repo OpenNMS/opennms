@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -31,41 +31,21 @@
  */
 package org.opennms.netmgt.model.events;
 
-import java.util.Collection;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 
-public interface EventSubscriptionService {
+public interface EventForwarder {
     
     /**
-     * Registers an event listener that is interested in all events
+     * Called by a service to send an event to eventd
      */
-    public void addEventListener(EventListener listener);
+    public void sendNow(Event event);
 
     /**
-     * Registers an event listener interested in the UEIs in the passed list
+     * Called by a service to send a set of events to eventd
      */
-    public void addEventListener(EventListener listener, Collection<String> ueis);
+    public void sendNow(Log eventLog);
 
-    /**
-     * Registers an event listener interested in the passed UEI
-     */
-    public void addEventListener(EventListener listener, String uei);
-
-    /**
-     * Removes a registered event listener
-     */
-    public void removeEventListener(EventListener listener);
-
-    /**
-     * Removes a registered event listener - the UEI list indicates the list of
-     * events the listener is no more interested in
-     */
-    public void removeEventListener(EventListener listener, Collection<String> ueis);
-
-    /**
-     * Removes a registered event listener - the UEI indicates an event the
-     * listener is no more interested in
-     */
-    public void removeEventListener(EventListener listener, String uei);
 
 
 }
