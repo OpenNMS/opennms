@@ -37,31 +37,10 @@
 //
 package org.opennms.netmgt.eventd;
 
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 
-/**
- * 
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- */
-public interface EventIpcManager extends EventSubscriptionService, EventProxy {
-    /**
-     * Called by a service to send an event to eventd
-     */
-    public void sendNow(Event event);
-
-    /**
-     * Called by a service to send a set of events to eventd
-     */
-    public void sendNow(Log eventLog);
-
-    /*
-     * TODO: Make a sendNow that takes a list of events so we don't need to
-     * mess with Log everywhere that sends multiple events.
-     */
+public interface EventIpcManager extends EventSubscriptionService, EventProxy, EventForwarder {
 
 }
