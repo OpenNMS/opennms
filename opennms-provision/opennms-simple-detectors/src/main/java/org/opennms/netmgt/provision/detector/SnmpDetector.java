@@ -4,6 +4,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -24,7 +25,7 @@ public class SnmpDetector extends AbstractDetector {
     private String m_oid;
     private String m_forceVersion;
     private String m_vbvalue;
-    private SnmpAgentConfig m_agentConfig;
+    private SnmpAgentConfigFactory m_agentConfigFactory;
     
     protected SnmpDetector() {
         setServiceName("SNMP");
@@ -42,7 +43,7 @@ public class SnmpDetector extends AbstractDetector {
         try {
 
             String oid = getOid(); //ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
-            SnmpAgentConfig agentConfig = getAgentConfig(); //SnmpPeerFactory.getInstance().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address); //SnmpPeerFactory.getInstance().getAgentConfig(address);
             String expectedValue = null;
             
             agentConfig.setPort(getPort());
@@ -113,12 +114,12 @@ public class SnmpDetector extends AbstractDetector {
         return m_vbvalue;
     }
 
-    public void setAgentConfig(SnmpAgentConfig agentConfig) {
-        m_agentConfig = agentConfig;
+    public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
+        m_agentConfigFactory = agentConfigFactory;
     }
 
-    public SnmpAgentConfig getAgentConfig() {
-        return m_agentConfig;
+    public SnmpAgentConfigFactory getAgentConfigFactory() {
+        return m_agentConfigFactory;
     }
     
 
