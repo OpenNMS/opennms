@@ -30,116 +30,88 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertTrue;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.springframework.core.io.ClassPathResource;
 
 
 
 public class SnmpDetectorTest {
-    /*
-     * FIXME: Assertions are not checked
-     * 
-     * Set this flag to false before checking in code.  Use this flag to
-     * test against a v3 compatible agent running on the localhost
-     * until the MockAgent code is finished.
-     */
     
-    @Test
-    public void testBogus() {
+    public static class AnAgentConfigFactory implements SnmpAgentConfigFactory{
+
+        public SnmpAgentConfig getAgentConfig(InetAddress address) {
+            
+            SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
+            agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
+            
+            return agentConfig;
+        }
         
     }
-//    private boolean m_runAssertions = false;
-//    
-//    private SnmpDetector m_detector = null;
-//    
-//    public static TestSuite suite() {
-//        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SnmpPluginTest.class);
-//    }
-//
-//    /**
-//     * Required method for TestCase
-//     */
-//    protected void setUp() throws Exception {
-//        assertNotNull("The org.opennms.snmp.strategyClass must be set to run this test", System.getProperty("org.opennms.snmp.strategyClass"));
-//        super.setUp();
-//        if (m_detector == null) {
-//            m_detector = new SnmpDetector();
-//        }
-//        m_runSupers = false;
-//    }
-//
-//    /**
-//     * Required method for TestCase
-//     */
-//    protected void tearDown() throws Exception {
-//        super.tearDown();
-//    }
-//            
-//    /**
-//     * This test works against a live v1/2c compatible agent until
-//     * the MockAgent code is completed.
-//     * @throws UnknownHostException 
-//     */
-//    public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
-//        InetAddress address = InetAddress.getByName(myLocalHost());
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("forced version", "snmpv1");
-//        
-//        m_detector.setForceVersion("snmpv1");
-//        if (m_runAssertions) {
-//            assertTrue("protocol is not supported", m_detector.isServiceDetected(address, new NullDetectorMonitor()));
-//        }
-//    }
-//
-//    /**
-//     * This test works against a live v1/2c compatible agent until
-//     * the MockAgent code is completed.
-//     * @throws UnknownHostException 
-//     */
-//    public void testIsExpectedValue() throws UnknownHostException {
-//        InetAddress address = InetAddress.getByName(myLocalHost());
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("vbvalue", "\\.1\\.3\\.6\\.1\\.4\\.1.*");
-//        m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
-//        if (m_runAssertions) {
-//            assertTrue("protocol is not supported", m_detector.isServiceDetected(address, new NullDetectorMonitor()));
-//        }
-//    }
-//    
-//    /*
-//     * Class under test for boolean isProtocolSupported(InetAddress)
-//     */
-//    public final void testIsProtocolSupportedInetAddress() throws UnknownHostException {
-//        if (m_runAssertions) {
-//            assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(myLocalHost()), new NullDetectorMonitor()));
-//        }
-//    }
-//    
-//    public final void testIsV3ProtocolSupported() throws ValidationException, IOException, IOException, MarshalException {
-//        setVersion(SnmpAgentConfig.VERSION3);
-//        Reader rdr = new StringReader(getSnmpConfig());
-//        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-//        
-//        m_detector.setAgentConfig(SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(myLocalHost())));
-//        
-//        if (m_runAssertions) {
-//            assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(myLocalHost()), new NullDetectorMonitor()));
-//        }
-//    }
-//
-//    public final void testIsV3ForcedToV1Supported() throws ValidationException, IOException, IOException, MarshalException {
-//        setVersion(SnmpAgentConfig.VERSION3);
-//        Reader rdr = new StringReader(getSnmpConfig());
-//        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-//        
-//        m_detector.setAgentConfig(SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(myLocalHost())));
-//        
-//        Map<String, Object> qualifiers = new HashMap<String, Object>();
-//        qualifiers.put("force version", "snmpv1");
-//        
-//        m_detector.setForceVersion("snmpv1");
-//
-//        if (m_runAssertions) {
-//            assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(myLocalHost()), new NullDetectorMonitor()));
-//        }
+    
+    private static int TEST_PORT = 1691;
+    private static String TEST_IP_ADDRESS = "127.0.0.1";
+    
+    private MockSnmpAgent m_snmpAgent;
+    private SnmpDetector m_detector;
+    
+    @Before
+    public void setUp() throws InterruptedException {
+        if(m_detector == null) {
+            m_detector = new SnmpDetector();
+            m_detector.setRetries(2);
+            m_detector.setTimeout(500);
+            m_detector.setPort(TEST_PORT);
+            m_detector.setAgentConfigFactory(new AnAgentConfigFactory());
+        }
+        
+        if(m_snmpAgent == null) {
+            m_snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/provision/detector/snmpTestData1.properties"), String.format("%s/%s", TEST_IP_ADDRESS, TEST_PORT));
+        }
+        
+    }
+    
+    @After
+    public void tearDown() throws InterruptedException {
+        m_snmpAgent.shutDownAndWait();
+    }
+    
+    @Test
+    public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
+        m_detector.setForceVersion("snmpv1");
+        m_detector.setAgentConfigFactory(new AnAgentConfigFactory());
+        
+        assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testIsExpectedValue() throws UnknownHostException {      
+        m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
+        assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+    }
+    
+    @Test
+     public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
+         
+         assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+         
+     }
+    
+//    @Test
+//    public final void testIsV3ProtocolSupported() throws  IOException, IOException {      
+//      m_detector.setForceVersion("snmpv1");
+//      assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+//      
 //    }
 }
