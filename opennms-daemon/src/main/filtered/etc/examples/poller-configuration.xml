@@ -276,6 +276,13 @@
              		<parameter key="match-type" value="regex" /><!-- For finding a Windows drive with a given label regardless of letter -->
              		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
 		</service>
+		<service name="UnixTime" interval="300000" user-defined="false" status="on">
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="retry" value="1"/>
+             		<parameter key="protocol" value="tcp"/><!-- UDP also supported -->
+             		<parameter key="port" value="37"/>
+             		<parameter key="allowed-skew" value="300"/><!-- Seconds, i.e. 5 minutes -->
+		</service>
 		<!--
 		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
 		<service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
@@ -563,6 +570,7 @@
 	<monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
 	<monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor"/>
 	<monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor"/>
+	<monitor service="UnixTime" 	class-name="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor"/>
 	<!-- 
 	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
 	 -->

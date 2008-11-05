@@ -49,9 +49,8 @@
 	<element name="translation">
 		<annotation>
 			<documentation>
-				List of OpenNMS events for which the passive status
-				keeper will subscribe to translate to an event for a
-				passive node
+				List of OpenNMS events for which the Event Translator 
+				will subscribe for translation.
 			</documentation>
 		</annotation>
 		<complexType>

@@ -255,7 +255,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="user-defined" use="required">
+      <attribute name="user-defined" use="optional" default="false">
         <annotation>
           <documentation>Specifies if the protocol was added by the user via
           the UI.</documentation>
