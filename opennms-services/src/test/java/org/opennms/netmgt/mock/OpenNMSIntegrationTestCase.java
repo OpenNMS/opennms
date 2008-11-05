@@ -166,7 +166,14 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
         } finally {
             IOUtils.closeQuietly(in);
         }
-        
+
+        try {
+            in = new FileInputStream(new File(etcDestDir, "version.properties"));
+            opennmsProperties.load(in);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+
         System.getProperties().putAll(opennmsProperties);
         
         // EventIpcManager is not self initializing yet

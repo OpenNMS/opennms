@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.web.WebSecurityUtils;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,
@@ -144,16 +145,18 @@ public class PathOutageFactory extends Object {
      * @param String nodeID
      *            the nodeID of the node being checked
      */
-    public static String[] getLabelAndStatus(String nodeID, Connection conn) throws SQLException {
+    public static String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException {
 
         int countManagedSvcs = 0;
         int countOutages = 0;
         String result[] = new String[3];
         result[1] = "Cleared";
         result[2] = "Unmanaged";
+        
+        int nodeID = WebSecurityUtils.safeParseInt(nodeIDStr);
 
         PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
-        stmt.setString(1, nodeID);
+        stmt.setInt(1, nodeID);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             result[0] = rs.getString(1);
@@ -162,7 +165,7 @@ public class PathOutageFactory extends Object {
         stmt.close();
 
         stmt = conn.prepareStatement(COUNT_MANAGED_SVCS);
-        stmt.setString(1, nodeID);
+        stmt.setInt(1, nodeID);
         rs = stmt.executeQuery();
         while (rs.next()) {
             countManagedSvcs = rs.getInt(1);
@@ -172,7 +175,7 @@ public class PathOutageFactory extends Object {
 
         if(countManagedSvcs > 0) {
             stmt = conn.prepareStatement(COUNT_OUTAGES);
-            stmt.setString(1, nodeID);
+            stmt.setInt(1, nodeID);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 countOutages = rs.getInt(1);

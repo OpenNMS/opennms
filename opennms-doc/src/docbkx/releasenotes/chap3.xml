@@ -8,7 +8,7 @@
 	<section>
 		<title>Current Release</title>
 
-		<para>A few small issues have been found in rc1 that will not make
+		<para>A few small issues were found in the release candidates that did not make
 		it into 1.6.0.  They will be a part of the 1.6.1 release.</para>
 		
 		<itemizedlist>
