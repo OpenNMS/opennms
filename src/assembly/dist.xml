@@ -25,7 +25,7 @@
     </moduleSet>
     <moduleSet>
       <includes>
-        <include>org.opennms:opennms-daemon</include>
+        <include>org.opennms:opennms-base-assembly</include>
       </includes>
       <binaries>
         <outputDirectory>/</outputDirectory>
