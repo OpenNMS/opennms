@@ -32,15 +32,12 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.dao;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -55,16 +52,16 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, InitializingBean {
+public class TransactionAwareEventForwarder implements EventForwarder, InitializingBean {
     
     public static class PendingEventsSynchronization extends TransactionSynchronizationAdapter {
         
         private PendingEventsHolder m_eventsHolder;
-        private EventIpcManager m_eventIpcManager;
+        private EventForwarder m_eventForwarder;
 
-        public PendingEventsSynchronization(PendingEventsHolder eventsHolder, EventIpcManager eventIpcManager) {
+        public PendingEventsSynchronization(PendingEventsHolder eventsHolder, EventForwarder eventForwarder) {
             m_eventsHolder = eventsHolder;
-            m_eventIpcManager = eventIpcManager;
+            m_eventForwarder = eventForwarder;
         }
 
         @Override
@@ -75,14 +72,14 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
             
             List<Log> pendingEvents = m_eventsHolder.consumePendingEvents();
             for(Log events : pendingEvents) {
-                m_eventIpcManager.sendNow(events);
+                m_eventForwarder.sendNow(events);
             }
         }
 
         @Override
         public void afterCompletion(int status) {
-            if (TransactionSynchronizationManager.hasResource(m_eventIpcManager)) {
-                TransactionSynchronizationManager.unbindResource(m_eventIpcManager);
+            if (TransactionSynchronizationManager.hasResource(m_eventForwarder)) {
+                TransactionSynchronizationManager.unbindResource(m_eventForwarder);
             }
         }
         
@@ -123,47 +120,15 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
 
     }
 
-    private EventIpcManager m_eventIpcManager;
+    private EventForwarder m_eventForwarder;
     
     
-    public void setEventIpcManager(EventIpcManager eventIpcManager) {
-        m_eventIpcManager = eventIpcManager;
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
 
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_eventIpcManager != null, "eventIpcManager property must be set");
-    }
-
-    public void addEventListener(EventListener listener, Collection<String> ueis) {
-        m_eventIpcManager.addEventListener(listener, ueis);
-    }
-
-    public void addEventListener(EventListener listener, String uei) {
-        m_eventIpcManager.addEventListener(listener, uei);
-    }
-
-    public void addEventListener(EventListener listener) {
-        m_eventIpcManager.addEventListener(listener);
-    }
-
-    public void removeEventListener(EventListener listener, Collection<String> ueis) {
-        m_eventIpcManager.removeEventListener(listener, ueis);
-    }
-
-    public void removeEventListener(EventListener listener, String uei) {
-        m_eventIpcManager.removeEventListener(listener, uei);
-    }
-
-    public void removeEventListener(EventListener listener) {
-        m_eventIpcManager.removeEventListener(listener);
-    }
-    
-    public void send(Event event) throws EventProxyException {
-        sendNow(event);
-    }
-
-    public void send(Log eventLog) throws EventProxyException {
-        sendNow(eventLog);
+        Assert.state(m_eventForwarder != null, "eventForwarder property must be set");
     }
 
     public void sendNow(Event event) {
@@ -183,7 +148,7 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
     }
     
     public List<Log> requestPendingEventsList() {
-        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventIpcManager);
+        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventForwarder);
         if (eventsHolder != null && (eventsHolder.hasPendingEvents() || eventsHolder.isSynchronizedWithTransaction())) {
             eventsHolder.requested();
             if (!eventsHolder.hasPendingEvents()) {
@@ -204,10 +169,10 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
             }
             holderToUse.requested();
             TransactionSynchronizationManager.registerSynchronization(
-                    new PendingEventsSynchronization(holderToUse, m_eventIpcManager));
+                    new PendingEventsSynchronization(holderToUse, m_eventForwarder));
             holderToUse.setSynchronizedWithTransaction(true);
             if (holderToUse != eventsHolder) {
-                TransactionSynchronizationManager.bindResource(m_eventIpcManager, holderToUse);
+                TransactionSynchronizationManager.bindResource(m_eventForwarder, holderToUse);
             }
         }
 
@@ -220,7 +185,7 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
             
         }
 
-        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventIpcManager);
+        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventForwarder);
         if (eventsHolder != null && eventHolderHolds(eventsHolder, pendingEvents)) {
             // It's the transactional Connection: Don't close it.
             eventsHolder.released();

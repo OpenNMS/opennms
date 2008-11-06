@@ -35,6 +35,7 @@
 package org.opennms.netmgt.utils;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -47,9 +48,9 @@ import org.opennms.test.DaoTestConfigBean;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TransactionAwareEventIpcManagerProxyTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+public class TransactionAwareEventForwarderTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     
-    private TransactionAwareEventIpcManagerProxy m_proxy;
+    private TransactionAwareEventForwarder m_proxy;
     private int m_eventNumber = 1;
     private MockEventIpcManager m_eventIpcManager;
     
@@ -64,13 +65,13 @@ public class TransactionAwareEventIpcManagerProxyTest extends AbstractTransactio
         return new String[] {
           "META-INF/opennms/applicationContext-dao.xml",
           "META-INF/opennms/applicationContext-daemon.xml",
-          "org/opennms/netmgt/utils/applicationContext-testTAEventIpcMgrTest.xml",
+          "org/opennms/netmgt/utils/applicationContext-testTAEventForwarderTest.xml",
           "META-INF/opennms/mockEventIpcManager.xml",
           "META-INF/opennms/smallEventConfDao.xml"
         };
     }
     
-    public void setTransactionAwareEventIpcManagerProxy(TransactionAwareEventIpcManagerProxy proxy) {
+    public void setTransactionAwareEventForwarder(TransactionAwareEventForwarder proxy) {
         m_proxy = proxy;
     }
     
