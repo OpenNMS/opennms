@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -255,8 +256,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		return false;
     }
     
-	public List translateEvent(Event e) {
-		ArrayList events = new ArrayList();
+	public List<Event> translateEvent(Event e) {
+		ArrayList<Event> events = new ArrayList<Event>();
 		for (Iterator it = getTranslationSpecs().iterator(); it.hasNext();) {
 			TranslationSpec spec = (TranslationSpec) it.next();
 			events.addAll(spec.translate(e));
@@ -620,11 +621,18 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			}
 			querier.execute(args);
 			if (querier.getCount() < 1) {
-				log().warn("No results found for query "+querier.reproduceStatement(args)+". Returning null");
+				log().info("No results found for query "+querier.reproduceStatement(args)+". Returning null");
 				return null;
 			}
-			else
-				return querier.getResult().toString();
+			else {
+			    Object result = querier.getResult();
+			    log().debug("getResult: result of single result querier is:"+result);
+			    if (result != null) {
+			        return result.toString();
+			    } else {
+			        return null;
+			    }
+			}
 		}
 		
 	}
@@ -743,11 +751,19 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			Parms parms = e.getParms();
 			if (parms == null) return null;
 			
-			for (Iterator it = parms.getParmCollection().iterator(); it.hasNext();) {
-				Parm parm = (Parm) it.next();
-				if (parm.getParmName().equals(attrName))
-					return (parm.getValue() == null ? "" : parm.getValue().getContent());
-					
+			for (Parm parm : parms.getParmCollection()) {
+				
+                if (parm.getParmName().equals(attrName)) {
+                    log().debug("getAttributeValue: eventParm name: '"+parm.getParmName()+" equals translation parameter name: '"+attrName);
+                    return (parm.getValue() == null ? "" : parm.getValue().getContent());
+                }
+                
+				String trimmedAttrName = StringUtils.removeStart(attrName, "~");
+				
+                if (attrName.startsWith("~") && (parm.getParmName().matches(trimmedAttrName))) {
+                    log().debug("getAttributeValue: eventParm name: '"+parm.getParmName()+" matches translation parameter name expression: '"+trimmedAttrName);
+                    return (parm.getValue() == null ? "" : parm.getValue().getContent());
+				}
 			}
 			return null;
 		}
