@@ -110,7 +110,7 @@
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
     <module>opennms-webapp</module>
-    <module>opennms-daemon</module>
+    <module>opennms-base-assembly</module>
   </modules>
   <build>
   <pluginManagement>
@@ -379,7 +379,7 @@
               <autocommit>true</autocommit>
               <onError>continue</onError>
               <srcFiles>
-                <srcFile>opennms-daemon/src/main/filtered/etc/create.sql</srcFile>
+                <srcFile>opennms-base-assembly/src/main/filtered/etc/create.sql</srcFile>
               </srcFiles>
             </configuration>
           </execution>
@@ -782,7 +782,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-daemon</artifactId>
+        <artifactId>opennms-base-assembly</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -833,6 +833,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-service</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
