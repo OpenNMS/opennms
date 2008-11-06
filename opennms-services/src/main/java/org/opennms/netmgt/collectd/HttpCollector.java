@@ -357,9 +357,29 @@ public class HttpCollector implements ServiceCollector {
     }
     
     private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet) {
-        log().debug("processResponse: ");
+        log().debug("processResponse:");
+        log().debug("responseBody = " + responseBodyAsString);
+        log().debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
-        Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches());
+        int flags = 0;
+        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence())
+            flags |= Pattern.CANON_EQ;
+        if (collectionSet.getUriDef().getUrl().getCaseInsensitive())
+            flags |= Pattern.CASE_INSENSITIVE;
+        if (collectionSet.getUriDef().getUrl().getComments())
+            flags |= Pattern.COMMENTS;
+        if (collectionSet.getUriDef().getUrl().getDotall())
+            flags |= Pattern.DOTALL;
+        if (collectionSet.getUriDef().getUrl().getLiteral())
+            flags |= Pattern.LITERAL;
+        if (collectionSet.getUriDef().getUrl().getMultiline())
+            flags |= Pattern.MULTILINE;
+        if (collectionSet.getUriDef().getUrl().getUnicodeCase())
+            flags |= Pattern.UNICODE_CASE;
+        if (collectionSet.getUriDef().getUrl().getUnixLines())
+            flags |= Pattern.UNIX_LINES;
+        log().debug("flags = " + flags);
+        Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches(), flags);
         Matcher m = p.matcher(responseBodyAsString);
         
         final boolean matches = m.matches();
