@@ -66,7 +66,8 @@ import junit.framework.Assert;
 
 public class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
-    private static final String DAEMON_DIRECTORY = "opennms-daemon";
+    // TODO: rename this constant
+    private static final String DAEMON_DIRECTORY = "opennms-base-assembly";
 
     public static URL getUrlForResource(Object obj, String resource) {
         URL url = getClass(obj).getResource(resource);
