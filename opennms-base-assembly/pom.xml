@@ -144,6 +144,10 @@
       <artifactId>jmta</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>apache-log4j-extras</artifactId>
+    </dependency>
     <!-- We depend on our JDBC database driver here instead of in the above
          OpenNMS dependencies that use the database because the database is
          configured in opennms-database.xml, which is in this project.
