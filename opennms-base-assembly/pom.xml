@@ -99,10 +99,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-import</artifactId>
     </dependency>
+<!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-service</artifactId>
     </dependency>
+-->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-jetty</artifactId>
