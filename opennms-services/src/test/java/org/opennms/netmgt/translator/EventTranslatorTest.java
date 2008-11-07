@@ -37,6 +37,9 @@ package org.opennms.netmgt.translator;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
@@ -52,6 +55,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
@@ -228,9 +232,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
     
     public void testTranslateEvent() throws MarshalException, ValidationException {
     	
-    		//printNodeInfo();
-
-    		// test non matching uei match fails
+   		// test non matching uei match fails
         Event pse = createTestEvent("someOtherUei", "Router", "192.168.1.1", "ICMP", "Down");
         assertTrue(m_config.translateEvent(pse).isEmpty());
         
@@ -268,19 +270,66 @@ public class EventTranslatorTest extends MockObjectTestCase {
         Event te3 = createTestEvent("translationTest", "Router", "xxx192.168.1.2", "ICMP", "Down");
         assertTrue(m_config.translateEvent(te3).isEmpty());
     }
+    
+    public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException {
+        Reader rdr = new StringReader(getLinkDownTranslation());
+        m_config = new EventTranslatorConfigFactory(rdr, m_db);
+        EventTranslatorConfigFactory.setInstance(m_config);
+        
+        m_translator = EventTranslator.getInstance();
+        m_translator.setEventManager(m_eventMgr);
+        m_translator.setConfig(EventTranslatorConfigFactory.getInstance());
+        //m_translator.setDataSource(m_db);
+        
+        
+        Connection c = m_db.getConnection();
+        Statement stmt = c.createStatement();
+        stmt.executeUpdate("update snmpinterface set snmpifname = 'david', snmpifalias = 'p-brane' WHERE nodeid = 1 and snmpifindex = 2");
+        stmt.close();
+        c.close();
+        
+        List<Event> translatedEvents = m_config.translateEvent(createLinkDownEvent());
+        assertNotNull(translatedEvents);
+        assertEquals(1, translatedEvents.size());
+        assertEquals(3, translatedEvents.get(0).getParms().getParmCount());
+        assertEquals(".1.3.6.1.2.1.2.2.1.1.2", translatedEvents.get(0).getParms().getParm(0).getParmName());
+        assertEquals("ifName", translatedEvents.get(0).getParms().getParm(1).getParmName());
+        assertEquals("ifAlias", translatedEvents.get(0).getParms().getParm(2).getParmName());
+        assertEquals("david", translatedEvents.get(0).getParms().getParm(1).getValue().getContent());
+        assertEquals("p-brane", translatedEvents.get(0).getParms().getParm(2).getValue().getContent());
+    }
 
-//	private void printNodeInfo() {
-//		RowProcessor rp = new RowProcessor() {
-//			public void processRow(ResultSet rs) throws SQLException {
-//				System.err.println("nodeid: "+rs.getString("nodeid")+", nodeLabel: "+rs.getString("nodeLabel")+" ipaddr: "+rs.getString("ipaddr"));
-//			}
-//		};
-//		
-//		Querier q = new Querier(m_db, "select node.nodeid as nodeid, node.nodeLabel as nodeLabel, ipinterface.ipaddr as ipaddr from node, ipinterface where node.nodeid = ipinterface.nodeid and node.nodeLabel = 'Router' and ipinterface.ipaddr = '192.168.1.1' and ipinterface.isManaged != 'D' ", rp);
-//		q.execute();
-//	}
+	private String getLinkDownTranslation() {
+	    String linkDownConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+	    		"<event-translator-configuration xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+	    		"  xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/translator-configuration http://www.opennms.org/xsd/config/translator-configuration.xsd \">\n" + 
+	    		"  <translation>\n" + 
+	    		"    <!-- This translation is predifined for integration with Hyperic-HQ server and the OpenNMS integrations found in\n" + 
+	    		"         the $OPENNMS_HOME/contrib/hyperic-integration directory -->\n" + 
+	    		"    <event-translation-spec uei=\"uei.opennms.org/generic/traps/SNMP_Link_Down\">\n" + 
+	    		"      <mappings>\n" + 
+	    		"        <mapping>\n" + 
+	    		"          <assignment name=\"ifName\" type=\"parameter\">\n" + 
+	    		"            <value type=\"sql\" result=\"SELECT snmp.snmpIfName FROM snmpInterface snmp WHERE snmp.nodeid = ? AND snmp.snmpifindex = ?\" >\n" + 
+                "              <value type=\"field\" name=\"nodeid\" matches=\".*\" result=\"${0}\" />\n" + 
+	    		"              <value type=\"parameter\" name=\"~^\\.1\\.3\\.6\\.1\\.2\\.1\\.2\\.2\\.1\\.1\\.([0-9]*)$\" matches=\".*\" result=\"${0}\" />\n" + 
+	    		"            </value>\n" + 
+	    		"          </assignment>\n" + 
+                "          <assignment name=\"ifAlias\" type=\"parameter\">\n" + 
+                "            <value type=\"sql\" result=\"SELECT snmp.snmpIfAlias FROM snmpInterface snmp WHERE snmp.nodeid = ? AND snmp.snmpifindex = ?\" >\n" + 
+                "              <value type=\"field\" name=\"nodeid\" matches=\".*\" result=\"${0}\" />\n" + 
+                "              <value type=\"parameter\" name=\"~^\\.1\\.3\\.6\\.1\\.2\\.1\\.2\\.2\\.1\\.1\\.([0-9]*)$\" matches=\".*\" result=\"${0}\" />\n" + 
+                "            </value>\n" + 
+                "          </assignment>\n" + 
+	    		"        </mapping>\n" + 
+	    		"      </mappings>\n" + 
+	    		"    </event-translation-spec>\n" + 
+	    		"  </translation>\n" + 
+	    		"</event-translator-configuration>";
+	    return linkDownConfig;
+    }
 
-	private void validateTranslatedEvent(Event event) {
+    private void validateTranslatedEvent(Event event) {
 		assertEquals(m_translator.getName(), event.getSource());
 		assertEquals(3L, event.getNodeid());
 		assertEquals("www.opennms.org", event.getHost());
@@ -295,6 +344,13 @@ public class EventTranslatorTest extends MockObjectTestCase {
     		List ueis = m_config.getUEIList();
     		assertEquals(1, ueis.size());
     		assertTrue(ueis.contains("uei.opennms.org/services/translationTest"));
+    }
+    
+    private Event createLinkDownEvent() {
+        EventBuilder builder = new EventBuilder("uei.opennms.org/generic/traps/SNMP_Link_Down", "Trapd");
+        builder.setField("nodeid", "1");
+        builder.addParam(".1.3.6.1.2.1.2.2.1.1.2", "2");
+        return builder.getEvent();
     }
 
     private Event createTestEvent(String type, String nodeLabel, String ipAddr, String serviceName, String status) {

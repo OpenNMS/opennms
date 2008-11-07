@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -570,7 +571,6 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
     /*
      * If Threshold has Filters defined for selected ThresholdGroup/DataSource/ResourceType then, apply filter rules.
-     * TODO: What happend if getAttributeValue returns null ?
      */
     private boolean passedThresholdFilters(File resourceDir, String thresholdGroup, String resourceType, ThresholdEntity thresholdEntity) {
 
@@ -587,11 +587,16 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = getAttributeValue(resourceDir, resourceType, f.getField());
             if (attr != null) {
-            	Pattern p = Pattern.compile(f.getContent());
-            	Matcher m = p.matcher(attr);
-                boolean pass = m.find();
-                log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
-                if (pass) return true;
+                try {
+                    Pattern p = Pattern.compile(f.getContent());
+                    Matcher m = p.matcher(attr);
+                    boolean pass = m.find();
+                    log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
+                    if (pass) return true;
+                } catch (PatternSyntaxException e) {
+                    log().warn("passedThresholdFilters: the regular expression " + f.getContent() + " is invalid: " + e.getMessage(), e);
+                    return false;
+                }
             }
         }
         return false;

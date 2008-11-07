@@ -46,6 +46,7 @@ import java.util.Map;
 import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Test;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -102,13 +103,15 @@ public class HttpCollectorTest extends OpenNMSTestCase {
                 "      <uri name=\"test-document-count\">\n" + 
                 "        <url path=\"/index.php/HttpCollector_UnitTest_${ipaddr}\"\n" + 
                 "             user-agent=\"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) " +
-                "AppleWebKit/412 (KHTML, like Gecko) Safari/412\" \n" + 
-                "             matches=\"(?s).*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*Document Type:\\s+(\\w+).*\" " +
+                "AppleWebKit/412 (KHTML, like Gecko) Safari/412\" \n" +
+                "             dotall=\"true\" case-insensitive=\"true\" unicode-case=\"true\" \n" +
+                "             matches=\".*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*Document Type:\\s+(goá).*Some Number:\\s+([0-9,]+).*\" " +
                 "             response-range=\"100-399\" virtual-host=\"www.opennms.org\">\n" + 
                 "        </url>\n" + 
                 "        <attributes>\n" + 
                 "          <attrib alias=\"documentCount\" match-group=\"1\" type=\"counter32\"/>\n" +
                 "          <attrib alias=\"documentType\" match-group=\"3\" type=\"string\"/>\n" + 
+                "          <attrib alias=\"documentType\" match-group=\"4\" type=\"gauge32\"/>\n" + 
                 "        </attributes>\n" + 
                 "      </uri>\n" + 
                 "    </uris>\n" + 
@@ -128,6 +131,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
      */
+    @Test
     public final void testCollect() throws Exception {
         
         InetAddress opennmsDotOrg = InetAddress.getByName("www.opennms.org");
