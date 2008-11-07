@@ -246,8 +246,6 @@ doStart(){
 	if [ $TEST -gt 0 ]; then
 		echo "- enabling JPDA debugging on port 8001"
 		JPDA="-Xdebug -Xnoagent -Djava.compiler=none -Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n"
-	else
-		JPDA=""
 	fi
 
 
@@ -485,7 +483,6 @@ CONTROLLER_OPTIONS="-Dopennms.home=$OPENNMS_HOME"
 if [ x"$ADDITIONAL_CONTROLLER_OPTIONS" != x"" ]; then
 	CONTROLLER_OPTIONS="$CONTROLLER_OPTIONS $ADDITIONAL_CONTROLLER_OPTIONS"
 fi
-
 
 TEST=0
 NOEXECUTE=""
