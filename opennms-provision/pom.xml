@@ -12,9 +12,9 @@
     <module>opennms-provision-api</module>
     <module>opennms-simple-detectors</module>
     <module>opennms-snmp-scanners</module>
+    <module>opennms-provision-service</module>
 <!--
     <module>opennms-scanners</module>
-    <module>opennms-provision-service</module>
 -->
   </modules>
 </project>
