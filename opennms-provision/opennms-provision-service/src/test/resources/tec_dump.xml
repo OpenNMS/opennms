@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!DOCTYPE myData [
+    <!ENTITY auml    "&#228;" >
+    <!ENTITY ouml    "&#246;" >
+    <!ENTITY uuml    "&#252;" >
+    <!ENTITY szlig   "&#223;" >
+  ]>
+<this:model-import xmlns:this="http://www.example.org/model-import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalLocation="http://www.example.org/model-import model-import.xsd" date-stamp="2006-03-09T00:03:09" foreign-source="matt:">
+	<this:node node-label="david" parent-node-label="apknd" foreign-id="4243">
+		<this:interface ip-addr="172.20.1.204" status="1" snmp-primary="S" descr="VPN interface">
+			<this:monitored-service service-name="ICMP"/>
+			<this:monitored-service service-name="HTTP"/>
+		</this:interface>
+		<this:interface ip-addr="172.20.1.201" status="1" snmp-primary="P" descr="Management interface">
+			<this:monitored-service service-name="ICMP"/>
+			<this:monitored-service service-name="SNMP"/>
+		</this:interface>
+        <this:category name="AC"/>
+        <this:category name="UK"/>
+        <this:category name="low"/>
+	</this:node>
+</this:model-import>
