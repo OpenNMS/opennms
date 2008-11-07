@@ -96,6 +96,7 @@
     <module>opennms-model</module>
     <module>opennms-config-utils</module>
     <module>opennms-dao</module>
+    <module>opennms-daemon</module>
     <module>opennms-icmp</module>
     <module>opennms-rrd</module>
     <module>opennms-snmp</module>
@@ -169,7 +170,7 @@
          <additionalConfig>
            <file>
              <name>.settings/org.eclipse.jdt.core.prefs</name>
-             <url>http://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
            </file>
          </additionalConfig>
        </configuration>
@@ -755,6 +756,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-correlator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-daemon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
