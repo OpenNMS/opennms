@@ -79,11 +79,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
     /**
      * Closes the JRobin RrdDb.
      */
-    public void closeFile(Object rrdFile) throws Exception {
+    public void closeFile(final Object rrdFile) throws Exception {
         ((RrdDb) rrdFile).close();
     }
 
-    public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
+    public Object createDefinition(final String creator, final String directory, final String rrdName, int step, final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
 
@@ -120,7 +120,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * closing. TODO: Change the interface here to create the file and return it
      * opened.
      */
-    public void createFile(Object rrdDef) throws Exception {
+    public void createFile(final Object rrdDef) throws Exception {
         if (rrdDef == null) {
             return;
         }
@@ -132,7 +132,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
     /**
      * Opens the JRobin RrdDb by name and returns it.
      */
-    public Object openFile(String fileName) throws Exception {
+    public Object openFile(final String fileName) throws Exception {
         RrdDb rrd = new RrdDb(fileName);
         return rrd;
     }
@@ -140,7 +140,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
     /**
      * Creates a sample from the JRobin RrdDb and passes in the data provided.
      */
-    public void updateFile(Object rrdFile, String owner, String data) throws Exception {
+    public void updateFile(final Object rrdFile, final String owner, final String data) throws Exception {
         Sample sample = ((RrdDb) rrdFile).createSample();
         sample.setAndUpdate(data);
     }
@@ -154,7 +154,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
             if(!s_initialized) {
                 RrdDb.setDefaultFactory("FILE");
                 String factory = RrdConfig.getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
-                RrdDb.setDefaultFactory(factory );
+                RrdDb.setDefaultFactory(factory);
                 s_initialized=true;
             }
             String home = System.getProperty("opennms.home");
@@ -175,11 +175,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
     /**
      * Fetch the last value from the JRobin RrdDb file.
      */
-    public Double fetchLastValue(String fileName, String ds, int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+    public Double fetchLastValue(final String fileName, final String ds, final int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         return fetchLastValue(fileName, ds, "AVERAGE", interval);
     }
 
-    public Double fetchLastValue(String fileName, String ds, String consolidationFunction, int interval)
+    public Double fetchLastValue(final String fileName, final String ds, final String consolidationFunction, final int interval)
             throws org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
@@ -211,7 +211,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         }
     }
     
-    public Double fetchLastValueInRange(String fileName, String ds, int interval, int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+    public Double fetchLastValueInRange(final String fileName, final String ds, final int interval, final int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
         	rrd = new RrdDb(fileName);
@@ -257,7 +257,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         }
     }
 
-    private Color getColor(String colorValue) {
+    private Color getColor(final String colorValue) {
         int colorVal = Integer.parseInt(colorValue, 16);
         return new Color(colorVal);
     }
@@ -265,14 +265,14 @@ public class JRobinRrdStrategy implements RrdStrategy {
     // For compatibility with RRDtool defs, the colour value for
     // LINE and AREA is optional. If it's missing, the line is rendered
     // invisibly.
-    private Color getColorOrInvisible(String[] array, int index) {
+    private Color getColorOrInvisible(final String[] array, final int index) {
         if (array.length > index) {
             return getColor(array[index]);
         }
         return new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
-    public InputStream createGraph(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+    public InputStream createGraph(final String command, final File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         return createGraphReturnDetails(command, workDir).getInputStream();
     }
 
@@ -285,7 +285,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * stream returning the bytes of the PNG image is returned.
      */
 
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
+    public RrdGraphDetails createGraphReturnDetails(final String command, final File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
 
         try {
             String[] commandArray = tokenize(command, " \t", false);
@@ -318,7 +318,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
     }
 
 
-    protected RrdGraphDef createGraphDef(File workDir, String[] commandArray) throws RrdException {
+    protected RrdGraphDef createGraphDef(final File workDir, final String[] commandArray) throws RrdException {
         RrdGraphDef graphDef = new RrdGraphDef();
         graphDef.setImageFormat("PNG");
         long start = 0;
@@ -590,7 +590,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
 		*/
 	}
     
-    private String[] tokenize(String line, String delimiters, boolean processQuotes) {
+    private String[] tokenize(final String line, final String delimiters, final boolean processQuotes) {
         String passthroughTokens = "lcrjgsJ"; /* see org.jrobin.graph.RrdGraphConstants.MARKERS */
         return tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes, passthroughTokens);
     }
@@ -599,7 +599,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * @param colorArg Should have the form COLORTAG#RRGGBB
      * @see http://www.jrobin.org/support/man/rrdgraph.html
      */
-    private void parseGraphColor(RrdGraphDef graphDef, String colorArg) throws IllegalArgumentException {
+    private void parseGraphColor(final RrdGraphDef graphDef, final String colorArg) throws IllegalArgumentException {
         // Parse for format COLORTAG#RRGGBB
         String[] colorArgParts = tokenize(colorArg, "#", false);
         if (colorArgParts.length != 2) {
@@ -703,7 +703,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
      *          will be passed through unescaped.
      * @return
      */
-    public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted, String tokens) {
+    public static String[] tokenizeWithQuotingAndEscapes(final String line, final String delims, final boolean processQuoted, final String tokens) {
         Category log = ThreadCategory.getInstance(StringUtils.class);
         List<String> tokenList = new LinkedList<String>();
     
@@ -711,7 +711,9 @@ public class JRobinRrdStrategy implements RrdStrategy {
         boolean quoting = false;
         boolean escaping = false;
         boolean debugTokens = Boolean.getBoolean("org.opennms.netmgt.rrd.debugTokens");
-    
+        if (!log.isDebugEnabled())
+            debugTokens = false;
+        
         if (debugTokens)
             log.debug("tokenize: line=" + line + " delims=" + delims);
         for (int i = 0; i < line.length(); i++) {
@@ -783,7 +785,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return (String[]) tokenList.toArray(new String[tokenList.size()]);
     }
     
-    public static char[] escapeIfNotPathSepInDEF(char encountered, char escaped, StringBuffer currToken) {
+    public static char[] escapeIfNotPathSepInDEF(final char encountered, final char escaped, final StringBuffer currToken) {
     	if ( ('\\' != File.separatorChar) || (! currToken.toString().startsWith("DEF:")) ) {
     		return new char[] { escaped };
     	} else {

@@ -65,7 +65,9 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     }
 
     public void visit(CollectionSetVisitor visitor) {
-        log().debug("Visiting attribute "+this);
+        if (log().isDebugEnabled()) {
+            log().debug("Visiting attribute "+this);
+        }
         visitor.visitAttribute(this);
         visitor.completeAttribute(this);
     }

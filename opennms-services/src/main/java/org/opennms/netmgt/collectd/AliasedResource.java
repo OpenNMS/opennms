@@ -41,12 +41,12 @@ import org.opennms.netmgt.model.RrdRepository;
 
 public class AliasedResource extends SnmpCollectionResource {
     
-    private IfInfo m_ifInfo;
-    private String m_ifAliasComment;
-    private String m_domain;
-    private String m_ifAlias;
+    private final IfInfo m_ifInfo;
+    private final String m_ifAliasComment;
+    private final String m_domain;
+    private final String m_ifAlias;
 
-    public AliasedResource(ResourceType resourceType, String domain, IfInfo ifInfo, String ifAliasComment, String ifAlias) {
+    public AliasedResource(final ResourceType resourceType, final String domain, final IfInfo ifInfo, final String ifAliasComment, final String ifAlias) {
         super(resourceType);
         m_domain = domain;
         m_ifInfo = ifInfo;
@@ -66,9 +66,8 @@ public class AliasedResource extends SnmpCollectionResource {
         return m_domain;
     }
 
-    public File getResourceDir(RrdRepository repository) {
-        File rrdBaseDir = repository.getRrdBaseDir();
-        File domainDir = new File(rrdBaseDir, getDomain());
+    public File getResourceDir(final RrdRepository repository) {
+        File domainDir = new File(repository.getRrdBaseDir(), getDomain());
         File aliasDir = new File(domainDir, getAliasDir());
         return aliasDir;
     }
@@ -89,9 +88,11 @@ public class AliasedResource extends SnmpCollectionResource {
         return getIfInfo().isScheduledForCollection();
     }
 
-    public boolean shouldPersist(ServiceParameters serviceParameters) {
+    public boolean shouldPersist(final ServiceParameters serviceParameters) {
         boolean shdPrsist = (serviceParameters.aliasesEnabled() && getAliasDir() != null && !getAliasDir().equals("")) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
-        log().debug("shouldPersist = " + shdPrsist);
+        if (log().isDebugEnabled()) {
+            log().debug("shouldPersist = " + shdPrsist);
+        }
         return shdPrsist;
     }
 
@@ -103,13 +104,12 @@ public class AliasedResource extends SnmpCollectionResource {
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
 	
-	for (Iterator<AttributeGroup> it = getGroups().iterator(); it.hasNext();) {
-	    AttributeGroup group = (AttributeGroup) it.next();
-	    AttributeGroup aliased = new AliasedGroup(this, group);
-	    aliased.visit(visitor);
-	}
+        for (Iterator<AttributeGroup> it = getGroups().iterator(); it.hasNext();) {
+            AttributeGroup aliased = new AliasedGroup(this, it.next());
+            aliased.visit(visitor);
+        }
 	
-	visitor.completeResource(this);
+        visitor.completeResource(this);
     }
 
     public Collection<AttributeGroup> getGroups() {
