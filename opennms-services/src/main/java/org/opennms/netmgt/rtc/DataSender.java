@@ -45,12 +45,11 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -74,9 +73,9 @@ import org.opennms.netmgt.xml.rtc.EuiLevel;
  * which it does by maintaining a 'SendRequest' runnable queue so as to not
  * block the RTCManager
  * 
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
 final class DataSender implements Fiber {
     /**
@@ -85,10 +84,10 @@ final class DataSender implements Fiber {
     private Map<String,RTCCategory> m_categories;
 
     /**
-     * The listeners like the webui that send a URL to which the data is to be
+     * The listeners like the WebUI that send a URL to which the data is to be
      * sent
      */
-    private Map<String, List<HttpPostInfo>> m_catUrlMap;
+    private Map<String, Set<HttpPostInfo>> m_catUrlMap;
 
     /**
      * The data sender thread pool
@@ -98,10 +97,10 @@ final class DataSender implements Fiber {
     /**
      * The queue to which data send requests are queued
      */
-    private FifoQueue m_dataSenderQ;
+    private FifoQueue<Runnable> m_dataSenderQ;
 
     /**
-     * The category to xml mapper
+     * The category to XML mapper
      */
     private EuiLevelMapper m_euiMapper;
 
@@ -160,8 +159,8 @@ final class DataSender implements Fiber {
     public DataSender(Map<String, RTCCategory> categories, int numSenders) {
         m_categories = categories;
 
-        // create the category url map
-        m_catUrlMap = new HashMap<String, List<HttpPostInfo>>();
+        // create the category URL map
+        m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
 
         // create and start the data sender pool
         m_dsrPool = new RunnableConsumerThreadPool("DataSenderPool", 0.6f, 1.0f, numSenders);
@@ -177,7 +176,7 @@ final class DataSender implements Fiber {
     }
 
     /**
-     * Start the datasender threadpool
+     * Start the data sender thread pool
      */
     public synchronized void start() {
         m_status = STARTING;
@@ -195,6 +194,10 @@ final class DataSender implements Fiber {
         m_status = RUNNING;
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(this.getClass());
+    }
+
     /**
      * <P>
      * Shutdown the data sender thread pool
@@ -202,22 +205,20 @@ final class DataSender implements Fiber {
     public synchronized void stop() {
         m_status = STOP_PENDING;
 
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        log.info("DataSender - shutting down the data sender pool");
+        log().info("DataSender - shutting down the data sender pool");
         try {
             m_dsrPool.stop();
         } catch (Exception e) {
-            log.error("Error shutting down data sender pool", e);
+            log().error("Error shutting down data sender pool", e);
         }
 
         m_status = STOPPED;
 
-        log.info("DataSender shutdown complete");
+        log().info("DataSender shutdown complete");
     }
 
     /**
-     * Returns a name/id for this fiber
+     * Returns a name/ID for this fiber
      */
     public String getName() {
         return "OpenNMS.RTC.DataSender";
@@ -231,19 +232,17 @@ final class DataSender implements Fiber {
     }
 
     /**
-     * Subscribe - Add the recd. URL and related info to the category->Urls map
-     * so the sendData() can send out to appropriate Urls for each category.
+     * Subscribe - Add the received URL and related info to the category->URLs map
+     * so the sendData() can send out to appropriate URLs for each category.
      * Also send the latest info for the category
      */
     public synchronized void subscribe(String url, String catlabel, String user, String passwd) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
         // send category data to the newly subscribed URL
         // look up info for this category
-        RTCCategory cat = (RTCCategory) m_categories.get(catlabel);
+        RTCCategory cat = m_categories.get(catlabel);
         if (cat == null) {
             // oops! category for which we have no info!
-            log.warn("RTC: No information available for category: " + catlabel);
+            log().warn("RTC: No information available for category: " + catlabel);
             return;
         }
 
@@ -252,15 +251,15 @@ final class DataSender implements Fiber {
         try {
             postInfo = new HttpPostInfo(url, catlabel, user, passwd);
         } catch (MalformedURLException mue) {
-            log.warn("ERROR subscribing: Invalid URL \'" + url + "\' - Data WILL NOT be SENT to the specified url");
+            log().warn("ERROR subscribing: Invalid URL \'" + url + "\' - Data WILL NOT be SENT to the specified url");
             return;
         }
 
         // Add the URL to the list for the specified category
-        List<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
+        Set<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
         if (urlList == null) {
             // create one
-            urlList = new ArrayList<HttpPostInfo>();
+            urlList = new TreeSet<HttpPostInfo>();
             urlList.add(postInfo);
             m_catUrlMap.put(catlabel, urlList);
         } else {
@@ -268,16 +267,16 @@ final class DataSender implements Fiber {
             if (!urlList.contains(postInfo))
                 urlList.add(postInfo);
             else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
+                if (log().isDebugEnabled()) {
+                    log().debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
                 }
 
                 return;
             }
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
+        if (log().isDebugEnabled()) {
+            log().debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
         }
 
         // send data
@@ -292,36 +291,36 @@ final class DataSender implements Fiber {
 
             inr = new PipedMarshaller(euidata).getReader();
 
-            if (log.isDebugEnabled())
-                log.debug("DataSender: posting data to: " + url);
+            if (log().isDebugEnabled())
+                log().debug("DataSender: posting data to: " + url);
 
             inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
 
             byte[] tmp = new byte[1024];
             int bytesRead;
             while ((bytesRead = inp.read(tmp)) != -1) {
-                if (log.isDebugEnabled()) {
+                if (log().isDebugEnabled()) {
                     if (bytesRead > 0)
-                        log.debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
+                        log().debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
                 }
             }
 
             // return current thread to its previous priority
             oldPriority = setCurrentThreadPriority(oldPriority);
 
-            if (log.isDebugEnabled())
-                log.debug("DataSender: posted data for category: " + catlabel);
+            if (log().isDebugEnabled())
+                log().debug("DataSender: posted data for category: " + catlabel);
         } catch (IOException ioE) {
-            log.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", ioE);
+            log().warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", ioE);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } catch (java.lang.OutOfMemoryError oe) {
-            log.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", oe);
+            log().warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", oe);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } catch (RuntimeException e) {
-            log.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", e);
+            log().warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", e);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } catch (Throwable t) {
-            log.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", t);
+            log().warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", t);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } finally {
             IOUtils.closeQuietly(inp);
@@ -330,44 +329,39 @@ final class DataSender implements Fiber {
     }
 
     /**
-     * Unsubscribe - remove the recd. URL and related info from the
-     * category->Urls map so the sendData() will know when it sends data out
+     * Unsubscribe - remove the received URL and related info from the
+     * category->URLs map so the sendData() will know when it sends data out
      */
     public synchronized void unsubscribe(String urlStr) {
         URL url = null;
-        Category log = ThreadCategory.getInstance(this.getClass());
 
         try {
             url = new URL(urlStr);
         } catch (MalformedURLException mue) {
-            log.warn("ERROR unsubscribing: Invalid URL: " + url);
+            log().warn("ERROR unsubscribing: Invalid URL: " + url);
             return;
         }
 
         // go through the hashtable entries and remove entries with
-        // the specified url
-        String key;
-        List value;
-        Iterator vuIter = m_catUrlMap.keySet().iterator();
-        while (vuIter.hasNext()) {
-            key = (String) vuIter.next();
-            value = (List) m_catUrlMap.get(key);
+        // the specified URL
+        Set<HttpPostInfo> value;
+        for (String key : m_catUrlMap.keySet()) {
+            value = m_catUrlMap.get(key);
 
             if (value == null)
                 continue;
 
-            ListIterator listIter = value.listIterator();
-            while (listIter.hasNext()) {
-                HttpPostInfo postInfo = (HttpPostInfo) listIter.next();
+            Iterator<HttpPostInfo> postSet = value.iterator();
+            while (postSet.hasNext()) {
+                HttpPostInfo postInfo = postSet.next();
                 if (url.equals(postInfo.getURL())) {
-                    // remove current entry from list
-                    listIter.remove();
+                    postSet.remove();
                 }
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("Unsubscribed URL: " + url);
+        if (log().isDebugEnabled())
+            log().debug("Unsubscribed URL: " + url);
     }
 
     /**
@@ -375,33 +369,28 @@ final class DataSender implements Fiber {
      * have changed
      */
     public synchronized void sendData() {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        log.debug("In DataSender sendData()");
+        log().debug("In DataSender sendData()");
 
         // loop through and send info
-        Iterator catsIter = m_categories.values().iterator();
-        while (catsIter.hasNext()) {
-            RTCCategory cat = (RTCCategory) catsIter.next();
-
+        for (RTCCategory cat : m_categories.values()) {
             // get label
             String catlabel = cat.getLabel();
 
-            if (log.isDebugEnabled())
-                log.debug("DataSender:sendData(): Category \'" + catlabel);
+            if (log().isDebugEnabled())
+                log().debug("DataSender:sendData(): Category \'" + catlabel);
 
             // get the post info for this category
-            List urlList = (List) m_catUrlMap.get(catlabel);
+            Set<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
             if (urlList == null || urlList.size() <= 0) {
                 // a category that no one is listening for?
-                if (log.isDebugEnabled())
-                    log.debug("DataSender: category \'" + catlabel + "\' has no listeners");
+                if (log().isDebugEnabled())
+                    log().debug("DataSender: category \'" + catlabel + "\' has no listeners");
 
                 continue;
             }
 
-            if (log.isDebugEnabled())
-                log.debug("DataSender: category \'" + catlabel + "\' has listeners - converting to xml...");
+            if (log().isDebugEnabled())
+                log().debug("DataSender: category \'" + catlabel + "\' has listeners - converting to xml...");
 
             // Run at a higher than normal priority since we do have to send
             // the update on time
@@ -411,57 +400,57 @@ final class DataSender implements Fiber {
             try {
                 euidata = m_euiMapper.convertToEuiLevelXML(cat);
             } catch (java.lang.OutOfMemoryError oe) {
-                log.warn("DataSender: unable to convert data to xml for category: " + catlabel, oe);
+                log().warn("DataSender: unable to convert data to xml for category: " + catlabel, oe);
                 setCurrentThreadPriority(Thread.NORM_PRIORITY);
                 continue;
             } catch (Throwable t) {
-                log.warn("DataSender: unable to convert data to xml for category: " + catlabel, t);
+                log().warn("DataSender: unable to convert data to xml for category: " + catlabel, t);
                 setCurrentThreadPriority(Thread.NORM_PRIORITY);
             }
 
             // do a HTTP POST if subscribed
             if (urlList != null && urlList.size() > 0) {
-                Iterator urlIter = urlList.listIterator();
+                Iterator<HttpPostInfo> urlIter = urlList.iterator();
                 while (urlIter.hasNext()) {
-                    HttpPostInfo postInfo = (HttpPostInfo) urlIter.next();
+                    HttpPostInfo postInfo = urlIter.next();
 
                     Reader inr = null;
                     InputStream inp = null;
                     try {
                         inr = new PipedMarshaller(euidata).getReader();
 
-                        if (log.isDebugEnabled())
-                            log.debug("DataSender: posting data to: " + postInfo.getURLString());
+                        if (log().isDebugEnabled())
+                            log().debug("DataSender: posting data to: " + postInfo.getURLString());
 
                         inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
 
-                        if (log.isDebugEnabled())
-                            log.debug("DataSender: posted data for category: " + catlabel);
+                        if (log().isDebugEnabled())
+                            log().debug("DataSender: posted data for category: " + catlabel);
                         
 
                         byte[] tmp = new byte[1024];
                         int bytesRead;
                         while ((bytesRead = inp.read(tmp)) != -1) {
-                            if (log.isDebugEnabled()) {
+                            if (log().isDebugEnabled()) {
                                 if (bytesRead > 0)
-                                    log.debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
+                                    log().debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
                             }
                         }
 
                         postInfo.clearErrors();
 
                     } catch (IOException e) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
+                        log().warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
                         postInfo.incrementErrors();
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (java.lang.OutOfMemoryError e) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
+                        log().warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (RuntimeException e) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
+                        log().warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (Throwable t) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + t.getClass().getName() + ": " + t.getMessage(), t);
+                        log().warn("DataSender: unable to send data for category: " + catlabel + " due to " + t.getClass().getName() + ": " + t.getMessage(), t);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } finally {
                         IOUtils.closeQuietly(inp);
@@ -473,7 +462,7 @@ final class DataSender implements Fiber {
                         // unsubscribe the URL
                         urlIter.remove();
 
-                        log.warn("URL " + postInfo.getURLString() + " UNSUBSCRIBED due to reaching error limit " + postInfo.getErrors());
+                        log().warn("URL " + postInfo.getURLString() + " UNSUBSCRIBED due to reaching error limit " + postInfo.getErrors());
                     }
                 }
             }
