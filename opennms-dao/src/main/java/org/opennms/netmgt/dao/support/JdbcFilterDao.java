@@ -35,8 +35,6 @@
  */
 package org.opennms.netmgt.dao.support;
 
-import java.io.PushbackReader;
-import java.io.StringReader;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -45,11 +43,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.*;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
@@ -671,8 +670,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             // Merge extracted strings back into expression
             regex = Pattern.compile("###@(\\d+)@###").matcher(sqlRule);
             tempStringBuff = new StringBuffer();
-            while (regex.find())
-                regex.appendReplacement(tempStringBuff, regex.quoteReplacement(extractedStrings.get(Integer.parseInt(regex.group(1)))));
+            while (regex.find()) {
+                regex.appendReplacement(tempStringBuff, Matcher.quoteReplacement(extractedStrings.get(Integer.parseInt(regex.group(1)))));
+            }
             regex.appendTail(tempStringBuff);
             sqlRule = tempStringBuff.toString();
 
