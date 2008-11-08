@@ -41,7 +41,7 @@ public interface SpringBoardMBean {
     
     public void start();
     
-    public List status();
+    public List<String> status();
     
     public void stop();
 

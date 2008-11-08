@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.1.0.v200808011800]]></pluginVersion>
+	<pluginVersion><![CDATA[2.2.0.v200809261800]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -9,7 +9,6 @@
 	<configs>
 		<config>src/main/resources/META-INF/opennms/applicationContext-capsd.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-commonConfigs.xml</config>
-		<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-collectd.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-eventDaemon.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml</config>
@@ -33,7 +32,6 @@
 				<config>/opennms-dao/src/main/resources/META-INF/opennms/applicationContext-dao.xml</config>
 				<config>src/main/resources/META-INF/opennms/applicationContext-capsd.xml</config>
 				<config>src/main/resources/META-INF/opennms/applicationContext-commonConfigs.xml</config>
-				<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
 			</configs>
 		</configSet>
 	</configSets>

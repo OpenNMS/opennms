@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -29,22 +29,42 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-
-
 package org.opennms.netmgt.vmmgr;
 
-import java.util.Map;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
-public interface DaemonManager {
-	
-	public void start();
-	
-	public void stop();
-	
-	public void pause();
-	
-	public void resume();
-	
-	public Map status();
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+public class SpringBoard implements SpringBoardMBean {
+    
+    private File contextDir;
+    private FileSystemXmlApplicationContext m_context;
+    
+    public String getContextDir() {
+        return (contextDir == null ? null : contextDir.getAbsolutePath());
+    }
+
+    public void setContextDir(String contextDir) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void start() {
+        String appContext = System.getProperty("opennms.appcontext", "opennms-appContext.xml");
+        File contextFile = new File(contextDir, appContext);
+        System.err.println(contextFile.getPath());
+        m_context = new FileSystemXmlApplicationContext(contextFile.getPath());
+    }
+
+    public List<String> status() {
+        return Collections.singletonList(m_context.toString());
+    }
+
+    public void stop() {
+        m_context.close();
+    }
+
 
 }
