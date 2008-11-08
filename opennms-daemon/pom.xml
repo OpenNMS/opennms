@@ -17,6 +17,11 @@
 
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
 
@@ -29,6 +34,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>mx4j</groupId>
+      <artifactId>mx4j</artifactId>
     </dependency>
 
   </dependencies>

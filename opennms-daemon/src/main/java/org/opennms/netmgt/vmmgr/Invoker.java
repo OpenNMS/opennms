@@ -125,7 +125,7 @@ public class Invoker {
                     log().debug("loading class " + service.getClassName());
                 }
 
-                Class clazz = Class.forName(service.getClassName());
+                Class<?> clazz = Class.forName(service.getClassName());
 
                 // Get a new instance of the class
                 if (log().isDebugEnabled()) {
@@ -327,8 +327,8 @@ public class Invoker {
     }
 
     private Attribute getAttribute(org.opennms.netmgt.config.service.Attribute attrib) throws Exception {
-        Class attribClass = Class.forName(attrib.getValue().getType());
-        Constructor construct = attribClass.getConstructor(new Class[] { String.class });
+        Class<?> attribClass = Class.forName(attrib.getValue().getType());
+        Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
         String log4jPrefix = ThreadCategory.getPrefix(); 
@@ -342,8 +342,8 @@ public class Invoker {
     }
 
     private Object getArgument(Argument arg) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        Class argClass = Class.forName(arg.getType());
-        Constructor construct = argClass.getConstructor(new Class[] { String.class });
+        Class<?> argClass = Class.forName(arg.getType());
+        Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
         String log4jPrefix = ThreadCategory.getPrefix(); 
         try {

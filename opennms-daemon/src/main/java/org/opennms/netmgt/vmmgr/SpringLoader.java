@@ -34,8 +34,8 @@ package org.opennms.netmgt.vmmgr;
 
 import java.io.File;
 import java.rmi.ConnectException;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.netmgt.Registry;
 import org.springframework.beans.factory.BeanCreationException;
@@ -128,10 +128,9 @@ public class SpringLoader {
 	
 	private void status() throws Throwable {
 		
-		Map stati = getDaemonMgr().status();
-		for (Iterator it = stati.keySet().iterator(); it.hasNext();) {
-			String name = (String) it.next();
-			System.err.println(name+": "+stati.get(name));
+		Map<String, String> stati = getDaemonMgr().status();
+		for(Entry<String, String> entry : stati.entrySet()) {
+			System.err.println(entry.getKey()+": "+entry.getValue());
 		}
 	}
 	
