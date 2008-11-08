@@ -34,57 +34,47 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.ServiceDaemon;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DaemonManagerDefault implements DaemonManager {
 	
-	private List m_serviceDaemons;
+	private List<ServiceDaemon> m_serviceDaemons;
 	
-	public void setServiceDaemons(List serviceDaemons) {
+	public void setServiceDaemons(List<ServiceDaemon> serviceDaemons) {
 		m_serviceDaemons = serviceDaemons;
 	}
 
 	public void pause() {
-		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
-			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
+        for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.pause();
 		}
 	}
 
 	public void resume() {
-		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
-			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
+        for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.resume();
 		}
 	}
 
 	public void start() {
-		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
-			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
+        for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.start();
 		}
 	}
 
-	public Map status() {
-		Map stati = new HashMap();
-		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
-			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
+	public Map<String, String> status() {
+        Map<String, String> stati = new HashMap<String, String>();
+        for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			stati.put(serviceDaemon.getName(), serviceDaemon.status());
 		}
 		return stati;
 	}
 
 	public void stop() {
-		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
-			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
+        for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			stopService(serviceDaemon);
 		}
 		System.exit(0);
