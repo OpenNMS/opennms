@@ -146,13 +146,13 @@ public class PageSequenceMonitorTest extends TestCase {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence name=\"opennms-login-seq\">\n" + 
-				"  <page path=\"/opennms\" port=\"8980\" successMatch=\"Password\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"8980\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
+				"  <page path=\"/opennms\" port=\"80\" successMatch=\"Password\" />\n" + 
+				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
 				"    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
 				"    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
 				"  </page>\n" + 
-				"  <page path=\"/opennms/event/index.jsp\" port=\"8980\" successMatch=\"Event Queries\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_logout\" port=\"8980\" successMatch=\"logged off\" />\n" + 
+				"  <page path=\"/opennms/event/index.jsp\" port=\"80\" successMatch=\"Event Queries\" />\n" + 
+				"  <page path=\"/opennms/j_acegi_logout\" port=\"80\" successMatch=\"logged off\" />\n" + 
 				"</page-sequence>\n");
 		
 		
