@@ -295,12 +295,14 @@
       destination attribute of 'donotpersist' indicates that Eventd is not to
       persist the event to the database. A value of 'discardtraps' instructs
       the SNMP trap daemon to not create events for incoming traps that match
-      this event.</documentation>
+      this event. The optional notify attributed can be used to suppress notices
+      on a particular event (by default it is true - i.e. a notice will be sent.</documentation>
     </annotation>
 
     <complexType>
       <simpleContent>
         <extension base="string">
+          <attribute name="notify" type="boolean" use="optional" default="true" />
           <attribute default="logndisplay" name="dest" use="optional">
             <simpleType>
               <restriction base="string">
@@ -311,6 +313,8 @@
         </extension>
       </simpleContent>
     </complexType>
+
+
   </element>
 
   <element name="correlation">

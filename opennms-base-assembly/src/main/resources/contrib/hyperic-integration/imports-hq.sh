@@ -1,7 +1,7 @@
 #!/bin/sh
 
 WGET_PATH=/usr/bin/wget
-OPENNMS_HOME=/opt/openms
+OPENNMS_HOME=/opt/opennms
 TMP_PATH=/tmp
 HYPERIC_URL=http://hq.opennms.org:7080
 HYPERIC_USER=hqadmin

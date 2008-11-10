@@ -443,12 +443,15 @@
       <documentation>The event logmsg with the destination attribute defining
       if event is for display only, logonly, log and display or neither. A
       destination attribute of 'donotpersist' indicates that Eventd is not to
-      persist the event to the database.</documentation>
+      persist the event to the database. The optional notify attributed can be 
+      used to suppress notices on a particular event (by default it is true - 
+      i.e. a notice will be sent.</documentation>
     </annotation>
 
     <complexType>
       <simpleContent>
         <extension base="string">
+          <attribute name="notify" type="boolean" use="optional" default="true" />
           <attribute default="logndisplay" name="dest" use="optional">
             <simpleType>
               <restriction base="string">
