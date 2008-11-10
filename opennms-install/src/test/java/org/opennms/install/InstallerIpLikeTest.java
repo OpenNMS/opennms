@@ -36,6 +36,7 @@
 package org.opennms.install;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.test.DaoTestConfigBean;
 
@@ -56,6 +57,7 @@ public class InstallerIpLikeTest {
     }
 
     @Test
+    @Ignore
     public void testIpLike() throws Exception {
     	String[] args = {"-d", "-i", "-s", "-Z" };
     	m_installer.install(args);
