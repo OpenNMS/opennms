@@ -82,7 +82,7 @@ public class Column {
     }
 
     public int hashCode() {
-        return m_name.hashCode() + m_type.hashCode() + new Integer(m_size).hashCode() + new Boolean(m_notNull).hashCode();
+        return m_name.hashCode() + m_type.hashCode() + Integer.valueOf(m_size).hashCode() + Boolean.valueOf(m_notNull).hashCode();
     }
 
     public String toString() {
