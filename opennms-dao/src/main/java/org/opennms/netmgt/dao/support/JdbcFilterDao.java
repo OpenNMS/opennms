@@ -580,7 +580,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * @throws FilterParseException
      *             if any errors occur during parsing
      */
-    private String parseRule(List<Table> tables, String rule) throws FilterParseException {
+    private String parseRule(final List<Table> tables, final String rule) throws FilterParseException {
         if (rule != null && rule.length() > 0) {
             String sqlRule = new String(rule);
             Matcher regex;

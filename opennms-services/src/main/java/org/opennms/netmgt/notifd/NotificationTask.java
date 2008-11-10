@@ -110,7 +110,7 @@ public class NotificationTask extends Thread {
      * @param someParams the parameters from
      * Notify
      */
-    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List siblings, String autoNotify) {
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify) {
         m_notificationManager = notificationManager;
         m_userManager = userManager;
         m_sendTime = sendTime;
@@ -305,7 +305,6 @@ public class NotificationTask extends Thread {
         return commandArgs;
     }
 
-    @SuppressWarnings("unchecked")
     private List<Argument> getArgumentsForCommand(Command command) {
         return command.getArgumentCollection();
     }

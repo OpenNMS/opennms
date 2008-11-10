@@ -363,8 +363,7 @@ public class NotifdTest extends NotificationsTestCase {
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
             resolutionMap.put(NotificationManager.PARAM_TEXT_MSG, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_TEXT_MSG));
            
-            
-            Map rebuiltMap = m_notifd.getBroadcastEventProcessor().rebuildParameterMap(notifId.intValue(), "RESOLVED: ");
+            Map<String, String> rebuiltMap = m_notifd.getBroadcastEventProcessor().rebuildParameterMap(notifId.intValue(), "RESOLVED: ", m_notifd.getConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
             
             assertEquals(resolutionMap, rebuiltMap);
             

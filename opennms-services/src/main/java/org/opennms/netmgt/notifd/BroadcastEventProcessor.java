@@ -300,7 +300,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         try {
                             // only send resolution notifications if notifications are globally turned on
                             if (curAck.getNotify() && notifsOn) {
-                                sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix());
+                                sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
                             }
                         } catch (Exception e) {
                             log().error("Failed to send resolution notifications.", e);
@@ -317,7 +317,7 @@ public final class BroadcastEventProcessor implements EventListener {
     }
 
     private void sendResolvedNotifications(Collection<Integer> notifIDs, Event event, String acknowledge, 
-            String[] match, String resolutionPrefix) throws Exception {
+            String[] match, String resolutionPrefix, boolean skipNumericPrefix) throws Exception {
         for (int notifId : notifIDs) {
             boolean wa = false;
             if(notifId < 0) {
@@ -328,7 +328,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
             final boolean wasAcked = wa;
-            final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix);
+            final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
             
             NotificationManager.expandMapValues(parmMap, 
                     getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
@@ -798,7 +798,7 @@ public final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    NotificationTask[] makeGroupTasks(long startTime, Map<String, String> params, int noticeId, String targetName, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
+    NotificationTask[] makeGroupTasks(long startTime, Map<String, String> params, int noticeId, String targetName, String[] command, List<NotificationTask> targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
         Group group = getGroupManager().getGroup(targetName);
 
         Calendar startCal = Calendar.getInstance();
@@ -829,7 +829,7 @@ public final class BroadcastEventProcessor implements EventListener {
         return constructTasksFromUserList(users, startTime, next, params, noticeId, command, targetSiblings, autoNotify, interval);
     }
 
-    private NotificationTask[] constructTasksFromUserList(String[] users, long startTime, long offset, Map<String, String> params, int noticeId, String[] command, List targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
+    private NotificationTask[] constructTasksFromUserList(String[] users, long startTime, long offset, Map<String, String> params, int noticeId, String[] command, List<NotificationTask> targetSiblings, String autoNotify, long interval) throws IOException, MarshalException, ValidationException {
         List<NotificationTask> taskList = new ArrayList<NotificationTask>(users.length);
         long curSendTime = 0;
         for (int j = 0; j < users.length; j++) {
@@ -844,7 +844,7 @@ public final class BroadcastEventProcessor implements EventListener {
     }
     
     
-    NotificationTask[] makeRoleTasks(long startTime, Map<String, String> params, int noticeId, String targetName, String[] command, List targetSiblings, String autoNotify, long interval) throws MarshalException, ValidationException, IOException {
+    NotificationTask[] makeRoleTasks(long startTime, Map<String, String> params, int noticeId, String targetName, String[] command, List<NotificationTask> targetSiblings, String autoNotify, long interval) throws MarshalException, ValidationException, IOException {
         String[] users = getUserManager().getUsersScheduledForRole(targetName, new Date(startTime));
         
         // There are no users in the group
@@ -875,7 +875,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    NotificationTask makeUserTask(long sendTime, Map<String, String> parameters, int noticeId, String targetName, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
+    NotificationTask makeUserTask(long sendTime, Map<String, String> parameters, int noticeId, String targetName, String[] commandList, List<NotificationTask> siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
@@ -905,7 +905,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    NotificationTask makeEmailTask(long sendTime, Map<String, String> parameters, int noticeId, String address, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
+    NotificationTask makeEmailTask(long sendTime, Map<String, String> parameters, int noticeId, String address, String[] commandList, List<NotificationTask> siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         task = new NotificationTask(getNotificationManager(), getUserManager(), sendTime, parameters, siblings, autoNotify);
@@ -944,8 +944,8 @@ public final class BroadcastEventProcessor implements EventListener {
      * @param i
      * @return
      */
-    public Map<String, String> rebuildParameterMap(int notifId, String resolutionPrefix) throws Exception {
-        return getNotificationManager().rebuildParamterMap(notifId, resolutionPrefix);
+    public Map<String, String> rebuildParameterMap(final int notifId, final String resolutionPrefix, final boolean skipNumericPrefix) throws Exception {
+        return getNotificationManager().rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
 
     }
 
