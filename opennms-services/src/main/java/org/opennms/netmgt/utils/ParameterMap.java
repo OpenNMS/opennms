@@ -59,7 +59,7 @@ public class ParameterMap extends Object {
      * 
      * @return The long value associated with the key.
      */
-	public static long getKeyedLong(Map map, String key, long defValue) {
+	public static long getKeyedLong(final Map map, final String key, final long defValue) {
         long value = defValue;
         Object oValue = map.get(key);
 
@@ -162,12 +162,12 @@ public class ParameterMap extends Object {
      *
      * @return The bool value associated with the key.
      */
-    public static boolean getKeyedBoolean(Map map, String key, boolean defValue) {
+    public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
         boolean value = defValue;
         Object oValue = map.get(key);
 
                if (oValue != null && oValue instanceof String) {
-                       oValue = new Boolean((String) oValue);
+                       oValue = Boolean.valueOf((String) oValue);
                }
 
         if (oValue != null && oValue instanceof Boolean) {
@@ -177,7 +177,7 @@ public class ParameterMap extends Object {
                 value = defValue;
                ThreadCategory.getInstance(ParameterMap.class).info("getBoolByKey: Failed to convert value " + oValue + " for key " + key);
             }
-            map.put(key, new Boolean(value));
+            map.put(key, Boolean.valueOf(value));
         } else if (oValue != null) {
             value = ((Boolean) oValue).booleanValue();
         }

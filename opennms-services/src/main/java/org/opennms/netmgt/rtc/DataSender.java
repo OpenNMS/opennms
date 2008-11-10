@@ -332,7 +332,7 @@ final class DataSender implements Fiber {
      * Unsubscribe - remove the received URL and related info from the
      * category->URLs map so the sendData() will know when it sends data out
      */
-    public synchronized void unsubscribe(String urlStr) {
+    public synchronized void unsubscribe(final String urlStr) {
         URL url = null;
 
         try {

@@ -35,14 +35,14 @@
  */
 package org.opennms.netmgt.syslogd;
 
+import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.util.Random;
+
 import org.apache.log4j.Category;
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
-
-import java.io.UnsupportedEncodingException;
-import java.net.DatagramPacket;
 
 /**
  * 
@@ -53,8 +53,6 @@ import java.net.DatagramPacket;
 public class SyslogConnection implements Runnable {
 
     private DatagramPacket _packet;
-
-    private FifoQueue _queue;
 
     private String m_logPrefix;
 
@@ -104,7 +102,7 @@ public class SyslogConnection implements Runnable {
             SyslogHandler.queueManager.putInQueue(re);
             // delay a random period of time
             try {
-                Thread.sleep((int) (Math.random() * 100));
+                Thread.sleep((new Random()).nextInt(100));
             } catch (InterruptedException e) {
                 log.debug("Syslogd: Interruption " + e);
             }
