@@ -147,6 +147,13 @@ public abstract class NotificationManager {
         Notification[] notif = null;
         boolean matchAll = getConfigManager().getNotificationMatch();
         Category log = ThreadCategory.getInstance(getClass());
+  
+        // This if statement will check to see if notification should be suppressed for this event.
+
+	if (!(event.getLogmsg().getNotify())) {
+            log.debug("Event " + event.getUei() + " is configured to supress notifications.");
+            return notif;
+        }
     
         for (Notification curNotif : m_notifications.getNotificationCollection()) {
             boolean curHasUei = false;
