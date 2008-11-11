@@ -150,7 +150,11 @@ public abstract class NotificationManager {
   
         // This if statement will check to see if notification should be suppressed for this event.
 
-	if (!(event.getLogmsg().getNotify())) {
+        if (event == null) {
+            log.warn("unable to get notification for null event!");
+        }
+
+        if (event.getLogmsg() != null && !(event.getLogmsg().getNotify())) {
             log.debug("Event " + event.getUei() + " is configured to supress notifications.");
             return notif;
         }
