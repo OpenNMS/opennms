@@ -85,12 +85,12 @@ final class Poller {
 
     private static byte[] s_hwAddress = null;
     private static byte[] s_myIpAddress = null;
-    private static String s_extendedMode = null;
     private static byte[] s_requestIpAddress = null;
     private static boolean reqTargetIp = true;
     private static boolean targetOffset = true;
     private static boolean relayMode = false;
     private static boolean paramsChecked = false;
+    private static Boolean extendedMode = false;
 
     /**
      * Broadcast flag...when set in the 'flags' portion of the DHCP query
@@ -228,11 +228,12 @@ final class Poller {
      */
     private Poller(long timeout) throws IOException {
         Category log = ThreadCategory.getInstance(this.getClass());
+        DhcpdConfigFactory dcf = DhcpdConfigFactory.getInstance();
         try {
-            if (log.isDebugEnabled())
-                log.debug("Poller.ctor: opening socket connection with DHCP client daemon on port " + DhcpdConfigFactory.getInstance().getPort());
-            m_connection = new Socket(InetAddress.getByName("127.0.0.1"),
-                                      DhcpdConfigFactory.getInstance().getPort());
+            if (log.isDebugEnabled()) {
+                log.debug("Poller.ctor: opening socket connection with DHCP client daemon on port " + dcf.getPort());
+            }
+            m_connection = new Socket(InetAddress.getByName("127.0.0.1"), dcf.getPort());
 
             if (log.isDebugEnabled()) {
                 log.debug("Poller.ctor: setting socket timeout to " + timeout);
@@ -332,30 +333,28 @@ final class Poller {
         // mode = false must be listed first. (DISCOVER)
         byte[] typeList = { (byte) DHCPMessage.DISCOVER, (byte) DHCPMessage.INFORM, (byte) DHCPMessage.REQUEST };
         String[] typeName = { "DISCOVER", "INFORM", "REQUEST" };
-
+        DhcpdConfigFactory dcf = DhcpdConfigFactory.getInstance();
         if (!paramsChecked) {
-            if (s_extendedMode == null) {
-                s_extendedMode = DhcpdConfigFactory.getInstance().getExtendedMode();
+            if (extendedMode == null) {
+                String s_extendedMode = dcf.getExtendedMode();
                 if (s_extendedMode == null) {
-                    s_extendedMode = "false";
+                    extendedMode = false;
+                } else {
+                    extendedMode = Boolean.parseBoolean(s_extendedMode);
                 }
                 if (log.isDebugEnabled()) {
-                    if (s_extendedMode.equalsIgnoreCase("true")) {
-                        log.debug("isServer: DHCP extended mode is true");
-                    } else {
-                        log.debug("isServer: DHCP extended mode is false");
-                    }
+                    log.debug("isServer: DHCP extended mode is " + extendedMode);
                 }
             }
             if (s_hwAddress == null) {
-                String hwAddressStr = DhcpdConfigFactory.getInstance().getMacAddress();
+                String hwAddressStr = dcf.getMacAddress();
                 if (log.isDebugEnabled()) {
                     log.debug("isServer: DHCP query hardware/MAC address is " + hwAddressStr);
                 }
                 setHwAddress(hwAddressStr);
             }
             if (s_myIpAddress == null) {
-                String myIpStr = DhcpdConfigFactory.getInstance().getMyIpAddress();
+                String myIpStr = dcf.getMyIpAddress();
                 if (log.isDebugEnabled()) {
                     log.debug("isServer: DHCP relay agent address is " + myIpStr);
                 }
@@ -366,8 +365,8 @@ final class Poller {
                     relayMode = true;
                 }
             }
-            if (s_requestIpAddress == null && s_extendedMode.equalsIgnoreCase("true")) {
-                String requestStr = DhcpdConfigFactory.getInstance().getRequestIpAddress();
+            if (s_requestIpAddress == null && extendedMode == true) {
+                String requestStr = dcf.getRequestIpAddress();
                 if (log.isDebugEnabled()) {
                     log.debug("isServer: REQUEST query target is " + requestStr);
                 }
@@ -388,7 +387,7 @@ final class Poller {
         }
 
         int j = 1;
-        if (s_extendedMode.equalsIgnoreCase("true")) {
+        if (extendedMode == true) {
             j = typeList.length;
         }
 
@@ -443,7 +442,7 @@ final class Poller {
                                 }
 
                                 // accept offer or ACK or NAK
-                                if (type[0] == DHCPMessage.OFFER || (s_extendedMode.equalsIgnoreCase("true") && (type[0] == DHCPMessage.ACK || type[0] == DHCPMessage.NAK))) {
+                                if (type[0] == DHCPMessage.OFFER || (extendedMode == true && (type[0] == DHCPMessage.ACK || type[0] == DHCPMessage.NAK))) {
                                     if (log.isDebugEnabled()) {
                                         log.debug("isServer: got a valid DHCP response. responseTime= " + responseTime + "ms");
                                     }
