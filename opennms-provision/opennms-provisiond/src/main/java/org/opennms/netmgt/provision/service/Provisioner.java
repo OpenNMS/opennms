@@ -47,6 +47,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventListener;
@@ -59,7 +60,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class Provisioner extends BaseImporter implements DisposableBean, EventListener {
+public class Provisioner extends BaseImporter implements SpringServiceDaemon, DisposableBean, EventListener {
 	
 	public static final String NAME = "Provisioner";
 
@@ -182,6 +183,10 @@ public class Provisioner extends BaseImporter implements DisposableBean, EventLi
 
     protected String getEventForeignSource(Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_FOREIGN_SOURCE);
+    }
+
+    public void start() throws Exception {
+        // no need to do anything
     }
 
 }
