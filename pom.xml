@@ -1284,26 +1284,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>apache-log4j-extras</artifactId>
-        <scope>runtime</scope>
-        <version>1.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.jdmk</groupId>
-            <artifactId>jmxtools</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.jmx</groupId>
-            <artifactId>jmxri</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>mx4j</groupId>
         <artifactId>mx4j</artifactId>
         <version>3.0.2</version>
