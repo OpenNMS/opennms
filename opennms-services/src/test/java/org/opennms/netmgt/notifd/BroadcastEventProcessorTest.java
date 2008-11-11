@@ -39,6 +39,7 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.Date;
 
+import org.junit.Test;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -65,6 +66,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
      * Test calling expandNotifParms to see if the regular expression in
      * m_notifdExpandRE is initialized from NOTIFD_EXPANSION_PARM.
      */
+    @Test
     @SuppressWarnings("unchecked")
     public void testExpandNotifParms() {
         m_processor.expandNotifParms("%foo%", Collections.EMPTY_MAP);
@@ -76,6 +78,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
      * 
      * @author Jeff Gehlbach <jeffg@jeffg.org>
      */
+    @Test
      public void testExpandNoticeId_Bug1745() throws Exception {
         MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/test/noticeIdExpansion", svc, null);
@@ -92,6 +95,6 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
         m_eventMgr.sendEventToListeners(event);
 
-        verifyAnticipated(finishedNotifs, 500);
+        verifyAnticipated(finishedNotifs, 1000);
      }
 }

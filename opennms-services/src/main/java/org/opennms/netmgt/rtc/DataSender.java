@@ -46,10 +46,10 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -258,25 +258,16 @@ final class DataSender implements Fiber {
         // Add the URL to the list for the specified category
         Set<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
         if (urlList == null) {
-            // create one
-            urlList = new TreeSet<HttpPostInfo>();
-            urlList.add(postInfo);
+            urlList = new HashSet<HttpPostInfo>();
             m_catUrlMap.put(catlabel, urlList);
-        } else {
-            // add to list
-            if (!urlList.contains(postInfo))
-                urlList.add(postInfo);
-            else {
-                if (log().isDebugEnabled()) {
-                    log().debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
-                }
-
-                return;
-            }
         }
-
-        if (log().isDebugEnabled()) {
-            log().debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
+        
+        if (!urlList.add(postInfo) && log().isDebugEnabled()) {
+            log().debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
+        } else {
+            if (log().isDebugEnabled()) {
+                log().debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
+            }
         }
 
         // send data
