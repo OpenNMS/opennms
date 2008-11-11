@@ -91,8 +91,10 @@ package org.opennms.protocols.ntp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 public class NtpMessage {
+    
     /**
      * This is a two-bit code warning of an impending leap second to be
      * inserted/deleted in the last minute of the current day. It's values may
@@ -369,7 +371,7 @@ public class NtpMessage {
         // low order bits of the timestamp with a random, unbiased
         // bitstring, both to avoid systematic roundoff errors and as
         // a means of loop detection and replay detection.
-        array[7] = (byte) (Math.random() * 255.0);
+        array[7] = (byte) ((new Random()).nextInt(255));
     }
 
     /**

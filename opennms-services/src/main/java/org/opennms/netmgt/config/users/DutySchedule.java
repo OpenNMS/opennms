@@ -257,11 +257,11 @@ public class DutySchedule {
      * 
      * @return A Vector properly formatted to reflect this DutySchedule.
      */
-    public Vector getAsVector() {
+    public Vector<Object> getAsVector() {
         Vector<Object> vector = new Vector<Object>();
 
         for (int i = 0; i < 7; i++) {
-            vector.add(new Boolean(m_days.get(i)));
+            vector.add(Boolean.valueOf(m_days.get(i)));
         }
 
         vector.add(String.valueOf(m_startTime));
