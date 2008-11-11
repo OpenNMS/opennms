@@ -61,13 +61,12 @@ public class DnsDetectorTest {
     public void setUp() throws SocketException {
         m_detector = new DnsDetector();
         m_detector.setTimeout(500);
-        m_detector.init();
+        
         //m_socket = new DatagramSocket(4445);
         //m_serverThread = createThread();
         //m_serverThread.start();
     } 
     
-    @SuppressWarnings("deprecation")
     @After
     public void tearDown() {
         //m_serverThread.stop();
@@ -83,9 +82,10 @@ public class DnsDetectorTest {
 //    }
     
     @Test
-    public void testDetectorSucess() throws UnknownHostException {
+    public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setPort(53);
         m_detector.setLookup("www.google.com");
+        m_detector.init();
         
         assertTrue(m_detector.isServiceDetected(InetAddress.getByName("151.197.0.38"), new NullDetectorMonitor()));
 

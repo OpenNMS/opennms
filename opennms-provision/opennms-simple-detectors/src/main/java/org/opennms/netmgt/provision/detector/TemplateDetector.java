@@ -47,7 +47,7 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * @author Donald Desloge
  *
  */
-public class DnsDetector extends AbstractDetector {
+public class TemplateDetector extends AbstractDetector {
     
     public static interface ResponseHandler{
         public boolean matches(Object...args); //DatagramSocket socket, InetAddress address;
@@ -122,11 +122,9 @@ public class DnsDetector extends AbstractDetector {
     private DNSAddressRequest m_request = null;
     private List<DatagramExchange> m_conversation = new ArrayList<DatagramExchange>();
     
-    protected DnsDetector() {
+    protected TemplateDetector() {
+        super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
         setServiceName("DNS");
-        setPort(DEFAULT_PORT);
-        setRetries(DEFAULT_RETRY);
-        setTimeout(DEFAULT_TIMEOUT);
         setLookup(DEFAULT_LOOKUP);
     }
     
