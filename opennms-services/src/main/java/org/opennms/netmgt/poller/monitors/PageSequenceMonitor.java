@@ -52,20 +52,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.AuthState;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -308,33 +302,35 @@ public class PageSequenceMonitor extends IPv4Monitor {
         }
 
         private URI getURI(MonitoredService svc) throws URIException {
-            return new URI(getScheme(), getUserInfo(), getHost(svc), getPort(), getPath(), getQuery(), getFragment());
+            Properties p = getServiceProperties(svc);
+            return new URI(getScheme(), getUserInfo(), getHost(p), getPort(), getPath(p), getQuery(p), getFragment(p));
         }
 
-        private String getFragment() {
-            return m_page.getFragment();
+        private String getFragment(Properties p) {
+            return PropertiesUtils.substitute(m_page.getFragment(), p);
         }
 
-        private String getQuery() {
-            return m_page.getQuery();
+        private String getQuery(Properties p) {
+            return PropertiesUtils.substitute(m_page.getQuery(), p);
         }
 
-        private String getPath() {
-            return m_page.getPath();
+        private String getPath(Properties p) {
+            return PropertiesUtils.substitute(m_page.getPath(), p);
         }
 
         private int getPort() {
             return m_page.getPort();
         }
 
-        private String getHost(MonitoredService svc) {
-            return PropertiesUtils.substitute(m_page.getHost(), getServiceProperties(svc));
+        private String getHost(Properties p) {
+            return PropertiesUtils.substitute(m_page.getHost(), p);
 
         }
 
         private Properties getServiceProperties(MonitoredService svc) {
             Properties properties = new Properties();
             properties.put("ipaddr", svc.getIpAddr());
+            properties.put("nodeid", svc.getNodeId());
             return properties;
         }
 
