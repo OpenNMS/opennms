@@ -47,9 +47,9 @@ import java.util.regex.Pattern;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
-import org.opennms.netmgt.provision.conversation.Conversation;
-import org.opennms.netmgt.provision.conversation.SimpleConversationEndPoint;
-import org.opennms.netmgt.provision.exchange.Exchange;
+import org.opennms.netmgt.provision.conversation.TemplateClientConversation;
+import org.opennms.netmgt.provision.conversation.SimpleConversationEndPoint.SimpleExchange;
+import org.opennms.netmgt.provision.detector.SimpleDetector.MultilineDetectorExchange;
 import org.opennms.netmgt.provision.exchange.RequestHandler;
 import org.opennms.netmgt.provision.exchange.ResponseHandler;
 
@@ -59,89 +59,19 @@ import org.opennms.netmgt.provision.exchange.ResponseHandler;
  *
  */
 
-abstract public class SimpleDetector extends SimpleConversationEndPoint implements ServiceDetector {
+abstract public class EasyDetector extends AbstractDetector implements ServiceDetector {
     
-    public static class MultilineDetectorExchange extends SimpleExchange implements Exchange {
-        
-        public MultilineDetectorExchange(ResponseHandler responseHandler, RequestHandler requestHandler) {
-            super(responseHandler, requestHandler);
-        }
-        
-        public boolean matchResponseByString(String input) {
-            
-            return false;
-        }
-
-        public boolean processResponse(BufferedReader in) throws IOException {
-           String line = null;
-            do {
-               line = in.readLine();
-               
-               if(!getResponseHandler().matches(line)) { return false; };
-               
-           }while(line !=null && line.length() > 0 && "-".equals(line.substring(3,4)));            
-            
-            return true;
-        }
-        
-    }
-    
-    
-    private int m_port;
-    private int m_retries;
-    private int m_timeout;
-    private String m_serviceName;
     private Socket m_socket;
     
-    private Conversation m_conversation = new Conversation();
+    private TemplateClientConversation m_conversation = new TemplateClientConversation();
     
-    protected SimpleDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        m_port = defaultPort;
-        m_timeout = defaultTimeout;
-        m_retries = defaultRetries;
+    protected EasyDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+        super(defaultPort, defaultTimeout, defaultRetries);
     }
+    
+    protected void onInit() {
         
-    public int getPort() {
-        return m_port;
     }
-
-    public void setPort(int port) {
-        m_port = port;
-    }
-
-    public int getRetries() {
-        return m_retries;
-    }
-
-    public void setRetries(int retries) {
-        m_retries = retries;
-    }
-
-    public int getTimeout() {
-        return m_timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        m_timeout = timeout;
-    }
-    
-    public void setServiceName(String serviceName) {
-        m_serviceName = serviceName;
-    }
-
-    public String getServiceName() {
-        return m_serviceName;
-    }
-    
-    public void init() {
-        if (m_timeout <= 0) {
-            throw new IllegalStateException(String.format("Timeout of %d is invalid.  Must be > 0", m_timeout));
-        }
-        
-        onInit();
-    }
-    
-    public void onInit() { }
     
     protected Socket createSocketConnection(InetAddress host, int port, int timeout) throws Exception {
         Socket socket = new Socket();
@@ -158,19 +88,13 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         detectorMonitor.start(this, "Checking address: %s for %s capability", address, getServiceName());
                 
         for (int attempts = 0; attempts <= retries; attempts++) {
-            m_socket = null;
 
             try {
-                m_socket = createSocketConnection(address, port, timeout);
                 
                 detectorMonitor.attempt(this, attempts, "Attempting to connect to address: %s attempt #%s",address.getHostAddress(),attempts);
                 
-                // Allocate a line reader
-                //
-                OutputStream out = m_socket.getOutputStream();
-                BufferedReader in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
                 
-                if (attemptConversation(in, out)) {
+                if (attemptConversation(createSocketConnectionWithArgs(address, port, timeout))) {
                     return true;
                 }
                 
@@ -205,8 +129,18 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         return false;
     }
     
-    private boolean attemptConversation(BufferedReader in, OutputStream out) throws IOException {
-        return getConversation().attemptClientConversation(in, out);
+    private Object[] createSocketConnectionWithArgs(InetAddress host, int port, int timeout) throws IOException {
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress(host, port), timeout);
+        socket.setSoTimeout(timeout);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        OutputStream out = socket.getOutputStream();
+        Object[] retArgs = {in, out};
+        return retArgs; 
+    }
+    
+    private boolean attemptConversation(Object...args) throws IOException {
+        return getConversation().attemptClientConversation(args);
     }
 
     protected void expectBanner(ResponseHandler bannerMatcher, RequestHandler requestHandler) {
@@ -247,11 +181,11 @@ abstract public class SimpleDetector extends SimpleConversationEndPoint implemen
         };
     }
 
-    public void setConversation(Conversation conversation) {
+    private void setConversation(TemplateClientConversation conversation) {
         m_conversation = conversation;
     }
 
-    public Conversation getConversation() {
+    private TemplateClientConversation getConversation() {
         return m_conversation;
     }
     

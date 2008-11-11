@@ -13,10 +13,29 @@ public abstract class AbstractDetector implements ServiceDetector {
     private String m_serviceName;
     
     
-    abstract public void init();
+    @Deprecated
+    protected AbstractDetector() {
+        
+    }
+    
+    protected AbstractDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+        m_port = defaultPort;
+        m_timeout = defaultTimeout;
+        m_retries = defaultRetries;
+    }
+
+    public void init() {
+        if (m_timeout <= 0) {
+            throw new IllegalStateException(String.format("Timeout of %d is invalid.  Must be > 0", m_timeout));
+        }
+        
+        onInit();
+    }
+    
+    protected void onInit() { }
 
     abstract public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
-
+    
     public void setPort(int port) {
         m_port = port;
     }

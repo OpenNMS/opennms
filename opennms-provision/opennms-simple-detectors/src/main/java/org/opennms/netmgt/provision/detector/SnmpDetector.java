@@ -1,17 +1,41 @@
 package org.opennms.netmgt.provision.detector;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
+import org.opennms.netmgt.provision.exchange.Exchange;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class SnmpDetector extends AbstractDetector {
+    
+    public static class SnmpExchange implements Exchange{
+
+        public boolean matchResponseByString(String input) {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        public boolean processResponse(BufferedReader in) throws IOException {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        
+        public boolean sendRequest(OutputStream out) throws IOException {
+            // TODO Auto-generated method stub
+            return false;
+        }
+        
+    }
     
     /**
      * The system object identifier to retreive from the remote agent.
