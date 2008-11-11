@@ -22,6 +22,7 @@
 		<config>src/main/resources/META-INF/opennms/applicationContext-tl1Daemon.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-trapDaemon.xml</config>
 		<config>src/main/resources/META-INF/opennms/applicationContext-troubleTicketer.xml</config>
+		<config>src/main/resources/META-INF/opennms/applicationContext-daemon.xml</config>
 	</configs>
 	<configSets>
 		<configSet>
