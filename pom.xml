@@ -843,7 +843,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-provision-service</artifactId>
+        <artifactId>opennms-provisiond</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

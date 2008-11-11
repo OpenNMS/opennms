@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd" default-lazy-init="true">
         
-   <bean id="importerDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+   <bean id="provisiondContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/applicationContext-provisionService.xml</value>
+         <value>META-INF/opennms/applicationContext-provisiond.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daemonContext" />
