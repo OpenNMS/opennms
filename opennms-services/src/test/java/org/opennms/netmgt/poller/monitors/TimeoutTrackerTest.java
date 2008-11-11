@@ -88,10 +88,8 @@ public class TimeoutTrackerTest extends TestCase {
         
         long minTime = sleepTime;
         long maxTime = 2 * sleepTime;
-        assertTrue("Expected value for elapsedTimeInMillis to be between "+minTime+" and "+maxTime+" : actual value "+elapsedTimeInMillis,
-                   minTime < elapsedTimeInMillis && elapsedTimeInMillis < maxTime 
-        );
-        
+        assertTrue("Expected value for elapsedTimeInMillis should be greater than " + minTime, elapsedTimeInMillis > (minTime - 1));
+        assertTrue("Expected value for elapsedTimeInMillis should be less than " + maxTime, elapsedTimeInMillis < (maxTime + 1));
     }
 
 }

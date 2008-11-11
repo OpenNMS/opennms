@@ -161,7 +161,7 @@ public class NotificationAnticipator {
         long totalWaitTime = Math.max(0, lastNotifyTime + waitTime
                 - System.currentTimeMillis());
 
-        Collection missingNotifications = waitForAnticipated(totalWaitTime);
+        Collection<MockNotification> missingNotifications = waitForAnticipated(totalWaitTime);
         // make sure that we didn't start before we should have
         long now = System.currentTimeMillis();
         try {
