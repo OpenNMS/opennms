@@ -103,6 +103,16 @@
       <attribute name="fragment" type="string" use="optional" />
       <attribute name="matches" type="string" use="optional" default="(.*)" />
       <attribute name="response-range" type="string" use="optional" default="100-399" />
+
+      <!-- regex fields http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#field_summary -->
+      <attribute name="canonical-equivalence" type="boolean" use="optional" default="false" />
+      <attribute name="case-insensitive" type="boolean" use="optional" default="false" />
+      <attribute name="comments" type="boolean" use="optional" default="false" />
+      <attribute name="dotall" type="boolean" use="optional" default="false" />
+      <attribute name="literal" type="boolean" use="optional" default="false" />
+      <attribute name="multiline" type="boolean" use="optional" default="false" />
+      <attribute name="unicode-case" type="boolean" use="optional" default="false" />
+      <attribute name="unix-lines" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
   
