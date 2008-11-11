@@ -35,14 +35,17 @@
  */
 package org.opennms.spring.xmlrpc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.apache.xmlrpc.WebServer;
-import org.opennms.spring.xmlrpc.XmlRpcProxyFactoryBean;
-import org.opennms.spring.xmlrpc.XmlRpcServiceExporter;
-import org.opennms.spring.xmlrpc.XmlRpcWebServerFactoryBean;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.remoting.RemoteAccessException;
 
@@ -51,11 +54,12 @@ import org.springframework.remoting.RemoteAccessException;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class XmlRpcTest extends TestCase {
+public class XmlRpcTest {
     
     private WebServer m_webServer;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         
         MockLogAppender.setupLogging();
         
@@ -67,11 +71,13 @@ public class XmlRpcTest extends TestCase {
         m_webServer = (WebServer)wsf.getObject();
     }
     
-    protected void tearDown() {
+    @After
+    public void tearDown() {
         m_webServer.shutdown();
         
     }
 
+    @Test
 	public void testXmlRpcProxyFactoryBeanAndServiceExporter() throws Throwable {
 		TestBean target = new TestBean("myname", 99);
         
@@ -95,7 +101,9 @@ public class XmlRpcTest extends TestCase {
 
 	}
 
-    public void _testXmlRpcProxyFactoryBeanAndServiceExporterWithHttps() throws Throwable {
+    @Test
+    @Ignore("We're not set up for HTTPS for these tests.")
+    public void testXmlRpcProxyFactoryBeanAndServiceExporterWithHttps() throws Throwable {
         TestBean target = new TestBean("myname", 99);
         
         
@@ -118,6 +126,8 @@ public class XmlRpcTest extends TestCase {
 
     }
 
+    @Test
+    @Ignore("If you're using OpenDNS, myurl gives an IP address")
 	public void testXmlRpcProxyFactoryBeanAndServiceExporterWithIOException() throws Exception {
 		TestBean target = new TestBean("myname", 99);
 
