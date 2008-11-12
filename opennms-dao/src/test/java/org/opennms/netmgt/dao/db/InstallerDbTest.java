@@ -2107,13 +2107,12 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         //Check created table
     	Table table=getInstallerDb().getTableFromDB("setFilter");
     	List<Constraint> constraints=table.getConstraints();
-    	assertTrue(constraints.size()==1);
+    	assertEquals(1, constraints.size());
     	Constraint constraint=constraints.get(0);
-    	assertTrue(cname.equals(constraint.getName()));
-    	// postgresql8.2 has quotes in the resulting expression
-    	// postgresql8.3 has none... remove the quotes (if there are any) before comparing
+    	assertEquals(cname, constraint.getName());
+        // postgresql8.2 has quotes in the resulting expression
+        // postgresql8.3 has none... remove the quotes (if there are any) before comparing
         assertEquals(checkexpression, "("+constraint.getCheckExpression().replaceAll("\"type\"", "type")+")");
-  	
     }
 
     public void addTableFromSQL(String tableName) throws SQLException {
