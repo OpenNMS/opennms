@@ -116,10 +116,6 @@ public class MailTransportMonitorTest extends TestCase {
     public void dont_testSend() throws Exception {
         
         setupLocalhostSendGoogleRead2();
-        //setupLocalHostSendOnly();
-        //setupGoogleSendOnly();
-        //setupGoogleReadOnly();
-        //setupGoogle();
 
         PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
         
@@ -152,7 +148,7 @@ public class MailTransportMonitorTest extends TestCase {
         		" \n" + 
         		"      <!-- Connect to local MTA and send... no auth required but the configuration\n" + 
         		"           requires auth be configured.  Disable with use-authentication attribute above. -->\n" + 
-        		"      <sendmail-host host=\"127.0.0.1\" port=\"2525\"/>\n" + 
+        		"      <sendmail-host host=\"cartman\" port=\"25\"/>\n" + 
         		"      <sendmail-protocol char-set=\"us-ascii\" \n" + 
         		"                         mailer=\"smtpsend\" \n" + 
         		"                         message-content-type=\"text/plain\" \n" + 
@@ -170,17 +166,17 @@ public class MailTransportMonitorTest extends TestCase {
         		"\n" + 
         		"    <!-- Read portion of the test.  Check to see if local MTA has delivered mail to Google Gmail account.  The\n" + 
         		"         attempt interval gives a delay between send and read test as well as between each retry. -->    \n" + 
-        		"    <readmail-test attempt-interval=\"5000\" debug=\"true\" mail-folder=\"INBOX\" subject-match=\"OpenNMS Test Message\" delete-all-mail=\"true\" >\n" + 
+        		"    <readmail-test attempt-interval=\"5000\" debug=\"true\" mail-folder=\"INBOX\" subject-match=\"OpenNMS Test Message\" delete-all-mail=\"false\" >\n" + 
         		"    \n" + 
         		"      <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->\n" + 
         		"      <javamail-property name=\"mail.pop3.apop.enable\" value=\"false\"/>\n" + 
         		"      <javamail-property name=\"mail.pop3.rsetbeforequit\" value=\"false\" />\n" + 
         		"      \n" + 
-        		"      <readmail-host host=\"pop.gmail.com\" port=\"995\">\n" + 
-        		"        <readmail-protocol ssl-enable=\"true\" start-tls=\"false\" transport=\"pop3s\"/>\n" + 
+        		"      <readmail-host host=\"imap.gmail.com\" port=\"993\">\n" + 
+        		"        <readmail-protocol ssl-enable=\"true\" start-tls=\"false\" transport=\"imaps\"/>\n" + 
         		"      </readmail-host>\n" + 
         		"      \n" + 
-        		"      <user-auth user-name=\"opennms\" password=\"rulz\" />\n" + 
+        		"      <user-auth user-name=\"dhustace\" password=\"abc\" />\n" + 
         		"    </readmail-test>\n" + 
         		"  </mail-test>\n" + 
         		"</mail-transport-test>\n" + 
