@@ -161,6 +161,7 @@ public class Provisioner extends BaseImporter implements SpringServiceDaemon, Di
 	}
 
 	public void afterPropertiesSet() throws Exception {
+	    super.afterPropertiesSet();
 		m_eventSubscriptionService.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 	}
 
