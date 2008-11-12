@@ -105,7 +105,7 @@ public class HttpCollectorTest extends OpenNMSTestCase {
                 "             user-agent=\"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) " +
                 "AppleWebKit/412 (KHTML, like Gecko) Safari/412\" \n" +
                 "             dotall=\"true\" case-insensitive=\"true\" unicode-case=\"true\" \n" +
-                "             matches=\".*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*Document Type:\\s+(goá).*Some Number:\\s+([0-9,]+).*\" " +
+                "             matches=\".*Document Count:\\s+([0-9,]+(\\.[0-9]*)?).*Document Type:\\s+(go\u00e1).*Some Number:\\s+([0-9,]+).*\" " +
                 "             response-range=\"100-399\" virtual-host=\"www.opennms.org\">\n" + 
                 "        </url>\n" + 
                 "        <attributes>\n" + 
