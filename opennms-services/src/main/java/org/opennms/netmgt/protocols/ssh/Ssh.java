@@ -207,6 +207,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
             m_socket = new Socket();
             m_socket.setTcpNoDelay(true);
             m_socket.connect(new InetSocketAddress(getAddress(), getPort()), getTimeout());
+            m_socket.setSoTimeout(getTimeout());
             
             m_reader = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
             m_writer = m_socket.getOutputStream();
