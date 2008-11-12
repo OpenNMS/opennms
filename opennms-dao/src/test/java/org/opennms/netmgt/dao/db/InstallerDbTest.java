@@ -2112,7 +2112,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     	assertEquals(cname, constraint.getName());
         // postgresql8.2 has quotes in the resulting expression
         // postgresql8.3 has none... remove the quotes (if there are any) before comparing
-        assertEquals(checkexpression, "("+constraint.getCheckExpression().replaceAll("\"type\"", "type")+")");
+        assertEquals(checkexpression.replaceAll("\"type\"", "type"), "("+constraint.getCheckExpression().replaceAll("\"type\"", "type")+")");
     }
 
     public void addTableFromSQL(String tableName) throws SQLException {
