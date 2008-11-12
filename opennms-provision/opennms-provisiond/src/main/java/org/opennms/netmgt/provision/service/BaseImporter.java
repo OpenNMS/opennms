@@ -38,7 +38,6 @@ package org.opennms.netmgt.provision.service;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -50,11 +49,9 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.provision.service.operations.DeleteOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
@@ -66,53 +63,67 @@ import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.UpdateOperation;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
-public class BaseImporter implements ImportOperationFactory {
+public class BaseImporter implements ImportOperationFactory, InitializingBean {
 
     private DefaultProvisionService m_provisionService;
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
+	
+	public void setProvisionService(DefaultProvisionService provisionService) {
+	    m_provisionService = provisionService;
+	}
+	
+	public DefaultProvisionService getProvisionService() {
+	    return m_provisionService;
+	}
 
     public NodeDao getNodeDao() {
-        return m_provisionService.getNodeDao();
+        return getProvisionService().getNodeDao();
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(getProvisionService(), "provisionService property must be set");
     }
 
     public IpInterfaceDao getIpInterfaceDao() {
-        return m_provisionService.getIpInterfaceDao();
+        return getProvisionService().getIpInterfaceDao();
     }
 
     public MonitoredServiceDao getMonitoredServiceDao() {
-        return m_provisionService.getMonitoredServiceDao();
+        return getProvisionService().getMonitoredServiceDao();
     }
 
     public ServiceTypeDao getServiceTypeDao() {
-        return m_provisionService.getServiceTypeDao();
+        return getProvisionService().getServiceTypeDao();
     }
 
     public AssetRecordDao getAssetRecordDao() {
-        return m_provisionService.getAssetRecordDao();
+        return getProvisionService().getAssetRecordDao();
     }
 
     public TransactionTemplate getTransTemplate() {
-        return m_provisionService.getTransactionTemplate();
+        return getProvisionService().getTransactionTemplate();
     }
 
     public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-        return new InsertOperation(foreignSource, foreignId, nodeLabel, building, city, m_provisionService);
+        return new InsertOperation(foreignSource, foreignId, nodeLabel, building, city, getProvisionService());
         
     }
 
     public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-        return new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city, m_provisionService);
+        return new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city, getProvisionService());
     }
 
     public ImportOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId) {
-        return new DeleteOperation(nodeId, foreignSource, foreignId, m_provisionService);
+        return new DeleteOperation(nodeId, foreignSource, foreignId, getProvisionService());
     }
     
     protected void importModelFromResource(Resource resource) throws IOException, ModelImportException {
@@ -282,12 +293,12 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     private OnmsDistPoller createDistPollerIfNecessary() {
-        return m_provisionService.createDistPollerIfNecessary();
+        return getProvisionService().createDistPollerIfNecessary();
     
     }
 
     public CategoryDao getCategoryDao() {
-        return m_provisionService.getCategoryDao();
+        return getProvisionService().getCategoryDao();
     }
 
 	public int getScanThreads() {
@@ -305,13 +316,5 @@ public class BaseImporter implements ImportOperationFactory {
 	public void setWriteThreads(int writeThreads) {
 		m_writeThreads = writeThreads;
 	}
-
-    private ThreadLocal<HashMap<String, OnmsCategory>> getCategoryCache() {
-        return m_provisionService.getCategoryCache();
-    }
-    
-    private ThreadLocal<HashMap<String, OnmsServiceType>> getTypeCache() {
-        return m_provisionService.getTypeCache();
-    }
 
 }

@@ -38,7 +38,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.service.DefaultProvisionService;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -51,18 +50,6 @@ public abstract class ImportOperation {
         m_provisionService = provisionService;
     }
 
-
-    @SuppressWarnings("unchecked")
-    private List<Event> persist() {
-        TransactionTemplate template = m_provisionService.getTransactionTemplate();
-        
-        return (List<Event>) template.execute(new TransactionCallback() {
-    		public Object doInTransaction(TransactionStatus status) {
-    			List<Event> result = doPersist();
-                return result;
-    		}
-    	});
-    }
 
     abstract public void gatherAdditionalData();
 

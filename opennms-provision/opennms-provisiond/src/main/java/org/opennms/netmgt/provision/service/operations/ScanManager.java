@@ -54,7 +54,8 @@ public class ScanManager {
     }
     
     public IfSnmpCollector getCollector() {
-        throw new UnsupportedOperationException("ScanManager.getCollector is not yet implemented");
+        //throw new UnsupportedOperationException("ScanManager.getCollector is not yet implemented");
+        return null;
     }
 
     void updateSnmpDataForNode(OnmsNode node) {
