@@ -63,6 +63,10 @@
   		<artifactId>mock-snmp-agent</artifactId>
   		<scope>test</scope>
   	</dependency>
+   <dependency>
+      <groupId>net.jradius</groupId>
+      <artifactId>jradius-core</artifactId>
+   </dependency>
   </dependencies>
   
 </project>
