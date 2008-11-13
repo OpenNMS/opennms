@@ -31,15 +31,9 @@
 //
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.service.DefaultProvisionService;
-import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 
 public abstract class ImportOperation {
@@ -60,48 +54,11 @@ public abstract class ImportOperation {
         return m_provisionService;
     }
 
-    protected abstract List<Event> doPersist();
-
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
-    public void persist(final ProvisionMonitor monitor) {
-        
-        TransactionTemplate template = m_provisionService.getTransactionTemplate();
-    
-        final ImportOperation oper = this;
-    
-    	template.execute(new TransactionCallbackWithoutResult() {
-    	    @Override
-        	public void doInTransactionWithoutResult(TransactionStatus status) {
-        	    
-                DefaultProvisionService provisionService = getProvisionService();
-
-                monitor.beginPersisting(oper);
-                log().info("Persist: "+oper);
-
-                List<Event> events = doPersist();
-                
-
-                monitor.finishPersisting(oper);
-                
-                monitor.beginSendingEvents(oper, events);
-                
-                provisionService.sendEvents(oper, events);
-            
-                monitor.finishSendingEvents(oper, events);
-
-        	}
-
-        });
-    	
-
-        log().info("Clear cache: "+this);
-
-        // clear the cache to we don't use up all the memory
-    	m_provisionService.clearCache();
-    }
+    public abstract void persist(final ProvisionMonitor monitor);
 
 
 }

@@ -43,7 +43,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             ApplicationContext appContext = new ClassPathXmlApplicationContext("/META-INF/modelImport-appContext.xml");
-            ModelImporter importer = (ModelImporter)appContext.getBean("modelImporter");
+            BaseImporter importer = (BaseImporter)appContext.getBean("modelImporter");
             Resource resource = new FileSystemResource(args[0]);
             importer.importModelFromResource(resource);            
         } catch (ModelImportException e) {

@@ -37,14 +37,7 @@ package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -120,7 +113,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	}
 
     public void foundMonitoredService(String serviceName) {
-        OnmsServiceType svcType = getServiceType(serviceName);
+        OnmsServiceType svcType = getProvisionService().createServiceTypeIfNecessary(serviceName);
         OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
         service.setStatus("A");
         m_currentInterface.getMonitoredServices().add(service);
@@ -128,123 +121,12 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     }
 
     public void foundCategory(String name) {
-        OnmsCategory category = getCategory(name);
+        OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
         m_node.getCategories().add(category);
-    }
-
-    private OnmsServiceType getServiceType(String serviceName) {
-        preloadExistingTypes();
-        OnmsServiceType type = getTypes().get(serviceName);
-        if (type == null) {
-            type = getServiceTypeDao().findByName(serviceName);
-            
-            if (type == null) {
-                type = new OnmsServiceType(serviceName);
-                getServiceTypeDao().save(type);
-            }
-            
-            getTypes().put(serviceName, type);
-        }
-        return type;
-    }
-    
-    private void preloadExistingTypes() {
-        
-        if (getTypes() == null) {
-            setTypes(new HashMap<String, OnmsServiceType>());
-            for (Iterator<OnmsServiceType> it = getServiceTypeDao().findAll().iterator(); it.hasNext();) {
-                OnmsServiceType svcType = it.next();
-                getTypes().put(svcType.getName(), svcType);
-            }
-        }
-    }
-    
-    private void preloadExistingCategories() {
-        if (getCategories() == null) {
-            setCategories(new HashMap<String, OnmsCategory>());
-            for(Iterator<OnmsCategory> it = getCategoryDao().findAll().iterator(); it.hasNext();) {
-                OnmsCategory category = it.next();
-                getCategories().put(category.getName(), category);
-            }
-        }
     }
 
     protected OnmsNode getNode() {
         return m_node;
-    }
-    
-    protected NodeDao getNodeDao() {
-        return getProvisionService().getNodeDao();
-    }
-    
-    protected DistPollerDao getDistPollerDao() {
-        return getProvisionService().getDistPollerDao();
-    }
-
-    private OnmsCategory getCategory(String name) {
-        preloadExistingCategories();
-        
-        OnmsCategory category = (OnmsCategory)getCategories().get(name);
-        if (category == null) {    
-            category = getCategoryDao().findByName(name);
-            if (category == null) {
-                category = new OnmsCategory(name);
-                getCategoryDao().save(category);
-            }
-            getCategories().put(category.getName(), category);
-        }
-        return category;
-
-    }
-
-    protected Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
-        Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
-        for (OnmsIpInterface iface : imported.getIpInterfaces()) {
-            ipAddrToIface.put(iface.getIpAddress(), iface);
-        }
-        return ipAddrToIface;
-    }
-
-    private HashMap<String, OnmsServiceType> getTypes() {
-        return getTypeCache().get();
-    }
-
-    private void setTypes(HashMap<String, OnmsServiceType> types) {
-        getTypeCache().set(types);
-    }
-
-    private void setCategories(HashMap<String, OnmsCategory> categories) {
-        getCategoryCache().set(categories);
-    }
-
-    private HashMap<String, OnmsCategory> getCategories() {
-        return getCategoryCache().get();
-    }
-
-    public CategoryDao getCategoryDao() {
-        return getProvisionService().getCategoryDao();
-    }
-
-    public ThreadLocal<HashMap<String, OnmsServiceType>> getTypeCache() {
-        return getProvisionService().getTypeCache();
-    }
-    
-	public boolean nullSafeEquals(Object o1, Object o2) {
-	    return (o1 == null ? o2 == null : o1.equals(o2));
-	}
-
-    /**
-     * @return the svcTypeDao
-     */
-    private ServiceTypeDao getServiceTypeDao() {
-        return getProvisionService().getServiceTypeDao();
-    }
-
-    /**
-     * @return the categories
-     */
-    private ThreadLocal<HashMap<String, OnmsCategory>> getCategoryCache() {
-        return getProvisionService().getCategoryCache();
     }
 
 }

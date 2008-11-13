@@ -38,31 +38,30 @@
  */
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
 
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
 
 public final class DeleteEventVisitor extends AbstractEntityVisitor {
-	private final List<Event> m_events;
+    private final EventForwarder m_eventForwarder;
 
-	DeleteEventVisitor(List<Event> events) {
-		m_events = events;
+	public DeleteEventVisitor(EventForwarder eventForwarder) {
+	    m_eventForwarder = eventForwarder;
 	}
 
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
-		m_events.add(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
+	    m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
 	}
 
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
-		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId(), iface.getIpAddress()));
+	    m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId(), iface.getIpAddress()));
 	}
 
 	public void visitNodeComplete(OnmsNode node) {
-		m_events.add(EventUtils.createNodeDeletedEvent("ModelImporter", node.getId(), node.getLabel(), node.getLabel()));
+	    m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("ModelImporter", node.getId(), node.getLabel(), node.getLabel()));
 	}
 }

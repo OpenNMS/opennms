@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-        
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+
+  <tx:annotation-driven proxy-target-class="true" />
+
   <bean id="transactionAwareEventForwarder" class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
@@ -19,7 +24,7 @@
     <property name="transactionTemplate" ref="transactionTemplate" />
   </bean>
 
-  <bean id="importer" class="org.opennms.netmgt.provision.service.ModelImporter">
+  <bean id="importer" class="org.opennms.netmgt.provision.service.BaseImporter">
     <property name="provisionService" ref="provisionService" />
   </bean>
 

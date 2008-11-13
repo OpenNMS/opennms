@@ -37,40 +37,16 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.EntityVisitor;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.DefaultProvisionService;
-import org.opennms.netmgt.xml.event.Event;
 
 public class DeleteOperation extends ImportOperation {
     
     private Integer m_nodeId;
+    
     public DeleteOperation(Integer nodeId, String foreignSource, String foreignId, DefaultProvisionService provisionService) {
         super(provisionService);
         m_nodeId = nodeId;
     }
-
-    protected List<Event> doPersist() {
-        //TODO: whatif node comes back as null?  can this happend?
-    	OnmsNode node = getNodeDao().get(m_nodeId);
-    	if (node == null) return Collections.emptyList();
-
-    	getNodeDao().delete(node);
-
-    	final List<Event> events = new LinkedList<Event>();
-
-    	EntityVisitor eventAccumlator = new DeleteEventVisitor(events);
-
-    	node.visit(eventAccumlator);
-
-    	return events;
-    }
-
 
     public String toString() {
     	return "DELETE: Node "+m_nodeId;
@@ -80,10 +56,21 @@ public class DeleteOperation extends ImportOperation {
 		// no additional data to gather
 	}
 
-    /**
-     * @return the nodeDao
-     */
-    private NodeDao getNodeDao() {
-        return getProvisionService().getNodeDao();
+    public void persist(final ProvisionMonitor monitor) {
+    
+        final ImportOperation oper = this;
+    
+        monitor.beginPersisting(oper);
+        log().info("Persist: "+oper);
+
+        getProvisionService().doDeleteNode(m_nodeId);
+        
+        monitor.finishPersisting(oper);
+        
+        log().info("Clear cache: "+this);
+    
+        // clear the cache to we don't use up all the memory
+    	getProvisionService().clearCache();
     }
+
 }

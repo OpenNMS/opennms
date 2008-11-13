@@ -37,13 +37,7 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.opennms.netmgt.model.EntityVisitor;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.service.DefaultProvisionService;
-import org.opennms.netmgt.xml.event.Event;
 
 public class InsertOperation extends SaveOrUpdateOperation {
     
@@ -51,22 +45,25 @@ public class InsertOperation extends SaveOrUpdateOperation {
 		super(foreignSource, foreignId, nodeLabel, building, city, provisionService);
 	}
 
-	public List<Event> doPersist() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        getNode().setDistPoller(distPoller);
-        getNodeDao().save(getNode());
-        
-    	final List<Event> events = new LinkedList<Event>();
-
-    	EntityVisitor eventAccumlator = new AddEventVisitor(events);
-
-    	getNode().visit(eventAccumlator);
-        
-    	return events;
+	public String toString() {
+        return "INSERT: Node: "+getNode().getLabel();
     }
 
-    public String toString() {
-	return "INSERT: Node: "+getNode().getLabel();
+    public void persist(final ProvisionMonitor monitor) {
+    
+        final ImportOperation oper = this;
+    
+        monitor.beginPersisting(oper);
+        log().info("Persist: "+oper);
+
+        getProvisionService().doInsertNode(getNode());
+    	
+        monitor.finishPersisting(oper);
+    
+        log().info("Clear cache: "+this);
+    
+        // clear the cache to we don't use up all the memory
+    	getProvisionService().clearCache();
     }
 
 }
