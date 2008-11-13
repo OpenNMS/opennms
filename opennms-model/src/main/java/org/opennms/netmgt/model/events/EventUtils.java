@@ -34,6 +34,7 @@ package org.opennms.netmgt.model.events;
 import static org.opennms.netmgt.EventConstants.INTERFACE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_ADDED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.PARM_IP_HOSTNAME;
 import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL;
@@ -72,7 +73,7 @@ public abstract class EventUtils {
         
         debug("createNodeGainedInterfaceEvent:  %d / %s", nodeId, ifaddr.getHostAddress());
         
-        EventBuilder bldr = new EventBuilder(NODE_GAINED_SERVICE_EVENT_UEI, source);
+        EventBuilder bldr = new EventBuilder(NODE_GAINED_INTERFACE_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.setInterface(ifaddr.getHostAddress());
         bldr.addParam(PARM_IP_HOSTNAME, ifaddr.getHostName());
