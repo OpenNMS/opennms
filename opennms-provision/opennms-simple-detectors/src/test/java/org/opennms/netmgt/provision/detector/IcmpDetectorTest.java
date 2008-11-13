@@ -8,9 +8,14 @@ import java.net.InetAddress;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.springframework.test.annotation.IfProfileValue;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({}) 
 public class IcmpDetectorTest {
     
     private IcmpDetector m_icmpDetector;
