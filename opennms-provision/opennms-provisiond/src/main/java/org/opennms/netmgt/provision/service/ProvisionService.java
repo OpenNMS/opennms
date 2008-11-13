@@ -31,11 +31,23 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsNode;
+
 /**
  * ProvisionService
  *
  * @author brozow
  */
 public interface ProvisionService {
+    
+    public OnmsDistPoller createDistPollerIfNecessary();
+    
+    public void doUpdateNode(OnmsNode node, boolean snmpDataForNodeUpToDate, boolean snmpDataForInterfacesUpToDate);
+
+    public void doDeleteNode(Integer nodeId);
+    
+    public void doInsertNode(OnmsNode node);
+    
 
 }

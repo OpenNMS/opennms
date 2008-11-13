@@ -109,10 +109,6 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
         return getProvisionService().getAssetRecordDao();
     }
 
-    public TransactionTemplate getTransTemplate() {
-        return getProvisionService().getTransactionTemplate();
-    }
-
     public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         return new InsertOperation(foreignSource, foreignId, nodeLabel, building, city, getProvisionService());
         
@@ -132,7 +128,7 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 
     protected void importModelFromResource(String foreignSource, Resource resource, ProvisionMonitor monitor)
             throws ModelImportException, IOException {
-        doImport(resource, monitor, m_scanThreads, m_writeThreads, getTransTemplate(),
+        doImport(resource, monitor, m_scanThreads, m_writeThreads, getProvisionService().getTransactionTemplate(),
                  new ImportManager(), foreignSource);
     }
 
@@ -187,15 +183,7 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 	}
 
     private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
-    	getTransTemplate().execute(new TransactionCallback() {
-    
-            public Object doInTransaction(TransactionStatus status) {
-                ImportAccountant accountant = new ImportAccountant(opsMgr);
-                specFile.visitImport(accountant);
-                return null;
-            }
-            
-        });
+        specFile.visitImport(new ImportAccountant(opsMgr));
     }
 
 	class NodeRelator extends AbstractImportVisitor {
@@ -206,7 +194,7 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 		}
 
         public void visitNode(final Node node) {
-			getTransTemplate().execute(new TransactionCallbackWithoutResult() {
+			getProvisionService().getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					
 					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
@@ -276,7 +264,7 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 
 
     private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
-        TransactionTemplate transTemplate = getTransTemplate();
+        TransactionTemplate transTemplate = getProvisionService().getTransactionTemplate();
         return getForeignIdtoNodeMap(foreignSource, transTemplate);
         
     }

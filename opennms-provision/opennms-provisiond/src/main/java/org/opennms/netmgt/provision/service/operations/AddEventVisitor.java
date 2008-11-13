@@ -38,33 +38,33 @@
  */
 package org.opennms.netmgt.provision.service.operations;
 
-import java.util.List;
 
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 public final class AddEventVisitor extends AbstractEntityVisitor {
-	private final List<Event> m_events;
-	private final String m_eventSource = "ModekImporter";
+    private static final String m_eventSource = "ModelImporter";
+	private final EventForwarder m_eventForwarder;
 
-	AddEventVisitor(List<Event> events) {
-		m_events = events;
+	public AddEventVisitor(EventForwarder eventForwarder) {
+		m_eventForwarder = eventForwarder;
 	}
 
 	public void visitNode(OnmsNode node) {
-		m_events.add(createNodeAddedEvent(node));
+	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
 	}
 
     public void visitIpInterface(OnmsIpInterface iface) {
-        m_events.add(createNodeGainedInterfaceEvent(iface));
+        m_eventForwarder.sendNow(createNodeGainedInterfaceEvent(iface));
     }
 
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
-        m_events.add(createNodeGainedServiceEvent(monSvc));
+        m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
 
     private Event createNodeAddedEvent(OnmsNode node) {
