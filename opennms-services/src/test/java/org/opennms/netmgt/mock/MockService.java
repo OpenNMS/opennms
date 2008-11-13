@@ -243,6 +243,10 @@ public class MockService extends MockElement implements MonitoredService {
         return MockEventUtil.createServiceResponsiveEvent("Test", this);
     }
     
+    public Event createNewEvent() {
+        return MockEventUtil.createNodeGainedServiceEvent("Test", this);
+    }
+
     public Event createDeleteEvent() {
         return MockEventUtil.createServiceDeletedEvent("Test", this);
     }
