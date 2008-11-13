@@ -122,11 +122,6 @@
       <artifactId>concurrent</artifactId>
     </dependency>
     <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>quartz</groupId>
       <artifactId>quartz</artifactId>
     </dependency>

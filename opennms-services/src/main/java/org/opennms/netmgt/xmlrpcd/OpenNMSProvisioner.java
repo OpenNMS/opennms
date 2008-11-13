@@ -400,7 +400,7 @@ public class OpenNMSProvisioner implements Provisioner {
             pkg.addService(svc);
         }
         svc.setInterval(interval);
-        Enumeration keys = parms.propertyNames();
+        Enumeration<?> keys = parms.propertyNames();
         while(keys.hasMoreElements()) {
             String key = (String)keys.nextElement();
             String value = parms.getProperty(key);
@@ -607,7 +607,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, JDBC_MONITOR, JDBC_PLUGIN, parm);
     }
     
-    public Map getServiceConfiguration(String pkgName, String serviceId) {
+    public Map<String, Object> getServiceConfiguration(String pkgName, String serviceId) {
         if (pkgName == null) {
             throw new NullPointerException("pkgName is null");
         }
