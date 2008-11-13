@@ -133,6 +133,10 @@ public class MockEventUtil {
         return createInterfaceEvent(source, EventConstants.INTERFACE_UP_EVENT_UEI, iface);
     }
     
+    public static Event createNodeGainedInterfaceEvent(String source, MockInterface iface) {
+        return createInterfaceEvent(source, EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, iface);
+    }
+    
     public static Event createInterfaceDeletedEvent(String source, MockInterface iface) {
         return createInterfaceEvent(source, EventConstants.INTERFACE_DELETED_EVENT_UEI, iface);
     }
@@ -147,6 +151,10 @@ public class MockEventUtil {
     
     public static Event createNodeUpEvent(String source, MockNode node) {
         return createNodeEvent(source, EventConstants.NODE_UP_EVENT_UEI, node);
+    }
+    
+    public static Event createNodeAddedEvent(String source, MockNode node) {
+        return createNodeEvent(source, EventConstants.NODE_ADDED_EVENT_UEI, node);
     }
     
     public static Event createNodeDeletedEvent(String source, MockNode node) {

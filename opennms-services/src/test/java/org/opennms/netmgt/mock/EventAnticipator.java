@@ -198,6 +198,10 @@ public class EventAnticipator implements EventListener {
             Assert.fail(problems.toString());
         }
     }
+    
+    public void verifyAnticipated() {
+        verifyAnticipated(0, 0, 0, 0, 0);
+    }
 
     private static String listEvents(String prefix, Collection<Event> events) {
         StringBuffer b = new StringBuffer();
