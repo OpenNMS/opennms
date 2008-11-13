@@ -222,6 +222,10 @@
     <url-pattern>/graph/results.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/KSC/customView.htm</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>AddRefreshHeader-120</filter-name>
     <url-pattern>/event/list</url-pattern>
   </filter-mapping>
