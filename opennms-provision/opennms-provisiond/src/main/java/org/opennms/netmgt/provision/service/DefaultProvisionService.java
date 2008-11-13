@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
@@ -411,18 +412,6 @@ public class DefaultProvisionService implements ProvisionService {
     }
 
     /**
-     * @return the transTemplate
-     */
-    public TransactionTemplate getTransactionTemplate() {
-        return m_transactionTemplate;
-    }
-    /**
-     * @param transactionTemplate the transTemplate to set
-     */
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        m_transactionTemplate = transactionTemplate;
-    }
-    /**
      * @return the distPollerDao
      */
     public DistPollerDao getDistPollerDao() {
@@ -646,7 +635,7 @@ public class DefaultProvisionService implements ProvisionService {
         return type;
     }
     
-    @Transactional
+    @Transactional(readOnly=true)
     public OnmsServiceType loadServiceType(String serviceName) {
         OnmsServiceType type;
         type = getServiceTypeDao().findByName(serviceName);
@@ -664,6 +653,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
     
+    @Transactional(readOnly=true)
     private HashMap<String, OnmsCategory> loadCategoryMap() {
         HashMap<String, OnmsCategory> categoryMap = new HashMap<String, OnmsCategory>();
         for(Iterator<OnmsCategory> it = getCategoryDao().findAll().iterator(); it.hasNext();) {
@@ -685,7 +675,7 @@ public class DefaultProvisionService implements ProvisionService {
         return category;
     }
     
-    @Transactional
+    @Transactional(readOnly=true)
     public OnmsCategory loadCategory(String name) {
         OnmsCategory category;
         category = getCategoryDao().findByName(name);
@@ -694,6 +684,75 @@ public class DefaultProvisionService implements ProvisionService {
             getCategoryDao().save(category);
         }
         return category;
+    }
+    
+    @Transactional(readOnly=true)
+    public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
+    }
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+    OnmsNode findNodebyNodeLabel(String label) {
+        Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
+    	if (nodes.size() == 1)
+    		return nodes.iterator().next();
+    	
+    	log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
+    	return null;
+    }
+    
+    @Transactional(readOnly=true)
+    OnmsNode findNodebyForeignId(String foreignSource, String foreignId) {
+        return getNodeDao().findByForeignId(foreignSource, foreignId);
+    }
+    
+    @Transactional(readOnly=true)
+    OnmsNode findParent(String foreignSource, String parentForeignId, String parentNodeLabel) {
+        if (parentForeignId != null)
+            return findNodebyForeignId(foreignSource, parentForeignId);
+        else {
+            if (parentNodeLabel != null)
+                return findNodebyNodeLabel(parentNodeLabel);
+        }
+    	
+    	return null;
+    }
+    
+    @Transactional
+    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
+
+        final OnmsNode node = findNodebyForeignId(foreignSource, foreignId);
+        final OnmsNode parent = findParent(foreignSource, parentForeignId, parentNodeLabel);
+
+        setParent(node, parent);
+        setPathDependency(node, parent);
+
+        getNodeDao().update(node);
+    }
+
+    private void setPathDependency(OnmsNode node, OnmsNode parent) {
+        
+        if (node == null) return;
+        
+        OnmsIpInterface critIface = null;
+    	if (parent != null) {
+    		critIface = parent.getCriticalInterface();
+    	}
+    	
+        log().info("Setting criticalInterface of node: "+node+" to: "+critIface);
+    	node.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddress(), "ICMP"));
+
+    }
+    
+    private void setParent(OnmsNode node, OnmsNode parent) {
+
+        if (node == null) return;
+
+        log().info("Setting parent of node: "+node+" to: "+parent);
+        node.setParent(parent);
+
+        getNodeDao().update(node);
     }
 
 
