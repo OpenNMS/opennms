@@ -129,6 +129,7 @@ abstract public class MockElement {
     abstract public Event createDownEvent();
     
     abstract public Event createUpEvent();
+    
 
     /**
      * @param upDate
@@ -150,6 +151,8 @@ abstract public class MockElement {
         return e;
     }
     
+    abstract public Event createNewEvent();
+
     abstract public Event createDeleteEvent();
 
 }
