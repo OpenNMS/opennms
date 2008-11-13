@@ -82,18 +82,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		long otrsTicketNumber = Long.parseLong(ticketId.trim());
 
-		TicketServiceLocator service = new TicketServiceLocator();
-		
-		service.setTicketServicePortEndpointAddress(m_configDao.getEndpoint());
-
-		TicketServicePort_PortType port = null;
-
-		try {
-			port = service.getTicketServicePort();
-		} catch (ServiceException e) {
-			log().error("Failed initialzing OTRS TicketServicePort" + e);
-			m_eventIpcManager.sendNow(createEvent("Failed initialzing OTRS TicketServicePort"));
-		}
+		TicketServicePort_PortType port = getTicketServicePort();
 
 		Ticket opennmsTicket = new Ticket();
 
@@ -159,13 +148,12 @@ public class OtrsTicketerPlugin implements Plugin {
 
 	}
 
+
 	public void saveOrUpdate(Ticket newTicket) {
 		
 		TicketIDAndNumber idAndNumber = null;
 		
-		TicketServiceLocator service = new TicketServiceLocator();
-
-		TicketServicePort_PortType port = null;
+		TicketServicePort_PortType port = getTicketServicePort();
 		
 		Ticket currentTicket = null;
 		
@@ -173,13 +161,6 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		creds.setUser(m_configDao.getUserName());
 		creds.setPass(m_configDao.getPassword());
-		
-		try {
-			port = service.getTicketServicePort();
-		} catch (ServiceException e) {
-			log().error("Failed initialzing OTRS TicketServicePort" + e);
-			m_eventIpcManager.sendNow(createEvent("Failed initialzing OTRS TicketServicePort"));
-		}
 		
 		if (newTicket.getId() != null) {
 
@@ -450,6 +431,30 @@ public class OtrsTicketerPlugin implements Plugin {
         
         return openNMSState;
         
+    }
+    
+    /**
+     * Convenience method for initialising the ticketServicePort and correctly setting the endpoint.
+     *
+     * @return TicketServicePort to connect to the remote service.
+     */
+    
+    private TicketServicePort_PortType getTicketServicePort() {
+        
+        TicketServiceLocator service = new TicketServiceLocator();
+        
+        service.setTicketServicePortEndpointAddress(m_configDao.getEndpoint());
+
+        TicketServicePort_PortType port = null;
+
+        try {
+            port = service.getTicketServicePort();
+        } catch (ServiceException e) {
+            log().error("Failed initialzing OTRS TicketServicePort" + e);
+            m_eventIpcManager.sendNow(createEvent("Failed initialzing OTRS TicketServicePort"));
+        }
+        
+        return port;
     }
     
     /**
