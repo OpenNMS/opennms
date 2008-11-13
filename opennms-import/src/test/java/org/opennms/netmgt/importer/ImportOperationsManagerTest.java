@@ -102,6 +102,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     protected void onSetUpInTransactionIfEnabled() throws Exception {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.snmp4j.Snmp", "FATAL");
+        p.setProperty("log4j.logger.org.opennms.netmgt.snmp.SnmpWalker", "FATAL");
         MockLogAppender.setupLogging(p);
 
         m_populator.populateDatabase();
