@@ -86,14 +86,14 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TemporaryDatabaseExecutionListener.class,
     DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/modelImporterTest.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 
 public class BaseImporterTest {
