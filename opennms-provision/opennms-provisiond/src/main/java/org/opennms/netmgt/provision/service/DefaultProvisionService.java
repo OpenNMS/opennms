@@ -381,6 +381,8 @@ public class DefaultProvisionService implements ProvisionService {
     private EventForwarder m_eventForwarder;
     
     private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
+    private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
+
     /**
      * @return the typeCache
      */
@@ -407,7 +409,6 @@ public class DefaultProvisionService implements ProvisionService {
             ThreadLocal<HashMap<String, OnmsCategory>> categoryCache) {
         m_categoryCache = categoryCache;
     }
-    private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 
     /**
      * @return the transTemplate

@@ -264,22 +264,17 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 
 
     private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
-        TransactionTemplate transTemplate = getProvisionService().getTransactionTemplate();
-        return getForeignIdtoNodeMap(foreignSource, transTemplate);
+        final DefaultProvisionService provisionService = getProvisionService();
+        TransactionTemplate transTemplate = provisionService.getTransactionTemplate();
+        return (Map<String, Integer>) transTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                return provisionService.getNodeDao().getForeignIdToNodeIdMap(foreignSource);
+            }
+        });
         
     }
 
     
-    @SuppressWarnings("unchecked")
-    private Map<String, Integer> getForeignIdtoNodeMap(
-            final String foreignSource, TransactionTemplate transTemplate) {
-        return (Map<String, Integer>) transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
-            }
-        });
-    }
-
     private OnmsDistPoller createDistPollerIfNecessary() {
         return getProvisionService().createDistPollerIfNecessary();
     
