@@ -37,7 +37,6 @@
 package org.opennms.netmgt.provision.service;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -50,9 +49,6 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.provision.service.operations.DeleteOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationFactory;
@@ -65,10 +61,6 @@ import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 public class BaseImporter implements ImportOperationFactory, InitializingBean {
@@ -128,14 +120,13 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 
     protected void importModelFromResource(String foreignSource, Resource resource, ProvisionMonitor monitor)
             throws ModelImportException, IOException {
-        doImport(resource, monitor, m_scanThreads, m_writeThreads, getProvisionService().getTransactionTemplate(),
-                 new ImportManager(), foreignSource);
+        doImport(resource, monitor, m_scanThreads, m_writeThreads, new ImportManager(),
+                 foreignSource);
     }
 
     private void doImport(Resource resource, ProvisionMonitor monitor,
             int scanThreads, int writeThreads,
-            TransactionTemplate transTemplate, ImportManager importManager,
-            String foreignSource) throws ModelImportException, IOException {
+            ImportManager importManager, String foreignSource) throws ModelImportException, IOException {
         
         importManager.getClass();
         monitor.beginImporting();
@@ -194,62 +185,8 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 		}
 
         public void visitNode(final Node node) {
-			getProvisionService().getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					
-					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
-					if (dbNode == null) {
-					    log().error("Error setting parent on node: "+node.getForeignId()+" node not in database");
-					    return;
-					}
-					OnmsNode parent = findParent(node);
-					
-					OnmsIpInterface critIface = null;
-					if (parent != null) {
-						critIface = getCriticalInterface(parent);
-					}
-					
-					log().info("Setting parent of node: "+dbNode+" to: "+parent);
-					dbNode.setParent(parent);
-					log().info("Setting criticalInterface of node: "+dbNode+" to: "+critIface);
-					dbNode.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddress(), "ICMP"));
-					getNodeDao().update(dbNode);
-				}
-
-				private OnmsIpInterface getCriticalInterface(OnmsNode parent) {
-					
-					OnmsIpInterface critIface = parent.getPrimaryInterface();
-					if (critIface != null) {
-						return critIface;
-					}
-					
-					return parent.getInterfaceWithService("ICMP");
-					
-				}
-
-			});
-		}
-		
-		private OnmsNode findParent(Node node) {
-			if (node.getParentForeignId() != null)
-				return findNodeByForeignId(m_foreignSource, node.getParentForeignId());
-			else if (node.getParentNodeLabel() != null)
-				return findNodeByNodeLabel(node.getParentNodeLabel());
-			
-			return null;
-		}
-
-		private OnmsNode findNodeByNodeLabel(String label) {
-			Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
-			if (nodes.size() == 1)
-				return nodes.iterator().next();
-			
-			log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
-			return null;
-		}
-
-		private OnmsNode findNodeByForeignId(String foreignSource, String foreignId) {
-            return getNodeDao().findByForeignId(foreignSource, foreignId);
+            getProvisionService().setNodeParentAndDependencies(m_foreignSource, node.getForeignId(), node.getParentForeignId(),
+                                                node.getParentNodeLabel());
 		}
 
 	};
@@ -264,14 +201,7 @@ public class BaseImporter implements ImportOperationFactory, InitializingBean {
 
 
     private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
-        final DefaultProvisionService provisionService = getProvisionService();
-        TransactionTemplate transTemplate = provisionService.getTransactionTemplate();
-        return (Map<String, Integer>) transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                return provisionService.getNodeDao().getForeignIdToNodeIdMap(foreignSource);
-            }
-        });
-        
+        return getProvisionService().getForeignIdToNodeIdMap(foreignSource);
     }
 
     

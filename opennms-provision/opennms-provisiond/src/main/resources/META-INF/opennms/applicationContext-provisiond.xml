@@ -42,7 +42,6 @@
     <property name="nodeDao" ref="nodeDao" />
     <property name="serviceTypeDao" ref="serviceTypeDao" />
     <property name="categoryDao" ref="categoryDao" />
-    <property name="transactionTemplate" ref="transactionTemplate" />
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
