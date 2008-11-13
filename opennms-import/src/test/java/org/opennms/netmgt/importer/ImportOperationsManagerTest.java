@@ -43,6 +43,7 @@ package org.opennms.netmgt.importer;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -99,7 +100,9 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     
     @Override
     protected void onSetUpInTransactionIfEnabled() throws Exception {
-        MockLogAppender.setupLogging();
+        Properties p = new Properties();
+        p.setProperty("log4j.logger.org.snmp4j.Snmp", "FATAL");
+        MockLogAppender.setupLogging(p);
 
         m_populator.populateDatabase();
         setComplete();

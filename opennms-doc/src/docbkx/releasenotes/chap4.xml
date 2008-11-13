@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="chap4">
+<chapter id="supported">
   <title>Supported Systems</title>
 
   <subtitle>Supported UNIX-like OSes</subtitle>
@@ -15,7 +15,7 @@
 
   <para>Windows 2000/XP/Vista are supported as of 1.3.8.</para>
 
-  <section id="chap4sect1">
+  <section id="supported-fully">
     <title>Fully Supported</title>
 
     <para>The following systems are supported out-of-the-box with native installation packages:</para>
@@ -86,7 +86,7 @@
 	</itemizedlist>
   </section>
 
-  <section id="chap4sect2">
+  <section id="supported-unsupported">
     <title>Unsupported</title>
 
     <para>OpenNMS 1.3.7 and up require Java 5 (a 1.5 JDK) and PostgreSQL 7.4 or higher.

@@ -4,31 +4,48 @@
 
 	<subtitle>About This Release</subtitle>
 
-	<para>Release 1.6.0 is the first stable release in the OpenNMS 1.6 series.</para>
+	<section id="introduction-1.6.1">
+		<title>Release 1.6.1</title>
 
-	<para>It's been 3 and a half years since the last OpenNMS stable version, 1.2, was
-	branched and released as production-ready.  In that time, OpenNMS as a project has
-	changed tremendously, the community has grown exponentially, and massive numbers of
-	new features have been incorporated into the "unstable" 1.3.x series.
-	</para>
+		<para>
+			Release 1.6.1 continues the 1.6 series with a small set of bug fixes and minor
+			feature enhancements.  It is a recommended upgrade for all users.
+		</para>
+		
+		<para>
+			The codename for 1.6.1 is <emphasis>bamboo army</emphasis>.
+		</para>
+	</section>
+    
+	<section id="introduction-1.6.0">
+		<title>Release 1.6.0</title>
 
-	<para>In that time, the unstable codebase solidified to the point that The OpenNMS
-	Group supported it as if it were stable; it was <emphasis>at least</emphasis> as
-	stable as 1.2.x was, but many users held off on upgrading because of the unstable
-	moniker.</para>
+		<para>Release 1.6.0 is the first stable release in the OpenNMS 1.6 series.</para>
 
-	<para>After a lot of work, and a renewed focus on getting the next stable release
-	out the door, we are now prepared to declare OpenNMS 1.6 release-candidate-ready.</para>
+		<para>It's been 3 and a half years since the last OpenNMS stable version, 1.2, was
+		branched and released as production-ready.  In that time, OpenNMS as a project has
+		changed tremendously, the community has grown exponentially, and massive numbers of
+		new features have been incorporated into the "unstable" 1.3.x series.
+		</para>
 
-	<para>Why 1.6 instead of 1.4?  3 years is a lot of time, and a lot has happened
-	in that time.  We're not ready to call it 2.0, we want to redo the web UI first,
-	but 1.4 didn't really do the massive changes since 1.2 justice.  So: 1.6 it is.</para>
-	
-	<para>Since it is a lot easier to do a release than it was in the 1.2 series (now
-	that the native code is moved out into separate packages, and OpenNMS itself is
-	distributed as pure-java sources), the goal is to continue to be on a much faster
-	6-month or year cycle for new releases.</para>
+		<para>In that time, the unstable codebase solidified to the point that The OpenNMS
+		Group supported it as if it were stable; it was <emphasis>at least</emphasis> as
+		stable as 1.2.x was, but many users held off on upgrading because of the unstable
+		moniker.</para>
 
-	<para>Please, let us know if you have any problems at all in our <ulink
-	url="http://bugzilla.opennms.org/">Bugzilla bug tracker</ulink>.</para>
+		<para>After a lot of work, and a renewed focus on getting the next stable release
+		out the door, we are now prepared to declare OpenNMS 1.6 release-candidate-ready.</para>
+
+		<para>Why 1.6 instead of 1.4?  3 years is a lot of time, and a lot has happened
+		in that time.  We're not ready to call it 2.0, we want to redo the web UI first,
+		but 1.4 didn't really do the massive changes since 1.2 justice.  So: 1.6 it is.</para>
+
+		<para>Since it is a lot easier to do a release than it was in the 1.2 series (now
+		that the native code is moved out into separate packages, and OpenNMS itself is
+		distributed as pure-java sources), the goal is to continue to be on a much faster
+		6-month or year cycle for new releases.</para>
+
+		<para>Please, let us know if you have any problems at all in our <ulink
+		url="http://bugzilla.opennms.org/">Bugzilla bug tracker</ulink>.</para>
+	</section>
 </chapter>
