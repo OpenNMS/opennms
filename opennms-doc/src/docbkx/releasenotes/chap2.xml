@@ -4,6 +4,191 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+  <section id="opennms-1.6.1">
+    <title>Changes in OpenNMS 1.6.1</title>
+    
+    <section id="opennms-1.6.1-features">
+    	<title>New Features</title>
+
+        <itemizedlist>
+
+          <listitem>
+          	<para>KSC reports are now sorted by title. (Bug <ulink
+          	url="http://bugzilla.opennms.org/show_bug.cgi?id=2817">#2817</ulink>)</para>
+          </listitem>
+
+          <listitem>
+          	<para>You can now use ${ipaddr} in URLs for in the Page Sequence Monitor. (Bug <ulink
+          	url="http://bugzilla.opennms.org/show_bug.cgi?id=2840">#2840</ulink>)</para>
+          </listitem>
+
+          <listitem>
+	        <para>Support for new Fortinet traps was added. (Bug <ulink
+	        url="http://bugzilla.opennms.org/show_bug.cgi?id=2847">#2847</ulink>)</para>
+	      </listitem>
+
+          <listitem>
+	        <para>A monitor for the trivial time service was added. (Bug <ulink
+	        url="http://bugzilla.opennms.org/show_bug.cgi?id=2864">#2864</ulink>)</para>
+	      </listitem>
+
+      </itemizedlist>
+
+    </section>
+    
+    <section id="opennms-1.6.1-bugfixes">
+    	<title>Bug Fixes</title>
+    	
+    	<itemizedlist>
+    	
+          <listitem>
+            <para>An error when attempting to delete URLs in the discovery admin page
+            was fixed.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2829">#2829</ulink>)</para>
+          </listitem>
+
+          <listitem>
+            <para>The poller was no longer setting the reason on nodeLostService events.
+            (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2846">#2846</ulink>)</para>
+          </listitem>
+
+          <listitem>
+            <para>An exception in the path outages web UI when using PostgreSQL 8.3
+            was fixed.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2866">#2866</ulink>)</para>
+          </listitem>
+          
+          <listitem>
+            <para>A few issues with ticket and alarm triggers were fixed.  (Bugs <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2868">#2868</ulink> and <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2869">#2869</ulink>)</para>
+          </listitem>
+          
+          <listitem>
+            <para>An invalid regular expression in the thresholding configuration could
+            cause thresholding not to happen and throw an exception.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2873">#2873</ulink>)</para>
+          </listitem>
+          
+          <listitem>
+            <para>The HTTP data collector now behaves properly when storeByGroup=true (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2875">#2875</ulink>)</para>
+          </listitem>
+          
+          <listitem>
+            <para>The SSH monitor would cause a thread lock if a socket allowed connection
+            but never returned any data.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2896">#2896</ulink>)</para>
+          </listitem>
+          
+          <listitem>
+            <para>The mail transport monitor would not retry during the read test.  (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2897">#2897</ulink>)</para>
+          </listitem>
+
+        </itemizedlist>
+    </section>
+    
+    <section id="opennms-1.6.1-changes">
+    
+      <title>Configuration/Behavior Changes</title>
+
+      <para>A number of changes were done to configs to clean up usage and get rid of old
+      unnecessary tags.</para>
+
+      <itemizedlist>
+        <listitem><para><filename>capsd-configuration.xml</filename>: capsd-configuration.xml no longer
+        requires the <code>user-defined</code> attribute. (Bug <ulink
+        url="http://bugzilla.opennms.org/show_bug.cgi?id=2872">#2872</ulink>)</para></listitem>
+
+        <listitem><para><filename>eventconf.xml</filename>: the &lt;logmsg&gt; tag now accepts an
+        optional attribute, <code>notify</code>, which can be set to <code>false</code>
+        to unilaterally suppress any notifications on that event. (Bug <ulink
+        url="http://bugzilla.opennms.org/show_bug.cgi?id=2891">#2891</ulink>)</para></listitem>
+        
+        <listitem><para><filename>http-datacollection-config.xml</filename>: The <code>name</code> attribute
+        on URI tags in the HTTP data collection configuration file is now required.  It was common
+        practice to do so anyways, but you will need to check your configs to make sure it is defined.
+        (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2876">#2876</ulink>)</para></listitem>
+        
+        <listitem>
+          <para><filename>http-datacollection-config.xml</filename>: The <code>url</code> tag can now take
+          a number of options relating to how regular expressions should be parsed.  (Bug
+          <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2882">#2882</ulink>)</para>
+
+          <glosslist>
+            <glossentry>
+              <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#CANON_EQ">canonical-equivalence</ulink></glossterm>
+              <glossdef><para>When this flag is specified then two characters will be considered to
+              match if, and only if, their full canonical decompositions match.  The expression "a\u030A",
+              for example, will match the string "å" when this flag is specified.  By default, matching
+              does not take canonical equivalence into account.</para></glossdef>
+            </glossentry>
+            <glossentry>
+              <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#CASE_INSENSITIVE">case-insensitive</ulink></glossterm>
+              <glossdef><para>Enables case-insensitive matching.  By default, case-insensitive matching
+              assumes that only characters in the US-ASCII charset are being matched.  Unicode-aware
+              case-insensitive matching can be enabled by specifying the <code>unicode-case</code>
+              flag in conjunction with this flag.</para></glossdef>
+            </glossentry>
+            <glossentry>
+              <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#COMMENTS">comments</ulink></glossterm>
+              <glossdef><para>Permits whitespace and comments in pattern.  In this mode, whitespace is
+              ignored, and embedded comments starting with # are ignored until the end of a line.</para></glossdef>
+             </glossentry>
+             <glossentry>
+               <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#DOTALL">dotall</ulink></glossterm>
+               <glossdef><para>Enables dotall mode.  In dotall mode, the expression . matches any
+               character, including a line terminator.  By default this expression does not match
+               line terminators.</para></glossdef>
+             </glossentry>
+             <glossentry>
+               <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#LITERAL">literal</ulink></glossterm>
+               <glossdef><para>Enables literal parsing of the pattern.  When this flag is specified
+               then the input string that specifies the pattern is treated as a sequence of literal
+               characters. Metacharacters or escape sequences in the input sequence will be given no
+               special meaning.  The flags <code>case-insensitive</code> and
+               <code>unicode-case</code> retain their impact on matching when used in
+               conjunction with this flag. The other flags become superfluous.</para></glossdef>
+             </glossentry>
+			 <glossentry>
+			   <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#MULTILINE">multiline</ulink></glossterm>
+			   <glossdef><para>Enables multiline mode.  In multiline mode the expressions ^ and $
+			   match just after or just before, respectively, a line terminator or the end of the
+			   input sequence. By default these expressions only match at the beginning and the
+			   end of the entire input sequence.</para></glossdef>
+			 </glossentry>
+			 <glossentry>
+			   <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#UNICODE_CASE">unicode-case</ulink></glossterm>
+			   <glossdef><para>Enables Unicode-aware case folding.  When this flag is specified then
+			   case-insensitive matching, when enabled by the <code>case-insensitive</code>
+			   flag, is done in a manner consistent with the Unicode Standard. By default,
+			   case-insensitive matching assumes that only characters in the US-ASCII charset are
+			   being matched.</para></glossdef>
+			 </glossentry>
+			 <glossentry>
+			   <glossterm><ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#UNIX_LINES">unix-lines</ulink></glossterm>
+			   <glossdef><para>Enables Unix lines mode.  In this mode, only the '\n' line terminator
+			   is recognized in the behavior of ., ^, and $.</para></glossdef>
+			 </glossentry>
+               
+          </glosslist>
+        </listitem>
+
+        <listitem><para><filename>notifd-configuration.xml</filename>: The default behavior of the numeric
+        page (-nm) field in notifications has been changed to prepend "RESOLVED:" to the message, just like
+        other page types, since most people are using the numeric field for SMS pages.  To restore the old
+        behavior, add the <code>skip-numeric-resolution-prefix</code> to the global
+        &lt;notifd-configuration&gt; tag at the top of the file, set to "<code>true</code>".</para></listitem>
+
+      </itemizedlist>
+        
+    </section>
+    
+    <para>The full list of changes is available in <ulink
+    url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.6.1&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+  </section>
+
   <section id="opennms-1.6.0">
     <title>Changes in OpenNMS 1.6.0</title>
     
