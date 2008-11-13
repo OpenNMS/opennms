@@ -105,7 +105,7 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>common-io</groupId>
+      <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
