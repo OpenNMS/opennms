@@ -39,6 +39,10 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.util.Properties;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.modelimport.Category;
@@ -46,16 +50,23 @@ import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockElement;
+import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.style.ToStringCreator;
@@ -80,26 +91,36 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/modelImporterTest.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
 })
-public class ModelImporterTest {
+
+public class BaseImporterTest {
+
     @Autowired
-    private DatabasePopulator m_populator;
+    private MockEventIpcManager m_mockEventIpcManager;
+    
+    @Autowired
+    private BaseImporter m_importer;
     
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
     
     @Autowired
-    private CategoryDao m_categoryDao;
-
-    @Autowired
-    private ModelImporter m_importer;
+    private MonitoredServiceDao m_monitoredServiceDao;
     
     @Autowired
-    private DefaultProvisionService m_provisionService;
+    private IpInterfaceDao m_ipInterfaceDao;
+    
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+    
+    private EventAnticipator m_eventAnticipator;
+    
     
 //    public void onSetUpInTransactionIfEnabled() throws Exception {
 //        super.onSetUpInTransactionIfEnabled();
@@ -117,7 +138,172 @@ public class ModelImporterTest {
 //        
 //        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
 //    }
+    
+    @Before
+    public void setUp() {
+        Properties props = new Properties();
+        props.setProperty("log4j.logger.org.hibernate", "INFO");
+        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
 
+        MockLogAppender.setupLogging(props);
+        
+        m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
+    }
+
+
+    @Test
+    public void testVisit() throws Exception {
+
+        SpecFile specFile = new SpecFile();
+        specFile.loadResource(new ClassPathResource("/NewFile2.xml"));
+        CountingVisitor visitor = new CountingVisitor();
+        specFile.visitImport(visitor);
+        verifyCounts(visitor);
+    }
+
+    @Test
+    public void testSendEventsOnImport() throws Exception {
+        
+        MockNetwork network = new MockNetwork();
+        MockNode node = network.addNode(1, "node1");
+        network.addInterface("172.20.1.204");
+        network.addService("ICMP");
+        network.addService("HTTP");
+        network.addInterface("172.20.1.201");
+        network.addService("ICMP");
+        network.addService("SNMP");
+        
+        anticpateCreationEvents(node);
+        
+        importFromClasspath("/tec_dump.xml");
+        
+        m_eventAnticipator.verifyAnticipated();
+        
+    }
+
+
+    private void importFromClasspath(String path) throws IOException,
+            ModelImportException {
+        m_importer.importModelFromResource(new ClassPathResource(path));
+    }
+
+
+    private void anticpateCreationEvents(MockElement element) {
+        element.visit(new MockVisitorAdapter() {
+
+            @Override
+            public void visitElement(MockElement e) {
+                m_eventAnticipator.anticipateEvent(e.createNewEvent());
+            }
+            
+        });
+    }
+    
+    @Test
+    public void testFindQuery() throws Exception {
+        importFromClasspath("/tec_dump.xml.smalltest");
+        
+        for (OnmsAssetRecord assetRecord : m_importer.getAssetRecordDao().findAll()) {
+            System.err.println(assetRecord.getBuilding());
+        }
+    }
+    
+    @Test
+    public void testPopulate() throws Exception {
+        
+        importFromClasspath("/tec_dump.xml.smalltest");
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(10, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(30, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(50, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+    }
+    
+    private DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+
+    private NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+
+    private IpInterfaceDao getInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+
+    private MonitoredServiceDao getMonitoredServiceDao() {
+        return m_monitoredServiceDao;
+    }
+
+
+    private ServiceTypeDao getServiceTypeDao() {
+        return m_serviceTypeDao;
+    }
+    
+
+    /**
+     * This test first bulk imports 10 nodes then runs update with 1 node missing
+     * from the import file.
+     * 
+     * @throws ModelImportException
+     */
+    @Test
+    public void testImportUtf8() throws Exception {
+        
+        m_importer.importModelFromResource(new ClassPathResource("/utf-8.xml"));
+        
+        assertEquals(1, m_importer.getNodeDao().countAll());
+        // \u00f1 is unicode for n~ 
+        assertEquals("\u00f1ode2", m_importer.getNodeDao().get(1).getLabel());
+        
+    }
+    
+    /**
+     * This test first bulk imports 10 nodes then runs update with 1 node missing
+     * from the import file.
+     * 
+     * @throws ModelImportException
+     */
+    @Test
+    public void testDelete() throws Exception {
+        
+        importFromClasspath("/tec_dump.xml.smalltest");
+        
+        assertEquals(10, m_importer.getNodeDao().countAll());
+        
+        importFromClasspath("/tec_dump.xml.smalltest.delete");
+        
+        assertEquals(9, m_importer.getNodeDao().countAll());
+        
+
+    }
+    
+    private void verifyCounts(CountingVisitor visitor) {
+        //System.err.println(visitor);
+        assertEquals(1, visitor.getModelImportCount());
+        assertEquals(1, visitor.getNodeCount());
+        assertEquals(3, visitor.getCategoryCount());
+        assertEquals(4, visitor.getInterfaceCount());
+        assertEquals(6, visitor.getMonitoredServiceCount());
+        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
+        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
+        assertEquals(visitor.getCategoryCount(), visitor.getCategoryCompletedCount());
+        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
+        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
+    }
 
     class CountingVisitor implements ImportVisitor {
         
@@ -232,184 +418,5 @@ public class ModelImporterTest {
         
     }
     
-    @Test
-    public void testVisit() throws Exception {
-
-        SpecFile specFile = new SpecFile();
-        specFile.loadResource(new ClassPathResource("/NewFile2.xml"));
-        CountingVisitor visitor = new CountingVisitor();
-        specFile.visitImport(visitor);
-        verifyCounts(visitor);
-    }
-    
-    @Test
-    public void testFindQuery() throws Exception {
-        ModelImporter mi = m_importer;        
-        String specFile = "/tec_dump.xml.smalltest";
-        mi.importModelFromResource(new ClassPathResource(specFile));
-        for (OnmsAssetRecord assetRecord : m_importer.getAssetRecordDao().findAll()) {
-            System.err.println(assetRecord.getAssetNumber());
-        }
-    }
-    
-    @Test
-    public void testPopulate() throws Exception {
-        createAndFlushServiceTypes();
-        createAndFlushCategories();
-        
-        ModelImporter mi = m_importer;        
-        String specFile = "/tec_dump.xml.smalltest";
-        mi.importModelFromResource(new ClassPathResource(specFile));
-
-        //Verify distpoller count
-        assertEquals(1, getProvisionService().getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(10, mi.getProvisionService().getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(30, mi.getIpInterfaceDao().countAll());
-        
-        //Verify ifservices count
-        assertEquals(50, mi.getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals(3, mi.getServiceTypeDao().countAll());
-    }
-    
-
-    /**
-     * This test first bulk imports 10 nodes then runs update with 1 node missing
-     * from the import file.
-     * 
-     * @throws ModelImportException
-     */
-    @Test
-    public void testImportUtf8() throws Exception {
-        createAndFlushServiceTypes();
-        createAndFlushCategories();
-        
-        //Initialize the database
-        ModelImporter mi = m_importer;
-        String specFile = "/utf-8.xml";
-        mi.importModelFromResource(new ClassPathResource(specFile));
-        
-        assertEquals(1, mi.getNodeDao().countAll());
-        // \u00f1 is unicode for n~ 
-        assertEquals("\u00f1ode2", mi.getNodeDao().get(1).getLabel());
-        
-//        ImportVisitor visitor = new ImportAccountant();
-//        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
-//        mi.visitImport(visitor);
-        
-    }
-    
-    /**
-     * This test first bulk imports 10 nodes then runs update with 1 node missing
-     * from the import file.
-     * 
-     * @throws ModelImportException
-     */
-    @Test
-    public void testDelete() throws Exception {
-        createAndFlushServiceTypes();
-        createAndFlushCategories();
-        
-        //Initialize the database
-        ModelImporter mi = m_importer;
-        String specFile = "/tec_dump.xml.smalltest";
-        mi.importModelFromResource(new ClassPathResource(specFile));
-        
-        assertEquals(10, mi.getNodeDao().countAll());
-        
-//        ImportVisitor visitor = new ImportAccountant();
-//        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
-//        mi.visitImport(visitor);
-        
-    }
-    private void verifyCounts(CountingVisitor visitor) {
-        //System.err.println(visitor);
-        assertEquals(1, visitor.getModelImportCount());
-        assertEquals(1, visitor.getNodeCount());
-        assertEquals(3, visitor.getCategoryCount());
-        assertEquals(4, visitor.getInterfaceCount());
-        assertEquals(6, visitor.getMonitoredServiceCount());
-        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
-        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
-        assertEquals(visitor.getCategoryCount(), visitor.getCategoryCompletedCount());
-        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
-        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
-    }
-
-    private void createAndFlushServiceTypes() {
-        getServiceTypeDao().save(new OnmsServiceType("ICMP"));
-        getServiceTypeDao().save(new OnmsServiceType("SNMP"));
-        getServiceTypeDao().save(new OnmsServiceType("HTTP"));
-        getServiceTypeDao().flush();
-
-//        setComplete();
-//        endTransaction();
-//        startNewTransaction();
-    }
-    
-    private void createAndFlushCategories() {
-        getCategoryDao().save(new OnmsCategory("AC"));
-        getCategoryDao().save(new OnmsCategory("AP"));
-        getCategoryDao().save(new OnmsCategory("UK"));
-        getCategoryDao().save(new OnmsCategory("BE"));
-        getCategoryDao().save(new OnmsCategory("high"));
-        getCategoryDao().save(new OnmsCategory("low"));
-        getCategoryDao().save(new OnmsCategory("Park Plaza"));
-        getCategoryDao().save(new OnmsCategory("Golden Tulip"));
-        getCategoryDao().save(new OnmsCategory("Hilton"));
-        getCategoryDao().save(new OnmsCategory("Scandic"));
-        getCategoryDao().save(new OnmsCategory("Best Western"));
-        getCategoryDao().flush();
-
-//        setComplete();
-//        endTransaction();
-//        startNewTransaction();
-    }
-
-    public ModelImporter getImporter() {
-        return m_importer;
-    }
-
-    private DefaultProvisionService getProvisionService() {
-        return m_provisionService;
-    }
-    
-    public void setProvisionService(DefaultProvisionService provisionService) {
-        m_provisionService = provisionService;
-    }
-
-
-    public void setImporter(ModelImporter importer) {
-        m_importer = importer;
-    }
-
-    public DatabasePopulator getPopulator() {
-        return m_populator;
-    }
-
-    public void setPopulator(DatabasePopulator populator) {
-        m_populator = populator;
-    }
-
-    public CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
-
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
-    public ServiceTypeDao getServiceTypeDao() {
-        return m_serviceTypeDao;
-    }
-
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
-    }
 
 }
