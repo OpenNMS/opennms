@@ -65,6 +65,12 @@
           </listitem>
           
           <listitem>
+            <para>A bug that would cause the OTRS ticketer plugin to ignore otrs.properties was
+            fixed (Bug <ulink
+            url="http://bugzilla.opennms.org/show_bug.cgi?id=2870">#2870</ulink>)</para>
+          </listitem>
+
+          <listitem>
             <para>An invalid regular expression in the thresholding configuration could
             cause thresholding not to happen and throw an exception.  (Bug <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2873">#2873</ulink>)</para>
