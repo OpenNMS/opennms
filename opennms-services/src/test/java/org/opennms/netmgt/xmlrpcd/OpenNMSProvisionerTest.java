@@ -48,7 +48,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
@@ -69,7 +71,11 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
+import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -131,16 +137,23 @@ public class OpenNMSProvisionerTest {
             "   <protocol-plugin protocol=\"MyTcp\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n" +
             "</capsd-configuration>\n";
 
+    private EasyMockUtils m_mocks = new EasyMockUtils();
+    private RrdStrategy m_strategy = m_mocks.createMock(RrdStrategy.class);
+
     private MockEventIpcManager m_eventManager;
 
     private JdbcCapsdDbSyncer m_syncer;
 
     @Before
     public void setUp() throws Exception {
-
         MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
+        
+        Properties properties = new Properties();
+        RrdConfig.setProperties(properties);
+
+        RrdUtils.setStrategy(m_strategy);
         
         m_provisioner = new OpenNMSProvisioner();
         
@@ -174,13 +187,18 @@ public class OpenNMSProvisionerTest {
         m_syncer.afterPropertiesSet();
 
         m_syncer.syncServices();
-        
         m_provisioner.setCapsdDbSyncer(m_syncer);
-        
+
+    }
+
+    private void expectRrdInitialize() throws Exception {
+        m_strategy.initialize();
+        EasyMock.expectLastCall().anyTimes();
     }
 
     @After
     public void tearDown() throws Exception {
+        
         DataSourceFactory.setInstance(null);
         MockLogAppender.assertNoWarningsOrGreater();
     }
@@ -309,37 +327,55 @@ public class OpenNMSProvisionerTest {
     }
 
     // TODO: Add test for exception on save of XML file
-    
     @Test
     public void testAddServiceDatabase() throws Exception {
         expectUpdateEvent();
+        expectRrdInitialize();
+        m_mocks.replayAll();
+
         m_provisioner.addServiceDatabase("MyDB", 13, 2001, 54321, 71, 23456, "dbuser", "dbPasswd", "org.mydb.MyDriver", "jdbc://mydbhost:2");
         checkDatabaseConfiguration("MyDB", "MyDB", 13, 2001, 54321, 71, 23456, "dbuser", "dbPasswd", "org.mydb.MyDriver", "jdbc://mydbhost:2");
 
+        m_mocks.verifyAll();
         verifyEvents();
     }
     
     @Test
     public void testAddServiceDNS() throws Exception {
         expectUpdateEvent();
+        expectRrdInitialize();
+        m_mocks.replayAll();
+
         m_provisioner.addServiceDNS("MyDNS", 11, 1111, 11111, 111, 111111, 101, "www.opennms.org");
         checkDNSConfiguration("MyDNS", "MyDNS", 11, 1111, 11111, 111, 111111, 101, "www.opennms.org");
+        
+        m_mocks.verifyAll();
         verifyEvents();
     }
 
     @Test
     public void testAddServiceHTTP() throws Exception {
         expectUpdateEvent();
+        expectRrdInitialize();
+        m_mocks.replayAll();
+
         m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "200-203", "Home", "/index.html", "user", "passwd", null);
         checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "200-203", "Home", "/index.html", "user", "passwd", null);
+        
+        m_mocks.verifyAll();
         verifyEvents();
     }
 
     @Test
     public void testAddServiceHTTPNoResponseCode() throws Exception {
         expectUpdateEvent();
+        expectRrdInitialize();
+        m_mocks.replayAll();
+
         m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "", "Home", "/index.html", "user", "pw", "");
         checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, null, "Home", "/index.html", "user", "pw", "");
+
+        m_mocks.verifyAll();
         verifyEvents();
     }
 
@@ -359,20 +395,30 @@ public class OpenNMSProvisionerTest {
     @Test
     public void testAddServiceHTTPS() throws Exception {
         expectUpdateEvent();
+        expectRrdInitialize();
+        m_mocks.replayAll();
+
         m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, "opennms.com", 313, "303", "Secure", "/secure.html", "user", "pw", "");
         checkHTTPSConfiguration("MyHTTPS", "MyHTTPS", 33, 3333, 33333, 333, 333333, "opennms.com", 313, "303", "Secure", "/secure.html", "user", "pw", "");
+        
+        m_mocks.verifyAll();
         verifyEvents();
     }
     
     private Map<String, Object> checkHTTPSConfiguration(String pkgName, String svcName, int retries, int timeout, int interval, int downtimeInterval, int downtimeDuration, String hostName, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws Exception {
         return checkHTTPConfiguration(pkgName, svcName, retries, timeout, interval, downtimeInterval, downtimeDuration, hostName, port, responseCode, contentCheck, url, user, passwd, agent);
     }
-    
+ 
     @Test
     public void testAddServiceTCP() throws Exception {
         expectUpdateEvent();
+        expectRrdInitialize();
+        m_mocks.replayAll();
+
         m_provisioner.addServiceTCP("MyTCP", 4, 44, 444, 4444, 44444, 404, "HELO");
         checkTCPConfiguration("MyTCP", "MyTCP", 4, 44, 444, 4444, 44444, 404, "HELO");
+        
+        m_mocks.verifyAll();
         verifyEvents();
     }
     
@@ -392,35 +438,6 @@ public class OpenNMSProvisionerTest {
         checkTCPConfiguration("MyTCP", "MyTCP", 5, 55, 555, 5555, 55555, 505, "AHOY");
         verifyEvents();
     }
-    
-/*    public void testStartingAndStopping() throws Exception {
-        MockLogAppender.setupLogging();
-        XmlRpc.debug = true;
-        
-        Provisioner provisioner = new Provisioner();
-        provisioner.init();
-        provisioner.start();
-        
-        XmlRpcClient client = new XmlRpcClient("http://localhost:9192/RPC2");
-        Vector parms = new Vector();
-        parms.add("default");
-        parms.add("ICMP");
-        Map map = (Map)client.execute("getServiceConfiguration", parms);
-        
-        assertEquals("ICMP", map.get("serviceid"));
-        
-        provisioner.stop();
-        
-        try {
-            Map map2 = (Map)client.execute("getServiceConfiguration", parms);
-            fail("Expected the server to be stopped.");
-        } catch (Exception e) {
-            
-        }
-
-
-    }
-*/
     
     // TODO: If a service is not in capsd it gets deleted at startup.. test that
     // adding one adds it to casd as well

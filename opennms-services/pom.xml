@@ -257,16 +257,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock-cglib</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>

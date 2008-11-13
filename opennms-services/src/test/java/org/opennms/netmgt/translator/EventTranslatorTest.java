@@ -35,6 +35,11 @@
 //
 package org.opennms.netmgt.translator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -44,7 +49,9 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.jmock.cglib.MockObjectTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
@@ -62,9 +69,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 
-public class EventTranslatorTest extends MockObjectTestCase {
+public class EventTranslatorTest {
     
     /* TODO for PassiveSTatusKeeper
      add reason mapper for status reason
@@ -81,7 +87,6 @@ public class EventTranslatorTest extends MockObjectTestCase {
      
      */
 
-
     private EventTranslator m_translator;
     private String m_passiveStatusConfiguration = getStandardConfig();
     private MockEventIpcManager m_eventMgr;
@@ -91,10 +96,9 @@ public class EventTranslatorTest extends MockObjectTestCase {
     private OutageAnticipator m_outageAnticipator;
     private EventTranslatorConfigFactory m_config;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
+    @Before
+    public void setUp() throws Exception {
+//        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
 
         createMockNetwork();
@@ -121,15 +125,16 @@ public class EventTranslatorTest extends MockObjectTestCase {
         
     }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_translator.stop();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
         DataSourceFactory.setInstance(null);
         m_db.drop();
-        MockUtil.println("------------ End Test "+getName()+" --------------------------");
-        super.tearDown();
+//        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+//        super.tearDown();
     }
     
 
@@ -178,7 +183,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         }
     }
     
-    
+    @Test
     public void testSubElementString() throws Exception {
     	m_passiveStatusConfiguration = getSqlSubValueString();
     	tearDown();
@@ -187,6 +192,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         
     }
     
+    @Test
     public void testSubElementLong() throws Exception {
     	m_passiveStatusConfiguration = getSqlSubValueLong();
     	tearDown();
@@ -194,7 +200,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
     	testTranslateEvent();
     }
     
-    
+    @Test
     public void testIsTranslationEvent() throws Exception {
         // test non matching uei match fails
         Event pse = createTestEvent("someOtherUei", "Router", "192.168.1.1", "ICMP", "Down");
@@ -230,6 +236,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         assertFalse(m_config.isTranslationEvent(te3));
     }
     
+    @Test
     public void testTranslateEvent() throws MarshalException, ValidationException {
     	
    		// test non matching uei match fails
@@ -238,7 +245,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         
         // test matchin uei succeeds
         Event te = createTestEvent("translationTest", "Router", "192.168.1.1", "ICMP", "This node is way Down!");
-        List translatedEvents = m_config.translateEvent(te);
+        List<Event> translatedEvents = m_config.translateEvent(te);
 		assertNotNull(translatedEvents);
 		assertEquals(1, translatedEvents.size());
         validateTranslatedEvent((Event)translatedEvents.get(0));
@@ -271,6 +278,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         assertTrue(m_config.translateEvent(te3).isEmpty());
     }
     
+    @Test
     public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException {
         Reader rdr = new StringReader(getLinkDownTranslation());
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
@@ -310,13 +318,13 @@ public class EventTranslatorTest extends MockObjectTestCase {
 	    		"      <mappings>\n" + 
 	    		"        <mapping>\n" + 
 	    		"          <assignment name=\"ifName\" type=\"parameter\">\n" + 
-	    		"            <value type=\"sql\" result=\"SELECT snmp.snmpIfName FROM snmpInterface snmp WHERE snmp.nodeid = ? AND snmp.snmpifindex = ?\" >\n" + 
+	    		"            <value type=\"sql\" result=\"SELECT snmp.snmpIfName FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer\" >\n" + 
                 "              <value type=\"field\" name=\"nodeid\" matches=\".*\" result=\"${0}\" />\n" + 
 	    		"              <value type=\"parameter\" name=\"~^\\.1\\.3\\.6\\.1\\.2\\.1\\.2\\.2\\.1\\.1\\.([0-9]*)$\" matches=\".*\" result=\"${0}\" />\n" + 
 	    		"            </value>\n" + 
 	    		"          </assignment>\n" + 
                 "          <assignment name=\"ifAlias\" type=\"parameter\">\n" + 
-                "            <value type=\"sql\" result=\"SELECT snmp.snmpIfAlias FROM snmpInterface snmp WHERE snmp.nodeid = ? AND snmp.snmpifindex = ?\" >\n" + 
+                "            <value type=\"sql\" result=\"SELECT snmp.snmpIfAlias FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer\" >\n" + 
                 "              <value type=\"field\" name=\"nodeid\" matches=\".*\" result=\"${0}\" />\n" + 
                 "              <value type=\"parameter\" name=\"~^\\.1\\.3\\.6\\.1\\.2\\.1\\.2\\.2\\.1\\.1\\.([0-9]*)$\" matches=\".*\" result=\"${0}\" />\n" + 
                 "            </value>\n" + 
@@ -340,8 +348,9 @@ public class EventTranslatorTest extends MockObjectTestCase {
         assertEquals("Down", EventUtils.getParm(event, "passiveStatus"));
 	}
     
+    @Test
     public void testUEIList() {
-    		List ueis = m_config.getUEIList();
+    		List<String> ueis = m_config.getUEIList();
     		assertEquals(1, ueis.size());
     		assertTrue(ueis.contains("uei.opennms.org/services/translationTest"));
     }
