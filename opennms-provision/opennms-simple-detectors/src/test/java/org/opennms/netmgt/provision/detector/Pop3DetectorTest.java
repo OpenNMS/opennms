@@ -47,7 +47,7 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 public class Pop3DetectorTest {
     private SimpleServer m_server;
-    private SimpleDetector m_detector;
+    private Pop3Detector m_detector;
     private static int TIMEOUT = 1000;
     
     @Before

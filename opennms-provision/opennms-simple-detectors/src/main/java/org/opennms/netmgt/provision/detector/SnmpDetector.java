@@ -145,6 +145,15 @@ public class SnmpDetector extends AbstractDetector {
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;
     }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.detector.AbstractDetector#onInit()
+     */
+    @Override
+    protected void onInit() {
+        // TODO Auto-generated method stub
+        
+    }
     
 
 }

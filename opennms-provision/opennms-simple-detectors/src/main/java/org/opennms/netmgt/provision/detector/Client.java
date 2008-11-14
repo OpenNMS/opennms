@@ -8,6 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -23,27 +27,29 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ *
  */
+
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
+import java.io.IOException;
+import java.net.InetAddress;
 
-    protected ImapDetector() {
-        super(143, 5000, 0);
-        
-    }
+/**
+ * @author brozow
+ *
+ */
+public interface Client<Request, Response> {
     
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
-    }
+    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception;
     
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
-    }
+    Response receiveBanner() throws IOException;
+    
+    Response sendRequest(Request request) throws IOException, Exception; 
+    
+    public void close();
 
 }

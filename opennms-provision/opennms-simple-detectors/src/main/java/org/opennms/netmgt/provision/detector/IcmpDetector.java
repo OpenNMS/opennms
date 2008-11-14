@@ -65,4 +65,10 @@ public class IcmpDetector extends AbstractDetector {
         
         return false;
     }
+
+    
+    @Override
+    protected void onInit() {
+        
+    }
 }

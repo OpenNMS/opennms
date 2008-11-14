@@ -32,7 +32,7 @@ public abstract class AbstractDetector implements ServiceDetector {
         onInit();
     }
     
-    protected void onInit() { }
+    abstract protected void onInit();
 
     abstract public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
     

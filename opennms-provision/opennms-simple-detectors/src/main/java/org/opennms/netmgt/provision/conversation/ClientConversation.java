@@ -30,41 +30,96 @@
  */
 package org.opennms.netmgt.provision.conversation;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.provision.exchange.Exchange;
+import org.opennms.netmgt.provision.detector.Client;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
-public class ClientConversation extends Conversation {
+public class ClientConversation<Request, Response> {
     
-    private List<Exchange> m_conversation = new ArrayList<Exchange>();
+    public static interface RequestBuilder<T> {
+        T getRequest() throws Exception;
+    }
     
-    public void addExchange(Exchange exchange) {
+    public static interface ResponseValidator<T> {
+        boolean validate(T response)throws Exception; 
+    }
+    
+    public static interface ClientExchange<Request, Response> extends RequestBuilder<Request>, ResponseValidator<Response> {
+    }
+    
+    public static class SimpleClientExchange<Request, RespType> implements ClientExchange<Request, RespType> {
+        private RequestBuilder<Request> m_requestBuilder;
+        private ResponseValidator<RespType> m_responseValidator;
+        
+        public SimpleClientExchange(RequestBuilder<Request> reqBuilder, ResponseValidator<RespType> respValidator) {
+            m_requestBuilder = reqBuilder;
+            m_responseValidator = respValidator;
+        }
+        
+        public Request getRequest() throws Exception {
+            return m_requestBuilder.getRequest();
+        }
+        
+        public boolean validate(RespType response) throws Exception {
+            return m_responseValidator.validate(response);
+        }
+        
+    }
+
+    private ResponseValidator<Response> m_bannerValidator;
+    private List<ClientExchange<Request, Response>> m_conversation = new ArrayList<ClientExchange<Request, Response>>();
+    
+    public void expectBanner(ResponseValidator<Response> bannerValidator) {
+        m_bannerValidator = bannerValidator;
+    }
+    
+    public void addExchange(final Request request, ResponseValidator<Response> validator) {
+        RequestBuilder<Request> builder = new RequestBuilder<Request>() {
+            public Request getRequest() {
+                return request;
+            }
+        };
+        addExchange(builder, validator);
+    }
+    
+    public void addExchange(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> validator) {
+        addExchange(new SimpleClientExchange<Request, Response>(requestBuilder, validator));
+    }
+    
+    public void addExchange(ClientExchange<Request, Response> exchange) {
         m_conversation.add(exchange); 
     }
     
-    public boolean attemptClientConversation(BufferedReader in, OutputStream out) throws IOException {
+    public boolean attemptConversation(Client<Request, Response> client) throws IOException, Exception { 
         
-        for(Iterator<Exchange> it = m_conversation.iterator(); it.hasNext();) {
-            Exchange ex = it.next();
-            
-            if(!ex.processResponse(in)) {
-               return false; 
-            }
-            System.out.println("processed response successfully");
-            if(!ex.sendRequest(out)) {
+        if (m_bannerValidator != null) {
+            Response banner = client.receiveBanner();
+            if (!m_bannerValidator.validate(banner)) {
+                System.out.println("False on Banner");
                 return false;
             }
-            System.out.println("send request if there was a request");
         }
+        
+        for(ClientExchange<Request, Response> ex : m_conversation) {
+            
+            Request request = ex.getRequest();
+            
+            System.out.printf("Sending Request %s\n", request);
+            Response response = client.sendRequest(request);
+            
+            System.out.printf("Received Response %s\n", response);
+            if (!ex.validate(response)) {
+                return false;
+            }
+        }
+        
+        
         
         return true;
         

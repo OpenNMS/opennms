@@ -30,29 +30,55 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import org.opennms.netmgt.provision.conversation.ClientConversation.ResponseValidator;
 
+/**
+ * @author Donald Desloge
+ *
+ */
+public abstract class MultilineOrientedDetector extends BasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
-public class SmtpDetector extends MultilineOrientedDetector{
-    
     /**
      * @param defaultPort
      * @param defaultTimeout
      * @param defaultRetries
      */
-    protected SmtpDetector() {
-        super(25, 1000, 2);
-        setServiceName("SMTP");
+    protected MultilineOrientedDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+        super(defaultPort, defaultTimeout, defaultRetries);
+    }
+    
+    protected LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
+    }
+    
+    protected void expectClose() {
+        send(LineOrientedRequest.Null, equals(null));
+        
+    }
+    
+    public ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
+        return new ResponseValidator<MultilineOrientedResponse>() {
+            
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.equals(pattern);
+            }
+            
+        };
+    }
+    
+    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
+        return new ResponseValidator<MultilineOrientedResponse>(){
+
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.startsWith(pattern);
+            }
+            
+        };
     }
 
-    public void onInit() {
-        expectBanner(startsWith("220"));
-        send(request("HELO LOCALHOST"), startsWith("250"));
-        send(request("QUIT"), startsWith("221"));
-        //addMultilineResponseHandler(startsWith("220"), singleLineRequest("HELO LOCALHOST"));
-        //addMultilineResponseHandler(startsWith("250"), singleLineRequest("QUIT"));
-        //addMultilineResponseHandler(startsWith("221"), null);
+    @Override
+    protected Client<LineOrientedRequest, MultilineOrientedResponse> getClient() {
+        return new MultilineOrientedClient();
     }
-    
-    
-    
+
 }
