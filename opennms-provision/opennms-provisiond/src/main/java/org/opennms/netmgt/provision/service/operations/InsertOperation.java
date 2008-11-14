@@ -37,11 +37,11 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import org.opennms.netmgt.provision.service.DefaultProvisionService;
+import org.opennms.netmgt.provision.service.ProvisionService;
 
 public class InsertOperation extends SaveOrUpdateOperation {
     
-    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, DefaultProvisionService provisionService) {
+    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
 		super(foreignSource, foreignId, nodeLabel, building, city, provisionService);
 	}
 
@@ -56,7 +56,7 @@ public class InsertOperation extends SaveOrUpdateOperation {
         monitor.beginPersisting(oper);
         log().info("Persist: "+oper);
 
-        getProvisionService().doInsertNode(getNode());
+        getProvisionService().insertNode(getNode());
     	
         monitor.finishPersisting(oper);
     

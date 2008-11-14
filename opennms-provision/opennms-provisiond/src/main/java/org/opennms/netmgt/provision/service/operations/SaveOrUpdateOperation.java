@@ -44,7 +44,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
-import org.opennms.netmgt.provision.service.DefaultProvisionService;
+import org.opennms.netmgt.provision.service.ProvisionService;
 
 public abstract class SaveOrUpdateOperation extends ImportOperation {
 
@@ -53,11 +53,11 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     
     private ScanManager m_scanManager;
     
-    public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, DefaultProvisionService provisionService) {
+    public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
 		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService);
 	}
 
-	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, DefaultProvisionService provisionService) {
+	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
 	    super(provisionService);
 	    
         m_node = new OnmsNode();
