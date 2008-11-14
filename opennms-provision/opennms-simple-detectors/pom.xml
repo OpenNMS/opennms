@@ -14,11 +14,6 @@
   		<version>${project.version}</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.apache.commons</groupId>
-  		<artifactId>commons-io</artifactId>
-  		<version>1.3.2</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.opennms</groupId>
   		<artifactId>opennms-icmp-api</artifactId>
   	</dependency>
@@ -51,10 +46,6 @@
   		<artifactId>opennms-dao</artifactId>
   	</dependency>
   	<dependency>
-  		<groupId>org.codehaus.castor</groupId>
-  		<artifactId>castor</artifactId>
-  	</dependency>
-  	<dependency>
   		<groupId>org.opennms</groupId>
   		<artifactId>opennms-services</artifactId>
   	</dependency>
@@ -63,10 +54,6 @@
   		<artifactId>mock-snmp-agent</artifactId>
   		<scope>test</scope>
   	</dependency>
-   <dependency>
-      <groupId>net.jradius</groupId>
-      <artifactId>jradius-core</artifactId>
-   </dependency>
   </dependencies>
   
 </project>
