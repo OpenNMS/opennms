@@ -17,5 +17,6 @@
 <!--
     <module>opennms-scanners</module>
 -->
+    <module>opennms-datagram-detector</module>
   </modules>
 </project>
