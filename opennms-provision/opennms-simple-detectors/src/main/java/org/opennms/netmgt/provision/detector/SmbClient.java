@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -29,21 +30,42 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
+import java.io.IOException;
+import java.net.InetAddress;
 
-    protected ImapDetector() {
-        super(143, 5000, 0);
+import jcifs.netbios.NbtAddress;
+
+/**
+ * @author thedesloge
+ *
+ */
+public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse>{
+    
+    private NbtAddress m_nbtAddress;
+    private String m_address;
+    
+    public void close() {
+        // TODO Auto-generated method stub
         
     }
-    
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
+
+    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+        m_address = address.getHostAddress();
+        m_nbtAddress = NbtAddress.getByName(m_address);        
+    }
+
+    public NbtAddressResponse receiveBanner() throws IOException {
+        return receiveResponse();
+    }
+
+    public NbtAddressResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
+        return receiveResponse();
     }
     
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
+    private NbtAddressResponse receiveResponse() {
+        NbtAddressResponse nbtAddrResponse = new NbtAddressResponse();
+        nbtAddrResponse.receive(m_address, m_nbtAddress);
+        return nbtAddrResponse;
     }
 
 }

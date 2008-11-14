@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -29,21 +30,28 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
+import jcifs.netbios.NbtAddress;
 
-    protected ImapDetector() {
-        super(143, 5000, 0);
-        
+/**
+ * @author thedesloge
+ *
+ */
+public class NbtAddressResponse {
+    
+    private String m_address;
+    private NbtAddress m_nbtAddress;
+    
+    public void receive(String address, NbtAddress nbtAddress) {
+        m_address = address;
+        m_nbtAddress = nbtAddress;
     }
     
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
+    public boolean validateAddressIsNotSame() {
+        if(m_nbtAddress.getHostAddress().equals(m_address)) {
+            System.out.println("address: " + m_address + " nbtAddressHost: " + m_nbtAddress.getHostAddress());
+           return false; 
+        }else {
+            return true;
+        }
     }
-    
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
-    }
-
 }

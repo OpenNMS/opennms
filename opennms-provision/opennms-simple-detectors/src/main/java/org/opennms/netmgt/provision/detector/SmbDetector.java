@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -29,21 +30,44 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
+import org.opennms.netmgt.provision.conversation.ClientConversation.ResponseValidator;
 
-    protected ImapDetector() {
-        super(143, 5000, 0);
+/**
+ * @author Donald Desloge
+ *
+ */
+public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressResponse> {
+
+    /**
+     * @param defaultPort
+     * @param defaultTimeout
+     * @param defaultRetries
+     */
+    public SmbDetector() {
+        super(0, 1000, 0);
+        setServiceName("SMB");
+    }
+
+    @Override
+    protected void onInit() {
+        expectBanner(validateAddressIsNotSame());
         
     }
     
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
+    private ResponseValidator<NbtAddressResponse> validateAddressIsNotSame(){
+        return new ResponseValidator<NbtAddressResponse>() {
+
+            public boolean validate(NbtAddressResponse response) throws Exception {
+                return response.validateAddressIsNotSame();
+            }
+            
+        };
     }
     
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
+    @Override
+    protected Client<LineOrientedRequest, NbtAddressResponse> getClient() {
+        return new SmbClient();
     }
+
 
 }

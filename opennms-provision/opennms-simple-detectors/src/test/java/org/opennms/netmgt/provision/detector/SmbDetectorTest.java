@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -29,21 +30,43 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
+import static org.junit.Assert.assertFalse;
 
-    protected ImapDetector() {
-        super(143, 5000, 0);
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.netmgt.capsd.plugins.SmbPlugin;
+import org.opennms.netmgt.provision.server.SimpleServer;
+import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+
+/**
+ * @author Donald Desloge
+ *
+ */
+public class SmbDetectorTest {
+    
+    private SmbDetector m_detector;
+    private SimpleServer m_server;
+    private SmbPlugin m_plugin;
+    
+    @Before
+    public void setUp() {
+        m_detector = new SmbDetector();
         
     }
     
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
+    @After
+    public void tearDown() {
+        
     }
     
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
+    @Test
+    public void testMyDetector() throws UnknownHostException {
+        m_detector.init();
+        //FIXME: This needs to be fixed
+        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.101"), new NullDetectorMonitor()));
     }
-
 }

@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -29,21 +30,39 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
+import java.io.IOException;
 
-    protected ImapDetector() {
-        super(143, 5000, 0);
-        
+import org.opennms.netmgt.provision.conversation.ClientConversation.ResponseValidator;
+
+/**
+ * @author Donald Desloge
+ *
+ */
+public class CitrixDetector extends MultilineOrientedDetector {
+
+    protected CitrixDetector() {
+        super(1494, 500, 2);
     }
-    
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
+
+    @Override
+    protected void onInit() {
+        expectBanner(readStreamUntilContains("ICA"));
+        expectClose();        
     }
-    
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
+
+    /**
+     * @param string
+     * @return
+     */
+    private ResponseValidator<MultilineOrientedResponse> readStreamUntilContains(final String pattern) {
+
+        return new ResponseValidator<MultilineOrientedResponse>() {
+
+            public boolean validate(MultilineOrientedResponse response) throws IOException {
+                return response.readStreamUntilContains(pattern);
+            }
+            
+        };
     }
 
 }

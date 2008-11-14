@@ -34,20 +34,17 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import org.opennms.netmgt.provision.ServiceDetector;
 
 
 
-public class TcpDetector extends SimpleDetector implements ServiceDetector {
+public class TcpDetector extends LineOrientedDetector {
     
     public TcpDetector() {
         super(23, 5000, 1);
     }
     
     public void onInit() {
-        //Using the regex to find a word that gets sent back from TCP. Any word counts.
-        expectBanner(find("\\w"), singleLineRequest("LOGOUT"));
+        expectBanner(find("\\w"));
     }
-
-
+    
 }

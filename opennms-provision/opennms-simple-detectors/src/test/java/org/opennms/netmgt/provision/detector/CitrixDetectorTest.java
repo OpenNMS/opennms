@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -32,6 +33,8 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,73 +42,61 @@ import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 
-public class ImapDetectorTest {
-    private ImapDetector m_detector;
-    private SimpleServer m_server; 
+/**
+ * @author thedesloge
+ *
+ */
+public class CitrixDetectorTest {
     
+    private CitrixDetector m_detector;
+    private SimpleServer m_server;
     
     @Before
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
+        m_detector = new CitrixDetector();
         
-        m_detector = new ImapDetector();
-        m_detector.setServiceName("Imap");
-        m_detector.setTimeout(1000);
-        m_detector.init();
+        m_server = getServer();
+        m_server.init();
+        m_server.startServer();
+        
+        
     }
     
     @After
-    public void tearDown() throws Exception{
-        
+    public void tearDown() throws IOException {
+       m_server.stopServer(); 
     }
     
     @Test
-    public void testServerSuccess() throws Exception{
-        m_server  = new SimpleServer() {
-            
-            public void onInit() {
-                setBanner("* OK THIS IS A BANNER FOR IMAP");
-                addResponseHandler(contains("LOGOUT"), shutdownServer("* BYE\r\nONMSCAPSD OK"));
-            }
-        };
+    public void testMyDetector() {
+        m_detector.setPort(20000);
+        m_detector.init();
         
-        m_server.init();
-        m_server.startServer();
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorFailWrongPort() {
+        m_detector.setPort(20000);
+        m_detector.init();
+        
+        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+    }
+    
+    @Test
+    public void testDetectorSuccess() {
         m_detector.setPort(m_server.getLocalPort());
+        m_detector.init();
         
         assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
     }
     
-    @Test
-    public void testDetectorFailUnexpectedBanner() throws Exception{
-        m_server  = new SimpleServer() {
+    private SimpleServer getServer() {
+        return new SimpleServer() {
             
             public void onInit() {
-                setBanner("* NOT OK THIS IS A BANNER FOR IMAP");
+                setBanner("ICAICAICAICA");
             }
         };
-        
-        m_server.init();
-        m_server.startServer();
-        m_detector.setPort(m_server.getLocalPort());
-        
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
     }
-    
-    @Test
-    public void testDetectorFailUnexpectedLogoutResponse() throws Exception{
-        m_server  = new SimpleServer() {
-            
-            public void onInit() {
-                setBanner("* NOT OK THIS IS A BANNER FOR IMAP");
-                addResponseHandler(contains("LOGOUT"), singleLineRequest("* NOT OK"));
-            }
-        };
-        
-        m_server.init();
-        m_server.startServer();
-        m_detector.setPort(m_server.getLocalPort());
-        
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
-    }
-    
 }

@@ -1,0 +1,103 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ *
+ */
+
+package org.opennms.netmgt.provision.detector;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
+/**
+ * @author brozow
+ *
+ */
+public class LineOrientedClient implements Client<LineOrientedRequest, LineOrientedResponse> {
+    
+    private Socket m_socket;
+    private OutputStream m_out;
+    private BufferedReader m_in;
+    
+    public void connect(InetAddress host, int port, int timeout) throws IOException {        
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress(host, port), timeout);
+        socket.setSoTimeout(timeout);
+        m_in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        m_out = socket.getOutputStream();
+        m_socket = socket;
+        
+    }
+    
+    public LineOrientedResponse sendRequest(LineOrientedRequest request) throws IOException {
+        request.send(m_out);
+        return receiveResponse();
+    }
+
+    /**
+     * @return
+     * @throws IOException
+     */
+    private LineOrientedResponse receiveResponse() throws IOException {
+        LineOrientedResponse response = new LineOrientedResponse();
+        response.receive(m_in);
+        return response;
+    }
+    
+    
+    /**
+     * @return
+     * @throws IOException 
+     */
+    public LineOrientedResponse receiveBanner() throws IOException {
+        return receiveResponse();
+    }
+
+
+    public void close() {
+        Socket socket = m_socket;
+        m_socket = null;
+        try {
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
