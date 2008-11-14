@@ -57,7 +57,6 @@ import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -369,19 +368,14 @@ public class DefaultProvisionService implements ProvisionService {
     
     }
     
-    @Autowired
     private DistPollerDao m_distPollerDao;
     
-    @Autowired
     private NodeDao m_nodeDao;
     
-    @Autowired
     private ServiceTypeDao m_serviceTypeDao;
     
-    @Autowired
     private CategoryDao m_categoryDao;
     
-    @Autowired
     private EventForwarder m_eventForwarder;
     
     
@@ -439,22 +433,22 @@ public class DefaultProvisionService implements ProvisionService {
     
     
     @Transactional
-    public OnmsDistPoller createDistPollerIfNecessary() {
-        OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
+    public OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr) {
+        OnmsDistPoller distPoller = m_distPollerDao.get(dpName);
         if (distPoller == null) {
-            distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+            
+            distPoller = new OnmsDistPoller(dpName, dpAddr);
             m_distPollerDao.save(distPoller);
         }
         return distPoller;
     }
-    
     
     public void clearCache() {
         getNodeDao().clear();
     }
     
     @Transactional
-    public void doUpdateNode(OnmsNode node, boolean snmpDataForNodeUpToDate, boolean snmpDataForInterfacesUpToDate) {
+    public void updateNode(OnmsNode node, boolean snmpDataForNodeUpToDate, boolean snmpDataForInterfacesUpToDate) {
         
         OnmsNode db = getNodeDao().getHierarchy(node.getId());
     
@@ -511,7 +505,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     @Transactional
-    public void doDeleteNode(Integer nodeId) {
+    public void deleteNode(Integer nodeId) {
         
         OnmsNode node = getNodeDao().get(nodeId);
     	if (node != null) {
@@ -524,7 +518,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     @Transactional
-    public void doInsertNode(OnmsNode node) {
+    public void insertNode(OnmsNode node) {
         
 
         OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
@@ -538,6 +532,47 @@ public class DefaultProvisionService implements ProvisionService {
 
     }
     
+    @Transactional
+    public OnmsServiceType createServiceTypeIfNecessary(String serviceName) {
+        proloadExistingTypes();
+        OnmsServiceType type = m_typeCache.get().get(serviceName);
+        if (type == null) {
+            type = loadServiceType(serviceName);
+            m_typeCache.get().put(serviceName, type);
+        }
+        return type;
+    }
+    
+
+    @Transactional
+    public OnmsCategory createCategoryIfNecessary(String name) {
+        preloadExistingCategories();
+        
+        OnmsCategory category = (OnmsCategory)m_categoryCache.get().get(name);
+        if (category == null) {    
+            category = loadCategory(name);
+            m_categoryCache.get().put(category.getName(), category);
+        }
+        return category;
+    }
+    
+    @Transactional(readOnly=true)
+    public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
+    }
+    
+    @Transactional
+    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
+
+        final OnmsNode node = findNodebyForeignId(foreignSource, foreignId);
+        final OnmsNode parent = findParent(foreignSource, parentForeignId, parentNodeLabel);
+
+        setParent(node, parent);
+        setPathDependency(node, parent);
+
+        getNodeDao().update(node);
+    }
+
     private void proloadExistingTypes() {
         if (m_typeCache.get() == null) {
             m_typeCache.set(loadServiceTypeMap());
@@ -553,19 +588,8 @@ public class DefaultProvisionService implements ProvisionService {
         return serviceTypeMap;
     }
     
-    @Transactional
-    public OnmsServiceType createServiceTypeIfNecessary(String serviceName) {
-        proloadExistingTypes();
-        OnmsServiceType type = m_typeCache.get().get(serviceName);
-        if (type == null) {
-            type = loadServiceType(serviceName);
-            m_typeCache.get().put(serviceName, type);
-        }
-        return type;
-    }
-    
     @Transactional(readOnly=true)
-    public OnmsServiceType loadServiceType(String serviceName) {
+    private OnmsServiceType loadServiceType(String serviceName) {
         OnmsServiceType type;
         type = m_serviceTypeDao.findByName(serviceName);
         
@@ -592,20 +616,8 @@ public class DefaultProvisionService implements ProvisionService {
         return categoryMap;
     }
     
-    @Transactional
-    public OnmsCategory createCategoryIfNecessary(String name) {
-        preloadExistingCategories();
-        
-        OnmsCategory category = (OnmsCategory)m_categoryCache.get().get(name);
-        if (category == null) {    
-            category = loadCategory(name);
-            m_categoryCache.get().put(category.getName(), category);
-        }
-        return category;
-    }
-    
     @Transactional(readOnly=true)
-    public OnmsCategory loadCategory(String name) {
+    private OnmsCategory loadCategory(String name) {
         OnmsCategory category;
         category = m_categoryDao.findByName(name);
         if (category == null) {
@@ -615,14 +627,11 @@ public class DefaultProvisionService implements ProvisionService {
         return category;
     }
     
-    @Transactional(readOnly=true)
-    public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
-    }
-    public Category log() {
+    private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-    OnmsNode findNodebyNodeLabel(String label) {
+    
+    private OnmsNode findNodebyNodeLabel(String label) {
         Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
     	if (nodes.size() == 1)
     		return nodes.iterator().next();
@@ -632,12 +641,12 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     @Transactional(readOnly=true)
-    OnmsNode findNodebyForeignId(String foreignSource, String foreignId) {
+    private OnmsNode findNodebyForeignId(String foreignSource, String foreignId) {
         return getNodeDao().findByForeignId(foreignSource, foreignId);
     }
     
     @Transactional(readOnly=true)
-    OnmsNode findParent(String foreignSource, String parentForeignId, String parentNodeLabel) {
+    private OnmsNode findParent(String foreignSource, String parentForeignId, String parentNodeLabel) {
         if (parentForeignId != null)
             return findNodebyForeignId(foreignSource, parentForeignId);
         else {
@@ -648,18 +657,6 @@ public class DefaultProvisionService implements ProvisionService {
     	return null;
     }
     
-    @Transactional
-    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
-
-        final OnmsNode node = findNodebyForeignId(foreignSource, foreignId);
-        final OnmsNode parent = findParent(foreignSource, parentForeignId, parentNodeLabel);
-
-        setParent(node, parent);
-        setPathDependency(node, parent);
-
-        getNodeDao().update(node);
-    }
-
     private void setPathDependency(OnmsNode node, OnmsNode parent) {
         
         if (node == null) return;

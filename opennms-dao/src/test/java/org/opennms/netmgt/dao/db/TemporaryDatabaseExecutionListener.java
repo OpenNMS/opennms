@@ -31,7 +31,11 @@
  */
 package org.opennms.netmgt.dao.db;
 
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -45,13 +49,28 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
     public void afterTestMethod(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
-        TemporaryDatabase dataSource = (TemporaryDatabase)DataSourceFactory.getInstance();
-        dataSource.drop();
+        
+        DataSource dataSource = DataSourceFactory.getInstance();
+        TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
+        if (tempDb != null) {
+            tempDb.drop();
+        }
         
         testContext.markApplicationContextDirty();
         testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE,
                 Boolean.TRUE);
 
+    }
+    
+    private TemporaryDatabase findTemporaryDatabase(DataSource dataSource) {
+        if (dataSource instanceof TemporaryDatabase) {
+            return (TemporaryDatabase) dataSource;
+        } else if (dataSource instanceof DelegatingDataSource) {
+            return findTemporaryDatabase(((DelegatingDataSource)dataSource).getTargetDataSource());
+        } else {
+            return null;
+        }
+        
     }
 
     public void beforeTestMethod(TestContext testContext) throws Exception {
@@ -65,7 +84,9 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         dataSource.setPopulateSchema(true);
         dataSource.create();
         
-        DataSourceFactory.setInstance(dataSource);
+        LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(dataSource);
+        
+        DataSourceFactory.setInstance(proxy);
     }
 
     private String getDatabaseName(TestContext testContext) {

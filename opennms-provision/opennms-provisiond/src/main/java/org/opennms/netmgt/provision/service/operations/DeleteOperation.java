@@ -37,13 +37,13 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import org.opennms.netmgt.provision.service.DefaultProvisionService;
+import org.opennms.netmgt.provision.service.ProvisionService;
 
 public class DeleteOperation extends ImportOperation {
     
     private Integer m_nodeId;
     
-    public DeleteOperation(Integer nodeId, String foreignSource, String foreignId, DefaultProvisionService provisionService) {
+    public DeleteOperation(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService) {
         super(provisionService);
         m_nodeId = nodeId;
     }
@@ -63,7 +63,7 @@ public class DeleteOperation extends ImportOperation {
         monitor.beginPersisting(oper);
         log().info("Persist: "+oper);
 
-        getProvisionService().doDeleteNode(m_nodeId);
+        getProvisionService().deleteNode(m_nodeId);
         
         monitor.finishPersisting(oper);
         

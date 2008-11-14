@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
 
-  <tx:annotation-driven proxy-target-class="true" />
+  <tx:annotation-driven />
 
   <bean id="transactionAwareEventForwarder" class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
     <property name="eventForwarder" ref="eventForwarder" />

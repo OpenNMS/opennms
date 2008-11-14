@@ -33,14 +33,14 @@ package org.opennms.netmgt.provision.service.operations;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.service.DefaultProvisionService;
+import org.opennms.netmgt.provision.service.ProvisionService;
 
 
 public abstract class ImportOperation {
     
-    final private DefaultProvisionService m_provisionService;
+    final private ProvisionService m_provisionService;
     
-    public ImportOperation(DefaultProvisionService provisionService) {
+    public ImportOperation(ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
 
@@ -50,7 +50,7 @@ public abstract class ImportOperation {
     /**
      * @return the provisionService
      */
-    protected DefaultProvisionService getProvisionService() {
+    protected ProvisionService getProvisionService() {
         return m_provisionService;
     }
 

@@ -39,7 +39,7 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -70,6 +70,7 @@ import org.opennms.netmgt.provision.service.specification.SpecFile;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -122,6 +123,9 @@ public class BaseProvisionerTest {
     
     @Autowired
     private AssetRecordDao m_assetRecordDao;
+    
+    @Autowired
+    private ResourceLoader m_resourceLoader;
     
     private EventAnticipator m_eventAnticipator;
     
@@ -179,19 +183,17 @@ public class BaseProvisionerTest {
         
         anticpateCreationEvents(node);
         
-        importFromClasspath("/tec_dump.xml");
+        importFromResource("classpath:/tec_dump.xml");
         
         m_eventAnticipator.verifyAnticipated();
         
     }
 
 
-    private void importFromClasspath(String path) throws IOException,
-            ModelImportException {
-        m_provisioner.importModelFromResource(new ClassPathResource(path));
+    private void importFromResource(String path) throws Exception {
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
     }
-
-
+    
     private void anticpateCreationEvents(MockElement element) {
         element.visit(new MockVisitorAdapter() {
 
@@ -205,7 +207,7 @@ public class BaseProvisionerTest {
     
     @Test
     public void testFindQuery() throws Exception {
-        importFromClasspath("/tec_dump.xml.smalltest");
+        importFromResource("classpath:/tec_dump.xml.smalltest");
         
         for (OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
             System.err.println(assetRecord.getBuilding());
@@ -213,9 +215,20 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    public void testBigImport() throws Exception {
+        File file = new File("/Users/brozow/tec_dump.xml.large");
+        if (file.exists()) {
+            String path = file.toURI().toURL().toExternalForm();
+            System.err.println("Importing: "+path);
+            importFromResource(path);
+        }
+        
+    }
+    
+    @Test
     public void testPopulate() throws Exception {
         
-        importFromClasspath("/tec_dump.xml.smalltest");
+        importFromResource("classpath:/tec_dump.xml.smalltest");
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -288,11 +301,11 @@ public class BaseProvisionerTest {
     @Test
     public void testDelete() throws Exception {
         
-        importFromClasspath("/tec_dump.xml.smalltest");
+        importFromResource("classpath:/tec_dump.xml.smalltest");
         
         assertEquals(10, getNodeDao().countAll());
         
-        importFromClasspath("/tec_dump.xml.smalltest.delete");
+        importFromResource("classpath:/tec_dump.xml.smalltest.delete");
         
         assertEquals(9, getNodeDao().countAll());
         
