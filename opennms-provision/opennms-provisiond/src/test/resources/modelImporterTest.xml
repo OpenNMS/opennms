@@ -14,10 +14,7 @@
   
   <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService">
     <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
-    <property name="assetRecordDao" ref="assetRecordDao"/>
     <property name="distPollerDao" ref="distPollerDao" />
-    <property name="ipInterfaceDao" ref="ipInterfaceDao" />
-    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="nodeDao" ref="nodeDao" />
     <property name="serviceTypeDao" ref="serviceTypeDao" />
     <property name="categoryDao" ref="categoryDao" />
