@@ -29,7 +29,7 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import org.opennms.netmgt.provision.conversation.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 public class HttpDetector extends MultilineOrientedDetector {
     

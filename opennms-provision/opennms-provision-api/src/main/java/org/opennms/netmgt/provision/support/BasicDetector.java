@@ -30,7 +30,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.support;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -41,9 +41,7 @@ import java.net.NoRouteToHostException;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
-import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation;
 import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 

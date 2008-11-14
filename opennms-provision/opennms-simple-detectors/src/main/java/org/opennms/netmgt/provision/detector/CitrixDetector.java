@@ -32,7 +32,7 @@ package org.opennms.netmgt.provision.detector;
 
 import java.io.IOException;
 
-import org.opennms.netmgt.provision.conversation.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
  * @author Donald Desloge

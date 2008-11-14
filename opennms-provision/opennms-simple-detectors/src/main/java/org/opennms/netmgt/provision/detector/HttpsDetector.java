@@ -29,6 +29,8 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import org.opennms.netmgt.provision.support.Client;
+
 
 public class HttpsDetector extends HttpDetector {
     
