@@ -59,15 +59,15 @@ import org.springframework.util.Assert;
 
 public class BaseProvisioner implements ImportOperationFactory, InitializingBean {
 
-    private DefaultProvisionService m_provisionService;
+    private ProvisionService m_provisionService;
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
 	
-	public void setProvisionService(DefaultProvisionService provisionService) {
+	public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
 	}
 	
-	public DefaultProvisionService getProvisionService() {
+	public ProvisionService getProvisionService() {
 	    return m_provisionService;
 	}
 
@@ -180,7 +180,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
 
     
     private OnmsDistPoller createDistPollerIfNecessary() {
-        return getProvisionService().createDistPollerIfNecessary();
+        return getProvisionService().createDistPollerIfNecessary("localhost", "127.0.0.1");
     
     }
 

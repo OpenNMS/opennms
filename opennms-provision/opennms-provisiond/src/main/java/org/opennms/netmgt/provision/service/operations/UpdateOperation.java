@@ -38,11 +38,11 @@
 package org.opennms.netmgt.provision.service.operations;
 
 
-import org.opennms.netmgt.provision.service.DefaultProvisionService;
+import org.opennms.netmgt.provision.service.ProvisionService;
 
 public class UpdateOperation extends SaveOrUpdateOperation {
     
-    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, DefaultProvisionService provisionService) {
+    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
 		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
 	}
 
@@ -57,7 +57,7 @@ public class UpdateOperation extends SaveOrUpdateOperation {
         monitor.beginPersisting(oper);
         log().info("Persist: "+oper);
 
-        getProvisionService().doUpdateNode(getNode(), getScanManager().isSnmpDataForNodeUpToDate(), getScanManager().isSnmpDataForInterfacesUpToDate());
+        getProvisionService().updateNode(getNode(), getScanManager().isSnmpDataForNodeUpToDate(), getScanManager().isSnmpDataForInterfacesUpToDate());
     	
         monitor.finishPersisting(oper);
     
