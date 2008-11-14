@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.exchange.Exchange;
+import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;

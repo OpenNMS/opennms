@@ -33,6 +33,8 @@ package org.opennms.netmgt.provision.detector;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.provision.support.Client;
+
 import jcifs.netbios.NbtAddress;
 
 /**

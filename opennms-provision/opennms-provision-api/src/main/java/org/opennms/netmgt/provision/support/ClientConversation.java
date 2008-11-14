@@ -28,13 +28,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.conversation;
+package org.opennms.netmgt.provision.support;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.provision.detector.Client;
+import org.opennms.netmgt.provision.support.Client;
 
 /**
  * @author Donald Desloge
