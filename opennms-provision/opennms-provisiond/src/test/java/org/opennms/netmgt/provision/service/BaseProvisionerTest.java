@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -118,6 +119,9 @@ public class BaseProvisionerTest {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
+    
+    @Autowired
+    private AssetRecordDao m_assetRecordDao;
     
     private EventAnticipator m_eventAnticipator;
     
@@ -203,7 +207,7 @@ public class BaseProvisionerTest {
     public void testFindQuery() throws Exception {
         importFromClasspath("/tec_dump.xml.smalltest");
         
-        for (OnmsAssetRecord assetRecord : m_provisioner.getAssetRecordDao().findAll()) {
+        for (OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
             System.err.println(assetRecord.getBuilding());
         }
     }
@@ -253,6 +257,10 @@ public class BaseProvisionerTest {
         return m_serviceTypeDao;
     }
     
+    private AssetRecordDao getAssetRecordDao() {
+        return m_assetRecordDao;
+    }
+    
 
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
@@ -265,9 +273,9 @@ public class BaseProvisionerTest {
         
         m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"));
         
-        assertEquals(1, m_provisioner.getNodeDao().countAll());
+        assertEquals(1, getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
-        assertEquals("\u00f1ode2", m_provisioner.getNodeDao().get(1).getLabel());
+        assertEquals("\u00f1ode2", getNodeDao().get(1).getLabel());
         
     }
     
@@ -282,11 +290,11 @@ public class BaseProvisionerTest {
         
         importFromClasspath("/tec_dump.xml.smalltest");
         
-        assertEquals(10, m_provisioner.getNodeDao().countAll());
+        assertEquals(10, getNodeDao().countAll());
         
         importFromClasspath("/tec_dump.xml.smalltest.delete");
         
-        assertEquals(9, m_provisioner.getNodeDao().countAll());
+        assertEquals(9, getNodeDao().countAll());
         
 
     }
