@@ -60,7 +60,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class Provisioner extends BaseImporter implements SpringServiceDaemon, DisposableBean, EventListener {
+public class Provisioner extends BaseProvisioner implements SpringServiceDaemon, DisposableBean, EventListener {
 	
 	public static final String NAME = "Provisioner";
 
