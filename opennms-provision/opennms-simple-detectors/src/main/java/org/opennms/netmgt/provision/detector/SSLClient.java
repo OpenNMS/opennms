@@ -41,6 +41,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**

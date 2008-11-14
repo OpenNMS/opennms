@@ -34,6 +34,7 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.provision.DetectorMonitor;
+import org.opennms.netmgt.provision.support.AbstractDetector;
 
 public class IcmpDetector extends AbstractDetector {
     

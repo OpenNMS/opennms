@@ -33,7 +33,7 @@
  *
  */
 
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.support;
 
 import java.io.IOException;
 import java.net.InetAddress;
