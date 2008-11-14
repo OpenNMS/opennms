@@ -23,7 +23,7 @@
     <property name="categoryDao" ref="categoryDao" />
   </bean>
 
-  <bean id="importer" class="org.opennms.netmgt.provision.service.BaseImporter">
+  <bean id="importer" class="org.opennms.netmgt.provision.service.BaseProvisioner">
     <property name="provisionService" ref="provisionService" />
   </bean>
 
