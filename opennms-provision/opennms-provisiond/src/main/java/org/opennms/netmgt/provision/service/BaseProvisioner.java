@@ -63,7 +63,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-public class BaseImporter implements ImportOperationFactory, InitializingBean {
+public class BaseProvisioner implements ImportOperationFactory, InitializingBean {
 
     private DefaultProvisionService m_provisionService;
 	private int m_scanThreads = 50;

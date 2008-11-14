@@ -96,13 +96,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 
-public class BaseImporterTest {
+public class BaseProvisionerTest {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
     
     @Autowired
-    private BaseImporter m_importer;
+    private BaseProvisioner m_provisioner;
     
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
@@ -184,7 +184,7 @@ public class BaseImporterTest {
 
     private void importFromClasspath(String path) throws IOException,
             ModelImportException {
-        m_importer.importModelFromResource(new ClassPathResource(path));
+        m_provisioner.importModelFromResource(new ClassPathResource(path));
     }
 
 
@@ -203,7 +203,7 @@ public class BaseImporterTest {
     public void testFindQuery() throws Exception {
         importFromClasspath("/tec_dump.xml.smalltest");
         
-        for (OnmsAssetRecord assetRecord : m_importer.getAssetRecordDao().findAll()) {
+        for (OnmsAssetRecord assetRecord : m_provisioner.getAssetRecordDao().findAll()) {
             System.err.println(assetRecord.getBuilding());
         }
     }
@@ -263,11 +263,11 @@ public class BaseImporterTest {
     @Test
     public void testImportUtf8() throws Exception {
         
-        m_importer.importModelFromResource(new ClassPathResource("/utf-8.xml"));
+        m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"));
         
-        assertEquals(1, m_importer.getNodeDao().countAll());
+        assertEquals(1, m_provisioner.getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
-        assertEquals("\u00f1ode2", m_importer.getNodeDao().get(1).getLabel());
+        assertEquals("\u00f1ode2", m_provisioner.getNodeDao().get(1).getLabel());
         
     }
     
@@ -282,11 +282,11 @@ public class BaseImporterTest {
         
         importFromClasspath("/tec_dump.xml.smalltest");
         
-        assertEquals(10, m_importer.getNodeDao().countAll());
+        assertEquals(10, m_provisioner.getNodeDao().countAll());
         
         importFromClasspath("/tec_dump.xml.smalltest.delete");
         
-        assertEquals(9, m_importer.getNodeDao().countAll());
+        assertEquals(9, m_provisioner.getNodeDao().countAll());
         
 
     }
