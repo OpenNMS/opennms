@@ -50,7 +50,7 @@ public class TcpDetectorTest {
        m_server = new SimpleServer() {
             
             public void onInit() {
-               //setBanner("BLIP");
+               
             }
             
         };

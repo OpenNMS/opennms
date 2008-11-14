@@ -95,6 +95,7 @@ public class DnsDetectorTest {
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(5000);
         m_detector.setLookup("www.google.com");
+        m_detector.init();
         
         assertFalse(m_detector.isServiceDetected(InetAddress.getByName("151.197.0.38"), new NullDetectorMonitor()));
 

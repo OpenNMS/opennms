@@ -29,65 +29,24 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
-import org.opennms.netmgt.provision.ServiceDetector;
-import org.opennms.netmgt.utils.RelaxedX509TrustManager;
-
-public class HttpsDetector extends HttpDetector implements ServiceDetector {
+public class HttpsDetector extends HttpDetector {
     
-    private String m_hostAddress;
     
     protected HttpsDetector() {
-        super();
-    }
-    
-    public void onInit() {
         setServiceName("Https");
         setPort(443);
         setTimeout(500);
         setRetries(1);
-        
-        sendHttpQuery(queryURLRequest(getUrl()));
-        addHttpResponseHandler(contains("HTTP/"), null, getUrl(), isCheckRetCode(), getMaxRetCode());
     }
     
-    protected Socket createSocketConnection(InetAddress host, int port, int timeout) throws Exception {
-        setHostAddress(host.getHostAddress());
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(host, port), timeout);
-        socket.setSoTimeout(timeout);
-        return wrapSocket(socket);
+    protected void onInit() {
+        send(request(httpCommand("GET")), contains("HTTP/",getUrl(), isCheckRetCode(), getMaxRetCode()));
+        expectClose();
     }
     
-    protected Socket wrapSocket(Socket socket) throws Exception {
-        Socket sslSocket;
-
-        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
-        // CERTIFICATES
-        SSLSocketFactory sslSF = null;
-
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, tm, new java.security.SecureRandom());
-        sslSF = sslContext.getSocketFactory();
-        System.out.println("port: " + getPort());
-        sslSocket = sslSF.createSocket(socket, getHostAddress(), getPort(), true);
-        return sslSocket;
+    @Override
+    protected Client<LineOrientedRequest, MultilineOrientedResponse> getClient() {
+        return new SSLClient();
     }
-
-    public void setHostAddress(String hostAddress) {
-        m_hostAddress = hostAddress;
-    }
-
-    public String getHostAddress() {
-        return m_hostAddress;
-    }
-
 }
