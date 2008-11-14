@@ -41,11 +41,8 @@ import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.EntityVisitor;
@@ -60,8 +57,8 @@ import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * DefaultProvisionService
@@ -371,136 +368,68 @@ public class DefaultProvisionService implements ProvisionService {
         }
     
     }
-    private TransactionTemplate m_transactionTemplate;
+    
+    @Autowired
     private DistPollerDao m_distPollerDao;
+    
+    @Autowired
     private NodeDao m_nodeDao;
-    private IpInterfaceDao m_ipInterfaceDao;
+    
+    @Autowired
     private ServiceTypeDao m_serviceTypeDao;
-    private MonitoredServiceDao m_monitoredServiceDao;
-    private AssetRecordDao m_assetRecordDao;
+    
+    @Autowired
     private CategoryDao m_categoryDao;
+    
+    @Autowired
     private EventForwarder m_eventForwarder;
+    
     
     private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 
-    /**
-     * @return the typeCache
-     */
-    public ThreadLocal<HashMap<String, OnmsServiceType>> getTypeCache() {
-        return m_typeCache;
-    }
-    /**
-     * @param typeCache the typeCache to set
-     */
-    public void setTypeCache(
-            ThreadLocal<HashMap<String, OnmsServiceType>> typeCache) {
-        m_typeCache = typeCache;
-    }
-    /**
-     * @return the categoryCache
-     */
-    public ThreadLocal<HashMap<String, OnmsCategory>> getCategoryCache() {
-        return m_categoryCache;
-    }
-    /**
-     * @param categoryCache the categoryCache to set
-     */
-    public void setCategoryCache(
-            ThreadLocal<HashMap<String, OnmsCategory>> categoryCache) {
-        m_categoryCache = categoryCache;
-    }
-
-    /**
-     * @return the distPollerDao
-     */
-    public DistPollerDao getDistPollerDao() {
-        return m_distPollerDao;
-    }
     /**
      * @param distPollerDao the distPollerDao to set
      */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
     }
+    
     /**
      * @return the nodeDao
      */
-    public NodeDao getNodeDao() {
+    private NodeDao getNodeDao() {
         return m_nodeDao;
     }
+    
     /**
      * @param nodeDao the nodeDao to set
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-    /**
-     * @return the ipInterfaceDao
-     */
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-    /**
-     * @param ipInterfaceDao the ipInterfaceDao to set
-     */
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-    /**
-     * @return the serviceTypeDao
-     */
-    public ServiceTypeDao getServiceTypeDao() {
-        return m_serviceTypeDao;
-    }
+
     /**
      * @param serviceTypeDao the serviceTypeDao to set
      */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
-    /**
-     * @return the monitoredServiceDao
-     */
-    public MonitoredServiceDao getMonitoredServiceDao() {
-        return m_monitoredServiceDao;
-    }
-    /**
-     * @param monitoredServiceDao the monitoredServiceDao to set
-     */
-    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
-        m_monitoredServiceDao = monitoredServiceDao;
-    }
-    /**
-     * @return the assetRecordDao
-     */
-    public AssetRecordDao getAssetRecordDao() {
-        return m_assetRecordDao;
-    }
-    /**
-     * @param assetRecordDao the assetRecordDao to set
-     */
-    public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
-        m_assetRecordDao = assetRecordDao;
-    }
-    /**
-     * @return the categoryDao
-     */
-    public CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
+
     /**
      * @param categoryDao the categoryDao to set
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
+
     /**
      * @return the eventForwarder
      */
-    public EventForwarder getEventForwarder() {
+    private EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
+
     /**
      * @param eventForwarder the eventForwarder to set
      */
@@ -511,10 +440,10 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional
     public OnmsDistPoller createDistPollerIfNecessary() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
         if (distPoller == null) {
             distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-            getDistPollerDao().save(distPoller);
+            m_distPollerDao.save(distPoller);
         }
         return distPoller;
     }
@@ -598,7 +527,7 @@ public class DefaultProvisionService implements ProvisionService {
     public void doInsertNode(OnmsNode node) {
         
 
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
 
         node.setDistPoller(distPoller);
         getNodeDao().save(node);
@@ -610,14 +539,14 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     private void proloadExistingTypes() {
-        if (getTypeCache().get() == null) {
-            getTypeCache().set(loadServiceTypeMap());
+        if (m_typeCache.get() == null) {
+            m_typeCache.set(loadServiceTypeMap());
         }
     }
     
     private HashMap<String, OnmsServiceType> loadServiceTypeMap() {
         HashMap<String, OnmsServiceType> serviceTypeMap = new HashMap<String, OnmsServiceType>();
-        for (Iterator<OnmsServiceType> it = getServiceTypeDao().findAll().iterator(); it.hasNext();) {
+        for (Iterator<OnmsServiceType> it = m_serviceTypeDao.findAll().iterator(); it.hasNext();) {
             OnmsServiceType svcType = it.next();
             serviceTypeMap.put(svcType.getName(), svcType);
         }
@@ -627,10 +556,10 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional
     public OnmsServiceType createServiceTypeIfNecessary(String serviceName) {
         proloadExistingTypes();
-        OnmsServiceType type = getTypeCache().get().get(serviceName);
+        OnmsServiceType type = m_typeCache.get().get(serviceName);
         if (type == null) {
             type = loadServiceType(serviceName);
-            getTypeCache().get().put(serviceName, type);
+            m_typeCache.get().put(serviceName, type);
         }
         return type;
     }
@@ -638,25 +567,25 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional(readOnly=true)
     public OnmsServiceType loadServiceType(String serviceName) {
         OnmsServiceType type;
-        type = getServiceTypeDao().findByName(serviceName);
+        type = m_serviceTypeDao.findByName(serviceName);
         
         if (type == null) {
             type = new OnmsServiceType(serviceName);
-            getServiceTypeDao().save(type);
+            m_serviceTypeDao.save(type);
         }
         return type;
     }
     
     private void preloadExistingCategories() {
-        if (getCategoryCache().get() == null) {
-            getCategoryCache().set(loadCategoryMap());
+        if (m_categoryCache.get() == null) {
+            m_categoryCache.set(loadCategoryMap());
         }
     }
     
     @Transactional(readOnly=true)
     private HashMap<String, OnmsCategory> loadCategoryMap() {
         HashMap<String, OnmsCategory> categoryMap = new HashMap<String, OnmsCategory>();
-        for(Iterator<OnmsCategory> it = getCategoryDao().findAll().iterator(); it.hasNext();) {
+        for(Iterator<OnmsCategory> it = m_categoryDao.findAll().iterator(); it.hasNext();) {
             OnmsCategory category = it.next();
             categoryMap.put(category.getName(), category);
         }
@@ -667,10 +596,10 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsCategory createCategoryIfNecessary(String name) {
         preloadExistingCategories();
         
-        OnmsCategory category = (OnmsCategory)getCategoryCache().get().get(name);
+        OnmsCategory category = (OnmsCategory)m_categoryCache.get().get(name);
         if (category == null) {    
             category = loadCategory(name);
-            getCategoryCache().get().put(category.getName(), category);
+            m_categoryCache.get().put(category.getName(), category);
         }
         return category;
     }
@@ -678,10 +607,10 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional(readOnly=true)
     public OnmsCategory loadCategory(String name) {
         OnmsCategory category;
-        category = getCategoryDao().findByName(name);
+        category = m_categoryDao.findByName(name);
         if (category == null) {
             category = new OnmsCategory(name);
-            getCategoryDao().save(category);
+            m_categoryDao.save(category);
         }
         return category;
     }

@@ -42,12 +42,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.service.operations.DeleteOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
@@ -77,28 +71,8 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
 	    return m_provisionService;
 	}
 
-    public NodeDao getNodeDao() {
-        return getProvisionService().getNodeDao();
-    }
-    
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return getProvisionService().getIpInterfaceDao();
-    }
-
-    public MonitoredServiceDao getMonitoredServiceDao() {
-        return getProvisionService().getMonitoredServiceDao();
-    }
-
-    public ServiceTypeDao getServiceTypeDao() {
-        return getProvisionService().getServiceTypeDao();
-    }
-
-    public AssetRecordDao getAssetRecordDao() {
-        return getProvisionService().getAssetRecordDao();
     }
 
     public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
@@ -210,11 +184,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
     
     }
 
-    public CategoryDao getCategoryDao() {
-        return getProvisionService().getCategoryDao();
-    }
-
-	public int getScanThreads() {
+    public int getScanThreads() {
 		return m_scanThreads;
 	}
 
