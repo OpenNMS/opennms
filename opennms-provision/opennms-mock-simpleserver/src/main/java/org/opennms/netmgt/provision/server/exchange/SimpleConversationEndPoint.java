@@ -30,15 +30,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.conversation;
+package org.opennms.netmgt.provision.server.exchange;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.opennms.netmgt.provision.exchange.Exchange;
-import org.opennms.netmgt.provision.exchange.RequestHandler;
-import org.opennms.netmgt.provision.exchange.ResponseHandler;
 
 public class SimpleConversationEndPoint {
     
