@@ -18,5 +18,7 @@
     <module>opennms-scanners</module>
 -->
     <module>opennms-datagram-detector</module>
+    <module>opennms-lineoriented-detectors</module>
+    <module>opennms-mock-simpleserver</module>
   </modules>
 </project>

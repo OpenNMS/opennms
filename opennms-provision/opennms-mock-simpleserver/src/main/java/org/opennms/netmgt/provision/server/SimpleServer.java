@@ -39,9 +39,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.opennms.netmgt.provision.conversation.SimpleConversationEndPoint;
-import org.opennms.netmgt.provision.exchange.Exchange;
-import org.opennms.netmgt.provision.exchange.RequestHandler;
+import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
+import org.opennms.netmgt.provision.server.exchange.Exchange;
+import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 
 public class SimpleServer extends SimpleConversationEndPoint {
     

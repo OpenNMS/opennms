@@ -28,7 +28,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.conversation;
+package org.opennms.netmgt.provision.server.exchange;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.provision.exchange.Exchange;
-import org.opennms.netmgt.provision.exchange.ResponseHandler;
+import org.opennms.netmgt.provision.server.exchange.Exchange;
+import org.opennms.netmgt.provision.server.exchange.ResponseHandler;
 
 public class Conversation {    
     

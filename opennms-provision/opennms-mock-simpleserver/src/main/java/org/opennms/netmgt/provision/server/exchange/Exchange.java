@@ -28,12 +28,14 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.conversation;
+package org.opennms.netmgt.provision.server.exchange;
 
-/**
- * @author thedesloge
- *
- */
-public class ServerConversation extends Conversation {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
 
+public interface Exchange {
+    public boolean sendRequest(OutputStream out) throws IOException;
+    public boolean processResponse(BufferedReader in) throws IOException;
+    public boolean matchResponseByString(String input);
 }
