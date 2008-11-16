@@ -54,6 +54,17 @@
   		<artifactId>mock-snmp-agent</artifactId>
   		<scope>test</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-lineoriented-detectors</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-mock-simpleserver</artifactId>
+  		<version>${project.version}</version>
+  		<scope>test</scope>
+  	</dependency>
   </dependencies>
   
 </project>
