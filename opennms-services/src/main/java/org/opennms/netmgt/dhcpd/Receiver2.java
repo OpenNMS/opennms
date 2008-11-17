@@ -40,6 +40,7 @@ package org.opennms.netmgt.dhcpd;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Iterator;
@@ -68,7 +69,13 @@ final class Receiver2 implements Runnable, Fiber {
         m_name = "DHCPReceiver2";
         m_worker = null;
         m_status = START_PENDING;
-        m_receiver = new DatagramSocket(DHCP_TARGET_PORT);
+        try {
+            m_receiver = new DatagramSocket(DHCP_TARGET_PORT);
+        } catch (BindException e) {
+            BindException newE = new BindException("Could not open datagram socket for DHCP client on port " + DHCP_TARGET_PORT + ".  Is there another DHCP client listening on this port?  Original exception: " + e);
+            newE.initCause(e);
+            throw newE;
+        }
         m_receiver.setSoTimeout(1000);
         m_clients = clients;
     }
