@@ -46,6 +46,7 @@
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
+    <property name="provisionService" ref="provisionService" />
     <property name="importResource" ref="importResource"/>
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="scanThreads" ref="scanThreads" />
@@ -56,7 +57,7 @@
     <property name="targetObject">
       <ref bean="daemon" />
     </property>
-    <property name="targetMethod">
+    <property name="targetMethod">  
       <value>doImport</value>
     </property>
     <property name="concurrent">
