@@ -9,7 +9,7 @@
   <packaging>jar</packaging>
   <name>OpenNMS Jersey Dependencies</name>
   <properties>
-    <jerseyVersion>0.9-ea-SNAPSHOT</jerseyVersion>
+    <jerseyVersion>1.0</jerseyVersion>
   </properties>
   <dependencies>
     <dependency>

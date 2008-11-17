@@ -20,10 +20,10 @@ import javax.ws.rs.ext.Provider;
 public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImpl> {	
 	Map<String, List<String>> params=new HashMap<String,List<String>>();
 
-	public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations) {
-		return type.isAssignableFrom(MultivaluedMapImpl.class);
-	}
-	
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaTypes) {
+        return type.isAssignableFrom(MultivaluedMapImpl.class);
+    }
+
 	public MultivaluedMapImpl readFrom(java.lang.Class<MultivaluedMapImpl> type,
 			java.lang.reflect.Type genericType,
 			java.lang.annotation.Annotation[] annotations, MediaType mediaType,
