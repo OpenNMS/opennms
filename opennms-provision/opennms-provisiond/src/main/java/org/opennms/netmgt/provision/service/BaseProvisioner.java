@@ -161,6 +161,8 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         public void visitNode(final Node node) {
             getProvisionService().setNodeParentAndDependencies(m_foreignSource, node.getForeignId(), node.getParentForeignId(),
                                                 node.getParentNodeLabel());
+
+            getProvisionService().clearCache();
 		}
 
 	};

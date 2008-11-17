@@ -67,7 +67,6 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
@@ -154,7 +153,7 @@ public class BaseProvisionerTest {
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
 
-        MockLogAppender.setupLogging(props);
+       // MockLogAppender.setupLogging(props);
         
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
     }
@@ -219,6 +218,8 @@ public class BaseProvisionerTest {
     public void testBigImport() throws Exception {
         File file = new File("/Users/brozow/tec_dump.xml.large");
         if (file.exists()) {
+            m_eventAnticipator.reset();
+            m_eventAnticipator.setDiscardUnanticipated(true);
             String path = file.toURI().toURL().toExternalForm();
             System.err.println("Importing: "+path);
             importFromResource(path);
