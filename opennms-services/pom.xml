@@ -140,6 +140,14 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.dhcp.jdhcp</groupId>
       <artifactId>jdhcp</artifactId>
       <scope>compile</scope>
@@ -238,16 +246,6 @@
       <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock-cglib</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
