@@ -216,7 +216,7 @@ public class BaseProvisionerTest {
     
     @Test
     public void testBigImport() throws Exception {
-        File file = new File("/Users/brozow/tec_dump.xml.large");
+        File file = new File("/tmp/tec_dump.xml.large");
         if (file.exists()) {
             m_eventAnticipator.reset();
             m_eventAnticipator.setDiscardUnanticipated(true);
