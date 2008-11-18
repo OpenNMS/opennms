@@ -20,5 +20,6 @@
     <module>opennms-datagram-detector</module>
     <module>opennms-lineoriented-detectors</module>
     <module>opennms-mock-simpleserver</module>
+    <module>opennms-radius-detector</module>
   </modules>
 </project>
