@@ -171,6 +171,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @throws Exception 
      */
     protected boolean attemptConversation(BufferedReader in, OutputStream out) throws Exception{
+        System.out.println("SSLServer attempting conversation");
         m_conversation.attemptServerConversation(in, out);      
         return true;
     }

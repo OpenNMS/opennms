@@ -65,7 +65,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         int port = getPort();
         int retries = getRetries();
         int timeout = getTimeout();
-        System.out.printf("Address: %s || port: %s || ", address, getPort());
+        System.out.printf("Address: %s || port: %s || \n", address, getPort());
         detectorMonitor.start(this, "Checking address: %s for %s capability", address, getServiceName());
                 
         Client<Request, Response> client = getClient();

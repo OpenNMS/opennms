@@ -73,11 +73,10 @@ public class Conversation {
     
     public void attemptServerConversation(BufferedReader in, OutputStream out) throws Exception {
         boolean isFinished = false;
-        
+
         while(!isFinished) {
            try { 
                 if(m_conversation.size() == 0) { return; }
-                
                 String line  = in.readLine();
                 System.out.println("Server line read: " + line);
                 
@@ -96,6 +95,7 @@ public class Conversation {
                 }
            }catch(Exception e) {
                isFinished = true;
+               e.printStackTrace();
            }
             
         }
