@@ -33,9 +33,9 @@ package org.opennms.netmgt.provision.detector;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.opennms.netmgt.provision.support.Client;
-
 import jcifs.netbios.NbtAddress;
+
+import org.opennms.netmgt.provision.support.Client;
 
 /**
  * @author thedesloge
@@ -52,8 +52,8 @@ public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse
     }
 
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        m_address = address.getHostAddress();
-        m_nbtAddress = NbtAddress.getByName(m_address);        
+       m_address = address.getHostAddress();
+       m_nbtAddress = NbtAddress.getByName(m_address);
     }
 
     public NbtAddressResponse receiveBanner() throws IOException {
