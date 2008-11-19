@@ -56,7 +56,7 @@ public class RadiusDetectorClient implements Client<RadiusPacket, RadiusPacket> 
     /**
      * Default secret
      */
-    public static final String DEFAULT_SECRET = "secret";
+    public static final String DEFAULT_SECRET = "secret123"; //"secret";
     
     private RadiusClient m_radiusClient;
     private int m_authport = DEFAULT_AUTH_PORT;

@@ -21,5 +21,6 @@
     <module>opennms-lineoriented-detectors</module>
     <module>opennms-mock-simpleserver</module>
     <module>opennms-radius-detector</module>
+    <module>opennms-dhcp-detector</module>
   </modules>
 </project>
