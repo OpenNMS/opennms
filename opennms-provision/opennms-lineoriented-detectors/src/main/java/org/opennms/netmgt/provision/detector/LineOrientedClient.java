@@ -51,22 +51,22 @@ import org.opennms.netmgt.provision.support.Client;
  */
 public class LineOrientedClient implements Client<LineOrientedRequest, LineOrientedResponse> {
     
-    private Socket m_socket;
+    protected Socket m_socket;
     private OutputStream m_out;
     private BufferedReader m_in;
     
-    public void connect(InetAddress host, int port, int timeout) throws IOException {        
+    public void connect(InetAddress host, int port, int timeout) throws IOException, Exception {        
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(host, port), timeout);
         socket.setSoTimeout(timeout);
-        m_in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        m_out = socket.getOutputStream();
+        setInput(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+        setOutput(socket.getOutputStream());
         m_socket = socket;
         
     }
     
     public LineOrientedResponse sendRequest(LineOrientedRequest request) throws IOException {
-        request.send(m_out);
+        request.send(getOutput());
         return receiveResponse();
     }
 
@@ -76,7 +76,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      */
     private LineOrientedResponse receiveResponse() throws IOException {
         LineOrientedResponse response = new LineOrientedResponse();
-        response.receive(m_in);
+        response.receive(getInput());
         return response;
     }
     
@@ -100,6 +100,22 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setOutput(OutputStream out) {
+        m_out = out;
+    }
+
+    public OutputStream getOutput() {
+        return m_out;
+    }
+
+    public void setInput(BufferedReader in) {
+        m_in = in;
+    }
+
+    public BufferedReader getInput() {
+        return m_in;
     }
 
 }
