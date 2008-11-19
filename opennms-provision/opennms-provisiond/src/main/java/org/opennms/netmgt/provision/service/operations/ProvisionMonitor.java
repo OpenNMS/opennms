@@ -38,7 +38,7 @@ import org.springframework.core.io.Resource;
 
 public interface ProvisionMonitor {
 
-	void beginProcessingOps();
+	void beginProcessingOps(int deleteCount, int updateCount, int insertCount);
 
 	void finishProcessingOps();
 
@@ -69,12 +69,6 @@ public interface ProvisionMonitor {
 	void beginAuditNodes();
 
 	void finishAuditNodes();
-
-	void setDeleteCount(int deleteCount);
-
-	void setInsertCount(int insertCount);
-
-	void setUpdateCount(int updateCount);
 
 	void beginRelateNodes();
 

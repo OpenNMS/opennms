@@ -55,7 +55,10 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 	private int m_updateCount;
 	private int m_eventCount;
 
-	public void beginProcessingOps() {
+	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
+	    m_deleteCount = deleteCount;
+	    m_updateCount = updateCount;
+	    m_insertCount = insertCount;
 		m_processingDuration.start();
 	}
 
@@ -126,18 +129,6 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 		m_auditDuration.end();
 	}
 	
-	public void setDeleteCount(int deleteCount) {
-		m_deleteCount = deleteCount;
-	}
-
-	public void setInsertCount(int insertCount) {
-		m_insertCount = insertCount;
-	}
-
-	public void setUpdateCount(int updateCount) {
-		m_updateCount = updateCount;
-	}
-
 	public void beginRelateNodes() {
 		m_relateDuration.start();
 	}

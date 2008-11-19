@@ -77,10 +77,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 
 	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
 		
-		if ("".equals(ipAddr)) {
-			log().error("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
-			// create a bogus OnmsIpInterface and set it to current to services we run across get ignored as well
-			m_currentInterface = new OnmsIpInterface();
+		if (ipAddr == null || "".equals(ipAddr)) {
+            log().error("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
+            System.err.println("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
 			return;
 		}
 
@@ -104,19 +103,24 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.addIpInterface(m_currentInterface);
     }
 	
-	public void gatherAdditionalData() {
+	public void scan() {
     	updateSnmpData();
 	}
 	
     protected void updateSnmpData() {
-        m_scanManager.updateSnmpData(m_node);
+        if (m_scanManager != null) {
+            m_scanManager.updateSnmpData(m_node);
+        }
 	}
 
     public void foundMonitoredService(String serviceName) {
-        OnmsServiceType svcType = getProvisionService().createServiceTypeIfNecessary(serviceName);
-        OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
-        service.setStatus("A");
-        m_currentInterface.getMonitoredServices().add(service);
+        // current interface may be null if it has no ipaddr
+        if (m_currentInterface != null) {
+            OnmsServiceType svcType = getProvisionService().createServiceTypeIfNecessary(serviceName);
+            OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
+            service.setStatus("A");
+            m_currentInterface.getMonitoredServices().add(service);
+        }
     
     }
 
@@ -128,5 +132,6 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     protected OnmsNode getNode() {
         return m_node;
     }
+
 
 }

@@ -31,8 +31,6 @@
 //
 package org.opennms.netmgt.provision.service;
 
-import java.io.IOException;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -46,9 +44,7 @@ public class Main {
             BaseProvisioner importer = (BaseProvisioner)appContext.getBean("modelImporter");
             Resource resource = new FileSystemResource(args[0]);
             importer.importModelFromResource(resource);            
-        } catch (ModelImportException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

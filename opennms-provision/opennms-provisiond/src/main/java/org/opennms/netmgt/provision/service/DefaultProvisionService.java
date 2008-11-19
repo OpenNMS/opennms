@@ -565,6 +565,10 @@ public class DefaultProvisionService implements ProvisionService {
     public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
 
         final OnmsNode node = findNodebyForeignId(foreignSource, foreignId);
+        if (node == null) {
+            return;
+        }
+        
         final OnmsNode parent = findParent(foreignSource, parentForeignId, parentNodeLabel);
 
         setParent(node, parent);
