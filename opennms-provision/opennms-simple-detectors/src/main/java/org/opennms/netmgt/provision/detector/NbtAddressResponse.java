@@ -47,8 +47,7 @@ public class NbtAddressResponse {
     }
     
     public boolean validateAddressIsNotSame() {
-        if(m_nbtAddress.getHostAddress().equals(m_address)) {
-            System.out.println("address: " + m_address + " nbtAddressHost: " + m_nbtAddress.getHostAddress());
+        if(m_nbtAddress.getHostName().equals(m_address)) {
            return false; 
         }else {
             return true;
