@@ -40,7 +40,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
 public class NoOpProvisionMonitor implements ProvisionMonitor {
-	public void beginProcessingOps() {
+	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
 	}
 
 	public void finishProcessingOps() {
@@ -86,15 +86,6 @@ public class NoOpProvisionMonitor implements ProvisionMonitor {
 	}
 
 	public void finishAuditNodes() {
-	}
-
-	public void setDeleteCount(int deleteCount) {
-	}
-
-	public void setInsertCount(int insertCount) {
-	}
-
-	public void setUpdateCount(int updateCount) {
 	}
 
 	public void beginRelateNodes() {

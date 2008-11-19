@@ -42,7 +42,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.service.operations.DeleteOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationFactory;
@@ -50,6 +49,7 @@ import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.InsertOperation;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.provision.service.operations.UpdateOperation;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
@@ -75,7 +75,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         Assert.notNull(getProvisionService(), "provisionService property must be set");
     }
 
-    public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+    public SaveOrUpdateOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         return new InsertOperation(foreignSource, foreignId, nodeLabel, building, city, getProvisionService());
         
     }
@@ -88,70 +88,128 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         return new DeleteOperation(nodeId, foreignSource, foreignId, getProvisionService());
     }
     
-    protected void importModelFromResource(Resource resource) throws IOException, ModelImportException {
+    protected void importModelFromResource(Resource resource) throws Exception {
     	importModelFromResource(null, resource, new NoOpProvisionMonitor());
     }
 
     protected void importModelFromResource(String foreignSource, Resource resource, ProvisionMonitor monitor)
-            throws ModelImportException, IOException {
+            throws Exception {
         doImport(resource, monitor, m_scanThreads, m_writeThreads, new ImportManager(),
                  foreignSource);
     }
 
-    private void doImport(Resource resource, ProvisionMonitor monitor,
-            int scanThreads, int writeThreads,
-            ImportManager importManager, String foreignSource) throws ModelImportException, IOException {
+    private void doImport(Resource resource, final ProvisionMonitor monitor,
+            final int scanThreads, final int writeThreads,
+            ImportManager importManager, final String foreignSource) throws Exception {
         
         importManager.getClass();
-        monitor.beginImporting();
-    	monitor.beginLoadingResource(resource);
+        
+        final Task<Resource, SpecFile> loader = new Task<Resource, SpecFile>() {
+
+            @Override
+            public SpecFile execute(Resource resource) throws Exception {
+                return loadSpecFile(resource, foreignSource, monitor);
+            }
+            
+        };
+        
+        
+
+        
+        final Task<SpecFile, ImportOperationsManager> auditor = new Task<SpecFile, ImportOperationsManager>() {
+
+            @Override
+            public ImportOperationsManager execute(SpecFile specFile) throws Exception {
+                monitor.beginAuditNodes();
+                ImportOperationsManager opsMgr = auditNodes(specFile, monitor);
+                monitor.finishAuditNodes();
+                return opsMgr;
+            }
+        };
+        
+        
+        
+        final Task<ImportOperationsManager, Void> persistor = new Task<ImportOperationsManager, Void>() {
+
+            @Override
+            public Void execute(ImportOperationsManager opsMgr) throws Exception {
+                opsMgr.persistOperations(writeThreads, scanThreads, monitor);
+                return null;
+            }
+            
+        };
+        
+        
+        
+        final Task<SpecFile, Void> relator = new Task<SpecFile, Void>() {
+
+            @Override
+            public Void execute(SpecFile specFile) throws Exception {
+                monitor.beginRelateNodes();
+                
+                relateNodes(specFile);
+                
+                monitor.finishRelateNodes();
+                return null;
+            }
+            
+        };
+        
+        
+        final Task<Resource, Void> importer = new Task<Resource, Void>() {
+
+            @Override
+            public Void execute(Resource resource) throws Exception {
+                monitor.beginImporting();
+
+                SpecFile specFile = loader.execute(resource);
+                ImportOperationsManager opsMgr = auditor.execute(specFile);
+                persistor.execute(opsMgr);
+                relator.execute(specFile);
+                
+            
+                monitor.finishImporting();
+                return null;
+            }
+            
+        };
+        
+        importer.execute(resource);
+
+    }
+
+    private ImportOperationsManager auditNodes(SpecFile specFile, ProvisionMonitor monitor) {
+        
+        getProvisionService().createDistPollerIfNecessary("localhost", "127.0.0.1");
+        String foreignSource = specFile.getForeignSource();
+        Map<String, Integer> foreignIdsToNodes = getProvisionService().getForeignIdToNodeIdMap(foreignSource);
+        
+        ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, this, getProvisionService());
+
+        opsMgr.setForeignSource(foreignSource);
+        
+        opsMgr.auditNodes(specFile);
+
+        return opsMgr;
+    }
+
+    private SpecFile loadSpecFile(Resource resource, String foreignSource,
+            ProvisionMonitor monitor) throws ModelImportException,
+            IOException {
+        monitor.beginLoadingResource(resource);
     	
         SpecFile specFile = new SpecFile();
         specFile.loadResource(resource);
-        
-        monitor.finishLoadingResource(resource);
-        
         
         if (foreignSource != null) {
             specFile.setForeignSource(foreignSource);
         }
         
-        monitor.beginAuditNodes();
-        createDistPollerIfNecessary();
-        
-        Map<String, Integer> foreignIdsToNodes = getForeignIdToNodeMap(specFile.getForeignSource());
-        
-        ImportOperationsManager opsMgr = createImportOperationsManager(foreignIdsToNodes, monitor);
-        opsMgr.setForeignSource(specFile.getForeignSource());
-        opsMgr.setScanThreads(scanThreads);
-        opsMgr.setWriteThreads(writeThreads);
-        
-        auditNodes(opsMgr, specFile);
-        
-        monitor.finishAuditNodes();
-        
-        opsMgr.persistOperations();
-        
-        monitor.beginRelateNodes();
-        
-        relateNodes(specFile);
-        
-        monitor.finishRelateNodes();
-    
-        monitor.finishImporting();
+        monitor.finishLoadingResource(resource);
+        return specFile;
     }
 
-    protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> foreignIdsToNodes, ProvisionMonitor stats) {
-		ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, this);
-        opsMgr.setMonitor(stats);
-		return opsMgr;
-	}
-
-    private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
-        specFile.visitImport(new ImportAccountant(opsMgr));
-    }
-
-	class NodeRelator extends AbstractImportVisitor {
+    class NodeRelator extends AbstractImportVisitor {
 		String m_foreignSource;
 		
 		public NodeRelator(String foreignSource) {
@@ -175,16 +233,6 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
     	return ThreadCategory.getInstance(getClass());
 	}
 
-
-    private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
-        return getProvisionService().getForeignIdToNodeIdMap(foreignSource);
-    }
-
-    
-    private OnmsDistPoller createDistPollerIfNecessary() {
-        return getProvisionService().createDistPollerIfNecessary("localhost", "127.0.0.1");
-    
-    }
 
     public int getScanThreads() {
 		return m_scanThreads;

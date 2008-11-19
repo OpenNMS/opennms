@@ -67,6 +67,7 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
@@ -153,7 +154,9 @@ public class BaseProvisionerTest {
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
 
-       // MockLogAppender.setupLogging(props);
+        MockLogAppender.setupLogging(props);
+        
+        //System.setProperty("mock.debug", "false");
         
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
     }

@@ -49,21 +49,9 @@ public class InsertOperation extends SaveOrUpdateOperation {
         return "INSERT: Node: "+getNode().getLabel();
     }
 
-    public void persist(final ProvisionMonitor monitor) {
-    
-        final ImportOperation oper = this;
-    
-        monitor.beginPersisting(oper);
-        log().info("Persist: "+oper);
-
+    @Override
+    protected void doPersist() {
         getProvisionService().insertNode(getNode());
-    	
-        monitor.finishPersisting(oper);
-    
-        log().info("Clear cache: "+this);
-    
-        // clear the cache to we don't use up all the memory
-    	getProvisionService().clearCache();
     }
 
 }

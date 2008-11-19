@@ -39,19 +39,25 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.provision.service.ImportAccountant;
+import org.opennms.netmgt.provision.service.ProvisionService;
+import org.opennms.netmgt.provision.service.specification.SpecFile;
 
 /**
  * This nodes job is to tracks nodes that need to be deleted, added, or changed
@@ -64,26 +70,27 @@ public class ImportOperationsManager {
     private List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
     private Map<String, Integer> m_foreignIdToNodeMap;
     
-    private ImportOperationFactory m_operationFactory;
-    private ProvisionMonitor m_monitor = new NoOpProvisionMonitor();
-	private EventForwarder m_eventForwarder;
-	
-	private int m_scanThreads = 50;
-	private int m_writeThreads = 4;
+    private final ProvisionService m_provisionService;
+    
+    private final ImportOperationFactory m_operationFactory;
+
     private String m_foreignSource;
     
-    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ImportOperationFactory operationFactory) {
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ImportOperationFactory operationFactory, ProvisionService provisionService) {
+        m_provisionService = provisionService;
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
         m_operationFactory = operationFactory;
     }
 
     public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String building, String city) {
         
+        SaveOrUpdateOperation ret;
         if (nodeExists(foreignId)) {
-            return updateNode(foreignId, nodeLabel, building, city);
+            ret = updateNode(foreignId, nodeLabel, building, city);
         } else {
-            return insertNode(foreignId, nodeLabel, building, city);
+            ret = insertNode(foreignId, nodeLabel, building, city);
         }        
+        return ret;
     }
 
     private boolean nodeExists(String foreignId) {
@@ -91,7 +98,7 @@ public class ImportOperationsManager {
     }
     
     private SaveOrUpdateOperation insertNode(String foreignId, String nodeLabel, String building, String city) {
-        InsertOperation insertOperation = m_operationFactory.createInsertOperation(getForeignSource(), foreignId, nodeLabel, building, city);
+        SaveOrUpdateOperation insertOperation = m_operationFactory.createInsertOperation(getForeignSource(), foreignId, nodeLabel, building, city);
         m_inserts.add(insertOperation);
         return insertOperation;
     }
@@ -110,7 +117,7 @@ public class ImportOperationsManager {
      * @return a nodeId
      */
     private Integer processForeignId(String foreignId) {
-        return (Integer)m_foreignIdToNodeMap.remove(foreignId);
+        return m_foreignIdToNodeMap.remove(foreignId);
     }
     
     public int getOperationCount() {
@@ -141,7 +148,7 @@ public class ImportOperationsManager {
             Entry<String, Integer> entry = m_foreignIdIterator.next();
             Integer nodeId = entry.getValue();
             String foreignId = entry.getKey();
-            return m_operationFactory.createDeleteOperation(nodeId, m_foreignSource, foreignId);
+            return m_operationFactory.createDeleteOperation(nodeId, getForeignSource(), foreignId);
 			
 		}
 
@@ -151,7 +158,7 @@ public class ImportOperationsManager {
     	
     }
     
-    class OperationIterator implements Iterator<ImportOperation> {
+    class OperationIterator implements Iterator<ImportOperation>, Enumeration<ImportOperation> {
     	
     	Iterator<Iterator<ImportOperation>> m_iterIter;
     	Iterator<ImportOperation> m_currentIter;
@@ -180,6 +187,14 @@ public class ImportOperationsManager {
 		public void remove() {
 			m_currentIter.remove();
 		}
+
+        public boolean hasMoreElements() {
+            return hasNext();
+        }
+
+        public ImportOperation nextElement() {
+            return next();
+        }
     	
     	
     }
@@ -194,89 +209,49 @@ public class ImportOperationsManager {
             log().error(msg, e);
         }
     }
- 
-    public void persistOperations() {
+    
+    public Collection<ImportOperation> getOperations() {
+        return Collections.list(new OperationIterator());
+    }
+    
+    public void persistOperations(final int writeThreads,
+            final int scanThreads, final ProvisionMonitor monitor) {
+        
+        
+        monitor.beginProcessingOps(getDeleteCount(), getUpdateCount(), getInsertCount());
 
-    	m_monitor.beginProcessingOps();
-    	m_monitor.setDeleteCount(getDeleteCount());
-    	m_monitor.setInsertCount(getInsertCount());
-    	m_monitor.setUpdateCount(getUpdateCount());
-    	ExecutorService dbPool = Executors.newFixedThreadPool(m_writeThreads);
+        final ExecutorService dbPool = Executors.newFixedThreadPool(writeThreads);
+        final ExecutorService scanPool = Executors.newFixedThreadPool(scanThreads);
+        
+        monitor.beginPreprocessingOps();
+        
+        final Collection<ImportOperation> operations = getOperations();
 
-		preprocessOperations(new OperationIterator(), dbPool);
+        for(final ImportOperation op : operations) {
+            Runnable r = sequence(dbPool, scanner(op, monitor), persister(op, monitor));
+            scanPool.execute(r);
+        }
+                
+        shutdownAndWaitForCompletion(scanPool, "preprocessor interrupted!");
+        
+        monitor.finishPreprocessingOps();
 
 		shutdownAndWaitForCompletion(dbPool, "persister interrupted!");
 
-		m_monitor.finishProcessingOps();
-    	
+		monitor.finishProcessingOps();
     }
     
-	private void preprocessOperations(OperationIterator iterator, final ExecutorService dbPool) {
-		
-		m_monitor.beginPreprocessingOps();
-		
-		ExecutorService threadPool = Executors.newFixedThreadPool(m_scanThreads);
-		for (Iterator<ImportOperation> it = iterator; it.hasNext();) {
-    		final ImportOperation oper = it.next();
-    		Runnable r = new Runnable() {
-    			public void run() {
-    				preprocessOperation(oper, dbPool);
-    			}
-    		};
-    		threadPool.execute(r);
+    private Runnable sequence(final Executor pool, final Runnable a, final Runnable b) {
+        return new Runnable() {
+            public void run() {
+                a.run();
+                pool.execute(b);
+            }
+        };
+    }
 
-    	}
-		
-		shutdownAndWaitForCompletion(threadPool, "preprocessor interrupted!");
-		
-		m_monitor.finishPreprocessingOps();
-	}
-
-	protected void preprocessOperation(final ImportOperation oper, final ExecutorService dbPool) {
-		m_monitor.beginPreprocessing(oper);
-		log().info("Preprocess: "+oper);
-		oper.gatherAdditionalData();
-		Runnable r = new Runnable() {
-			public void run() {
-				oper.persist(m_monitor);
-			}
-		};
-
-		dbPool.execute(r);
-
-		m_monitor.finishPreprocessing(oper);
-	}
-
-	private Category log() {
+	private Logger log() {
 		return ThreadCategory.getInstance(getClass());
-	}
-
-	public void setScanThreads(int scanThreads) {
-		m_scanThreads = scanThreads;
-	}
-	
-	public void setWriteThreads(int writeThreads) {
-		m_writeThreads = writeThreads;
-	}
-
-
-
-	public EventForwarder getEventForwarder() {
-		return m_eventForwarder;
-	}
-
-
-
-	public void setEventForwarder(EventForwarder eventForwarder) {
-		m_eventForwarder = eventForwarder;
-	}
-
-	public ProvisionMonitor getMonitor() {
-		return m_monitor;
-	}
-
-	public void setMonitor(ProvisionMonitor stats) {
-		m_monitor = stats;
 	}
 
     public void setForeignSource(String foreignSource) {
@@ -285,5 +260,29 @@ public class ImportOperationsManager {
 
     public String getForeignSource() {
         return m_foreignSource;
+    }
+
+    public void auditNodes(SpecFile specFile) {
+        specFile.visitImport(new ImportAccountant(this));
+    }
+
+    private Runnable persister(final ImportOperation oper,  final ProvisionMonitor monitor) {
+        Runnable r = new Runnable() {
+        	public void run() {
+        		oper.persist(monitor);
+        	}
+        };
+        return r;
+    }
+    
+    private Runnable scanner(final ImportOperation oper, final ProvisionMonitor monitor) {
+        return new Runnable() {
+            public void run() {
+                monitor.beginPreprocessing(oper);
+                log().info("Preprocess: "+oper);
+                oper.scan();
+                monitor.finishPreprocessing(oper);
+            }
+        };
     }
 }
