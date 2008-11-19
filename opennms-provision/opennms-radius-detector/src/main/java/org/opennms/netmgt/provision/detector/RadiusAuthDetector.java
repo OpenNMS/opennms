@@ -50,11 +50,11 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
     
     private int m_authport = DEFAULT_AUTH_PORT;
     private int m_acctport = DEFAULT_ACCT_PORT;
-    private String m_authType;
     private String m_secret = DEFAULT_SECRET;
-    private String m_nasid;
-    private String m_user;
-    private String m_password;
+    private String m_authType = DEFAULT_AUTH_TYPE;
+    private String m_nasid = DEFAULT_NAS_ID;
+    private String m_user = DEFAULT_USER;
+    private String m_password = DEFAULT_PASSWORD;
     
     protected RadiusAuthDetector() {
         super(1812, 5000, 0);
