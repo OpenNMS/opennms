@@ -42,9 +42,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.io.IOException;
-import java.util.Map;
-
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -53,8 +50,6 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
-import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
@@ -98,12 +93,8 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 
 			send(importSuccessEvent(m_stats, resource));
 
-        } catch (IOException e) {
-            String msg = "IOException importing "+resource;
-			log().error(msg, e);
-            send(importFailedEvent((msg+": "+e.getMessage()), resource));
-        } catch (ModelImportException e) {
-            String msg = "Error parsing import data from "+resource;
+        } catch (Exception e) {
+            String msg = "Exception importing "+resource;
 			log().error(msg, e);
             send(importFailedEvent((msg+": "+e.getMessage()), resource));
         }
@@ -152,12 +143,6 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 
 	public void setEventSubscriptionService(EventSubscriptionService eventManager) {
 		m_eventSubscriptionService = eventManager;
-	}
-
-	protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> assetNumbersToNodes, ProvisionMonitor stats) {
-		ImportOperationsManager opsMgr = super.createImportOperationsManager(assetNumbersToNodes, stats);
-		opsMgr.setEventForwarder(m_eventForwarder);
-		return opsMgr;
 	}
 
 	public void afterPropertiesSet() throws Exception {

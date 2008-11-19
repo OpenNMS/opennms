@@ -50,20 +50,8 @@ public class UpdateOperation extends SaveOrUpdateOperation {
        return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
     }
 
-    public void persist(final ProvisionMonitor monitor) {
-    
-        final ImportOperation oper = this;
-    
-        monitor.beginPersisting(oper);
-        log().info("Persist: "+oper);
-
+	@Override
+    protected void doPersist() {
         getProvisionService().updateNode(getNode(), getScanManager().isSnmpDataForNodeUpToDate(), getScanManager().isSnmpDataForInterfacesUpToDate());
-    	
-        monitor.finishPersisting(oper);
-    
-        log().info("Clear cache: "+this);
-    
-        // clear the cache to we don't use up all the memory
-    	getProvisionService().clearCache();
     }
 }

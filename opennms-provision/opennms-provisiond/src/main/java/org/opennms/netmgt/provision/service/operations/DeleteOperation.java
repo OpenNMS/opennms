@@ -52,25 +52,13 @@ public class DeleteOperation extends ImportOperation {
     	return "DELETE: Node "+m_nodeId;
     }
 
-	public void gatherAdditionalData() {
+	public void scan() {
 		// no additional data to gather
 	}
 
-    public void persist(final ProvisionMonitor monitor) {
-    
-        final ImportOperation oper = this;
-    
-        monitor.beginPersisting(oper);
-        log().info("Persist: "+oper);
-
+	@Override
+    protected void doPersist() {
         getProvisionService().deleteNode(m_nodeId);
-        
-        monitor.finishPersisting(oper);
-        
-        log().info("Clear cache: "+this);
-    
-        // clear the cache to we don't use up all the memory
-    	getProvisionService().clearCache();
     }
 
 }

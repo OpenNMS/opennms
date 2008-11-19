@@ -45,7 +45,7 @@ public abstract class ImportOperation {
     }
 
 
-    abstract public void gatherAdditionalData();
+    abstract public void scan();
 
     /**
      * @return the provisionService
@@ -58,7 +58,25 @@ public abstract class ImportOperation {
         return ThreadCategory.getInstance(getClass());
     }
 
-    public abstract void persist(final ProvisionMonitor monitor);
+    protected abstract void doPersist();
+
+
+    public void persist(final ProvisionMonitor monitor) {
+    
+        final ImportOperation oper = this;
+    
+        monitor.beginPersisting(oper);
+        log().info("Persist: "+oper);
+    
+        doPersist();
+    	
+        monitor.finishPersisting(oper);
+    
+        log().info("Clear cache: "+this);
+    
+        // clear the cache to we don't use up all the memory
+    	getProvisionService().clearCache();
+    }
 
 
 }
