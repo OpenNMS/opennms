@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,7 +44,12 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.service.Computations.AsyncSequenceBuilder;
+import org.opennms.netmgt.provision.service.Action;
+import org.opennms.netmgt.provision.service.Computation;
+import org.opennms.netmgt.provision.service.async.Async;
+import org.opennms.netmgt.provision.service.async.AsyncRunnable;
+import org.opennms.netmgt.provision.service.async.Computations;
+import org.opennms.netmgt.provision.service.async.Computations.AsyncSequenceBuilder;
 import org.opennms.test.mock.MockLogAppender;
 
 

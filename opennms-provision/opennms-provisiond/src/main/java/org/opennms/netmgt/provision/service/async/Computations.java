@@ -29,10 +29,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+
+import org.opennms.netmgt.provision.service.Action;
+import org.opennms.netmgt.provision.service.Computation;
 
 /**
  * Computations

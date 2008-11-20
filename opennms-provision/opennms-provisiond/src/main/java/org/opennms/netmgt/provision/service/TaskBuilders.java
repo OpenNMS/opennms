@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.service;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
+
 /**
  * TaskBuilders
  *
@@ -96,7 +97,15 @@ public class TaskBuilders {
     }
     
     public static <T> TaskBuilder<T, T> identityBuilder() {
-        return compute(Computations.<T>identity());
+        return compute(TaskBuilders.<T>identity());
+    }
+
+    private static <T> Computation<T, T> identity() {
+        return new Computation<T, T>() {
+            public T compute(T t) throws Exception {
+                return t;
+            }
+        };
     }
     
     public static class SequenceBuilder<A, B> {

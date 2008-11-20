@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -40,6 +40,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.provision.service.Action;
+import org.opennms.netmgt.provision.service.Computation;
 import org.springframework.util.Assert;
 
 
