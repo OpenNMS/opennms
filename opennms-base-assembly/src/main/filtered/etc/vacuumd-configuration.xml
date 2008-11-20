@@ -277,8 +277,8 @@
       <statement>
         DELETE FROM alarms
          WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '2 minutes'
-           AND (alarmacktime IS NULL OR tticketState = 3)
+           AND COALESCE(lastautomationtime, lasteventtime) &gt; now() - interval '2 minutes'
+           AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 3))
       </statement>
     </action>
 
@@ -288,8 +288,8 @@
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
-           AND (alarmacktime IS NULL OR tticketState = 3)
+           AND COALESCE(lastautomationtime, lasteventtime) &gt; now() - interval '24 hours'
+           AND (tticketState IS NULL OR tticketState = 3)
       </statement>
     </action>
   
