@@ -29,19 +29,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
 import java.util.concurrent.ExecutorService;
 
-/**
- * AsyncAction
- *
- * @author brozow
- */
-public class AsyncAction<A> extends SimpleAsync<A, Void> {
-
-    public AsyncAction(ExecutorService executor, Action<A> action) {
-        super(executor, Computations.computation(action));
+public class AsyncRunnable extends SimpleAsync<Void, Void> {
+    AsyncRunnable(ExecutorService executor, Runnable r) {
+        super(executor, Computations.computation(r));
     }
-
+    
+    public void start() {
+        start(null);
+    }
 }
