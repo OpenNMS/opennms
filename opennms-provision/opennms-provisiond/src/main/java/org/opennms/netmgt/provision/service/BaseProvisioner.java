@@ -38,6 +38,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -104,7 +105,9 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         
         importManager.getClass();
         
-        final Task<Resource, SpecFile> loader = new Task<Resource, SpecFile>() {
+        ExecutorService executor = null;
+        
+        final Task<Resource, SpecFile> loader = new Task<Resource, SpecFile>(executor) {
 
             @Override
             public SpecFile execute(Resource resource) throws Exception {
@@ -116,7 +119,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         
 
         
-        final Task<SpecFile, ImportOperationsManager> auditor = new Task<SpecFile, ImportOperationsManager>() {
+        final Task<SpecFile, ImportOperationsManager> auditor = new Task<SpecFile, ImportOperationsManager>(executor) {
 
             @Override
             public ImportOperationsManager execute(SpecFile specFile) throws Exception {
@@ -129,7 +132,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         
         
         
-        final Task<ImportOperationsManager, Void> persistor = new Task<ImportOperationsManager, Void>() {
+        final Task<ImportOperationsManager, Void> persistor = new Task<ImportOperationsManager, Void>(executor) {
 
             @Override
             public Void execute(ImportOperationsManager opsMgr) throws Exception {
@@ -141,7 +144,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         
         
         
-        final Task<SpecFile, Void> relator = new Task<SpecFile, Void>() {
+        final Task<SpecFile, Void> relator = new Task<SpecFile, Void>(executor) {
 
             @Override
             public Void execute(SpecFile specFile) throws Exception {
@@ -156,7 +159,7 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         };
         
         
-        final Task<Resource, Void> importer = new Task<Resource, Void>() {
+        final Task<Resource, Void> importer = new Task<Resource, Void>(executor) {
 
             @Override
             public Void execute(Resource resource) throws Exception {
