@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,6 +36,11 @@ public class ScanManagerTest {
         m_scanManager = new ScanManager(m_agentAddress);
     }
 
+    @After
+    public void tearDown() throws InterruptedException {
+        m_agent.shutDownAndWait();
+    }
+    
     @Ignore
     @Test
     public void testCreateSnmpResource() {
