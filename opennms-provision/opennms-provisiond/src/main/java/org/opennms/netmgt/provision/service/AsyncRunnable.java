@@ -33,38 +33,12 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.concurrent.ExecutorService;
 
-/**
- * Task
- *
- * @author brozow
- */
-public abstract class Task<A, B> {
-    
-    private A m_arg;
-    
-    public Task(ExecutorService executor) {
-
-    }
-
-    abstract public B execute(A a) throws Exception;
-
-    public void start(A a) {
-        m_arg = a;
+public class AsyncRunnable extends SimpleAsync<Void, Void> {
+    AsyncRunnable(ExecutorService executor, Runnable r) {
+        super(executor, Computations.computation(r));
     }
     
     public void start() {
         start(null);
     }
-
-    public B waitFor() throws Exception {
-        B b = execute(m_arg);
-        onComplete(b);
-        return b;
-    }
-    
-    protected void onComplete(B result) {
-        
-    }
-    
-
 }
