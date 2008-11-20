@@ -58,12 +58,12 @@ public class ScanManager {
         return null;
     }
 
-    void updateSnmpDataForNode(OnmsNode node) {
+    public void updateSnmpDataForResource(ScanResource sr) {
         if (getCollector() != null && getCollector().hasSystemGroup()) {
-            node.setSysContact(getCollector().getSystemGroup().getSysContact());
-            node.setSysDescription(getCollector().getSystemGroup().getSysDescr());
-            node.setSysLocation(getCollector().getSystemGroup().getSysLocation());
-            node.setSysObjectId(getCollector().getSystemGroup().getSysObjectID());
+            sr.setAttribute("sysContact", getCollector().getSystemGroup().getSysContact());
+            sr.setAttribute("sysDescription", getCollector().getSystemGroup().getSysDescr());
+            sr.setAttribute("sysLocation", getCollector().getSystemGroup().getSysLocation());
+            sr.setAttribute("sysObjectId", getCollector().getSystemGroup().getSysObjectID());
         }
     }
 
@@ -155,7 +155,9 @@ public class ScanManager {
         if (getCollector() != null) 
         	getCollector().run();
         
-        updateSnmpDataForNode(node);
+        ScanResource sr = new ScanResource("SNMP");
+        sr.setNode(node);
+        updateSnmpDataForResource(sr);
         
         for (OnmsIpInterface ipIf : node.getIpInterfaces()) {
             resolveIpHostname(ipIf);
