@@ -29,16 +29,14 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
-import java.util.concurrent.ExecutorService;
-
-public class AsyncRunnable extends SimpleAsync<Void, Void> {
-    AsyncRunnable(ExecutorService executor, Runnable r) {
-        super(executor, Computations.computation(r));
-    }
+/**
+ * AsyncCoordinator
+ *
+ * @author brozow
+ */
+public class AsyncCoordinator {
     
-    public void start() {
-        start(null);
-    }
+
 }
