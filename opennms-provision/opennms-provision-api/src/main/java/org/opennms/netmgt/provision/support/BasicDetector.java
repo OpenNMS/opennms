@@ -83,6 +83,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
+                System.out.println("put before");
                 cE.printStackTrace();
                 detectorMonitor.info(this, cE, "Attempting to connect to address: %s attempt #%s",address.getHostAddress(),attempts);
             } catch (NoRouteToHostException e) {
@@ -105,7 +106,6 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 client.close();
             }
         }
-        
         return false;
     }
 
@@ -129,7 +129,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         getConversation().addExchange(request, responseValidator);
     }
     
-    private ClientConversation<Request, Response> getConversation() {
+    protected ClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }
     
