@@ -118,12 +118,15 @@ public final class DhcpPlugin extends AbstractPlugin {
                 ioE.fillInStackTrace();
                 log.debug("isServer: The DHCP discovery operation was interrupted", ioE);
             }
+            ioE.printStackTrace();
         } catch (IOException ioE) {
             log.warn("isServer: An I/O exception occured during DHCP discovery", ioE);
             isAServer = false;
+            ioE.printStackTrace();
         } catch (Throwable t) {
             log.error("isServer: An undeclared throwable exception was caught during test", t);
             isAServer = false;
+            t.printStackTrace();
         }
 
         // If response time is equal to or greater than zero

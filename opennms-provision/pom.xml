@@ -22,5 +22,6 @@
     <module>opennms-mock-simpleserver</module>
     <module>opennms-radius-detector</module>
     <module>opennms-dhcp-detector</module>
+    <module>opennms-jmx-detectors</module>
   </modules>
 </project>

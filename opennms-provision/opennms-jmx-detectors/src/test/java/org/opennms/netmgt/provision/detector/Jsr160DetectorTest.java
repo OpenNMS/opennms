@@ -8,9 +8,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,29 +24,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  */
+package org.opennms.netmgt.provision.detector;
 
-package org.opennms.netmgt.provision.support;
+import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+
 
 /**
- * @author brozow
+ * @author Donald Desloge
  *
  */
-public interface Client<Request, Response> {
+public class Jsr160DetectorTest {
     
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception;
+    private Jsr160Detector m_detector;
     
-    Response receiveBanner() throws IOException, Exception;
+    @Before
+    public void setUp() {
+       m_detector = new Jsr160Detector(); 
+    }
     
-    Response sendRequest(Request request) throws IOException, Exception; 
-    
-    public void close();
-
+    @Test
+    public void testMyDetector() throws UnknownHostException {
+        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
+    }
 }
