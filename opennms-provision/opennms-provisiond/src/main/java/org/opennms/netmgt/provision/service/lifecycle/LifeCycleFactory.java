@@ -31,48 +31,13 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-
 /**
- * LifeCycleBuilder
+ * LifeCycleFactory
  *
  * @author brozow
  */
-public class LifeCycleDefinition {
+public interface LifeCycleFactory {
     
-    private String m_lifeCycleName;
-    private List<String> m_phases = new ArrayList<String>();
-    private List<Object> m_providers = new ArrayList<Object>();
-    
-    public LifeCycleDefinition(String lifeCycleName) {
-        m_lifeCycleName = lifeCycleName;
-    }
-    
-    public String getLifeCycleName() {
-        return m_lifeCycleName;
-    }
-
-    public LifeCycleDefinition addPhase(String phaseName) {
-        m_phases.add(phaseName);
-        return this;
-    }
-
-    public LifeCycleDefinition addPhases(String... phases) {
-        m_phases.addAll(Arrays.asList(phases));
-        return this;
-    }
-
-    public LifeCycleDefinition addProviders(Object... providers) {
-        m_providers.addAll(Arrays.asList(providers));
-        return this;
-    }
-
-    public LifeCycle build() {
-        return new DefaultLifeCycle(m_lifeCycleName, m_phases.toArray(new String[0]), m_providers.toArray());
-    }
-
+    LifeCycle createLifeCycle(String lifeCycleName);
 
 }
