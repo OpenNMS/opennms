@@ -50,6 +50,8 @@ public interface LifeCycle {
 
     <T> T getAttribute(String key, Class<T> type);
 
+    <T> T getAttribute(String key, T defaultValue);
+
     void trigger();
 
     void waitFor();
