@@ -303,7 +303,7 @@ public class LifeCycleTest {
     public void testNestedLifeCycle() {
 
         LifeCycle lifecycle = m_lifeCycleFactory.createLifeCycle("sample");
-        lifecycle.setAttribute(MAX_DEPTH, 2);
+        lifecycle.setAttribute(MAX_DEPTH, 1);
 
         lifecycle.trigger();
         
