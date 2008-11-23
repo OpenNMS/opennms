@@ -67,6 +67,20 @@ class DefaultLifeCycle implements LifeCycle {
     public Object getAttribute(String key) {
         return m_attributes.get(key);
     }
+    
+    public <T> T getAttribute(String key, T defaultValue) {
+        if (getAttribute(key) == null) {
+            return defaultValue;
+        } else {
+            return getAttribute(key, getClass(defaultValue));
+        }
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> Class<T> getClass(T t) {
+        return (Class<T>) t.getClass();
+    }
 
     public <T> T getAttribute(String key, Class<T> type) {
         return type.cast(getAttribute(key));

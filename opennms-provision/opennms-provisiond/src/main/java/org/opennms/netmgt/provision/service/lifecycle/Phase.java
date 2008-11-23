@@ -56,38 +56,61 @@ class Phase {
     
     public void run() {
         for(Object provider : m_providers) {
-            Method[] methods = findPhaseMethods(provider);
-            for(Method method : methods) {
-                try {
-                    method.invoke(provider, m_lifecycle);
-                } catch (IllegalArgumentException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+            PhaseMethod[] methods = findPhaseMethods(provider);
+            for(PhaseMethod method : methods) {
+                method.invoke(m_lifecycle);
             }
             
         }
         
     }
     
-    private Method[] findPhaseMethods(Object provider) {
-        List<Method> methods = new ArrayList<Method>();
+    private PhaseMethod[] findPhaseMethods(Object provider) {
+        List<PhaseMethod> methods = new ArrayList<PhaseMethod>();
         for(Method method : provider.getClass().getMethods()) {
             if (isPhaseMethod(method)) {
-                methods.add(method);
+                methods.add(new PhaseMethod(provider, method));
             }
         }
-        return methods.toArray(new Method[methods.size()]);
+        return methods.toArray(new PhaseMethod[methods.size()]);
     }
 
     private boolean isPhaseMethod(Method method) {
         Activity activity = method.getAnnotation(Activity.class);
         return (activity != null && activity.phase().equals(m_name) && activity.lifecycle().equals(m_lifecycle.getName()));
+    }
+    
+    PhaseMethod createPhaseMethod(Object provider, Method method) {
+        return new PhaseMethod(provider, method);
+    }
+    
+    public static class PhaseMethod {
+        private Object m_target;
+        private Method m_method;
+        
+        public PhaseMethod(Object target, Method method) {
+            m_target = target;
+            m_method = method;
+        }
+        
+        public void invoke(LifeCycle lifeCycle) {
+            try {
+                doInvoke(lifeCycle);
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        private void doInvoke(LifeCycle lifeCycle) throws IllegalAccessException, InvocationTargetException {
+            m_method.invoke(m_target, lifeCycle);
+        }
+        
     }
 }
