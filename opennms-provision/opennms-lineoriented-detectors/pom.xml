@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms-lineoriented-detectors</artifactId>
-  <name>Detector Base Archtype</name>
+  <name>OpenNMS LineOriented Detectors</name>
   <url>http://www.opennms.org</url>
   <dependencies>
     <dependency>
