@@ -50,6 +50,27 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvid
  */
 public class LifeCycleTest {
     
+    /*
+     * TODO
+     * - Use parameter type info to inject the appropriate arguments
+     * - Add return values to attribute lists
+     * - Use annotations to disambiguate attribute parameters
+     * - Use annotations to assign attribute name to return values
+     * - LifeCycle return value automatically triggered 
+     * - Task return value automatically scheduled
+     * - Use a CompletionService and Executor to run phases in the background
+     * - Make waitFor really work for things in the background
+     * - Run phases asynchronously
+     * - Make phases depend-on previous phases
+     * - Make a lifeCycle definition DAO
+     * - provide a way to locate ActivityProviders
+     * - Wrap the annotation driven strategy in an ActitivyProvider class
+     *     programmatic providers can all be used.  This will enable
+     *     'publishing' a provider as an interface in OSGI
+     *  
+     * 
+     */
+    
     // activity(LifeCycle lifeCycle, OnmsIpInterface iface)
     // if there is only one attribute that contains that type then
     // pass it in as an argument.  Should be able to annotate the 
@@ -73,6 +94,11 @@ public class LifeCycleTest {
     // are all complete.
     // If they are asynchronous then activities that depend on the phase cannot
     // run until all the return LifeCycles/Tasks are completed
+    
+     // Does having subphases make sense?  Or having 'foreach' tasks that get fired 
+     // when something gets added?
+    
+    
     
     // Another NOTE:  Callbacks and task scheduling implemented around a CompletionService
     // The CompletionService has and executor behind it running tasks and a thread whose job 

@@ -38,6 +38,21 @@ import java.util.Map;
 
 class DefaultLifeCycle implements LifeCycle {
     
+    /*
+     * Complications... 
+     * separation between 'phase list... lifecycle definition', 'provider set', 'phase running'
+     * 
+     * also
+     * confusion.. about definitions and factories
+     * 
+     * other notes:
+     * phase runners can and should be built at lifecycle creation time rather than 'on the fly'
+     * only strange case is 'fan-out' of lifecycles
+     * 
+     * 
+     *  
+     */
+    
     String m_name;
     Phase[] m_phases;
     Object[] m_providers;
