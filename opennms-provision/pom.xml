@@ -23,5 +23,6 @@
     <module>opennms-radius-detector</module>
     <module>opennms-dhcp-detector</module>
     <module>opennms-jmx-detectors</module>
+    <module>opennms-jdbc-detector</module>
   </modules>
 </project>
