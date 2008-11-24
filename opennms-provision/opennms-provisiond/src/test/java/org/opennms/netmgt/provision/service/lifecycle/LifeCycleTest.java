@@ -50,11 +50,83 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvid
  */
 public class LifeCycleTest {
     
-    // define a lifecyle
+    // activity(LifeCycle lifeCycle, OnmsIpInterface iface)
+    // if there is only one attribute that contains that type then
+    // pass it in as an argument.  Should be able to annotate the 
+    // type as well
+    
+    // if would be good if return values could be automatically added
+    // to the lifecycle don't know what attribute that would use but
+    // we could define that with an annotation... if it matters.. could
+    // be that type info is enough
+    
+    // need a way to handle nested lifecycles without waiting...
+    // 
+    // mark an activity as 'asynchronous=true' this would run
+    // without waiting...
+    
+    // mark an activity as 'depends-on='previous task' this would
+    // force it to wait for other activities that are running in the background
+    
+    // Activities can return LifeCycles (or maybe more generic Tasks??). If the
+    // activities are synchronous then the next phase doesn't run into those tasks
+    // are all complete.
+    // If they are asynchronous then activities that depend on the phase cannot
+    // run until all the return LifeCycles/Tasks are completed
+    
+    // Another NOTE:  Callbacks and task scheduling implemented around a CompletionService
+    // The CompletionService has and executor behind it running tasks and a thread whose job 
+    // it is to process completed tasks and schedule the next.  This would make the schronization
+    // requirements of the task tracking much easy to keep thread safe.
+    
+    // Can the importer be implemented with this mechanism?
+    
+    /* class ImportActitivies {
+     * 
+     *  public SpecFile parseResource(OnmsResource resource) {
+     *       // parse and create SpecFile
+     *       // assert SpecFile
+     * }
+     * 
+     * public void auditNode(SpecFile specFile) {
+     *      // retrieve ForeignId -> NodeId Map
+     *      // as I go thru the nodes in the specFile
+     *      // I end up with three groups of nodes
+     *      // one set to delete
+     *      // one set to scan and then update
+     *      // one set to scan and then insert
+     *      //
+     *      // I could make each of these a 'lifecycle' of their own
+     *      // a trick is that deletes have to complete, then updates, then inserts
+     *      // but... scanning for the nodes can happen anytime...
+     *      //
+     *      // also... the scan/update or scan/insert should be a 'scanNode' lifecycle
+     *      // for sure
+     *      //
+     *      // so.. we could do this:
+     *      //
+     *      // for each node
+     *      // /---
+     *      // |
+     *      // |-- scan phase... start scans for update and insert nodes... make it asynchronous
+     *      // |
+     *      // |-- delete phase... delete the nodes that need to be deleted (synchronous)
+     *      // |
+     *      // |-- update phase... update the nodes that need to be updated... depends on the scan for the node (synchronous)
+     *      // |
+     *      // |-- insert phase... insert the nodes that need to be inserted... depends on the scan for the node (synchronous)
+     *      // |
+     *      // \---
+     *      // 
+     *      // relateNodes... relate the nodes to each other.. after they have been committed to the DB.
+     * }
+     */
+    
+    
+    
+   
     
     // how do we build scanners when we need to run them
-    
-    // a better name for a scanner (mojo?)
     
     // how do we find the scanners
     
@@ -262,6 +334,7 @@ public class LifeCycleTest {
                 nested.setAttribute(MAX_DEPTH, maxDepth);
                 nested.setAttribute(NEST_LEVEL, nestLevel+1);
                 
+                //fail("I'd like to have trigger by called by the framework rather than here...");
                 nested.trigger();
                 
                 nested.waitFor();
