@@ -34,7 +34,7 @@ public class ContainerTask extends BaseTask {
 
     public ContainerTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
-        m_startTask = new BaseTask(coordinator);
+        m_startTask = coordinator.createTask(null);
     }
 
     @Override
@@ -52,10 +52,17 @@ public class ContainerTask extends BaseTask {
         super.schedule();
     }
 
-    public void add(BaseTask task) {
+    private void add(BaseTask task) {
         super.addPrerequisite(task);
         addChildDependencies(task);
         m_children.add(task);
+        if (isScheduled()) {
+            task.schedule();
+        }
+    }
+    
+    public void add(Runnable runnable) {
+        add(getCoordinator().createTask(runnable));
     }
 
     protected void addChildDependencies(BaseTask child) {

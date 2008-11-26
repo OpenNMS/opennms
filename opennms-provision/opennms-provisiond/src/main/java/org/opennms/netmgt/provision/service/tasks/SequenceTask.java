@@ -46,6 +46,10 @@ public class SequenceTask extends ContainerTask {
         }
     }
     
+    public String toString() {
+        return "sequenceTask";
+    }
+    
     
 
 
