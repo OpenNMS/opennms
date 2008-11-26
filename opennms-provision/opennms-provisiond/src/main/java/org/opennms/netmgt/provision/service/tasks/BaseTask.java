@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * BaseTask
@@ -48,15 +49,22 @@ public class BaseTask {
     
     private final DefaultTaskCoordinator m_coordinator;
     private final Runnable m_action;
+    
+    private static enum State {
+        NEW,
+        SCHEDULED,
+        SUBMITTED,
+        COMPLETED
+    }
 
-    private final AtomicBoolean m_finished = new AtomicBoolean(false);
-    private final AtomicBoolean m_scheduled = new AtomicBoolean(false);
+    private final AtomicReference<State> m_state = new AtomicReference<State>(State.NEW);
+    
+    private final AtomicBoolean m_scheduleCalled = new AtomicBoolean(false);
     private final CountDownLatch m_latch = new CountDownLatch(1);
     
     private final AtomicInteger m_pendingPrereqs = new AtomicInteger(0);
     private final Set<BaseTask> m_dependents = new HashSet<BaseTask>();
     private final Set<BaseTask> m_prerequisites = new HashSet<BaseTask>();
-    
     
     public BaseTask(DefaultTaskCoordinator coordinator) {
         this(coordinator, null);
@@ -65,6 +73,10 @@ public class BaseTask {
     public BaseTask(DefaultTaskCoordinator coordinator, Runnable action) {
         m_coordinator = coordinator;
         m_action = action;
+    }
+    
+    public DefaultTaskCoordinator getCoordinator() {
+        return m_coordinator;
     }
     
     /**
@@ -97,12 +109,34 @@ public class BaseTask {
         m_prerequisites.remove(prereq);
     }
     
+    
+    final void scheduled() {
+        setState(State.NEW, State.SCHEDULED);
+    }
+    
+    private final void setState(State oldState, State newState) {
+        if (!m_state.compareAndSet(oldState, newState)) {
+            String msg = String.format("Attempted to move to state %s with state not %s (actual value %s) for task %s", newState, oldState, m_state.get(), this);
+            new IllegalStateException(msg).printStackTrace();
+        } else {
+            //System.err.printf("Set state of %s to %s\n", this, newState);
+        }
+    }
+    
+    final void submitted() {
+        setState(State.SCHEDULED, State.SUBMITTED);
+    }
+    
+    final void completed() {
+        m_state.compareAndSet(State.SUBMITTED, State.COMPLETED);
+    }
+    
     /**
      * These are final and package protected because they should ONLY be accessed by the TaskCoordinator
      * This is for thread safety and efficiency.  use 'addDependency' to update these
      */
     final boolean isReady() {
-        return !isFinished() && m_prerequisites.isEmpty() && m_pendingPrereqs.get() == 0;
+        return m_state.get() == State.SCHEDULED && m_prerequisites.isEmpty() && m_pendingPrereqs.get() == 0;
     }
     
     final void incrPendingPrereq() {
@@ -120,11 +154,20 @@ public class BaseTask {
     final Runnable getRunnable() {
         return new Runnable() {
           public void run() {
-              execute();
+              BaseTask.this.run();
           }
         };
     }
     
+    /**
+     * Called from execute after the 'body' of the task has completed
+     */
+    void onComplete() {
+        completed();
+        m_latch.countDown();
+    }
+    
+
     /**
      * This is the run method where the 'work' related to the Task gets down.  This method can be overridden
      * or a Runnable can be passed to the task in the constructor.  The Task is not complete until this method
@@ -137,46 +180,25 @@ public class BaseTask {
     }
     
     /**
-     * This method is called to execute the task.. It calls the run method and does some additionaly bookkeeping
-     * like signaling and waiting threads and marking the task as finished
-     */
-    public void execute() {
-        try {
-            run();
-        } finally {
-            onComplete();
-        }
-    }
-
-    /**
-     * Called from execute after the 'body' of the task has completed
-     */
-    private void onComplete() {
-        m_finished.set(true);
-        m_latch.countDown();
-    }
-    
-
-    /**
      * This is called to add the task to the queue of tasks that can be considered to be runnable
      */
     public void schedule() {
+        m_scheduleCalled.set(true);
         m_coordinator.schedule(this);
-        m_scheduled.set(true);
     }
 
     /**
      * This task's run method has completed
      */
     public boolean isFinished() {
-        return m_finished.get();
+        return m_state.get() == State.COMPLETED;
     }
     
     /**
      * This task has be sent to the TaskCoordinator to be run
      */
     public boolean isScheduled() {
-        return m_scheduled.get();
+        return m_state.get() != State.NEW || m_scheduleCalled.get();
     }
     
     /**
@@ -209,6 +231,8 @@ public class BaseTask {
         m_latch.await(timeout, unit);
     }
 
-    
+    public String toString() {
+        return m_action == null ? super.toString() : m_action.toString();
+    }
 
 }
