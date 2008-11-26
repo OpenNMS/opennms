@@ -24,5 +24,6 @@
     <module>opennms-dhcp-detector</module>
     <module>opennms-jmx-detectors</module>
     <module>opennms-jdbc-detector</module>
+    <module>opennms-ssh-detector</module>
   </modules>
 </project>
