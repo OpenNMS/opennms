@@ -31,10 +31,9 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -42,10 +41,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author brozow
  */
-public class BaseTask implements Callable<BaseTask> {
+public class BaseTask {
     
     private DefaultTaskCoordinator m_coordinator;
     private AtomicBoolean m_finished = new AtomicBoolean(false);
+    private CountDownLatch m_latch = new CountDownLatch(1);
     
     public BaseTask(DefaultTaskCoordinator coordinator) {
         m_coordinator = coordinator;
@@ -54,15 +54,26 @@ public class BaseTask implements Callable<BaseTask> {
     public void run() {
         
     }
-
-    public BaseTask call() throws Exception {
+    
+    public Runnable getRunnable() {
+        return new Runnable() {
+          public void run() {
+              execute();
+          }
+        };
+    }
+    
+    public void execute() {
         try {
             run();
         } finally {
-            m_finished.set(true);
+            onComplete();
         }
-        
-        return this;
+    }
+
+    private void onComplete() {
+        m_finished.set(true);
+        m_latch.countDown();
     }
     
 
@@ -71,7 +82,7 @@ public class BaseTask implements Callable<BaseTask> {
     }
 
     public void waitFor() throws InterruptedException, ExecutionException {
-        m_coordinator.waitFor(this);
+        m_latch.await();
     }
 
     public void addDependency(BaseTask task1) {
@@ -84,8 +95,8 @@ public class BaseTask implements Callable<BaseTask> {
         return m_finished.get();
     }
 
-    public void waitFor(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        m_coordinator.waitFor(this, timeout, unit);
+    public void waitFor(long timeout, TimeUnit unit) throws InterruptedException {
+        m_latch.await(timeout, unit);
     }
 
     

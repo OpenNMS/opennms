@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class BaseTaskTest {
     
     @Before
     public void setUp() {
-        m_executor = Executors.newSingleThreadExecutor();
+        m_executor = Executors.newFixedThreadPool(50);
         m_coordinator = new DefaultTaskCoordinator(m_executor);
     }
     
@@ -110,6 +111,72 @@ public class BaseTaskTest {
     }
     
     @Test
+    public void testLargeSequence() throws Exception {
+        
+        long count = 50000;
+        
+        AtomicLong result = new AtomicLong(0);
+        
+        SequenceTask task = new SequenceTask(m_coordinator);
+        
+        for(long i = 1; i <= count; i++) {
+            task.add(add(result, i));
+        }
+        
+        task.schedule();
+        
+        task.waitFor();
+        
+        assertEquals(count*(count+1)/2, result.get());
+        
+    }
+    
+    @Test
+    public void testLargeBatch() throws Exception {
+        
+        long count = 50000;
+        
+        AtomicLong result = new AtomicLong(0);
+        
+        BatchTask task = new BatchTask(m_coordinator);
+        
+        for(long i = 1; i <= count; i++) {
+            task.add(add(result, i));
+        }
+        
+        task.schedule();
+        
+        task.waitFor();
+        
+        assertEquals(count*(count+1)/2, result.get());
+        
+    }
+    
+    public BaseTask add(final AtomicLong accum, final long n) {
+        return new BaseTask(m_coordinator) {
+          public void run() {
+              int attempt = 0;
+              while (true) {
+                  attempt++;
+                  long origVal = accum.get();
+                  long newVal = origVal + n;
+                  if (accum.compareAndSet(origVal, newVal)) {
+                      //System.out.printf("%d: success %d: %d = %d + %d\n", n, attempt, newVal, n, origVal);
+                      return;
+                  } else {
+                      System.out.printf("%d: FAILED %d: %d = %d + %d\n", n, attempt, newVal, n, origVal);
+                  }
+              }
+
+          }
+          public String toString() {
+              return String.format("add(%d)", n);
+          }
+          
+        };
+    }
+    
+    @Test
     public void testTaskWithCompletedDependencies() throws Exception {
         
         final List<String> sequence = new Vector<String>();
@@ -144,7 +211,7 @@ public class BaseTaskTest {
         
         AtomicInteger counter = new AtomicInteger(0);
         
-        BatchTask batch = new BatchTask(m_coordinator);
+        ContainerTask batch = new BatchTask(m_coordinator);
 
         batch.add(incr(m_coordinator, counter));
         batch.add(incr(m_coordinator, counter));
@@ -163,7 +230,14 @@ public class BaseTaskTest {
         
         final List<String> sequence = new Vector<String>();
         
-        SequenceTask seq = new SequenceTask(m_coordinator);
+        SequenceTask seq = new SequenceTask(m_coordinator) {
+          public void run() {
+              System.out.println("Sequence Finished");
+          }
+          public String toString() {
+              return "testSequenceTask Seq TAsk";
+          }
+        };
 
         seq.add(testTask(m_coordinator, "task1", sequence));
         seq.add(testTask(m_coordinator, "task2", sequence));
