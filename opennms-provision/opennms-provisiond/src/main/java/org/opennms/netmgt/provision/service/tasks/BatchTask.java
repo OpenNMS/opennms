@@ -31,39 +31,13 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class BatchTask extends BaseTask {
-    
-    BaseTask m_startTask;
-    List<BaseTask> m_children = new ArrayList<BaseTask>();
+public class BatchTask extends ContainerTask {
     
     public BatchTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
-        m_startTask = new BaseTask(coordinator);
     }
     
-    @Override
-    public void addDependency(BaseTask task) {
-        super.addDependency(task);
-        m_startTask.addDependency(task);
-    }
-
-    @Override
-    public void schedule() {
-        m_startTask.schedule();
-        for(BaseTask task : m_children) {
-            task.schedule();
-        }
-        super.schedule();
-    }
-
-    public void add(BaseTask task) {
-        super.addDependency(task);
-        task.addDependency(m_startTask);
-        m_children.add(task);
-    }
     public String toString() {
         return "batch task";
     }

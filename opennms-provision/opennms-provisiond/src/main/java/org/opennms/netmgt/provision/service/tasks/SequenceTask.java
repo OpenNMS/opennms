@@ -31,17 +31,22 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
-public class SequenceTask extends BatchTask {
+public class SequenceTask extends ContainerTask {
     SequenceTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
     }
 
     @Override
-    public void add(BaseTask task) {
+    protected void addChildDependencies(BaseTask child) {
         if (m_children.size() > 0) {
             BaseTask last = m_children.get(m_children.size()-1);
-            task.addDependency(last);
+            child.addDependency(last);
+        } else {
+            child.addDependency(m_startTask);
         }
-        super.add(task);
     }
+    
+    
+
+
 }
