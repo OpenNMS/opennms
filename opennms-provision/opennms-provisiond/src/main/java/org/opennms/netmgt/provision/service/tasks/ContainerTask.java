@@ -52,7 +52,7 @@ public class ContainerTask extends BaseTask {
         super.schedule();
     }
 
-    private void add(BaseTask task) {
+    public void add(BaseTask task) {
         super.addPrerequisite(task);
         addChildDependencies(task);
         m_children.add(task);
