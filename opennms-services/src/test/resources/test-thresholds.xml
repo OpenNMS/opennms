@@ -5,7 +5,8 @@
                 rrdRepository = "@install.share.dir@/rrd/snmp/">
                 <threshold type="high" ds-name="freeMem"  ds-type="node" value="10000" rearm="5000" trigger="1"/>
                 <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1">
-                	<resource-filter field='snmpifdesc'>wlan0</resource-filter>
+                	<resource-filter field='snmpifalias'>wlan0</resource-filter>
+                	<resource-filter field='myMockParam'>myMockValue</resource-filter>
                 </threshold>
                 <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="90" rearm="50" trigger="1"/>
                 <threshold type="high" ds-name="frReceivedFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>

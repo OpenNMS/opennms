@@ -645,11 +645,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             if (resourceType.equals("if")) {
                 String ifLabel = resourceDirectory.getName();
                 value = this.getIfInfo(m_nodeId, ifLabel, attribute);
-            } else {
+            }
+            if (value == null) {
                 //Check in the current set of collected string vars first, then check numeric vars; only then check on disk (in string properties)
                 value=m_stringAttributeValues.get(attribute);
                 if(value==null) {
-                    value=m_numericAttributeValues.get(attribute).getNumericValue();
+                    if (m_numericAttributeValues.get(attribute) != null)
+                        value=m_numericAttributeValues.get(attribute).getNumericValue();
                     if(value==null) {
                         if (log().isDebugEnabled()) {
                             log().debug("Value not found in collection set, getting from " + resourceDirectory);
