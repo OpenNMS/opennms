@@ -34,6 +34,6 @@ package org.opennms.netmgt.provision.detector;
  * @author thedesloge
  *
  */
-public class SshRequest {
+public class NullRequest {
 
 }

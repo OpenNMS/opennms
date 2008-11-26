@@ -35,5 +35,14 @@ package org.opennms.netmgt.provision.detector;
  *
  */
 public class SshResponse {
-
+    
+    private boolean m_isAvailable = false;
+    
+    public void receive(boolean isAvail) {
+        m_isAvailable = isAvail;
+    }
+    
+    public boolean isAvailable() {
+        return m_isAvailable;
+    }
 }
