@@ -42,29 +42,42 @@ import org.opennms.netmgt.provision.support.ssh.SshMonitor;
  * @author thedesloge
  *
  */
-public class SshClient implements Client<SshRequest, SshResponse> {
-
+public class SshClient implements Client<NullRequest, SshResponse> {
+    
+    private boolean m_isAvailable = false;
+    private Map<String, Object> m_parameters = new HashMap<String, Object>();
+    
     public void close() {
-        // TODO Auto-generated method stub
         
     }
 
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         SshMonitor m = new SshMonitor();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        boolean retVal = m.poll(address, parameters).isAvailable();
+        m_parameters.put("port", port);
         
+        m_isAvailable = m.poll(address, m_parameters).isAvailable();
     }
 
     public SshResponse receiveBanner() throws IOException, Exception {
-        // TODO Auto-generated method stub
-        return null;
+        SshResponse response = new SshResponse();
+        response.receive(m_isAvailable);
+        return response;
     }
 
-    public SshResponse sendRequest(SshRequest request) throws IOException,
-            Exception {
-        // TODO Auto-generated method stub
+    public SshResponse sendRequest(NullRequest request) throws IOException, Exception {
         return null;
+    }
+    
+    public void setBanner(String banner) {
+        m_parameters.put("banner", banner);
+    }
+    
+    public void setMatch(String match) {
+        m_parameters.put("match", match);
+    }
+    
+    public void setClientBanner(String clientBanner) {
+        m_parameters.put("client-banner", clientBanner);
     }
 
 }

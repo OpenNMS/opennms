@@ -5,16 +5,39 @@ import static org.junit.Assert.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 public class SSHDetectorTest{
 	//Tested on a local server with SSH
     
+    private SshDetector m_detector;
+    
+    @Before
+    public void setUp() {
+        m_detector = new SshDetector();
+        
+    }
+    
 	@Test
-	public void testMyDetector() throws UnknownHostException{
-		//SshDetector detector = new SshDetector();
-		//assertTrue(detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
+	public void testDetectorSuccess() throws UnknownHostException{
+		//m_detector.init();
+		//assertTrue(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
 	}
+	
+	@Test
+    public void testDetectorFailWrongPort() throws UnknownHostException{
+	    //m_detector.setPort(30);
+        //m_detector.init();
+        //assertFalse(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
+    }
+	
+	@Test
+    public void testDetectorFailBanner() throws UnknownHostException{
+	    //m_detector.setBanner("Hello there crazy");
+        //m_detector.init();
+        //assertFalse(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
+    }
 	
 }
