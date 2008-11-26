@@ -16,11 +16,11 @@ public class DhcpDetectorTest{
 	@Test
 	public void testMyDetector() throws MarshalException, ValidationException, IOException{
 	    //FIXME: Finish test
-//	    DhcpdConfigFactory.init();
+	    
 //		DhcpDetector detect = new DhcpDetector();
-//		long retVal = detect.isService(InetAddress.getByName("192.168.1.103"), 5818, 1000);
-//		System.out.println("returning: " + retVal);
-//		assertNotNull(retVal);
+//		DhcpdConfigFactory.init();
+//		assertTrue(detect.isProtocolSupported(InetAddress.getByName("192.168.1.103")));
+		
 	}
 	
 }
