@@ -50,5 +50,9 @@
     	<groupId>org.dhcp.jdhcp</groupId>
     	<artifactId>jdhcp</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-util</artifactId>
+    </dependency>
   </dependencies>
 </project>
