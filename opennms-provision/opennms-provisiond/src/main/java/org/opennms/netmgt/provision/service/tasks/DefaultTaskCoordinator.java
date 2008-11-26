@@ -31,7 +31,6 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionService;
@@ -105,18 +104,10 @@ public class DefaultTaskCoordinator {
         }
     }
     
-    private class TaskKeeper {
-        private BaseTask m_task;
-        TaskKeeper(BaseTask task) {
-            m_task = task;
-        }
-    }
-    
     final ExecutorService m_executor;
 
     final ConcurrentMap<BaseTask, Set<BaseTask>> m_befores = new ConcurrentHashMap<BaseTask, Set<BaseTask>>();
     final ConcurrentMap<BaseTask, Set<BaseTask>> m_afters = new ConcurrentHashMap<BaseTask, Set<BaseTask>>();
-    final ConcurrentMap<BaseTask, TaskKeeper> m_keepers = new ConcurrentHashMap<BaseTask, TaskKeeper>();
     
     final BlockingQueue<Future<Runnable>> m_queue;
     final CompletionService<Runnable> m_taskCompletionService;
@@ -130,7 +121,7 @@ public class DefaultTaskCoordinator {
         
     }
     
-    public void onProcessorThread(final Runnable r) {
+    private void onProcessorThread(final Runnable r) {
         Future<Runnable> now = new Future<Runnable>() {
             public boolean cancel(boolean mayInterruptIfRunning) {
                 return false;
@@ -151,7 +142,7 @@ public class DefaultTaskCoordinator {
         m_queue.add(now);
     }
 
-    public void submit(BaseTask task) {
+    private void submit(BaseTask task) {
         m_taskCompletionService.submit(task.getRunnable(), taskCompleter(task));
     }
     
@@ -160,17 +151,15 @@ public class DefaultTaskCoordinator {
         onProcessorThread(scheduler(task));
     }
     
-    public Runnable scheduler(final BaseTask task) {
+    private Runnable scheduler(final BaseTask task) {
         return new Runnable() {
             public void run() {
-                if (!hasBefores(task)) {
-                    submit(task);
-                } 
+                submitIfReady(task); 
             }
         };
     }
     
-    public Runnable taskCompleter(final BaseTask task) {
+    private Runnable taskCompleter(final BaseTask task) {
         return new Runnable() {
             public void run() {
                 notifyDependents(task);
@@ -179,69 +168,50 @@ public class DefaultTaskCoordinator {
     }
     
     
-    private void notifyDependents(BaseTask before) {
-        //System.err.printf("Task %s completed!\n", before);
+    private void notifyDependents(BaseTask completed) {
+        System.err.printf("Task %s completed!\n", completed);
 
-        final Set<BaseTask> afters = getAfters(before);
-        //System.err.printf("Task %s afters = %s\n", before, afters);
-        if (afters != null) {
-            for(BaseTask after : afters) {
-                //System.err.printf("Checking the prereqs for %s\n", after);
-                Set<BaseTask> befores = getBefores(after);
-                //System.err.printf("Found %s befores for task %s\n", befores, after);
-                befores.remove(before);
-                //System.err.printf("Updated befores are %s\n", befores);
-                if (befores.isEmpty()) {
-                    submit(after);
-                }
-            }
-        }
+        final Set<BaseTask> dependents = completed.getDependents();
+        System.err.printf("Task %s afters = %s\n", completed, dependents);
+        for(BaseTask dependent : dependents) {
+            System.err.printf("Checking the prereqs for %s\n", dependent);
+            dependent.doRemovePrerequisite(completed);
+            System.err.printf("Task %s %s ready\n", dependent, dependent.isReady() ? "is" : "is not");
+            
+            submitIfReady(dependent);
+        }   
     }
 
     public void addDependency(BaseTask prereq, BaseTask dependent) {
+        // this is only needed when add dependencies while running
+        dependent.incrPendingPrereq();
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
     
-    public Runnable dependencyAdder(final BaseTask prereq, final BaseTask dependent) {
+    /**
+     * The returns a runnable that is run on the taskCoordinator thread.. This is 
+     * done to keep the Task data structures thread safe.
+     */
+    private Runnable dependencyAdder(final BaseTask prereq, final BaseTask dependent) {
         return new Runnable() {
             public void run() {
-                addPrerequisite(prereq, dependent);
-                addDependent(prereq, dependent);
+                prereq.doAddDependent(dependent);
+                dependent.doAddPrerequisite(prereq);
+                // this is only needed when add dependencies while running
+                dependent.decrPendingPrereq();
+                // XXX I do this concerned the the pending prereq prevented things from getting
+                // submitted when it should have.. Do I really need to? 
+                // If I put this here than some tasks get run more than once
+                //submitIfReady(dependent);
             }
         };
     }
-    
-    private void addDependent(BaseTask before, BaseTask after) {
-        add(m_afters, before, after);
-    }
 
-    private void addPrerequisite(BaseTask before, BaseTask after) {
-        add(m_befores, after, before);
-    }
-    
-    private void add(ConcurrentMap<BaseTask, Set<BaseTask>> map, BaseTask key, BaseTask addedValue) {
-        Set<BaseTask> newSet = new HashSet<BaseTask>();
-        Set<BaseTask> set = map.putIfAbsent(key, newSet);
-        if (set == null) {
-            set = newSet;
+    private void submitIfReady(final BaseTask task) {
+        if (task.isReady()) {
+            submit(task);
         }
-        set.add(addedValue);
     }
     
-    private Set<BaseTask> getBefores(BaseTask task) {
-       return m_befores.get(task);
-    }
-    
-    private boolean hasBefores(BaseTask task) {
-        return m_befores.containsKey(task);
-    }
-    
-    private Set<BaseTask> getAfters(BaseTask task) {
-        return m_afters.get(task);
-    }
-    
-    private boolean hasAfters(BaseTask task) {
-        return m_afters.containsKey(task);
-    }
 
 }
