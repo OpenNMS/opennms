@@ -95,8 +95,8 @@ public class BaseTaskTest {
         BaseTask task2 = testTask(m_coordinator, "task2", sequence);
         BaseTask task3 = testTask(m_coordinator, "task3", sequence);
 
-        task2.addDependency(task1);
-        task3.addDependency(task2);
+        task2.addPrerequisite(task1);
+        task3.addPrerequisite(task2);
 
         task3.schedule();
         
@@ -189,13 +189,13 @@ public class BaseTaskTest {
         
         task1.waitFor();
 
-        task2.addDependency(task1);
+        task2.addPrerequisite(task1);
         
         task2.schedule();
 
         task2.waitFor();
         
-        task3.addDependency(task2);
+        task3.addPrerequisite(task2);
 
         task3.schedule();
         
@@ -266,8 +266,8 @@ public class BaseTaskTest {
         seq.add(testTask(m_coordinator, "subtask2", sequence));
         seq.add(testTask(m_coordinator, "subtask3", sequence));
         
-        seq.addDependency(task1);
-        task2.addDependency(seq);
+        seq.addPrerequisite(task1);
+        task2.addPrerequisite(seq);
 
         seq.schedule();
 
@@ -299,12 +299,6 @@ public class BaseTaskTest {
             }
         };
     }
-    
-    // task with dependency
-    
-    // sequential task
-    
-    // batch task (parallelized subtasks)
     
     public void sleep(long millis) {
         try {

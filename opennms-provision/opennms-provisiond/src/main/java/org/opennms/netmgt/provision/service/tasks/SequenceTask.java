@@ -40,9 +40,9 @@ public class SequenceTask extends ContainerTask {
     protected void addChildDependencies(BaseTask child) {
         if (m_children.size() > 0) {
             BaseTask last = m_children.get(m_children.size()-1);
-            child.addDependency(last);
+            child.addPrerequisite(last);
         } else {
-            child.addDependency(m_startTask);
+            child.addPrerequisite(m_startTask);
         }
     }
     

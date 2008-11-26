@@ -38,9 +38,9 @@ public class ContainerTask extends BaseTask {
     }
 
     @Override
-    public void addDependency(BaseTask task) {
-        super.addDependency(task);
-        m_startTask.addDependency(task);
+    public void addPrerequisite(BaseTask task) {
+        super.addPrerequisite(task);
+        m_startTask.addPrerequisite(task);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class ContainerTask extends BaseTask {
     }
 
     public void add(BaseTask task) {
-        super.addDependency(task);
+        super.addPrerequisite(task);
         addChildDependencies(task);
         m_children.add(task);
     }
 
     protected void addChildDependencies(BaseTask child) {
-        child.addDependency(m_startTask);
+        child.addPrerequisite(m_startTask);
     }
 
 }
