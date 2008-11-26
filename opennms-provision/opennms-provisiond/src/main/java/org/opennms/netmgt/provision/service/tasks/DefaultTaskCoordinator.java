@@ -34,8 +34,6 @@ package org.opennms.netmgt.provision.service.tasks;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -90,8 +88,13 @@ public class DefaultTaskCoordinator {
             try {
                 while(true) {
                     Runnable r = m_queue.take().get();
+                    //System.err.printf("Processing %s\n", r);
+                    //System.err.printf("Processing %s, queue is %s\n", r, m_queue);
                     if (r != null) {
                         r.run();
+                    }
+                    if (m_loopDelay != null) {
+                        sleep(m_loopDelay);
                     }
                 }
             } catch (InterruptedException e) {
@@ -104,14 +107,14 @@ public class DefaultTaskCoordinator {
         }
     }
     
-    final ExecutorService m_executor;
+    private final ExecutorService m_executor;
 
-    final ConcurrentMap<BaseTask, Set<BaseTask>> m_befores = new ConcurrentHashMap<BaseTask, Set<BaseTask>>();
-    final ConcurrentMap<BaseTask, Set<BaseTask>> m_afters = new ConcurrentHashMap<BaseTask, Set<BaseTask>>();
+    private final BlockingQueue<Future<Runnable>> m_queue;
+    private final CompletionService<Runnable> m_taskCompletionService;
+    private final RunnableActor m_actor;
     
-    final BlockingQueue<Future<Runnable>> m_queue;
-    final CompletionService<Runnable> m_taskCompletionService;
-    final RunnableActor m_actor;
+    // This is used to adjust timing during testing
+    private Long m_loopDelay; 
     
     public DefaultTaskCoordinator(ExecutorService executor) {
         m_executor = executor;
@@ -119,6 +122,32 @@ public class DefaultTaskCoordinator {
         m_taskCompletionService = new ExecutorCompletionService<Runnable>(m_executor, m_queue);
         m_actor = new RunnableActor(m_queue);
         
+    }
+    
+    public BaseTask createTask(Runnable r) {
+        return new BaseTask(this, r);
+    }
+    
+    public BatchTask createBatch() {
+        return new BatchTask(this);
+    }
+    
+    public SequenceTask createSequence() {
+        return new SequenceTask(this);
+    }
+    
+    public void setLoopDelay(long millis) {
+        m_loopDelay = millis;
+    }
+    
+    public void schedule(final BaseTask task) {
+        onProcessorThread(scheduler(task));
+    }
+    
+    public void addDependency(BaseTask prereq, BaseTask dependent) {
+        // this is only needed when add dependencies while running
+        dependent.incrPendingPrereq();
+        onProcessorThread(dependencyAdder(prereq, dependent));
     }
     
     private void onProcessorThread(final Runnable r) {
@@ -138,23 +167,23 @@ public class DefaultTaskCoordinator {
             public boolean isDone() {
                 return true;
             }
+            public String toString() {
+                return "Future<"+r+">";
+            }
         };
         m_queue.add(now);
     }
 
-    private void submit(BaseTask task) {
-        m_taskCompletionService.submit(task.getRunnable(), taskCompleter(task));
-    }
     
 
-    public void schedule(final BaseTask task) {
-        onProcessorThread(scheduler(task));
-    }
-    
     private Runnable scheduler(final BaseTask task) {
         return new Runnable() {
             public void run() {
+                task.scheduled();
                 submitIfReady(task); 
+            }
+            public String toString() {
+                return String.format("schedule(%s)", task);
             }
         };
     }
@@ -164,30 +193,28 @@ public class DefaultTaskCoordinator {
             public void run() {
                 notifyDependents(task);
             }
+            public String toString() {
+                return String.format("notifyDependents(%s)", task);
+            }
         };
     }
     
     
     private void notifyDependents(BaseTask completed) {
         System.err.printf("Task %s completed!\n", completed);
+        completed.onComplete();
 
         final Set<BaseTask> dependents = completed.getDependents();
-        System.err.printf("Task %s afters = %s\n", completed, dependents);
+        //System.err.printf("Task %s afters = %s\n", completed, dependents);
         for(BaseTask dependent : dependents) {
-            System.err.printf("Checking the prereqs for %s\n", dependent);
+            //System.err.printf("Checking the prereqs for %s\n", dependent);
             dependent.doRemovePrerequisite(completed);
-            System.err.printf("Task %s %s ready\n", dependent, dependent.isReady() ? "is" : "is not");
+            //System.err.printf("Task %s %s ready\n", dependent, dependent.isReady() ? "is" : "is not");
             
             submitIfReady(dependent);
         }   
     }
 
-    public void addDependency(BaseTask prereq, BaseTask dependent) {
-        // this is only needed when add dependencies while running
-        dependent.incrPendingPrereq();
-        onProcessorThread(dependencyAdder(prereq, dependent));
-    }
-    
     /**
      * The returns a runnable that is run on the taskCoordinator thread.. This is 
      * done to keep the Task data structures thread safe.
@@ -197,19 +224,25 @@ public class DefaultTaskCoordinator {
             public void run() {
                 prereq.doAddDependent(dependent);
                 dependent.doAddPrerequisite(prereq);
-                // this is only needed when add dependencies while running
                 dependent.decrPendingPrereq();
-                // XXX I do this concerned the the pending prereq prevented things from getting
-                // submitted when it should have.. Do I really need to? 
-                // If I put this here than some tasks get run more than once
-                //submitIfReady(dependent);
+
+                /**
+                 *  the prereq task may have completed between the time this adder was enqueued
+                 *  and the time we got here.  In this case there will be no tasks to kick this
+                 *  one off... so check it here. 
+                 */
+                submitIfReady(dependent);
+            }
+            public String toString() {
+                return String.format("%s.addPrerequisite(%s)", dependent, prereq);
             }
         };
     }
 
     private void submitIfReady(final BaseTask task) {
         if (task.isReady()) {
-            submit(task);
+            m_taskCompletionService.submit(task.getRunnable(), taskCompleter(task));
+            task.submitted();
         }
     }
     
