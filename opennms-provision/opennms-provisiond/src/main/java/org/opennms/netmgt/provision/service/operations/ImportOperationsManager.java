@@ -50,13 +50,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.service.ImportAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
+import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
 
 /**
@@ -72,14 +72,11 @@ public class ImportOperationsManager {
     
     private final ProvisionService m_provisionService;
     
-    private final ImportOperationFactory m_operationFactory;
-
     private String m_foreignSource;
     
-    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ImportOperationFactory operationFactory, ProvisionService provisionService) {
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService) {
         m_provisionService = provisionService;
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
-        m_operationFactory = operationFactory;
     }
 
     public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String building, String city) {
@@ -98,14 +95,14 @@ public class ImportOperationsManager {
     }
     
     private SaveOrUpdateOperation insertNode(String foreignId, String nodeLabel, String building, String city) {
-        SaveOrUpdateOperation insertOperation = m_operationFactory.createInsertOperation(getForeignSource(), foreignId, nodeLabel, building, city);
+        SaveOrUpdateOperation insertOperation = new InsertOperation(getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService);
         m_inserts.add(insertOperation);
         return insertOperation;
     }
 
     private SaveOrUpdateOperation updateNode(String foreignId, String nodeLabel, String building, String city) {
         Integer nodeId = processForeignId(foreignId);
-        UpdateOperation updateOperation = m_operationFactory.createUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city);
+        UpdateOperation updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService);
         m_updates.add(updateOperation);
         return updateOperation;
     }
@@ -146,9 +143,7 @@ public class ImportOperationsManager {
 
 		public ImportOperation next() {
             Entry<String, Integer> entry = m_foreignIdIterator.next();
-            Integer nodeId = entry.getValue();
-            String foreignId = entry.getKey();
-            return m_operationFactory.createDeleteOperation(nodeId, getForeignSource(), foreignId);
+            return new DeleteOperation(entry.getValue(), getForeignSource(), entry.getKey(), m_provisionService);
 			
 		}
 
@@ -214,33 +209,6 @@ public class ImportOperationsManager {
         return Collections.list(new OperationIterator());
     }
     
-    public void persistOperations(final int writeThreads,
-            final int scanThreads, final ProvisionMonitor monitor) {
-        
-        
-        monitor.beginProcessingOps(getDeleteCount(), getUpdateCount(), getInsertCount());
-
-        final ExecutorService dbPool = Executors.newFixedThreadPool(writeThreads);
-        final ExecutorService scanPool = Executors.newFixedThreadPool(scanThreads);
-        
-        monitor.beginPreprocessingOps();
-        
-        final Collection<ImportOperation> operations = getOperations();
-
-        for(final ImportOperation op : operations) {
-            Runnable r = sequence(dbPool, scanner(op, monitor), persister(op, monitor));
-            scanPool.execute(r);
-        }
-                
-        shutdownAndWaitForCompletion(scanPool, "preprocessor interrupted!");
-        
-        monitor.finishPreprocessingOps();
-
-		shutdownAndWaitForCompletion(dbPool, "persister interrupted!");
-
-		monitor.finishProcessingOps();
-    }
-    
     private Runnable sequence(final Executor pool, final Runnable a, final Runnable b) {
         return new Runnable() {
             public void run() {
@@ -266,22 +234,20 @@ public class ImportOperationsManager {
         specFile.visitImport(new ImportAccountant(this));
     }
 
-    private Runnable persister(final ImportOperation oper,  final ProvisionMonitor monitor) {
+    private Runnable persister(final ImportOperation oper) {
         Runnable r = new Runnable() {
         	public void run() {
-        		oper.persist(monitor);
+        		oper.persist();
         	}
         };
         return r;
     }
     
-    private Runnable scanner(final ImportOperation oper, final ProvisionMonitor monitor) {
+    private Runnable scanner(final ImportOperation oper) {
         return new Runnable() {
             public void run() {
-                monitor.beginPreprocessing(oper);
                 log().info("Preprocess: "+oper);
                 oper.scan();
-                monitor.finishPreprocessing(oper);
             }
         };
     }

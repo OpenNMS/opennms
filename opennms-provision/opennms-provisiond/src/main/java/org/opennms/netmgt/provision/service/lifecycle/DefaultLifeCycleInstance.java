@@ -36,7 +36,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class DefaultLifeCycle implements LifeCycle {
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+import org.opennms.netmgt.provision.service.tasks.SequenceTask;
+
+class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance {
     
     /*
      * Complications... 
@@ -53,17 +56,24 @@ class DefaultLifeCycle implements LifeCycle {
      *  
      */
     
-    String m_name;
-    Phase[] m_phases;
-    Object[] m_providers;
-    Map<String, Object> m_attributes = new HashMap<String, Object>();
+    final LifeCycleRepository m_repository;
+    final DefaultTaskCoordinator m_coordinator;
+    final String m_name;
+    final Phase[] m_phases;
+    final Object[] m_providers;
+    final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
-    public DefaultLifeCycle(String lifeCycleName, String[] phaseNames, Object[] providers) {
+    public DefaultLifeCycleInstance(LifeCycleRepository repository, DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
+        super(coordinator);
+        m_repository = repository;
+        m_coordinator = coordinator;
         m_name = lifeCycleName;
         m_providers = providers;
+        
         m_phases = new Phase[phaseNames.length];
         for(int i = 0; i < phaseNames.length; i++) {
             m_phases[i] = new Phase(this, phaseNames[i], m_providers);
+            add(m_phases[i]);
         }
     }
 
@@ -104,15 +114,17 @@ class DefaultLifeCycle implements LifeCycle {
     public void setAttribute(String key, Object value) {
         m_attributes.put(key, value);
     }
-
-    public void trigger() {
-        for(Phase phase : m_phases) {
-            phase.run();
-        }
+    
+    public LifeCycleInstance createNestedLifeCycle(String lifeCycleName) {
+        return m_repository.createLifeCycleInstance(lifeCycleName, m_providers);
     }
 
-    public void waitFor() {
+    public void trigger() {
+        this.schedule();
+    }
 
+    public String toString() {
+        return "LifeCycleInstance "+getName();
     }
 
 }

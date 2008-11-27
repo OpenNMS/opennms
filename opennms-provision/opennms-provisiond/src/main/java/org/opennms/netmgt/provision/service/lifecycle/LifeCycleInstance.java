@@ -31,13 +31,37 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+
 /**
- * LifeCycleFactory
+ * LifeCycle
  *
  * @author brozow
  */
-public interface LifeCycleFactory {
+public interface LifeCycleInstance {
+
+    List<String> getPhaseNames();
+
+    String getName();
     
-    LifeCycle createLifeCycle(String lifeCycleName);
+    void setAttribute(String key, Object value);
+
+    Object getAttribute(String key);
+
+    <T> T getAttribute(String key, Class<T> type);
+
+    <T> T getAttribute(String key, T defaultValue);
+
+    LifeCycleInstance createNestedLifeCycle(String lifeCycleName);
+
+    void trigger();
+
+    void waitFor() throws InterruptedException, ExecutionException;
+
+    DefaultTaskCoordinator getCoordinator();
+    
 
 }

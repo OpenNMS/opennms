@@ -31,48 +31,40 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 
-/**
- * LifeCycleBuilder
- *
- * @author brozow
- */
-public class LifeCycleDefinition {
+public class DefaultLifeCycleRepository implements LifeCycleRepository {
     
-    private String m_lifeCycleName;
-    private List<String> m_phases = new ArrayList<String>();
-    private List<Object> m_providers = new ArrayList<Object>();
+    final private Map<String, LifeCycle> m_lifeCycles = new HashMap<String, LifeCycle>();
     
-    public LifeCycleDefinition(String lifeCycleName) {
-        m_lifeCycleName = lifeCycleName;
+    final private DefaultTaskCoordinator m_coordinator;
+    
+    public DefaultLifeCycleRepository(ExecutorService executor) {
+        m_coordinator = new DefaultTaskCoordinator(executor);
+    }
+
+    public LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers) {
+        LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
+        
+        return new DefaultLifeCycleInstance(this, m_coordinator, lifeCycle.getLifeCycleName(), lifeCycle.getPhaseNames(), providers);
+    }
+
+    private LifeCycle getLifeCycle(String lifeCycleName) {
+        LifeCycle lifeCycle = m_lifeCycles.get(lifeCycleName);
+
+        if (lifeCycle == null) {
+            throw new IllegalArgumentException("Unable to find a definition for lifecycle "+lifeCycleName);
+        }
+
+        return lifeCycle;
     }
     
-    public String getLifeCycleName() {
-        return m_lifeCycleName;
+    public void addLifeCycle(LifeCycle lifeCycle) {
+        m_lifeCycles.put(lifeCycle.getLifeCycleName(), lifeCycle);
     }
-
-    public LifeCycleDefinition addPhase(String phaseName) {
-        m_phases.add(phaseName);
-        return this;
-    }
-
-    public LifeCycleDefinition addPhases(String... phases) {
-        m_phases.addAll(Arrays.asList(phases));
-        return this;
-    }
-
-    public LifeCycleDefinition addProviders(Object... providers) {
-        m_providers.addAll(Arrays.asList(providers));
-        return this;
-    }
-
-    public LifeCycle build() {
-        return new DefaultLifeCycle(m_lifeCycleName, m_phases.toArray(new String[0]), m_providers.toArray());
-    }
-
-
+    
 }

@@ -46,9 +46,6 @@ import org.junit.Test;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.service.Action;
 import org.opennms.netmgt.provision.service.Computation;
-import org.opennms.netmgt.provision.service.async.Async;
-import org.opennms.netmgt.provision.service.async.AsyncRunnable;
-import org.opennms.netmgt.provision.service.async.Computations;
 import org.opennms.netmgt.provision.service.async.Computations.AsyncSequenceBuilder;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -158,8 +155,8 @@ public class AsyncComputationTest {
     @Test
     public void testAsyncSequenceInProgress() throws Exception {
         
-        final long count = 1000000;
-        final long batchSize = 1000;
+        final long count = 100000;
+        final long batchSize = 100;
         final long batches = count / batchSize;
 
 
@@ -198,8 +195,8 @@ public class AsyncComputationTest {
     @Test
     public void testAsyncSequenceInProgressSimple() throws Exception {
         
-        final long count = 5000000;
-        final long batchSize = 1000;
+        final long count = 500000;
+        final long batchSize = 100;
         final long batches = count / batchSize;
 
         AsyncSequenceBuilder<String, Long> summer = Computations.asyncSeq(m_executor, Computations.async(m_executor, toLong()));

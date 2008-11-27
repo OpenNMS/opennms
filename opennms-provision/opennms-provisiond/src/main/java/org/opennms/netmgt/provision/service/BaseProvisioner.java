@@ -36,30 +36,24 @@
 //
 package org.opennms.netmgt.provision.service;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.provision.service.operations.DeleteOperation;
-import org.opennms.netmgt.provision.service.operations.ImportOperation;
-import org.opennms.netmgt.provision.service.operations.ImportOperationFactory;
-import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
-import org.opennms.netmgt.provision.service.operations.InsertOperation;
+import org.opennms.netmgt.provision.service.lifecycle.DefaultLifeCycleRepository;
+import org.opennms.netmgt.provision.service.lifecycle.LifeCycle;
+import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
+import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
-import org.opennms.netmgt.provision.service.operations.UpdateOperation;
-import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
-import org.opennms.netmgt.provision.service.specification.SpecFile;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-public class BaseProvisioner implements ImportOperationFactory, InitializingBean {
+public class BaseProvisioner implements InitializingBean {
 
+    private CoreImportActivities m_provider;
+    private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
@@ -74,21 +68,36 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
 
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
-    }
+        
+        DefaultLifeCycleRepository lifeCycleRepository = new DefaultLifeCycleRepository(Executors.newFixedThreadPool(m_scanThreads+m_writeThreads));
+        
+        LifeCycle importLifeCycle = new LifeCycle("import")
+            .addPhase("validate")
+            .addPhase("audit")
+            .addPhase("scan")
+            .addPhase("delete")
+            .addPhase("update")
+            .addPhase("insert")
+            .addPhase("relate");
+            
+            
+        lifeCycleRepository.addLifeCycle(importLifeCycle);
+        
+        LifeCycle nodeScanLifeCycle = new LifeCycle("nodeScan")
+            .addPhase("scan")
+            .addPhase("persist");
+        
 
-    public SaveOrUpdateOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-        return new InsertOperation(foreignSource, foreignId, nodeLabel, building, city, getProvisionService());
+        lifeCycleRepository.addLifeCycle(nodeScanLifeCycle);
+        
+        m_lifeCycleRepository = lifeCycleRepository;
+        
+        
+        m_provider = new CoreImportActivities(getProvisionService());
+        
         
     }
 
-    public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-        return new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city, getProvisionService());
-    }
-
-    public ImportOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId) {
-        return new DeleteOperation(nodeId, foreignSource, foreignId, getProvisionService());
-    }
-    
     protected void importModelFromResource(Resource resource) throws Exception {
     	importModelFromResource(null, resource, new NoOpProvisionMonitor());
     }
@@ -105,132 +114,22 @@ public class BaseProvisioner implements ImportOperationFactory, InitializingBean
         
         importManager.getClass();
         
-        ExecutorService executor = null;
+        LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_provider);
+        doImport.setAttribute("resource", resource);
+        doImport.setAttribute("foreignSoruce", foreignSource);
         
-        final Task<Resource, SpecFile> loader = new Task<Resource, SpecFile>(executor) {
+        doImport.trigger();
+        
+        doImport.waitFor();
 
-            @Override
-            public SpecFile execute(Resource resource) throws Exception {
-                return loadSpecFile(resource, foreignSource, monitor);
-            }
+//        SpecFile specFile = m_provider.loadSpecFile(resource, foreignSource);
+//        ImportOperationsManager opsMgr = m_provider.auditNodes(specFile);
+//        opsMgr.persistOperations(doImport);
+//        relateNodes(specFile);
+
             
-        };
-        
-        
-
-        
-        final Task<SpecFile, ImportOperationsManager> auditor = new Task<SpecFile, ImportOperationsManager>(executor) {
-
-            @Override
-            public ImportOperationsManager execute(SpecFile specFile) throws Exception {
-                monitor.beginAuditNodes();
-                ImportOperationsManager opsMgr = auditNodes(specFile, monitor);
-                monitor.finishAuditNodes();
-                return opsMgr;
-            }
-        };
-        
-        
-        
-        final Task<ImportOperationsManager, Void> persistor = new Task<ImportOperationsManager, Void>(executor) {
-
-            @Override
-            public Void execute(ImportOperationsManager opsMgr) throws Exception {
-                opsMgr.persistOperations(writeThreads, scanThreads, monitor);
-                return null;
-            }
-            
-        };
-        
-        
-        
-        final Task<SpecFile, Void> relator = new Task<SpecFile, Void>(executor) {
-
-            @Override
-            public Void execute(SpecFile specFile) throws Exception {
-                monitor.beginRelateNodes();
-                
-                relateNodes(specFile);
-                
-                monitor.finishRelateNodes();
-                return null;
-            }
-            
-        };
-        
-        
-        final Task<Resource, Void> importer = new Task<Resource, Void>(executor) {
-
-            @Override
-            public Void execute(Resource resource) throws Exception {
-                monitor.beginImporting();
-
-                SpecFile specFile = loader.execute(resource);
-                ImportOperationsManager opsMgr = auditor.execute(specFile);
-                persistor.execute(opsMgr);
-                relator.execute(specFile);
-                
-            
-                monitor.finishImporting();
-                return null;
-            }
-            
-        };
-        
-        importer.execute(resource);
 
     }
-
-    private ImportOperationsManager auditNodes(SpecFile specFile, ProvisionMonitor monitor) {
-        
-        getProvisionService().createDistPollerIfNecessary("localhost", "127.0.0.1");
-        String foreignSource = specFile.getForeignSource();
-        Map<String, Integer> foreignIdsToNodes = getProvisionService().getForeignIdToNodeIdMap(foreignSource);
-        
-        ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, this, getProvisionService());
-
-        opsMgr.setForeignSource(foreignSource);
-        
-        opsMgr.auditNodes(specFile);
-
-        return opsMgr;
-    }
-
-    private SpecFile loadSpecFile(Resource resource, String foreignSource,
-            ProvisionMonitor monitor) throws ModelImportException,
-            IOException {
-        monitor.beginLoadingResource(resource);
-    	
-        SpecFile specFile = new SpecFile();
-        specFile.loadResource(resource);
-        
-        if (foreignSource != null) {
-            specFile.setForeignSource(foreignSource);
-        }
-        
-        monitor.finishLoadingResource(resource);
-        return specFile;
-    }
-
-    class NodeRelator extends AbstractImportVisitor {
-		String m_foreignSource;
-		
-		public NodeRelator(String foreignSource) {
-			m_foreignSource = foreignSource;
-		}
-
-        public void visitNode(final Node node) {
-            getProvisionService().setNodeParentAndDependencies(m_foreignSource, node.getForeignId(), node.getParentForeignId(),
-                                                node.getParentNodeLabel());
-
-            getProvisionService().clearCache();
-		}
-
-	};
-
-	private void relateNodes(SpecFile specFile) {
-		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
-	}
 
     public Category log() {
     	return ThreadCategory.getInstance(getClass());

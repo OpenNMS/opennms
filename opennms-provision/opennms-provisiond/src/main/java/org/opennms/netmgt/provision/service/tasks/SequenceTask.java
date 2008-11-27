@@ -32,7 +32,7 @@
 package org.opennms.netmgt.provision.service.tasks;
 
 public class SequenceTask extends ContainerTask {
-    SequenceTask(DefaultTaskCoordinator coordinator) {
+    public SequenceTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
     }
 
@@ -42,7 +42,7 @@ public class SequenceTask extends ContainerTask {
             BaseTask last = m_children.get(m_children.size()-1);
             child.addPrerequisite(last);
         } else {
-            child.addPrerequisite(m_startTask);
+            child.addPrerequisite(getTriggerTask());
         }
     }
     

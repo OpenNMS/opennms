@@ -33,14 +33,16 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import org.opennms.netmgt.provision.service.ProvisionService;
+
 
 
 public interface ImportOperationFactory {
 
-    public abstract SaveOrUpdateOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city);
+    public abstract SaveOrUpdateOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService);
 
-    public abstract UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city);
+    public abstract UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService service);
     
-    public abstract ImportOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId);
+    public abstract ImportOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService);
 
 }

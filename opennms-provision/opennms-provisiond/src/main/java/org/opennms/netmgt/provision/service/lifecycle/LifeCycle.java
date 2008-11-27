@@ -31,30 +31,44 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+
 /**
- * LifeCycle
+ * LifeCycleBuilder
  *
  * @author brozow
  */
-public interface LifeCycle {
-
-    List<String> getPhaseNames();
-
-    String getName();
+public class LifeCycle {
+   
+    private static final String[] OF_STRINGS = new String[0];
     
-    void setAttribute(String key, Object value);
-
-    Object getAttribute(String key);
-
-    <T> T getAttribute(String key, Class<T> type);
-
-    <T> T getAttribute(String key, T defaultValue);
-
-    void trigger();
-
-    void waitFor();
+    private String m_lifeCycleName;
+    private List<String> m_phases = new ArrayList<String>();
     
+    public LifeCycle(String lifeCycleName) {
+        m_lifeCycleName = lifeCycleName;
+    }
+    
+    public String getLifeCycleName() {
+        return m_lifeCycleName;
+    }
+
+    public LifeCycle addPhase(String phaseName) {
+        m_phases.add(phaseName);
+        return this;
+    }
+
+    public LifeCycle addPhases(String... phases) {
+        m_phases.addAll(Arrays.asList(phases));
+        return this;
+    }
+    
+    public String[] getPhaseNames() {
+        return m_phases.toArray(OF_STRINGS);
+    }
+
 
 }

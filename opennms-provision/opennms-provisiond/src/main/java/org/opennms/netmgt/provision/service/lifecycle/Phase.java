@@ -33,47 +33,67 @@ package org.opennms.netmgt.provision.service.lifecycle;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
+import org.opennms.netmgt.provision.service.tasks.BaseTask;
+import org.opennms.netmgt.provision.service.tasks.BatchTask;
 
-class Phase {
-    private LifeCycle m_lifecycle;
+class Phase extends BatchTask {
+    private LifeCycleInstance m_lifecycle;
     private String m_name;
     private Object[] m_providers;
         
-    public Phase(LifeCycle lifecycle, String name, Object[] providers) {
+    public Phase(LifeCycleInstance lifecycle, String name, Object[] providers) {
+        super(lifecycle.getCoordinator());
         m_lifecycle = lifecycle;
         m_name = name;
         m_providers = providers;
 
+        addPhaseMethods();
     }
 
     public String getName() {
         return m_name;
     }
     
-    public void run() {
-        for(Object provider : m_providers) {
-            PhaseMethod[] methods = findPhaseMethods(provider);
-            for(PhaseMethod method : methods) {
-                method.invoke(m_lifecycle);
-            }
-            
-        }
-        
+    public LifeCycleInstance getLifeCycleInstance() {
+        return m_lifecycle;
     }
     
-    private PhaseMethod[] findPhaseMethods(Object provider) {
-        List<PhaseMethod> methods = new ArrayList<PhaseMethod>();
+    public void addPhaseMethods() {
+        for(Object provider : m_providers) {
+            addPhaseMethods(provider);
+        }
+    }
+    
+    public void addPhaseMethods(Object provider) {
         for(Method method : provider.getClass().getMethods()) {
             if (isPhaseMethod(method)) {
-                methods.add(new PhaseMethod(provider, method));
+                add(createPhaseMethod(provider, method));
             }
         }
-        return methods.toArray(new PhaseMethod[methods.size()]);
     }
+    
+//    public void run() {
+//        for(Object provider : m_providers) {
+//            PhaseMethod[] methods = findPhaseMethods(provider);
+//            for(PhaseMethod method : methods) {
+//                method.invoke();
+//            }
+//            
+//        }
+//        
+//    }
+//    
+//    private PhaseMethod[] findPhaseMethods(Object provider) {
+//        List<PhaseMethod> methods = new ArrayList<PhaseMethod>();
+//        for(Method method : provider.getClass().getMethods()) {
+//            if (isPhaseMethod(method)) {
+//                methods.add(new PhaseMethod(this, provider, method));
+//            }
+//        }
+//        return methods.toArray(new PhaseMethod[methods.size()]);
+//    }
 
     private boolean isPhaseMethod(Method method) {
         Activity activity = method.getAnnotation(Activity.class);
@@ -81,36 +101,59 @@ class Phase {
     }
     
     PhaseMethod createPhaseMethod(Object provider, Method method) {
-        return new PhaseMethod(provider, method);
+        return new PhaseMethod(this, provider, method);
     }
     
-    public static class PhaseMethod {
+    public static class PhaseMethod extends BatchTask {
+        private Phase m_phase;
         private Object m_target;
         private Method m_method;
         
-        public PhaseMethod(Object target, Method method) {
+        public PhaseMethod(Phase phase, Object target, Method method) {
+            super(phase.getCoordinator());
+            m_phase = phase;
             m_target = target;
             m_method = method;
+            add(phaseRunner());
         }
         
-        public void invoke(LifeCycle lifeCycle) {
-            try {
-                doInvoke(lifeCycle);
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        private Runnable phaseRunner() {
+            return new Runnable() {
+                public void run() {
+                    try {
+                        doInvoke(m_phase.getLifeCycleInstance());
+                    } catch (IllegalArgumentException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                public String toString() {
+                    return "Runner for "+m_phase.toString();
+                }
+            };
         }
 
-        private void doInvoke(LifeCycle lifeCycle) throws IllegalAccessException, InvocationTargetException {
-            m_method.invoke(m_target, lifeCycle);
+        private void doInvoke(LifeCycleInstance lifeCycle) throws IllegalAccessException, InvocationTargetException {
+            Object retVal = m_method.invoke(m_target, lifeCycle);
+            if (retVal instanceof BaseTask) {
+                add((BaseTask)retVal);
+            } 
         }
         
+        public String toString() {
+            return String.format("%s.%s(%s)", m_target.getClass().getSimpleName(), m_method.getName(), m_phase.getLifeCycleInstance());
+        }
+        
+    }
+    
+    
+    public String toString() {
+        return String.format("Phase %s of %s", getName(), m_lifecycle);
     }
 }
