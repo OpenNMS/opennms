@@ -56,14 +56,17 @@ public final class AddEventVisitor extends AbstractEntityVisitor {
 	}
 
 	public void visitNode(OnmsNode node) {
+        System.out.printf("Sending nodeAdded Event for %s\n", node);
 	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
 	}
 
     public void visitIpInterface(OnmsIpInterface iface) {
+        System.out.printf("Sending nodeGainedInterface Event for %s\n", iface);
         m_eventForwarder.sendNow(createNodeGainedInterfaceEvent(iface));
     }
 
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
+        System.out.printf("Sending nodeGainedService Event for %s\n", monSvc);
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
 

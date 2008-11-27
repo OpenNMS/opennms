@@ -31,50 +31,13 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
-
-import org.junit.Test;
-
-
 /**
- * LifeCycleDefinitionTest
+ * LifeCycleRepository
  *
  * @author brozow
  */
-public class LifeCycleDefinitionTest {
+public interface LifeCycleRepository {
     
-    final String[] m_expectedPhases = new String[] {"phase1", "phase2", "phase3"};
-
-
-    @Test
-    public void testBuildLifeCycle() {
-        
-        LifeCycleDefinition bldr = new LifeCycleDefinition("sample");
-        for(String phase : m_expectedPhases) {
-            bldr.addPhase(phase);
-        }
-        LifeCycle lifecycle = bldr.build();
-
-        
-        assertNotNull(lifecycle);
-        assertEquals("sample", lifecycle.getName());
-        List<String> phases = lifecycle.getPhaseNames();
-        assertArrayEquals(m_expectedPhases, phases.toArray(new String[0]));
-    }
-
-    @Test
-    public void testBuildLifeCycleFromArray() {
-
-        LifeCycle lifecycle = new LifeCycleDefinition("sample").addPhases(m_expectedPhases).build();
-
-        assertNotNull(lifecycle);
-        assertEquals("sample", lifecycle.getName());
-        List<String> phases = lifecycle.getPhaseNames();
-        assertArrayEquals(m_expectedPhases, phases.toArray(new String[0]));
-    }
+    LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers);
 
 }

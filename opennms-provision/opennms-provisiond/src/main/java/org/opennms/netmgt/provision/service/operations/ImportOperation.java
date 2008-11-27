@@ -61,16 +61,14 @@ public abstract class ImportOperation {
     protected abstract void doPersist();
 
 
-    public void persist(final ProvisionMonitor monitor) {
+    public void persist() {
     
         final ImportOperation oper = this;
     
-        monitor.beginPersisting(oper);
         log().info("Persist: "+oper);
     
         doPersist();
     	
-        monitor.finishPersisting(oper);
     
         log().info("Clear cache: "+this);
     
