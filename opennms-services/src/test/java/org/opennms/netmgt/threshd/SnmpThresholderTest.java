@@ -287,7 +287,7 @@ public class SnmpThresholderTest {
         for (Basethresholddef threshold: thresholds) {
             count += threshold.getResourceFilterCount();
         }
-        assertEquals(4, count); // as defined on test-thresholods.xml
+        assertEquals(5, count); // Count how many resource-filter entries are defined on test-thresholods.xml
     }
     
     @SuppressWarnings("deprecation")
@@ -336,14 +336,16 @@ public class SnmpThresholderTest {
         ifInfoEth0.put("snmpifindex", "1");
         ifInfoEth0.put("snmpifdesc", "eth0");
         ifInfoEth0.put("snmpifalias", "ethernet interface");
-        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "eth0")).andReturn(ifInfoEth0).times(2);
+        // 3 times because there are 2 thresholds instances, one with two filters and one without filter (a total of 3) on test-thresholds.xml
+        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "eth0")).andReturn(ifInfoEth0).times(3);
 
         // Creating Mock ifInfo Data for wlan0
         Map<String,String> ifInfoWlan0 = new HashMap<String,String>();
         ifInfoWlan0.put("snmpifindex", "2");
         ifInfoWlan0.put("snmpifdesc", "wlan0");
         ifInfoWlan0.put("snmpifalias", "wireless interface");
-        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "wlan0")).andReturn(ifInfoWlan0).times(2);
+        // 3 times because there are 2 thresholds instances, one with two filters and one without filter (a total of 3) on test-thresholds.xml
+        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "wlan0")).andReturn(ifInfoWlan0).times(3);
 
         m_mocks.replayAll();
         m_snmpThresholder.checkIfDir(intf1Dir, m_thresholdInterface, new Date(start), events);
