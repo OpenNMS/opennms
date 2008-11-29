@@ -43,16 +43,11 @@
 </jsp:include>
 <%@page language="java" contentType="text/html" session="true"  %>
 
-      <!-- Services down box -->
-		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
 
 	<!-- Middle Column -->
-	<div id="index-contentmiddle">
-		<!-- category box(es) -->    
 		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
 
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 		<hr />
-	</div>
 
