@@ -59,6 +59,8 @@
     </c:forEach>
     OpenNMS Web Console
   </title>
+<meta name="viewport" content="initial-scale=2.3, user-scalable=no" />
+<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
@@ -83,19 +85,19 @@
 
 	<!-- Header -->
 	<div id="header">
-		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
+		<!-- <h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  -->
 		<div id="headerinfo">
-			<h2>${param.title}</h2>
+			<b>${param.title}</b>
 			<p align="right">
-				<c:choose>
+				<!-- <c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
 						User: <a href="account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-						- <a href="j_acegi_logout">Log out</a><br/>
+						- <a href="j_acegi_logout">Log out</a>
 					</c:when>
 					<c:otherwise>
-						User: &hellip;<br/>
+						User: &hellip;
 					</c:otherwise>
-				</c:choose>
+				</c:choose> -->
                 <jsp:useBean id="currentDate" class="java.util.Date" />
                 <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
                 &nbsp;
@@ -105,9 +107,9 @@
 		<hr />
 		<c:choose>
 			<c:when test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">
-				<div id="headernavbarright">
+			<!--	<div id="headernavbarright">
                   <jsp:include page="/navBar.htm" flush="false"/>
-				</div>
+				</div> -->
 			</c:when>
 			<c:otherwise>
 				<div id="headernavbarright">
