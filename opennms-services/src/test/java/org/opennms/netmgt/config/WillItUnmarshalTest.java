@@ -456,10 +456,6 @@ public class WillItUnmarshalTest {
         unmarshalExample("translator-configuration.xml", EventTranslatorConfiguration.class);
     }
     @Test
-    public void testExampleTranslatorEventConfiguration() throws Exception {
-        unmarshalExample("OpenNMS.translator.events.xml", Events.class);
-    }
-    @Test
     public void testExampleHypericTranslatorConfiguration() throws Exception {
         unmarshalExample("hyperic-integration/translator-configuration.xml", EventTranslatorConfiguration.class);
     }
