@@ -1871,6 +1871,6 @@
   <event-file>events/Xerox.events.xml</event-file>
 
   <event-file>events/Standard.events.xml</event-file>
-
+  <event-file>events/Translator.default.events.xml</event-file>
   <event-file>events/default.events.xml</event-file>
 </events>
