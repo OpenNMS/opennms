@@ -1,0 +1,144 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.                                                            
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//       
+// For more information contact: 
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+// Tab Size = 8
+//
+
+package org.opennms.netmgt.provision.service.snmp;
+
+import java.net.InetAddress;
+
+/**
+ * <P>
+ * The IpAddrTableEntry class is designed to hold all the MIB-II information for
+ * one entry in the ipAddrTable. The table effectively contains a list of these
+ * entries, each entry having information about one address. The entry contains
+ * an IP Address, its netmask, interface binding, broadcast address, and maximum
+ * packet reassembly size.
+ * </P>
+ * 
+ * <P>
+ * This object is used by the IpAddrTable to hold infomation single entries in
+ * the table. See the IpAddrTable documentation form more information.
+ * </P>
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
+ * 
+ * @see IpAddrTable
+ * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ */
+public final class IpAddrTableEntry extends SnmpTableEntry {
+    // Lookup strings for specific table entries
+    //
+    public final static String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
+
+    public final static String IP_ADDR_IF_INDEX = "ipAdEntIfIndex";
+
+    public final static String IP_ADDR_ENT_NETMASK = "ipAdEntNetMask";
+
+    public final static String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
+
+    public static NamedSnmpVar[] ms_elemList = null;
+
+    /**
+     * <P>
+     * Initialize the element list for the class. This is class wide data, but
+     * will be used by each instance.
+     * </P>
+     */
+    static {
+        // Array size has changed from 5 to 4...no longer going after
+        // ipAdEntReasmMaxSize variable because we aren't currently using
+        // it and not all agents implement it which causes the collection
+        // of the ipAddrTable to fail
+        IpAddrTableEntry.ms_elemList = (new NamedSnmpVar[4]);
+        int ndx = 0;
+
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_ADDR, ".1.3.6.1.2.1.4.20.1.1", 1);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_IF_INDEX, ".1.3.6.1.2.1.4.20.1.2", 2);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_NETMASK, ".1.3.6.1.2.1.4.20.1.3", 3);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_ENT_BCASTADDR, ".1.3.6.1.2.1.4.20.1.4", 4);
+        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
+        // IP_ADDR_ENT_REASM_MAXSIZE, ".1.3.6.1.2.1.4.20.1.5", 5);
+    }
+
+    /**
+     * <P>
+     * The TABLE_OID is the object identifier that represents the root of the IP
+     * Address table in the MIB forest.
+     * </P>
+     */
+    public static final String TABLE_OID = ".1.3.6.1.2.1.4.20.1"; // start of
+                                                                    // table
+                                                                    // (GETNEXT)
+
+    /**
+     * <P>
+     * The class constructor used to initialize the object to its initial state.
+     * Although the object's member variables can change after an instance is
+     * created, this constructor will initialize all the variables as per their
+     * named variable from the passed array of SNMP varbinds.
+     * </P>
+     * 
+     * <P>
+     * If the information in the object should not be modified then a <EM>final
+     * </EM> modifier can be applied to the created object.
+     * </P>
+     * 
+     * @param vars
+     *            The array of variable bindings.
+     */
+    public IpAddrTableEntry() {
+        super(ms_elemList);
+    }
+
+    public InetAddress getIpAdEntAddr() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
+    }
+
+    public Integer getIpAdEntIfIndex() {
+        return getInt32(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+    }
+
+    public InetAddress getIpAdEntNetMask() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
+    }
+    
+    public InetAddress getIpAdEntBcastAddr() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_BCASTADDR);
+    }
+
+    
+}
