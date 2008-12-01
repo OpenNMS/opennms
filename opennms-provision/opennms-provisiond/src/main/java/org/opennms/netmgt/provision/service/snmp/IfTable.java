@@ -98,96 +98,27 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     }
     
     public int getOperStatus(int ifIndex) {
-        if (getEntries() == null)
-            return -1;
-        
-        for(IfTableEntry entry : getEntries()) {
-            Integer ndx = entry.getIfIndex();
-            if (ndx != null && ndx.intValue() == ifIndex) {
-                // found it
-                // extract the admin status
-                //
-                Integer ifStatus = entry.getIfOperStatus();
-                if (ifStatus != null)
-                    return ifStatus.intValue();
-            }
-        }
-        return -1;
+        return (getEntry(ifIndex) == null ? -1 : getEntry(ifIndex).getIfOperStatus());
     }
         
     public int getAdminStatus(int ifIndex) {
-        if (getEntries() == null)
-            return -1;
-        
-        for(IfTableEntry entry : getEntries()) {
-            Integer ndx = entry.getIfIndex();
-            if (ndx != null && ndx.intValue() == ifIndex) {
-                // found it
-                // extract the admin status
-                //
-                Integer ifStatus = entry.getIfAdminStatus();
-                if (ifStatus != null)
-                    return ifStatus.intValue();
-            }
-        }
-        return -1;
+        return (getEntry(ifIndex) == null ? -1 : getEntry(ifIndex).getIfAdminStatus());
     }
 
     public int getIfType(int ifIndex) {
-        if (getEntries() == null)
-            return -1;
-        
-        for(IfTableEntry entry : getEntries()) {
-            Integer ndx = entry.getIfIndex();
-            if (ndx != null && ndx.intValue() == ifIndex) {
-                // found it
-                // extract the ifType
-                //
-                Integer ifType = entry.getIfType();
-                if (ifType != null)
-                    return ifType.intValue();
-            }
-        }
-        return -1;
+        return (getEntry(ifIndex) == null ? -1 : getEntry(ifIndex).getIfType());
     }
 
     public String getIfDescr(final int ifIndex) {
-        String ifDescr = null;   
-        if (getEntries() != null) {
-            for(IfTableEntry entry : getEntries()) {
-                Integer ndx = entry.getIfIndex();
-                if (ndx != null && ndx.intValue() == ifIndex) {
-                    ifDescr = entry.getIfDescr();
-                }
-            }
-        }
-        return ifDescr;
+        return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfDescr());
     }
 
     public Long getIfSpeed(final int ifIndex) {
-        Long ifSpeed = null;   
-        if (getEntries() != null) {
-            for(IfTableEntry entry : getEntries()) {
-                Integer ndx = entry.getIfIndex();
-                if (ndx != null && ndx.intValue() == ifIndex) {
-                    ifSpeed = entry.getIfSpeed();
-                }
-            }
-        }
-        return ifSpeed;
+        return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfSpeed());
     }
     
     public String getPhysAddr(final int ifIndex) {
-        String physAddr = null;   
-        if (getEntries() != null) {
-            for(IfTableEntry entry : getEntries()) {
-                Integer ndx = entry.getIfIndex();
-                if (ndx != null && ndx.intValue() == ifIndex) {
-                    physAddr = entry.getPhysAddr();
-                }
-            }
-        }
-        return physAddr;
+        return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getPhysAddr());
     }
 
 }

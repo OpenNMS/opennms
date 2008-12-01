@@ -84,44 +84,11 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
     }
     
     public String getIfName(int ifIndex) {
-    
-        // Find ifXTable entry with matching ifIndex
-
-        for(IfXTableEntry ifXEntry : getEntries()) {
-    
-            int ifXIndex = -1;
-            Integer snmpIfIndex = ifXEntry.getIfIndex();
-            if (snmpIfIndex != null)
-                ifXIndex = snmpIfIndex.intValue();
-    
-            // compare with passed ifIndex
-            if (ifXIndex == ifIndex) {
-                // Found match! Get the ifName
-                return ifXEntry.getIfName();
-            }
-    
-        }
-        return null;
+        return getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfName();
     }
 
     public String getIfAlias(int ifIndex) {
-        // Find ifXTable entry with matching ifIndex
-
-        for(IfXTableEntry ifXEntry : getEntries()) {
-    
-            int ifXIndex = -1;
-            Integer snmpIfIndex = ifXEntry.getIfIndex();
-            if (snmpIfIndex != null)
-                ifXIndex = snmpIfIndex.intValue();
-    
-            // compare with passed ifIndex
-            if (ifXIndex == ifIndex) {
-                // Found match! Get the ifAlias
-                return ifXEntry.getIfAlias();
-            }
-    
-        }
-        return null;
+        return getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfAlias();
     }
 
 }

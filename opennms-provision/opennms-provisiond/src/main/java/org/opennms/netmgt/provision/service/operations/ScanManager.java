@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.provision.service.snmp.IfSnmpCollector;
+import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 
 public class ScanManager {
     
@@ -60,11 +61,18 @@ public class ScanManager {
 
     public void updateSnmpDataForResource(ScanResource sr) {
         if (getCollector() != null && getCollector().hasSystemGroup()) {
-            sr.setAttribute("sysContact", getCollector().getSystemGroup().getSysContact());
-            sr.setAttribute("sysDescription", getCollector().getSystemGroup().getSysDescr());
-            sr.setAttribute("sysLocation", getCollector().getSystemGroup().getSysLocation());
-            sr.setAttribute("sysObjectId", getCollector().getSystemGroup().getSysObjectID());
+            sr.setAttribute("sysContact", getSystemGroup().getSysContact());
+            sr.setAttribute("sysDescription", getSystemGroup().getSysDescr());
+            sr.setAttribute("sysLocation", getSystemGroup().getSysLocation());
+            sr.setAttribute("sysObjectId", getSystemGroup().getSysObjectID());
         }
+    }
+
+    /**
+     * @return
+     */
+    private SystemGroup getSystemGroup() {
+        return getCollector().getSystemGroup();
     }
 
     void resolveIpHostname(OnmsIpInterface ipIf) {
@@ -88,10 +96,8 @@ public class ScanManager {
     }
 
     String getNetMask(int ifIndex) {
-        InetAddress[] ifAddressAndMask = getCollector().getIfAddressAndMask(ifIndex);
-    	if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null)
-    		return ifAddressAndMask[1].getHostAddress();
-    	return null;
+        InetAddress addr = getCollector().getIpAddrTable().getNetMask(ifIndex);
+        return (addr == null ? null : addr.getHostAddress());
     }
 
     Integer getAdminStatus(int ifIndex) {
