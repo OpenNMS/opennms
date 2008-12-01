@@ -74,6 +74,14 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
+    
+    public T getEntry(SnmpInstId inst) {
+        return m_results.get(inst);
+    }
+    
+    public T getEntry(int inst) {
+        return getEntry(new SnmpInstId(inst));
+    }
 
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
