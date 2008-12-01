@@ -40,8 +40,6 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -84,115 +82,54 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return new IpAddrTableEntry();
     }
 
-     public InetAddress[] getIfAddressAndMask(int ifIndex) {
-        if (getEntries() == null)
+    public InetAddress[] getIfAddressAndMask(int ifIndex) {
+        IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
+        return entry == null ? null : ipAddrPair(entry.getIpAdEntAddr(), entry.getIpAdEntNetMask());
+    }
+    
+    public InetAddress getIfAddress(int ifIndex) {
+        IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
+        return entry == null ? null : entry.getIpAdEntAddr();
+    }
+    
+    public InetAddress getNetMask(int ifIndex) {
+        IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
+        return entry == null ? null : entry.getIpAdEntNetMask();
+        
+    }
+    
+    public int getIfIndex(InetAddress address) {
+        return getEntry(address) == null ? -1 : getEntry(address).getIpAdEntIfIndex();
+    }
+
+
+    public InetAddress[] ipAddrPair(InetAddress addr, InetAddress mask) {
+        InetAddress[] pair = new InetAddress[2];
+        pair[0] = addr;
+        pair[1] = mask;
+        return pair;
+    }
+     
+    public IpAddrTableEntry getEntryByIfIndex(int ifIndex) {
+        if (getEntries() == null) {
             return null;
+        }
         
         for(IpAddrTableEntry entry : getEntries()) {
-
             Integer ndx = entry.getIpAdEntIfIndex();
             if (ndx != null && ndx.intValue() == ifIndex) {
-                // found it
-                // extract the address
-                //
-                InetAddress[] pair = new InetAddress[2];
-                pair[0] = entry.getIpAdEntAddr();
-                pair[1] = entry.getIpAdEntNetMask();
-                return pair;
+                return entry;
             }
         }
         return null;
     }
-
-    public int getIfIndex(InetAddress address) {
-        if (getEntries() == null) {
-            return -1;
-        }
-        if (log().isDebugEnabled())
-            log().debug("getIfIndex: num ipAddrTable entries: " + getEntries().size());
-
-        for(IpAddrTableEntry entry : getEntries()) {
-
-            InetAddress ifAddr = entry.getIpAdEntAddr();
-            if (ifAddr != null && ifAddr.equals(address)) {
-                // found it
-                // extract the ifIndex
-                //
-                Integer ndx = entry.getIpAdEntIfIndex();
-                log().debug("getIfIndex: got a match for address " + address.getHostAddress() + " index: " + ndx);
-                if (ndx != null)
-                    return ndx.intValue();
-            }
-        }
-        log().debug("getIfIndex: no matching ipAddrTable entry for " + address.getHostAddress());
-        return -1;
+     
+    public IpAddrTableEntry getEntry(InetAddress address) {
+        return getEntry(new SnmpInstId(address.getHostAddress()));
     }
 
     protected final Category log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 
-    /**
-     * Returns all Internet addresses at the corresponding index. If the address
-     * cannot be resolved then a null reference is returned.
-     * 
-     * @param ifIndex
-     *            The index to search for.
-     * 
-     * @return list of InetAddress objects representing each of the interfaces
-     *         IP addresses.
-     */
-    
-    public List<InetAddress> getIpAddresses(int index) {
-        if (index == -1 || getEntries() == null) {
-            return null;
-        }
-        
-        List<InetAddress> addresses = new ArrayList<InetAddress>();
-        
-        for(IpAddrTableEntry entry : getEntries()) {
-
-            Integer ndx = entry.getIpAdEntIfIndex();
-            if (ndx != null && ndx.intValue() == index) {
-                
-                InetAddress ifAddr = entry.getIpAdEntAddr();
-                if (ifAddr != null) {
-                    addresses.add(ifAddr);
-                }
-            }
-        }
-        return addresses;
-    }
-
-    /**
-     * Returns all Internet addresses in the ipAddrEntry list. If the address
-     * cannot be resolved then a null reference is returned.
-     * 
-     * @param ipAddrEntries
-     *            List of IpAddrTableEntry objects to search
-     * 
-     * @return list of InetAddress objects representing each of the interfaces
-     *         IP addresses.
-     */
-    public List<InetAddress> getIpAddresses() {
-        if (getEntries() == null) {
-            return null;
-        }
-        
-        List <InetAddress>addresses = new ArrayList<InetAddress>();
-        
-        for(IpAddrTableEntry entry : getEntries()) {
-
-            Integer ndx = entry.getIpAdEntIfIndex();
-            if (ndx != null) {
-        
-                InetAddress ifAddr = entry.getIpAdEntAddr();
-                if (ifAddr != null) {
-                    addresses.add(ifAddr);
-                }
-        
-            }
-        }
-        return addresses;
-    }
 }

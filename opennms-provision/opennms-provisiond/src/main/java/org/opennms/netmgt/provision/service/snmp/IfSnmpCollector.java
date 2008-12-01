@@ -42,10 +42,6 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.capsd.snmp.IfTable;
-import org.opennms.netmgt.capsd.snmp.IfXTable;
-import org.opennms.netmgt.capsd.snmp.IpAddrTable;
-import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -102,13 +98,6 @@ public final class IfSnmpCollector implements Runnable {
         m_ifTable = null;
         m_ifXTable = null;
         m_ipAddrTable = null;
-    }
-
-    /**
-     * Returns true if any part of the collection failed.
-     */
-    public boolean failed() {
-        return !hasSystemGroup() || !hasIfTable() || !hasIpAddrTable();
     }
 
     /**
@@ -260,30 +249,15 @@ public final class IfSnmpCollector implements Runnable {
     }
     
     public String getIfDescr(final int ifIndex) {
-        String ifDescr = null;
-        
-        if (hasIfTable()) {
-            ifDescr = m_ifTable.getIfDescr(ifIndex);
-        }
-        return ifDescr;
+        return hasIfTable() ? m_ifTable.getIfDescr(ifIndex) :  null;
     }
     
     public Long getIfSpeed(final int ifIndex) {
-        Long ifSpeed = null;
-        
-        if (hasIfTable()) {
-            ifSpeed = m_ifTable.getIfSpeed(ifIndex);
-        }
-        return ifSpeed;
+        return hasIfTable() ? getIfTable().getIfSpeed(ifIndex) : null;
     }
     
     public String getPhysAddr(final int ifIndex) {
-        String physAddr = null;
-        
-        if (hasIfTable()) {
-            physAddr = m_ifTable.getPhysAddr(ifIndex);
-        }
-        return physAddr;
+        return hasIfTable() ? getIfTable().getPhysAddr(ifIndex) : null;
     }
     
     /**
@@ -291,9 +265,9 @@ public final class IfSnmpCollector implements Runnable {
      */
     public String getIfAlias(int ifIndex) {
         String snmpIfAlias = null;
-
+        
         if (hasIfXTable()) {
-            snmpIfAlias = m_ifXTable.getIfAlias(ifIndex);
+            snmpIfAlias = getIfXTable().getIfAlias(ifIndex);
 
             if (log().isDebugEnabled()) {
                 if (snmpIfAlias != null) {
