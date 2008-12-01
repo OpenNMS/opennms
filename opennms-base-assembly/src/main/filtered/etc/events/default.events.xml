@@ -45,9 +45,10 @@
             configuration. The data passed with the event are 1) The name and value of the ifIndex instance for the affected interface. The name of the
             interface can be retrieved via an snmpget of .1.3.6.1.2.1.2.2.1.2.INST, where INST is the instance returned with the trap.&lt;/p&gt;
         </descr>
-        <logmsg dest='logndisplay'>Agent Interface Down (linkDown Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
+        <logmsg dest='donotpersist'>Agent Interface Down (linkDown Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
         <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" />
+        <!-- Removed this alarm in preference to the translated version -->
+        <!-- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" /> -->
     </event>
     <event>
         <mask>
@@ -63,9 +64,10 @@
             configuration has come up. The data passed with the event are 1) The name and value of the ifIndex instance for the affected interface. The name of
             the interface can be retrieved via an snmpget of .1.3.6.1.2.1.2.2.1.2.INST, where INST is the instance returned with the trap.&lt;/p&gt;
         </descr>
-        <logmsg dest='logndisplay'>Agent Interface Up (linkUp Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
+        <logmsg dest='donotpersist'>Agent Interface Up (linkUp Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
         <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/generic/traps/SNMP_Link_Down"  clear-key="uei.opennms.org/generic/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%" />
+        <!-- Removed this alarm in preference to the translated version -->
+        <!-- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/generic/traps/SNMP_Link_Down"  clear-key="uei.opennms.org/generic/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%" /> -->
     </event>
     <event>
         <mask>
