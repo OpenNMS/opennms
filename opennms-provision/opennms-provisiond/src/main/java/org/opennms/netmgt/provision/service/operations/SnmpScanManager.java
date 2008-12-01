@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.provision.service.snmp.IfSnmpCollector;
 
 public class SnmpScanManager {
     
@@ -54,8 +55,7 @@ public class SnmpScanManager {
     }
     
     public IfSnmpCollector getCollector() {
-        //throw new UnsupportedOperationException("ScanManager.getCollector is not yet implemented");
-        return null;
+        return m_collector;
     }
 
     public void updateSnmpDataForResource(ScanResource sr) {

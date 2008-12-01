@@ -42,9 +42,15 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.mock.snmp.JUnitSnmpAgent;
+import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -56,6 +62,7 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -86,6 +93,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
     TemporaryDatabaseExecutionListener.class,
+    JUnitSnmpAgentExecutionListener.class,
     DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class
@@ -114,6 +122,9 @@ public class BaseProvisionerTest {
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
+    
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -146,6 +157,11 @@ public class BaseProvisionerTest {
 //        
 //        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
 //    }
+    
+    @BeforeClass
+    public static void setUpSnmpConfig() {
+        SnmpPeerFactory.setFile(new File("src/test/proxy-snmp-config.xml"));
+    }
     
     @Before
     public void setUp() {
@@ -192,7 +208,6 @@ public class BaseProvisionerTest {
         
     }
 
-
     private void importFromResource(String path) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
     }
@@ -231,6 +246,32 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
+    public void testPopulateWithSnmp() throws Exception {
+        
+        importFromResource("classpath:/tec_dump.xml");
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(4, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(2, getSnmpInterfaceDao().countAll());
+        
+    }
+    
+    @Test
     public void testPopulate() throws Exception {
         
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -263,6 +304,11 @@ public class BaseProvisionerTest {
 
     private IpInterfaceDao getInterfaceDao() {
         return m_ipInterfaceDao;
+    }
+
+
+    private SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
     }
 
 
