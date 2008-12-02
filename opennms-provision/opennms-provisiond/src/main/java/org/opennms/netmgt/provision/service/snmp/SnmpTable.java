@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
@@ -68,6 +69,10 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
 
     protected abstract T createTableEntry(SnmpObjId base, SnmpInstId inst, Object val);
 
+    public Set<SnmpInstId> getInstances() {
+        return m_results.keySet();
+    }
+    
     public List<T> getEntries() {
         return new ArrayList<T>(m_results.values());
     }
@@ -76,6 +81,9 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
     }
     
     public T getEntry(SnmpInstId inst) {
+        if (failed()) {
+            return null;
+        }
         return m_results.get(inst);
     }
     

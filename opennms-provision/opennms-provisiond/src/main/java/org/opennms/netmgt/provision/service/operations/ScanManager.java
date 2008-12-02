@@ -37,138 +37,206 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.PeerFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
-import org.opennms.netmgt.provision.service.snmp.IfSnmpCollector;
+import org.opennms.netmgt.provision.service.snmp.IfTable;
+import org.opennms.netmgt.provision.service.snmp.IfXTable;
+import org.opennms.netmgt.provision.service.snmp.IpAddrTable;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class ScanManager {
     
-    private IfSnmpCollector m_collector;
+    private SystemGroup m_systemGroup;
+    private IfTable m_ifTable;
+    private IpAddrTable m_ipAddrTable;
+    private IfXTable m_ifXTable;
+    private InetAddress m_address;
 
     ScanManager(InetAddress address) {
-        m_collector = new IfSnmpCollector(address);
+        m_address = address;
+        m_systemGroup = new SystemGroup(address);
+        m_ifTable = new IfTable(address);
+        m_ipAddrTable = new IpAddrTable(address);
+        m_ifXTable = new IfXTable(address);
     }
     
-    public IfSnmpCollector getCollector() {
-        return m_collector;
-    }
-
-    public void updateSnmpDataForResource(ScanResource sr) {
-        if (getCollector() != null && getCollector().hasSystemGroup()) {
-            sr.setAttribute("sysContact", getSystemGroup().getSysContact());
-            sr.setAttribute("sysDescription", getSystemGroup().getSysDescr());
-            sr.setAttribute("sysLocation", getSystemGroup().getSysLocation());
-            sr.setAttribute("sysObjectId", getSystemGroup().getSysObjectID());
-        }
+    public SystemGroup getSystemGroup() {
+        return m_systemGroup;
     }
 
     /**
-     * @return
+     * @return the ifTable
      */
-    private SystemGroup getSystemGroup() {
-        return getCollector().getSystemGroup();
+    public IfTable getIfTable() {
+        return m_ifTable;
     }
 
-    void resolveIpHostname(OnmsIpInterface ipIf) {
-    	ipIf.setIpHostName(ipIf.getIpAddress());
-    //
-    //     DON'T DO THIS SINCE DNS DOESN'T RELIABLY AVOID HANGING
-    //
-    //    	log().info("Resolving Hostname for "+ipIf.getIpAddress());
-    //		try {
-    //			InetAddress addr = InetAddress.getByName(ipIf.getIpAddress());
-    //			ipIf.setIpHostName(addr.getHostName());
-    //		} catch (Exception e) {
-    //			if (ipIf.getIpHostName() == null)
-    //				ipIf.setIpHostName(ipIf.getIpAddress());
-    //		}
+    /**
+     * @return the ipAddrTable
+     */
+    public IpAddrTable getIpAddrTable() {
+        return m_ipAddrTable;
     }
 
-    Integer getIfType(int ifIndex) {
-        int ifType = getCollector().getIfType(ifIndex);
-    	return (ifType == -1 ? null : new Integer(ifType));
+    /**
+     * @return the ifXTable
+     */
+    public IfXTable getIfXTable() {
+        return m_ifXTable;
     }
 
     String getNetMask(int ifIndex) {
-        InetAddress addr = getCollector().getIpAddrTable().getNetMask(ifIndex);
+        InetAddress addr = getIpAddrTable().getNetMask(ifIndex);
         return (addr == null ? null : addr.getHostAddress());
-    }
-
-    Integer getAdminStatus(int ifIndex) {
-        int adminStatus = getCollector().getAdminStatus(ifIndex);
-    	return (adminStatus == -1 ? null : new Integer(adminStatus));
     }
 
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
-    void updateSnmpDataforInterface(OnmsIpInterface ipIf) {
-    
-        OnmsNode node = ipIf.getNode();
-        if (getCollector() == null || !getCollector().hasIpAddrTable() || !getCollector().hasIfTable()) return;
-    
-    	String ipAddr = ipIf.getIpAddress();
-    	log().debug("Creating SNMP info for interface "+ipAddr);
-    
-    	InetAddress inetAddr = ipIf.getInetAddress();
-    
-    	int ifIndex = getCollector().getIfIndex(inetAddr);
-    	if (ifIndex == -1) return;
-    
-        // first look to see if an snmpIf was created already
-        OnmsSnmpInterface snmpIf = node.getSnmpInterfaceWithIfIndex(ifIndex);
-        
-        if (snmpIf == null) {
-            // if not then create one
-            snmpIf = new OnmsSnmpInterface(ipAddr, new Integer(ifIndex), node);
-            snmpIf.setIfAlias(getCollector().getIfAlias(ifIndex));
-            snmpIf.setIfName(getCollector().getIfName(ifIndex));
-            snmpIf.setIfType(getIfType(ifIndex));
-            snmpIf.setNetMask(getNetMask(ifIndex));
-            snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-            snmpIf.setIfDescr(getCollector().getIfDescr(ifIndex));
-            snmpIf.setIfSpeed(getCollector().getIfSpeed(ifIndex));
-            snmpIf.setPhysAddr(getCollector().getPhysAddr(ifIndex));
-        }
-        
-        if (ipIf.getIsSnmpPrimary() == CollectionType.PRIMARY) {
-            // make sure the snmpIf has the ipAddr of the primary interface
-            snmpIf.setIpAddress(ipAddr);
-        }
-    	
-    	ipIf.setSnmpInterface(snmpIf);
-    
-    	//FIXME: Improve OpenNMS to provide these values
-    	// ifOperStatus
-    }
-
     boolean isSnmpDataForInterfacesUpToDate() {
-        return getCollector() != null && getCollector().hasIfTable() && getCollector().hasIpAddrTable();
+        return !getIfTable().failed() && !getIpAddrTable().failed();
     }
 
     boolean isSnmpDataForNodeUpToDate() {
-        return getCollector() != null && getCollector().hasSystemGroup();
+        return !getSystemGroup().failed();
     }
 
     void updateSnmpData(OnmsNode node) {
-        if (getCollector() != null) 
-        	getCollector().run();
+        run();
         
-        ScanResource sr = new ScanResource("SNMP");
-        sr.setNode(node);
-        updateSnmpDataForResource(sr);
+        getSystemGroup().updateSnmpDataForNode(node);
         
-        for (OnmsIpInterface ipIf : node.getIpInterfaces()) {
-            resolveIpHostname(ipIf);
-            updateSnmpDataforInterface(ipIf);
+        if (!getIpAddrTable().failed() && !getIfTable().failed()) {
+            
+            Set<String> ipAddrs = getIpAddressesToUpdate(node);
+            
+            Set<Integer> ifIndices = getIfIndicesToUpdate(node);
+            
+            for(Integer ifIndex : ifIndices) {
+                getIfTable().updateSnmpInterfaceData(node, ifIndex);
+                getIfXTable().updateSnmpInterfaceData(node, ifIndex);
+            }
+                
+             for(String ipAddr : ipAddrs) {   
+                getIpAddrTable().updateIpInterfaceData(node, ipAddr);
+            }
         }
+        
+
+    }
+
+    /**
+     * @param node
+     * @return
+     */
+    private Set<Integer> getIfIndicesToUpdate(OnmsNode node) {
+        //return getIfIndicesForImportedIpAddresses(node);
+        return getIfTable().getIfIndices();
+    }
+
+    /**
+     * @param node
+     * @return
+     */
+    private Set<String> getIpAddressesToUpdate(OnmsNode node) {
+        //return getImportedIpAddresses(node);
+        Set<String> ipAddrs = getIpAddrTable().getIpAddresses();
+        for(Iterator<String> it = ipAddrs.iterator(); it.hasNext(); ) {
+            String ipAddr = it.next();
+            if (PeerFactory.verifyIpMatch(ipAddr, "127.*.*.*")) {
+                it.remove();
+            }
+        }
+        return ipAddrs;
+    }
+
+    /**
+     * @param node
+     * @return
+     */
+    private Set<Integer> getIfIndicesForImportedIpAddresses(OnmsNode node) {
+        Set<Integer> ifIndices = new LinkedHashSet<Integer>();
+        for(OnmsIpInterface ipIf : node.getIpInterfaces()) {
+            Integer ifIndex = getIpAddrTable().getIfIndex(ipIf.getInetAddress());
+            if (ifIndex != null) {
+                ifIndices.add(ifIndex);
+            }
+        }
+        return ifIndices;
+    }
+
+    /**
+     * @param node
+     * @return
+     */
+    private Set<String> getImportedIpAddresses(OnmsNode node) {
+        Set<String> ipAddrs = new LinkedHashSet<String>();
+        for (OnmsIpInterface ipIf : node.getIpInterfaces()) {
+            String ipAddr = ipIf.getIpAddress();
+            if (ipAddr != null) {
+                ipAddrs.add(ipAddr);
+            }
+        }
+        return ipAddrs;
+    }
+
+    /**
+     * 
+     */
+    private void run() {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
+        
+        CollectionTracker tracker = createCollectionTracker();
+        
+        if (log().isDebugEnabled())
+            log().debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
+        
+        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", tracker);
+        walker.start();
+        
+        try {
+            walker.waitFor();
+        
+            // Log any failures
+            //
+            if (getSystemGroup().failed())
+                log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
+            if (getIfTable().failed())
+                log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
+            if (getIpAddrTable().failed())
+                log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
+            if (getIfXTable().failed())
+                log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
+        
+        } catch (InterruptedException e) {
+        
+            tracker.setFailed(true);
+        
+            log().warn("IfSnmpCollector: collection interrupted, exiting", e);
+        
+        }
+    }
+
+    /**
+     * @param ifSnmpCollector TODO
+     * @return
+     */
+    public AggregateTracker createCollectionTracker() {
+        return new AggregateTracker(new CollectionTracker[] { getSystemGroup(), getIfTable(), getIpAddrTable(), getIfXTable()});
     }
 
 }

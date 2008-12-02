@@ -42,8 +42,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -267,7 +265,7 @@ public class BaseProvisionerTest {
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
-        assertEquals(2, getSnmpInterfaceDao().countAll());
+        assertEquals(6, getSnmpInterfaceDao().countAll());
         
     }
     
