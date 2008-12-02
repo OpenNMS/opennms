@@ -39,9 +39,13 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -97,16 +101,16 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return ThreadCategory.getInstance(IfTable.class);
     }
     
-    public int getOperStatus(int ifIndex) {
-        return (getEntry(ifIndex) == null ? -1 : getEntry(ifIndex).getIfOperStatus());
+    public Integer getOperStatus(int ifIndex) {
+        return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfOperStatus());
     }
         
-    public int getAdminStatus(int ifIndex) {
-        return (getEntry(ifIndex) == null ? -1 : getEntry(ifIndex).getIfAdminStatus());
+    public Integer getAdminStatus(int ifIndex) {
+        return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfAdminStatus());
     }
 
-    public int getIfType(int ifIndex) {
-        return (getEntry(ifIndex) == null ? -1 : getEntry(ifIndex).getIfType());
+    public Integer getIfType(int ifIndex) {
+        return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfType());
     }
 
     public String getIfDescr(final int ifIndex) {
@@ -119,6 +123,38 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     
     public String getPhysAddr(final int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getPhysAddr());
+    }
+
+    /**
+     * @param node
+     * @param ifIndex
+     */
+    public void updateSnmpInterfaceData(OnmsNode node, Integer ifIndex) {
+        // first look to see if an snmpIf was created already
+        OnmsSnmpInterface snmpIf = node.getSnmpInterfaceWithIfIndex(ifIndex);
+        
+        if (snmpIf == null) {
+            // if not then create one
+            snmpIf = new OnmsSnmpInterface(null, ifIndex, node);
+        }
+        
+        // IfTable Attributes
+        snmpIf.setIfType(getIfType(ifIndex));
+        snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+        snmpIf.setIfDescr(getIfDescr(ifIndex));
+        snmpIf.setIfSpeed(getIfSpeed(ifIndex));
+        snmpIf.setPhysAddr(getPhysAddr(ifIndex));
+    }
+
+    /**
+     * @return
+     */
+    public Set<Integer> getIfIndices() {
+        Set<Integer> ifIndices = new LinkedHashSet<Integer>();
+        for(SnmpInstId inst : getInstances()) {
+            ifIndices.add(inst.toInt());
+        }
+        return ifIndices;
     }
 
 }

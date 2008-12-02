@@ -42,6 +42,8 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -89,6 +91,23 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
 
     public String getIfAlias(int ifIndex) {
         return getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfAlias();
+    }
+
+    /**
+     * @param node
+     * @param ifIndex
+     */
+    public void updateSnmpInterfaceData(OnmsNode node, Integer ifIndex) {
+        // first look to see if an snmpIf was created already
+        OnmsSnmpInterface snmpIf2 = node.getSnmpInterfaceWithIfIndex(ifIndex);
+        
+        if (snmpIf2 == null) {
+            // if not then create one
+            snmpIf2 = new OnmsSnmpInterface(null, ifIndex, node);
+        }
+        // ifXTable Attributes
+        snmpIf2.setIfAlias(getIfAlias(ifIndex));
+        snmpIf2.setIfName(getIfName(ifIndex));
     }
 
 }

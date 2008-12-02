@@ -43,6 +43,8 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.operations.ScanResource;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -254,6 +256,27 @@ public final class SystemGroup extends AggregateTracker {
 
     private final Category log() {
         return ThreadCategory.getInstance(getClass());
+    }
+
+    /**
+     * @param sr
+     */
+    public void updateSnmpDataForResource(ScanResource sr) {
+        if (!failed()) {
+            sr.setAttribute("sysContact", getSysContact());
+            sr.setAttribute("sysDescription", getSysDescr());
+            sr.setAttribute("sysLocation", getSysLocation());
+            sr.setAttribute("sysObjectId", getSysObjectID());
+        }
+    }
+
+    /**
+     * @param node
+     */
+    public void updateSnmpDataForNode(OnmsNode node) {
+        ScanResource sr = new ScanResource("SNMP");
+        sr.setNode(node);
+        updateSnmpDataForResource(sr);
     }
 
 }
