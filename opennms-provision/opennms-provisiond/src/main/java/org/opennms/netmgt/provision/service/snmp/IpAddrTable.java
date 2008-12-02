@@ -40,9 +40,14 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -98,8 +103,12 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         
     }
     
-    public int getIfIndex(InetAddress address) {
-        return getEntry(address) == null ? -1 : getEntry(address).getIpAdEntIfIndex();
+    public InetAddress getNetMask(InetAddress address) {
+        return getEntry(address) == null ? null : getEntry(address).getIpAdEntNetMask();
+    }
+    
+    public Integer getIfIndex(InetAddress address) {
+        return getEntry(address) == null ? null : getEntry(address).getIpAdEntIfIndex();
     }
 
 
@@ -130,6 +139,50 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
     protected final Category log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
+    }
+
+    /**
+     * @param node
+     * @param ipAddr
+     */
+    public void updateIpInterfaceData(OnmsNode node, String ipAddr) {
+        OnmsIpInterface ipIf = node.getIpInterfaceByIpAddress(ipAddr);
+        if (ipIf == null) {
+            ipIf = new OnmsIpInterface(ipAddr, node);
+        }
+        
+        InetAddress inetAddr = ipIf.getInetAddress();
+        InetAddress mask = getNetMask(inetAddr);
+        Integer ifIndex = getIfIndex(inetAddr);
+        
+        // first look to see if an snmpIf was created already
+        OnmsSnmpInterface snmpIf = node.getSnmpInterfaceWithIfIndex(ifIndex);
+        
+        if (snmpIf == null) {
+            // if not then create one
+            snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, node);
+        }
+    
+        // make sure the snmpIf has the ipAddr of the primary interface
+        snmpIf.setIpAddress(ipAddr);
+        if (mask != null) {
+            snmpIf.setNetMask(mask.getHostAddress());
+        }
+        
+        ipIf.setIpHostName(ipAddr);
+        ipIf.setSnmpInterface(snmpIf);
+    }
+
+    /**
+     * 
+     */
+    public Set<String> getIpAddresses() {
+        Set<String> ipAddrs = new LinkedHashSet<String>();
+        for(SnmpInstId inst : getInstances()) {
+            ipAddrs.add(inst.toString());
+        }
+        return ipAddrs;
+        
     }
 
 }
