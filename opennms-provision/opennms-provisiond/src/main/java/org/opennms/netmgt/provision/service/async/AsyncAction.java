@@ -33,7 +33,6 @@ package org.opennms.netmgt.provision.service.async;
 
 import java.util.concurrent.ExecutorService;
 
-import org.opennms.netmgt.provision.service.Action;
 
 /**
  * AsyncAction

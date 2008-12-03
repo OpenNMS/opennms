@@ -20,7 +20,6 @@
  */
 package org.opennms.netmgt.provision.service.async;
 
-import org.opennms.netmgt.provision.service.Action;
 
 /*
  * Async
