@@ -40,8 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.service.Action;
-import org.opennms.netmgt.provision.service.Computation;
 import org.springframework.util.Assert;
 
 

@@ -29,13 +29,8 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
-/**
- * ScanSequence
- *
- * @author brozow
- */
-public interface ScanSequence {
-
+public interface Action<A> {
+    void action(A a);
 }
