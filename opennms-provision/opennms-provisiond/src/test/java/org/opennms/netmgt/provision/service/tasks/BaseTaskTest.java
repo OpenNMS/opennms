@@ -77,7 +77,7 @@ public class BaseTaskTest {
             }
         };
         
-        BaseTask task = createTask(r);
+        Task task = createTask(r);
         
         task.schedule();
         
@@ -94,9 +94,9 @@ public class BaseTaskTest {
         
         final List<String> sequence = new Vector<String>();
         
-        BaseTask task1 = createTask(appender(sequence, "task1"));
-        BaseTask task2 = createTask(appender(sequence, "task2"));
-        BaseTask task3 = createTask(appender(sequence, "task3"));
+        Task task1 = createTask(appender(sequence, "task1"));
+        Task task2 = createTask(appender(sequence, "task2"));
+        Task task3 = createTask(appender(sequence, "task3"));
 
         task2.addPrerequisite(task1);
         task3.addPrerequisite(task2);
@@ -113,7 +113,7 @@ public class BaseTaskTest {
         
     }
 
-    private BaseTask createTask(final Runnable runnable) {
+    private Task createTask(final Runnable runnable) {
         return m_coordinator.createTask(runnable);
     }
     
@@ -123,9 +123,9 @@ public class BaseTaskTest {
         
         final List<String> sequence = new Vector<String>();
         
-        BaseTask task1 = createTask(appender(sequence, "task1"));
-        BaseTask task2 = createTask(appender(sequence, "task2"));
-        BaseTask task3 = createTask(appender(sequence, "task3"));
+        Task task1 = createTask(appender(sequence, "task1"));
+        Task task2 = createTask(appender(sequence, "task2"));
+        Task task3 = createTask(appender(sequence, "task3"));
 
         task1.schedule();
         
@@ -199,8 +199,8 @@ public class BaseTaskTest {
         
         List<String> sequence = new Vector<String>();
         
-        BaseTask task1 = m_coordinator.createTask(appender(sequence, "task1"));
-        BaseTask task2 = m_coordinator.createTask(appender(sequence, "task2"));
+        Task task1 = m_coordinator.createTask(appender(sequence, "task1"));
+        Task task2 = m_coordinator.createTask(appender(sequence, "task2"));
 
         SequenceTask seq = new SequenceTask(m_coordinator);
 
@@ -239,9 +239,9 @@ public class BaseTaskTest {
 
 
         // create the tasks and a simple prerequisite and schedule
-        BaseTask a = createTask(waiter("A", aBlocker));
-        BaseTask b = createTask(waiter("B", bBlocker));
-        BaseTask c = createTask(waiter("C", cBlocker));
+        Task a = createTask(waiter("A", aBlocker));
+        Task b = createTask(waiter("B", bBlocker));
+        Task c = createTask(waiter("C", cBlocker));
 
         c.addPrerequisite(a);
         

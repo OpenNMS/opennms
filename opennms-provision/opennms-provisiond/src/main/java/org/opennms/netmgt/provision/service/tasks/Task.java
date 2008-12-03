@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author brozow
  */
-public class BaseTask {
+public class Task {
     
     private final DefaultTaskCoordinator m_coordinator;
     private final Runnable m_action;
@@ -63,14 +63,14 @@ public class BaseTask {
     private final CountDownLatch m_latch = new CountDownLatch(1);
     
     private final AtomicInteger m_pendingPrereqs = new AtomicInteger(0);
-    private final Set<BaseTask> m_dependents = new HashSet<BaseTask>();
-    private final Set<BaseTask> m_prerequisites = new HashSet<BaseTask>();
+    private final Set<Task> m_dependents = new HashSet<Task>();
+    private final Set<Task> m_prerequisites = new HashSet<Task>();
     
-    public BaseTask(DefaultTaskCoordinator coordinator) {
+    public Task(DefaultTaskCoordinator coordinator) {
         this(coordinator, null);
     }
 
-    public BaseTask(DefaultTaskCoordinator coordinator, Runnable action) {
+    public Task(DefaultTaskCoordinator coordinator, Runnable action) {
         m_coordinator = coordinator;
         m_action = action;
     }
@@ -83,11 +83,11 @@ public class BaseTask {
      * These are final and package protected because they should ONLY be accessed by the TAskCoordinator
      * This is for thread safety and efficiency.  use 'addDependency' to update these.
      */
-    final Set<BaseTask> getDependents() {
+    final Set<Task> getDependents() {
         return m_dependents;
     }
     
-    final void doAddDependent(BaseTask dependent) {
+    final void doAddDependent(Task dependent) {
         m_dependents.add(dependent);
     }
     
@@ -95,17 +95,17 @@ public class BaseTask {
      * These are final and package protected because they should ONLY be accessed by the TAskCoordinator
      * This is for thread safety and efficiency.  use 'addDependency' to update these
      */
-    final Set<BaseTask> getPrerequisites() {
+    final Set<Task> getPrerequisites() {
         return m_prerequisites;
     }
     
-    final void doAddPrerequisite(BaseTask prereq) {
+    final void doAddPrerequisite(Task prereq) {
         if (!prereq.isFinished()) {
             m_prerequisites.add(prereq);
         }
     }
     
-    final void doRemovePrerequisite(BaseTask prereq) {
+    final void doRemovePrerequisite(Task prereq) {
         m_prerequisites.remove(prereq);
     }
     
@@ -154,7 +154,7 @@ public class BaseTask {
     final Runnable getRunnable() {
         return new Runnable() {
           public void run() {
-              BaseTask.this.run();
+              Task.this.run();
           }
         };
     }
@@ -205,7 +205,7 @@ public class BaseTask {
      * Add's prereq as a Prerequisite of this task. In other words... this taks cannot run
      * until prereq was been complted.
      */
-    public void addPrerequisite(BaseTask prereq) {
+    public void addPrerequisite(Task prereq) {
         m_coordinator.addDependency(prereq, this);
     }
     
@@ -213,7 +213,7 @@ public class BaseTask {
      * Adds dependent as a dependent of this task.  So dependent will not be able to run
      * until this task has been completed.
      */
-    public void addDependent(BaseTask dependent) {
+    public void addDependent(Task dependent) {
         m_coordinator.addDependency(this, dependent);
     }
 

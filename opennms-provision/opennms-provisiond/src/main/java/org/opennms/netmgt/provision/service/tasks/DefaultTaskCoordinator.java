@@ -124,8 +124,8 @@ public class DefaultTaskCoordinator {
         
     }
     
-    public BaseTask createTask(Runnable r) {
-        return new BaseTask(this, r);
+    public Task createTask(Runnable r) {
+        return new Task(this, r);
     }
     
     public BatchTask createBatch() {
@@ -140,11 +140,11 @@ public class DefaultTaskCoordinator {
         m_loopDelay = millis;
     }
     
-    public void schedule(final BaseTask task) {
+    public void schedule(final Task task) {
         onProcessorThread(scheduler(task));
     }
     
-    public void addDependency(BaseTask prereq, BaseTask dependent) {
+    public void addDependency(Task prereq, Task dependent) {
         // this is only needed when add dependencies while running
         dependent.incrPendingPrereq();
         onProcessorThread(dependencyAdder(prereq, dependent));
@@ -176,7 +176,7 @@ public class DefaultTaskCoordinator {
 
     
 
-    private Runnable scheduler(final BaseTask task) {
+    private Runnable scheduler(final Task task) {
         return new Runnable() {
             public void run() {
                 task.scheduled();
@@ -188,7 +188,7 @@ public class DefaultTaskCoordinator {
         };
     }
     
-    private Runnable taskCompleter(final BaseTask task) {
+    private Runnable taskCompleter(final Task task) {
         return new Runnable() {
             public void run() {
                 notifyDependents(task);
@@ -200,13 +200,13 @@ public class DefaultTaskCoordinator {
     }
     
     
-    private void notifyDependents(BaseTask completed) {
+    private void notifyDependents(Task completed) {
         System.err.printf("Task %s completed!\n", completed);
         completed.onComplete();
 
-        final Set<BaseTask> dependents = completed.getDependents();
+        final Set<Task> dependents = completed.getDependents();
         //System.err.printf("Task %s afters = %s\n", completed, dependents);
-        for(BaseTask dependent : dependents) {
+        for(Task dependent : dependents) {
             //System.err.printf("Checking the prereqs for %s\n", dependent);
             dependent.doRemovePrerequisite(completed);
             //System.err.printf("Task %s %s ready\n", dependent, dependent.isReady() ? "is" : "is not");
@@ -219,7 +219,7 @@ public class DefaultTaskCoordinator {
      * The returns a runnable that is run on the taskCoordinator thread.. This is 
      * done to keep the Task data structures thread safe.
      */
-    private Runnable dependencyAdder(final BaseTask prereq, final BaseTask dependent) {
+    private Runnable dependencyAdder(final Task prereq, final Task dependent) {
         return new Runnable() {
             public void run() {
                 prereq.doAddDependent(dependent);
@@ -239,7 +239,7 @@ public class DefaultTaskCoordinator {
         };
     }
 
-    private void submitIfReady(final BaseTask task) {
+    private void submitIfReady(final Task task) {
         if (task.isReady()) {
             m_taskCompletionService.submit(task.getRunnable(), taskCompleter(task));
             task.submitted();

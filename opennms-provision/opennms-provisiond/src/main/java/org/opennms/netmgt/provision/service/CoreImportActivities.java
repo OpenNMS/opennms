@@ -43,7 +43,7 @@ import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
-import org.opennms.netmgt.provision.service.tasks.BaseTask;
+import org.opennms.netmgt.provision.service.tasks.Task;
 import org.opennms.netmgt.provision.service.tasks.BatchTask;
 import org.springframework.core.io.Resource;
 
@@ -126,7 +126,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "scan")
-    public BaseTask scanNodes(LifeCycleInstance lifeCycle) {
+    public Task scanNodes(LifeCycleInstance lifeCycle) {
         ImportOperationsManager opsMgr = lifeCycle.getAttribute("opsMgr", ImportOperationsManager.class);
         
         System.out.println("Scheduling Nodes");
@@ -138,7 +138,7 @@ public class CoreImportActivities {
             LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle("nodeScan");
             System.out.printf("Created  LifeCycle %s for op %s\n", nodeScan, op);
             nodeScan.setAttribute("operation", op);
-            batch.add((BaseTask)nodeScan);
+            batch.add((Task)nodeScan);
         }
 
 
@@ -166,7 +166,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "relate" )
-    public BaseTask relateNodes(final LifeCycleInstance lifeCycle) {
+    public Task relateNodes(final LifeCycleInstance lifeCycle) {
         
         
         System.out.println("Running relate phase");
