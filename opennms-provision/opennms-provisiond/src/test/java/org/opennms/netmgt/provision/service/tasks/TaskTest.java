@@ -55,7 +55,7 @@ import org.junit.Test;
  *
  * @author brozow
  */
-public class BaseTaskTest {
+public class TaskTest {
     
     ExecutorService m_executor;
     DefaultTaskCoordinator m_coordinator;
