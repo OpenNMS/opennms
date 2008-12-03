@@ -35,7 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
-import org.opennms.netmgt.provision.service.tasks.BaseTask;
+import org.opennms.netmgt.provision.service.tasks.Task;
 import org.opennms.netmgt.provision.service.tasks.BatchTask;
 
 class Phase extends BatchTask {
@@ -141,8 +141,8 @@ class Phase extends BatchTask {
 
         private void doInvoke(LifeCycleInstance lifeCycle) throws IllegalAccessException, InvocationTargetException {
             Object retVal = m_method.invoke(m_target, lifeCycle);
-            if (retVal instanceof BaseTask) {
-                add((BaseTask)retVal);
+            if (retVal instanceof Task) {
+                add((Task)retVal);
             } 
         }
         
