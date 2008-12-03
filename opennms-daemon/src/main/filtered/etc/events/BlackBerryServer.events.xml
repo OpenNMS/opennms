@@ -38,6 +38,7 @@
 		<maskelement>
 			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.3530.9.1.0</mevalue>
+			<mevalue>.1.3.6.1.4.1.3530.9.3.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -64,6 +65,7 @@ in Exchange BES.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<maskelement>
 			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.3530.9.1.0</mevalue>
+			<mevalue>.1.3.6.1.4.1.3530.9.5.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -92,6 +94,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<maskelement>
 			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.3530.9.1.0</mevalue>
+			<mevalue>.1.3.6.1.4.1.3530.9.7.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -117,6 +120,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<maskelement>
 			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.3530.9.1.0</mevalue>
+			<mevalue>.1.3.6.1.4.1.3530.9.11.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -142,6 +146,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<maskelement>
 			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.3530.9.1.0</mevalue>
+			<mevalue>.1.3.6.1.4.1.3530.9.13.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -167,6 +172,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<maskelement>
 			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.3530.9.1.0</mevalue>
+			<mevalue>.1.3.6.1.4.1.3530.9.21.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
