@@ -338,6 +338,15 @@
       </statement>
     </action>
 
+    <!-- Does nothing while still meeting the requirements of all actions -->
+    <action name="doNothingAction" >
+      <statement>
+        UPDATE node
+           SET nodeid = -1
+         WHERE nodeid = -1
+      </statement>
+    </action>
+
   </actions>
 
   <!--  Deprecating this element... see the new <action-events> element -->    
