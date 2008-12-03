@@ -37,9 +37,9 @@ public class SequenceTask extends ContainerTask {
     }
 
     @Override
-    protected void addChildDependencies(BaseTask child) {
+    protected void addChildDependencies(Task child) {
         if (m_children.size() > 0) {
-            BaseTask last = m_children.get(m_children.size()-1);
+            Task last = m_children.get(m_children.size()-1);
             child.addPrerequisite(last);
         } else {
             child.addPrerequisite(getTriggerTask());

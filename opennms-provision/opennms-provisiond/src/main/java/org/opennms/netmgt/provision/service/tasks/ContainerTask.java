@@ -27,10 +27,10 @@ import java.util.List;
  * ContainerTask
  * @author brozow
  */
-public class ContainerTask extends BaseTask {
+public class ContainerTask extends Task {
 
-    protected BaseTask m_triggerTask;
-    protected List<BaseTask> m_children = new ArrayList<BaseTask>();
+    protected Task m_triggerTask;
+    protected List<Task> m_children = new ArrayList<Task>();
 
     public ContainerTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
@@ -41,7 +41,7 @@ public class ContainerTask extends BaseTask {
     }
 
     @Override
-    public void addPrerequisite(BaseTask task) {
+    public void addPrerequisite(Task task) {
         super.addPrerequisite(task);
         m_triggerTask.addPrerequisite(task);
     }
@@ -49,17 +49,17 @@ public class ContainerTask extends BaseTask {
     @Override
     public void schedule() {
         m_triggerTask.schedule();
-        for(BaseTask task : m_children) {
+        for(Task task : m_children) {
             task.schedule();
         }
         super.schedule();
     }
     
-    protected BaseTask getTriggerTask() {
+    protected Task getTriggerTask() {
         return m_triggerTask;
     }
 
-    public void add(BaseTask task) {
+    public void add(Task task) {
         super.addPrerequisite(task);
         addChildDependencies(task);
         m_children.add(task);
@@ -72,7 +72,7 @@ public class ContainerTask extends BaseTask {
         add(getCoordinator().createTask(runnable));
     }
 
-    protected void addChildDependencies(BaseTask child) {
+    protected void addChildDependencies(Task child) {
         child.addPrerequisite(m_triggerTask);
     }
 
