@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.service.async;
 
 public interface Computation<A, B> {
     B compute(A a) throws Exception;
