@@ -78,8 +78,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr)) {
-            log().error("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
-            System.err.println("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
+		    String msg = String.format("Found interface on node %s with an empty ipaddr! Ignoring!", m_node.getLabel());
+            log().error(msg);
+            System.err.println(msg);
 			return;
 		}
 
@@ -94,7 +95,8 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         try {
             m_scanManager = new ScanManager(InetAddress.getByName(ipAddr));
         } catch (UnknownHostException e) {
-            log().error("Unable to resolve address of snmpPrimary interface for node "+m_node.getLabel(), e);
+            String msg = String.format("Unable to resolve address of snmpPrimary interface for node %s with address '%s'",m_node.getLabel(), ipAddr);
+            log().error(msg, e);
         }
         
         

@@ -37,6 +37,7 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -120,22 +121,21 @@ public class ScanManager {
         
         getSystemGroup().updateSnmpDataForNode(node);
         
-        if (!getIpAddrTable().failed() && !getIfTable().failed()) {
-            
-            Set<String> ipAddrs = getIpAddressesToUpdate(node);
-            
-            Set<Integer> ifIndices = getIfIndicesToUpdate(node);
-            
-            for(Integer ifIndex : ifIndices) {
-                getIfTable().updateSnmpInterfaceData(node, ifIndex);
-                getIfXTable().updateSnmpInterfaceData(node, ifIndex);
-            }
-                
-             for(String ipAddr : ipAddrs) {   
-                getIpAddrTable().updateIpInterfaceData(node, ipAddr);
-            }
+        Set<String> ipAddrs = getIpAddressesToUpdate(node);
+        
+        Set<Integer> ifIndices = getIfIndicesToUpdate(node);
+        
+        for(Integer ifIndex : ifIndices) {
+            getIfTable().updateSnmpInterfaceData(node, ifIndex);
         }
         
+        for(Integer ifIndex : ifIndices) {
+            getIfXTable().updateSnmpInterfaceData(node, ifIndex);
+        }
+                
+        for(String ipAddr : ipAddrs) {   
+            getIpAddrTable().updateIpInterfaceData(node, ipAddr);
+        }
 
     }
 
@@ -145,7 +145,11 @@ public class ScanManager {
      */
     private Set<Integer> getIfIndicesToUpdate(OnmsNode node) {
         //return getIfIndicesForImportedIpAddresses(node);
-        return getIfTable().getIfIndices();
+        if (getIfTable().failed()) {
+            return Collections.emptySet();
+        } else {
+            return getIfTable().getIfIndices();
+        }
     }
 
     /**
@@ -154,6 +158,9 @@ public class ScanManager {
      */
     private Set<String> getIpAddressesToUpdate(OnmsNode node) {
         //return getImportedIpAddresses(node);
+        if (getIpAddrTable().failed()) {
+            return Collections.emptySet();
+        }
         Set<String> ipAddrs = getIpAddrTable().getIpAddresses();
         for(Iterator<String> it = ipAddrs.iterator(); it.hasNext(); ) {
             String ipAddr = it.next();

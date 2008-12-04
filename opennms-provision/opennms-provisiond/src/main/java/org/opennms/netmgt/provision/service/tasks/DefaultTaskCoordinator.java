@@ -34,19 +34,24 @@ package org.opennms.netmgt.provision.service.tasks;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * TaskCoordinator
  *
  * @author brozow
  */
-public class DefaultTaskCoordinator {
+public class DefaultTaskCoordinator implements InitializingBean {
     
     /*
      * Refactor this code....
@@ -86,8 +91,10 @@ public class DefaultTaskCoordinator {
         
         public void run() {
             try {
+                int count = 0;
                 while(true) {
                     Runnable r = m_queue.take().get();
+                    System.out.printf("Processing completion %d with queue size %d\n", ++count, m_queue.size());
                     //System.err.printf("Processing %s\n", r);
                     //System.err.printf("Processing %s, queue is %s\n", r, m_queue);
                     if (r != null) {
@@ -107,20 +114,39 @@ public class DefaultTaskCoordinator {
         }
     }
     
-    private final ExecutorService m_executor;
 
     private final BlockingQueue<Future<Runnable>> m_queue;
-    private final CompletionService<Runnable> m_taskCompletionService;
+    private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
     private final RunnableActor m_actor;
     
-    // This is used to adjust timing during testing
-    private Long m_loopDelay; 
+    private String m_defaultExecutor ;
+    private CompletionService<Runnable> m_defaultCompletionService;
     
-    public DefaultTaskCoordinator(ExecutorService executor) {
-        m_executor = executor;
+    // This is used to adjust timing during testing
+    private Long m_loopDelay;
+
+    public DefaultTaskCoordinator() {
         m_queue = new LinkedBlockingQueue<Future<Runnable>>();
-        m_taskCompletionService = new ExecutorCompletionService<Runnable>(m_executor, m_queue);
         m_actor = new RunnableActor(m_queue);
+        addExecutor(Task.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor());
+    }
+    
+    public DefaultTaskCoordinator(Executor defaultExecutor) {
+        this();
+        m_defaultExecutor = "default";
+        addExecutor("default", defaultExecutor);
+    }
+
+    public void setDefaultExecutor(String executorName) {
+        m_defaultExecutor = executorName;
+    }
+    
+    public void afterPropertiesSet() {
+        Assert.notNull(m_defaultExecutor, "defaultExecutor must be set");
+        
+        m_defaultCompletionService = getCompletionService(m_defaultExecutor);
+        
+        Assert.notNull(m_defaultCompletionService, "defaultExecutor must be set to the name of an added executor");
         
     }
     
@@ -209,7 +235,9 @@ public class DefaultTaskCoordinator {
         for(Task dependent : dependents) {
             //System.err.printf("Checking the prereqs for %s\n", dependent);
             dependent.doRemovePrerequisite(completed);
-            //System.err.printf("Task %s %s ready\n", dependent, dependent.isReady() ? "is" : "is not");
+            if (dependent.isReady()) {
+                System.err.printf("\tTask %s %s ready with hint: %s\n", dependent, dependent.isReady() ? "is" : "is not", dependent.getPreferredExecutor());
+            }
             
             submitIfReady(dependent);
         }   
@@ -238,13 +266,26 @@ public class DefaultTaskCoordinator {
             }
         };
     }
+    
+    private CompletionService<Runnable> getCompletionService(String name) {
+        CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
+        System.err.printf("USING COMPLETION SERVICE %s : %s!!!!!!\n", name, completionService);
+        return completionService != null ? completionService : m_defaultCompletionService;
+    }
 
     private void submitIfReady(final Task task) {
         if (task.isReady()) {
-            m_taskCompletionService.submit(task.getRunnable(), taskCompleter(task));
+            
+            final String preferredExecutor = task.getPreferredExecutor();
+            getCompletionService(preferredExecutor).submit(task.getRunnable(), taskCompleter(task));
+            
+            System.out.printf("SUBMIT: Task %s to executor %s\n", task, preferredExecutor);
             task.submitted();
         }
     }
-    
+
+    public void addExecutor(String executorName, Executor executor) {
+        m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
+    }
 
 }

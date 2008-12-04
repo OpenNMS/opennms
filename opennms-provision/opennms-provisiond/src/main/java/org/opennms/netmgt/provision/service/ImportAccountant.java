@@ -57,7 +57,7 @@ public class ImportAccountant extends AbstractImportVisitor {
     }
 
     public void visitInterface(Interface iface) {
-        m_currentOp.foundInterface(iface.getIpAddr(), iface.getDescr(), iface.getSnmpPrimary(), iface.getManaged(), iface.getStatus());
+        m_currentOp.foundInterface(iface.getIpAddr().trim(), iface.getDescr(), iface.getSnmpPrimary(), iface.getManaged(), iface.getStatus());
         
     }
     

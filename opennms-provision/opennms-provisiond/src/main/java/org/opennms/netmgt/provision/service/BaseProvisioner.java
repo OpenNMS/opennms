@@ -36,6 +36,7 @@
 //
 package org.opennms.netmgt.provision.service;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Category;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -69,7 +71,16 @@ public class BaseProvisioner implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         
-        DefaultLifeCycleRepository lifeCycleRepository = new DefaultLifeCycleRepository(Executors.newFixedThreadPool(m_scanThreads+m_writeThreads));
+        Executor m_scanExecutor = Executors.newFixedThreadPool(m_scanThreads);
+        Executor m_writeExecutor = Executors.newFixedThreadPool(m_writeThreads);
+        
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator();
+        coordinator.setDefaultExecutor("scan");
+        coordinator.addExecutor("scan", m_scanExecutor);
+        coordinator.addExecutor("write", m_writeExecutor);
+        coordinator.afterPropertiesSet();
+        
+        DefaultLifeCycleRepository lifeCycleRepository = new DefaultLifeCycleRepository(coordinator);
         
         LifeCycle importLifeCycle = new LifeCycle("import")
             .addPhase("validate")

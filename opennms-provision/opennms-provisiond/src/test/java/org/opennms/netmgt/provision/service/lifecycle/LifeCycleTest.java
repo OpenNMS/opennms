@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 
 
 /**
@@ -54,7 +55,9 @@ public class LifeCycleTest {
     
     @Before
     public void setUp() {
-        m_lifeCycleRepository = new DefaultLifeCycleRepository(Executors.newSingleThreadExecutor());
+        
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
+        m_lifeCycleRepository = new DefaultLifeCycleRepository(coordinator);
     }
 
 

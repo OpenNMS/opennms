@@ -43,8 +43,8 @@ import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
-import org.opennms.netmgt.provision.service.tasks.Task;
 import org.opennms.netmgt.provision.service.tasks.BatchTask;
+import org.opennms.netmgt.provision.service.tasks.Task;
 import org.springframework.core.io.Resource;
 
 /**
@@ -157,7 +157,7 @@ public class CoreImportActivities {
         System.out.println("Finished Running scan phase of "+operation);
     }
     
-    @Activity( lifecycle = "nodeScan", phase = "persist" )
+    @Activity( lifecycle = "nodeScan", phase = "persist" , schedulingHint = "write" )
     public void persistNode(LifeCycleInstance lifeCycle) {
         ImportOperation operation = lifeCycle.getAttribute("operation", ImportOperation.class);
         System.out.println("Running persist phase of "+operation);
@@ -165,7 +165,7 @@ public class CoreImportActivities {
         System.out.println("Finished Running persist phase of "+operation);
     }
     
-    @Activity( lifecycle = "import", phase = "relate" )
+    @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
     public Task relateNodes(final LifeCycleInstance lifeCycle) {
         
         
