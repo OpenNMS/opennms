@@ -30,18 +30,20 @@
  */
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
-
-import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.IoFuture;
 
 /**
  * @author thedesloge
  *
  */
-public interface DetectorFuture extends ConnectFuture{
+public interface DetectFuture extends IoFuture {
     
-    public InetAddress getAddress();
+    public AsyncServiceDetector getServiceDetector();
     
-    public boolean get();
+    public boolean isServiceDetected();
+    
+    public void setServiceDetected(boolean serviceDetected);
+    
+    public void setException(Throwable throwable);
     
 }
