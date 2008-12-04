@@ -1948,29 +1948,380 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Cisco PIX1">
+      <systemDef name="Cisco PIX1"><!-- PIX 515 -->
         <sysoid>.1.3.6.1.4.1.9.1.390</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
         </collect>
       </systemDef>
 
-      <systemDef name="Cisco PIX2">
+      <systemDef name="Cisco PIX2"><!-- PIX 501 -->
         <sysoid>.1.3.6.1.4.1.9.1.417</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
         </collect>
       </systemDef>
 
-      <systemDef name="Cisco PIX3">
+      <systemDef name="Cisco PIX3"><!-- PIX 515E -->
         <sysoid>.1.3.6.1.4.1.9.1.451</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
         </collect>
       </systemDef>
-      
+
+      <systemDef name="Cisco PIX - ciscoPIXFirewall">
+        <sysoid>.1.3.6.1.4.1.9.1.227</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 506">
+        <sysoid>.1.3.6.1.4.1.9.1.389</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 520">
+        <sysoid>.1.3.6.1.4.1.9.1.391</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 525">
+        <sysoid>.1.3.6.1.4.1.9.1.392</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 535">
+        <sysoid>.1.3.6.1.4.1.9.1.393</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 506E">
+        <sysoid>.1.3.6.1.4.1.9.1.450</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 535sc">
+        <sysoid>.1.3.6.1.4.1.9.1.675</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 525sc">
+        <sysoid>.1.3.6.1.4.1.9.1.676</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515Esc">
+        <sysoid>.1.3.6.1.4.1.9.1.677</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515sc">
+        <sysoid>.1.3.6.1.4.1.9.1.678</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515sy">
+        <sysoid>.1.3.6.1.4.1.9.1.768</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515Esy">
+        <sysoid>.1.3.6.1.4.1.9.1.769</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 525sy">
+        <sysoid>.1.3.6.1.4.1.9.1.770</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 535sy">
+        <sysoid>.1.3.6.1.4.1.9.1.771</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4210">
+        <sysoid>.1.3.6.1.4.1.9.1.645</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4215">
+        <sysoid>.1.3.6.1.4.1.9.1.646</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4235">
+        <sysoid>.1.3.6.1.4.1.9.1.647</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250">
+        <sysoid>.1.3.6.1.4.1.9.1.649</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250SX">
+        <sysoid>.1.3.6.1.4.1.9.1.650</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250XL">
+        <sysoid>.1.3.6.1.4.1.9.1.651</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS IDSM2">
+        <sysoid>.1.3.6.1.4.1.9.1.653</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS NMCIDS">
+        <sysoid>.1.3.6.1.4.1.9.1.654</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4220">
+        <sysoid>.1.3.6.1.4.1.9.1.741</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4230">
+        <sysoid>.1.3.6.1.4.1.9.1.742</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4215 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.807</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4235 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.808</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.809</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250SX Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.810</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250XL Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.811</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4240 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.812</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4255 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.813</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4260 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.814</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS IDSM2 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.815</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco ASA5510">
         <sysoid>1.3.6.1.4.1.9.1.669</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5520">
+        <sysoid>.1.3.6.1.4.1.9.1.670</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5520sc">
+        <sysoid>.1.3.6.1.4.1.9.1.671</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5540">
+        <sysoid>.1.3.6.1.4.1.9.1.672</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5540sc">
+        <sysoid>.1.3.6.1.4.1.9.1.673</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5505">
+        <sysoid>.1.3.6.1.4.1.9.1.745</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5550">
+        <sysoid>.1.3.6.1.4.1.9.1.753</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5550sc">
+        <sysoid>.1.3.6.1.4.1.9.1.763</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5520sy">
+        <sysoid>.1.3.6.1.4.1.9.1.764</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5540sy">
+        <sysoid>.1.3.6.1.4.1.9.1.765</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5550sy">
+        <sysoid>.1.3.6.1.4.1.9.1.766</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5510sc">
+        <sysoid>.1.3.6.1.4.1.9.1.773</sysoid>
+        <collect>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5510sy">
+        <sysoid>.1.3.6.1.4.1.9.1.774</sysoid>
         <collect>
 	      <includeGroup>cisco-pix</includeGroup>
 	      <includeGroup>cisco-cike</includeGroup>
