@@ -33,7 +33,7 @@ package org.opennms.netmgt.provision.support;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.provision.AsyncServiceDetector;
-import org.opennms.netmgt.provision.DetectorFuture;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
 
 /**
@@ -68,7 +68,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     
     abstract protected void onInit();
     
-    abstract public DetectorFuture isServiceDetected(InetAddress address, DetectorMonitor monitor);
+    abstract public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor);
     
     public void setPort(int port) {
         m_port = port;

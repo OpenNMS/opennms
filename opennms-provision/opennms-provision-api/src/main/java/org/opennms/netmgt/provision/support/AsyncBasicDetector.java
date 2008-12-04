@@ -42,7 +42,7 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.opennms.netmgt.provision.DetectorFuture;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
 
 /**
@@ -58,36 +58,33 @@ public abstract class AsyncBasicDetector extends AsyncAbstractDetector {
     
     abstract protected void onInit();
     
-    @SuppressWarnings("deprecation")
     @Override
-    public DetectorFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) {
+    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) {
         SocketConnector connector = new NioSocketConnector();
+        
+        DetectFuture future = new DefaultDetectFuture(this);
 
         // Set connect timeout.
          //connector.getDefaultConfig().setConnectTimeout(30);
         connector.setConnectTimeoutMillis( 3000 );
-        connector.setHandler( getDetectorHandler() );
+        connector.setHandler( createDetectorHandler(future) );
         connector.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
         connector.getFilterChain().addLast( "codec", getProtocolCodecFilter());
         connector.getSessionConfig().setIdleTime( IdleStatus.READER_IDLE, getIdleTime() );
 
-        // Start communication.
-        //ConnectFuture cf = connector.connect( new InetSocketAddress( address, 9123 ));
-        DetectorFuture df = (DetectorFuture) connector.connect( new InetSocketAddress( address, 9123 ));
-        
-        // Wait for the connection attempt to be finished.
-        df.join();
-        df.getSession();
-        
-        return df;
+        // Start communication
+        connector.connect( new InetSocketAddress( address, 9123 ));
+
+        return future;
     }
 
     public void setDetectorHandler(IoHandlerAdapter detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
 
-    public IoHandlerAdapter getDetectorHandler() {
-        return m_detectorHandler;
+    public IoHandlerAdapter createDetectorHandler(DetectFuture future) {
+        //return new MyDetectorHandler(future);
+        return null;
     }
 
     public void setLoggingFilter(IoFilterAdapter filterLogging) {

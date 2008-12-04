@@ -33,12 +33,15 @@ package org.opennms.netmgt.provision.detector;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.opennms.netmgt.provision.DetectFuture;
 
 /**
  * @author thedesloge
  *
  */
 public class AsyncPop3Handler extends IoHandlerAdapter {
+    
+    DetectFuture m_future;
     
     public void sessionOpened(IoSession session) {
         // Set reader idle time to 10 seconds.
@@ -52,6 +55,8 @@ public class AsyncPop3Handler extends IoHandlerAdapter {
     
     public void exceptionCaught(IoSession session, Throwable cause)    throws Exception {
         cause.printStackTrace();
+        
+        m_future.setException(cause);
     }
 
     public void sessionClosed(IoSession session) {
@@ -67,6 +72,16 @@ public class AsyncPop3Handler extends IoHandlerAdapter {
 
     public void messageReceived(IoSession session, Object message) {
         System.out.println("yo: " + message.toString().trim());
+        
+//        if (matchExpected()) {
+//            if (more())  {
+//                sendnext();
+//            } else {
+//                m_future.setServiceDetected(true);
+//            }
+//        } else {
+//            m_futre.setServiceDetected(false);
+//        }
         
     }
 
