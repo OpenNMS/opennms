@@ -33,7 +33,6 @@ package org.opennms.netmgt.provision.service.lifecycle;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 
@@ -43,8 +42,8 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
     
     final private DefaultTaskCoordinator m_coordinator;
     
-    public DefaultLifeCycleRepository(ExecutorService executor) {
-        m_coordinator = new DefaultTaskCoordinator(executor);
+    public DefaultLifeCycleRepository(DefaultTaskCoordinator coordinator) {
+        m_coordinator = coordinator;
     }
 
     public LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers) {

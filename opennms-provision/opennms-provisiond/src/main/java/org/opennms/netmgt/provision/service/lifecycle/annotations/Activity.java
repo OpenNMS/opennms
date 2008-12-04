@@ -48,5 +48,7 @@ public @interface Activity {
     String phase();
 
     String lifecycle();
+    
+    String schedulingHint() default "unset";
 
 }

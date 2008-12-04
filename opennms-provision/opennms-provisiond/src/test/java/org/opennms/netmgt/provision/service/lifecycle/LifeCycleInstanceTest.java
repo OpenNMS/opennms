@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 
 
 
@@ -205,7 +206,9 @@ public class LifeCycleInstanceTest {
     @Before
     public void setUp() {
         
-        DefaultLifeCycleRepository repository = new DefaultLifeCycleRepository(Executors.newFixedThreadPool(10));
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newFixedThreadPool(10));
+        
+        DefaultLifeCycleRepository repository = new DefaultLifeCycleRepository(coordinator);
         
         LifeCycle lifeCycle = new LifeCycle("sample")
         .addPhases("phase1", "phase2", "phase3");

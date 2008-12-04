@@ -45,10 +45,14 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author brozow
  */
-public class Task {
+public class Task extends Async {
+    
+    public static final String DEFAULT_EXECUTOR = "default";
+    public static final String ADMIN_EXECUTOR = "admin";
     
     private final DefaultTaskCoordinator m_coordinator;
     private final Runnable m_action;
+    private String m_preferredExecutor = DEFAULT_EXECUTOR;
     
     private static enum State {
         NEW,
@@ -233,6 +237,14 @@ public class Task {
 
     public String toString() {
         return m_action == null ? super.toString() : m_action.toString();
+    }
+
+    public String getPreferredExecutor() {
+        return m_preferredExecutor;
+    }
+    
+    public void setPreferredExecutor(String preferredExecutor) {
+        m_preferredExecutor = preferredExecutor;
     }
 
 }

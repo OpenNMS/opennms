@@ -31,13 +31,16 @@ public class ContainerTask extends Task {
 
     protected Task m_triggerTask;
     protected List<Task> m_children = new ArrayList<Task>();
-
+    protected String m_childPreferredExecutor = DEFAULT_EXECUTOR;
+    
     public ContainerTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
+        super.setPreferredExecutor(ADMIN_EXECUTOR);
         m_triggerTask = coordinator.createTask(new Runnable() {
             public void run() {};
             public String toString() { return "Trigger For "+ContainerTask.this; }
         });
+        m_triggerTask.setPreferredExecutor(ADMIN_EXECUTOR);
     }
 
     @Override
@@ -52,9 +55,22 @@ public class ContainerTask extends Task {
         for(Task task : m_children) {
             task.schedule();
         }
+        m_children.clear();
         super.schedule();
     }
     
+    protected String getChildPreferredExecutor() {
+        return m_childPreferredExecutor;
+    }
+    
+    @Override
+    public void setPreferredExecutor(String preferredExecutor) {
+        m_childPreferredExecutor = preferredExecutor;
+        for(Task task : m_children) {
+            setPreferredExecutorOfChild(task);
+        }
+    }
+
     protected Task getTriggerTask() {
         return m_triggerTask;
     }
@@ -62,9 +78,24 @@ public class ContainerTask extends Task {
     public void add(Task task) {
         super.addPrerequisite(task);
         addChildDependencies(task);
-        m_children.add(task);
+        setPreferredExecutorOfChild(task);
         if (isScheduled()) {
             task.schedule();
+        } else {
+            m_children.add(task);
+        }
+    }
+
+    private void setPreferredExecutorOfChild(Task task) {
+        if (task instanceof ContainerTask) {
+            ContainerTask container = (ContainerTask)task;
+            if (container.getChildPreferredExecutor().equals(DEFAULT_EXECUTOR)) {
+                container.setPreferredExecutor(getChildPreferredExecutor());
+            }
+        } else {
+            if (task.getPreferredExecutor().equals(DEFAULT_EXECUTOR)) {
+                task.setPreferredExecutor(getChildPreferredExecutor());
+            }
         }
     }
     
