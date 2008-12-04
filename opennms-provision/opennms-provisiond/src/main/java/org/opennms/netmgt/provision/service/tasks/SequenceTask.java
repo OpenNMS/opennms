@@ -31,19 +31,22 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class SequenceTask extends ContainerTask {
+    
+    private AtomicReference<Task> m_lastChild = new AtomicReference<Task>(null);
+
     public SequenceTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
+        m_lastChild.set(getTriggerTask());
     }
-
+    
     @Override
     protected void addChildDependencies(Task child) {
-        if (m_children.size() > 0) {
-            Task last = m_children.get(m_children.size()-1);
-            child.addPrerequisite(last);
-        } else {
-            child.addPrerequisite(getTriggerTask());
-        }
+        super.addChildDependencies(child);
+        Task last = m_lastChild.getAndSet(child);
+        child.addPrerequisite(last);
     }
     
     public String toString() {

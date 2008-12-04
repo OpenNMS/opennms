@@ -35,8 +35,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
-import org.opennms.netmgt.provision.service.tasks.Task;
 import org.opennms.netmgt.provision.service.tasks.BatchTask;
+import org.opennms.netmgt.provision.service.tasks.Task;
 
 class Phase extends BatchTask {
     private LifeCycleInstance m_lifecycle;
@@ -68,8 +68,10 @@ class Phase extends BatchTask {
     
     public void addPhaseMethods(Object provider) {
         for(Method method : provider.getClass().getMethods()) {
-            if (isPhaseMethod(method)) {
-                add(createPhaseMethod(provider, method));
+            String schedulingHint = isPhaseMethod(method);
+            if (schedulingHint != null) {
+                this.setPreferredExecutor(schedulingHint);
+                add(createPhaseMethod(provider, method, schedulingHint));
             }
         }
     }
@@ -95,13 +97,16 @@ class Phase extends BatchTask {
 //        return methods.toArray(new PhaseMethod[methods.size()]);
 //    }
 
-    private boolean isPhaseMethod(Method method) {
+    private String isPhaseMethod(Method method) {
         Activity activity = method.getAnnotation(Activity.class);
-        return (activity != null && activity.phase().equals(m_name) && activity.lifecycle().equals(m_lifecycle.getName()));
+        if (activity != null && activity.phase().equals(m_name) && activity.lifecycle().equals(m_lifecycle.getName())) {
+            return activity.schedulingHint();
+        }
+        return null;
     }
     
-    PhaseMethod createPhaseMethod(Object provider, Method method) {
-        return new PhaseMethod(this, provider, method);
+    PhaseMethod createPhaseMethod(Object provider, Method method, String schedulingHint) {
+        return new PhaseMethod(this, provider, method, schedulingHint);
     }
     
     public static class PhaseMethod extends BatchTask {
@@ -109,12 +114,14 @@ class Phase extends BatchTask {
         private Object m_target;
         private Method m_method;
         
-        public PhaseMethod(Phase phase, Object target, Method method) {
+        public PhaseMethod(Phase phase, Object target, Method method, String schedulingHint) {
             super(phase.getCoordinator());
             m_phase = phase;
             m_target = target;
             m_method = method;
-            add(phaseRunner());
+            Task phaseRunnerTask = phase.getCoordinator().createTask(phaseRunner());
+            phaseRunnerTask.setPreferredExecutor(schedulingHint);
+            add(phaseRunnerTask);
         }
         
         private Runnable phaseRunner() {
