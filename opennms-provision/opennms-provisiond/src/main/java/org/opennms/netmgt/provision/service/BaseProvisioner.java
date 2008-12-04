@@ -127,7 +127,7 @@ public class BaseProvisioner implements InitializingBean {
         
         LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_provider);
         doImport.setAttribute("resource", resource);
-        doImport.setAttribute("foreignSoruce", foreignSource);
+        doImport.setAttribute("foreignSource", foreignSource);
         
         doImport.trigger();
         

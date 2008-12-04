@@ -89,7 +89,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
     public InetAddress[] getIfAddressAndMask(int ifIndex) {
         IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
-        return entry == null ? null : ipAddrPair(entry.getIpAdEntAddr(), entry.getIpAdEntNetMask());
+        return entry == null ? null : new InetAddress[] { entry.getIpAdEntAddr(), entry.getIpAdEntNetMask() };
     }
     
     public InetAddress getIfAddress(int ifIndex) {
@@ -112,13 +112,6 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
     }
 
 
-    public InetAddress[] ipAddrPair(InetAddress addr, InetAddress mask) {
-        InetAddress[] pair = new InetAddress[2];
-        pair[0] = addr;
-        pair[1] = mask;
-        return pair;
-    }
-     
     public IpAddrTableEntry getEntryByIfIndex(int ifIndex) {
         if (getEntries() == null) {
             return null;
