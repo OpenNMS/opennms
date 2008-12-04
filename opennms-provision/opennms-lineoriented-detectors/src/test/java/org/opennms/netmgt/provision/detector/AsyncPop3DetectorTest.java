@@ -8,8 +8,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications;
- * Created 10/16/2008
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,27 +30,27 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.net.InetAddress;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.server.AsyncSimpleServer;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 
-public class Pop3DetectorTest {
+/**
+ * @author thedesloge
+ *
+ */
+public class AsyncPop3DetectorTest {
+    
+    private AsyncPop3Detector m_detector;
     private AsyncSimpleServer m_server;
-    private Pop3Detector m_detector;
-    private static int TIMEOUT = 1000;
     
     @Before
-    public void setServer() throws Exception {
+    public void setUp() throws Exception {
         m_server = new AsyncSimpleServer() {
-            
+          
             public void onInit() {
                 setBanner("+OK");
                 setExpectedClose("QUIT", "+OK");
@@ -60,49 +58,18 @@ public class Pop3DetectorTest {
         };
         m_server.init();
         m_server.startServer();
+        
+        m_detector = new AsyncPop3Detector();
+        
     }
     
-    @Before
-    public void setUp() throws Exception {
-        
-        m_detector = new Pop3Detector();
-        m_detector.setServiceName("POP3");
-        m_detector.setTimeout(500);
-        m_detector.setPort(9123);
-        m_detector.init();
-    }
-
     @After
     public void tearDown() throws Exception {
-        if(m_server != null) {
-            m_server.stopServer();
-        }
+        m_server.stopServer();
     }
     
     @Test
-    public void testSuccess() throws Exception {
-        assertTrue("Test for protocol Pop3 should have passed", doCheck());        
-    }
-    
-    @Test
-    public void testFailureWithBogusResponse() throws Exception {
-        m_server.setBanner("Oh Henry");
-        assertFalse("Test for protocol Pop3 should have failed", doCheck());
-    }
-    
-    @Test
-    public void testMonitorFailureWithNoResponse() throws Exception {
-        m_server.setBanner(null);
-        assertFalse("Test for protocol Pop3 should have failed", doCheck());
-    }
-    
-    @Test
-    public void testDetectorFailWrongPort() throws Exception{
-        m_detector.setPort(9000);
-        assertFalse(doCheck());
-    }
-    
-    private boolean  doCheck() throws Exception {
-        return m_detector.isServiceDetected(InetAddress.getByName("127.0.0.1"), new NullDetectorMonitor());
+    public void testAsyncDetector() throws Exception{
+        m_detector.testDetectorConnection(InetAddress.getLocalHost());
     }
 }
