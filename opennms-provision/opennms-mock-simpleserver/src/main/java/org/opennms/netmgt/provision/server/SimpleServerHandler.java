@@ -63,7 +63,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     
     @Override
     public void messageReceived (IoSession session, Object message) throws Exception {
-        
+        System.out.printf("Server received: %s\n", message.toString().trim());
         String str = message.toString();
         if(str.trim().equalsIgnoreCase(m_conversation.getExpectedClose())) {
             if(m_conversation.getExpectedCloseResponse() != null) {
