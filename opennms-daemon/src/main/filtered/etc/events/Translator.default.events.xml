@@ -1,7 +1,7 @@
 <events>
   <!-- Default events that are now passed through the Translator for enrichment-->
   <event>
-    <uei>uei.opennms.org/generic/traps/SNMP_Link_Down</uei>
+    <uei>uei.opennms.org/translator/traps/SNMP_Link_Down</uei>
     <event-label>Translator Enriched LinkDown Event</event-label>
       <descr>
         &lt;p&gt;A linkDown trap signifies that the sending protocol entity recognizes a failure in one of the communication link represented in the agent's configuration. &lt;/p&gt;
@@ -16,7 +16,7 @@
   </event>
 
   <event>
-    <uei>uei.opennms.org/generic/traps/SNMP_Link_Up</uei>
+    <uei>uei.opennms.org/translator/traps/SNMP_Link_Up</uei>
     <event-label>Translator Enriched LinkUp Event</event-label>
       <descr>
         &lt;p&gt;A linkUp trap signifies that the sending protocol entity recognizes that one of the communication links represented in the agent's configuration has come up. &lt;/p&gt;
@@ -27,7 +27,7 @@
       </descr>
       <logmsg dest='logndisplay'>Agent Interface Down (linkUp Trap) on interface index:%parm[#1]%; ifDescr:%parm[#5]%; ifName:%parm[#6]%; IfAlias:%parm[#7]%</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[1]%" clear-key="uei.opennms.org/generic/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" />
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[1]%" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" />
   </event>
 
   <event>
