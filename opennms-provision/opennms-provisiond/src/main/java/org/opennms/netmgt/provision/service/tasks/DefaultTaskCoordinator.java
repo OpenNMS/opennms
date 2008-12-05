@@ -135,6 +135,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         this();
         m_defaultExecutor = "default";
         addExecutor("default", defaultExecutor);
+        afterPropertiesSet();
     }
 
     public void setDefaultExecutor(String executorName) {
@@ -269,8 +270,9 @@ public class DefaultTaskCoordinator implements InitializingBean {
     
     private CompletionService<Runnable> getCompletionService(String name) {
         CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
-        System.err.printf("USING COMPLETION SERVICE %s : %s!!!!!!\n", name, completionService);
-        return completionService != null ? completionService : m_defaultCompletionService;
+        CompletionService<Runnable> selected = completionService != null ? completionService : m_defaultCompletionService;
+        System.err.printf("USING COMPLETION SERVICE %s : %s!!!!!!\n", name, selected);
+        return selected;
     }
 
     private void submitIfReady(final Task task) {
