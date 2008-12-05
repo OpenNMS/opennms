@@ -55,33 +55,20 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
         m_detector = detector;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.DetectFuture#getServiceDetector()
-     */
     public AsyncServiceDetector getServiceDetector() {
         return m_detector;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.DetectFuture#isServiceDetected()
-     */
     public boolean isServiceDetected() {
         return Boolean.TRUE.equals(getValue());
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.DetectFuture#setServiceDetected(boolean)
-     */
     public void setServiceDetected(boolean serviceDetected) {
         setValue(serviceDetected);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.DetectFuture#setException(java.lang.Throwable)
-     */
     public void setException(Throwable throwable) {
         setValue(throwable);
-        
     }
     
 }
