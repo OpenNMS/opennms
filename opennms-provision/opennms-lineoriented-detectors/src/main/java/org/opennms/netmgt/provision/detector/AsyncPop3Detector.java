@@ -30,62 +30,38 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-
-import org.apache.mina.core.future.ConnectFuture;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.filter.logging.LoggingFilter;
-import org.apache.mina.transport.socket.SocketConnector;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
  * @author thedesloge
  *
  */
-public class AsyncPop3Detector implements ServiceDetector {
+public class AsyncPop3Detector extends AsyncBasicDetector<String> {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ServiceDetector#init()
-     */
-    public void init() {
-        // TODO Auto-generated method stub
-        
+    public AsyncPop3Detector() {
+        super(110, 5000, 1);
+    }
+
+    @Override
+    protected void onInit() {
+        expectBanner(startsWith("+OK"));
+        send(request("QUIT"), startsWith("+OK"));
     }
     
-    public void testDetectorConnection(InetAddress address) {
-     // Create TCP/IP connector.
-        SocketConnector connector = new NioSocketConnector();
-
-        // Set connect timeout.
-         //connector.getDefaultConfig().setConnectTimeout(30);
-        connector.setConnectTimeoutMillis(3000);
-        connector.setHandler( new AsyncPop3Handler());
-        connector.getFilterChain().addLast("logger", new LoggingFilter());
-        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(Charset.forName("UTF-8"))));
-        //m_acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(Charset.forName( "UTF-8" ))));
-        connector.getSessionConfig().setIdleTime(IdleStatus.READER_IDLE, 10);
-
-        // Start communication.
-        ConnectFuture cf = connector.connect(new InetSocketAddress(address, 9123));
-        
-        // Wait for the connection attempt to be finished.
-        cf.join();
-        cf.getSession();
+    private String request(String request) {
+        return request;
     }
     
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ServiceDetector#isServiceDetected(java.net.InetAddress, org.opennms.netmgt.provision.DetectorMonitor)
-     */
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
-        return false;
+    private ResponseValidator startsWith(final String prefix) {
+        return new ResponseValidator() {
+
+            public boolean validate(Object message) {
+                String str = message.toString().trim();
+                return str.startsWith(prefix);
+            }
+            
+        };
     }
-    
-    
-    
+       
 }

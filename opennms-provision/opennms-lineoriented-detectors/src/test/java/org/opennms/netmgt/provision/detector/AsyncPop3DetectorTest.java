@@ -30,12 +30,16 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.net.InetAddress;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.AsyncSimpleServer;
+import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 
 /**
@@ -70,6 +74,15 @@ public class AsyncPop3DetectorTest {
     
     @Test
     public void testAsyncDetector() throws Exception{
-        m_detector.testDetectorConnection(InetAddress.getLocalHost());
+        m_detector.setPort(9123);
+        m_detector.setDetectorHandler(new AsyncPop3Handler());
+        m_detector.init();
+        
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        assertNotNull(future);
+        
+        future.await();
+        
+        System.out.printf("future is complete, isServiceDetected: %s\n", future.isServiceDetected());
     }
 }

@@ -35,7 +35,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
-import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
@@ -44,17 +44,24 @@ import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchangeImpl;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
-public abstract class AsyncBasicDetector extends AsyncAbstractDetector {
+public abstract class AsyncBasicDetector<Request> extends AsyncAbstractDetector {
     
-    private IoHandlerAdapter m_detectorHandler;
+    private BaseDetectorHandler<Request> m_detectorHandler = new BaseDetectorHandler<Request>();
     private IoFilterAdapter m_filterLogging;
     private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" )));
     private int m_idleTime = 10;
+    private AsyncClientConversation<Request> m_conversation = new AsyncClientConversation<Request>();
+    
+    public AsyncBasicDetector(int defaultPort, int defaultTimeout, int defaultRetries){
+        super(defaultPort, defaultTimeout, defaultRetries);
+    }
     
     abstract protected void onInit();
     
@@ -65,7 +72,6 @@ public abstract class AsyncBasicDetector extends AsyncAbstractDetector {
         DetectFuture future = new DefaultDetectFuture(this);
 
         // Set connect timeout.
-         //connector.getDefaultConfig().setConnectTimeout(30);
         connector.setConnectTimeoutMillis( 3000 );
         connector.setHandler( createDetectorHandler(future) );
         connector.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
@@ -73,18 +79,28 @@ public abstract class AsyncBasicDetector extends AsyncAbstractDetector {
         connector.getSessionConfig().setIdleTime( IdleStatus.READER_IDLE, getIdleTime() );
 
         // Start communication
-        connector.connect( new InetSocketAddress( address, 9123 ));
+        connector.connect( new InetSocketAddress( address, getPort() ));
 
         return future;
     }
+    
+    protected void expectBanner(ResponseValidator bannerValidator) {
+        getConversation().expectBanner(bannerValidator);
+    }
+    
 
-    public void setDetectorHandler(IoHandlerAdapter detectorHandler) {
+    protected void send(Request request, ResponseValidator responseValidator) {
+        getConversation().addExchange(new AsyncExchangeImpl(request, responseValidator));
+    }
+    
+    public void setDetectorHandler(BaseDetectorHandler<Request> detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
 
-    public IoHandlerAdapter createDetectorHandler(DetectFuture future) {
-        //return new MyDetectorHandler(future);
-        return null;
+    public IoHandler createDetectorHandler(DetectFuture future) {
+        m_detectorHandler.setConversation(getConversation());
+        m_detectorHandler.setFuture(future);
+        return m_detectorHandler;
     }
 
     public void setLoggingFilter(IoFilterAdapter filterLogging) {
@@ -109,6 +125,18 @@ public abstract class AsyncBasicDetector extends AsyncAbstractDetector {
 
     public int getIdleTime() {
         return m_idleTime;
+    }
+
+    public IoHandler getDetectorHandler() {
+        return m_detectorHandler;
+    }
+
+    public void setConversation(AsyncClientConversation<Request> conversation) {
+        m_conversation = conversation;
+    }
+
+    public AsyncClientConversation<Request> getConversation() {
+        return m_conversation;
     }
 
 }
