@@ -133,8 +133,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
     
     public DefaultTaskCoordinator(Executor defaultExecutor) {
         this();
-        m_defaultExecutor = "default";
-        addExecutor("default", defaultExecutor);
+        m_defaultExecutor = Task.DEFAULT_EXECUTOR;
+        addExecutor(Task.DEFAULT_EXECUTOR, defaultExecutor);
         afterPropertiesSet();
     }
 
