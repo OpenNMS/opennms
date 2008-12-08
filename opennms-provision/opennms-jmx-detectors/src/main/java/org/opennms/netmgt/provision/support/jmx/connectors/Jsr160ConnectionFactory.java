@@ -30,8 +30,11 @@
 
 package org.opennms.netmgt.provision.support.jmx.connectors;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.util.*;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -78,8 +81,10 @@ public class Jsr160ConnectionFactory {
                 MBeanServerConnection connection = connector.getMBeanServerConnection();
                 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
-            } catch(Exception e) {
-                log.warn("Unable to get MBeanServerConnection: " + url);
+            } catch(MalformedURLException e) {
+                log.warn("URL was malformed: " + url, e);
+            } catch (IOException e) {
+                log.warn("An I/O exception occurred: " +url, e);
             }
         }
         else if (factory.equals("PASSWORD-CLEAR")) {
@@ -88,7 +93,7 @@ public class Jsr160ConnectionFactory {
                 String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
                 String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
                 
-                HashMap env = new HashMap();
+                HashMap<String, String[]> env = new HashMap<String, String[]>();
                 
                 // Provide the credentials required by the server to successfully
                 // perform user authentication

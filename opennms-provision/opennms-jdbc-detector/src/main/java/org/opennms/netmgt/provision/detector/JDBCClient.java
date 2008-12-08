@@ -33,15 +33,12 @@ package org.opennms.netmgt.provision.detector;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.Driver;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.netmgt.provision.support.jdbc.DBTools;
 import org.opennms.netmgt.provision.support.Client;
+import org.opennms.netmgt.provision.support.jdbc.DBTools;
 
 /**
  * @author thedesloge
@@ -54,7 +51,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     private String m_password;
     private String m_url;
     
-    private ResultSet m_result;
+//    private ResultSet m_result;
     private Connection m_connection;
     
     public void close() {

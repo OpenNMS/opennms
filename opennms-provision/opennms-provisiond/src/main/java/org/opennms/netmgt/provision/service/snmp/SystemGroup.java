@@ -54,7 +54,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * <P>
  * SystemGroup holds the system group properties It implements the SnmpHandler
  * to receive notifications when a reply is received/error occurs in the
- * SnmpSession used to send requests /recieve replies.
+ * SnmpSession used to send requests/receive replies.
  * </P>
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
@@ -114,7 +114,7 @@ public final class SystemGroup extends AggregateTracker {
         /**
          * <P>
          * A description of the remote entity. For example this may include
-         * hardware, opererating system, and various version information. This
+         * hardware, operating system, and various version information. This
          * should be a US-ASCII display string.
          * </P>
          */
@@ -161,7 +161,7 @@ public final class SystemGroup extends AggregateTracker {
          * <P>
          * The physical location of the node. This field, like many others, is a
          * free formed US-ASCII field that can contain any type of location
-         * string. Some sites might acutually use a special encoding that
+         * string. Some sites might actually use a special encoding that
          * designates the state, city, building, floor, and room that contains
          * the equipment.
          * </P>
@@ -172,7 +172,7 @@ public final class SystemGroup extends AggregateTracker {
          * <P>
          * A value that indicates the set of services that this entity provides.
          * This is a bit encode integer that allows the management entity to
-         * determ if the agent supports the following standards
+         * determine if the agent supports the following standards
          * </P>
          * 
          * <UL>
@@ -197,14 +197,14 @@ public final class SystemGroup extends AggregateTracker {
      * <P>
      * The SYSTEM_OID is the object identifier that represents the root of the
      * system information in the MIB forest. Each of the system elements can be
-     * retreived by adding their specific index to the string, and an additional
+     * retrieved by adding their specific index to the string, and an additional
      * Zero(0) to signify the single instance item.
      * </P>
      */
     public static final String SYSTEM_OID = ".1.3.6.1.2.1.1";
 
-    private SnmpStore m_store;
-    private InetAddress m_address;
+    private final SnmpStore m_store;
+    private final InetAddress m_address;
     
     /**
      * <P>
@@ -242,14 +242,17 @@ public final class SystemGroup extends AggregateTracker {
         return m_store.getDisplayString(SYS_CONTACT);
     }
 
+    @Override
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_store.storeResult(base, inst, val);
     }
 
+    @Override
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
+    @Override
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }

@@ -201,7 +201,7 @@ public class LifeCycleInstanceTest {
     public static final String NEST_LEVEL = "nestLevel";
     public static final String MAX_DEPTH = "maxDepth";
     
-    private static LifeCycleRepository m_lifeCycleFactory;
+    private LifeCycleRepository m_lifeCycleFactory;
     
     @Before
     public void setUp() {
@@ -298,7 +298,7 @@ public class LifeCycleInstanceTest {
     @ActivityProvider
     public static class NestedLifeCycleActivites extends ActivityProviderSupport {
         
-        private LifeCycleRepository m_lifeCycleRepository;
+        private final LifeCycleRepository m_lifeCycleRepository;
         
         public NestedLifeCycleActivites(LifeCycleRepository lifeCycleRepository) {
             m_lifeCycleRepository = lifeCycleRepository;

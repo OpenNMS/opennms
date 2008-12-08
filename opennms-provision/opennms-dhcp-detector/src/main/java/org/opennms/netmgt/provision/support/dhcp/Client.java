@@ -49,6 +49,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Observable;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
@@ -60,19 +61,19 @@ final class Client extends Observable implements Runnable, Fiber {
 
     private static InetAddress NULL_ADDR;
 
-    private DatagramSocket m_sender;
+    private final DatagramSocket m_sender;
 
-    private Socket m_client;
+    private final Socket m_client;
 
-    private ObjectOutputStream m_objsOut;
+    private final ObjectOutputStream m_objsOut;
 
-    private String m_name;
+    private final String m_name;
 
-    private int m_status;
+    private volatile int m_status;
 
     private Thread m_worker;
 
-    private UnicastListener m_unicastListener;
+    private final UnicastListener m_unicastListener;
 
     private boolean m_keepListening;
 
@@ -125,8 +126,9 @@ final class Client extends Observable implements Runnable, Fiber {
         public void run() {
             Category log = ThreadCategory.getInstance(this.getClass());
 
-            if (log.isDebugEnabled())
-                log.debug("thread " + this.getName() + " running...");
+            if (log.isDebugEnabled()) {
+                log.debug("thread " + super.getName() + " running...");
+            }
 
             // set socket timeout to 1 second so the value of m_keepListening
             // can be checked periodically
@@ -178,8 +180,9 @@ final class Client extends Observable implements Runnable, Fiber {
                 }
             }
 
-            if (log.isDebugEnabled())
-                log.debug("thread " + this.getName() + " exiting...");
+            if (log.isDebugEnabled()) {
+                log.debug("thread " + super.getName() + " exiting...");
+            }
         }
     }
 
@@ -209,8 +212,9 @@ final class Client extends Observable implements Runnable, Fiber {
     }
 
     public synchronized void start() {
-        if (m_worker != null)
+        if (m_worker != null) {
             throw new IllegalStateException("The fiber has already been started");
+        }
 
         // Start UnicastListener thread.
         //
@@ -270,18 +274,21 @@ final class Client extends Observable implements Runnable, Fiber {
             try {
                 Message msg = (Message) input.readObject();
                 if (msg.getAddress().equals(NULL_ADDR)) {
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("Got disconnect request from Poller corresponding to sending port " + m_sender.getLocalPort());
+                    }
                     isOk = false;
                 } else {
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("Got request... adress = " + msg.getAddress());
+                    }
                     byte[] dhcp = msg.getMessage().externalize();
 
                     DatagramPacket pkt = new DatagramPacket(dhcp, dhcp.length, msg.getAddress(), DHCP_TARGET_PORT);
                     try {
-                        if (log.isDebugEnabled())
-                           log.debug("sending request on port: " + m_sender.getLocalPort());
+                        if (log.isDebugEnabled()) {
+                            log.debug("sending request on port: " + m_sender.getLocalPort());
+                        }
                         m_sender.send(pkt);
                     } catch (IOException ex) {
                     } // discard
@@ -308,15 +315,17 @@ final class Client extends Observable implements Runnable, Fiber {
         // stop the unicast listener thread and wait for it to exit
         //
         m_keepListening = false;
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("run: waiting for UnicastListener thread " + this.getName() + " to die...");
+        }
         try {
             m_unicastListener.join();
         } catch (InterruptedException e) {
             log.debug("run: interrupted while waiting for UnicastListener thread " + this.getName() + " to die", e);
         }
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("run: UnicastListener thread " + this.getName() + " is dead...");
+        }
 
         // close the datagram socket
         //
@@ -324,8 +333,8 @@ final class Client extends Observable implements Runnable, Fiber {
 
         // close the client's socket
         //
+        IOUtils.closeQuietly(input);
         try {
-            input.close();
             m_client.close();
         } catch (IOException e) {
         }

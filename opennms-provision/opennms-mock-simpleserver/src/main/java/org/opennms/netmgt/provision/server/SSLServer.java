@@ -11,18 +11,16 @@ import java.security.SecureRandom;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
 
 public class SSLServer extends SimpleServer{
     
-    public static int DEFAULT_TESTING_PORT = 7070;
-    public static String DEFAULT_PASSWORD = "123456";
-    public static String DEFAULT_PATH_TO_KEY_STORE = "src/main/resources/org/opennms/netmgt/provision/server/mySrvKeystore";
-    public static String DEFAULT_KEY_MANAGER_ALGORITHM = "SunX509";
-    public static String DEFAULT_KEY_MANAGER_PROVIDER = "SunJSSE";
-    public static String DEFAULT_SSL_CONTEXT_PROTOCOL = "SSL";
+    public static final int DEFAULT_TESTING_PORT = 7070;
+    public static final String DEFAULT_PASSWORD = "123456";
+    public static final String DEFAULT_PATH_TO_KEY_STORE = "src/main/resources/org/opennms/netmgt/provision/server/mySrvKeystore";
+    public static final String DEFAULT_KEY_MANAGER_ALGORITHM = "SunX509";
+    public static final String DEFAULT_KEY_MANAGER_PROVIDER = "SunJSSE";
+    public static final String DEFAULT_SSL_CONTEXT_PROTOCOL = "SSL";
     
     private int m_port = DEFAULT_TESTING_PORT;
     private String m_password = DEFAULT_PASSWORD;
@@ -53,7 +51,7 @@ public class SSLServer extends SimpleServer{
         SSLContext sslContext = SSLContext.getInstance(getSslContextProtocol());
         sslContext.init(km, null, new SecureRandom());
         SSLServerSocketFactory serverFactory = sslContext.getServerSocketFactory();
-        setServerSocket((SSLServerSocket) serverFactory.createServerSocket(getPort()));
+        setServerSocket(serverFactory.createServerSocket(getPort()));
         onInit();
     }
     
@@ -63,7 +61,7 @@ public class SSLServer extends SimpleServer{
             public void run(){
                 try{
                     getServerSocket().setSoTimeout(getTimeout());
-                    setSocket((SSLSocket) getServerSocket().accept());
+                    setSocket(getServerSocket().accept());
                     
                     if(getThreadSleepLength() > 0) { Thread.sleep(getThreadSleepLength()); }
                     getSocket().setSoTimeout(getTimeout());
@@ -90,7 +88,7 @@ public class SSLServer extends SimpleServer{
     }
 
     public void setPort(int port) {
-        this.m_port = port;
+        m_port = port;
     }
 
     public int getPort() {
@@ -98,7 +96,7 @@ public class SSLServer extends SimpleServer{
     }
 
     public void setPassword(String password) {
-        this.m_password = password;
+        m_password = password;
     }
 
     public String getPassword() {
@@ -106,7 +104,7 @@ public class SSLServer extends SimpleServer{
     }
 
     public void setPathToKeyStore(String pathToKeyStore) {
-        this.m_pathToKeyStore = pathToKeyStore;
+        m_pathToKeyStore = pathToKeyStore;
     }
 
     public String getPathToKeyStore() {
@@ -114,7 +112,7 @@ public class SSLServer extends SimpleServer{
     }
 
     public void setKeyManagerAlgorithm(String keyManagerAlgorithm) {
-        this.m_keyManagerAlgorithm = keyManagerAlgorithm;
+        m_keyManagerAlgorithm = keyManagerAlgorithm;
     }
 
     public String getKeyManagerAlgorithm() {
@@ -122,7 +120,7 @@ public class SSLServer extends SimpleServer{
     }
 
     public void setKeyManagerProvider(String keyManagerProvider) {
-        this.m_keyManagerProvider = keyManagerProvider;
+        m_keyManagerProvider = keyManagerProvider;
     }
 
     public String getKeyManagerProvider() {
@@ -130,7 +128,7 @@ public class SSLServer extends SimpleServer{
     }
 
     public void setSslContextProtocol(String sslContextProtocol) {
-        this.m_sslContextProtocol = sslContextProtocol;
+        m_sslContextProtocol = sslContextProtocol;
     }
 
     public String getSslContextProtocol() {
