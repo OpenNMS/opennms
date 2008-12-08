@@ -46,7 +46,7 @@ import java.net.InetAddress;
  * </P>
  * 
  * <P>
- * This object is used by the IpAddrTable to hold infomation single entries in
+ * This object is used by the IpAddrTable to hold information single entries in
  * the table. See the IpAddrTable documentation form more information.
  * </P>
  * 

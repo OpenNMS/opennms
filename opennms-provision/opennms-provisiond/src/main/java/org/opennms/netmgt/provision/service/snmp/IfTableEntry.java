@@ -53,10 +53,10 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * 
  * <P>
  * Once an instance is created and its data set either via the constructor or
- * from the update method, the actual elements can be retreived using the
+ * from the update method, the actual elements can be retrieved using the
  * instance names. The names include: <EM>ifIndex</EM>,<EM>ifDescr</EM>,
  * <EM>ifSpeed</EM>,<EM>etc al</EM>. The information can also be accessed
- * by using the complete object identifer for the entry.
+ * by using the complete object identifier for the entry.
  * </P>
  * 
  * <P>

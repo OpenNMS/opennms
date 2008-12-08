@@ -119,7 +119,7 @@ public class MultilineOrientedResponse {
                         maxRetCode = 600;
                     }
                     
-                    StringTokenizer t = new StringTokenizer(response.toString());
+                    StringTokenizer t = new StringTokenizer(response);
                     t.nextToken();
                     String codeString = t.nextToken();
                                                
@@ -166,7 +166,6 @@ public class MultilineOrientedResponse {
                 response.append(line);
             }
         }
-        String line = response.toString();
         return response.toString();
     }
 

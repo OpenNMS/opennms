@@ -1,23 +1,19 @@
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.*;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 public class JDBCDetectorTest{
 	
     //Tested detector on a MySQL database on local network.
     
-    private JDBCDetector m_detector;
+//    private JDBCDetector m_detector;
     
     @Before
     public void setUp() {
-      m_detector = new JDBCDetector();
+//      m_detector = new JDBCDetector();
     }
     
 	@Test

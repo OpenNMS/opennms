@@ -30,14 +30,9 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.*;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 
 /**
@@ -46,8 +41,8 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
  */
 public class LdapDetectorTest {
     
-    private LdapDetector m_detector;
-    private static String DEFAULT_LOCAL_SERVER_IP = "192.168.1.103";
+//    private LdapDetector m_detector;
+//    private static String DEFAULT_LOCAL_SERVER_IP = "192.168.1.103";
     /*
      * Setup a local Ldap server and test against that server. Then change the IP address to the server
      */

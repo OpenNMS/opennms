@@ -1,13 +1,9 @@
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.*;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 public class SSHDetectorTest{
 	//Tested on a local server with SSH
@@ -17,7 +13,6 @@ public class SSHDetectorTest{
     @Before
     public void setUp() {
         m_detector = new SshDetector();
-        
     }
     
 	@Test

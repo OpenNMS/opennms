@@ -375,7 +375,7 @@ public class BaseProvisionerTest {
         assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
     }
 
-    class CountingVisitor implements ImportVisitor {
+    static class CountingVisitor implements ImportVisitor {
         
 
         private int m_modelImportCount;

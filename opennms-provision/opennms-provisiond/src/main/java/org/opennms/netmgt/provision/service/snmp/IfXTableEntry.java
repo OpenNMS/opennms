@@ -52,10 +52,10 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * 
  * <P>
  * Once an instance is created and its data set either via the constructor or
- * from the update method, the actual elements can be retreived using the
+ * from the update method, the actual elements can be retrieved using the
  * instance names. The names include: <EM>ifName</EM>,<EM>ifInMulticastPts
  * </EM>,<EM>ifInBroadcastPkts</EM>,<EM>etc al</EM>. The information
- * can also be accessed by using the complete object identifer for the entry.
+ * can also be accessed by using the complete object identifier for the entry.
  * </P>
  * 
  * <P>
@@ -109,7 +109,7 @@ public final class IfXTableEntry extends SnmpTableEntry {
     public final static String IF_INDEX = AbstractSnmpStore.IFINDEX;
 
     /**
-     * Number of object identfiers making up the interface extensions table
+     * Number of object identifiers making up the interface extensions table
      * 
      * WARNING: This value must be incremented by one for each new object added
      * to the ms_elemList variable

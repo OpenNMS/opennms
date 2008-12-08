@@ -48,7 +48,7 @@ import org.opennms.netmgt.provision.service.ProvisionService;
 
 public abstract class SaveOrUpdateOperation extends ImportOperation {
 
-    private OnmsNode m_node;
+    private final OnmsNode m_node;
     private OnmsIpInterface m_currentInterface;
     
     private ScanManager m_scanManager;
@@ -87,7 +87,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
-        m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
+        m_currentInterface.setIpStatus(status == 3 ? Integer.valueOf(3) : Integer.valueOf(1));
         
         if ("P".equals(snmpPrimary)) {
         }
@@ -105,7 +105,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.addIpInterface(m_currentInterface);
     }
 	
-	public void scan() {
+    public void scan() {
     	updateSnmpData();
 	}
 	

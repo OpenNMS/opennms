@@ -32,7 +32,7 @@
  */
 package org.opennms.netmgt.provision.server;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class Pop3ServerTest {
     @Test
     public void testServerBanner() throws Exception{
        String line = m_in.readLine();
-       assertTrue(line.equals("+OK"));        
+       assertEquals("+OK", line);
     }
     
     @Test
@@ -81,14 +81,14 @@ public class Pop3ServerTest {
         
         String line = m_in.readLine();
         System.out.println("banner: " + line);
-        assertTrue(line.equals("+OK"));
+        assertEquals("+OK", line);
         
         m_socket.getOutputStream().write("QUIT\r\n".getBytes());
         System.out.println("writing output QUIT");
         
         line = m_in.readLine();
         System.out.println("request response: " + line);
-        assertTrue(line.equals("+OK"));
+        assertEquals("+OK", line);
         
     }
 

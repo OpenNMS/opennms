@@ -30,14 +30,10 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import static org.junit.Assert.*;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 
 /**
@@ -46,11 +42,11 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
  */
 public class Jsr160DetectorTest {
     
-    private Jsr160Detector m_detector;
+    // private Jsr160Detector m_detector;
     
     @Before
     public void setUp() {
-       m_detector = new Jsr160Detector(); 
+       // m_detector = new Jsr160Detector(); 
     }
     
     @Test

@@ -32,6 +32,7 @@ package org.opennms.netmgt.provision.detector;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * @author Donald Desloge
@@ -45,10 +46,14 @@ public class NrpeRequest {
         }
     };
     
-    private byte[] m_command;
+    private final byte[] m_command;
     
     public NrpeRequest(byte[] command) {
-        m_command = command;
+        if (command != null) {
+            m_command = command.clone();
+        } else {
+            m_command = null;
+        }
     }
 
     /**
@@ -60,6 +65,6 @@ public class NrpeRequest {
     }
     
     public String toString() {
-        return String.format("Request: %s", m_command.toString());
+        return String.format("Request: %s", Arrays.toString(m_command));
     }
 }

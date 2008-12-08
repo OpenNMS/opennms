@@ -41,7 +41,7 @@ import org.junit.Test;
  */
 public class SmbDetectorTest {
     
-    private SmbDetector m_detector;
+//    private SmbDetector m_detector;
     
 //    @Before
 //    public void setUp() {
