@@ -30,18 +30,12 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.opennms.netmgt.provision.support.Client;
-
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPSocketFactory;
 
 /**
@@ -54,9 +48,9 @@ public class LdapDetectorClient extends LineOrientedClient {
      * A class to add a timeout to the socket that the LDAP code uses to access
      * an LDAP server
      */
-    private class TimeoutLDAPSocket implements LDAPSocketFactory {
+    private static class TimeoutLDAPSocket implements LDAPSocketFactory {
 
-        private int m_timeout;
+        private final int m_timeout;
         private Socket m_socket;
 
         public TimeoutLDAPSocket(int timeout) {

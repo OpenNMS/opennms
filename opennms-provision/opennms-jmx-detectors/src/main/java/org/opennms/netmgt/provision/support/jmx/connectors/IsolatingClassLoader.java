@@ -45,13 +45,13 @@ import java.util.Set;
  **/
 public class IsolatingClassLoader extends URLClassLoader {
     
-    private String m_name;
+    // private String m_name;
     
     /** Array of prefixes that identifies packages or classes to isolate. **/
     private String[] m_isolatedPrefixes;
     
     /** Set of class names that identifies classes to isolate. **/
-    private Set m_isolatedClassNames = new HashSet();
+    private final Set<String> m_isolatedClassNames = new HashSet<String>();
     
     /**
      * @param classpath Where to find classes.
@@ -91,22 +91,22 @@ public class IsolatingClassLoader extends URLClassLoader {
     
     private void init(String name, String[] isolated, boolean augmentClassPath) throws InvalidContextClassLoaderException {
         
-        m_name = name;
+        // m_name = name;
         
-        final Set prefixes = new HashSet();
+        final Set<String> prefixes = new HashSet<String>();
         
-        for (int i=0; i<isolated.length; i++) {
-            final int index = isolated[i].indexOf('*');
+        for (String element : isolated) {
+            final int index = element.indexOf('*');
             
             if (index >= 0) {
-                prefixes.add(isolated[i].substring(0, index));
+                prefixes.add(element.substring(0, index));
             }
             else {
-                m_isolatedClassNames.add(isolated[i]);
+                m_isolatedClassNames.add(element);
             }
         }
         
-        m_isolatedPrefixes = (String[])prefixes.toArray(new String[0]);
+        m_isolatedPrefixes = prefixes.toArray(new String[0]);
         
         if (augmentClassPath) {
             final ClassLoader callerClassLoader = Thread.currentThread().getContextClassLoader();
@@ -114,8 +114,8 @@ public class IsolatingClassLoader extends URLClassLoader {
             if (callerClassLoader instanceof URLClassLoader) {
                 final URL[] newURLs = ((URLClassLoader)callerClassLoader).getURLs();
                 
-                for (int i=0; i<newURLs.length; i++) {
-                    addURL(newURLs[i]);
+                for (URL newURL : newURLs) {
+                    addURL(newURL);
                 }
             }
             else {
@@ -128,14 +128,14 @@ public class IsolatingClassLoader extends URLClassLoader {
      * Override to only check parent ClassLoader if the class name
      * doesn't match our list of isolated classes.
      **/
-    protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         
         boolean isolated = m_isolatedClassNames.contains(name);
         
         if (!isolated) {
-            for (int i=0; i<m_isolatedPrefixes.length; i++) {
+            for (String prefixe : m_isolatedPrefixes) {
                 
-                if (name.startsWith(m_isolatedPrefixes[i])) {
+                if (name.startsWith(prefixe)) {
                     isolated = true;
                     break;
                 }
@@ -143,7 +143,7 @@ public class IsolatingClassLoader extends URLClassLoader {
         }
         
         if (isolated) {
-            Class c = findLoadedClass(name);
+            Class<?> c = findLoadedClass(name);
             
             if (c == null) {
                 c = findClass(name);
@@ -161,7 +161,8 @@ public class IsolatingClassLoader extends URLClassLoader {
     }
     
     public static class InvalidContextClassLoaderException extends Exception {
-        
+        private static final long serialVersionUID = 1L;
+
         public InvalidContextClassLoaderException(String message) {
             
             super(message);

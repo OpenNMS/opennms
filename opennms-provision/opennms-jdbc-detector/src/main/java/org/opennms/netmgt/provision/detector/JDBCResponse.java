@@ -60,13 +60,10 @@ public class JDBCResponse {
                 System.out.println("Metadata catalog: '" + m_result.getString(1) + "'");
             }
             
-            if(m_result != null) {
-                m_result.close();
-                return true;
-             }
+            m_result.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
 
         return false;

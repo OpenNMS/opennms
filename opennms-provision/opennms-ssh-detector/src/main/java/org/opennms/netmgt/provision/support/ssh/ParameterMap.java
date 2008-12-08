@@ -59,7 +59,7 @@ public class ParameterMap extends Object {
      * 
      * @return The long value associated with the key.
      */
-	public static long getKeyedLong(final Map map, final String key, final long defValue) {
+	public static long getKeyedLong(final Map<String,Object> map, final String key, final long defValue) {
         long value = defValue;
         Object oValue = map.get(key);
 
@@ -70,7 +70,7 @@ public class ParameterMap extends Object {
                 value = defValue;
                 ThreadCategory.getInstance(ParameterMap.class).info("getLongByKey: Failed to convert value " + oValue + " for key " + key);
             }
-            map.put(key, new Long(value));
+            map.put(key, Long.valueOf(value));
         } else if (oValue != null) {
             value = ((Number) oValue).longValue();
         }
@@ -87,8 +87,8 @@ public class ParameterMap extends Object {
      * 
      * @return The int value associated with the key.
      */
-    public static int getKeyedInteger(Map map, String key, int defValue) {
-    	return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
+    public static int getKeyedInteger(Map<String,Object> map, String key, int defValue) {
+    	return new Long(ParameterMap.getKeyedLong(map, key, defValue)).intValue();
     }
 
     /**
@@ -99,14 +99,14 @@ public class ParameterMap extends Object {
      * 
      * @return The array of integer values associated with the key.
      */
-    public final static int[] getKeyedIntegerArray(Map map, String key, int[] defValues) {
+    public final static int[] getKeyedIntegerArray(Map<String,Object> map, String key, int[] defValues) {
         int[] result = defValues;
         Object oValue = map.get(key);
 
         if (oValue != null && oValue instanceof int[]) {
             result = (int[]) oValue;
         } else if (oValue != null) {
-            List tmpList = new ArrayList(5);
+            List<Integer> tmpList = new ArrayList<Integer>(5);
 
             // Split on spaces, commas, colons, or semicolons
             //
@@ -114,15 +114,16 @@ public class ParameterMap extends Object {
             while (ints.hasMoreElements()) {
                 try {
                     int x = Integer.parseInt(ints.nextToken());
-                    tmpList.add(new Integer(x));
+                    tmpList.add(Integer.valueOf(x));
                 } catch (NumberFormatException e) {
                     ThreadCategory.getInstance(ParameterMap.class).warn("getKeyedIntegerList: list member for key " + key + " is malformed", e);
                 }
             }
             result = new int[tmpList.size()];
 
-            for (int x = 0; x < result.length; x++)
-                result[x] = ((Integer) tmpList.get(x)).intValue();
+            for (int x = 0; x < result.length; x++) {
+                result[x] = (tmpList.get(x)).intValue();
+            }
 
             map.put(key, result);
         }
@@ -138,7 +139,7 @@ public class ParameterMap extends Object {
      * 
      * @return The String value associated with the key.
      */
-    public static String getKeyedString(Map map, String key, String defValue) {
+    public static String getKeyedString(Map<String,Object> map, String key, String defValue) {
 
         String value = defValue;
         Object oValue = map.get(key);
@@ -160,9 +161,9 @@ public class ParameterMap extends Object {
      * in the map. If the specified key does not exist in the map then the
      * default value is returned.
      *
-     * @return The bool value associated with the key.
+     * @return The boolean value associated with the key.
      */
-    public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
+    public static boolean getKeyedBoolean(final Map<String,Object> map, final String key, final boolean defValue) {
         boolean value = defValue;
         Object oValue = map.get(key);
 

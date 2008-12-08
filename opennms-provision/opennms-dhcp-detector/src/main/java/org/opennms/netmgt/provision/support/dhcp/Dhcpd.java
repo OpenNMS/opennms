@@ -56,9 +56,7 @@ import java.util.Observer;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.provision.support.dhcp.DhcpdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.provision.support.dhcp.IpValidator;
 
 /**
  * <P>
@@ -109,14 +107,9 @@ import org.opennms.netmgt.provision.support.dhcp.IpValidator;
 public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Observer {
 
     /**
-     * The singular instance of the DHCP server.
-     */
-    private final static Dhcpd m_singleton = new Dhcpd();
-
-    /**
      * List of clients currently connected to the DHCP daemon
      */
-    private static List<Client> m_clients;
+    private static List<Client> m_clients = Collections.synchronizedList(new LinkedList<Client>());;
 
     /**
      * Socket over which the daemon actively listens for new client connection
@@ -140,13 +133,18 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     private Thread m_worker;
 
     /**
+     * The singular instance of the DHCP server.
+     */
+    private final static Dhcpd m_singleton = new Dhcpd();
+
+    /**
      * Constructs a new DHCP server instance. All of the internal fields are
      * initialized to <code>null</code>.
      * 
      */
     private Dhcpd() {
     	super("OpenNMS.Dhcpd");
-        m_clients = null;
+    	m_clients.clear();
         m_server = null;
         m_listener = null;
         m_worker = null;
@@ -165,9 +163,6 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         if (m_worker != null) {
             stop();
         }
-
-        // the client list
-        m_clients = Collections.synchronizedList(new LinkedList<Client>());
 
         // load the dhcpd configuration
         DhcpdConfigFactory dFactory = null;
@@ -270,7 +265,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         }
 
         m_server = null;
-        m_clients = null;
+        m_clients.clear();
         m_worker = null;
         m_listener = null;
     }
@@ -353,9 +348,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
      */
     public void update(Observable inst, Object ignored) {
         synchronized (this) {
-            if (m_clients != null) {
-                m_clients.remove(inst);
-            }
+            m_clients.remove(inst);
         }
     }
 

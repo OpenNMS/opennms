@@ -82,11 +82,16 @@ public final class DhcpdConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private DhcpdConfigFactory(File configFile) throws IOException, MarshalException, ValidationException {
-        Reader cfgIn = new FileReader(configFile);
-        m_config = (DhcpdConfiguration) Unmarshaller.unmarshal(DhcpdConfiguration.class, cfgIn);
-        cfgIn.close();
-
+    private DhcpdConfigFactory(File configFile) throws MarshalException, ValidationException, IOException {
+        Reader cfgIn = null;
+        try {
+            cfgIn = new FileReader(configFile);
+            m_config = (DhcpdConfiguration) Unmarshaller.unmarshal(DhcpdConfiguration.class, cfgIn);
+        } finally {
+            if (cfgIn != null) {
+                cfgIn.close();
+            }
+        }
     }
 
     /**
@@ -139,8 +144,9 @@ public final class DhcpdConfigFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized DhcpdConfigFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
     }
