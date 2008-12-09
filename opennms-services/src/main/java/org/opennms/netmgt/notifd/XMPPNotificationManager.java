@@ -82,6 +82,8 @@ public class XMPPNotificationManager {
 
 	private String xmppServer;
 
+	private String xmppServiceName;
+	
 	private String xmppUser;
 
 	private String xmppPassword;
@@ -146,11 +148,12 @@ public class XMPPNotificationManager {
 		}
 
 		xmppServer = this.props.getProperty("xmpp.server");
+		xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
 		xmppUser = this.props.getProperty("xmpp.user");
 		xmppPassword = this.props.getProperty("xmpp.pass");
 		xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port", XMPP_PORT));
 
-		xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort);
+		xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort, xmppServiceName);
 
 		boolean debuggerEnabled = Boolean.parseBoolean(props.getProperty("xmpp.debuggerEnabled"));
 		xmppConfig.setDebuggerEnabled(debuggerEnabled);
@@ -158,7 +161,7 @@ public class XMPPNotificationManager {
 		    log().setLevel(Level.DEBUG);
 		}
 
-		xmppConfig.setSASLAuthenticationEnabled(true);
+		xmppConfig.setSASLAuthenticationEnabled(Boolean.parseBoolean(props.getProperty("xmpp.SASLEnabled", "true")));
 		xmppConfig.setSelfSignedCertificateEnabled(Boolean.parseBoolean(props.getProperty("xmpp.selfSignedCertificateEnabled")));
 
 		if (Boolean.parseBoolean(props.getProperty("xmpp.TLSEnabled"))) {
