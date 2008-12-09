@@ -7,6 +7,9 @@
     <event-translation-spec uei="uei.opennms.org/generic/traps/SNMP_Link_Down">
       <mappings>
         <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/translator/traps/SNMP_Link_Down" />
+          </assignment>
           <assignment name="ifDescr" type="parameter">
             <value type="sql" result="SELECT snmp.snmpIfDescr FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
@@ -31,6 +34,9 @@
     <event-translation-spec uei="uei.opennms.org/generic/traps/SNMP_Link_Up">
       <mappings>
         <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/translator/traps/SNMP_Link_Up" />
+          </assignment>
           <assignment name="ifDescr" type="parameter">
             <value type="sql" result="SELECT snmp.snmpIfDescr FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
