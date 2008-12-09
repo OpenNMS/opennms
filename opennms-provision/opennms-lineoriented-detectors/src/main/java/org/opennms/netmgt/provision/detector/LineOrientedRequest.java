@@ -29,6 +29,10 @@ public class LineOrientedRequest {
         out.write(String.format("%s\r\n", m_command).getBytes());
     }
     
+    public String getRequest() {
+        return String.format("%s\r\n", m_command);
+    }
+    
     public String toString() {
         return String.format("Request: %s", m_command);
     }

@@ -30,12 +30,31 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import org.opennms.netmgt.provision.support.BaseDetectorHandler;
+import org.opennms.netmgt.provision.support.AsyncBasicDetector;
 
 /**
  * @author thedesloge
  *
  */
-public class AsyncPop3Handler extends BaseDetectorHandler<String> {
+public class AsyncHttpDetector extends AsyncBasicDetector<String, String> {
+
     
+    
+    /**
+     * @param defaultPort
+     * @param defaultTimeout
+     * @param defaultRetries
+     */
+    public AsyncHttpDetector() {
+        super(80, 3000, 3);
+        setServiceName("HTTP");
+        //setProtocolCodecFilter(new ProtocolCodecFilter( ));
+    }
+
+    @Override
+    protected void onInit() {
+        
+        
+    }
+
 }

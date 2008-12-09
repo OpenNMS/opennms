@@ -30,16 +30,21 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.AsyncSimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
 
 
 /**
@@ -75,7 +80,7 @@ public class AsyncPop3DetectorTest {
     @Test
     public void testAsyncDetector() throws Exception{
         m_detector.setPort(9123);
-        m_detector.setDetectorHandler(new AsyncPop3Handler());
+        m_detector.setProtocolCodecFilter(new ProtocolCodecFilter( new LineOrientedCodecFactory( Charset.forName( "UTF-8" ))));
         m_detector.init();
         
         DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
@@ -83,6 +88,72 @@ public class AsyncPop3DetectorTest {
         
         future.await();
         
+        assertTrue(future.isServiceDetected());
+        System.out.printf("future is complete, isServiceDetected: %s\n", future.isServiceDetected());
+    }
+    
+    @Test
+    public void testAsyncDetectorFailWrongBanner() throws Exception{
+        m_server.setBanner("+BINGO");
+        
+        m_detector.setPort(9123);
+        m_detector.init();
+        
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        assertNotNull(future);
+        
+        future.await();
+        
+        assertFalse(future.isServiceDetected());
+        System.out.printf("future is complete, isServiceDetected: %s\n", future.isServiceDetected());
+    }
+    
+    @Test
+    public void testAsyncDetectorFailWrongQuitResponse() throws Exception{
+        m_server.setExpectedClose("QUIT", "+OUT");
+        m_detector.setPort(9123);
+        m_detector.init();
+        
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        assertNotNull(future);
+        
+        future.await();
+        
+        assertFalse(future.isServiceDetected());
+        System.out.printf("future is complete, isServiceDetected: %s\n", future.isServiceDetected());
+    }
+    
+    @Test
+    public void testAsyncDetectorFailServerNoResponse() throws Exception{
+        m_server.setExpectedClose("LOGOUT", "+OK");
+        m_detector.setPort(9123);
+        m_detector.setTimeout(1000);
+        m_detector.setIdleTime(1);
+        m_detector.init();
+        
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        assertNotNull(future);
+        
+        future.await();
+        
+        assertFalse(future.isServiceDetected());
+        System.out.printf("future is complete, isServiceDetected: %s\n", future.isServiceDetected());
+    }
+    
+    @Test
+    public void testAsyncDetectorFailWrongPort() throws Exception{
+        m_detector.setPort(9120);
+        m_detector.setTimeout(1000);
+        m_detector.setIdleTime(1);
+        m_detector.setRetries(3);
+        m_detector.init();
+        
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        assertNotNull(future);
+        
+        future.await();
+        
+        assertFalse(future.isServiceDetected());
         System.out.printf("future is complete, isServiceDetected: %s\n", future.isServiceDetected());
     }
 }

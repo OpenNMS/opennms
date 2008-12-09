@@ -30,14 +30,12 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
-public class AsyncPop3Detector extends AsyncBasicDetector<String> {
+public class AsyncPop3Detector extends AsyncLineOrientedDetector {
 
     public AsyncPop3Detector() {
         super(110, 5000, 1);
@@ -48,20 +46,4 @@ public class AsyncPop3Detector extends AsyncBasicDetector<String> {
         expectBanner(startsWith("+OK"));
         send(request("QUIT"), startsWith("+OK"));
     }
-    
-    private String request(String request) {
-        return request;
-    }
-    
-    private ResponseValidator startsWith(final String prefix) {
-        return new ResponseValidator() {
-
-            public boolean validate(Object message) {
-                String str = message.toString().trim();
-                return str.startsWith(prefix);
-            }
-            
-        };
-    }
-       
 }

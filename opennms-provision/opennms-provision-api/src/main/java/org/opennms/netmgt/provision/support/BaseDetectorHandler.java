@@ -39,10 +39,10 @@ import org.opennms.netmgt.provision.DetectFuture;
  * @author Donald Desloge
  *
  */
-public class BaseDetectorHandler<Request> extends IoHandlerAdapter {
+public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     
     private DetectFuture m_future;
-    private AsyncClientConversation<Request> m_conversation;
+    private AsyncClientConversation<Request, Response> m_conversation;
     
 
     public void setFuture(DetectFuture future) {
@@ -54,37 +54,60 @@ public class BaseDetectorHandler<Request> extends IoHandlerAdapter {
     }
     
     public void sessionCreated(IoSession session) throws Exception {
+        System.out.println("Session created");
     }
 
     public void sessionOpened(IoSession session) throws Exception {
-       if(!m_conversation.hasBannerValidator()) {
-           session.write(m_conversation.getRequest());
+        System.out.println("Session opened");
+        if(!m_conversation.hasBannerValidator()) {
+           //session.write(m_conversation.getRequest());
        }
     }
 
     public void sessionClosed(IoSession session) throws Exception {
+        System.out.println("Session closed");
+        if(!getFuture().isDone()) {
+            getFuture().setServiceDetected(false);
+        }
     }
 
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+        System.out.println("Session idle");
+        getFuture().setServiceDetected(false);
+        session.close();
     }
 
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+        System.out.println("Exception Caught");
         super.exceptionCaught(session, cause);
+        cause.printStackTrace();
     }
 
+    @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
-        
-        if(m_conversation.hasExchanges() && !m_conversation.isComplete()) {
-           Object request = m_conversation.validate(message);
-            if(request != null) {
-               session.write(request);
-           }else {
-               getFuture().setServiceDetected(false);
-               session.close();
-           }
-        }else {
-            getFuture().setServiceDetected(true);
-            session.close();
+        try {    
+        System.out.printf("Client Receiving: %s\n", message.toString().trim());
+            
+            if(m_conversation.hasExchanges() && m_conversation.validate((Response)message)) {
+               Object request = m_conversation.getRequest();
+               
+                if(request != null) {
+                   session.write(request);
+               }else if(request == null && m_conversation.isComplete()){
+                   getFuture().setServiceDetected(true);
+                   session.close();
+               }else {
+                   
+                   getFuture().setServiceDetected(false);
+                   session.close();
+               }
+            }else {
+                getFuture().setServiceDetected(false);
+                session.close();
+            }
+            
+        }catch(Exception e){
+              e.printStackTrace();  
         }
         
     }
@@ -94,7 +117,7 @@ public class BaseDetectorHandler<Request> extends IoHandlerAdapter {
     /**
      * @param conversation
      */
-    public void setConversation(AsyncClientConversation<Request> conversation) {
+    public void setConversation(AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;        
     }
     

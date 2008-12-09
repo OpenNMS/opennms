@@ -75,7 +75,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      * @throws IOException
      */
     private LineOrientedResponse receiveResponse() throws IOException {
-        LineOrientedResponse response = new LineOrientedResponse();
+        LineOrientedResponse response = new LineOrientedResponse("response");
         response.receive(getInput());
         return response;
     }
