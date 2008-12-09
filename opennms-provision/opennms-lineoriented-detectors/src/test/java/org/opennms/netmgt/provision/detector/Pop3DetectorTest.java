@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.AsyncSimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
@@ -47,10 +48,9 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 public class Pop3DetectorTest {
     private AsyncSimpleServer m_server;
     private Pop3Detector m_detector;
-    private static int TIMEOUT = 1000;
     
     @Before
-    public void setServer() throws Exception {
+    public void setUp() throws Exception {
         m_server = new AsyncSimpleServer() {
             
             public void onInit() {
@@ -60,16 +60,6 @@ public class Pop3DetectorTest {
         };
         m_server.init();
         m_server.startServer();
-    }
-    
-    @Before
-    public void setUp() throws Exception {
-        
-        m_detector = new Pop3Detector();
-        m_detector.setServiceName("POP3");
-        m_detector.setTimeout(500);
-        m_detector.setPort(9123);
-        m_detector.init();
     }
 
     @After
@@ -81,28 +71,51 @@ public class Pop3DetectorTest {
     
     @Test
     public void testSuccess() throws Exception {
-        assertTrue("Test for protocol Pop3 should have passed", doCheck());        
+        m_detector = createDetector(m_server.getPort());
+        
+        assertTrue( doCheck( m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
-        assertFalse("Test for protocol Pop3 should have failed", doCheck());
+        
+        m_detector = createDetector(m_server.getPort());
+        
+        assertFalse( doCheck( m_detector.isServiceDetected( InetAddress.getLocalHost(), new NullDetectorMonitor())));
+        
     }
     
     @Test
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
-        assertFalse("Test for protocol Pop3 should have failed", doCheck());
+        m_detector = createDetector(m_server.getPort());
+        
+        assertFalse( doCheck( m_detector.isServiceDetected( InetAddress.getLocalHost(), new NullDetectorMonitor())));
+        
     }
     
     @Test
     public void testDetectorFailWrongPort() throws Exception{
-        m_detector.setPort(9000);
-        assertFalse(doCheck());
+        
+        m_detector = createDetector(9000);
+        
+        assertFalse( doCheck( m_detector.isServiceDetected( InetAddress.getLocalHost(), new NullDetectorMonitor())));
     }
     
-    private boolean  doCheck() throws Exception {
-        return m_detector.isServiceDetected(InetAddress.getByName("127.0.0.1"), new NullDetectorMonitor());
+    private Pop3Detector createDetector(int port) {
+        Pop3Detector detector = new Pop3Detector();
+        detector.setServiceName("POP3");
+        detector.setTimeout(500);
+        detector.setPort(port);
+        detector.init();
+        return detector;
+    }
+    
+    private boolean  doCheck(DetectFuture future) throws Exception {
+        
+        future.await();
+        
+        return future.isServiceDetected();
     }
 }
