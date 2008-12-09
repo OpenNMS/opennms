@@ -33,8 +33,11 @@ package org.opennms.netmgt.provision.support;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.regex.Pattern;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
+import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -51,14 +54,20 @@ import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseVali
  * @author Donald Desloge
  *
  */
-public abstract class AsyncBasicDetector<Request> extends AsyncAbstractDetector {
+public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstractDetector {
     
-    private BaseDetectorHandler<Request> m_detectorHandler = new BaseDetectorHandler<Request>();
+    private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
     private IoFilterAdapter m_filterLogging;
     private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" )));
-    private int m_idleTime = 10;
-    private AsyncClientConversation<Request> m_conversation = new AsyncClientConversation<Request>();
+    private int m_idleTime = 1;
+    private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     
+    /**
+     * 
+     * @param defaultPort
+     * @param defaultTimeout
+     * @param defaultRetries
+     */
     public AsyncBasicDetector(int defaultPort, int defaultTimeout, int defaultRetries){
         super(defaultPort, defaultTimeout, defaultRetries);
     }
@@ -67,38 +76,89 @@ public abstract class AsyncBasicDetector<Request> extends AsyncAbstractDetector 
     
     @Override
     public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) {
+        DetectFuture future = null;
+        
         SocketConnector connector = new NioSocketConnector();
         
-        DetectFuture future = new DefaultDetectFuture(this);
+        future = new DefaultDetectFuture(this);
 
         // Set connect timeout.
-        connector.setConnectTimeoutMillis( 3000 );
+        connector.setConnectTimeoutMillis( getTimeout() );
         connector.setHandler( createDetectorHandler(future) );
         connector.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
         connector.getFilterChain().addLast( "codec", getProtocolCodecFilter());
         connector.getSessionConfig().setIdleTime( IdleStatus.READER_IDLE, getIdleTime() );
 
         // Start communication
-        connector.connect( new InetSocketAddress( address, getPort() ));
-
+        InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
+        ConnectFuture cf = connector.connect( socketAddress );
+        cf.addListener(retryAttemptListener( connector, future, socketAddress, getRetries() ));
+        
         return future;
     }
     
-    protected void expectBanner(ResponseValidator bannerValidator) {
-        getConversation().expectBanner(bannerValidator);
-    }
-    
+    /**
+     * Handles the retry attempts. Listens to see when the ConnectFuture is finished and checks if there was 
+     * an exception thrown. If so, it then attempts a retry if there are more retries.
+     * 
+     * @param connector
+     * @param detectFuture
+     * @param address
+     * @param retryAttempt
+     * @return IoFutureListener<ConnectFuture>
+     */
+    private IoFutureListener<ConnectFuture> retryAttemptListener(final SocketConnector connector,final DetectFuture detectFuture, final InetSocketAddress address, final int retryAttempt) {
+        return new IoFutureListener<ConnectFuture>() {
 
-    protected void send(Request request, ResponseValidator responseValidator) {
-        getConversation().addExchange(new AsyncExchangeImpl(request, responseValidator));
+            public void operationComplete(ConnectFuture future) {
+                Throwable cause = future.getException();
+                
+                if(cause.getMessage().equals("Connection refused")) {
+                    if(retryAttempt == 0) {
+                        detectFuture.setServiceDetected(false); 
+                    }else {
+                        future = connector.connect(address);
+                        future.addListener(retryAttemptListener(connector, detectFuture, address, retryAttempt -1));
+                    }
+                }
+                
+            }
+            
+        };
     }
     
-    public void setDetectorHandler(BaseDetectorHandler<Request> detectorHandler) {
+    /**
+     * 
+     * @param bannerValidator
+     */
+    protected void expectBanner(ResponseValidator<Response> bannerValidator) {
+        getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(null, bannerValidator));
+    }
+    
+    /**
+     * 
+     * @param request
+     * @param responseValidator
+     */
+    protected void send(Request request, ResponseValidator<Response> responseValidator) {
+        getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(request, responseValidator));
+    }
+    
+    /**
+     * 
+     * @param detectorHandler
+     */
+    public void setDetectorHandler(BaseDetectorHandler<Request, Response> detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
-
+    
+    /**
+     * 
+     * @param future
+     * @return
+     */
     public IoHandler createDetectorHandler(DetectFuture future) {
-        m_detectorHandler.setConversation(getConversation());
+        ((BaseDetectorHandler<Request, Response>) m_detectorHandler).setConversation(getConversation());
         m_detectorHandler.setFuture(future);
         return m_detectorHandler;
     }
@@ -131,12 +191,40 @@ public abstract class AsyncBasicDetector<Request> extends AsyncAbstractDetector 
         return m_detectorHandler;
     }
 
-    public void setConversation(AsyncClientConversation<Request> conversation) {
+    public void setConversation(AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;
     }
 
-    public AsyncClientConversation<Request> getConversation() {
+    public AsyncClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }
+    
+    protected Request request(Request request) {
+        return request;
+    }
+    
+    protected ResponseValidator<Response> startsWith(final String prefix) {
+        return new ResponseValidator<Response>() {
+
+            public boolean validate(Object message) {
+                String str = message.toString().trim();
+                return str.startsWith(prefix);
+            }
+            
+        };
+    }
+    
+    public ResponseValidator<Response> find(final String regex){
+        return new ResponseValidator<Response>() {
+
+            public boolean validate(Object message) {
+                String str = message.toString().trim();
+                return Pattern.compile(regex).matcher(str).find();
+            }
+          
+            
+        };
+    }
+       
 
 }

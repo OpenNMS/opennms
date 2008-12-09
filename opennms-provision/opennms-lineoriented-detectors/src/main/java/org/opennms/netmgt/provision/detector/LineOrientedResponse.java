@@ -11,7 +11,11 @@ import java.util.regex.Pattern;
 public class LineOrientedResponse {
     
     private String m_response;
-
+    
+    public LineOrientedResponse(String response) {
+        m_response = response;
+    }
+    
     public void receive(BufferedReader in) throws IOException {
         m_response = in.readLine();
     }

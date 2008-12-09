@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
@@ -42,7 +44,13 @@ public class TcpDetectorTest {
         m_server.startServer();
         m_detector.setPort(m_server.getLocalPort());
         
-        assertTrue("Test should pass, TcpDetector checks for all wildcard banners", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        //assertTrue("Test should pass, TcpDetector checks for all wildcard banners", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        
+        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+        
+        future.awaitUninterruptibly();
+        assertNotNull(future);
+        assertTrue(future.isServiceDetected());
     }
     
     @Test
@@ -57,7 +65,11 @@ public class TcpDetectorTest {
         m_server.init();
         m_server.startServer();
         m_detector.setPort(m_server.getLocalPort());
-        assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+        assertNotNull(future);
+        future.awaitUninterruptibly();
+        assertFalse(future.isServiceDetected());
     
     }
     
@@ -73,7 +85,12 @@ public class TcpDetectorTest {
         m_server.init();
         m_detector.setPort(m_server.getLocalPort());
         
-        assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        
+        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+        assertNotNull(future);
+        future.awaitUninterruptibly();
+        assertFalse(future.isServiceDetected());
     
     }
 }
