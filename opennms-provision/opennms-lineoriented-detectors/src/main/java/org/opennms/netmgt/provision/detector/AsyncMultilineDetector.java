@@ -30,52 +30,24 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import org.opennms.netmgt.provision.support.AsyncBasicDetector;
 
 /**
  * @author Donald Desloge
  *
  */
-public class CitrixDetector extends AsyncLineOrientedDetector {
-//MultilineOrientedDetector
-    protected CitrixDetector() {
-        super(1494, 500, 2);
-        setServiceName("CITRIX");
+public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
+
+     /**
+     * @param defaultPort
+     * @param defaultTimeout
+     * @param defaultRetries
+     */
+    public AsyncMultilineDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+        super(defaultPort, defaultTimeout, defaultRetries);
     }
 
     @Override
-    protected void onInit() {
-        expectBanner(startsWith("ICA"));       
-    }
-
-    /**
-     * @param string
-     * @return
-     */
-//    private ResponseValidator readStreamUntilContains(final String string) {
-//        
-//        return new ResponseValidator() {
-//
-//            public boolean validate(Object message) {
-//                
-//                return string.contains("ICA");
-//            }
-//            
-//        };
-//    }
-
-    /**
-     * @param string
-     * @return
-     */
-//    private ResponseValidator<MultilineOrientedResponse> readStreamUntilContains(final String pattern) {
-//
-//        return new ResponseValidator<MultilineOrientedResponse>() {
-//
-//            public boolean validate(MultilineOrientedResponse response) throws IOException {
-//                return response.readStreamUntilContains(pattern);
-//            }
-//            
-//        };
-//    }
+    abstract protected void onInit();
 
 }

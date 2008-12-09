@@ -10,9 +10,7 @@ import java.io.OutputStream;
 public class LineOrientedRequest {
     
     public static final LineOrientedRequest Null = new LineOrientedRequest(null) {
-        @Override
-        public void send(OutputStream out) throws IOException {
-        }
+        
     };
     
     private String m_command;
