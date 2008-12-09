@@ -53,7 +53,7 @@ import org.opennms.netmgt.config.NotificationManager;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy </A>
+ * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
  */
 public class XMPPNotificationStrategy implements NotificationStrategy {
 
@@ -142,8 +142,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 
 			if (NotificationManager.PARAM_XMPP_ADDRESS.equals(arg.getSwitch())) {
 				parsedArgs[XMPP_TO] = arg.getValue();
-			} else if (NotificationManager.PARAM_TEXT_MSG.equals(arg
-					.getSwitch())) {
+			} else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
 				parsedArgs[XMPP_MESSAGE] = arg.getValue();
 			}
 
@@ -151,9 +150,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 
 		for (int i = 0; i < XMPP_MAX; ++i) {
 			if (parsedArgs[i] == null) {
-				throw (new Exception(
-						"Incomplete argument set, missing argument: "
-								+ INDEX_TO_NAME[i]));
+				throw (new Exception("Incomplete argument set, missing argument: " + INDEX_TO_NAME[i]));
 			}
 		}
 

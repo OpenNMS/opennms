@@ -1221,12 +1221,12 @@
       <dependency>
         <groupId>jivesoftware</groupId>
         <artifactId>smack</artifactId>
-        <version>2.2.1</version>
+        <version>3.0.4</version>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>
         <artifactId>smackx</artifactId>
-        <version>2.2.1</version>
+        <version>3.0.4</version>
       </dependency>
       <dependency>
         <groupId>net.sf.jradius</groupId>
