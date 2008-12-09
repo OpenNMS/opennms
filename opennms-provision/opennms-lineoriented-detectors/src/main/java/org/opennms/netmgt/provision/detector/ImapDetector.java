@@ -29,11 +29,12 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-public class ImapDetector extends LineOrientedDetector {
 
+public class ImapDetector extends AsyncLineOrientedDetector {
+//LineOrientedDetector
     protected ImapDetector() {
         super(143, 5000, 0);
-        
+        setServiceName("IMAP");
     }
     
     public void onInit(){

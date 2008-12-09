@@ -34,11 +34,8 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+public class TcpDetector extends AsyncLineOrientedDetector {
 
-
-
-public class TcpDetector extends LineOrientedDetector {
-    
     public TcpDetector() {
         super(23, 5000, 1);
     }

@@ -28,56 +28,39 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.support.codec;
 
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import java.nio.charset.Charset;
+
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFactory;
+import org.apache.mina.filter.codec.ProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
  * @author Donald Desloge
  *
  */
-public class CitrixDetector extends AsyncBasicDetector<String, String> {
-//MultilineOrientedDetector
-    protected CitrixDetector() {
-        super(1494, 500, 2);
-        setServiceName("CITRIX");
+public class LineOrientedCodecFactory implements ProtocolCodecFactory {
+    
+    private final LineOrientedEncoder m_encoder;
+    private final LineOrientedDecoder m_decoder;
+    
+    public LineOrientedCodecFactory(Charset charset) {
+        this(charset, null);
+    }
+    
+    public LineOrientedCodecFactory(Charset charset, String delimit) {
+        m_encoder = new LineOrientedEncoder(charset);
+        m_decoder = new LineOrientedDecoder(charset, delimit);
+    }
+    
+    public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+        return m_decoder;
     }
 
-    @Override
-    protected void onInit() {
-        //expectBanner(readStreamUntilContains("ICA"));
-        //expectClose();        
+    public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+        return m_encoder;
     }
-
-    /**
-     * @param string
-     * @return
-     */
-//    private ResponseValidator readStreamUntilContains(final String string) {
-//        
-//        return new ResponseValidator() {
-//
-//            public boolean validate(Object message) {
-//                
-//                return string.contains("ICA");
-//            }
-//            
-//        };
-//    }
-
-    /**
-     * @param string
-     * @return
-     */
-//    private ResponseValidator<MultilineOrientedResponse> readStreamUntilContains(final String pattern) {
-//
-//        return new ResponseValidator<MultilineOrientedResponse>() {
-//
-//            public boolean validate(MultilineOrientedResponse response) throws IOException {
-//                return response.readStreamUntilContains(pattern);
-//            }
-//            
-//        };
-//    }
 
 }

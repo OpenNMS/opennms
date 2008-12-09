@@ -39,58 +39,57 @@ import java.util.List;
  * @author Donald Desloge
  *
  */
-public class AsyncClientConversation<Request> {
+public class AsyncClientConversation<Request, Response> {
     
-    public static interface ResponseValidator{
-        boolean validate(Object message);
+    public static interface ResponseValidator<Response>{
+        boolean validate(Response message);
     }
     
-    public static interface AsyncExchange{
+    public static interface AsyncExchange<Request, Response>{
 
         /**
          * @param message
          * @return
          */
-        boolean validateResponse(Object message);
+        boolean validateResponse(Response response);
 
         /**
          * @return
          */
-        Object getRequest();
+        Request getRequest();
         
        
         
     }
     
-    public static class AsyncExchangeImpl implements AsyncExchange{
+    public static class AsyncExchangeImpl<Request, Response> implements AsyncExchange<Request, Response>{
         
-        private Object m_request;
-        private ResponseValidator m_responseValidator;
+        private Request m_request;
+        private ResponseValidator<Response> m_responseValidator;
 
-        public AsyncExchangeImpl(Object request, ResponseValidator responseValidator) {
+        public AsyncExchangeImpl(Request request, ResponseValidator<Response> responseValidator) {
             m_request = request;
             m_responseValidator = responseValidator;
         }
         
-        public Object getRequest() {
-
+        public Request getRequest() {
             return m_request;
         }
 
-        public boolean validateResponse(Object message) {
+        public boolean validateResponse(Response message) {
             return m_responseValidator.validate(message);
         }
         
     }
     
-    private List<AsyncExchange> m_conversation = new ArrayList<AsyncExchange>();
+    private List<AsyncExchange<Request, Response>> m_conversation = new ArrayList<AsyncExchange<Request, Response>>();
     private boolean m_isComplete = false;
-    private ResponseValidator m_bannerValidator;
+    private ResponseValidator<Response> m_bannerValidator;
     
     /**
      * 
      */
-    public void addExchange(AsyncExchange request) {
+    public void addExchange(AsyncExchange<Request, Response> request) {
         m_conversation.add(request);
     }
 
@@ -105,7 +104,7 @@ public class AsyncClientConversation<Request> {
      * @param message
      * @return
      */
-    public boolean validateBanner(Object message) {
+    public boolean validateBanner(Response message) {
         boolean retVal = m_bannerValidator.validate(message);
         m_bannerValidator = null;
         return retVal;
@@ -129,28 +128,32 @@ public class AsyncClientConversation<Request> {
      * @param message
      * @return
      */
-    public Object validate(Object message) {
-        AsyncExchange ex = m_conversation.remove(0);
+    public boolean validate(Response message) {
+        AsyncExchange<Request, Response> ex = m_conversation.remove(0);
         
         if(m_conversation.isEmpty()) {
             m_isComplete = true;
         }
         
-        return ex.validateResponse(message) ? ex.getRequest() : null;
+        return ex.validateResponse(message);
     }
 
     /**
      * @param bannerValidator
      */
-    public void expectBanner(ResponseValidator bannerValidator) {
+    public void expectBanner(ResponseValidator<Response> bannerValidator) {
         m_bannerValidator = bannerValidator;        
     }
 
     /**
      * @return
      */
-    public Object getRequest() {
-        return m_conversation.remove(0).getRequest();
+    public Request getRequest() {
+        return extracted();
+    }
+
+    private Request extracted() {
+        return m_conversation.isEmpty() ? null : m_conversation.get(0).getRequest();
     }
     
    
