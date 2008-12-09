@@ -28,54 +28,25 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.support.codec;
 
+import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
 /**
  * @author Donald Desloge
  *
  */
-public class CitrixDetector extends AsyncLineOrientedDetector {
-//MultilineOrientedDetector
-    protected CitrixDetector() {
-        super(1494, 500, 2);
-        setServiceName("CITRIX");
-    }
-
+public class MultilineOrientedDecoder extends CumulativeProtocolDecoder {
+    
+    
+    
     @Override
-    protected void onInit() {
-        expectBanner(startsWith("ICA"));       
+    protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
+        
+        return false;
     }
-
-    /**
-     * @param string
-     * @return
-     */
-//    private ResponseValidator readStreamUntilContains(final String string) {
-//        
-//        return new ResponseValidator() {
-//
-//            public boolean validate(Object message) {
-//                
-//                return string.contains("ICA");
-//            }
-//            
-//        };
-//    }
-
-    /**
-     * @param string
-     * @return
-     */
-//    private ResponseValidator<MultilineOrientedResponse> readStreamUntilContains(final String pattern) {
-//
-//        return new ResponseValidator<MultilineOrientedResponse>() {
-//
-//            public boolean validate(MultilineOrientedResponse response) throws IOException {
-//                return response.readStreamUntilContains(pattern);
-//            }
-//            
-//        };
-//    }
 
 }
