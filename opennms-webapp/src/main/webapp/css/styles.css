@@ -541,7 +541,7 @@ img {
 #headernavbarright {
 	position: relative;
 	float: right;
-	padding: 2px 2px 5px 2px;
+	padding: 2px 0px 5px 0px;
 }
 
 #contentleft {
