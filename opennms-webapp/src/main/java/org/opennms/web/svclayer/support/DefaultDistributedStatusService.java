@@ -34,6 +34,7 @@
  */
 package org.opennms.web.svclayer.support;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,7 +121,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
     
-    public static class MonitoredServiceComparator implements Comparator<OnmsMonitoredService> {
+    public static class MonitoredServiceComparator implements Comparator<OnmsMonitoredService>, Serializable {
+        private static final long serialVersionUID = 1L;
+
         public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
             int diff;
             diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
@@ -144,7 +147,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      * 
      * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
      */
-    public static class ServiceGraphComparator implements Comparator<ServiceGraph> {
+    public static class ServiceGraphComparator implements Comparator<ServiceGraph>, Serializable {
+        private static final long serialVersionUID = 1L;
+
         public int compare(ServiceGraph o1, ServiceGraph o2) {
             if ((o1.getErrors().length == 0 && o2.getErrors().length == 0)
                     || (o1.getErrors().length > 0 && o2.getErrors().length > 0)) {
@@ -157,7 +162,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
     
-    public static class LocationStatusComparator implements Comparator<OnmsLocationSpecificStatus> {
+    public static class LocationStatusComparator implements Comparator<OnmsLocationSpecificStatus>, Serializable {
+        private static final long serialVersionUID = 1L;
+
         public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
             if ((o1.getPollResult().isUnknown() && o2.getPollResult().isUnknown())
                     || (!o1.getPollResult().isUnknown() && !o2.getPollResult().isUnknown())) {
@@ -660,14 +667,18 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         List<OnmsApplication> sortedApplications = new ArrayList<OnmsApplication>(applications);
         Collections.sort(sortedApplications);
 
-        OnmsMonitoringLocationDefinition location;
+        OnmsMonitoringLocationDefinition location = new OnmsMonitoringLocationDefinition();
         if (locationName == null) {
-            location = locationDefinitions.get(0);
+            if (!locationDefinitions.isEmpty()) {
+                location = locationDefinitions.get(0);
+            }
         } else {
             location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
             if (location == null) {
                 errors.add("Could not find location definition '" + locationName + "'");
-                location = locationDefinitions.get(0);
+                if (!locationDefinitions.isEmpty()) {
+                    location = locationDefinitions.get(0);
+                }
             }
         }
         
@@ -681,14 +692,18 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         }
 
-        OnmsApplication application;
+        OnmsApplication application = new OnmsApplication();
         if (applicationName == null) {
-            application = sortedApplications.get(0);
+            if (!sortedApplications.isEmpty()) {
+                application = sortedApplications.get(0);
+            }
         } else {
             application = m_applicationDao.findByName(applicationName);
             if (application == null) {
                 errors.add("Could not find application '" + applicationName + "'");
-                application = sortedApplications.get(0);
+                if (!sortedApplications.isEmpty()) {
+                    application = sortedApplications.get(0);
+                }
             }
         }
         
@@ -706,7 +721,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         }
         
-        if (monitor == null && sortedMonitors.size() > 0) {
+        if (monitor == null && !sortedMonitors.isEmpty()) {
             monitor = sortedMonitors.get(0);
         }
         
@@ -724,7 +739,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
 
         Collection<OnmsMonitoredService> applicationMemberServices = m_monitoredServiceDao.findByApplication(application);
-        if (applicationMemberServices.size() == 0) {
+        if (applicationMemberServices.isEmpty()) {
             errors.add("There are no services in the application '" + applicationName + "'");
         }
         
