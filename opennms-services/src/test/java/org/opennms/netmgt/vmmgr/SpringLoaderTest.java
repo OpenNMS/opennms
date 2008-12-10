@@ -32,27 +32,27 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.Registry;
 import org.opennms.netmgt.model.ServiceDaemon;
 
-public class SpringLoaderTest extends TestCase {
+public class SpringLoaderTest {
 
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
+    @Before
+    public void setUp() {
+        System.setProperty("opennms.startup.context", "classpath:/startup.xml");
+    }
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-        
-        public void testBogus() {
-            // an empty test so that JUnit doesn't complain that there aren't any tests
-        }
-	
-	public void FIXMEtestStart() {
+    @Test
+    @Ignore("broken")
+	public void testStart() {
 		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
 		SpringLoader.main(new String[] { "start" });
 
@@ -65,20 +65,24 @@ public class SpringLoaderTest extends TestCase {
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
-	public void FIXMEtestContexts() {
+    @Test
+    @Ignore("broken")
+	public void testContexts() {
 		SpringLoader.main(new String[] { "start" });
 		
-		
-
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("collectd");
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
-	
-    public void FIXMEtestStatus() {
+
+    @Test
+    @Ignore("broken")
+    public void testStatus() {
 		SpringLoader.main(new String[] { "status" });
     }
 	
-	public void FIXMEtestStop() {
+    @Test
+    @Ignore("broken")
+	public void testStop() {
 		SpringLoader.main(new String[] { "stop" });
 	}
 	
@@ -86,7 +90,7 @@ public class SpringLoaderTest extends TestCase {
 		assertFalse(Registry.containsBean(beanName));
 	}
 
-	private void assertBeanExists(String beanName) {
+    private void assertBeanExists(String beanName) {
 		assertTrue(Registry.containsBean(beanName));
 	}
 
