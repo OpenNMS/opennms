@@ -52,7 +52,7 @@ public class LineOrientedCodecFactory implements ProtocolCodecFactory {
     
     public LineOrientedCodecFactory(Charset charset, String delimit) {
         m_encoder = new LineOrientedEncoder(charset);
-        m_decoder = new LineOrientedDecoder(charset, delimit);
+        m_decoder = new LineOrientedDecoder(charset);
     }
     
     public ProtocolDecoder getDecoder(IoSession session) throws Exception {

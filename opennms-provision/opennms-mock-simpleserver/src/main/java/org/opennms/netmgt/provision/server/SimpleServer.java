@@ -39,9 +39,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
 import org.opennms.netmgt.provision.server.exchange.Exchange;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
+import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
 
 public class SimpleServer extends SimpleConversationEndPoint {
     
@@ -171,7 +171,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @throws Exception 
      */
     protected boolean attemptConversation(BufferedReader in, OutputStream out) throws Exception{
-        System.out.println("SSLServer attempting conversation");
+        //System.out.println("SSLServer attempting conversation");
         m_conversation.attemptServerConversation(in, out);      
         return true;
     }

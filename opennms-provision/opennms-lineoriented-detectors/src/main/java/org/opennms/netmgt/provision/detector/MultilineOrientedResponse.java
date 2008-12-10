@@ -22,8 +22,6 @@ package org.opennms.netmgt.provision.detector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -33,25 +31,27 @@ public class MultilineOrientedResponse {
     private BufferedReader m_in;
     private String m_lineEscape = " ";
     private String m_multilineIndicator = "-";
+    
+    private String m_response;
+    
+    public void setResponse(String response) {
+        m_response = response;
+    }
 
     public void receive(BufferedReader in) {
         m_in = in;
     }
     
-    public boolean startsWith(String pattern) {
-        String line = null;
-        do {
-           try {
-               line = getLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public boolean startsWith(String prefix) {
+        String[] response = m_response.split("\r\n");
+        
+        for(int i = 0; i < response.length; i++) {
+            String codeString = getCode(response[i]);
+            if(!codeString.startsWith(prefix)) {
                 return false;
             }
-           
-           if(!line.startsWith(pattern)) { return false; };
-           
-       }while(line !=null && line.length() > 0 && "-".equals(line.substring(3,4)));            
-        
+        }
+ 
         return true;
     }
     
@@ -60,48 +60,18 @@ public class MultilineOrientedResponse {
      * @param endRange
      * @return
      */
-    public boolean expectedCodeRange(int beginRange, int endRange) {
-        try {  
-            
-            List<String> response = new ArrayList<String>();
-    
-            String firstResponseLine = getLine();
-            System.out.println("MultilineOrientedResponse from server: " + firstResponseLine);
-            
-            String codeString = getCode(firstResponseLine);
-            
-            if(!validateCode(codeString)) { return false; }
-            System.out.printf("MultilineOrientedResponse Code: %s\n", codeString);
-            response.add(firstResponseLine.substring(4));
-    
-    
-            // Is the fourth character a hyphen (if so, it's a continuation)?
-            if (m_multilineIndicator.equals(firstResponseLine.substring(3, 4))) {
-                // The multi-line response ends with a line that begins with this:
-                String endMultiLine = String.format("%s%s", codeString, m_lineEscape);
-    
-                while (true) {
-                    String subsequentResponse = null;
-                    
-                    subsequentResponse = getLine();
-                    
-                    System.out.printf("MultilineOrientedResponse subsequentResponse: %s", subsequentResponse);
-    
-                    if (subsequentResponse.startsWith(endMultiLine)) {
-                        response.add(subsequentResponse.substring(4));
-                        break;
-                    }
-    
-                    response.add(subsequentResponse);
-                }
+    public boolean expectedCodeRange(int beginCodeRange, int endCodeRange) {
+
+        String[] response = m_response.split("\r\n");
+        
+        for(int i = 0; i < response.length; i++) {
+            String codeString = getCode(response[i]);
+            if(!validateCodeRange(codeString, beginCodeRange, endCodeRange)) {
+                return false;
             }
-            System.out.println("MultilineOrientedResponse code string: " + codeString);
-            return validateCodeRange(codeString, beginRange, endRange);
-            
-      }catch(IOException e) {
-          //e.printStackTrace();
-          return false;
-      }
+        }
+        
+        return true;
             
     }
     
@@ -182,36 +152,14 @@ public class MultilineOrientedResponse {
      * @param codeString
      * @return
      */
-    private boolean validateCode(String codeString)  {
-        try {    
-            Integer.parseInt(codeString);
-        }catch(NumberFormatException e) {
+    private boolean validateCodeRange(String codeString, int beginCodeRange, int endCodeRange) {
+        try {
+            int code = Integer.parseInt(codeString);
+            return (code >= beginCodeRange && code <= endCodeRange);
+        }catch(Exception e) {
             return false;
         }
         
-        return true;
-    }
-
-    /**
-     * @return
-     * @throws IOException
-     */
-    private String getLine() throws IOException {
-        String line = m_in.readLine();
-        if(line != null) { 
-            return line; 
-       }else {
-            throw new IOException("End of stream was reached before a response could be read");
-        }
-    }
-
-    /**
-     * @param codeString
-     * @return
-     */
-    private boolean validateCodeRange(String codeString, int beginCodeRange, int endCodeRange) {
-        int code = Integer.parseInt(codeString);
-        return (code >= beginCodeRange && code <= endCodeRange);
     }
 
     public void until(String lineEcapse) {
@@ -247,5 +195,9 @@ public class MultilineOrientedResponse {
             }
         }
         return false;
+    }
+    
+    public String toString() {
+        return String.format("Response: %s", m_response);
     }
 }
