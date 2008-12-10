@@ -37,23 +37,25 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import org.opennms.netmgt.provision.detector.LineOrientedResponse;
+import org.opennms.netmgt.provision.detector.MultilineOrientedResponse;
 
 /**
- * @author Donald Desloge
+ * @author thedesloge
  *
  */
-public class LineOrientedDecoder extends CumulativeProtocolDecoder {
+public class MultiLineDecoder extends CumulativeProtocolDecoder {
     
+    private final String m_multilineIndicator;
     private Charset m_charset;
     
-    public LineOrientedDecoder(Charset charset) {
+    public MultiLineDecoder(Charset charset, String multilineIndicator) {
         m_charset = charset;
+        m_multilineIndicator = multilineIndicator;
     }
     
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
-        // Remember the initial position.
+     // Remember the initial position.
         int start = in.position();
         
         // Now find the first CRLF in the buffer.
@@ -70,7 +72,18 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
                     in.limit(position);
                     // The bytes between in.position() and in.limit()
                     // now contain a full CRLF terminated line.
-                    out.write(parseCommand(in.slice()));
+                    
+                   if(!checkIndicator(in.slice())) {
+                       //TODO: make sure that this is working appropriately 
+                       in.position(0);
+                        //MultilineOrientedResponse resp = parseCommand(in.slice());
+                        //System.out.printf("*** Response from Server Decoded:\n %s \n******", resp.toString());
+                        //out.write(resp);
+                        out.write(parseCommand(in.slice()));
+                        return true;
+                    }
+                    
+                    
                 } finally {
                     // Set the position to point right after the
                     // detected line and set the limit to the old
@@ -93,12 +106,17 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
         in.position(start);
         
         return false;
-        
     }
     
-    private LineOrientedResponse parseCommand(IoBuffer in) throws CharacterCodingException {
-        return new LineOrientedResponse(in.getString(m_charset.newDecoder()));
+    private boolean checkIndicator(IoBuffer in) throws CharacterCodingException {
+        String line = in.getString(m_charset.newDecoder());
+        return line.substring(3, 4).equals(m_multilineIndicator);
+    }
+    
+    private MultilineOrientedResponse parseCommand(IoBuffer in) throws CharacterCodingException {
+        MultilineOrientedResponse response = new MultilineOrientedResponse();
+        response.setResponse(in.getString(m_charset.newDecoder()));
+        return response;
     }
 
-    
 }
