@@ -32,9 +32,10 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -43,23 +44,14 @@ import org.opennms.netmgt.Registry;
 import org.opennms.netmgt.model.ServiceDaemon;
 
 public class SpringLoaderTest {
-    
+
     @Before
-	public void setUp() throws Exception {
-		
-	}
-    
-    @After
-	public void tearDown() throws Exception {
-		
-	}
-    
-    @Test
-    public void testBogus() {
-        // an empty test so that JUnit doesn't complain that there aren't any tests
+    public void setUp() {
+        System.setProperty("opennms.startup.context", "classpath:/startup.xml");
     }
-	
-    @Ignore
+
+    @Test
+    @Ignore("broken")
 	public void testStart() {
 		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
 		SpringLoader.main(new String[] { "start" });
@@ -73,22 +65,23 @@ public class SpringLoaderTest {
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
-    @Ignore
+    @Test
+    @Ignore("broken")
 	public void testContexts() {
 		SpringLoader.main(new String[] { "start" });
 		
-		
-
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("collectd");
 		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
-	
-    @Ignore
+
+    @Test
+    @Ignore("broken")
     public void testStatus() {
 		SpringLoader.main(new String[] { "status" });
     }
 	
-    @Ignore
+    @Test
+    @Ignore("broken")
 	public void testStop() {
 		SpringLoader.main(new String[] { "stop" });
 	}
@@ -97,7 +90,7 @@ public class SpringLoaderTest {
 		assertFalse(Registry.containsBean(beanName));
 	}
 
-	private void assertBeanExists(String beanName) {
+    private void assertBeanExists(String beanName) {
 		assertTrue(Registry.containsBean(beanName));
 	}
 
