@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 04: Severity -> OnmsSeverity name change and some method name changes. - dj@opennms.org
 // 2008 Sep 27: Use Java 5 enums for sort style and acknowledge type and
 //              use new Severity enum from Alarm. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
@@ -53,8 +52,8 @@ import java.util.Vector;
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.alarm.Alarm.Severity;
 import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
@@ -766,7 +765,7 @@ public class AlarmFactory extends Object {
     }
 
     public static Alarm[] getAlarmsForSeverity(int severity, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
-        return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[] { new SeverityFilter(OnmsSeverity.get(severity)) }));
+        return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[] { new SeverityFilter(Severity.getById(severity)) }));
     }
 
     /**
@@ -1086,7 +1085,7 @@ public class AlarmFactory extends Object {
 
             alarm.count = rs.getInt("counter");
 
-            alarm.severity = OnmsSeverity.get(rs.getInt("severity"));
+            alarm.severity = Severity.getById(rs.getInt("severity"));
 
             alarm.lastEventID = rs.getInt("lastEventID");
 
@@ -1185,16 +1184,16 @@ public class AlarmFactory extends Object {
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, OnmsSeverity.CLEARED.getId());
-                stmt.setInt(2, OnmsSeverity.WARNING.getId());
-                stmt.setInt(3, OnmsSeverity.CRITICAL.getId());
-                stmt.setInt(4, OnmsSeverity.CRITICAL.getId());
+                stmt.setInt(1, Severity.CLEARED.getId());
+                stmt.setInt(2, Severity.WARNING.getId());
+                stmt.setInt(3, Severity.CRITICAL.getId());
+                stmt.setInt(4, Severity.CRITICAL.getId());
                 stmt.setInt(5, Alarm.PROBLEM_TYPE);
                 stmt.setInt(6, Alarm.RESOLUTION_TYPE);
-                stmt.setInt(7, OnmsSeverity.CLEARED.getId());
+                stmt.setInt(7, Severity.CLEARED.getId());
                 stmt.setInt(8, Alarm.PROBLEM_TYPE);
-                stmt.setInt(9, OnmsSeverity.NORMAL.getId());
-                stmt.setInt(10, OnmsSeverity.CRITICAL.getId());
+                stmt.setInt(9, Severity.NORMAL.getId());
+                stmt.setInt(10, Severity.CRITICAL.getId());
                 stmt.executeUpdate();
                 stmt.close();
             } finally {
@@ -1239,10 +1238,10 @@ public class AlarmFactory extends Object {
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
-                stmt.setInt(1, OnmsSeverity.CLEARED.getId());
+                stmt.setInt(1, Severity.CLEARED.getId());
                 stmt.setInt(2, Alarm.RESOLUTION_TYPE);
-                stmt.setInt(3, OnmsSeverity.NORMAL.getId());
-                stmt.setInt(4, OnmsSeverity.CRITICAL.getId());
+                stmt.setInt(3, Severity.NORMAL.getId());
+                stmt.setInt(4, Severity.CRITICAL.getId());
                 stmt.executeUpdate();
                 stmt.close();
             } finally {

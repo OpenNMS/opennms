@@ -52,7 +52,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
 
     private Map<AttributeGroupType, AttributeGroup> m_groups = new HashMap<AttributeGroupType, AttributeGroup>();
 
-    public SnmpCollectionResource(final ResourceType def) {
+    public SnmpCollectionResource(ResourceType def) {
         m_resourceType = def;
     }
     
@@ -82,20 +82,19 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     	return false;
     }
     
-    public void setAttributeValue(final SnmpAttributeType type, final SnmpValue val) {
+    public void setAttributeValue(SnmpAttributeType type, SnmpValue val) {
         SnmpAttribute attr = new SnmpAttribute(this, type, val);
         addAttribute(attr);
     }
 
-    private void addAttribute(final SnmpAttribute attr) {
+    private void addAttribute(SnmpAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
-        if (log().isDebugEnabled()) {
-            log().debug("Adding attribute " + attr.getClass().getName() + ": " + attr + " to group " + group);
-        }
+        log().debug("Adding attribute " + attr.getClass().getName() + ": "
+                    + attr + " to group " + group);
         group.addAttribute(attr);
     }
 
-    private AttributeGroup getGroup(final AttributeGroupType groupType) {
+    private AttributeGroup getGroup(AttributeGroupType groupType) {
         AttributeGroup group = m_groups.get(groupType);
         if (group == null) {
             group = new AttributeGroup(this, groupType);
@@ -104,7 +103,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
         return group;
     }
 
-    public void visit(final CollectionSetVisitor visitor) {
+    public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         
         for (AttributeGroup group : getGroups()) {

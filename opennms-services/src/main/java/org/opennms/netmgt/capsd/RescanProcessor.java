@@ -2828,23 +2828,24 @@ public final class RescanProcessor implements Runnable {
              * to a collector map.
              */
             for (int i = 0; i < dbInterfaces.length; i++) {
-                log().info("run: Running collector for interface "+i+" of "+dbInterfaces.length);
                 InetAddress ifaddr = dbInterfaces[i].getIfAddress();
 
                 /*
                  * collect the information from the interface.
                  * NOTE: skip '127.*.*.*' and '0.0.0.0' addresses.
                  */
-                if (!scannableInterface(dbInterfaces, ifaddr)) {
-                    log().debug("run: skipping scan of address: "+ifaddr.getHostAddress());
+                if (ifaddr.getHostAddress().startsWith("127")
+                        || ifaddr.getHostAddress().equals("0.0.0.0")) {
                     continue;
                 }
 
                 if (log().isDebugEnabled()) {
-                    log().debug("running collection for " + ifaddr.getHostAddress());
+                    log().debug("running collection for "
+                              + ifaddr.getHostAddress());
                 }
 
-                IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true, probedAddrs);
+                IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true,
+                                                        probedAddrs);
                 collector.run();
 
                 IfSnmpCollector snmpc = collector.getSnmpCollector();
@@ -3070,13 +3071,6 @@ public final class RescanProcessor implements Runnable {
                       + "for node w/ nodeid " + getNodeId()
                       + " completed.");
         }
-    }
-
-    protected static boolean scannableInterface(final DbIpInterfaceEntry[] dbInterfaces, final InetAddress ifaddr) {
-        boolean localHostAddress = (ifaddr.getHostAddress().startsWith("127") && dbInterfaces.length > 1);
-        boolean nonIpAddress = ifaddr.getHostAddress().equals("0.0.0.0");
-        boolean scannable = !localHostAddress && !nonIpAddress;
-        return scannable;
     }
 
     private int getNodeId() {

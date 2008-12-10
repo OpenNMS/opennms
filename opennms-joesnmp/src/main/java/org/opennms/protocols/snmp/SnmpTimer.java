@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Sep 28: Use long time rather than making new Date objects - ranger@opennms.org
 // 2007 Jun 23: Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -43,6 +42,7 @@
 package org.opennms.protocols.snmp;
 
 import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -53,7 +53,8 @@ import java.util.NoSuchElementException;
  * 
  * @see SnmpSession
  * 
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version 1.1.1.1
  */
 class SnmpTimer extends Object {
     /**
@@ -89,7 +90,7 @@ class SnmpTimer extends Object {
         /**
          * The date to run the runnable
          */
-        public long m_when;
+        public Date m_when;
 
         /**
          * Default Constructor. Takes an Offset from now and a runnable that
@@ -101,7 +102,8 @@ class SnmpTimer extends Object {
          *            The runnable to be executed
          */
         TimeoutElement(long offset, Runnable what) {
-            m_when = System.currentTimeMillis() + offset;
+            m_when = new Date();
+            m_when.setTime(m_when.getTime() + offset);
             m_toRun = what;
         }
     }
@@ -122,7 +124,7 @@ class SnmpTimer extends Object {
             LinkedList<Runnable> toRun = new LinkedList<Runnable>();
             while (true) {
                 //
-                // synchronize on the object
+                // syncronize on the object
                 //
                 synchronized (m_sync) {
                     if (m_exit)
@@ -136,6 +138,7 @@ class SnmpTimer extends Object {
                         try {
                             m_sync.wait();
                         } catch (InterruptedException err) {
+                            // Thread.currentThread().interrupt();
                             return;
                         }
 
@@ -146,10 +149,10 @@ class SnmpTimer extends Object {
                     }
 
                     //
-                    // find the smallest time slice
+                    // find the smallest timeslice
                     // and run those in error
                     //
-                    long now = System.currentTimeMillis();
+                    Date now = new Date();
                     boolean done = false;
                     long minTime = Long.MAX_VALUE;
                     ListIterator<TimeoutElement> iter = m_list.listIterator(0);
@@ -160,9 +163,9 @@ class SnmpTimer extends Object {
                             // get the next timeout element
                             //
                             TimeoutElement elem = iter.next();
-                            if (now > elem.m_when) {
+                            if (now.after(elem.m_when)) {
                                 //
-                                // The element has expired
+                                // The element has expried
                                 //
                                 toRun.add(elem.m_toRun);
                                 iter.remove();
@@ -171,8 +174,8 @@ class SnmpTimer extends Object {
                                 // find out if this time is less
                                 // than the one currently stored
                                 //
-                                if (elem.m_when < minTime)
-                                    minTime = elem.m_when;
+                                if (elem.m_when.getTime() < minTime)
+                                    minTime = elem.m_when.getTime();
                             }
                         } catch (NoSuchElementException err) {
                             done = true;
@@ -184,10 +187,10 @@ class SnmpTimer extends Object {
                     //
                     // if there are no elements to run
                     // then wait the minimum time until
-                    // the synchronization object is signaled.
+                    // the syncronization object is signaled.
                     //
                     if (toRun.size() == 0) {
-                        minTime -= now;
+                        minTime -= now.getTime();
                         try {
                             if (minTime > 0)
                                 m_sync.wait(minTime);
@@ -226,7 +229,7 @@ class SnmpTimer extends Object {
 
     /**
      * Creates an SnmpTime object and it's internal thread that is used to
-     * schedule the execution of the runnables.
+     * schedual the execution of the runnables.
      * 
      */
     SnmpTimer() {

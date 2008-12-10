@@ -992,7 +992,7 @@ public class NetworkElementFactory extends Object {
         }
 
         Collections.sort(intfs, INTERFACE_COMPARATOR);
-        return intfs.toArray(new Interface[intfs.size()]);
+        return (Interface[]) intfs.toArray(new Interface[intfs.size()]);
 
     }
 
@@ -1076,7 +1076,7 @@ public class NetworkElementFactory extends Object {
             services.add(service);
         }
 
-        return services.toArray(new Service[services.size()]);
+        return (Service[]) services.toArray(new Service[services.size()]);
     }
 
     public static String getServiceNameFromId(int serviceId) throws SQLException {
@@ -1084,7 +1084,7 @@ public class NetworkElementFactory extends Object {
             createServiceIdNameMaps();
         }
 
-        String serviceName = serviceId2NameMap.get(new Integer(serviceId));
+        String serviceName = (String) serviceId2NameMap.get(new Integer(serviceId));
 
         return (serviceName);
     }
@@ -1100,7 +1100,7 @@ public class NetworkElementFactory extends Object {
             createServiceIdNameMaps();
         }
 
-        Integer value = serviceName2IdMap.get(serviceName);
+        Integer value = (Integer) serviceName2IdMap.get(serviceName);
 
         if (value != null) {
             serviceId = value.intValue();
@@ -1562,7 +1562,7 @@ public class NetworkElementFactory extends Object {
         
     }    
 
-    public static Set<Integer> getLinkedNodeIdOnNodes(Set<Integer> nodeIds, Connection conn) throws SQLException {
+    public static Set<Integer> getLinkedNodeIdOnNodes(Set nodeIds, Connection conn) throws SQLException {
 		String LOG4J_CATEGORY = "OpenNMS.Map";
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		Category log= ThreadCategory.getInstance(NetworkElementFactory.class);
@@ -1572,13 +1572,15 @@ public class NetworkElementFactory extends Object {
         	return new TreeSet<Integer>();
         }
         
+        Integer node = null;
+        
         try {
         	log.debug("Before First select");
         	StringBuffer query = new StringBuffer("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID IN (");
-        	Iterator<Integer> it = nodeIds.iterator();
+        	Iterator it = nodeIds.iterator();
         	StringBuffer nodesStrBuff = new StringBuffer("");
         	while(it.hasNext()){
-        		nodesStrBuff.append( (it.next()).toString());
+        		nodesStrBuff.append( ((Integer)it.next()).toString());
         		if(it.hasNext()){
         			nodesStrBuff.append(", ");
         		}
@@ -1589,7 +1591,11 @@ public class NetworkElementFactory extends Object {
             PreparedStatement stmt = conn.prepareStatement(query.toString());
             ResultSet rs = stmt.executeQuery();
     	    while (rs.next()) {
-	            nodes.add(new Integer(rs.getInt("parentid")));
+	            Object element = new Integer(rs.getInt("parentid"));
+	            if (element != null) {
+	                node = ((Integer) element);
+	            }
+	            nodes.add(node);
 	        }
 	        rs.close();
             stmt.close();
@@ -1600,7 +1606,11 @@ public class NetworkElementFactory extends Object {
         	query.append(") AND STATUS != 'D'");            
             rs = stmt.executeQuery();
     	    while (rs.next()) {
-	            nodes.add(new Integer(rs.getInt("parentid")));
+	            Object element = new Integer(rs.getInt("parentid"));
+	            if (element != null) {
+	                node = ((Integer) element);
+	            }
+	            nodes.add(node);
 	        }
 		    rs.close();
 		    stmt.close();
@@ -1895,7 +1905,7 @@ public class NetworkElementFactory extends Object {
             atIfs.add(atIf);
         }
 
-        return atIfs.toArray(new AtInterface[atIfs.size()]);
+        return (AtInterface[]) atIfs.toArray(new AtInterface[atIfs.size()]);
     }
 
     /**
@@ -1978,7 +1988,7 @@ public class NetworkElementFactory extends Object {
             ipRtIfs.add(ipRtIf);
         }
 
-        return ipRtIfs.toArray(new IpRouteInterface[ipRtIfs.size()]);
+        return (IpRouteInterface[]) ipRtIfs.toArray(new IpRouteInterface[ipRtIfs.size()]);
     }
 
     /**
@@ -2068,7 +2078,7 @@ public class NetworkElementFactory extends Object {
             stpIfs.add(stpIf);
         }
 
-        return stpIfs.toArray(new StpInterface[stpIfs.size()]);
+        return (StpInterface[]) stpIfs.toArray(new StpInterface[stpIfs.size()]);
     }
 
     /**
@@ -2153,7 +2163,7 @@ public class NetworkElementFactory extends Object {
             stpNodes.add(stpNode);
         }
 
-        return stpNodes.toArray(new StpNode[stpNodes.size()]);
+        return (StpNode[]) stpNodes.toArray(new StpNode[stpNodes.size()]);
     }
 
     /**
@@ -2204,7 +2214,7 @@ public class NetworkElementFactory extends Object {
             vlan.add(vlanEntry);
         }
 
-        return vlan.toArray(new Vlan[vlan.size()]);
+        return (Vlan[]) vlan.toArray(new Vlan[vlan.size()]);
     }
 
 
@@ -2264,7 +2274,7 @@ public class NetworkElementFactory extends Object {
             dataLinkIfs.add(dataLinkIf);
         }
 
-        return dataLinkIfs.toArray(new DataLinkInterface[dataLinkIfs.size()]);
+        return (DataLinkInterface[]) dataLinkIfs.toArray(new DataLinkInterface[dataLinkIfs.size()]);
     }
 
     protected static DataLinkInterface[] invertDataLinkInterface(DataLinkInterface[] nodes) {

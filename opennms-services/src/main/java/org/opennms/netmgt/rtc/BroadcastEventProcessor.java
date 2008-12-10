@@ -62,7 +62,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where incoming events of interest are enqueued
      */
-    private final FifoQueue m_updaterQ;
+    private FifoQueue m_updaterQ;
 
     /**
      * Constructor

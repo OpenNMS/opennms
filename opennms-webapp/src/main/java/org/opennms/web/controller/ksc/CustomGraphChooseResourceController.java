@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 22: Use new loadResourceById when we need an exception if the resource isn't found. - dj@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -67,7 +66,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         String selectedResourceId = request.getParameter("selectedResourceId");
         if (selectedResourceId != null) {
             try {
-                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
+                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId, true);
 
                 Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
                 OnmsResource r = selectedResource;
@@ -82,7 +81,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
             }
         }
         
-        OnmsResource resource = getResourceService().loadResourceById(resourceId);
+        OnmsResource resource = getResourceService().getResourceById(resourceId, true);
         modelAndView.addObject("parentResource", resource);
         
         modelAndView.addObject("parentResourcePrefabGraphs", m_resourceService.findPrefabGraphsForResource(resource));

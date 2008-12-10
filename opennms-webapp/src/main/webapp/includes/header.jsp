@@ -104,7 +104,7 @@
 		</div>
 		<hr />
 		<c:choose>
-			<c:when test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">
+			<c:when test="${param.nonavbar != 'true'}">
 				<div id="headernavbarright">
                   <jsp:include page="/navBar.htm" flush="false"/>
 				</div>
@@ -129,7 +129,7 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
 <%= "<div id=\"content\">" %>
-<c:if test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">	
+<c:if test="${param.nonavbar != 'true'}">	
    <h2><a href="index.jsp">Home</a>
    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
      <c:if test="${breadcrumb != ''}">

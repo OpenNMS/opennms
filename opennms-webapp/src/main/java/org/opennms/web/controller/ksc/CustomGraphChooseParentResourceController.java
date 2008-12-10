@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 22: Use new loadResourceById method. - dj@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -72,7 +71,7 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
         String selectedResourceId = request.getParameter("selectedResourceId");
         if (selectedResourceId != null) {
             try {
-                OnmsResource selectedResource = m_resourceService.loadResourceById(selectedResourceId);
+                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId, true);
 
                 Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
                 OnmsResource r = selectedResource;

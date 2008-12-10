@@ -68,9 +68,7 @@ public class AttributeGroup {
     }
 
     public void visit(CollectionSetVisitor visitor) {
-        if (log().isDebugEnabled()) {
-            log().debug("Visiting Group "+this);
-        }
+        log().debug("Visiting Group "+this);
         visitor.visitGroup(this);
         
         for(CollectionAttribute attr : getAttributes()) {
@@ -82,9 +80,7 @@ public class AttributeGroup {
     
     public boolean shouldPersist(ServiceParameters params) {
         boolean shouldPersist = doShouldPersist();
-        if (log().isDebugEnabled()) {
-            log().debug(this+".shouldPersist = "+shouldPersist);
-        }
+        log().debug(this+".shouldPersist = "+shouldPersist);
         return shouldPersist;   
  
         

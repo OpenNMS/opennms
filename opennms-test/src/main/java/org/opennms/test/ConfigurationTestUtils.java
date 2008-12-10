@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 24: Add getSpringResourceForResource. - dj@opennms.org
 // 2008 Feb 05: Allow setting the object to null and we'll use ourselves. - dj@opennms.org
 // 2007 Dec 25: Add getUrlForResource and getFileForResource. - dj@opennms.org
 // 2007 Aug 02: Add getFileForConfigFile. - dj@opennms.org
@@ -58,16 +57,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-
 import junit.framework.Assert;
 
 public class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
-    // TODO: rename this constant
-    private static final String DAEMON_DIRECTORY = "opennms-base-assembly";
+    private static final String DAEMON_DIRECTORY = "opennms-daemon";
 
     public static URL getUrlForResource(Object obj, String resource) {
         URL url = getClass(obj).getResource(resource);
@@ -77,14 +71,6 @@ public class ConfigurationTestUtils extends Assert {
 
     private static Class<? extends Object> getClass(Object obj) {
         return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class.getClass();
-    }
-    
-    public static Resource getSpringResourceForResource(Object obj, String resource) {
-        try {
-            return new FileSystemResource(getFileForResource(obj, resource));
-        } catch (Throwable t) {
-            return new InputStreamResource(getInputStreamForResource(obj, resource));
-        }
     }
     
     public static File getFileForResource(Object obj, String resource) {

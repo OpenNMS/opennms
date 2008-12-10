@@ -130,9 +130,8 @@ public class JDBCPlugin extends AbstractPlugin {
         Statement statement = null;
         boolean connected = false;
 
-        for (int attempts = 0; attempts <= retries && !connected;) {
+        for (int attempts = 1; attempts <= retries && !connected;) {
             log().info("Trying to detect JDBC server on '" + hostname + "', attempts #: " + attempts);
-
             try {
 
                 log().debug("Loading JDBC driver: '" + db_driver + "'");
@@ -157,7 +156,6 @@ public class JDBCPlugin extends AbstractPlugin {
                 
             } catch (Exception e) {
                 log().info(e);
-                e.printStackTrace();
             } finally {
                 attempts++;
                 closeStmt(statement);

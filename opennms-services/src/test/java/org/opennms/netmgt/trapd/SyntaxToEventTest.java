@@ -8,10 +8,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Modifications:
-//
-// 2008 Oct 26: Use SnmpTestSuiteUtils to create our TestSuite since the same thing is used in other classes. - dj@opennms.org
-//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -38,15 +34,19 @@ package org.opennms.netmgt.trapd;
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.test.PropertySettingTestSuite;
 
 public class SyntaxToEventTest extends OpenNMSTestCase {
     public static TestSuite suite() {
-        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SyntaxToEventTest.class);
+        Class testClass = SyntaxToEventTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
+        suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
+        return suite;
     }
     
 

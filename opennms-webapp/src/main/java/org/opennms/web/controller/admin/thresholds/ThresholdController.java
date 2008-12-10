@@ -155,8 +155,6 @@ public class ThresholdController extends AbstractController implements Initializ
         thresholdTypes.add("high");
         thresholdTypes.add("low");
         thresholdTypes.add("relativeChange");
-        thresholdTypes.add("absoluteChange");
-        thresholdTypes.add("rearmingAbsoluteChange");
         modelAndView.addObject("thresholdTypes",thresholdTypes);
       
         modelAndView.addObject("saveButtonTitle", SAVE_BUTTON_TITLE);
@@ -304,7 +302,6 @@ public class ThresholdController extends AbstractController implements Initializ
         }
     }
     
-    @SuppressWarnings("unchecked")
     private List<ResourceFilter> getFilterList(HttpServletRequest request, boolean create) {
         return (List<ResourceFilter>)request.getSession(create).getAttribute("savedFilters");
     }

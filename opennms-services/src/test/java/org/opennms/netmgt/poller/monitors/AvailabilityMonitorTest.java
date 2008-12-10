@@ -76,7 +76,7 @@ public class AvailabilityMonitorTest extends TestCase {
             }
             public InetAddress getAddress() {
                 try {
-                    return InetAddress.getByName("127.0.0.1");
+                    return InetAddress.getLocalHost();
                 } catch (UnknownHostException e) {
                     throw new IllegalStateException("Error getting localhost address", e);
                 }

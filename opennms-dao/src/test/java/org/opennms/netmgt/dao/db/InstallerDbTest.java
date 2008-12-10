@@ -85,9 +85,9 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().setDatabaseName(getTestDatabase());
         m_installerDb.setPostgresOpennmsUser("opennms");
 
-        getInstallerDb().setCreateSqlLocation("../opennms-base-assembly/src/main/filtered/etc/create.sql");
+        getInstallerDb().setCreateSqlLocation("../opennms-daemon/src/main/filtered/etc/create.sql");
 
-        getInstallerDb().setStoredProcedureDirectory("../opennms-base-assembly/src/main/filtered/etc");
+        getInstallerDb().setStoredProcedureDirectory("../opennms-daemon/src/main/filtered/etc");
 
         //getInstallerDb().setDebug(true);
 
@@ -2081,7 +2081,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     
     public void testCreateTableWithCheckConstraint() throws Exception {
     	final String cname="setfilter_type_valid";
-    	final String checkexpression="(((type >= 0) AND (type <= 2)))";
+    	final String checkexpression="(((\"type\" >= 0) AND (\"type\" <= 2)))";
         final String sql = "create table setFilter ( id integer, type integer, " +
         		"constraint "+cname+" check "+checkexpression+");\n";
         getInstallerDb().readTables(new StringReader(sql));
@@ -2095,7 +2095,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     
     public void testUpgradeAddCheckConstraint() throws Exception {
        	final String cname="setfilter_type_valid";
-    	final String checkexpression="(((type >= 0) AND (type <= 2)))";
+    	final String checkexpression="(((\"type\" >= 0) AND (\"type\" <= 2)))";
         final String sql_start = "create table setFilter ( id integer, type integer);\n";
         executeSQL(sql_start);
         
@@ -2107,12 +2107,11 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         //Check created table
     	Table table=getInstallerDb().getTableFromDB("setFilter");
     	List<Constraint> constraints=table.getConstraints();
-    	assertEquals(1, constraints.size());
+    	assertTrue(constraints.size()==1);
     	Constraint constraint=constraints.get(0);
-    	assertEquals(cname, constraint.getName());
-        // postgresql8.2 has quotes in the resulting expression
-        // postgresql8.3 has none... remove the quotes (if there are any) before comparing
-        assertEquals(checkexpression.replaceAll("\"type\"", "type"), "("+constraint.getCheckExpression().replaceAll("\"type\"", "type")+")");
+    	assertTrue(cname.equals(constraint.getName()));
+    	assertTrue(checkexpression.equals("("+constraint.getCheckExpression()+")"));
+  	
     }
 
     public void addTableFromSQL(String tableName) throws SQLException {

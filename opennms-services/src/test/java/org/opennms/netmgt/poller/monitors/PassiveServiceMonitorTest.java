@@ -33,7 +33,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import static org.junit.Assert.assertEquals;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;

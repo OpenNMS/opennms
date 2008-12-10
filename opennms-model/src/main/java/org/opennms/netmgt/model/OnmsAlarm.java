@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 04: Use new OnmsSeverity object and remove package name from OnmsEvent. - dj@opennms.org
 // 2008 Sep 26: Move some of the alarm "constant" information into here
 // 2007 Apr 05: Make annotation nullability and default values match what's in create.sql. - dj@opennms.org
 //
@@ -53,7 +52,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -66,6 +64,20 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="alarms")
 public class OnmsAlarm implements Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
+
+    public static final int INDETERMINATE_SEVERITY = 1;
+
+    public static final int CLEARED_SEVERITY = 2;
+
+    public static final int NORMAL_SEVERITY = 3;
+
+    public static final int WARNING_SEVERITY = 4;
+
+    public static final int MINOR_SEVERITY = 5;
+
+    public static final int MAJOR_SEVERITY = 6;
+
+    public static final int CRITICAL_SEVERITY = 7;
     
     public static final int PROBLEM_TYPE = 1;
     
@@ -99,7 +111,7 @@ public class OnmsAlarm implements Serializable {
     private Integer m_counter;
 
     /** persistent field */
-    private OnmsSeverity m_severity;
+    private Integer m_severity;
 
     /** persistent field */
     private Date m_firstEventTime;
@@ -153,7 +165,7 @@ public class OnmsAlarm implements Serializable {
     private String m_clearKey;
 
     /** persistent field */
-    private OnmsEvent m_lastEvent;
+    private org.opennms.netmgt.model.OnmsEvent m_lastEvent;
 
     /** persistent field */
     private String m_managedObjectInstance;
@@ -175,7 +187,7 @@ public class OnmsAlarm implements Serializable {
 	private Map<String, String> m_details;
 
     /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, TroubleTicketState tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, TroubleTicketState tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
@@ -185,7 +197,7 @@ public class OnmsAlarm implements Serializable {
         this.m_reductionKey = reductionkey;
         this.m_alarmType = alarmtype;
         this.m_counter = counter;
-        this.m_severity = OnmsSeverity.get(severity);
+        this.m_severity = severity;
         this.m_firstEventTime = firsteventtime;
         this.m_description = description;
         this.m_logMsg = logmsg;
@@ -213,7 +225,7 @@ public class OnmsAlarm implements Serializable {
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
         this.m_counter = counter;
-        this.m_severity = OnmsSeverity.get(severity);
+        this.m_severity = severity;
         this.m_firstEventTime = firsteventtime;
         this.m_lastEvent = event;
     }
@@ -316,25 +328,15 @@ public class OnmsAlarm implements Serializable {
         this.m_counter = counter;
     }
 
-    @Transient
-    public OnmsSeverity getSeverity() {
+    @Column(name="severity", nullable=false)
+    public Integer getSeverity() {
         return this.m_severity;
     }
 
-    @Transient
-    public void setSeverity(OnmsSeverity severity) {
-        m_severity = severity;
-    }
-    
-    @Column(name="severity", nullable=false)
-    public Integer getSeverityId() {
-        return this.m_severity.getId();
+    public void setSeverity(Integer severity) {
+        this.m_severity = severity;
     }
 
-    public void setSeverityId(Integer severity) {
-        this.m_severity = OnmsSeverity.get(severity);
-    }
-    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="firstEventTime")
     public Date getFirstEventTime() {

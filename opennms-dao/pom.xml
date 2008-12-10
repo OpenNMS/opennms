@@ -111,7 +111,7 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
@@ -130,6 +130,11 @@
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>

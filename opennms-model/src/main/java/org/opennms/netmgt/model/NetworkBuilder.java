@@ -161,10 +161,6 @@ public class NetworkBuilder {
 	public void setDisplayCategory(String displayCategory) {
 		m_currentNode.getAssetRecord().setDisplayCategory(displayCategory);
 	}
-	
-	public void setBuilding(String building){
-	    m_currentNode.getAssetRecord().setBuilding(building);
-	}
 
 	public OnmsNode getCurrentNode() {
 		return m_currentNode;

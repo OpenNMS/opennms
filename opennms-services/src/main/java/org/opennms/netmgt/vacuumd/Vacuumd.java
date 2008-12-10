@@ -76,17 +76,17 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
     public static final String RELOAD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
-    private static volatile Vacuumd m_singleton;
+    private static Vacuumd m_singleton;
 
-    private volatile Thread m_thread;
+    private Thread m_thread;
 
-    private volatile long m_startTime;
+    private long m_startTime;
 
-    private volatile boolean m_stopped = false;
+    private boolean m_stopped = false;
 
-    private volatile LegacyScheduler m_scheduler;
+    private LegacyScheduler m_scheduler;
 
-    private volatile EventIpcManager m_eventMgr;
+    private EventIpcManager m_eventMgr;
 
     public synchronized static Vacuumd getSingleton() {
         if (m_singleton == null) {

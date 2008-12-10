@@ -40,7 +40,6 @@ package org.opennms.netmgt.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -52,12 +51,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @author brozow
  */
 public class EventAnticipator implements EventListener {
-    
-    boolean m_discardUnanticipated = false;
 
     List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
-    
-    List<Event> m_anticipatedEventsReceived = new ArrayList<Event>();
 
     List<Event> m_unanticipatedEvents = new ArrayList<Event>();
 
@@ -65,47 +60,13 @@ public class EventAnticipator implements EventListener {
      */
     public EventAnticipator() {
     }
-    
-
-    /**
-     * @return the discardUnanticipated
-     */
-    public boolean isDiscardUnanticipated() {
-        return m_discardUnanticipated;
-    }
-
-
-    /**
-     * @param discardUnanticipated the discardUnanticipated to set
-     */
-    public void setDiscardUnanticipated(boolean discardUnanticipated) {
-        m_discardUnanticipated = discardUnanticipated;
-    }
-
 
     /**
      * @param event
      * 
      */
     public void anticipateEvent(Event event) {
-        anticipateEvent(event, false);
-    }
-    
-    public synchronized void anticipateEvent(Event event, boolean checkUnanticipatedList) {
-        EventWrapper w = new EventWrapper(event);
-        if (checkUnanticipatedList) {
-            for(Iterator<Event> it = m_unanticipatedEvents.iterator(); it.hasNext(); ) {
-                Event unE = it.next();
-                EventWrapper unW = new EventWrapper(unE);
-                if (unW.equals(w)) {
-                    it.remove();
-                    notifyAll();
-                    return;
-                }
-            }
-        } 
-        m_anticipatedEvents.add(w);
-        notifyAll();
+        m_anticipatedEvents.add(new EventWrapper(event));
     }
 
     /**
@@ -115,15 +76,8 @@ public class EventAnticipator implements EventListener {
         EventWrapper w = new EventWrapper(event);
         if (m_anticipatedEvents.contains(w)) {
             m_anticipatedEvents.remove(w);
-            m_anticipatedEventsReceived.add(event);
             notifyAll();
         } else {
-            saveUnanticipatedEvent(event);
-        }
-    }
-
-    private void saveUnanticipatedEvent(Event event) {
-        if (!m_discardUnanticipated) {
             m_unanticipatedEvents.add(event);
         }
     }
@@ -134,10 +88,6 @@ public class EventAnticipator implements EventListener {
             events.add(w.getEvent());
         }
         return events;
-    }
-    
-    public synchronized List<Event> getAnticipatedEventsRecieved() {
-        return new ArrayList<Event>(m_anticipatedEventsReceived);
     }
 
     public void reset() {
@@ -151,7 +101,6 @@ public class EventAnticipator implements EventListener {
 
     public void resetAnticipated() {
         m_anticipatedEvents = new ArrayList<EventWrapper>();
-        m_anticipatedEventsReceived = new ArrayList<Event>();
     }
 
     /**
@@ -205,13 +154,13 @@ public class EventAnticipator implements EventListener {
             }
         }
 
-        if (anticipatedSize >= 0 && missingEvents.size() != anticipatedSize) {
+        if (missingEvents.size() != anticipatedSize) {
             problems.append(missingEvents.size() +
                     " expected events still outstanding (expected " +
                     anticipatedSize + "):\n");
             problems.append(listEvents("\t", missingEvents));
         }
-        if (unanticipatedSize >= 0 && unanticipatedEvents().size() != unanticipatedSize) {
+        if (unanticipatedEvents().size() != unanticipatedSize) {
             problems.append(unanticipatedEvents().size() +
                     " unanticipated events received (expected " +
                     unanticipatedSize + "):\n");
@@ -222,10 +171,6 @@ public class EventAnticipator implements EventListener {
             problems.deleteCharAt(problems.length() - 1);
             Assert.fail(problems.toString());
         }
-    }
-    
-    public void verifyAnticipated() {
-        verifyAnticipated(0, 0, 0, 0, 0);
     }
 
     private static String listEvents(String prefix, Collection<Event> events) {

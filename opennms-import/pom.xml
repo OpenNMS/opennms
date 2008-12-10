@@ -105,7 +105,7 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
@@ -116,6 +116,15 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>concurrent</groupId>
+      <artifactId>concurrent</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>quartz</groupId>

@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Sep 28: Handle XSS scripting issues - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -105,43 +104,43 @@ public class EventQueryServlet extends HttpServlet {
         List<Filter> filterArray = new ArrayList<Filter>();
 
         // convenient syntax for LogMessageSubstringFilter
-        String msgSubstring = WebSecurityUtils.sanitizeString(request.getParameter("msgsub"));
+        String msgSubstring = request.getParameter("msgsub");
         if (msgSubstring != null && msgSubstring.length() > 0) {
             filterArray.add(new LogMessageSubstringFilter(msgSubstring));
         }
 
         // convenient syntax for LogMessageMatchesAnyFilter
-        String msgMatchAny = WebSecurityUtils.sanitizeString(request.getParameter("msgmatchany"));
+        String msgMatchAny = request.getParameter("msgmatchany");
         if (msgMatchAny != null && msgMatchAny.length() > 0) {
             filterArray.add(new LogMessageMatchesAnyFilter(msgMatchAny));
         }
 
         // convenient syntax for NodeNameContainingFilter
-        String nodeNameLike = WebSecurityUtils.sanitizeString(request.getParameter("nodenamelike"));
+        String nodeNameLike = request.getParameter("nodenamelike");
         if (nodeNameLike != null && nodeNameLike.length() > 0) {
             filterArray.add(new NodeNameLikeFilter(nodeNameLike));
         }
 
         // convenient syntax for ServiceFilter
-        String service = WebSecurityUtils.sanitizeString(request.getParameter("service"));
+        String service = request.getParameter("service");
         if (service != null && !service.equals(EventUtil.ANY_SERVICES_OPTION)) {
             filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
         }
 
         // convenient syntax for IPLikeFilter
-        String ipLikePattern = WebSecurityUtils.sanitizeString(request.getParameter("iplike"));
+        String ipLikePattern = request.getParameter("iplike");
         if (ipLikePattern != null && !ipLikePattern.equals("")) {
             filterArray.add(new IPLikeFilter(ipLikePattern));
         }
 
         // convenient syntax for SeverityFilter
-        String severity = WebSecurityUtils.sanitizeString(request.getParameter("severity"));
+        String severity = request.getParameter("severity");
         if (severity != null && !severity.equals(EventUtil.ANY_SEVERITIES_OPTION)) {
             filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time
-        String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
+        String relativeTime = request.getParameter("relativetime");
         if (relativeTime != null && !relativeTime.equals(EventUtil.ANY_RELATIVE_TIMES_OPTION)) {
             try {
                 filterArray.add(EventUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
@@ -151,7 +150,7 @@ public class EventQueryServlet extends HttpServlet {
             }
         }
 
-        String useBeforeTime = WebSecurityUtils.sanitizeString(request.getParameter("usebeforetime"));
+        String useBeforeTime = request.getParameter("usebeforetime");
         if (useBeforeTime != null && useBeforeTime.equals("1")) {
             try {
                 filterArray.add(this.getBeforeDateFilter(request));
@@ -163,7 +162,7 @@ public class EventQueryServlet extends HttpServlet {
             }
         }
 
-        String useAfterTime = WebSecurityUtils.sanitizeString(request.getParameter("useaftertime"));
+        String useAfterTime = request.getParameter("useaftertime");
         if (useAfterTime != null && useAfterTime.equals("1")) {
             try {
                 filterArray.add(this.getAfterDateFilter(request));
@@ -188,9 +187,9 @@ public class EventQueryServlet extends HttpServlet {
             Map<String, Object> paramAdditions = new HashMap<String, Object>();
             paramAdditions.put("filter", filterStrings);
 
-            queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, paramAdditions, IGNORE_LIST));
+            queryString = Util.makeQueryString(request, paramAdditions, IGNORE_LIST);
         } else {
-            queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, IGNORE_LIST));
+            queryString = Util.makeQueryString(request, IGNORE_LIST);
         }
 
         response.sendRedirect(this.redirectUrl + "?" + queryString);
@@ -218,7 +217,7 @@ public class EventQueryServlet extends HttpServlet {
         cal.setLenient(true);
 
         // hour, from 1-12
-        String hourString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "hour"));
+        String hourString = request.getParameter(prefix + "hour");
         if (hourString == null) {
             throw new MissingParameterException(prefix + "hour", this.getRequiredDateFields(prefix));
         }
@@ -226,7 +225,7 @@ public class EventQueryServlet extends HttpServlet {
         cal.set(Calendar.HOUR, WebSecurityUtils.safeParseInt(hourString));
 
         // minute, from 0-59
-        String minuteString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "minute"));
+        String minuteString = request.getParameter(prefix + "minute");
         if (minuteString == null) {
             throw new MissingParameterException(prefix + "minute", this.getRequiredDateFields(prefix));
         }
@@ -234,7 +233,7 @@ public class EventQueryServlet extends HttpServlet {
         cal.set(Calendar.MINUTE, WebSecurityUtils.safeParseInt(minuteString));
 
         // AM/PM, either AM or PM
-        String amPmString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "ampm"));
+        String amPmString = request.getParameter(prefix + "ampm");
         if (amPmString == null) {
             throw new MissingParameterException(prefix + "ampm", this.getRequiredDateFields(prefix));
         }
@@ -248,7 +247,7 @@ public class EventQueryServlet extends HttpServlet {
         }
 
         // month, 0-11 (Jan-Dec)
-        String monthString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "month"));
+        String monthString = request.getParameter(prefix + "month");
         if (monthString == null) {
             throw new MissingParameterException(prefix + "month", this.getRequiredDateFields(prefix));
         }
@@ -256,7 +255,7 @@ public class EventQueryServlet extends HttpServlet {
         cal.set(Calendar.MONTH, WebSecurityUtils.safeParseInt(monthString));
 
         // date, 1-31
-        String dateString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "date"));
+        String dateString = request.getParameter(prefix + "date");
         if (dateString == null) {
             throw new MissingParameterException(prefix + "date", this.getRequiredDateFields(prefix));
         }
@@ -264,7 +263,7 @@ public class EventQueryServlet extends HttpServlet {
         cal.set(Calendar.DATE, WebSecurityUtils.safeParseInt(dateString));
 
         // year
-        String yearString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "year"));
+        String yearString = request.getParameter(prefix + "year");
         if (yearString == null) {
             throw new MissingParameterException(prefix + "year", this.getRequiredDateFields(prefix));
         }

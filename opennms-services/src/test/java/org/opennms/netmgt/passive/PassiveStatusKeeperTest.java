@@ -35,18 +35,12 @@
 //
 package org.opennms.netmgt.passive;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -66,8 +60,9 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.mock.MockUtil;
 
-public class PassiveStatusKeeperTest {
+public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
     /* TODO for PassiveSTatusKeeper
      add reason mapper for status reason
@@ -92,9 +87,10 @@ public class PassiveStatusKeeperTest {
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
 
-    @Before
-    public void setUp() throws Exception {
-//        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
 
         createMockNetwork();
@@ -118,15 +114,15 @@ public class PassiveStatusKeeperTest {
         
     }
 
-    @After
-    public void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_psk.stop();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
         DataSourceFactory.setInstance(null);
         m_db.drop();
-//        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+        super.tearDown();
     }
     
 
@@ -179,7 +175,6 @@ public class PassiveStatusKeeperTest {
      * This is a test for the passive status keeper where all the required parms are included
      * in the event.
      */
-    @Test
     public void testEventWithPassiveStatusParms() {
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
 
@@ -194,7 +189,6 @@ public class PassiveStatusKeeperTest {
      * @throws MarshalException 
      *
      */
-    @Test
     public void testIsPassiveStatusEvent() throws MarshalException, ValidationException {
         
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
@@ -210,7 +204,17 @@ public class PassiveStatusKeeperTest {
                 
     }
     
-    @Test
+//	private void printNodeInfo() {
+//		RowProcessor rp = new RowProcessor() {
+//			public void processRow(ResultSet rs) throws SQLException {
+//				System.err.println("nodeid: "+rs.getString("nodeid")+", nodeLabel: "+rs.getString("nodeLabel")+" ipaddr: "+rs.getString("ipaddr"));
+//			}
+//		};
+//		
+//		Querier q = new Querier(m_db, "select node.nodeid as nodeid, node.nodeLabel as nodeLabel, ipinterface.ipaddr as ipaddr from node, ipinterface where node.nodeid = ipinterface.nodeid and node.nodeLabel = 'Router' and ipinterface.ipaddr = '192.168.1.1' and ipinterface.isManaged != 'D' ", rp);
+//		q.execute();
+//	}
+
     public void testSetStatus() {
         testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.up());
         
@@ -221,7 +225,6 @@ public class PassiveStatusKeeperTest {
         assertEquals(pollStatus, PassiveStatusKeeper.getInstance().getStatus(nodeLabel, ipAddr, svcName));
     }
     
-    @Test
     public void testRestart() {
         testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.up());
 
@@ -243,7 +246,6 @@ public class PassiveStatusKeeperTest {
         assertEquals(PollStatus.down(), PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV2"));
     }
     
-    @Test
     public void testDownPassiveStatus() throws InterruptedException, UnknownHostException {
 
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
@@ -256,7 +258,7 @@ public class PassiveStatusKeeperTest {
         MockMonitoredService svc = new MockMonitoredService(1, "Router", "192.168.1.1", "ICMP" );
         
         ServiceMonitor m = new PassiveServiceMonitor();
-        m.initialize((Map<String,String>)null);
+        m.initialize((Map)null);
         m.initialize(svc);
         PollStatus ps2 = m.poll(svc, null);
         m.release(svc);

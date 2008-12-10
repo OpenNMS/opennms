@@ -59,7 +59,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 
     private final class PollRunner implements Runnable {
     	
-    	private volatile PollStatus m_pollStatus;
+    	private PollStatus m_pollStatus;
 		public void run() {
 		    doPoll();
 		    getNode().processStatusChange(new Date());
@@ -70,13 +70,12 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 		}
 	}
 
-	private final String m_svcName;
-    private final IPv4NetworkInterface m_netInterface;
-
-    private volatile PollConfig m_pollConfig;
-    private volatile PollStatus m_oldStatus;
-    private volatile Schedule m_schedule;
-    private volatile long m_statusChangeTime = 0L;
+	private String m_svcName;
+    private PollConfig m_pollConfig;
+    private IPv4NetworkInterface m_netInterface;
+    private PollStatus m_oldStatus;
+    private Schedule m_schedule;
+    private long m_statusChangeTime = 0L;
     /**
      * @param svcName
      * @param iface

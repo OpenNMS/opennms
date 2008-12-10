@@ -149,13 +149,7 @@ public class ServletInitializer extends Object {
             try {
                 loadPropertiesFromFile(opennmsProperties, homeDir + File.separator + "etc" + File.separator + "opennms.properties");
             } catch (IOException e) {
-                throw new ServletException("Could not load opennms.properties", e);
-            }
-
-            try {
-                loadPropertiesFromContextResource(context, opennmsProperties, "/WEB-INF/version.properties");
-            } catch (IOException e) {
-                throw new ServletException("Could not load version.properties", e);
+                throw new ServletException("Could not load configuration.properties", e);
             }
 
             for (Enumeration<Object> opennmsKeys = opennmsProperties.keys(); opennmsKeys.hasMoreElements(); ) {

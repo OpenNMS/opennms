@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.support.ChooseResourceModel;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,12 +51,12 @@ public class ChooseResourceController extends AbstractController implements Init
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] { "parentResourceId or", "parentResourceType and parentResource" };
 
-        String endUrl = WebSecurityUtils.sanitizeString(request.getParameter("endUrl"));
+        String endUrl = request.getParameter("endUrl");
 
-        String resourceId = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceId"));
+        String resourceId = request.getParameter("parentResourceId");
         if (resourceId == null) {
-            String resourceType = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceType"));
-            String resource = WebSecurityUtils.sanitizeString(request.getParameter("parentResource"));
+            String resourceType = request.getParameter("parentResourceType");
+            String resource = request.getParameter("parentResource");
             if (request.getParameter("parentResourceType") == null) {
                 throw new MissingParameterException("parentResourceType", requiredParameters);
             }

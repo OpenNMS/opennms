@@ -31,13 +31,8 @@
 //
 package org.opennms.secret.web;
 
-import static org.junit.Assert.*;
 import java.util.HashMap;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.opennms.secret.model.GraphDefinition;
 import org.opennms.secret.service.impl.GraphRendererImpl;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -46,15 +41,16 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 
-public class GraphRendererViewTest {
+import junit.framework.TestCase;
+
+public class GraphRendererViewTest extends TestCase {
     private MockServletContext m_context;
     private MockHttpSession m_session;
     private MockHttpServletRequest m_request;
     private MockHttpServletResponse m_response;
     private GraphRendererView m_view;
-    
-    @Before
-    public void setUp() throws Exception {
+
+    protected void setUp() throws Exception {
         m_context = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
         m_session = new MockHttpSession(m_context);
         resetRequestResponse();
@@ -69,17 +65,14 @@ public class GraphRendererViewTest {
         m_request.setSession(m_session);
         m_response = new MockHttpServletResponse();
     }
-    
-    @After
-    public void tearDown() throws Exception {
+
+    protected void tearDown() throws Exception {
     }
-    
-    @Ignore
-    public void testRender() throws Exception {
+
+    public void FIXMEtestRender() throws Exception {
         m_view.render(new HashMap(), m_request, m_response);
     }
-    
-    @Test
+
     public void testRenderNullRenderer() throws Exception {
         boolean gotException = false;
         
@@ -99,7 +92,6 @@ public class GraphRendererViewTest {
         }
     }
     
-    @Test
     public void testRenderNullGraphDef() throws Exception {
         boolean gotException = false;
         
@@ -119,7 +111,7 @@ public class GraphRendererViewTest {
         }
     }
     
-    @Test
+    
     public void testRenderBadGraphDef() throws Exception {
         boolean gotException = false;
         

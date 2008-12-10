@@ -2,7 +2,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 04: Use new OnmsSeverity object for OnmsAlarms. - dj@opennms.org
 // 2007 Jun 24: Mark unread fields as unused. - dj@opennms.org
 //
 // Copyright (C) 2006-2007 Craig Gallen, 
@@ -45,7 +44,6 @@ import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
 import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
 import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
@@ -288,12 +286,12 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setSuppressedUntil(new Date()); // needed?
 				alarm.setSuppressedTime(new Date()); // needed?
 
-				OnmsSeverity onmsseverity;
+				Integer onmsseverity;
 				try{
 					onmsseverity= onmsAlarmOssjMapper.ossjSeveritytoOnmsSeverity(nnae.getPerceivedSeverity());
 				} catch (IllegalArgumentException iae){
 					log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
-					onmsseverity=OnmsSeverity.WARNING;
+					onmsseverity=new Integer(OnmsAlarm.WARNING_SEVERITY);
 				}
 				alarm.setSeverity(onmsseverity); 
 
@@ -484,7 +482,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					//alarm.setSuppressedUser(arg0);
 					//alarm.setSuppressedUntil(arg0);
 					//alarm.setSuppressedTime(arg0);
-					alarm.setSeverity(OnmsSeverity.CLEARED);  //TODO need mapping for severity
+					alarm.setSeverity(OnmsAlarm.CLEARED_SEVERITY);  //TODO need mapping for severity
 					//alarm.setServiceType(arg0);
 					//alarm.setReductionKey(arg0);
 					//alarm.setOssPrimaryKey(arg0);

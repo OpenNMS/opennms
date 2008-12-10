@@ -125,27 +125,27 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Instantiated service collectors specified in config file
      */
-    private final Map<String,ServiceCollector> m_collectors = new HashMap<String,ServiceCollector>(4);
+    private Map<String,ServiceCollector> m_collectors = new HashMap<String,ServiceCollector>(4);
 
     /**
      * List of all CollectableService objects.
      */
-    private final List<CollectableService> m_collectableServices;
+    private List<CollectableService> m_collectableServices;
 
     /**
      * Reference to the collection scheduler
      */
-    private volatile Scheduler m_scheduler;
+    private Scheduler m_scheduler;
 
     /**
      * Indicates if scheduling of existing interfaces has been completed
      */
-    private volatile CollectorConfigDao m_collectorConfigDao;
+    private CollectorConfigDao m_collectorConfigDao;
 
-    private volatile IpInterfaceDao m_ifaceDao;
+    private IpInterfaceDao m_ifaceDao;
 
     static class SchedulingCompletedFlag {
-        volatile boolean m_schedulingCompleted = false;
+        boolean m_schedulingCompleted = false;
 
         public synchronized void setSchedulingCompleted(
                 boolean schedulingCompleted) {
@@ -158,13 +158,13 @@ public class Collectd extends AbstractServiceDaemon implements
 
     }
 
-    private final SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
+    private SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
 
-    private volatile EventIpcManager m_eventIpcManager;
+    private EventIpcManager m_eventIpcManager;
 
-    private volatile TransactionTemplate m_transTemplate;
+    private TransactionTemplate m_transTemplate;
 
-    private volatile NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
 
     /**
      * Constructor.

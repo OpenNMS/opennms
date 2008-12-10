@@ -165,10 +165,6 @@ public class MockInterface extends MockContainer {
         return MockEventUtil.createInterfaceUpEvent("Test", this);
     }
     
-    public Event createNewEvent() {
-        return MockEventUtil.createNodeGainedInterfaceEvent("Test", this);
-    }
-
     public Event createDeleteEvent() {
         return MockEventUtil.createInterfaceDeletedEvent("Test", this);
     }

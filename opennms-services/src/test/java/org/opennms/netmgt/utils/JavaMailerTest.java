@@ -44,30 +44,22 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import junit.framework.TestCase;
+
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.annotation.IfProfileValue;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test the JavaMailer class.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({}) 
-public class JavaMailerTest {
+public class JavaMailerTest extends TestCase {
     private static final String TEST_ADDRESS = "test@opennms.org";
 
-    @Before
-    public void setUp() throws IOException {
+    protected void setUp() throws IOException {
         MockLogAppender.setupLogging();
 
         Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
@@ -78,20 +70,22 @@ public class JavaMailerTest {
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
     }
 
-    @After
-    public void tearDown() throws Throwable {
-       // MockLogAppender.assertNoWarningsOrGreater();
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    @Test
-    @IfProfileValue(name="runMailTests", value="true")
+    public void testNothing() throws Exception {
+
+    }
+
     public final void testJavaMailerWithDefaults() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using details");
 
         jm.mailSend();
     }
 
-    @Test
     public final void testJavaMailerWithNullTo() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -107,7 +101,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithEmptyTo() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -123,7 +116,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithNullFrom() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -139,7 +131,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithEmptyFrom() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -155,7 +146,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithNullSubject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -171,7 +161,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithEmptySbuject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -187,7 +176,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithNullMessageText() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -203,7 +191,6 @@ public class JavaMailerTest {
         ta.verifyAnticipated();
     }
 
-    @Test
     public final void testJavaMailerWithEmptyMessageText() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -220,8 +207,7 @@ public class JavaMailerTest {
     }
 
     // FIXME: took this out a david's suggestion
-    @Test
-    public final void testJavaMailerUsingMTAExplicitly() throws Exception {
+    public final void FIXMEtestJavaMailerUsingMTAExplicitly() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA explicitly");
 
         if (jm.isSmtpSsl()) {
@@ -233,8 +219,7 @@ public class JavaMailerTest {
     }
 
     // FIXME: took this out a david's suggestion
-    @Test
-    public final void testJavaMailerUsingMTAByTransport() throws Exception {
+    public final void FIXMEtestJavaMailerUsingMTAByTransport() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA by transport");
 
         if (jm.isSmtpSsl()) {
@@ -247,8 +232,6 @@ public class JavaMailerTest {
         jm.mailSend();
     }
 
-    @Test
-    @IfProfileValue(name="runMailTests", value="true")
     public final void testJavaMailerWithFileAttachment() throws Exception {
         JavaMailer jm = createMailer("Test message with file attachment from testJavaMailer");
 
@@ -257,7 +240,7 @@ public class JavaMailerTest {
         jm.mailSend();
     }
 
-    private JavaMailer createMailer(String subject) throws Exception {
+    private JavaMailer createMailer(String subject) throws JavaMailerException {
         JavaMailer jm = new JavaMailer();
 
         jm.setFrom(TEST_ADDRESS);
@@ -268,7 +251,12 @@ public class JavaMailerTest {
         return jm;
     }
 
-    private InetAddress getLocalHost() throws UnknownHostException {
-        return InetAddress.getLocalHost();
+    private InetAddress getLocalHost()  {
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            fail("Could not lookup local host address: " + e);
+            return null; // never reached
+        }
     }
 }

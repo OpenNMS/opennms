@@ -45,13 +45,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.aspectj.lang.annotation.*;
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -60,23 +55,19 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.DefaultOutageService;
 
-public class DefaultOutageServiceTest {
+public class DefaultOutageServiceTest extends TestCase {
 
 	DefaultOutageService outageService = new DefaultOutageService();
 
 	private OutageDao outageDao;
-	
-	@Before
+
 	public void setUp() throws Exception {
+		super.setUp();
 		outageDao = createMock(OutageDao.class);
 		outageService.setDao(outageDao);
 	}
-	
-	@Test
+
 	public void testLoadOneOutage() {
-	    assertNotNull(outageService);
-	    assertNotNull(outageDao);
-	    
 		Integer outageId = new Integer(505);
 		OnmsOutage outage = new OnmsOutage();
 
@@ -92,11 +83,10 @@ public class DefaultOutageServiceTest {
 
 	}
 
-	@Test
+	
+
 	public void testGetCurrentOutageCount() {
-	    assertNotNull(outageService);
-	    assertNotNull(outageDao);
-	    
+
 		Integer expectedCount = new Integer(1);
 
 		expect(outageDao.currentOutageCount()).andReturn(expectedCount);
@@ -108,8 +98,7 @@ public class DefaultOutageServiceTest {
 
 	}
 
-	@Ignore("The features here have yet been implemented")
-	public void testSuppressedOutageCount() {
+	public void FIXMEtestSuppressedOutageCount() {
 
 		fail("Needs to be upgraded to hibernate");
 //		Integer expectedCount = new Integer(1);
@@ -122,13 +111,9 @@ public class DefaultOutageServiceTest {
 //		assertTrue("All is suppressed ", count.equals(1));
 
 	}
-	
-	@Test
+
 	public void testCurrentOutages() {
-	    assertNotNull(outageService);
-	    assertNotNull(outageDao);
-        
-	    Collection<OnmsOutage> expectedOutages = new HashSet<OnmsOutage>();
+		Collection<OnmsOutage> expectedOutages = new HashSet<OnmsOutage>();
 		OnmsOutage expectedCurrent = new OnmsOutage();
 		expectedCurrent.setId(1);
 		expectedOutages.add(expectedCurrent);
@@ -141,9 +126,8 @@ public class DefaultOutageServiceTest {
         
 		assertTrue("Current Outages", current.equals(expectedOutages));
 	}
-	
-	@Ignore("The features here have yet been implemented")
-	public void testSuppressedOutages() {
+
+	public void FIXMEtestSuppressedOutages() {
 		
 		fail("Needs to be upgraded to hibernate");
 
@@ -159,9 +143,8 @@ public class DefaultOutageServiceTest {
 //		verify(outageDao);
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 	}
-	
-	@Ignore("The features here have yet been implemented")
-	public void testOpenAndResolved() {
+
+	public void FIXMEtestOpenAndResolved() {
 
 		fail("Needs to be upgraded to hibernate");
 
@@ -178,13 +161,9 @@ public class DefaultOutageServiceTest {
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 
 	}
-	
-	@Test
+
 	public void testCurrentByRange() {
-		assertNotNull(outageService);
-		assertNotNull(outageDao);
-		
-	    List<OnmsOutage> expectedOutages = new LinkedList<OnmsOutage>();
+		List<OnmsOutage> expectedOutages = new LinkedList<OnmsOutage>();
 		OnmsOutage expectedCurrent = new OnmsOutage();
 		expectedCurrent.setId(1);
                 expectedCurrent.setMonitoredService(new OnmsMonitoredService());
@@ -202,9 +181,8 @@ public class DefaultOutageServiceTest {
                 
 		assertTrue("Current Outages", outages.equals(expectedOutages));
 	}
-	
-	@Ignore("The features here have yet been implemented")
-	public void testSuppressedByRange() {
+
+	public void FIXMEtestSuppressedByRange() {
 
 		fail("Needs to be upgraded to hibernate");
 
@@ -221,9 +199,8 @@ public class DefaultOutageServiceTest {
 //		assertTrue("Current Outages", suppressed.equals(expectedOutages));
 
 	}
-	
-	@Ignore("The features here have yet been implemented")
-	public void testGetOpenAndResolvedByRange() {
+
+	public void FIXMEtestGetOpenAndResolvedByRange() {
 
 		fail("Needs to be upgraded to hibernate");
 

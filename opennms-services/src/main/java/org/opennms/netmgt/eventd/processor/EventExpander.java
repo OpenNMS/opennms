@@ -221,7 +221,6 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
         dest.setContent(src.getContent());
         dest.setDest(src.getDest());
-        dest.setNotify(src.getNotify());
 
         return dest;
     }

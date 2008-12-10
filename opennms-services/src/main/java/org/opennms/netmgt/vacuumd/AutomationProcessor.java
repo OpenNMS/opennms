@@ -77,17 +77,17 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class AutomationProcessor implements ReadyRunnable {
 
-    private final Automation m_automation;
-    private final TriggerProcessor m_trigger;
-    private final ActionProcessor m_action;
-    private final AutoEventProcessor m_autoEvent;
-    private final ActionEventProcessor m_actionEvent;
-    
-    private volatile Schedule m_schedule;
-    private volatile boolean m_ready = false;
+    private Automation m_automation;
+    private boolean m_ready = false;
+    private Schedule m_schedule;
 
+    public TriggerProcessor m_trigger;
+    private ActionProcessor m_action;
+    private AutoEventProcessor m_autoEvent;
+    private ActionEventProcessor m_actionEvent;
+    
     static class TriggerProcessor {
-        private final Trigger m_trigger;
+        private Trigger m_trigger;
 
         public TriggerProcessor(String automationName, Trigger trigger) {
             m_trigger = trigger;
@@ -193,9 +193,9 @@ public class AutomationProcessor implements ReadyRunnable {
     }
     
     static class TriggerResults {
-    	private final TriggerProcessor m_trigger;
-    	private final ResultSet m_resultSet;
-    	private final boolean m_successful;
+    	private TriggerProcessor m_trigger;
+    	private ResultSet m_resultSet;
+    	private boolean m_successful;
     	
 		public TriggerResults(TriggerProcessor trigger, ResultSet set, boolean successful) {
 			m_trigger = trigger;
@@ -219,10 +219,10 @@ public class AutomationProcessor implements ReadyRunnable {
     
     static class ActionProcessor {
         
-        private final String m_automationName;
-        private final Action m_action;
+        private String m_automationName;
+        private Action m_action;
 
-        public ActionProcessor(String automationName, Action action) {
+        public ActionProcessor(String automationName,Action action) {
             m_automationName = automationName;
             m_action = action;
         }
@@ -415,8 +415,8 @@ public class AutomationProcessor implements ReadyRunnable {
     
     static class AutoEventProcessor {
 
-        private final String m_automationName;
-        private final AutoEvent m_autoEvent;
+        private AutoEvent m_autoEvent;
+        private String m_automationName;
         
         public AutoEventProcessor(String automationName, AutoEvent autoEvent) {
             m_automationName = automationName;
@@ -444,15 +444,16 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         void send() {
+            log().debug("runAutomation: Sending any possible configured event for automation: "+m_automationName);
             
             if (hasEvent()) {
                 //create and send event
-                log().debug("AutoEventProcessor: Sending auto-event "+getUei()+" for automation "+m_automationName);
+                log().debug("runAutomation: Sending event: "+getUei()+" for automation: "+m_automationName);
                 
                 EventBuilder bldr = new EventBuilder(getUei(), "Automation");
                 sendEvent(bldr.getEvent());
             } else {
-                log().debug("AutoEventProcessor: No auto-event for automation "+m_automationName);             
+                log().debug("runAutomation: No event configured automation: "+m_automationName);             
             }
         }
 
@@ -464,7 +465,7 @@ public class AutomationProcessor implements ReadyRunnable {
     
     static class SQLExceptionHolder extends RuntimeException {
         private static final long serialVersionUID = 1L;
-        private final SQLException m_ex;
+        SQLException m_ex = null;
         public SQLExceptionHolder(SQLException ex) {
             m_ex = ex;
         }
@@ -477,7 +478,7 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     static class ResultSetSymbolTable implements PropertiesUtils.SymbolTable {
-        private final ResultSet m_rs;
+        private ResultSet m_rs;
         
         public ResultSetSymbolTable(ResultSet rs) {
             m_rs = rs;
@@ -505,7 +506,7 @@ public class AutomationProcessor implements ReadyRunnable {
     static class EventAssignment {
 
         static final Pattern s_pattern = Pattern.compile("\\$\\{(\\w+)\\}");
-        private final Assignment m_assignment;
+        private Assignment m_assignment;
 
         public EventAssignment(Assignment assignment) {
             m_assignment = assignment;
@@ -535,9 +536,9 @@ public class AutomationProcessor implements ReadyRunnable {
 
     static class ActionEventProcessor {
 
-        private final String m_automationName;
-        private final ActionEvent m_actionEvent;
-        private final List<EventAssignment> m_assignments;
+        private ActionEvent m_actionEvent;
+        private String m_automationName;
+        private List<EventAssignment> m_assignments;
         
         public ActionEventProcessor(String automationName, ActionEvent actionEvent) {
             m_automationName = automationName;
@@ -550,8 +551,6 @@ public class AutomationProcessor implements ReadyRunnable {
                     m_assignments.add(new EventAssignment(assignment));
                 }
             
-            } else {
-                m_assignments = null;
             }
             
         }
@@ -565,15 +564,15 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         void send() {
+            log().debug("runAutomation: Sending any possible configured event for automation: "+m_automationName);
             
             if (hasEvent()) {
                 EventBuilder bldr = new EventBuilder(new Event());
                 buildEvent(bldr, new InvalidSymbolTable());
-                log().debug("ActionEventProcessor: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
                 sendEvent(bldr.getEvent());
                 
             } else {
-                log().debug("ActionEventProcessor: No action-event for automation "+m_automationName);             
+                log().debug("runAutomation: No event configured automation: "+m_automationName);             
             }
         }
 
@@ -588,10 +587,7 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         void processTriggerResults(TriggerResults triggerResults) throws SQLException {
-            if (!hasEvent()) {
-                log().debug("processTriggerResults: No action-event for automation "+m_automationName);
-                return;
-            }
+            if (!hasEvent()) return;
             
             ResultSet triggerResultSet = triggerResults.getResultSet();
             
@@ -608,7 +604,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();
                 }
-                log().debug("processTriggerResults: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
+
                 sendEvent(bldr.getEvent());
             }
 

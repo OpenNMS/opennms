@@ -10,11 +10,8 @@
  *
  * Modifications:
  * 
- * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
- * 2008 Oct 19: Bug #2823: Fix for NullPointerException if a graph doesn't have
- *              a resourceId, nodeId, or domain. - dj@opennms.org
- * 
  * Created: January 2, 2007
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,13 +62,13 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
-        OnmsResource node = getResourceService().loadResourceById(resourceId);
+        OnmsResource node = getResourceService().getResourceById(resourceId, true);
         return buildResourceReport(node, "Domain Report for Domain " + domain);
     }
 
     public Report buildNodeReport(int node_id) {
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
-        OnmsResource node = getResourceService().loadResourceById(resourceId);
+        OnmsResource node = getResourceService().getResourceById(resourceId, true);
         return buildResourceReport(node, "Node Report for Node Number " + node_id);
     }
     
@@ -101,7 +98,9 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
 
     public OnmsResource getResourceFromGraph(Graph graph) {
-        Assert.notNull(graph, "graph argument cannot be null");
+        if (graph == null) {
+            throw new IllegalArgumentException("graph argument cannot be null");
+        }
         
         String resourceId;
         if (graph.getResourceId() != null) {
@@ -115,11 +114,9 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
                 parentResourceTypeName = "node";
                 parentResourceName = graph.getNodeId();
-            } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
+            } else {
                 parentResourceTypeName = "domain";
                 parentResourceName = graph.getDomain();
-            } else {
-                throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
             }
             
             String intf = graph.getInterfaceId();
@@ -134,7 +131,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
         }
         
-        return getResourceService().loadResourceById(resourceId);
+        return getResourceService().getResourceById(resourceId, true);
     }
     
 

@@ -83,32 +83,32 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * List of all ThresholdableService objects.
      */
-    private final List<ThresholdableService> m_thresholdableServices;
+    private List<ThresholdableService> m_thresholdableServices;
 
     /**
      * Reference to the threshd scheduler
      */
-    private volatile LegacyScheduler m_scheduler;
+    private LegacyScheduler m_scheduler;
 
     /**
      * Indicates if all the existing interfaces have been scheduled
      */
-    private volatile boolean m_schedulingCompleted = false;
+    private boolean m_schedulingCompleted = false;
 
     /**
      * Reference to the JMS event proxy for sending events.
      */
-    private final EventProxy m_proxy;
+    private EventProxy m_proxy;
 
     /**
      * Reference to the event processor
      */
-    private volatile BroadcastEventProcessor m_receiver;
+    private BroadcastEventProcessor m_receiver;
 
     /**
      * Map of all available ServiceThresholder objects indexed by service name
      */
-    private static volatile Map<String, ServiceThresholder> m_svcThresholders;
+    private static Map<String, ServiceThresholder> m_svcThresholders;
 
     private ThreshdConfigManager m_threshdConfig;
 

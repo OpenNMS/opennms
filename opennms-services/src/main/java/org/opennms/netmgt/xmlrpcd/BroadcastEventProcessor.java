@@ -63,22 +63,22 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where incoming events of interest are enqueued
      */
-    private final FifoQueue<Event> m_eventQ;
+    private FifoQueue<Event> m_eventQ;
 
     /**
      * The maximam size of the event queue.
      */
-    private final int m_maxQSize;
+    private int m_maxQSize;
 
     /**
      * Subscribed events for this listener
      */
-    private final HashSet<String> m_events;
+    private HashSet<String> m_events;
 
     /**
      * Suffix used to create a unique name for event registration
      */
-    private final String m_nameSuffix;
+    private String m_nameSuffix;
 
     /**
      * Create message selector to set to the subscription

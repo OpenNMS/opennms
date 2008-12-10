@@ -32,7 +32,6 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * listens for incoming connection on defined port (default is 8154)
 	 */
 	public void run() {
-        ThreadCategory.setPrefix("OpenNMS.InsProxy");
 		log=ThreadCategory.getInstance(this.getClass());
 		if(criteriaRestriction ==null)
 			throw new IllegalStateException("The property criteriaRestriction cannot be null!");

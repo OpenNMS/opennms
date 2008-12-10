@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -154,7 +153,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     private boolean m_needsRefresh=false;
     
     
-    public static ThresholdingVisitor createThresholdingVisitor(final int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, final Map<String,String> params) {
+    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
 
         // Use the "thresholding-enable" to use Thresholds processing on Collectd
@@ -200,9 +199,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
             // Is the interface in the package?
             //
-            if (log().isDebugEnabled()) {
-                log().debug("createThresholdingVisitor: checking ipaddress " + m_hostAddress + " for inclusion in pkg " + pkg.getName());
-            }
+            log().debug("createThresholdingVisitor: checking ipaddress " + m_hostAddress + " for inclusion in pkg " + pkg.getName());
             boolean foundInPkg = m_threshdConfig.interfaceInPackage(m_hostAddress, pkg);
             if (!foundInPkg) {
                 // The interface might be a newly added one, rebuild the package
@@ -230,9 +227,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                     }
                     if (groupName != null) {
                         groupNameList.add(groupName);
-                        if (log().isDebugEnabled()) {
-                            log().debug("createThresholdingVisitor:  address/service: " + m_hostAddress + "/" + m_serviceName + ". Adding Group " + groupName);
-                        }
+                        log().debug("createThresholdingVisitor:  address/service: " + m_hostAddress + "/" + m_serviceName + ". Adding Group " + groupName);
                     }
                 }
             }
@@ -243,15 +238,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
     }
     
-    protected ThresholdingVisitor(final int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo) { 
+    protected ThresholdingVisitor(int nodeId, String hostAddress, String serviceName, RrdRepository repo) { 
         m_nodeId=nodeId;
         m_hostAddress=hostAddress;
         m_serviceName=serviceName;
         m_repository=repo;
         initThresholdState();
-        if (log().isDebugEnabled()) {
-            log().debug(this + " just created!");
-        }
+        log().debug(this + " just created!");
     }
     
     /**
@@ -260,24 +253,18 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * Can be called when thresholding configuration has changed and we need to refresh the threshold state
      */
     private void initThresholdState() {
-        if (log().isDebugEnabled()) {
-            log().debug("initThresholdState on "+this);
-        }
+        log().debug("initThresholdState on "+this);
         m_needsRefresh=true; 
     }
     
     /**
      * When called, we're starting a new resource.  Clears out any stored attribute values from previous resource visits
      */
-    public void visitResource(final CollectionResource resource) {
-        if (log().isDebugEnabled()) {
-            log().debug(this+" visiting resource "+resource);
-        }
+    public void visitResource(CollectionResource resource) {
+        log().debug(this+" visiting resource "+resource);
         //Should only refresh our thresholds when we start checking a new collection; do the check now
         if (m_needsRefresh) {
-            if (log().isDebugEnabled()) {
-                log().debug(this + " needs refresh of state; refreshing now");
-            }
+            log().debug(this + " needs refresh of state; refreshing now");
             m_thresholdGroupList = new ArrayList<ThresholdGroup>();
             for (String groupName : m_groupNameList) {
                 ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
@@ -315,30 +302,26 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * Stores the attribute locally so that on completion we can do thresholding
      * @see org.opennms.netmgt.collectd.AbstractCollectionSetVisitor#visitAttribute(org.opennms.netmgt.collectd.CollectionAttribute)
      */
-    public void visitAttribute(final CollectionAttribute attribute) {
+    public void visitAttribute(CollectionAttribute attribute) {
         //Store the value away until we hit completeResource
         String numValue=attribute.getNumericValue();
         String attribName=attribute.getName();
         if(numValue!=null) {
             m_numericAttributeValues.put(attribName, attribute);
-            if (log().isDebugEnabled()) {
-                log().debug("visitAttribute storing value "+numValue +" for attribute named "+attribName);
-            }
+            log().debug("visitAttribute storing value "+numValue +" for attribute named "+attribName);
         } else {
           //No numeric value available; storing as a string
           String stringValue=attribute.getStringValue();  
           m_stringAttributeValues.put(attribName, stringValue);
-          if (log().isDebugEnabled()) {
-              log().debug("visitAttribute storing value "+stringValue +" for attribute named "+attribName);
-          }
+          log().debug("visitAttribute storing value "+stringValue +" for attribute named "+attribName);
         }
     }
     
-    private String getIfInfo(final int nodeid, final String ifLabel, final String attributeName) {
+    private String getIfInfo(int nodeid, String ifLabel, String attributeName) {
         return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(m_nodeId, ifLabel).get(attributeName);
     }
     
-    public void completeResource(final CollectionResource resource) {
+    public void completeResource(CollectionResource resource) {
         Date date=new Date();
         List<Event> eventsList=new ArrayList<Event>();
         if(log().isDebugEnabled()) {
@@ -441,7 +424,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * Handle the difference between counters and gauges;  for the former, the value we threshold on
      * is the difference (current-last), for the latter, it's the absolute value.  
      */
-    private Double getValue(final CollectionResource resource, final String ds) {
+    private Double getValue(CollectionResource resource, String ds) {
         if (m_numericAttributeValues.get(ds) == null) {
             log().warn("getValue: can't find attribute called " + ds + " on " + resource);
             return null;
@@ -454,15 +437,11 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         String id = resource.toString() + "." + ds;
         Double current = Double.parseDouble(numValue);
         if (m_numericAttributeValues.get(ds).getType().toLowerCase().startsWith("counter") == false) {
-            if (log().isDebugEnabled()) {
-                log().debug("getValue: " + id + "(gauge) value= " + current);
-            }
+            log().debug("getValue: " + id + "(gauge) value= " + current);
             return current;
         }
         Double last = m_cache.get(id);
-        if (log().isDebugEnabled()) {
-            log().debug("getValue: " + id + "(counter) last=" + last + ", current=" + current);
-        }
+        log().debug("getValue: " + id + "(counter) last=" + last + ", current=" + current);
         m_cache.put(id, current);
         if (last == null) {
             return Double.NaN;
@@ -474,7 +453,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return current - last;
     }
 
-    private void thresholdingFinished(final boolean success) {
+    private void thresholdingFinished(boolean success) {
         if (success != m_success) {
             // Generate transition events
             if (log().isDebugEnabled())
@@ -494,7 +473,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
 
     
-    private void sendEvent(final String uei) {
+    private void sendEvent(String uei) {
         Category log = log();
         Event event = new Event();
         event.setUei(uei);
@@ -522,7 +501,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             log.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + m_hostAddress + "/" + m_serviceName);
     }
      
-    private void completeEventList(final List<Event> eventList, final String ifLabel, final String snmpifIndex, final String dsLabelValue) {
+    private void completeEventList(List<Event> eventList, String ifLabel, String snmpifIndex, String dsLabelValue) {
         for (Event event : eventList) {
             // create the event to be sent
             event.setNodeid(m_nodeId);
@@ -573,7 +552,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /**
      * Get the value to use for the ds-label from this threshold.  
      */
-    private String getDataSourceLabelFromFile(final File directory, final ThresholdEntity threshold) {
+    private String getDataSourceLabelFromFile(File directory, ThresholdEntity threshold) {
         String dsLabelValue = null;
         
         try {
@@ -591,38 +570,28 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
     /*
      * If Threshold has Filters defined for selected ThresholdGroup/DataSource/ResourceType then, apply filter rules.
+     * TODO: What happend if getAttributeValue returns null ?
      */
-    private boolean passedThresholdFilters(final File resourceDir, final String thresholdGroup, final String resourceType, final ThresholdEntity thresholdEntity) {
+    private boolean passedThresholdFilters(File resourceDir, String thresholdGroup, String resourceType, ThresholdEntity thresholdEntity) {
 
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) return true;
 
         // Threshold definition with filters must match ThresholdEntity (checking DataSource and ResourceType)
-        if (log().isDebugEnabled()) {
-            log().debug("passedThresholdFilters: resource=" + resourceDir.getName() + ", group=" + thresholdGroup + ", type=" + resourceType + ", filters=" + filters.length);
-        }
+        log().debug("passedThresholdFilters: resource=" + resourceDir.getName() + ", group=" + thresholdGroup + ", type=" + resourceType + ", filters=" + filters.length);
         int count = 1;
         for (ResourceFilter f : filters) {
-            if (log().isDebugEnabled()) {
-                log().debug("passedThresholdFilters: filter #" + count + ": field=" + f.getField() + ", regex='" + f.getContent() + "'");
-            }
+            log().debug("passedThresholdFilters: filter #" + count + ": field=" + f.getField() + ", regex='" + f.getContent() + "'");
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = getAttributeValue(resourceDir, resourceType, f.getField());
             if (attr != null) {
-                try {
-                    final Pattern p = Pattern.compile(f.getContent());
-                    final Matcher m = p.matcher(attr);
-                    boolean pass = m.find();
-                    if (log().isDebugEnabled()) {
-                        log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
-                    }
-                    if (pass) return true;
-                } catch (PatternSyntaxException e) {
-                    log().warn("passedThresholdFilters: the regular expression " + f.getContent() + " is invalid: " + e.getMessage(), e);
-                    return false;
-                }
+            	Pattern p = Pattern.compile(f.getContent());
+            	Matcher m = p.matcher(attr);
+                boolean pass = m.find();
+                log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
+                if (pass) return true;
             }
         }
         return false;
@@ -632,10 +601,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * This directly access database to get OnmsSnmpInterface (snmpinterface table on database) data
      * for selected Interface ID.
      */
-    private String getAttributeValue(final File resourceDirectory, final String resourceType, final String attribute) {
-        if (log().isDebugEnabled()) {
-            log().debug("Getting Value for " + resourceType + "::" + attribute);
-        }
+    private String getAttributeValue(File resourceDirectory, String resourceType, String attribute) {
+         log().debug("Getting Value for " + resourceType + "::" + attribute);
         String value = null;
         // Interface ID or Resource ID from data path
         if (attribute.equals("ID")) {
@@ -645,17 +612,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             if (resourceType.equals("if")) {
                 String ifLabel = resourceDirectory.getName();
                 value = this.getIfInfo(m_nodeId, ifLabel, attribute);
-            }
-            if (value == null) {
+            } else {
                 //Check in the current set of collected string vars first, then check numeric vars; only then check on disk (in string properties)
                 value=m_stringAttributeValues.get(attribute);
                 if(value==null) {
-                    if (m_numericAttributeValues.get(attribute) != null)
-                        value=m_numericAttributeValues.get(attribute).getNumericValue();
+                    value=m_numericAttributeValues.get(attribute).getNumericValue();
                     if(value==null) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("Value not found in collection set, getting from " + resourceDirectory);
-                        }
+                        log().debug("Value not found in collection set, getting from " + resourceDirectory);
                         value = ResourceTypeUtils.getStringProperty(resourceDirectory, attribute);
                     }
                 }

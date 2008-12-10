@@ -34,10 +34,6 @@
  */
 package org.opennms.netmgt.threshd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -51,13 +47,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
 import org.easymock.EasyMock;
-import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdDef;
-import org.jrobin.core.Sample;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.jrobin.core.*;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.rrd.RrdConfig;
@@ -78,7 +71,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class SnmpThresholderTest {
+public class SnmpThresholderTest extends TestCase {
 
     @SuppressWarnings("deprecation")
     private SnmpThresholder m_snmpThresholder;
@@ -92,8 +85,9 @@ public class SnmpThresholderTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
         
     @SuppressWarnings("deprecation")
-    @Before
-    public void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
         m_fileAnticipator = new FileAnticipator();
         
@@ -114,23 +108,28 @@ public class SnmpThresholderTest {
         m_iface = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(nodeId, InetAddress.getByName(ipAddress));
         m_params = new HashMap<String, String>();
         m_params.put("thresholding-group", "default-snmp");
+//      m_thresholdInterface = new SnmpThresholdInterface(m_iface, nodeId, null, 'N');
         m_thresholdInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, m_iface, m_params);
     }
     
-    @After
-    public void tearDown() {
+    @Override
+    protected void tearDown() {
         m_fileAnticipator.tearDown();
     }
     
+//  private void setUpThresholdingConfig(String dirName, String fileName, String ipAddress, String serviceName, String groupName) throws Exception {
     private void setUpThresholdingConfig() throws Exception {
+//        File dir = new File(dirName);
+
         Resource config = new ClassPathResource("/test-thresholds.xml");
         Reader r = new InputStreamReader(config.getInputStream());
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
         r.close();
+//        ThresholdingConfigFactory.getInstance().getGroup("default-snmp").setRrdRepository("foo!");
+//      ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository(dir.getParentFile().getAbsolutePath());
     }
 
     @SuppressWarnings("deprecation")
-    @Test
     public void testCheckNodeDirNullDirectory() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("directory argument cannot be null"));
@@ -144,7 +143,6 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testCheckNodeDirNullThresholdNetworkInterface() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("thresholdNetworkInterface argument cannot be null"));
@@ -159,10 +157,9 @@ public class SnmpThresholderTest {
 
     // FIXME: This doesn't work now that config has been moved into SnmpThresholdNetworkInterface 
     @SuppressWarnings("deprecation")
-    @Test
-    public void testCheckNodeDirNullThresholdConfiguration() {
+    public void FIXMEtestCheckNodeDirNullThresholdConfiguration() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("thresholdNetworkInterface argument cannot be null"));
+        ta.anticipate(new IllegalArgumentException("thresholdConfiguration argument cannot be null"));
         
         try {
             m_snmpThresholder.checkNodeDir(new File(""), null, new Date(), new Events());
@@ -173,7 +170,6 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testCheckNodeDirNullDate() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("date argument cannot be null"));
@@ -187,7 +183,6 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testCheckNodeDirNullEvents() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("events argument cannot be null"));
@@ -200,14 +195,33 @@ public class SnmpThresholderTest {
         ta.verifyAnticipated();
     }
     
+    // FIXME: This doesn't work because the nodeId underneath is now an int, not an Integer
     @SuppressWarnings("deprecation")
-    @Test
-    public void testCheckNodeDirNullSnmpIfaceInetAddress() {
+    public void FIXMEtestCheckNodeDirNullSnmpIfaceNodeId() throws Exception {
+        ThresholdNetworkInterface intf = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(0, InetAddress.getByName("192.168.1.1"));
+        SnmpThresholdNetworkInterface snmpIface = new SnmpThresholdNetworkInterface(m_thresholdsDao, intf, m_params);
+        //snmpIface.setNodeId(null);
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalArgumentException("getNodeId() of snmpIface argument cannot be null"));
+        
+        try {
+            m_snmpThresholder.checkNodeDir(new File(""), snmpIface, new Date(), new Events());
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    // FIXME: This doesn't work because of an NPE in SnmpThresholdInterface.getIpAddress() 
+    @SuppressWarnings("deprecation")
+    public void FIXMEtestCheckNodeDirNullSnmpIfaceInetAddress() {
+//        IPv4NetworkInterface intf = new IPv4NetworkInterface(null);
         ThresholdNetworkInterface intf = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(1, null);
         SnmpThresholdNetworkInterface snmpIface = new SnmpThresholdNetworkInterface(m_thresholdsDao, intf, m_params);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("getInetAddress() of thresholdNetworkInterface argument cannot be null"));
+        ta.anticipate(new IllegalArgumentException("events argument cannot be null"));
         
         try {
             m_snmpThresholder.checkNodeDir(new File(""), snmpIface, new Date(), new Events());
@@ -218,7 +232,6 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testCheckNodeDirNullFoo() throws Exception {
         /*
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -239,7 +252,6 @@ public class SnmpThresholderTest {
     
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testStripRrdExtensionWithValidExtension() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension()); 
@@ -248,7 +260,6 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testStripRrdExtensionWithNoExtension() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo");
@@ -256,7 +267,6 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testStripRrdExtensionWithValidExtensionTwice() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension() + RrdUtils.getExtension()); 
@@ -265,19 +275,18 @@ public class SnmpThresholderTest {
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testStripRrdExtensionWithValidExtensionNotAtEnd() throws Exception {
         setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension() + ".bar"); 
         assertNull("stripped file name should be null, but was: " + strippedName, strippedName);
     }
 
+
     private void setUpRrdStrategy() throws RrdException {
         RrdConfig.setProperties(new Properties());
         RrdUtils.initialize();
     }
 
-    @Test
     public void testThresholdFilters() throws Exception {
         System.err.println("--------------------------------------------------------");
         ThresholdGroup group = m_thresholdsDao.get("generic-snmp");
@@ -287,11 +296,10 @@ public class SnmpThresholderTest {
         for (Basethresholddef threshold: thresholds) {
             count += threshold.getResourceFilterCount();
         }
-        assertEquals(5, count); // Count how many resource-filter entries are defined on test-thresholods.xml
+        assertEquals(4, count); // as defined on test-thresholods.xml
     }
     
     @SuppressWarnings("deprecation")
-    @Test
     public void testInterfaces() throws Exception {
         System.err.println("--------------------------------------------------------");
         setUpRrdStrategy();
@@ -336,16 +344,14 @@ public class SnmpThresholderTest {
         ifInfoEth0.put("snmpifindex", "1");
         ifInfoEth0.put("snmpifdesc", "eth0");
         ifInfoEth0.put("snmpifalias", "ethernet interface");
-        // 3 times because there are 2 thresholds instances, one with two filters and one without filter (a total of 3) on test-thresholds.xml
-        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "eth0")).andReturn(ifInfoEth0).times(3);
+        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "eth0")).andReturn(ifInfoEth0).times(2);
 
         // Creating Mock ifInfo Data for wlan0
         Map<String,String> ifInfoWlan0 = new HashMap<String,String>();
         ifInfoWlan0.put("snmpifindex", "2");
         ifInfoWlan0.put("snmpifdesc", "wlan0");
         ifInfoWlan0.put("snmpifalias", "wireless interface");
-        // 3 times because there are 2 thresholds instances, one with two filters and one without filter (a total of 3) on test-thresholds.xml
-        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "wlan0")).andReturn(ifInfoWlan0).times(3);
+        EasyMock.expect(m_ifInfoGetter.getIfInfoForNodeAndLabel(1, "wlan0")).andReturn(ifInfoWlan0).times(2);
 
         m_mocks.replayAll();
         m_snmpThresholder.checkIfDir(intf1Dir, m_thresholdInterface, new Date(start), events);
@@ -357,7 +363,6 @@ public class SnmpThresholderTest {
     }
   
     @SuppressWarnings("deprecation")
-    @Test
     public void testThresholdWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
         setUpRrdStrategy();
@@ -427,7 +432,6 @@ public class SnmpThresholderTest {
     }
 
     @SuppressWarnings("deprecation")
-    @Test
     public void testExpressionWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
         // Set storeByGroup, because JRBs will be created with this feature

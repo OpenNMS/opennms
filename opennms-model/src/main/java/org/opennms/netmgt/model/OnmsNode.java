@@ -597,7 +597,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 		}
 		return null;
 	}
-    
+
     @Transient
 	public OnmsIpInterface getInterfaceWithService(String svcName) {
 		for(OnmsIpInterface iface : getIpInterfaces()) {
@@ -607,17 +607,5 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 		}
 		return null;
 	}
-
-    @Transient
-    public OnmsIpInterface getCriticalInterface() {
-    	
-    	OnmsIpInterface critIface = getPrimaryInterface();
-    	if (critIface != null) {
-    		return critIface;
-    	}
-    	
-    	return getInterfaceWithService("ICMP");
-    	
-    }
 
 }

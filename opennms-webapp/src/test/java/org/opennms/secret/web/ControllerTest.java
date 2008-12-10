@@ -31,18 +31,11 @@
 //
 package org.opennms.secret.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import junit.framework.TestCase;
+
 import org.opennms.secret.dao.impl.DataSourceDaoSimple;
 import org.opennms.secret.dao.impl.NodeDaoSimple;
 import org.opennms.secret.dao.impl.NodeInterfaceDaoSimple;
@@ -58,7 +51,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.servlet.ModelAndView;
 
-public class ControllerTest {
+public class ControllerTest extends TestCase {
 
 	private NodeServiceImpl nodeService;
 	private NodeInterfaceServiceImpl ifService;
@@ -75,8 +68,7 @@ public class ControllerTest {
     private MockHttpServletRequest m_request;
     private MockHttpServletResponse m_response;
 
-    @Before
-	public void setUp() throws Exception {
+	protected void setUp() throws Exception {
 		nodeService = new NodeServiceImpl();
 		nodeService.setNodeDao(new NodeDaoSimple());
         
@@ -109,9 +101,11 @@ public class ControllerTest {
         m_response = new MockHttpServletResponse();
     }
 
-    @Test
-    @Ignore("This is an un implemented feature")
-	public void testNodeService() throws Exception {
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+	
+	public void FIXMEtestNodeService() throws Exception {
 		assertNotNull("nodeMaV was not null", nodeMaV);
 		
 		assertTrue(viewName + " did not match", nodeMaV.getViewName().equals(viewName));
@@ -121,8 +115,6 @@ public class ControllerTest {
 		assertNotNull(node.getNodeLabel());
 	}
 	
-    @Test
-    @Ignore("This is an un implemented feature")
 	public void testInterfaceService() throws Exception {
 		ifService = new NodeInterfaceServiceImpl();
 		

@@ -18,10 +18,5 @@
       <artifactId>opennms-config-utils</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

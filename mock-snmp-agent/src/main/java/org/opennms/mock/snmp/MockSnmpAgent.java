@@ -507,9 +507,5 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         updateValue(oid, new Counter64(val));
     }
     
-    public String toString() {
-        return "MockSnmpAgent["+m_address+"]";
-    }
-    
 
 }

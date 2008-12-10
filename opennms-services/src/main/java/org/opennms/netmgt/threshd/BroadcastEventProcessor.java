@@ -73,14 +73,14 @@ final class BroadcastEventProcessor implements EventListener {
      * The scheduler assocated with this receiver
      * 
      */
-    private final Scheduler m_scheduler;
+    private Scheduler m_scheduler;
 
     /**
      * List of ThresholdableService objects.
      */
-    private final List m_thresholdableServices;
+    private List m_thresholdableServices;
 
-    private final Threshd m_threshd;
+    private Threshd m_threshd;
 
     /**
      * This constructor is called to initilize the JMS event receiver. A

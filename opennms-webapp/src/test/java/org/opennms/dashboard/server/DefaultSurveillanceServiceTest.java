@@ -36,7 +36,6 @@ package org.opennms.dashboard.server;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
@@ -48,8 +47,6 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.User;
 import org.acegisecurity.userdetails.UserDetails;
-import org.junit.Before;
-import org.junit.Test;
 import org.opennms.dashboard.client.NodeRtc;
 import org.opennms.dashboard.client.SurveillanceSet;
 import org.opennms.netmgt.config.GroupDao;
@@ -72,12 +69,13 @@ import org.opennms.web.svclayer.support.DefaultRtcService;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class DefaultSurveillanceServiceTest {
+public class DefaultSurveillanceServiceTest extends TestCase {
     private DefaultSurveillanceService m_service;
 
-    @Before
-    public void setUp() throws Exception {
-               
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        
         m_service = new DefaultSurveillanceService();
         
         /*
@@ -87,7 +85,6 @@ public class DefaultSurveillanceServiceTest {
         SecurityContextHolder.clearContext();
     }
     
-    @Test
     public void testGetUsernameWithUserDetails() {
         UserDetails details = populateSecurityContext();
         
@@ -96,7 +93,6 @@ public class DefaultSurveillanceServiceTest {
         assertEquals("user name", details.getUsername(), user);
     }
     
-    @Test
     public void testGetUsernameWithStringPrincipal() {
         Authentication auth = new UsernamePasswordAuthenticationToken("user", null, new GrantedAuthority[0]);
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -106,7 +102,6 @@ public class DefaultSurveillanceServiceTest {
         assertEquals("user name", "user", user);
     }
     
-    @Test
     public void testGetUsernameNoAuthenticationObject() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalStateException("No Authentication object found when calling getAuthentication on our SecurityContext object"));
@@ -120,7 +115,6 @@ public class DefaultSurveillanceServiceTest {
         ta.verifyAnticipated();
     }
     
-    @Test
     public void testGetUsernameNoPrincipalObject() {
         Authentication auth = new UsernamePasswordAuthenticationToken(null, null, new GrantedAuthority[0]);
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -137,7 +131,6 @@ public class DefaultSurveillanceServiceTest {
         ta.verifyAnticipated();
     }
     
-    @Test
     public void testGetRtcForSet() {
         UserDetails details = populateSecurityContext();
         
@@ -178,6 +171,10 @@ public class DefaultSurveillanceServiceTest {
         mock.verifyAll();
         
         assertNotNull("rtcs should not be null", rtcs);
+    }
+    
+    public void NOTYETWORKINGtestGetOutagesForSet() {
+        m_service.getOutagesForSet(SurveillanceSet.DEFAULT);
     }
     
     private UserDetails populateSecurityContext() {

@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 04: Severity -> OnmsSeverity name change. - dj@opennms.org
 // 2008 Sep 26: Use new Severity enum. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,15 +39,15 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.alarm.Alarm.Severity;
 
 /** Encapsulates severity filtering functionality. */
 public class SeverityFilter extends Object implements Filter {
     public static final String TYPE = "severity";
 
-    private OnmsSeverity m_severity;
+    private Severity m_severity;
 
-    public SeverityFilter(OnmsSeverity severity) {
+    public SeverityFilter(Severity severity) {
         m_severity = severity;
     }
 

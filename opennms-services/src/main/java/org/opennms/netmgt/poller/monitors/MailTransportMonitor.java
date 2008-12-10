@@ -136,10 +136,7 @@ public class MailTransportMonitor extends IPv4Monitor {
             status = sendTestMessage(mailParms);
 
             if (status.isAvailable()) {
-                log().debug("doMailTest: send test successfull.");
                 status = readTestMessage(mailParms);
-            } else {
-                log().info("doMailTest: send test unsuccessfull... skipping read portion of test.");
             }
 
         } else if (mailParms.getReadTest() != null) {
@@ -153,7 +150,6 @@ public class MailTransportMonitor extends IPv4Monitor {
         if (status.isAvailable()) {
             status.setResponseTime(Double.valueOf(String.valueOf(System.currentTimeMillis() - beginPoll)));
         }
-        log().info("doMailTest: mailtest result: "+status);
         return status;
     }
 
@@ -166,28 +162,21 @@ public class MailTransportMonitor extends IPv4Monitor {
         if (mailParms.isEnd2EndTestInProgress()) {
             log().debug("Initially delaying read test: "+mailParms.getReadTestAttemptInterval()+" because end to end test is in progress.");
             
-            if (delayTest(status, interval) == PollStatus.SERVICE_UNKNOWN) {
+            if (delayTest(status, interval).getStatusCode() == PollStatus.SERVICE_UNKNOWN) {
                 return status;
             }
         }
         
-        Store mailStore = null;
-        Folder mailFolder = null;
         try {
             JavaMailer readMailer = new JavaMailer(mailParms.getJavamailProperties());
             setReadMailProperties(mailParms, readMailer);
 
+            Store mailStore = null;
+            Folder mailFolder = null;
             TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
             for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
                 tracker.startAttempt();
-                
-                if (tracker.getAttempt() > 0) {
-                    if (delayTest(status, interval) == PollStatus.SERVICE_UNKNOWN) {
-                        log().warn("readTestMessage: Status set to: "+status+" during delay, exiting test.");
-                        break;
-                    }
-                }
-                log().debug("readTestMessage: reading mail attempt: "+String.valueOf((tracker.getAttempt()+1))+", elapsed time:"+tracker.elapsedTimeInMillis()+"ms.");
+                log().debug("readTestMessage: reading mail attempt: "+tracker.getAttempt()+", elapsed time:"+tracker.elapsedTimeInMillis()+"ms.");
                 try {
                     mailStore = readMailer.getSession().getStore();
                     mailFolder = retrieveMailFolder(mailParms, mailStore);
@@ -204,16 +193,17 @@ public class MailTransportMonitor extends IPv4Monitor {
                 }
                 if (mailFolder.isOpen() && (mailParms.getReadTest().getSubjectMatch() != null || mailParms.isEnd2EndTestInProgress())) {
                     status = searchMailSubject(mailParms, mailFolder);
-                    if (status.getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
-                        break;
-                    }
-                }
+                } 
+                break;
             }
 
+            if (tracker.shouldRetry()) {
+                status = delayTest(status, interval);
+            }
+
+            closeStore(mailStore, mailFolder);
         } catch (JavaMailerException e) {
             status = PollStatus.down(e.getLocalizedMessage());
-        } finally {
-            closeStore(mailStore, mailFolder);
         }
         return status;
     }
@@ -382,7 +372,7 @@ public class MailTransportMonitor extends IPv4Monitor {
             }
             
             if (tracker.shouldRetry()) {
-                delayTest(status, interval);
+                status = delayTest(status, interval);
             }
         }
         return status;
@@ -394,7 +384,7 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @param interval
      * @return returns an unchanged PollStatus unless an exception happens in which case status is changed to unknown. 
      */
-    private int delayTest(PollStatus status, final long interval) {
+    private PollStatus delayTest(PollStatus status, final long interval) {
         log().debug("delayTest: delaying test for: "+interval+"ms. per configuration.");
         try {
             Thread.sleep(interval);
@@ -402,7 +392,7 @@ public class MailTransportMonitor extends IPv4Monitor {
             log().error("delayTest: An exception occurred while delaying mail test: ", e);
             status = PollStatus.unknown(e.getLocalizedMessage());
         }
-        return status.getStatusCode();
+        return status;
     }
 
     /**

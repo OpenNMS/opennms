@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.report.availability.AvailabilityReportViewerService;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -50,22 +51,22 @@ public class SimpleXMLReportController extends AbstractController {
     private AvailabilityReportViewerService m_viewerService;
 
     @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
+    protected ModelAndView handleRequestInternal(HttpServletRequest req,
             HttpServletResponse res) throws Exception {
         String[] requiredParameters = new String[] { "format", "reportid" };
 
         for (String requiredParameter : requiredParameters) {
-            if (request.getParameter(requiredParameter) == null) {
+            if (req.getParameter(requiredParameter) == null) {
                 throw new MissingParameterException(requiredParameter,
                                                     requiredParameters);
             }
         }
         try {
-            m_reportId = WebSecurityUtils.safeParseInt(request.getParameter("reportid"));
+            m_reportId = WebSecurityUtils.safeParseInt(req.getParameter("reportid"));
         } catch (NumberFormatException e) {
         }
         ModelAndView mav = new ModelAndView();
-        String format = WebSecurityUtils.sanitizeString(request.getParameter("format"));
+        String format = req.getParameter("format");
         if (format.equalsIgnoreCase("pdf")) {
             mav.setViewName("/reports/pdfreportviewer");
         } else if (format.equalsIgnoreCase("svg")) {

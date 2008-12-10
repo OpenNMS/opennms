@@ -38,8 +38,6 @@
 //
 package org.opennms.netmgt.importer;
 
-import java.util.Properties;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -74,47 +72,25 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
     protected void onSetUpInTransactionIfEnabled() throws Exception {
         super.onSetUpInTransactionIfEnabled();
         
-        Properties logConfig = new Properties();
-        
-        logConfig.put("log4j.logger.org.exolab.castor", "INFO");
-        logConfig.put("log4j.logger.org.hibernate", "INFO");
-        logConfig.put("log4j.logger.org.hibernate.SQL", "DEBUG");
-        logConfig.put("log4j.logger.org.springframework", "INFO");
-
-        MockLogAppender.setupLogging(logConfig);
+        MockLogAppender.setupLogging();
     }
 
     public void testSchedule() throws Exception {
-        expectImportStarted();
+        anticipateEvent(createEvent(EventConstants.IMPORT_STARTED_UEI));
+        anticipateEvent(createEvent(EventConstants.IMPORT_SUCCESSFUL_UEI));
         
         getDaemon().start();
 
-        // we wait a while here because the start up time could be long
-        // this will end as soon as the event is received so no harm in waiting
-        waitForImportStarted(300000);
-
-        expectImportSuccessful();
-
+        Thread.sleep(65000);
+      
         getDaemon().destroy();
         
-        // this will end as soon as the event is received so no harm in waiting
-        waitForImportSuccessful(300000);
+        verifyAnticipated();
     }
 
-    private void expectImportSuccessful() {
-        anticipateEvent(createEvent(EventConstants.IMPORT_SUCCESSFUL_UEI));
-    }
-
-    private void expectImportStarted() {
-        anticipateEvent(createEvent(EventConstants.IMPORT_STARTED_UEI));
-    }
-    
-    private void waitForImportStarted(long timeout) {
-        assertTrue("Failed to receive importStarted event after waiting "+timeout+" millis", m_eventIpcMgr.getEventAnticipator().waitForAnticipated(timeout).size() == 0);
-    }
-
-    private void waitForImportSuccessful(long timeout) {
-        assertTrue("Failed to receive importSuccessful event after waiting "+timeout+" millis", m_eventIpcMgr.getEventAnticipator().waitForAnticipated(timeout).size() == 0);
+    private void verifyAnticipated() {
+        m_eventIpcMgr.getEventAnticipator().resetUnanticipated();
+        m_eventIpcMgr.getEventAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
     }
 
     public Event createEvent(String uei) {
@@ -122,10 +98,7 @@ public class ImporterServiceTest extends AbstractTransactionalTemporaryDatabaseS
     }
 
     private void anticipateEvent(Event e) {
-        anticipateEvent(e, false);
-    }
-    private void anticipateEvent(Event e, boolean checkUnanticipatedList) {
-        m_eventIpcMgr.getEventAnticipator().anticipateEvent(e, checkUnanticipatedList);
+        m_eventIpcMgr.getEventAnticipator().anticipateEvent(e);
     }
 
     public void setEventIpcManager(MockEventIpcManager eventIpcMgr) {

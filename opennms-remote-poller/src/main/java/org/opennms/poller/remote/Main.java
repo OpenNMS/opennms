@@ -35,7 +35,6 @@ package org.opennms.poller.remote;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -225,22 +224,10 @@ public class Main {
     }
 		
     public static void main(String[] args) {
-        String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
-        File killSwitch = null;
         
-        if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
-            killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
-            if (!killSwitch.exists()) {
-                try {
-                    killSwitch.createNewFile();
-                } catch (IOException ioe) {
-                    // We'll just do without one
-                }
-            }
-        }
         new Main(args).run();
         
-    }
+	}
 
 
 

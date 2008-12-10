@@ -35,31 +35,25 @@
 //
 package org.opennms.install;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.opennms.test.DaoTestConfigBean;
+import java.sql.SQLException;
 
+import junit.framework.TestCase;
 
-public class InstallerIpLikeTest {
+public class InstallerIpLikeTest extends TestCase {
 
     private Installer m_installer;
 
-    @Before
-    public void setUp() {
-        System.setProperty("skip-native", "true");
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.setRelativeHomeDirectory("target/test-classes");
-        System.setProperty("install.dir", "target/test-classes");
-        System.setProperty("install.etc.dir", "target/test-classes/etc");
-        bean.afterPropertiesSet();
+    protected void setUp() throws SQLException {
         m_installer = new Installer();
     }
 
-    @Test
-    @Ignore
-    public void testIpLike() throws Exception {
-    	String[] args = {"-d", "-i", "-s", "-Z" };
+    // FIXME: this is here so there is at least one test in this file.
+    public void testBogus() {
+    }
+
+    // FIXME: this test modifies the "opennms" database.
+    public void FIXMEtestIpLike() throws Exception {
+    	String[] args = {"-d", "-i", "-s", "-U" };
     	m_installer.install(args);
     }
     

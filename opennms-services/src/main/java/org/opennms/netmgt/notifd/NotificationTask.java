@@ -73,36 +73,36 @@ public class NotificationTask extends Thread {
     /**
      * The User object the notification needs to go out to
      */
-    private volatile User m_user;
+    private User m_user;
 
     /**The autoNotify info for the usersnotified table
      */
-    private volatile String m_autoNotify;
+    private String m_autoNotify;
 
     /**
      * The row id that will be used for the row inserted into the notifications
      * table
      */
-    private volatile int m_notifyId;
+    private int m_notifyId;
 
     /**
      * The console command that will be issued to send the actual notification.
      */
-    private volatile Command[] m_commands;
+    private Command[] m_commands;
 
     /**
      */
-    private final Map<String, String> m_params;
+    private Map<String, String> m_params;
 
     /**
      */
-    private final long m_sendTime;
+    private long m_sendTime;
 
-    private volatile boolean m_started = false;
+    private boolean m_started = false;
 
-    private final NotificationManager m_notificationManager;
+    private NotificationManager m_notificationManager;
 
-    private final UserManager m_userManager;
+    private UserManager m_userManager;
 
     /**
      * Constructor, initializes some information
@@ -110,7 +110,7 @@ public class NotificationTask extends Thread {
      * @param someParams the parameters from
      * Notify
      */
-    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify) {
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List siblings, String autoNotify) {
         m_notificationManager = notificationManager;
         m_userManager = userManager;
         m_sendTime = sendTime;
@@ -305,6 +305,7 @@ public class NotificationTask extends Thread {
         return commandArgs;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Argument> getArgumentsForCommand(Command command) {
         return command.getArgumentCollection();
     }

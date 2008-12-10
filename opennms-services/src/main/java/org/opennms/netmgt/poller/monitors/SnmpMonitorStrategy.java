@@ -117,12 +117,10 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      * @param value
      * @return
      */
-    private Boolean checkStringCriteria(final String operator, String operand, String value) {
+    private Boolean checkStringCriteria(String operator, String operand, String value) {
         Boolean retVal = null;
         
-        if (value == null) {
-            value = "";
-        } else if (value.startsWith(".")) {
+        if (value.startsWith(".")) {
             value = value.substring(1);
         }
         
@@ -133,11 +131,11 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
         }
         
         if (EQUALS.equals(operator))
-            retVal = Boolean.valueOf(operand.equals(value));
+            retVal = new Boolean(operand.equals(value));
         else if (NOT_EQUAL.equals(operator))
-            retVal = Boolean.valueOf(!operand.equals(value));
+            retVal = new Boolean(!operand.equals(value));
         else if (MATCHES.equals(operator))
-            retVal = Boolean.valueOf(Pattern.compile(operand).matcher(value).find());
+            retVal = new Boolean(Pattern.compile(operand).matcher(value).find());
         return retVal;
     }
 

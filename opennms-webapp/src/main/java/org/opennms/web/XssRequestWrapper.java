@@ -2,7 +2,6 @@ package org.opennms.web;
 
 // from http://mc4j.org/confluence/display/stripes/XSS+filter
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,15 +14,16 @@ import org.opennms.core.utils.ThreadCategory;
 
 public class XssRequestWrapper extends HttpServletRequestWrapper
 {
-    private Map<String, String[]> sanitized_parameters;
-    private Map<String, String[]> original_parameters;
+
+    private Map<String, String[]> sanitized;
+    private Map<String, String[]> orig;
     
     @SuppressWarnings("unchecked")
     public XssRequestWrapper(HttpServletRequest req) 
     {
         super(req);
-        original_parameters = req.getParameterMap();   
-        sanitized_parameters = getParameterMap();
+        orig = req.getParameterMap();   
+        sanitized = getParameterMap();
         if (log().isDebugEnabled())
             snzLogger();
     }       
@@ -41,9 +41,9 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
     @Override
     public Map<String, String[]> getParameterMap() 
     {   
-        if (sanitized_parameters==null)
-            sanitized_parameters = sanitizeParamMap(original_parameters);
-        return sanitized_parameters;           
+        if (sanitized==null)
+            sanitized = sanitizeParamMap(orig);
+        return sanitized;           
 
     }
 
@@ -52,31 +52,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
     {   
         return getParameterMap().get(name);
     }
-    
-    @Override
-    public void removeAttribute(String name) {
-        super.getRequest().removeAttribute(name);
-    }
-    
-    @Override
-    public void setAttribute(String name, Object o) {
-        super.getRequest().setAttribute(name, o);
-    }
-    
-    @Override
-    public Object getAttribute(String name) {
-        return super.getRequest().getAttribute(name);
-    }
 
-    @Override
-    public void setCharacterEncoding(String enc) throws UnsupportedEncodingException {
-        super.getRequest().setCharacterEncoding(enc);
-    }
-    
-    @Override
-    public String getCharacterEncoding() {
-        return super.getRequest().getCharacterEncoding();
-    }
 
     private  Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
     {       
@@ -90,7 +66,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
             String[] snzVals = new String[rawVals.length];
             for (int i=0; i < rawVals.length; i++) 
             {
-                snzVals[i] = WebSecurityUtils.sanitizeString(rawVals[i]);
+                snzVals[i] = SafeHtmlUtil.sanitize(rawVals[i]);
             }
             res.put(key, snzVals);
         }           
@@ -100,10 +76,10 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
 
     private void snzLogger()
     {
-        for (String key : (Set<String>) original_parameters.keySet())
+        for (String key : (Set<String>) orig.keySet())
         {
-            String[] rawVals = original_parameters.get(key);
-            String[] snzVals = sanitized_parameters.get(key);
+            String[] rawVals = orig.get(key);
+            String[] snzVals = sanitized.get(key);
             if (rawVals !=null && rawVals.length>0)
             {
                 for (int i=0; i < rawVals.length; i++) 

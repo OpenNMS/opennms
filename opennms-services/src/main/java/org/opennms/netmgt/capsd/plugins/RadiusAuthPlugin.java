@@ -111,11 +111,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      */
     public static final String DEFAULT_SECRET = "secret";
 
-    /**
-     * 
-     * Default NAS_ID
-     */
-    public static final String DEFAULT_NAS_ID = "opennms";
+
     /**
      * 
      * @param host
@@ -138,13 +134,10 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * @param retry 
      *		  Number of times to retry 
      *
-     * @param nasid
-     *            NAS Identifier to use
-     *
      * @return True if server, false if not.
      */
     private boolean isRadius(InetAddress host, int authport, int acctport, String authType,
-				String user, String password, String secret, String nasid,
+				String user, String password, String secret,
 				int retry, int timeout) {
 
         boolean isRadiusServer = false;
@@ -167,11 +160,8 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
                 ChapUtil chapUtil = new ChapUtil();
                 RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
                 RadiusAttribute userNameAttribute;
-                RadiusAttribute nasIdAttribute;
-                nasIdAttribute = new RadiusAttribute(RadiusAttributeValues.NAS_IDENTIFIER,nasid.getBytes());
                 userNameAttribute = new RadiusAttribute(RadiusAttributeValues.USER_NAME,user.getBytes());
                 accessRequest.setAttribute(userNameAttribute);
-                accessRequest.setAttribute(nasIdAttribute);
                 if(authType.equalsIgnoreCase("chap")){
                     byte[] chapChallenge = chapUtil.getNextChapChallenge(16);
                     accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_PASSWORD, chapEncrypt(password, chapChallenge, chapUtil)));
@@ -220,7 +210,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      */
     public boolean isProtocolSupported(InetAddress address) {
         return isRadius(address, DEFAULT_AUTH_PORT, DEFAULT_ACCT_PORT, DEFAULT_AUTH_TYPE,
-			DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SECRET, DEFAULT_NAS_ID,
+			DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SECRET,
 			DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
 
@@ -256,7 +246,6 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
 	String user = DEFAULT_USER;
 	String password = DEFAULT_PASSWORD;
 	String secret = DEFAULT_SECRET;
-	String nasid = DEFAULT_NAS_ID;
         if (qualifiers != null) {
             authport = ParameterMap.getKeyedInteger(qualifiers, "authport", DEFAULT_AUTH_PORT);
             acctport = ParameterMap.getKeyedInteger(qualifiers, "acctport", DEFAULT_ACCT_PORT);
@@ -266,11 +255,10 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
             user = ParameterMap.getKeyedString(qualifiers, "user", DEFAULT_USER);
             password = ParameterMap.getKeyedString(qualifiers, "password", DEFAULT_PASSWORD);
             secret = ParameterMap.getKeyedString(qualifiers, "secret", DEFAULT_SECRET);
-            nasid = ParameterMap.getKeyedString(qualifiers, "nasid", DEFAULT_NAS_ID);
         }
 
         return isRadius(address, authport, acctport, authType, 
-			user, password, secret, nasid,
+			user, password, secret,
 			retry, timeout);
     }
 

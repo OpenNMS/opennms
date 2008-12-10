@@ -429,10 +429,16 @@ public class EventUtils {
      * @return the value of the parameter as a long
      */
     public static long getLongParm(Event e, String parmName, long defaultValue) {
-        return org.opennms.netmgt.model.events.EventUtils.getLongParm(
-                                                                      e,
-                                                                      parmName,
-                                                                      defaultValue);
+        String longVal = getParm(e, parmName);
+
+        if (longVal == null)
+            return defaultValue;
+
+        try {
+            return Long.parseLong(longVal);
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 
     /**
@@ -449,14 +455,20 @@ public class EventUtils {
      * @return the value of the parameter as a long
      */
     public static int getIntParm(Event e, String parmName, int defaultValue) {
-        return org.opennms.netmgt.model.events.EventUtils.getIntParm(
-                                                                     e,
-                                                                     parmName,
-                                                                     defaultValue);
+        String intVal = getParm(e, parmName);
+
+        if (intVal == null)
+            return defaultValue;
+
+        try {
+            return Integer.parseInt(intVal);
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
     
     public static int getIntParm(Event e, String parmName) {
-        return org.opennms.netmgt.model.events.EventUtils.getIntParm(e, parmName, 0);
+        return getIntParm(e, parmName, 0);
     }
 
     /**
@@ -485,7 +497,7 @@ public class EventUtils {
      * @return the value of the parameter, or null of the parameter is not set
      */
     public static String getParm(Event e, String parmName) {
-        return org.opennms.netmgt.model.events.EventUtils.getParm(e, parmName);
+        return getParm(e, parmName, null);
     }
 
     /**
@@ -502,7 +514,24 @@ public class EventUtils {
      *         not set
      */
     public static String getParm(Event e, String parmName, String defaultValue) {
-        return org.opennms.netmgt.model.events.EventUtils.getParm(e, parmName, defaultValue);
+        Parms parms = e.getParms();
+        if (parms == null)
+            return defaultValue;
+
+        Enumeration<Parm> parmEnum = parms.enumerateParm();
+        while (parmEnum.hasMoreElements()) {
+            Parm parm = parmEnum.nextElement();
+            if (parmName.equals(parm.getParmName())) {
+                if (parm.getValue() != null && parm.getValue().getContent() != null) {
+                    return parm.getValue().getContent();
+                } else {
+                    return defaultValue;
+                }
+            }
+        }
+
+        return defaultValue;
+
     }
 
     /**
@@ -580,18 +609,13 @@ public class EventUtils {
     }
 
 	public static Event createNodeAddedEvent(int nodeId, String nodeLabel, String labelSource) {
-        return createNodeAddedEvent("OpenNMS.Capsd", nodeId, nodeLabel, labelSource);
-	}
-
-    public static Event createNodeAddedEvent(String source, int nodeId,
-            String nodeLabel, String labelSource) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+		Category log = ThreadCategory.getInstance(EventUtils.class);
 		if (log.isDebugEnabled())
             log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
 
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-        newEvent.setSource(source);
+        newEvent.setSource("OpenNMS.Capsd");
         newEvent.setNodeid(nodeId);
         newEvent.setHost(Capsd.getLocalHostAddress());
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
@@ -620,7 +644,7 @@ public class EventUtils {
         newEvent.setParms(eventParms);
 
         return newEvent;
-    }
+	}
 
     /**
      * This method is responsible for generating a nodeGainedInterface event and

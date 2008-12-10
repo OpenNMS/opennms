@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2008 Oct 26: Use SnmpTestSuiteUtils to create our TestSuite since the same thing is used in other classes. - dj@opennms.org
 // 2008 Mar 16: Extend MockSnmpAgentTestCase. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -43,6 +42,7 @@ import java.net.UnknownHostException;
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;
+import org.opennms.test.PropertySettingTestSuite;
 import org.springframework.core.io.ClassPathResource;
 
 public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcessorFactory {
@@ -107,7 +107,11 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
     }
 
     public static TestSuite suite() {
-        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SnmpUtilsTest.class);
+        Class testClass = SnmpUtilsTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
+        suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
+        return suite;
     }
 
     @Override

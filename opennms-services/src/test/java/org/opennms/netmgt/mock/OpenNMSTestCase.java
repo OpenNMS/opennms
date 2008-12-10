@@ -58,7 +58,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.junit.Test;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
@@ -293,8 +292,7 @@ public class OpenNMSTestCase extends TestCase {
         return m_startEventd;
     }
 
-    @Test
-    public void testDoNothing() { sleep(200); }
+    public void testDoNothing() { sleep(1000); }
 
     protected void sleep(long millis) {
         try {

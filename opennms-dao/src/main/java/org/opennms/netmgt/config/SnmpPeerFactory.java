@@ -58,7 +58,6 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
@@ -83,7 +82,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFactory {
+public final class SnmpPeerFactory extends PeerFactory {
     /**
      * The singleton instance of this factory
      */

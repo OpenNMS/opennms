@@ -40,26 +40,19 @@
  */
 package org.opennms.netmgt.rrd.jrobin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.Sample;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.jrobin.graph.RrdGraphInfo;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -75,13 +68,14 @@ import org.springframework.util.StringUtils;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class JRobinRrdStrategyTest {
+public class JRobinRrdStrategyTest extends TestCase {
     
     private JRobinRrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
     
-    @Before
-    public void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
         
         MockLogAppender.setupLogging();
         
@@ -92,20 +86,25 @@ public class JRobinRrdStrategyTest {
         m_fileAnticipator = new FileAnticipator(false);
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
         if (m_fileAnticipator.isInitialized()) {
             m_fileAnticipator.deleteExpected();
         }
+    }
+     
+    @Override
+    protected void tearDown() throws Exception {
         m_fileAnticipator.tearDown();
+        
+        super.tearDown();
     }
 
-    @Test
     public void testInitilize() {
        // Don't do anything... just check that setUp works 
     }
     
-    @Test
     public void testCommandWithoutDrawing() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
@@ -128,7 +127,6 @@ public class JRobinRrdStrategyTest {
         ta.verifyAnticipated();
     }
     
-    @Test
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
         
@@ -142,7 +140,6 @@ public class JRobinRrdStrategyTest {
         m_strategy.closeFile(openedFile);
     }
 
-    @Test
     public void testUpdate() throws Exception {
         File rrdFile = createRrdFile();
         
@@ -151,7 +148,6 @@ public class JRobinRrdStrategyTest {
         m_strategy.closeFile(openedFile);
     }
 
-    @Test
     public void testSampleSetFloatingPointValueGood() throws Exception {
         File rrdFile = createRrdFile();
         
@@ -163,7 +159,7 @@ public class JRobinRrdStrategyTest {
         
         double[] values = sample.getValues();
         assertEquals("values list size", 1, values.length);
-        assertEquals("values item 0", 1.234, values[0], 0.0);
+        assertEquals("values item 0", 1.234, values[0]);
     }
 
     /**
@@ -171,9 +167,7 @@ public class JRobinRrdStrategyTest {
      * <a href="http://bugzilla.opennms.org/show_bug.cgi?id=2272">bug #2272</a>
      * in org.jrobin.core.Sample.
      */
-    @Test
-    @Ignore("fails due to bug 2272")
-    public void testSampleSetFloatingPointValueWithComma() throws Exception {
+    public void DISABLEDtestSampleSetFloatingPointValueWithComma() throws Exception {
         File rrdFile = createRrdFile();
         
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
@@ -184,7 +178,7 @@ public class JRobinRrdStrategyTest {
         
         double[] values = sample.getValues();
         assertEquals("values list size", 1, values.length);
-        assertEquals("values item 0", 1.234, values[0], 0.0);
+        assertEquals("values item 0", 1.234, values[0]);
     }
 
     /**
@@ -192,9 +186,7 @@ public class JRobinRrdStrategyTest {
      * <a href="http://bugzilla.opennms.org/show_bug.cgi?id=2272">bug #2272</a>
      * in org.jrobin.core.Sample.
      */
-    @Test
-    @Ignore("fails due to bug 2272")
-    public void testSampleSetFloatingPointValueWithExtraJunk() throws Exception {
+    public void DISABLEDtestSampleSetFloatingPointValueWithExtraJunk() throws Exception {
         File rrdFile = createRrdFile();
         
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
@@ -213,7 +205,6 @@ public class JRobinRrdStrategyTest {
         ta.verifyAnticipated();
     }
     
-    @Test
     public void testCommentWithNewlines() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
@@ -244,7 +235,6 @@ public class JRobinRrdStrategyTest {
         assertFalse("first graph height " + firstHeight + " and second graph height " + secondHeight + " should not be equal... there should be another newline in the second one making it taller", firstHeight == secondHeight);
     }
     
-    @Test
     public void testGprintWithNewlines() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
@@ -278,7 +268,6 @@ public class JRobinRrdStrategyTest {
         assertFalse("first graph height " + firstHeight + " and second graph height " + secondHeight + " should not be equal... there should be another line with a newline in the second one making it taller", firstHeight == secondHeight);
     }
     
-    @Test
     public void testPrint() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
@@ -301,11 +290,10 @@ public class JRobinRrdStrategyTest {
         assertEquals("graph printLines size", 1, printLines.length);
         assertEquals("graph printLines item 0", "1.000000e+00", printLines[0]);
         double d = Double.parseDouble(printLines[0]);
-        assertEquals("graph printLines item 0 as a double", 1.0, d, 0.0);
+        assertEquals("graph printLines item 0 as a double", 1.0, d);
     }
     
 
-    @Test
     public void testPrintThroughInterface() throws Exception {
         long end = System.currentTimeMillis();
         long start = end - (24 * 60 * 60 * 1000);
@@ -324,10 +312,9 @@ public class JRobinRrdStrategyTest {
         assertEquals("graph printLines size", 1, printLines.length);
         assertEquals("graph printLines item 0", "1.000000e+00", printLines[0]);
         double d = Double.parseDouble(printLines[0]);
-        assertEquals("graph printLines item 0 as a double", 1.0, d, 0.0);
+        assertEquals("graph printLines item 0 as a double", 1.0, d);
     }
     
-    @Test
     public void testTWQnENoQNoE() throws Exception {
     	String input = "This string has no quoting and no escapes";
     	String[] expected = new String[] { "This", "string", "has", "no", "quoting", "and", "no", "escapes" }; 
@@ -335,7 +322,6 @@ public class JRobinRrdStrategyTest {
     	assertEquals(Arrays.asList(expected), Arrays.asList(actual));
     }
     
-    @Test
     public void testTWQnENoQNoEWithDEFUnix() throws Exception {
     	if (File.separatorChar != '/') {
     		MockUtil.println("-------- Skipping testTWQnENoQNoEWithDEFUnix since File.separator is not / ------------");
@@ -348,7 +334,6 @@ public class JRobinRrdStrategyTest {
     	assertEquals(Arrays.asList(expected), Arrays.asList(actual));
     }
     
-    @Test
     public void testTWQnENoQNoEWithDEFWindows() throws Exception {
     	// This test case inspired by bug #2223
     	if (File.separatorChar != '\\') {

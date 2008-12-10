@@ -90,14 +90,16 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         popShouldPersist();
     }
     
-    protected void createBuilder(CollectionResource resource, String name, AttributeDefinition attributeType) {
+    protected void createBuilder(CollectionResource resource, String name, CollectionAttributeType attributeType) {
         createBuilder(resource, name, Collections.singleton(attributeType));
     }
 
-    protected void createBuilder(CollectionResource resource, String name, Set<AttributeDefinition> attributeTypes) {
+    @SuppressWarnings("unchecked")
+    protected void createBuilder(CollectionResource resource, String name, Set attributeTypes) {
         m_builder = new PersistOperationBuilder(getRepository(), resource, name);
-        for (Iterator<AttributeDefinition> iter = attributeTypes.iterator(); iter.hasNext();) {
-            AttributeDefinition attrType = iter.next();
+        for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
+            CollectionAttributeType attrType = (CollectionAttributeType) iter.next();
+            // Only numeric values can be included on RRDs
             if (attrType instanceof NumericAttributeType) {
                 m_builder.declareAttribute(attrType);
             }

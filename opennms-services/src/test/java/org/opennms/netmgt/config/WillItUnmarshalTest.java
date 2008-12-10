@@ -10,7 +10,6 @@
  *
  * Modifications:
  *
- * 2008 Oct 24: Eliminate warnings when using Readers. - dj@opennms.org
  * 2008 Jun 05: Add discovery-configuration.xml as an example. - dj@opennms.org
  * 2008 Jan 25: Add Hyperic tests and test for subdirectories in examples. - dj@opennms.org
  * 2007 Aug 03: Created this file. - dj@opennms.org
@@ -38,14 +37,11 @@
  */
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,13 +50,11 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
 
 import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
@@ -106,12 +100,12 @@ import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
+import org.opennms.netmgt.config.webuiColors.CategoryColors;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -120,13 +114,14 @@ import org.springframework.util.StringUtils;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class WillItUnmarshalTest {
+public class WillItUnmarshalTest extends TestCase {
     private static final String CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY = "org.exolab.castor.xml.lenient.sequence.order";
     private static Set<String> m_filesTested = new HashSet<String>();
     private static Set<String> m_exampleFilesTested = new HashSet<String>();
     
-    @Before
-    public void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
         
         MockLogAppender.setupLogging(true, "INFO");
         
@@ -134,9 +129,11 @@ public class WillItUnmarshalTest {
         LocalConfiguration.getInstance().getProperties().clear();
         LocalConfiguration.getInstance().getProperties().load(ConfigurationTestUtils.getInputStreamForResource(this, "/castor.properties"));
     }
-
-    @After
-    public void checkWarnings() {
+    
+    @Override
+    protected void runTest() throws Throwable {
+        super.runTest();
+        
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -144,38 +141,34 @@ public class WillItUnmarshalTest {
      * Ensure we can load a good configuration file without enabling
      * lenient sequence ordering.
      */
-    @Test
     public void testGoodOrdering() throws Exception {
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml"));
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-good-ordering.xml"));
     }
 
     /**
      * Ensure we can load a bad configuration file with
      * lenient sequence ordering enabled explicitly.
      */
-    @Test
     public void testLenientOrdering() throws Exception {
         LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
 
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
     }
 
     /**
      * Ensure we can load a bad configuration file with
      * lenient sequence ordering enabled in castor.properties.
      */
-    @Test
     public void testLenientOrderingAsDefault() throws Exception {
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
+        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
     }
     
     /**
      * Ensure we fail to load a bad configuration file with
      * lenient sequence ordering disabled explicitly.
      */
-    @Test
     public void testLenientOrderingDisabled() throws Exception {
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
@@ -183,7 +176,7 @@ public class WillItUnmarshalTest {
         boolean gotException = false;
 
         try {
-            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
+            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForResource(this, "eventconf-bad-ordering.xml"));
         } catch (MarshalException e) {
             if (e.getMessage().contains(exceptionText)) {
                 gotException = true;
@@ -199,312 +192,235 @@ public class WillItUnmarshalTest {
         }
     }
 
-    @Test
     public void testActiondConfiguration() throws Exception {
         unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
     }
-    @Test
     public void testCapsdConfiguration() throws Exception {
         unmarshal("capsd-configuration.xml", CapsdConfiguration.class);
     }
-    @Test
     public void testExampleCapsdConfiguration() throws Exception {
         unmarshalExample("capsd-configuration.xml", CapsdConfiguration.class);
     }
-    @Test
     public void testExampleHypericCapsdConfiguration() throws Exception {
         unmarshalExample("hyperic-integration/capsd-configuration.xml", CapsdConfiguration.class);
     }
-    @Test
     public void testCategories() throws Exception {
         unmarshal("categories.xml", Catinfo.class);
     }
-    @Test
     public void testChartConfiguration() throws Exception {
         unmarshal("chart-configuration.xml", ChartConfiguration.class);
     }
-    @Test
     public void testCollectdConfiguration() throws Exception {
         unmarshal("collectd-configuration.xml", CollectdConfiguration.class);
     }
-    @Test
     public void testExampleCollectdConfiguration() throws Exception {
         unmarshalExample("collectd-configuration.xml", CollectdConfiguration.class);
     }
-    @Test
     public void testDatabaseSchema() throws Exception {
         unmarshal("database-schema.xml", DatabaseSchema.class);
     }
-    @Test
     public void testDataCollectionConfiguration() throws Exception {
         unmarshal("datacollection-config.xml", DatacollectionConfig.class);
     }
-    @Test
     public void testDestinationPaths() throws Exception {
         unmarshal("destinationPaths.xml", DestinationPaths.class);
     }
-    @Test
     public void testExampleDestinationPaths() throws Exception {
         unmarshalExample("destinationPaths.xml", DestinationPaths.class);
     }
-    @Test
     public void testDhcpdConfiguration() throws Exception {
         unmarshal("dhcpd-configuration.xml", DhcpdConfiguration.class);
     }
-    @Test
     public void testDiscoveryConfiguration() throws Exception {
         unmarshal("discovery-configuration.xml", DiscoveryConfiguration.class);
     }
-    @Test
     public void testExampleDiscoveryConfiguration() throws Exception {
         unmarshalExample("discovery-configuration.xml", DiscoveryConfiguration.class);
     }
-    @Test
     public void testEventconf() throws Exception {
         unmarshal("eventconf.xml", Events.class);
     }
-    @Test
     public void testExampleHypericEventconf() throws Exception {
         unmarshalExample("hyperic-integration/eventconf.xml", Events.class);
     }
-    @Test
     public void testExampleHypericEvents() throws Exception {
         unmarshalExample("hyperic-integration/Hyperic.events.xml", Events.class);
     }
-    @Test
     public void testEventsArchiverConfiguration() throws Exception {
         unmarshal("events-archiver-configuration.xml", EventsArchiverConfiguration.class);
     }
-    @Test
     public void testGroups() throws Exception {
         unmarshal("groups.xml", Groupinfo.class);
     }
-    @Test
     public void testExampleGroups() throws Exception {
         unmarshalExample("groups.xml", Groupinfo.class);
     }
-    @Test
     public void testHttpDataCollectionConfiguration() throws Exception {
         unmarshal("http-datacollection-config.xml", HttpDatacollectionConfig.class);
     }
-    @Test
     public void testJmxDataCollectionConfiguration() throws Exception {
         unmarshal("jmx-datacollection-config.xml", JmxDatacollectionConfig.class);
     }
-    @Test
     public void testKscPerformanceReports() throws Exception {
         unmarshal("ksc-performance-reports.xml", ReportsList.class);
     }
-    @Test
     public void testLinkdConfiguration() throws Exception {
         unmarshal("linkd-configuration.xml", LinkdConfiguration.class);
     }
-    @Test
     public void testExampleMailTransportTest() throws Exception {
         unmarshalExample("mail-transport-test.xml", MailTransportTest.class);
     }
-    @Test
     public void testExampleHypericImportsHQ() throws Exception {
         unmarshalExample("hyperic-integration/imports-HQ.xml", ModelImport.class);
     }
-    @Test
     public void testExampleHypericImportsOpennmsAdmin() throws Exception {
         unmarshalExample("hyperic-integration/imports-opennms-admin.xml", ModelImport.class);
     }
-    @Test
     public void testMonitoringLocations() throws Exception {
         unmarshal("monitoring-locations.xml", MonitoringLocationsConfiguration.class);
     }
-    @Test
     public void testExampleMonitoringLocations() throws Exception {
         unmarshalExample("monitoring-locations.xml", MonitoringLocationsConfiguration.class);
     }
-    @Test
     public void testNotifdConfiguration() throws Exception {
         unmarshal("notifd-configuration.xml", NotifdConfiguration.class);
     }
-    @Test
     public void testNotificationCommands() throws Exception {
         unmarshal("notificationCommands.xml", NotificationCommands.class);
     }
-    @Test
     public void testExampleNotificationCommands() throws Exception {
         unmarshalExample("notificationCommands.xml", NotificationCommands.class);
     }
-    @Test
     public void testNotifications() throws Exception {
         unmarshal("notifications.xml", Notifications.class);
     }
-    @Test
     public void testExampleNotifications() throws Exception {
         unmarshalExample("notifications.xml", Notifications.class);
     }
-    @Test
     public void testNsclientConfiguration() throws Exception {
         unmarshal("nsclient-config.xml", NsclientConfig.class);
     }
-    @Test
     public void testExampleNsclientConfiguration() throws Exception {
         unmarshalExample("nsclient-config.xml", NsclientConfig.class);
     }
-    @Test
     public void testNsclientDataCollectionConfiguration() throws Exception {
         unmarshal("nsclient-datacollection-config.xml", NsclientDatacollectionConfig.class);
     }
-    @Test
     public void testOpennmsDatasources() throws Exception {
         unmarshal("opennms-datasources.xml", DataSourceConfiguration.class);
     }
-    @Test
     public void testOpennmsServer() throws Exception {
         unmarshal("opennms-server.xml", LocalServer.class);
     }
-    @Test
     public void testExampleOpennmsServer() throws Exception {
         unmarshalExample("opennms-server.xml", LocalServer.class);
     }
-    @Test
     public void testPollOutages() throws Exception {
         unmarshal("poll-outages.xml", Outages.class);
     }
-    @Test
     public void testExamplePollOutages() throws Exception {
         unmarshalExample("poll-outages.xml", Outages.class);
     }
-    @Test
     public void testPollerConfiguration() throws Exception {
         unmarshal("poller-configuration.xml", PollerConfiguration.class);
     }
-    @Test
     public void testExamplePollerConfiguration() throws Exception {
         unmarshalExample("poller-configuration.xml", PollerConfiguration.class);
     }
-    @Test
     public void testExampleHypericPollerConfiguration() throws Exception {
         unmarshalExample("hyperic-integration/poller-configuration.xml", PollerConfiguration.class);
     }
-    @Test
     public void testRtcConfiguration() throws Exception {
         unmarshal("rtc-configuration.xml", RTCConfiguration.class);
     }
-    @Test
     public void testScriptdConfiguration() throws Exception {
         unmarshal("scriptd-configuration.xml", ScriptdConfiguration.class);
     }
-    @Test
     public void testExampleScriptdConfiguration() throws Exception {
         unmarshalExample("scriptd-configuration.xml", ScriptdConfiguration.class);
     }
-    @Test
     public void testExampleScriptdConfigurationWithEventProxy() throws Exception {
         unmarshalExample("scriptd-configuration-with-event-proxy.xml", ScriptdConfiguration.class);
     }
-    @Test
     public void testSiteStatusViews() throws Exception {
         unmarshal("site-status-views.xml", SiteStatusViewConfiguration.class);
     }
-    @Test
     public void testSnmpConfig() throws Exception {
         unmarshal("snmp-config.xml", SnmpConfig.class);
     }
-    @Test
     public void testExampleSnmpConfig() throws Exception {
         unmarshalExample("snmp-config.xml", SnmpConfig.class);
     }
-    @Test
     public void testStatsdConfiguration() throws Exception {
         unmarshal("statsd-configuration.xml", StatisticsDaemonConfiguration.class);
     }
-    @Test
     public void testSurveillanceViews() throws Exception {
         unmarshal("surveillance-views.xml", SurveillanceViewConfiguration.class);
     }
-    @Test
     public void testExampleSurveillanceViews() throws Exception {
         unmarshalExample("surveillance-views.xml", SurveillanceViewConfiguration.class);
     }
-    @Test
     public void testSyslogdConfiguration() throws Exception {
         unmarshal("syslogd-configuration.xml", SyslogdConfiguration.class);
     }
-    @Test
     public void testThreshdConfiguration() throws Exception {
         unmarshal("threshd-configuration.xml", ThreshdConfiguration.class);
     }
-    @Test
     public void testExampleThreshdConfiguration() throws Exception {
         unmarshalExample("threshd-configuration.xml", ThreshdConfiguration.class);
     }
-    @Test
     public void testThresholds() throws Exception {
         unmarshal("thresholds.xml", ThresholdingConfig.class);
     }
-    @Test
     public void testExampleThresholds() throws Exception {
         unmarshalExample("thresholds.xml", ThresholdingConfig.class);
     }
-    @Test
     public void testTl1dConfiguration() throws Exception {
         unmarshal("tl1d-configuration.xml", Tl1dConfiguration.class);
     }
-    @Test
     public void testTranslatorConfiguration() throws Exception {
         unmarshal("translator-configuration.xml", EventTranslatorConfiguration.class);
     }
-    @Test
-    public void testExampleTranslatorConfiguration() throws Exception {
-        unmarshalExample("translator-configuration.xml", EventTranslatorConfiguration.class);
-    }
-    @Test
     public void testExampleHypericTranslatorConfiguration() throws Exception {
         unmarshalExample("hyperic-integration/translator-configuration.xml", EventTranslatorConfiguration.class);
     }
-    @Test
     public void testTrapdonfiguration() throws Exception {
         unmarshal("trapd-configuration.xml", TrapdConfiguration.class);
     }
-    @Test
     public void testUsers() throws Exception {
         unmarshal("users.xml", Userinfo.class);
     }
-    @Test
     public void testVacuumdConfiguration() throws Exception {
         unmarshal("vacuumd-configuration.xml", VacuumdConfiguration.class);
     }
-    @Test
     public void testVulnscandConfiguration() throws Exception {
         unmarshal("vulnscand-configuration.xml", VulnscandConfiguration.class);
     }
-    @Test
+    public void testWebUiColors() throws Exception {
+        unmarshal("webui-colors.xml", CategoryColors.class);
+    }
     public void testXmlrpcdConfiguration() throws Exception {
         unmarshal("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
     }
-    @Test
     public void testExampleXmlrpcdConfiguration() throws Exception {
         unmarshalExample("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
     }
-    @Test
     public void testEventdConfiguration() throws Exception {
         unmarshal("eventd-configuration.xml", Viewinfo.class);
     }
-    @Test
     public void testServiceConfiguration() throws Exception {
         unmarshal("service-configuration.xml", ServiceConfiguration.class);
     }
-    @Test
     public void testViewsDisplay() throws Exception {
         unmarshal("viewsdisplay.xml", Viewinfo.class);
     }
-    @Test
     public void testExampleViewsDisplay() throws Exception {
         unmarshalExample("viewsdisplay.xml", Viewinfo.class);
     }
-    @Test
     public void testExampleTl1dConfiguration() throws Exception {
         unmarshalExample("tl1d-configuration.xml", Tl1dConfiguration.class);
     }
     
-    @Test
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
         File configDir = someConfigFile.getParentFile();
@@ -527,7 +443,6 @@ public class WillItUnmarshalTest {
         }
     }
     
-    @Test
     public void testCheckAllDaemonXmlExampleConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
         File examplesDir = new File(someConfigFile.getParentFile(), "examples");
@@ -569,7 +484,6 @@ public class WillItUnmarshalTest {
         }
     }
     
-    @Test
     public void testAllIncludedEventXml() throws Exception {
         File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
@@ -585,26 +499,26 @@ public class WillItUnmarshalTest {
             try {
                 // Be conservative about what we ship, so don't be lenient
                 LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-                CastorUtils.unmarshal(Events.class, new FileSystemResource(includedEventFile));
+                CastorUtils.unmarshal(Events.class, new FileReader(includedEventFile));
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedEventFile + ": " + t, t);
             }
         }
     }
     
-    private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
+    private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
         return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
     }
 
-    private static <T>T unmarshalExample(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
+    private static <T>T unmarshalExample(String configFile, Class<T> clazz) throws MarshalException, ValidationException, FileNotFoundException {
         return unmarshal(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
     }
 
-    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws MarshalException, ValidationException, IOException {
+    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws MarshalException, ValidationException, FileNotFoundException {
         // Be conservative about what we ship, so don't be lenient
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
-        T config = CastorUtils.unmarshal(clazz, new FileSystemResource(file));
+        T config = CastorUtils.unmarshal(clazz, new FileReader(file));
         
         assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
         testedSet.add(fileName);

@@ -120,10 +120,6 @@ public class MockNode extends MockContainer {
         return MockEventUtil.createNodeDownEvent("Test", this);
     }
     
-    public Event createNewEvent() {
-        return MockEventUtil.createNodeAddedEvent("Test", this);
-    }
-
     public Event createDeleteEvent() {
         return MockEventUtil.createNodeDeletedEvent("Test", this);
     }

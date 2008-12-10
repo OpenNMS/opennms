@@ -656,7 +656,8 @@ public class NoticeFactory extends Object {
             }
             ResultSet rs = stmt.executeQuery();
             
-//            PreparedStatement ps = conn.prepareStatement(select.toString());
+            PreparedStatement ps = conn.prepareStatement(select.toString());
+
             notices = rs2Notices(rs);
 
             rs.close();
@@ -953,9 +954,7 @@ public class NoticeFactory extends Object {
             notice.m_notifyID = ((Integer) element).intValue();
 
             element = rs.getTimestamp("pagetime");
-            if (element != null) {
-                notice.m_timeSent = ((Timestamp) element).getTime();
-            }
+            notice.m_timeSent = ((Timestamp) element).getTime();
 
             element = rs.getTimestamp("respondtime");
             if (element != null) {

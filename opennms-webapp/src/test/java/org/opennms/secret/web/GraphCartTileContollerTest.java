@@ -31,14 +31,11 @@
 //
 package org.opennms.secret.web;
 
-import static org.junit.Assert.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import junit.framework.TestCase;
+
 import org.opennms.secret.dao.DataSourceDao;
 import org.opennms.secret.dao.impl.DataSourceDaoSimple;
 import org.opennms.secret.model.DataSource;
@@ -52,7 +49,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
-public class GraphCartTileContollerTest {
+public class GraphCartTileContollerTest extends TestCase {
 
     private MockHttpSession m_session;
     private MockHttpServletRequest m_request;
@@ -68,9 +65,8 @@ public class GraphCartTileContollerTest {
     private DataSourceService m_dataSourceService;
     
     private DataSource m_testDataSource;
-    
-    @Before
-    public void setUp() throws Exception {
+
+    protected void setUp() throws Exception {
         m_dataSourceDao = new DataSourceDaoSimple();
         m_dataSourceService = new DataSourceServiceImpl();
         ((DataSourceServiceImpl) m_dataSourceService).setDataSourceDao(m_dataSourceDao);
@@ -93,18 +89,11 @@ public class GraphCartTileContollerTest {
         m_request.setSession(m_session);
         m_response = new MockHttpServletResponse();
     }
-    
-    @After
-    public void tearDown() throws Exception {
+
+    protected void tearDown() throws Exception {
     }
     
-    @Test
-    public void testBogus() throws Exception{
-        //so that JUnit won't complain
-    }
-    
-    @Ignore
-    public void testCreateGraph() throws Exception {    
+    public void FIXMEtestCreateGraph() throws Exception {    
         callController();
         assertGraph();
         GraphDefinition firstGraphDef = m_graphDef;
@@ -157,18 +146,19 @@ public class GraphCartTileContollerTest {
     }
     */
     
-    @Ignore
-    public void testAddParameter() throws Exception {
+    public void testBogus() {
+        // Do nothing.  This is here so JUnit doesn't complain.
+    }
+    
+    public void FIXMEtestAddParameter() throws Exception {
         addDatasource(m_testDataSource, true);
     }
     
-    @Ignore
-    public void testAddBogusParameter() throws Exception {
+    public void FIXMEtestAddBogusParameter() throws Exception {
         addDatasource(new DataSource("bogus", "bogus", "bogus", "bogus"), false);
     }
     
-    @Ignore
-    public void testRemoveParameter() throws Exception {
+    public void FIXMEtestRemoveParameter() throws Exception {
         GraphDataElement dataElement = addDatasource(m_testDataSource, true);
         
         resetRequestResponse();
@@ -176,8 +166,7 @@ public class GraphCartTileContollerTest {
         removeDatasource(dataElement, true);
     }
     
-    @Ignore
-    public void testRemoveBogusParameter() throws Exception {
+    public void FIXMEtestRemoveBogusParameter() throws Exception {
         addDatasource(m_testDataSource, true);
         
         resetRequestResponse();
@@ -188,8 +177,7 @@ public class GraphCartTileContollerTest {
         removeDatasource(dataElement, false);
     }
     
-    @Ignore
-    public void testClearParameter() throws Exception {
+    public void FIXMEtestClearParameter() throws Exception {
         addDatasource(m_testDataSource, true);
         
         resetRequestResponse();
