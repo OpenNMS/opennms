@@ -81,7 +81,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         SocketConnector connector = new NioSocketConnector();
         
         future = new DefaultDetectFuture(this);
-
+        
         // Set connect timeout.
         connector.setConnectTimeoutMillis( getTimeout() );
         connector.setHandler( createDetectorHandler(future) );

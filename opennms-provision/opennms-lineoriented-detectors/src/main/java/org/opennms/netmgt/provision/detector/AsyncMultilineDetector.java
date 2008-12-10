@@ -31,6 +31,7 @@
 package org.opennms.netmgt.provision.detector;
 
 import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
  * @author Donald Desloge
@@ -49,5 +50,29 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
 
     @Override
     abstract protected void onInit();
+    
+    protected ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
+        return new ResponseValidator<MultilineOrientedResponse>() {
+            
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.expectedCodeRange(beginRange, endRange);
+            }
+            
+        };
+    }
+    
+    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
+        return new ResponseValidator<MultilineOrientedResponse>(){
+
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.startsWith(pattern);
+            }
+            
+        };
+    }
+    
+    public LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
+    }
 
 }

@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
 public class LineConversation {

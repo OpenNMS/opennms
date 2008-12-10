@@ -73,8 +73,6 @@ public class SimpleServerHandler extends IoHandlerAdapter {
             return;
         }
         
-//        System.out.printf("Writing: %s \n", m_conversation.getResponse(str.trim()));
-//        session.write(m_conversation.getResponse(str.trim()));
     }
     
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {

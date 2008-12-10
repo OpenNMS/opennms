@@ -8,8 +8,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications;
- * Created 10/16/2008
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,26 +33,91 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.SimpleServer;
+import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
+/**
+ * @author Donald Desloge
+ *
+ */
+public class LineDecoderTest {
+    
+    public static class TestServer extends SimpleServer{
+        
+        @Override
+        protected void sendBanner(OutputStream out) throws IOException {
+            String[] tokens = getBanner().split("");
+            
+            for(int i = 0; i < tokens.length; i++) {
+                String str = tokens[i];
+                out.write(str.getBytes());
+                out.flush();
+                
+            }
+            out.write("\r\n".getBytes());
+            
+        }
+        
+        @Override
+        protected RequestHandler errorString(final String error) {
+            return new RequestHandler() {
 
-public class Pop3DetectorTest {
-    private SimpleServer m_server;
-    private Pop3Detector m_detector;
+                public void doRequest(OutputStream out) throws IOException {
+                    out.write(String.format("%s", error).getBytes());
+                    
+                }
+                
+            };
+        }
+        
+        @Override
+        protected RequestHandler shutdownServer(final String response) {
+            return new RequestHandler() {
+                
+                public void doRequest(OutputStream out) throws IOException {
+                    out.write(String.format("%s\r\n", response).getBytes());
+                    stopServer();
+                }
+                
+            };
+        }
+    }
+    
+    public static class TestDetector extends AsyncLineOrientedDetector{
+
+        public TestDetector() {
+            super(110, 5000, 1);
+           
+        }
+
+        @Override
+        protected void onInit() {
+            expectBanner(startsWith("+OK"));
+            send(request("QUIT"), startsWith("+OK"));
+        }
+        
+    }
+    
+    private TestServer m_server;
+    private TestDetector m_detector;
+    private String m_notAServerResponse = "NOT A SERVER";
     
     @Before
     public void setUp() throws Exception {
-        m_server = new SimpleServer() {
+        m_server = new TestServer() {
             
             public void onInit() {
                 setBanner("+OK");
-                addResponseHandler(startsWith("QUIT"), shutdownServer("+OK"));
-                //setExpectedClose("QUIT", "+OK");
+                addResponseHandler(contains("QUIT"), shutdownServer("+OK"));
             }
         };
         m_server.init();
@@ -76,6 +139,8 @@ public class Pop3DetectorTest {
         assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
+    
+    @Ignore
     @Test
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
@@ -86,6 +151,7 @@ public class Pop3DetectorTest {
         
     }
     
+    @Ignore
     @Test
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
@@ -95,6 +161,7 @@ public class Pop3DetectorTest {
         
     }
     
+    @Ignore
     @Test
     public void testDetectorFailWrongPort() throws Exception{
         
@@ -103,10 +170,10 @@ public class Pop3DetectorTest {
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
-    private Pop3Detector createDetector(int port) {
-        Pop3Detector detector = new Pop3Detector();
-        detector.setServiceName("POP3");
-        detector.setTimeout(500);
+    private TestDetector createDetector(int port) {
+        TestDetector detector = new TestDetector();
+        detector.setServiceName("TEST");
+        detector.setTimeout(1000);
         detector.setPort(port);
         detector.init();
         return detector;

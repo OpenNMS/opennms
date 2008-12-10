@@ -38,6 +38,7 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
@@ -84,7 +85,7 @@ public class SmtpDetectorTest {
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
         
-        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
@@ -104,7 +105,7 @@ public class SmtpDetectorTest {
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
         
-        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
@@ -123,41 +124,40 @@ public class SmtpDetectorTest {
         tempServer.init();
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
+        m_detector.setIdleTime(1000);
         
-        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testDetectorFailWrongTypeOfBanner() throws Exception {
-        SimpleServer tempServer = new SimpleServer() {
-            
-            public void onInit() {
-                setBanner("Bogus");
-            }
-        };
         
-        tempServer.init();
-        tempServer.startServer();
-        m_detector.setPort(tempServer.getLocalPort());
+        m_server.setBanner("bogus");
+        m_detector.setPort(m_server.getLocalPort());
         
-        assertFalse(m_detector.isServiceDetected(tempServer.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
-    public void testDetectorFailServerStopped() throws IOException {
+    public void testDetectorFailServerStopped() throws IOException, InterruptedException {
         m_server.stopServer();
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
-    public void testDetectorFailWrongPort() {
+    public void testDetectorFailWrongPort() throws InterruptedException {
         m_detector.setPort(1);
-        assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
-    public void testDetectorSucess() {
-        assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+    public void testDetectorSucess() throws InterruptedException {
+        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
+    }
+    
+    private boolean doCheck(DetectFuture future) throws InterruptedException {
+        future.await();
+        return future.isServiceDetected();
     }
     
     private SimpleServer getServer() {
