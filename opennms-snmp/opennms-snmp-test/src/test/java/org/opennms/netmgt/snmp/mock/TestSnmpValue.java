@@ -168,6 +168,46 @@ public class TestSnmpValue implements SnmpValue {
         }
     }
     
+    static enum UnitOfTime {
+        DAYS(4), HOURS(3), MINUTES(2), SECONDS(1), MILLIS(0);
+        
+        private int m_index;
+        
+        private UnitOfTime(int index) {
+            m_index = index;
+        }
+        
+        private static final long[] s_millisPerUnit = {
+            1L,                         // millis
+            1000L,                      // seconds
+            1000L * 60L,                // minutes
+            1000L * 60L * 60L,          // hours
+            1000L * 60L * 60L * 24L     // days
+        };
+        
+        private static final String[] s_unitName = {
+            "ms",   // millis
+            "s",    // seconds
+            "m",    // minutes
+            "h",    // hours
+            "d"     // days
+        };
+        
+        public long wholeUnits(long millis) {
+            return millis / s_millisPerUnit[m_index];
+        }
+        
+        public long remainingMillis(long millis) {
+            return millis % s_millisPerUnit[m_index];
+        }
+        
+        public String unit() {
+            return s_unitName[m_index];
+        }
+        
+        
+    }
+    
     public static class TimeticksSnmpValue extends NumberSnmpValue {
 
         // Format of string is '(numTicks) HH:mm:ss.hh'
@@ -176,9 +216,30 @@ public class TestSnmpValue implements SnmpValue {
         }
 
         public String getNumberString() {
-            String str = toString();
+            String str = getValue();
             int end = str.indexOf(')');
-            return str.substring(1, end);
+            return (end < 0 ? str : str.substring(1, end));
+        }
+        
+        public String toString() {
+            long millis = toLong()*10L;
+            
+            StringBuilder buf = new StringBuilder();
+
+            boolean first = true;
+            for(UnitOfTime unit : UnitOfTime.values()) {
+
+                if (first) {
+                    first = false; 
+                 } else {
+                     buf.append(' ');
+                 }
+
+                buf.append(unit.wholeUnits(millis)).append(unit.unit());
+                millis = unit.remainingMillis(millis);
+            }
+            
+            return buf.toString();
         }
 
     }
@@ -264,6 +325,8 @@ public class TestSnmpValue implements SnmpValue {
     public String toDisplayString() { return toString(); }
     
     public String toString() { return m_value; }
+    
+    public String getValue() { return m_value; }
 
     public boolean equals(Object obj) {
         if (obj instanceof TestSnmpValue ) {

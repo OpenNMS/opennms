@@ -346,6 +346,16 @@ public class EventConstants {
     public final static String ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/absoluteChangeExceeded";
 
     /**
+     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI
+     */
+    public final static String REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeExceeded";
+    
+    /**
+     * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI
+     */
+    public final static String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
+    
+    /**
      * The interface index changed event
      */
     public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
@@ -808,6 +818,12 @@ public class EventConstants {
     public final static String PARM_PASSIVE_SERVICE_NAME = "passiveServiceName";
     public final static String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
     public final static String PARM_PASSIVE_REASON_CODE = "passiveReasonCode";
+
+    /**
+     * Parm used to importer event
+     */
+    public static final String PARM_FOREIGN_SOURCE = "foreignSource";
+
     
     /**
      * Parms used for configureSnmp events
@@ -883,6 +899,7 @@ public class EventConstants {
      * active
      */
     static final int STATE_OFF = 0;
+
 
 
     /**

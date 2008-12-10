@@ -28,5 +28,10 @@
       <artifactId>opennms-spring</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+    </dependency>
+
   </dependencies>
 </project>

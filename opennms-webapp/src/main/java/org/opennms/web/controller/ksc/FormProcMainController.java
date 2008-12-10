@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS scripting issues. - ranger@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
 //              for tracking editing state in the user's session.
 //              Refactor handleRequestInternal(). - dj@opennms.org
@@ -43,8 +44,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.KscReportEditor;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,38 +59,40 @@ public class FormProcMainController extends AbstractController implements Initia
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String action = request.getParameter("report_action");
-        
+        String action = WebSecurityUtils.sanitizeString(request.getParameter("report_action"));
+
         if (action == null) {
             throw new MissingParameterException("report_action");
         }
 
         KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
-        
-        if (action.equals("Customize")) {
-            editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
-            return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (action.equals("CreateFrom")) {
-            editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
-            return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (action.equals("Delete")) {
-            getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
-            return new ModelAndView("redirect:/KSC/index.htm");
-        } else if (action.equals("Create")) {
-            editor.loadNewWorkingReport();
-            return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (action.equals("View")) {
+
+        if (action.equals("View")) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
             modelAndView.addObject("report", getReportIndex(request));
             modelAndView.addObject("type", "custom");
             return modelAndView;
-        } else {
-            throw new ServletException ("Invalid Parameter contents for report_action: " + action);
+          
+        } else if (!request.isUserInRole(Authentication.READONLY_ROLE) && (request.getRemoteUser() != null)) {
+            if (action.equals("Customize")) {
+                editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
+                return new ModelAndView("redirect:/KSC/customReport.htm");
+            } else if (action.equals("CreateFrom")) {
+                editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
+                return new ModelAndView("redirect:/KSC/customReport.htm");
+            } else if (action.equals("Delete")) {
+                getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
+                return new ModelAndView("redirect:/KSC/index.htm");
+            } else if (action.equals("Create")) {
+                editor.loadNewWorkingReport();
+               return new ModelAndView("redirect:/KSC/customReport.htm");
+            }
         }
+        throw new ServletException ("Invalid Parameter contents for report_action: " + action);
     }
 
     private int getReportIndex(HttpServletRequest request) {
-        String report = request.getParameter("report");
+        String report = WebSecurityUtils.sanitizeString(request.getParameter("report"));
         if (report == null) {
             throw new MissingParameterException("report");
         } 

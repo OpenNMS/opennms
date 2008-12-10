@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Oct 22: Update to use new getResourceById/loadResourceById methods. - dj@opennms.org
 // 2007 Sep 09: Catch DataAccessException in getResourceById and throw as a ObjectRetrievalFailureException with the resource ID. - dj@opennms.org
 // 2007 May 12: Clean up imports. - dj@opennms.org
 // 2007 Apr 05: Add public constant for the strings.properties file name. - dj@opennms.org
@@ -54,9 +55,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.IntSet;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.StorageStrategy;
@@ -256,10 +255,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     }
     
     public OnmsResource getResourceById(String id) {
-    	return getResourceById(id, false);
+        try {
+            return loadResourceById(id);
+        } catch (ObjectRetrievalFailureException e) {
+            return null;
+        }
     }
 
-    public OnmsResource getResourceById(String id, boolean ignoreErrors) {
+    public OnmsResource loadResourceById(String id) {
         OnmsResource resource = null;
 
         Pattern p = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
@@ -277,12 +280,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                     resource = getChildResource(resource, resourceTypeName, resourceName);
                 }
             } catch (DataAccessException e) {
-            	String message = "Could not get resource for resource ID '" + id + "'";
-            	if (ignoreErrors) {
-            		log().warn(message, e);
-            	} else {
-            		throw new ObjectRetrievalFailureException(OnmsResource.class, id, message, e);
-            	}
+                throw new ObjectRetrievalFailureException(OnmsResource.class, id, "Could not get resource for resource ID '" + id + "'", e);
             }
             
             m.appendReplacement(sb, "");
@@ -561,9 +559,4 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resources.addAll(findDomainResources());
         return resources;
     }
-
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

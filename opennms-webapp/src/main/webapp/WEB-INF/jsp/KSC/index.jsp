@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -154,11 +154,18 @@
           }
       }
   }
+
+  function submitReadOnlyView()
+  {
+      if (validateReport()) {
+          document.choose_report.submit();
+      }
+  }
+  
 </script>
 
 <div class="TwoColLeft">
  
-<c:if test="${showReportList}">
   <h3>Customized Reports</h3>
 
   <div class="boxWrapper">
@@ -172,17 +179,24 @@
                   </select>
 
  <p>
+                  <c:choose>
+                    <c:when test="${kscReadOnly == false }">
+                      <input type="radio" name="report_action" value="View" checked /> View <br>
+                      <input type="radio" name="report_action" value="Customize" /> Customize <br/>
+                      <input type="radio" name="report_action" value="Create" /> Create New <br/>
+                      <input type="radio" name="report_action" value="CreateFrom" /> Create New From Existing <br/>
+                      <input type="radio" name="report_action" value="Delete" /> Delete <br/>
+                      <input type="button" value="Submit" onclick="submitReportForm()" alt="Initiates Action for Custom Report"/>
+                    </c:when>
+                    <c:otherwise>
+                      <input type="hidden" name="report_action" value="View">
+                      <input type="button" value="Submit" onclick="submitReadOnlyView()" alt="Initiates Action for Custom Report"/>
+                    </c:otherwise>
+                  </c:choose>
 
-                  <input type="radio" name="report_action" value="View" checked /> View <br>
-                  <input type="radio" name="report_action" value="Customize" /> Customize <br/>
-                  <input type="radio" name="report_action" value="Create" /> Create New <br/>
-                  <input type="radio" name="report_action" value="CreateFrom" /> Create New From Existing <br/>
-                  <input type="radio" name="report_action" value="Delete" /> Delete <br/>
-                  <input type="button" value="Submit" onclick="submitReportForm()" alt="Initiates Action for Custom Report"/>
  </p>
       </form>
   </div>
-</c:if>
 
 <h3>Node SNMP Interface Reports</h3>
 <div class="boxWrapper">
@@ -231,18 +245,35 @@
   <div class="boxWrapper">
     <p>
       <b>Customized Reports</b>
-      allows users to create, view, and edit customized reports containing
-      any number of prefabricated reports from any available graphable
-      resource.
+      <c:choose>
+        <c:when test="${kscReadOnly == false }">
+          allows users to create, view, and edit customized reports containing
+          any number of prefabricated reports from any available graphable
+          resource.
+        </c:when>
+        <c:otherwise>
+          allows users to view customized reports containing any number of
+          prefabricated reports from any available graphable resource.
+        </c:otherwise>
+      </c:choose>
     </p>
 
     <p>
       <b>Node and Domain Reports</b>
-      allows users to view automatically generated reports for any node or
-      domain.  These reports can be further edited and saved just like other
-      customized reports.  These reports list only the SNMP interfaces on
-      the selected node or domain, but they can be customized to include
-      any graphable resource.
+      <c:choose>
+        <c:when test="${kscReadOnly == false }">
+          allows users to view automatically generated reports for any node or
+          domain.  These reports can be further edited and saved just like other
+          customized reports.  These reports list only the SNMP interfaces on
+          the selected node or domain, but they can be customized to include
+          any graphable resource.
+        </c:when>
+        <c:otherwise>
+          allows users to view automatically generated reports for any node or
+          domain.  
+        </c:otherwise>
+      </c:choose>
+
     </p>
   </div>
 </div>

@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
  * 2007 Apr 05: Move properties loading code into ResourceTypeUtils, move
  *              ifSpeed loading to InterfaceSnmpResourceType, reorganize
  *              to use OnmsAttributes to get this data, and use RrdDao
@@ -99,7 +100,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         AdhocGraphType t = m_graphDao.findAdhocByName("performance");
 
-        OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        OnmsResource r = m_resourceDao.loadResourceById(resourceId);
         
         String command = createAdHocCommand(t,
                                   r,
@@ -157,7 +158,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                                + "\" is not valid");
         }
         
-        OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        OnmsResource r = m_resourceDao.loadResourceById(resourceId);
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         

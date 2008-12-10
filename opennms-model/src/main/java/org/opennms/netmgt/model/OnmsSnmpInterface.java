@@ -114,7 +114,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
 
     public OnmsSnmpInterface(String ipaddr, Integer ifIndex, OnmsNode node) {
-        m_ipAddr = ipaddr;
+        m_ipAddr = ipaddr == null ? "0.0.0.0" : ipaddr;
         m_ifIndex = ifIndex;
         m_node = node;
         node.getSnmpInterfaces().add(this);

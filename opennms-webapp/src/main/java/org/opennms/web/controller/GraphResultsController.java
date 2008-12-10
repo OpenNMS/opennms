@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues - ranger@opennms.org
 // 2007 Apr 05: Implement InitializingBean, make m_periods static, and eliminate
 //              RrdStrategy (the needed data is in GraphResults). - dj@opennms.org
 //
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.svclayer.GraphResultsService;
@@ -71,24 +73,24 @@ public class GraphResultsController extends AbstractController implements Initia
             }
         }
 
-        String[] resourceIds = request.getParameterValues("resourceId");
-        String[] reports = request.getParameterValues("reports");
+        String[] resourceIds = WebSecurityUtils.sanitizeString(request.getParameterValues("resourceId"));
+        String[] reports = WebSecurityUtils.sanitizeString(request.getParameterValues("reports"));
         
         // see if the start and end time were explicitly set as params
-        String start = request.getParameter("start");
-        String end = request.getParameter("end");
+        String start = WebSecurityUtils.sanitizeString(request.getParameter("start"));
+        String end = WebSecurityUtils.sanitizeString(request.getParameter("end"));
 
-        String relativeTime = request.getParameter("relativetime");
+        String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
         
-        String startMonth = request.getParameter("startMonth");
-        String startDate = request.getParameter("startDate");
-        String startYear = request.getParameter("startYear");
-        String startHour = request.getParameter("startHour");
+        String startMonth = WebSecurityUtils.sanitizeString(request.getParameter("startMonth"));
+        String startDate = WebSecurityUtils.sanitizeString(request.getParameter("startDate"));
+        String startYear = WebSecurityUtils.sanitizeString(request.getParameter("startYear"));
+        String startHour = WebSecurityUtils.sanitizeString(request.getParameter("startHour"));
 
-        String endMonth = request.getParameter("endMonth");
-        String endDate = request.getParameter("endDate");
-        String endYear = request.getParameter("endYear");
-        String endHour = request.getParameter("endHour");
+        String endMonth = WebSecurityUtils.sanitizeString(request.getParameter("endMonth"));
+        String endDate = WebSecurityUtils.sanitizeString(request.getParameter("endDate"));
+        String endYear = WebSecurityUtils.sanitizeString(request.getParameter("endYear"));
+        String endHour = WebSecurityUtils.sanitizeString(request.getParameter("endHour"));
         
         long startLong;
         long endLong;
@@ -175,7 +177,11 @@ public class GraphResultsController extends AbstractController implements Initia
                                               reports, startLong,
                                               endLong, relativeTime);
 
-        return new ModelAndView("/graph/results", "results", model);
+        ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
+
+        modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
+        
+        return modelAndView;
     }
 
     public GraphResultsService getGraphResultsService() {

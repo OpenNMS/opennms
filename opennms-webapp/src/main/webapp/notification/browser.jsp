@@ -53,8 +53,7 @@
 		java.sql.SQLException,
 		org.opennms.web.event.*,
 		org.opennms.web.event.filter.*,
-		org.opennms.web.XssRequestWrapper,
-		org.opennms.web.SafeHtmlUtil
+		org.opennms.web.WebSecurityUtils
 	"
 %>
 
@@ -79,11 +78,9 @@
 %>
 
 <%
-	XssRequestWrapper req = new XssRequestWrapper(request);
-
     //required attributes
-    Notification[] notices = (Notification[])req.getAttribute( "notices" );
-    NoticeQueryParms parms = (NoticeQueryParms)req.getAttribute( "parms" );
+    Notification[] notices = (Notification[])request.getAttribute( "notices" );
+    NoticeQueryParms parms = (NoticeQueryParms)request.getAttribute( "parms" );
 
     if( notices == null || parms == null ) {
         throw new ServletException( "Missing either the notices or parms request attribute." );
@@ -214,16 +211,16 @@
     Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
 		<span class="filter"><% NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); %>
-				<%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
+				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove all]</a>
   </p>
 <% } %>
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
-          <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
-          <%=org.opennms.web.Util.makeHiddenTags(req)%>        
-	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+          <%=org.opennms.web.Util.makeHiddenTags(request)%>        
+	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <p><input TYPE="reset" />
 						<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
 						<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
@@ -251,7 +248,7 @@
         %>
         <tr class="<%=eventSeverity%>">
           <td class="divider noWrap" rowspan="2"><% if((parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) && 
-		!(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
           <% } %> 
 						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
@@ -319,7 +316,7 @@
       </table>
       <p><%=notices.length%> notices &nbsp;
 
-        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input TYPE="reset" />
             <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
             <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>

@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<thresholding-config>
-        <group name="default-snmp"
-                rrdRepository = "@install.share.dir@/rrd/snmp/">
-                <threshold type="high" ds-name="avgBusy5"  ds-type="node" value="90" rearm="50" trigger="3"/>
-                <threshold type="low" ds-name="freeMem"  ds-type="node" value="1024" rearm="1000000" trigger="3"/>
-        </group>
-
-</thresholding-config>

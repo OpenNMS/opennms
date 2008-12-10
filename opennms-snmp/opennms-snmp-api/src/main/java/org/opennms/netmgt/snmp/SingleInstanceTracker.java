@@ -44,6 +44,10 @@ public class SingleInstanceTracker extends CollectionTracker {
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst) {
         this(base, inst, null);
     }
+    
+    public SingleInstanceTracker(String baseOid, String instId) {
+        this(SnmpObjId.get(baseOid), new SnmpInstId(instId));
+    }
 
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst, CollectionTracker parent) {
         super(parent);

@@ -100,10 +100,6 @@ public class HttpCollector implements ServiceCollector {
     //copy and the key won't require the service name as  part of the key.
     private final HashMap<Integer, String> m_scheduledNodes = new HashMap<Integer, String>();
     
-    //  Group name is arbitrary (there is no such thing as a "group" in the http collection config),
-    //Similarly, collection is always at the node level
-    private AttributeGroupType m_groupType=new AttributeGroupType("httpcollection","all");
-    
     private NumberFormat parser = null;
     
     private NumberFormat rrdFormatter =  null;
@@ -150,7 +146,6 @@ public class HttpCollector implements ServiceCollector {
         HttpCollectionSet(CollectionAgent agent, Map<String, String> parameters) {
             m_agent = agent;
             m_parameters = parameters;
-            m_collectionResource=new HttpCollectionResource(agent);
             m_status=ServiceCollector.COLLECTION_FAILED;
         }
         
@@ -164,6 +159,7 @@ public class HttpCollector implements ServiceCollector {
             List<Uri> uriDefs = collection.getUris().getUriCollection();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
+                m_collectionResource=new HttpCollectionResource(m_agent, uriDef);
                 try {
                     doCollection(this);
                 } catch (HttpCollectorException e) {
@@ -262,11 +258,19 @@ public class HttpCollector implements ServiceCollector {
     class HttpCollectionAttribute extends AbstractCollectionAttribute implements AttributeDefinition {
         String m_alias;
         String m_type;
-        Number m_value;
+        Object m_value;
         HttpCollectionResource m_resource;
         HttpCollectionAttributeType m_attribType;
         
         HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) { 
+            m_resource=resource;
+            m_attribType=attribType;
+            m_alias = alias;
+            m_type= type;
+            m_value = value;
+        }
+
+        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, String value) { 
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;
@@ -282,12 +286,23 @@ public class HttpCollector implements ServiceCollector {
             return m_type;
         }
         
-        public Number getValue() {
+        public Object getValue() {
             return m_value;
         }
         
         public String getNumericValue() {
-                return getValue().toString();
+            Object val = getValue();
+            if (val instanceof Number) {
+                return val.toString();
+            } else {
+                try {
+                    return Double.valueOf(val.toString()).toString();
+                } catch (NumberFormatException nfe) { /* Fall through */ }
+            }
+            if (log().isDebugEnabled()) {
+                log().debug("Value for attribute " + this + " does not appear to be a number, skipping");
+            }
+            return null;
         }
              
         public String getStringValue() {
@@ -295,7 +310,11 @@ public class HttpCollector implements ServiceCollector {
         }
         
         public String getValueAsString() {
-            return rrdFormatter.format(m_value);
+            if (m_value instanceof Number) {
+                return rrdFormatter.format(m_value);
+            } else {
+                return m_value.toString();
+            }
         }
 
         @Override
@@ -338,30 +357,63 @@ public class HttpCollector implements ServiceCollector {
     }
     
     private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet) {
-        log().debug("processResponse: ");
+        log().debug("processResponse:");
+        log().debug("responseBody = " + responseBodyAsString);
+        log().debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
-        Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches());
+        int flags = 0;
+        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence())
+            flags |= Pattern.CANON_EQ;
+        if (collectionSet.getUriDef().getUrl().getCaseInsensitive())
+            flags |= Pattern.CASE_INSENSITIVE;
+        if (collectionSet.getUriDef().getUrl().getComments())
+            flags |= Pattern.COMMENTS;
+        if (collectionSet.getUriDef().getUrl().getDotall())
+            flags |= Pattern.DOTALL;
+        if (collectionSet.getUriDef().getUrl().getLiteral())
+            flags |= Pattern.LITERAL;
+        if (collectionSet.getUriDef().getUrl().getMultiline())
+            flags |= Pattern.MULTILINE;
+        if (collectionSet.getUriDef().getUrl().getUnicodeCase())
+            flags |= Pattern.UNICODE_CASE;
+        if (collectionSet.getUriDef().getUrl().getUnixLines())
+            flags |= Pattern.UNIX_LINES;
+        log().debug("flags = " + flags);
+        Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches(), flags);
         Matcher m = p.matcher(responseBodyAsString);
         
         final boolean matches = m.matches();
         if (matches) {
             log().debug("processResponse: found matching attributes: "+matches);
             List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
+            AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
             
             for (Attrib attribDef : attribDefs) {
-                try {
-                    Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
-                    HttpCollectionAttribute bute = 
+                if (! attribDef.getType().matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
+                    try {
+                        Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
+                        HttpCollectionAttribute bute = 
+                            new HttpCollectionAttribute(
+                                                        collectionSet.getResource(),
+                                                        new HttpCollectionAttributeType(attribDef, groupType), 
+                                                        attribDef.getAlias(),
+                                                        attribDef.getType(), 
+                                                        num);
+                        log().debug("processResponse: adding found numeric attribute: "+bute);
+                        butes.add(bute);
+                    } catch (ParseException e) {
+                        log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched "+m.group(attribDef.getMatchGroup())+" instead.");
+                    }
+                } else {
+                    HttpCollectionAttribute bute =
                         new HttpCollectionAttribute(
                                                     collectionSet.getResource(),
-                                                    new HttpCollectionAttributeType(attribDef, m_groupType), 
+                                                    new HttpCollectionAttributeType(attribDef, groupType),
                                                     attribDef.getAlias(),
-                                                    attribDef.getType(), 
-                                                    num);
-                    log().debug("processResponse: adding found attribute: "+bute);
+                                                    attribDef.getType(),
+                                                    m.group(attribDef.getMatchGroup()));
+                    log().debug("processResponse: adding found string attribute: " + bute);
                     butes.add(bute);
-                } catch (ParseException e) {
-                    log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched "+m.group(attribDef.getMatchGroup())+" instead.");
                 }
             }
         } else {
@@ -634,9 +686,9 @@ public class HttpCollector implements ServiceCollector {
         CollectionAgent m_agent;
         AttributeGroup m_attribGroup;
         
-        HttpCollectionResource(CollectionAgent agent) {
+        HttpCollectionResource(CollectionAgent agent, Uri uriDef) {
             m_agent=agent;
-            m_attribGroup=new AttributeGroup(this, m_groupType);
+            m_attribGroup=new AttributeGroup(this, new AttributeGroupType(uriDef.getName(), "all"));
         }
         
         public void storeResults(List<HttpCollectionAttribute> results) {

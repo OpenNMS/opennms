@@ -55,10 +55,10 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -362,9 +362,9 @@ public class NotifdTest extends NotificationsTestCase {
             Map<String, String> resolutionMap = new HashMap<String, String>(originalMap);
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
             resolutionMap.put(NotificationManager.PARAM_TEXT_MSG, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_TEXT_MSG));
+            resolutionMap.put(NotificationManager.PARAM_NUM_MSG, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_NUM_MSG));
            
-            
-            Map rebuiltMap = m_notifd.getBroadcastEventProcessor().rebuildParameterMap(notifId.intValue(), "RESOLVED: ");
+            Map<String, String> rebuiltMap = m_notifd.getBroadcastEventProcessor().rebuildParameterMap(notifId.intValue(), "RESOLVED: ", m_notifd.getConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
             
             assertEquals(resolutionMap, rebuiltMap);
             

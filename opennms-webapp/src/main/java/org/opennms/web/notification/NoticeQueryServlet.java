@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -52,8 +53,8 @@ import org.opennms.web.WebSecurityUtils;
  * A servlet that handles querying the notifications table and and then forwards
  * the query's result to a JSP for display.
  * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class NoticeQueryServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -75,7 +76,7 @@ public class NoticeQueryServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // handle the style sort parameter
-        String sortStyleString = request.getParameter("sortby");
+        String sortStyleString = WebSecurityUtils.sanitizeString(request.getParameter("sortby"));
         NoticeFactory.SortStyle sortStyle = NoticeFactory.SortStyle.ID;
         if (sortStyleString != null) {
             Object temp = NoticeUtil.getSortStyle(sortStyleString);
@@ -84,8 +85,8 @@ public class NoticeQueryServlet extends HttpServlet {
             }
         }
 
-        // handle the acknowledgement type parameter
-        String ackTypeString = request.getParameter("acktype");
+        // handle the acknowledgment type parameter
+        String ackTypeString = WebSecurityUtils.sanitizeString(request.getParameter("acktype"));
         NoticeFactory.AcknowledgeType ackType = NoticeFactory.AcknowledgeType.UNACKNOWLEDGED;
         if (ackTypeString != null) {
             Object temp = NoticeUtil.getAcknowledgeType(ackTypeString);
@@ -99,7 +100,7 @@ public class NoticeQueryServlet extends HttpServlet {
         List<NoticeFactory.Filter> filterArray = new ArrayList<NoticeFactory.Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
-                NoticeFactory.Filter filter = NoticeUtil.getFilter(filterStrings[i]);
+                NoticeFactory.Filter filter = NoticeUtil.getFilter(WebSecurityUtils.sanitizeString(filterStrings[i]));
                 if (filter != null) {
                     filterArray.add(filter);
                 }

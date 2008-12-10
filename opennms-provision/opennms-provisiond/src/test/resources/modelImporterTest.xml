@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+
+  <tx:annotation-driven />
+
+  <bean id="transactionAwareEventForwarder" class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+  
+  <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService">
+    <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
+    <property name="distPollerDao" ref="distPollerDao" />
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="serviceTypeDao" ref="serviceTypeDao" />
+    <property name="categoryDao" ref="categoryDao" />
+  </bean>
+
+  <bean id="importer" class="org.opennms.netmgt.provision.service.BaseProvisioner">
+    <property name="provisionService" ref="provisionService" />
+  </bean>
+
+</beans>

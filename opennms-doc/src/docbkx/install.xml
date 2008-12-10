@@ -1,61 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
-<!ENTITY __copyright SYSTEM "common/copyright.xml">
-<!ENTITY __legalnotice SYSTEM "common/legalnotice.xml">
-<!ENTITY __preface SYSTEM "common/preface.xml">
-<!ENTITY __chapter1__dwwdzyh8 SYSTEM "install/chapter1.xml">
-<!ENTITY __chapter2__dwwe0ple SYSTEM "install/chapter2.xml">
-<!ENTITY __chapter3__dx0bh6rf SYSTEM "install/chapter3.xml">
-<!ENTITY __chapter4 SYSTEM "install/chapter4.xml">
-<!ENTITY __chapter5 SYSTEM "install/chapter5.xml">
-<!ENTITY __chapter6 SYSTEM "install/chapter6.xml">
-]>
-<book>
-  <title><trademark class="registered">OpenNMS</trademark> Installation
-  Guide</title>
 
-  <bookinfo>
-    <date>$Date$</date>
+<book version="5.0" xml:id="opennms-installguide" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
 
-    <subtitle>Installing the OpenNMS Network Management Application</subtitle>
+	<title><trademark class="registered">OpenNMS</trademark> Installation Guide</title>
 
-    <edition>Version @product.version@-@product.release@, $Version$</edition>
+	<bookinfo>
+		<subtitle>Getting from Point A to Point Woot!</subtitle>
 
-    <authorgroup>
-      <corpauthor>OpenNMS Development Team</corpauthor>
+		<authorgroup>
+			<corpauthor>OpenNMS Development Team</corpauthor>
 
-      <author>
-        <firstname>Tarus</firstname>
-        <surname>Balog</surname>
+			<author>
+				<firstname>Tarus</firstname>
+				<surname>Balog</surname>
 
-        <email>tarus@opennms.org</email>
-      </author>
+				<email>tarus@opennms.org</email>
+			</author>
 
-      <author>
-        <firstname>DJ</firstname>
-        <surname>Gregor</surname>
+			<author>
+				<firstname>DJ</firstname>
+				<surname>Gregor</surname>
 
-        <email>dj@opennms.org</email>
-      </author>
-    </authorgroup>
+				<email>dj@opennms.org</email>
+			</author>
 
-    
-	&__copyright;
-	&__legalnotice;
-  </bookinfo>
+			<author>
+				<firstname>Benjamin</firstname>
+				<surname>Reed</surname>
 
-  &__preface;
+				<email>ranger@opennms.org</email>
+			</author>
+		</authorgroup>
 
-  &__chapter1__dwwdzyh8;
+		<xi:include href="common/copyright.xml" />
+		<xi:include href="common/legalnotice.xml" />
 
-  &__chapter2__dwwe0ple;
+	</bookinfo>
 
-  &__chapter3__dx0bh6rf;
+	<xi:include href="common/preface.xml" />
+	<xi:include href="install/overview.xml" />
+	<xi:include href="install/preparing-for-install.xml" />
+	<xi:include href="install/installing.xml" />
+	<xi:include href="install/getting-started.xml" />
+	<xi:include href="install/performance-tuning.xml" />
+	<xi:include href="install/building-from-source.xml" />
+	<xi:include href="install/troubleshooting.xml" />
 
-  &__chapter4;
-
-  &__chapter5;
-
-  &__chapter6;
 </book>

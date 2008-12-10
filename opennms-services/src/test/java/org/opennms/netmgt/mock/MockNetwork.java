@@ -57,6 +57,9 @@ public class MockNetwork extends MockContainer {
     public Event createUpEvent() {
         throw new UnsupportedOperationException("Cannot generate up event for the network");
     }
+    public Event createNewEvent() {
+        throw new UnsupportedOperationException("Cannot generate new event for the network");
+    }
     public Event createDeleteEvent() {
         throw new UnsupportedOperationException("Cannot generate delete event for the network");
     }

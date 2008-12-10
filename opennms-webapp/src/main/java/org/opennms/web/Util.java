@@ -333,7 +333,7 @@ public abstract class Util extends Object {
                     buffer.append("<input type=\"hidden\" name=\"");
                     buffer.append(name);
                     buffer.append("\" value=\"");
-                    buffer.append(values[i]);
+                    buffer.append(WebSecurityUtils.sanitizeString(values[i]));
                     buffer.append("\" />");
                     buffer.append("\n");
                 }

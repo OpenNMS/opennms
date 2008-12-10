@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2007 Jul 24: Add serialVersionUID and Java 5 generics. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -77,7 +78,7 @@ public class OutageFilterServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // handle the style sort parameter
-        String sortStyleString = request.getParameter("sortby");
+        String sortStyleString = WebSecurityUtils.sanitizeString(request.getParameter("sortby"));
         OutageFactory.SortStyle sortStyle = OutageFactory.DEFAULT_SORT_STYLE;
         if (sortStyleString != null) {
             Object temp = OutageUtil.getSortStyle(sortStyleString);
@@ -86,30 +87,8 @@ public class OutageFilterServlet extends HttpServlet {
             }
         }
         
-        // JOED
-        
- // handle the suppress parameter
-        
-        String outageSuppressTimeString = request.getParameter("suppressTime");
-        if (outageSuppressTimeString != null){
-            // timetosuppress
-            
-        } 
-          
-        // handle the suppresstime parameter
-        
-        String outageIdString = request.getParameter("outageID");        
-        if (outageIdString != null) {
-            // Outage we are going to suppress
-        }
-        
-        String outageSupressedByString = request.getParameter("suppressedBy");
-        if (outageSupressedByString != null) {
-            
-        }
-
-        // handle the acknowledgement type parameter
-        String outTypeString = request.getParameter("outtype");
+        // handle the acknowledgment type parameter
+        String outTypeString = WebSecurityUtils.sanitizeString(request.getParameter("outtype"));
         OutageFactory.OutageType outType = OutageFactory.OutageType.BOTH;
         if (outTypeString != null) {
             Object temp = OutageUtil.getOutageType(outTypeString);
@@ -123,7 +102,7 @@ public class OutageFilterServlet extends HttpServlet {
         List<Filter> filterArray = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
-                Filter filter = OutageUtil.getFilter(filterStrings[i]);
+                Filter filter = OutageUtil.getFilter(WebSecurityUtils.sanitizeString(filterStrings[i]));
                 if (filter != null) {
                     filterArray.add(filter);
                 }

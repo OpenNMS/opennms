@@ -165,21 +165,51 @@ public class HttpPostInfo extends Object {
         return m_errors;
     }
 
-    /**
-     * Overrides the superclass method to return true only if all instance
-     * members are equal
-     */
-    public boolean equals(Object o) {
-        if ((!(o instanceof HttpPostInfo)) || (o == null)) {
-            return false;
-        }
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_catlabel == null) ? 0 : m_catlabel.hashCode());
+        result = prime * result + m_errors;
+        result = prime * result + ((m_passwd == null) ? 0 : m_passwd.hashCode());
+        result = prime * result + ((m_url == null) ? 0 : m_url.hashCode());
+        result = prime * result + ((m_user == null) ? 0 : m_user.hashCode());
+        return result;
+    }
 
-        HttpPostInfo obj = (HttpPostInfo) o;
-
-        if (m_url.equals(obj.getURL()) && m_catlabel.equals(obj.getCategory()) && m_user.equals(obj.getUser()) && m_passwd.equals(obj.getPassword())) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
-        } else {
+        }
+        if (obj == null) {
             return false;
         }
+        if (getClass() != obj.getClass())
+            return false;
+        HttpPostInfo other = (HttpPostInfo) obj;
+        if (m_catlabel == null) {
+            if (other.m_catlabel != null)
+                return false;
+        } else if (!m_catlabel.equals(other.m_catlabel))
+            return false;
+        if (m_errors != other.m_errors)
+            return false;
+        if (m_passwd == null) {
+            if (other.m_passwd != null)
+                return false;
+        } else if (!m_passwd.equals(other.m_passwd))
+            return false;
+        if (m_url == null) {
+            if (other.m_url != null)
+                return false;
+        } else if (!m_url.equals(other.m_url))
+            return false;
+        if (m_user == null) {
+            if (other.m_user != null)
+                return false;
+        } else if (!m_user.equals(other.m_user))
+            return false;
+        return true;
     }
 }

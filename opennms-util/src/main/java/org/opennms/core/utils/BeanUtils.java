@@ -68,9 +68,8 @@ public class BeanUtils {
      * @param clazz class representing the type for the returned bean
      * @return bean for given bean ID casted to the appropriate class
      */
-    @SuppressWarnings("unchecked")
     public static <T> T getBean(BeanFactoryReference beanFactory, String beanId, Class<T> clazz) {
-        return (T) beanFactory.getFactory().getBean(beanId);
+        return clazz.cast(beanFactory.getFactory().getBean(beanId));
     }
     
     /**

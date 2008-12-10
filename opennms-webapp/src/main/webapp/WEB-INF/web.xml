@@ -222,6 +222,10 @@
     <url-pattern>/graph/results.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/KSC/customView.htm</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>AddRefreshHeader-120</filter-name>
     <url-pattern>/event/list</url-pattern>
   </filter-mapping>
@@ -270,9 +274,8 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-
-  <!-- Remove this as it causes hangs on shutdown of opennms
-       Needs to be reworked 
+  
+  <!--
   <listener>
     <listener-class>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
   </listener>

@@ -68,9 +68,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     @Embeddable
     public static class CollectionType implements Comparable<CollectionType>, Serializable {
-        private static final long serialVersionUID = 3684486716941692804L;
-        private static final char[] s_order = {'N', 'C', 'S', 'P' };
-        char m_collType;
+        private static final long serialVersionUID = -647348487361201657L;
+        private static final char[] s_order = { 'N', 'C', 'S', 'P' };
+        char m_collType = 'N';
 
         @SuppressWarnings("unused")
         private CollectionType() {
@@ -101,6 +101,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         }
 
         public boolean equals(CollectionType o) {
+            if (o == null)
+                return false;
             return m_collType == o.m_collType;
         }
 

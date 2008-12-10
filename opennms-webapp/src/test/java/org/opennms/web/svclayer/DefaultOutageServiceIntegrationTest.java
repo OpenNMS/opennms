@@ -105,7 +105,7 @@ public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTe
 		assertTrue("We should find suppressed messages ", outages == 0);
 	}
 
-	public void FIXMEtestSuppression() {
+	public void testSuppression() {
 		Date time = new Date();
 		//Load Outage manipulate and save it.
 		OnmsOutage myOutage = m_outageService.load(new Integer(1));

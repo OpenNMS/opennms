@@ -44,6 +44,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -53,9 +57,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
-import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
 /**
  * This nodes job is to tracks nodes that need to be deleted, added, or changed
@@ -133,18 +134,18 @@ public class ImportOperationsManager {
     	return m_foreignIdToNodeMap.size();
     }
     
-    class DeleteIterator implements Iterator {
+    class DeleteIterator implements Iterator<ImportOperation> {
     	
-    	private Iterator m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
+    	private Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
 		public boolean hasNext() {
 			return m_foreignIdIterator.hasNext();
 		}
 
-		public Object next() {
-            Map.Entry entry = (Map.Entry)m_foreignIdIterator.next();
-            Integer nodeId = (Integer)entry.getValue();
-            String foreignId = (String)entry.getKey();
+		public ImportOperation next() {
+            Entry<String, Integer> entry = m_foreignIdIterator.next();
+            Integer nodeId = entry.getValue();
+            String foreignId = entry.getKey();
             return m_operationFactory.createDeleteOperation(nodeId, m_foreignSource, foreignId);
 			
 		}
@@ -155,13 +156,13 @@ public class ImportOperationsManager {
     	
     }
     
-    class OperationIterator implements Iterator {
+    class OperationIterator implements Iterator<ImportOperation> {
     	
-    	Iterator<Iterator> m_iterIter;
-    	Iterator m_currentIter;
+    	Iterator<Iterator<ImportOperation>> m_iterIter;
+    	Iterator<ImportOperation> m_currentIter;
     	
     	OperationIterator() {
-    		List<Iterator> iters = new ArrayList<Iterator>(3);
+    		List<Iterator<ImportOperation>> iters = new ArrayList<Iterator<ImportOperation>>(3);
     		iters.add(new DeleteIterator());
     		iters.add(m_updates.iterator());
     		iters.add(m_inserts.iterator());
@@ -177,7 +178,7 @@ public class ImportOperationsManager {
 			return (m_currentIter == null ? false: m_currentIter.hasNext());
 		}
 
-		public Object next() {
+		public ImportOperation next() {
 			return m_currentIter.next();
 		}
 
@@ -187,47 +188,55 @@ public class ImportOperationsManager {
     	
     	
     }
-
+    
+    public void shutdownAndWaitForCompletion(ExecutorService executorService, String msg) {
+        executorService.shutdown();
+        try {
+            while (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                // loop util the await returns false
+            }
+        } catch (InterruptedException e) {
+            log().error(msg, e);
+        }
+    }
+ 
     public void persistOperations(TransactionTemplate template, OnmsDao dao) {
     	m_stats.beginProcessingOps();
     	m_stats.setDeleteCount(getDeleteCount());
     	m_stats.setInsertCount(getInsertCount());
     	m_stats.setUpdateCount(getUpdateCount());
-		PooledExecutor dbPool = new PooledExecutor(new LinkedQueue());
-		dbPool.setMinimumPoolSize(m_writeThreads);
+    	ExecutorService dbPool = Executors.newFixedThreadPool(m_writeThreads);
 
 		preprocessOperations(template, dao, new OperationIterator(), dbPool);
-    	
-		dbPool.shutdownAfterProcessingCurrentlyQueuedTasks();
-		try { dbPool.awaitTerminationAfterShutdown(); } catch (InterruptedException e) { log().error("persister interrupted!", e); }
-		
+
+		shutdownAndWaitForCompletion(dbPool, "persister interrupted!");
+
 		m_stats.finishProcessingOps();
     	
     }
     
-	private void preprocessOperations(final TransactionTemplate template, final OnmsDao dao, OperationIterator iterator, final PooledExecutor dbPool) {
+	private void preprocessOperations(final TransactionTemplate template, final OnmsDao dao, OperationIterator iterator, final ExecutorService dbPool) {
 		
 		m_stats.beginPreprocessingOps();
 		
-		PooledExecutor threadPool = new PooledExecutor(new LinkedQueue());
-		threadPool.setMinimumPoolSize(m_scanThreads);
-		for (Iterator it = iterator; it.hasNext();) {
-    		final ImportOperation oper = (ImportOperation) it.next();
+		ExecutorService threadPool = Executors.newFixedThreadPool(m_scanThreads);
+		for (Iterator<ImportOperation> it = iterator; it.hasNext();) {
+    		final ImportOperation oper = it.next();
     		Runnable r = new Runnable() {
     			public void run() {
     				preprocessOperation(oper, template, dao, dbPool);
     			}
     		};
-    		try { threadPool.execute(r); } catch (InterruptedException e) { log().info("Interrupted: " + e, e); }
-    		it.remove();
+    		threadPool.execute(r);
+
     	}
-		threadPool.shutdownAfterProcessingCurrentlyQueuedTasks();
-		try { threadPool.awaitTerminationAfterShutdown(); } catch (InterruptedException e) {log().error("preprocessor interrupted!", e);}
+		
+		shutdownAndWaitForCompletion(threadPool, "preprocessor interrupted!");
 		
 		m_stats.finishPreprocessingOps();
 	}
 
-	protected void preprocessOperation(final ImportOperation oper, final TransactionTemplate template, final OnmsDao dao, final PooledExecutor dbPool) {
+	protected void preprocessOperation(final ImportOperation oper, final TransactionTemplate template, final OnmsDao dao, final ExecutorService dbPool) {
 		m_stats.beginPreprocessing(oper);
 		log().info("Preprocess: "+oper);
 		oper.gatherAdditionalData();
@@ -236,7 +245,9 @@ public class ImportOperationsManager {
 				persistOperation(oper, template, dao);
 			}
 		};
-		try { dbPool.execute(r); } catch (InterruptedException e) { }
+
+		dbPool.execute(r);
+
 		m_stats.finishPreprocessing(oper);
 	}
 

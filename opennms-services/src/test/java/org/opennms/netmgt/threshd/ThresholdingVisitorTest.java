@@ -34,37 +34,49 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.collectd.IfResourceType;
 import org.opennms.netmgt.collectd.NodeInfo;
 import org.opennms.netmgt.collectd.NodeResourceType;
 import org.opennms.netmgt.collectd.NumericAttributeType;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
+import org.opennms.netmgt.collectd.ResourceType;
 import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
+import org.opennms.netmgt.collectd.SnmpIfData;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 
 /**
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
 public class ThresholdingVisitorTest extends TestCase {
@@ -72,7 +84,7 @@ public class ThresholdingVisitorTest extends TestCase {
     ThresholdingVisitor m_visitor;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
-
+    
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -135,7 +147,7 @@ public class ThresholdingVisitorTest extends TestCase {
 
         CollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
-        MibObject mibObject = createMibObject("counter", "freeMem");
+        MibObject mibObject = createMibObject("counter", "freeMem", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
@@ -182,7 +194,7 @@ public class ThresholdingVisitorTest extends TestCase {
 
         CollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
-        MibObject mibObject = createMibObject("gauge", "bug2746");
+        MibObject mibObject = createMibObject("gauge", "bug2746", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
@@ -216,6 +228,53 @@ public class ThresholdingVisitorTest extends TestCase {
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
     
+    public void testInterfaceResourceWithDBAttributeFilter() throws Exception {
+        setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runVisitInterfaceResource("127.0.0.1", "wlan0", 100, 220);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
+    public void testInterfaceResourceWithStringAttributeFilter() throws Exception {
+        setupSnmpInterfaceDatabase("127.0.0.1", "sis0");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        
+        File resourceDir = new File(getRepository().getRrdBaseDir(), "1/sis0");
+        resourceDir.deleteOnExit();
+        resourceDir.mkdirs();
+        Properties p = new Properties();
+        p.put("myMockParam", "myMockValue");
+        ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
+        
+        runVisitInterfaceResource("127.0.0.1", "sis0", 100, 220);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
+    }
+    
+    private void runVisitInterfaceResource(String ipAddress, String ifName, long v1, long v2) {
+        ThresholdingVisitor visitor = createVisitor();
+        
+        SnmpIfData ifData = createSnmpIfData(ipAddress, ifName);
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+
+        // Step 1
+        SnmpCollectionResource resource = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", v1);
+        addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v1);
+        resource.visit(visitor);
+        
+        // Step 2 - Increment Counters
+        resource = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(resource, resourceType, "ifInOctets", "counter", "ifIndex", v2);
+        addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v2);
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+    }
+
     public void testReload() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
@@ -240,11 +299,9 @@ public class ThresholdingVisitorTest extends TestCase {
 
     private void runGaugeDataTest(ThresholdingVisitor visitor, long value) {
         CollectionAgent agent = createCollectionAgent();
-        NodeResourceType resourceType = createNodeResourceType(agent);        
-        MibObject mibObject = createMibObject("gauge", "freeMem");
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        NodeResourceType resourceType = createNodeResourceType(agent);
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(value));
+        addAttributeToCollectionResource(resource, resourceType, "freeMem", "gauge", "0", value);        
         resource.visit(visitor);
         EasyMock.verify(agent);
     }
@@ -253,6 +310,7 @@ public class ThresholdingVisitorTest extends TestCase {
         CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
+        EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }
@@ -263,12 +321,24 @@ public class ThresholdingVisitorTest extends TestCase {
         return new NodeResourceType(agent, collection);
     }
 
-    private MibObject createMibObject(String type, String alias) {
+    private IfResourceType createInterfaceResourceType(CollectionAgent agent) {
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        return new IfResourceType(agent, collection);
+    }
+    
+    private void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
+        MibObject ifInOctetsObject = createMibObject(attributeType, attributeName, attributeInstance);
+        SnmpAttributeType ifInOctetsType = new NumericAttributeType(type, "default", ifInOctetsObject, new AttributeGroupType("mibGroup", "ignore"));
+        resource.setAttributeValue(ifInOctetsType, SnmpUtils.getValueFactory().getCounter32(value));
+    }
+
+    private MibObject createMibObject(String type, String alias, String instance) {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
         mibObject.setAlias(alias);
         mibObject.setType(type);
-        mibObject.setInstance("0");
+        mibObject.setInstance(instance);
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         return mibObject;
@@ -287,6 +357,47 @@ public class ThresholdingVisitorTest extends TestCase {
         e.setInterface("127.0.0.1");
         e.setService("SNMP");
         m_anticipator.anticipateEvent(e);
+    }
+    
+    private SnmpIfData createSnmpIfData(String ipAddress, String ifName) {
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        node.setLabel("testNode");
+        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(ipAddress, 1, node);
+        snmpIface.setIfDescr(ifName);
+        snmpIface.setIfName(ifName);
+        snmpIface.setIfAlias(ifName);
+        snmpIface.setIfSpeed(10000000l);
+        return new SnmpIfData(snmpIface);
+    }
+    
+    private void setupSnmpInterfaceDatabase(String ipAddress, String ifName) throws Exception {
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        network.addNode(1, "testNode");
+        network.addInterface(ipAddress);
+        network.setIfAlias(ifName);
+        network.addService("ICMP");
+        network.addService("SNMP");
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
+        DataSourceFactory.setInstance(db);
+    }
+    
+    private boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for(int i=0; i<files.length; i++) {
+                if(files[i].isDirectory()) {
+                    deleteDirectory(files[i]);
+                }
+                else {
+                    files[i].delete();
+                }
+            }
+        }
+        return path.delete();
     }
 
 }

@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2008 Sep 28: handle XSS scripting issues - ranger@opennms.org
 // 2007 Jul 24: Organize imports. - dj@opennms.org
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added support for Display, Notify, Poller and Threshold Categories
@@ -93,47 +94,51 @@ public class ModifyAssetServlet extends HttpServlet {
         }
     }
 
+    protected String getRequestParameter(final HttpServletRequest request, final String name) {
+        return WebSecurityUtils.sanitizeString(request.getParameter(name));
+    }
+    
     protected Asset parms2Asset(HttpServletRequest request, int nodeId) {
         Asset asset = new Asset();
 
         asset.setNodeId(nodeId);
-        asset.setCategory(request.getParameter("category"));
-        asset.setManufacturer(request.getParameter("manufacturer"));
-        asset.setVendor(request.getParameter("vendor"));
-        asset.setModelNumber(request.getParameter("modelnumber"));
-        asset.setSerialNumber(request.getParameter("serialnumber"));
-        asset.setDescription(request.getParameter("description"));
-        asset.setCircuitId(request.getParameter("circuitid"));
-        asset.setAssetNumber(request.getParameter("assetnumber"));
-        asset.setOperatingSystem(request.getParameter("operatingsystem"));
-        asset.setRack(request.getParameter("rack"));
-        asset.setSlot(request.getParameter("slot"));
-        asset.setPort(request.getParameter("port"));
-        asset.setRegion(request.getParameter("region"));
-        asset.setDivision(request.getParameter("division"));
-        asset.setDepartment(request.getParameter("department"));
-        asset.setAddress1(request.getParameter("address1"));
-        asset.setAddress2(request.getParameter("address2"));
-        asset.setCity(request.getParameter("city"));
-        asset.setState(request.getParameter("state"));
-        asset.setZip(request.getParameter("zip"));
-        asset.setBuilding(request.getParameter("building"));
-        asset.setFloor(request.getParameter("floor"));
-        asset.setRoom(request.getParameter("room"));
-        asset.setVendorPhone(request.getParameter("vendorphone"));
-        asset.setVendorFax(request.getParameter("vendorfax"));
-        asset.setDateInstalled(request.getParameter("dateinstalled"));
-        asset.setLease(request.getParameter("lease"));
-        asset.setLeaseExpires(request.getParameter("leaseexpires"));
-        asset.setSupportPhone(request.getParameter("supportphone"));
-        asset.setMaintContract(request.getParameter("maintcontract"));
-        asset.setVendorAssetNumber(request.getParameter("vendorassetnumber"));
-        asset.setMaintContractExpires(request.getParameter("maintcontractexpires"));
-        asset.setDisplayCategory(request.getParameter("displaycategory"));
-        asset.setNotifyCategory(request.getParameter("notifycategory"));
-        asset.setPollerCategory(request.getParameter("pollercategory"));
-        asset.setThresholdCategory(request.getParameter("thresholdcategory"));
-        asset.setComments(request.getParameter("comments"));
+        asset.setCategory(getRequestParameter(request, "category"));
+        asset.setManufacturer(getRequestParameter(request, "manufacturer"));
+        asset.setVendor(getRequestParameter(request, "vendor"));
+        asset.setModelNumber(getRequestParameter(request, "modelnumber"));
+        asset.setSerialNumber(getRequestParameter(request, "serialnumber"));
+        asset.setDescription(getRequestParameter(request, "description"));
+        asset.setCircuitId(getRequestParameter(request, "circuitid"));
+        asset.setAssetNumber(getRequestParameter(request, "assetnumber"));
+        asset.setOperatingSystem(getRequestParameter(request, "operatingsystem"));
+        asset.setRack(getRequestParameter(request, "rack"));
+        asset.setSlot(getRequestParameter(request, "slot"));
+        asset.setPort(getRequestParameter(request, "port"));
+        asset.setRegion(getRequestParameter(request, "region"));
+        asset.setDivision(getRequestParameter(request, "division"));
+        asset.setDepartment(getRequestParameter(request, "department"));
+        asset.setAddress1(getRequestParameter(request, "address1"));
+        asset.setAddress2(getRequestParameter(request, "address2"));
+        asset.setCity(getRequestParameter(request, "city"));
+        asset.setState(getRequestParameter(request, "state"));
+        asset.setZip(getRequestParameter(request, "zip"));
+        asset.setBuilding(getRequestParameter(request, "building"));
+        asset.setFloor(getRequestParameter(request, "floor"));
+        asset.setRoom(getRequestParameter(request, "room"));
+        asset.setVendorPhone(getRequestParameter(request, "vendorphone"));
+        asset.setVendorFax(getRequestParameter(request, "vendorfax"));
+        asset.setDateInstalled(getRequestParameter(request, "dateinstalled"));
+        asset.setLease(getRequestParameter(request, "lease"));
+        asset.setLeaseExpires(getRequestParameter(request, "leaseexpires"));
+        asset.setSupportPhone(getRequestParameter(request, "supportphone"));
+        asset.setMaintContract(getRequestParameter(request, "maintcontract"));
+        asset.setVendorAssetNumber(getRequestParameter(request, "vendorassetnumber"));
+        asset.setMaintContractExpires(getRequestParameter(request, "maintcontractexpires"));
+        asset.setDisplayCategory(getRequestParameter(request, "displaycategory"));
+        asset.setNotifyCategory(getRequestParameter(request, "notifycategory"));
+        asset.setPollerCategory(getRequestParameter(request, "pollercategory"));
+        asset.setThresholdCategory(getRequestParameter(request, "thresholdcategory"));
+        asset.setComments(getRequestParameter(request, "comments"));
 
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());

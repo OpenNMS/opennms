@@ -1,13 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // Modifications:
 //
+// 2008 Sep 28: Handle XSS scripting issues. - ranger@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet().  Use KscReportEditor
 //              for tracking editing state in the user's session. - dj@opennms.org
 //
@@ -63,12 +64,12 @@ public class FormProcGraphController extends AbstractController implements Initi
         Graph graph = editor.getWorkingGraph();
 
         // Get Form Variables
-        String action = request.getParameter("action");
-        String timespan = request.getParameter("timespan");
-        String graphtype = request.getParameter("graphtype");
-        String title = request.getParameter("title");
-        String g_index = request.getParameter("graphindex");
-        int graph_index = (WebSecurityUtils.safeParseInt(g_index));
+        String action = WebSecurityUtils.sanitizeString(request.getParameter("action"));
+        String timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+        String graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
+        String title = WebSecurityUtils.sanitizeString(request.getParameter("title"));
+        String g_index = WebSecurityUtils.sanitizeString(request.getParameter("graphindex"));
+        int graph_index = WebSecurityUtils.safeParseInt(g_index);
         graph_index--; 
      
         // Save the modified variables into the working graph 

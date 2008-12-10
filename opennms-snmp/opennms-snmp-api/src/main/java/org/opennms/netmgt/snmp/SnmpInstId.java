@@ -52,7 +52,7 @@ public class SnmpInstId extends SnmpObjId {
     public SnmpInstId(int instance) {
         super(new int[] { instance }, false);
     }
-
+    
     protected boolean addPrefixDotInToString() {
         return false;
     }

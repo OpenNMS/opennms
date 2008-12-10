@@ -52,6 +52,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-daemon</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
@@ -138,6 +143,10 @@
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.jradius</groupId>
@@ -250,16 +259,6 @@
       <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock-cglib</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>

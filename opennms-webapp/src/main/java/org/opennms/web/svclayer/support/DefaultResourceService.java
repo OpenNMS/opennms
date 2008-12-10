@@ -9,9 +9,11 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- *  2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
+ *
+ * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
+ * 2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
  *              (merged to trunk by ayersw on 2007 Aug 17)
- *  2007 May 12: Add getRrdDirectory(), update afterPropertiesSet(). - dj@opennms.org
+ * 2007 May 12: Add getRrdDirectory(), update afterPropertiesSet(). - dj@opennms.org
  * 
  * Created: January 2, 2007
  *
@@ -111,14 +113,14 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     }
 
     public List<OnmsResource> findNodeChildResources(int nodeId) {
-        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
+        OnmsResource resource = m_resourceDao.loadResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
         List<OnmsResource> resources = resource.getChildResources();
         resources.size(); // Get the size to force the list to be loaded
         return resources;
     }
 
     public List<OnmsResource> findDomainChildResources(String domain) {
-        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("domain", domain));
+        OnmsResource resource = m_resourceDao.loadResourceById(OnmsResource.createResourceId("domain", domain));
         List<OnmsResource> resources = resource.getChildResources();
         resources.size(); // Get the size to force the list to be loaded
         return resources;
@@ -151,9 +153,9 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public OnmsResource getResourceById(String id) {
         return m_resourceDao.getResourceById(id);
     }
-    
-    public OnmsResource getResourceById(String id, boolean ignoreErrors) {
-        return m_resourceDao.getResourceById(id, ignoreErrors);
+
+    public OnmsResource loadResourceById(String id) {
+        return m_resourceDao.loadResourceById(id);
     }
     
     public PrefabGraph[] findPrefabGraphsForResource(OnmsResource resource) {
@@ -172,12 +174,12 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException e) {
-            log().warn("Unable to send file promotion event to opennms.", e);
+            log().warn("Unable to send file promotion event to opennms: " + e, e);
         }
     }
     
     public void promoteGraphAttributesForResource(String resourceId) {
-        promoteGraphAttributesForResource(getResourceById(resourceId));
+        promoteGraphAttributesForResource(loadResourceById(resourceId));
     }
     
     private Category log() {

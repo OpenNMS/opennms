@@ -74,7 +74,7 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalTemp
 	    // Empty test to keep JUnit from complaining about no tests
 	}
     
-    // FIXME
+    // FIXME this is a feature that has not been written yet
 	public void FIXMEtestPollMonitoredService() {
 		PollerService api = createMock(PollerService.class);
 		((DefaultDemandPollService)m_demandPollService).setPollerAPI(api);

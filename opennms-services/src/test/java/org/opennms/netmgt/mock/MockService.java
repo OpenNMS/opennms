@@ -103,6 +103,12 @@ public class MockService extends MockElement implements MonitoredService {
         m_pollCount = 0;
 
     }
+   
+   // test
+   public void bringDown(String reason) {
+       setServicePollStatus(PollStatus.down(reason));
+   }
+
 
    // FIXME: model? make generic poll listener
     public void addAnticipator(PollAnticipator trigger) {
@@ -237,6 +243,10 @@ public class MockService extends MockElement implements MonitoredService {
         return MockEventUtil.createServiceResponsiveEvent("Test", this);
     }
     
+    public Event createNewEvent() {
+        return MockEventUtil.createNodeGainedServiceEvent("Test", this);
+    }
+
     public Event createDeleteEvent() {
         return MockEventUtil.createServiceDeletedEvent("Test", this);
     }

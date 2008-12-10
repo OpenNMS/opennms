@@ -44,35 +44,36 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.test.mock.MockLogAppender;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
-public class PageSequenceMonitorTest extends TestCase {
+public class PageSequenceMonitorTest {
 	
 	PageSequenceMonitor m_monitor;
 	Map<String, String> m_params;
 	
 
-    @Override
-	protected void setUp() throws Exception {
-		super.setUp();
-        
+    @Before
+	public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 		
     	m_monitor = new PageSequenceMonitor();
     	m_monitor.initialize(Collections.EMPTY_MAP);
     	
 		m_params = new HashMap<String, String>();
-		m_params.put("timeout", "6000");
+		m_params.put("timeout", "8000");
 		m_params.put("retries", "1");
 		
 	}
@@ -88,25 +89,26 @@ public class PageSequenceMonitorTest extends TestCase {
     }
 
     
-    @Override
-	protected void tearDown() throws Exception {
+    @After
+	public void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
-        
-		super.tearDown();
 	}
     
+    @Test
     public void testSimpleGoogle() throws Exception {
         setPageSequenceParam("www.google.com");
         PollStatus googleStatus = m_monitor.poll(getHttpService("www.google.com"), m_params);
         assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
     }
-        
+
+    @Test
     public void testSimpleBogus() throws Exception {
         setPageSequenceParam(null);
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
     }
 
+    @Test
     public void testSimpleYahoo() throws Exception {
         setPageSequenceParam("www.yahoo.com");
         PollStatus yahooStatus = m_monitor.poll(getHttpService("www.yahoo.com"), m_params);
@@ -128,7 +130,8 @@ public class PageSequenceMonitorTest extends TestCase {
 				"</page-sequence>\n");
     }
 
-    public void _testHttps() throws Exception {
+    @Test
+    public void testHttps() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
@@ -142,17 +145,18 @@ public class PageSequenceMonitorTest extends TestCase {
 
     }
 
+    @Test
 	public void testLogin() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence name=\"opennms-login-seq\">\n" + 
-				"  <page path=\"/opennms\" port=\"8980\" successMatch=\"Password\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"8980\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
+				"  <page path=\"/opennms\" port=\"80\" successMatch=\"Password\" />\n" + 
+				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
 				"    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
 				"    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
 				"  </page>\n" + 
-				"  <page path=\"/opennms/event/index.jsp\" port=\"8980\" successMatch=\"Event Queries\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_logout\" port=\"8980\" successMatch=\"logged off\" />\n" + 
+				"  <page path=\"/opennms/event/index.jsp\" port=\"80\" successMatch=\"Event Queries\" />\n" + 
+				"  <page path=\"/opennms/j_acegi_logout\" port=\"80\" successMatch=\"logged off\" />\n" + 
 				"</page-sequence>\n");
 		
 		
@@ -161,6 +165,7 @@ public class PageSequenceMonitorTest extends TestCase {
 		
 	}
 	
+    @Test
 	public void testVirtualHost() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +

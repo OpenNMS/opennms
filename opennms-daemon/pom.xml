@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
@@ -6,163 +7,39 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-daemon</artifactId>
-  <packaging>tgz</packaging>
-  <name>OpenNMS Daemon Application</name>
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/filtered</directory>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-	        <configuration>
-	          <artifactItems>
-	           <artifactItem>
-	             <groupId>org.opennms</groupId>
-	             <artifactId>opennms-webapp</artifactId>
-	             <version>${project.version}</version>
-	             <type>war</type>
-	           </artifactItem>
-	          </artifactItems>
-	        </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>tgz-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/daemon.xml</descriptor>
-          </descriptors>
-          <appendAssemblyId>false</appendAssemblyId>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>resources</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <name>OpenNMS Daemon</name>
+  <description>
+  The OpenNMS Daemon launches and acts as a container for OpenNMS Services such as the poller or collector
+  </description>
+  <url>http://maven.apache.org</url>
+
   <dependencies>
+
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-dao</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-correlator</artifactId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>drools-correlation-engine</artifactId>
+      <artifactId>opennms-spring</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-install</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-bootstrap</artifactId>
-      <scope>compile</scope>
+      <groupId>mx4j</groupId>
+      <artifactId>mx4j</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-import</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jetty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-integration-otrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-joesnmp</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-snmp4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <!-- this is a runtime depdency we need at install time -->
-    <dependency>
-      <groupId>alt.dev.jmta</groupId>
-      <artifactId>jmta</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- We depend on our JDBC database driver here instead of in the above
-         OpenNMS dependencies that use the database because the database is
-         configured in opennms-database.xml, which is in this project.
-         We only work on PostgreSQL now, though. -->
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-qosdaemon</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
+
   </dependencies>
 </project>
