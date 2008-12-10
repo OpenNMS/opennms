@@ -627,15 +627,15 @@ function doDelete() {
     "dvbRcsMacLayer",           //239
     "dvbTdm",                   //240
     "dvbRcsTdma",               //241
-    "x86Laps"                   //242
-    "wwanPP"                    //243
-    "wwanPP2"                   //244
-    "voiceEBS"                  //245
-    "ifPwType"                  //246
-    "ilan"                      //247
-    "pip"                       //248
-    "aluELP"                    //249
-    "gpon"                      //250
+    "x86Laps",                  //242
+    "wwanPP",                   //243
+    "wwanPP2",                  //244
+    "voiceEBS",                 //245
+    "ifPwType",                 //246
+    "ilan",                     //247
+    "pip",                      //248
+    "aluELP",                   //249
+    "gpon",                     //250
   };
 
 
