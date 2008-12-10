@@ -424,10 +424,11 @@ class NessusScan implements Runnable {
              * you would use the LONG_ATTACK directive for).
              */
             
-            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString().replaceAll("/", "") + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
-//            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString() + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
+            //out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString().replaceAll("/", "") + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
+//            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString().replaceAll("/", "") + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
+            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.getCanonicalHostName() + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
 
-            log.debug("Sent NEW_ATTACK directive against target: " + config.targetAddress.toString());
+            log.debug("Sent NEW_ATTACK directive against target: " + config.targetAddress.getCanonicalHostName());
 
             // Read the response to the NEW_ATTACK
             int returnCode = SCAN_SUCCESS;
@@ -548,7 +549,7 @@ class NessusScan implements Runnable {
         else
             retval += "no";
 
-        retval += "\nmax_hosts" + NTP_SEP + "1\n" + "ntp_short_status" + NTP_SEP + "yes\n" + NTP_SEP + NTP_CLIENT_ENTITY;
+        retval += "\nmax_hosts" + NTP_SEP + "1\n" + "ntp_short_status" + NTP_SEP + "yes\n" +  "reverse_lookup" + NTP_SEP + "yes\n" + NTP_SEP + NTP_CLIENT_ENTITY;
 
         return retval;
     }
