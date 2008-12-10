@@ -34,6 +34,7 @@
  */
 package org.opennms.web.svclayer.support;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -254,7 +255,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
 
-    @SuppressWarnings("unchecked")
     private RowDef getRowDef(View view, String rowLabel) {
         Rows rows = view.getRows();
         Collection<RowDef> rowDefs = rows.getRowDefCollection();
@@ -267,8 +267,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         throw new DataRetrievalFailureException("Unable to locate row: "+rowLabel+" for status view: "+view.getName());
     }
     
-
-    @SuppressWarnings("unchecked")
     private Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
         Set<String> categories = new LinkedHashSet<String>();
         
@@ -362,7 +360,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         Assert.state(m_siteStatusViewConfigDao != null, "siteStatusViewConfigDao property cannot be null");
     }
     
-    public static class IpInterfaceComparator implements Comparator<OnmsIpInterface> {
+    public static class IpInterfaceComparator implements Comparator<OnmsIpInterface>, Serializable {
+        private static final long serialVersionUID = 1L;
+
         public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
             int diff;
 
@@ -426,7 +426,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         }
     }
 
-    public static class ArpInterfaceComparator implements Comparator<OnmsArpInterface> {
+    public static class ArpInterfaceComparator implements Comparator<OnmsArpInterface>, Serializable {
+        private static final long serialVersionUID = 1L;
+
         public int compare(OnmsArpInterface o1, OnmsArpInterface o2) {
             int diff;
 
