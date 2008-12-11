@@ -217,24 +217,18 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             try {
                 cinst = Class.forName(className);
             } catch (ClassNotFoundException e) {
-                throw new ObjectRetrievalFailureException(StorageStrategy.class,
-                                                          className,
-                                                          "Could not load class",
-                                                          e);
+                throw new ObjectRetrievalFailureException(StorageStrategy.class, className,
+                   "Could not load class '" + className + "' for resource type '" + resourceType.getName() + "'", e);
             }
             StorageStrategy storageStrategy;
             try {
                 storageStrategy = (StorageStrategy) cinst.newInstance();
             } catch (InstantiationException e) {
-                throw new ObjectRetrievalFailureException(StorageStrategy.class,
-                                                          className,
-                                                          "Could not instantiate",
-                                                          e);
+                throw new ObjectRetrievalFailureException(StorageStrategy.class, className,
+                    "Could not instantiate class '" + className + "' for resource type '" + resourceType.getName() + "'", e);
             } catch (IllegalAccessException e) {
-                throw new ObjectRetrievalFailureException(StorageStrategy.class,
-                                                          className,
-                                                          "Could not instantiate",
-                                                          e);
+                throw new ObjectRetrievalFailureException(StorageStrategy.class, className,
+                    "Could not instantiate class '" + className + "' for resource type '" + resourceType.getName() + "'", e);
             }
             
             storageStrategy.setResourceTypeName(resourceType.getName());

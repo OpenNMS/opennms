@@ -55,9 +55,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.DatagramPacket;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -141,29 +143,35 @@ public class Installer {
         loadProperties();
         parseArguments(argv);
 
-        if (!m_update_database && !m_do_inserts && !m_update_iplike
-                && !m_update_unicode && m_tomcat_conf == null
-                && !m_install_webapp && !m_fix_constraint) {
-            usage(options, m_commandLine, "Nothing to do.  Use -h for help.",
-                  null);
+        boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
+        
+        if (!doDatabase && m_tomcat_conf == null && !m_install_webapp && m_library_search_path == null) {
+            usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
             System.exit(1);
         }
 
-        m_installerDb.setForce(m_force);
-        m_installerDb.setIgnoreNotNull(m_ignore_not_null);
-        m_installerDb.setNoRevert(m_do_not_revert);
+        if (doDatabase) {
+            m_installerDb.setForce(m_force);
+            m_installerDb.setIgnoreNotNull(m_ignore_not_null);
+            m_installerDb.setNoRevert(m_do_not_revert);
+    
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+            
+            Reader fr = new FileReader(cfgFile);
+            JdbcDataSource adminDs = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
+            fr.close();
+            m_installerDb.setAdminDataSource(new SimpleDataSource(adminDs));
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-        
-        JdbcDataSource adminDs = C3P0ConnectionFactory.marshalDataSourceFromConfig(new FileReader(cfgFile), ADMIN_DATA_SOURCE_NAME);
-        m_installerDb.setAdminDataSource(new SimpleDataSource(adminDs));
+            fr = new FileReader(cfgFile);
+            JdbcDataSource ds = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
+            m_installerDb.setDataSource(new SimpleDataSource(ds));
+            fr.close();
 
-        JdbcDataSource ds = C3P0ConnectionFactory.marshalDataSourceFromConfig(new FileReader(cfgFile), OPENNMS_DATA_SOURCE_NAME);
-        m_installerDb.setDataSource(new SimpleDataSource(ds));
-        
-        m_installerDb.setPostgresOpennmsUser(ds.getUserName());
-        m_installerDb.setPostgresOpennmsPassword(ds.getPassword());
-        m_installerDb.setDatabaseName(ds.getDatabaseName());
+            m_installerDb.setPostgresOpennmsUser(ds.getUserName());
+            m_installerDb.setPostgresOpennmsPassword(ds.getPassword());
+            m_installerDb.setDatabaseName(ds.getDatabaseName());
+            
+        }
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -181,16 +189,16 @@ public class Installer {
          * create it if it doesn't already exist).
          */
 
-        // XXX Check Tomcat version?
-        if (m_update_database || m_update_iplike || m_update_unicode
-                || m_do_inserts || m_fix_constraint) {
+        if (doDatabase) {
             if (!m_ignore_database_version) {
                 m_installerDb.databaseCheckVersion();
             }
             m_installerDb.databaseCheckLanguage();
-        }
 
-        printDiagnostics();
+            m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser() + "' as the PostgreSQL user for OpenNMS");
+            m_out.println("* using '" + m_installerDb.getPostgresOpennmsPassword() + "' as the PostgreSQL password for OpenNMS");
+            m_out.println("* using '" + m_installerDb.getDatabaseName() + "' as the PostgreSQL database name for OpenNMS");
+        }
 
         verifyFilesAndDirectories();
 
@@ -214,8 +222,10 @@ public class Installer {
             }
         }
 
-        m_installerDb.checkUnicode();
-
+        if (doDatabase) {
+            m_installerDb.checkUnicode();
+        }
+        
         // We can now use the opennms database
 
         if (m_fix_constraint) {
@@ -273,8 +283,10 @@ public class Installer {
             m_installerDb.databaseRemoveDB();
         }
 
-        m_installerDb.disconnect();
-
+        if (doDatabase) {
+            m_installerDb.disconnect();
+        }
+        
         if (m_update_database) {
             createConfiguredFile();
         }
@@ -284,20 +296,16 @@ public class Installer {
     }
 
     public void createConfiguredFile() throws IOException {
-        File f = new File(m_opennms_home + File.separator + "etc"
-                + File.separator + "configured");
+        File f = new File(m_opennms_home + File.separator + "etc" + File.separator + "configured");
         f.createNewFile();
     }
 
     public void printHeader() {
-        m_out.println("==============================================="
-                + "===============================");
+        m_out.println("==============================================================================");
         m_out.println("OpenNMS Installer Version " + s_version);
-        m_out.println("==============================================="
-                + "===============================");
+        m_out.println("==============================================================================");
         m_out.println("");
-        m_out.println("Configures PostgreSQL tables, users, and other "
-                + "miscellaneous settings.");
+        m_out.println("Configures PostgreSQL tables, users, and other miscellaneous settings.");
         m_out.println("");
     }
 
@@ -447,8 +455,7 @@ public class Installer {
         m_remove_database = m_commandLine.hasOption("Z");
         m_do_full_vacuum = m_commandLine.hasOption("f");
         m_do_inserts = m_commandLine.hasOption("i");
-        m_library_search_path = m_commandLine.getOptionValue("l",
-                                                             m_library_search_path);
+        m_library_search_path = m_commandLine.getOptionValue("l", m_library_search_path);
         m_skip_constraints = m_commandLine.hasOption("n");
         m_ignore_not_null = m_commandLine.hasOption("N");
         m_ignore_database_version = m_commandLine.hasOption("Q");
@@ -464,25 +471,14 @@ public class Installer {
 
         if (m_commandLine.getArgList().size() > 0) {
             usage(options, m_commandLine, "Unknown command-line arguments: "
-                    + m_commandLine.getArgs(), null);
+                    + Arrays.toString(m_commandLine.getArgs()), null);
             System.exit(1);
         }
     }
 
-    public void printDiagnostics() {
-        m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser()
-                + "' as the PostgreSQL user for OpenNMS");
-        m_out.println("* using '"
-                + m_installerDb.getPostgresOpennmsPassword()
-                + "' as the PostgreSQL password for OpenNMS");
-        m_out.println("* using '" + m_installerDb.getDatabaseName()
-                + "' as the PostgreSQL database name for OpenNMS");
-    }
-
     public void verifyFilesAndDirectories() throws FileNotFoundException {
         if (m_update_database) {
-            verifyFileExists(true,
-                             m_installerDb.getStoredProcedureDirectory(),
+            verifyFileExists(true,  m_installerDb.getStoredProcedureDirectory(),
                              "SQL directory", "install.etc.dir property");
 
             verifyFileExists(false, m_installerDb.getCreateSqlLocation(),
@@ -490,31 +486,24 @@ public class Installer {
         }
 
         if (m_tomcat_conf != null) {
-            verifyFileExists(
-                             false,
-                             m_tomcat_conf,
-                             "Tomcat startup configuration file tomcat4.conf",
-                             "-T option");
+            verifyFileExists(false, m_tomcat_conf, "Tomcat startup configuration file tomcat4.conf", "-T option");
         }
 
         if (m_install_webapp) {
-            verifyFileExists(true, m_webappdir, "Tomcat context directory",
-                             "-w option");
+            verifyFileExists(true, m_webappdir, "Tomcat context directory", "-w option");
 
-            verifyFileExists(true, m_install_servletdir,
-                             "OpenNMS servlet directory",
+            verifyFileExists(true, m_install_servletdir, "OpenNMS servlet directory",
                              "install.servlet.dir property");
         }
     }
 
-    public void verifyFileExists(boolean isDir, String file,
-            String description, String option) throws FileNotFoundException {
+    public void verifyFileExists(boolean isDir, String file, String description, String option)
+            throws FileNotFoundException {
         File f;
 
         if (file == null) {
-            throw new FileNotFoundException("The user most provide the "
-                    + "location of " + description
-                    + ", but this is not specified.  " + "Use the " + option
+            throw new FileNotFoundException("The user most provide the location of " + description
+                    + ", but this is not specified.  Use the " + option
                     + " to specify this file.");
         }
 
@@ -575,7 +564,8 @@ public class Installer {
             return;
         }
 
-        BufferedReader r = new BufferedReader(new FileReader(f));
+        FileReader fr = new FileReader(f);
+        BufferedReader r = new BufferedReader(fr);
         String line;
 
         while ((line = r.readLine()) != null) {
@@ -583,14 +573,11 @@ public class Installer {
             b.append("\n");
         }
         r.close();
+        fr.close();
 
         if (b.toString().matches(search_regexp)) {
-            throw new Exception(
-                                "Old OpenNMS context found in "
-                                        + f.getAbsolutePath()
-                                        + ".  "
-                                        + "You must remove this context from server.xml and re-run the "
-                                        + "installer.");
+            throw new Exception("Old OpenNMS context found in " + f.getAbsolutePath() +
+                                ".  You must remove this context from server.xml and re-run the installer.");
         }
 
         m_out.println("OK");
@@ -638,7 +625,9 @@ public class Installer {
 
         m_out.print("  - copying " + source + " to " + destination + "... ");
         if (!destinationFile.getParentFile().exists()) {
-            destinationFile.getParentFile().mkdirs();
+            if (!destinationFile.getParentFile().mkdirs()) {
+                throw new Exception("unable to create directory: " + destinationFile.getParent());
+            }
         }
         if (!destinationFile.createNewFile()) {
             throw new Exception("unable to create file: " + destinationFile);
@@ -649,6 +638,8 @@ public class Installer {
             from = new FileInputStream(sourceFile).getChannel();
             to = new FileOutputStream(destinationFile).getChannel();
             to.transferFrom(from, 0, from.size());
+        } catch (FileNotFoundException e) {
+            throw new Exception("unable to copy " + sourceFile + " to " + destinationFile, e);
         } finally {
             if (from != null) {
                 from.close();
@@ -861,8 +852,7 @@ public class Installer {
         }
 
         if (System.getProperty("java.library.path") != null) {
-            for (String entry : System.getProperty("java.library.path").split(
-                                                                              File.pathSeparator)) {
+            for (String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
                 searchPaths.add(entry);
             }
         }
@@ -993,15 +983,13 @@ public class Installer {
         int count = 3;
         for (long attempt = 0; attempt < count; attempt++) {
             // build a packet
-            org.opennms.protocols.icmp.ICMPEchoPacket pingPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(
-                                                                                                              attempt);
+            org.opennms.protocols.icmp.ICMPEchoPacket pingPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(attempt);
             pingPkt.setIdentity(m_icmpId);
             pingPkt.computeChecksum();
 
             // convert it to a datagram to be sent
             byte[] buf = pingPkt.toBytes();
-            DatagramPacket sendPkt = new DatagramPacket(buf, buf.length,
-                                                        addr, 0);
+            DatagramPacket sendPkt = new DatagramPacket(buf, buf.length, addr, 0);
             buf = null;
             pingPkt = null;
 

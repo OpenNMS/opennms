@@ -38,7 +38,7 @@ create or replace function iplike(text, text) returns boolean as '
 			return ''f'';
 		end if;
 		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
-	
+
 		c_i3 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
 		if c_i3 > 255 then
 			return ''f'';
@@ -65,14 +65,14 @@ create or replace function iplike(text, text) returns boolean as '
 		c_work := ltrim(ltrim(c_work, ''0123456789,-*''), ''.'');
 
 		c_r2 := substr(c_work, 0, strpos(c_work, ''.''));
-		
+	
 		if not check_rule(c_i2, c_r2) then
 			return ''f'';
 		end if;
 
 		c_work := ltrim(ltrim(c_work, ''0123456789,-*''), ''.'');
 		c_r3 := substr(c_work, 0, strpos(c_work, ''.''));
-		
+	
 		if not check_rule(c_i3, c_r3) then
 			return ''f'';
 		end if;
@@ -85,61 +85,59 @@ create or replace function iplike(text, text) returns boolean as '
 		end if;
 	else
 		return ''f'';
-	end if;		
+	end if;	
 
   return ''t'';
+end;' language plpgsql;
+
+create or replace function check_range (integer, text) returns boolean as '
+declare
+	i_octet	alias for $1;
+	i_rule	alias for $2;
+	c_r1 integer;
+	c_r2 integer;
+begin
+
+	c_r1 := to_number(split_part(i_rule, ''-'', 1), ''999'');
+	c_r2 := to_number(split_part(i_rule, ''-'', 2), ''999'');
+	if i_octet between c_r1 and c_r2 then
+		return ''t'';
+	end if;
+	return ''f'';
 end;' language plpgsql;
 
 create or replace function check_rule (integer, text) returns boolean as '
 declare
 	i_octet	alias for $1;
 	i_rule	alias for $2;
-	c_r1	integer;   -- range elements
-	c_r2	integer;
-	c_element integer;
+	c_element text;
 	c_work	text;
+
 begin
 	if i_rule = ''*'' then   -- * matches anything!
 		return ''t'';
 	end if;
 
-	if i_rule ~ ''^[0-9]+$'' then
-		c_element := to_number(i_rule, ''999'');
-		if i_octet = to_number(i_rule, ''999'') then
-			return ''t'';
+	c_work := i_rule;
+	while c_work <> '''' loop
+		raise notice ''c_work = %'',c_work;
+		if c_work ~ '','' then
+			c_element := substr(c_work, 0, strpos(c_work, '',''));
+			c_work := substr(c_work, strpos(c_work, '','')+1);
 		else
-			return ''f'';
+			c_element := c_work;
+			c_work := '''';
 		end if;
-	end if;
 
-	if i_rule ~ ''[0-9]+-[0-9]'' then
-		c_r1 := to_number(substr(i_rule, 0, strpos(i_rule, ''-'')), ''999'');
-		c_r2 := to_number(substr(i_rule, strpos(i_rule, ''-'')+1), ''999'');
-
-		if i_octet between c_r1 and c_r2 then
-			return ''t'';
-		else
-			return ''f'';
-		end if;
-	end if;
-
-	if i_rule ~ ''[0-9,]'' then
-		c_work := i_rule;
-		while c_work <> '''' loop
-			if c_work ~ ''^[0-9]+$'' then
-				c_element := to_number(c_work, ''999'');
-				if c_element = i_octet then
-					return ''t'';
-				end if;
-				return ''f'';
-			end if;			
-			c_element := to_number(substr(c_work, 0, strpos(c_work, '','')), ''999'');
-			if c_element = i_octet then
+		if c_element ~ ''-'' then
+			if check_range(i_octet, c_element) then
 				return ''t'';
 			end if;
-			c_work := to_number(substr(c_work, strpos(c_work, '','')+1), ''999'');
-		end loop;
-		return ''f'';
-	end if;
+		else
+			if i_octet = to_number(c_element, ''999'') then
+				return ''t'';
+			end if;
+		end if;
+	end loop;
 	return ''f'';
 end;' language plpgsql;
