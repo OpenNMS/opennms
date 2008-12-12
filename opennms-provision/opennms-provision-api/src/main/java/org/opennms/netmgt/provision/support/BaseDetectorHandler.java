@@ -59,8 +59,9 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
 
     public void sessionOpened(IoSession session) throws Exception {
         System.out.println("Session opened");
-        if(!m_conversation.hasBannerValidator()) {
-           //session.write(m_conversation.getRequest());
+        if(!m_conversation.hasBanner()) {
+            Object request = m_conversation.getRequest();
+           session.write(request);
        }
     }
 

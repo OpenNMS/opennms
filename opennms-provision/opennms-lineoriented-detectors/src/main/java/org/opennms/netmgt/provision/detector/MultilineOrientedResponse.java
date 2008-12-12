@@ -22,6 +22,8 @@ package org.opennms.netmgt.provision.detector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -29,29 +31,28 @@ import java.util.StringTokenizer;
  */
 public class MultilineOrientedResponse {
     private BufferedReader m_in;
-    private String m_lineEscape = " ";
-    private String m_multilineIndicator = "-";
     
-    private String m_response;
+    private List<String> m_responseList;
     
-    public void setResponse(String response) {
-        m_response = response;
+    public MultilineOrientedResponse() {
+        m_responseList = new ArrayList<String>();
     }
+    
+    public void addLine(String line) {
+        m_responseList.add(line);
+    }
+
 
     public void receive(BufferedReader in) {
         m_in = in;
     }
     
     public boolean startsWith(String prefix) {
-        String[] response = m_response.split("\r\n");
-        
-        for(int i = 0; i < response.length; i++) {
-            String codeString = getCode(response[i]);
-            if(!codeString.startsWith(prefix)) {
-                return false;
-            }
+        for(String line : m_responseList) {
+           if(!line.startsWith(prefix)) {
+               return false;
+           }
         }
- 
         return true;
     }
     
@@ -62,14 +63,11 @@ public class MultilineOrientedResponse {
      */
     public boolean expectedCodeRange(int beginCodeRange, int endCodeRange) {
 
-        String[] response = m_response.split("\r\n");
-        
-        for(int i = 0; i < response.length; i++) {
-            String codeString = getCode(response[i]);
-            if(!validateCodeRange(codeString, beginCodeRange, endCodeRange)) {
+        for(String line : m_responseList) {
+            if(!validateCodeRange(line, beginCodeRange, endCodeRange)) {
                 return false;
             }
-        }
+         }
         
         return true;
             
@@ -77,6 +75,8 @@ public class MultilineOrientedResponse {
     
     //HTTP multiline response
     public boolean containedInHTTP(String pattern, String url, boolean isCheckCode, int maxRetCode) {
+
+        
         try {
             
             String response = getEntireResponse(m_in);
@@ -140,15 +140,6 @@ public class MultilineOrientedResponse {
     }
 
     /**
-     * @param firstResponseLine
-     * @return
-     */
-    private String getCode(String firstResponseLine) {
-        String codeString = firstResponseLine.substring(0, 3);
-        return codeString;
-    }
-
-    /**
      * @param codeString
      * @return
      */
@@ -162,42 +153,29 @@ public class MultilineOrientedResponse {
         
     }
 
-    public void until(String lineEcapse) {
-        m_lineEscape = lineEcapse;
-    }
-    
-    public void whileIndicator(String indicator) {
-        m_multilineIndicator = indicator;
-    }
-
-    public boolean equals(String response) {
-        return true; // (response == null ? m_response == null :
-                     // response.equals(m_response));
-    }
-
     /**
      * @param pattern
      * @return
      * @throws IOException 
      */
-    public boolean readStreamUntilContains(String pattern) throws IOException {
-        
-        BufferedReader reader = m_in;
-        StringBuffer buffer = new StringBuffer();
-        
-        boolean patternFound = false;
-        while (!patternFound) {
-            buffer.append((char) reader.read());
-            System.out.println("Return from server: " + buffer.toString());
-            if (buffer.toString().contains(pattern)) {
-                patternFound = true;
-                return patternFound;
-            }
-        }
-        return false;
-    }
+//    public boolean readStreamUntilContains(String pattern) throws IOException {
+//        
+//        BufferedReader reader = m_in;
+//        StringBuffer buffer = new StringBuffer();
+//        
+//        boolean patternFound = false;
+//        while (!patternFound) {
+//            buffer.append((char) reader.read());
+//            System.out.println("Return from server: " + buffer.toString());
+//            if (buffer.toString().contains(pattern)) {
+//                patternFound = true;
+//                return patternFound;
+//            }
+//        }
+//        return false;
+//    }
     
     public String toString() {
-        return String.format("Response: %s", m_response);
+        return String.format("Response: %s", m_responseList.toArray());
     }
 }

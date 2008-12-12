@@ -48,7 +48,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
     private Charset m_charset;
     
     public LineOrientedDecoder(Charset charset) {
-        m_charset = charset;
+        setCharset(charset);
     }
     
     @Override
@@ -96,8 +96,16 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
         
     }
     
-    private LineOrientedResponse parseCommand(IoBuffer in) throws CharacterCodingException {
-        return new LineOrientedResponse(in.getString(m_charset.newDecoder()));
+    protected Object parseCommand(IoBuffer in) throws CharacterCodingException {
+        return new LineOrientedResponse(in.getString(getCharset().newDecoder()));
+    }
+
+    public void setCharset(Charset charset) {
+        m_charset = charset;
+    }
+
+    public Charset getCharset() {
+        return m_charset;
     }
 
     
