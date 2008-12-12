@@ -84,7 +84,7 @@ public class AsyncClientConversation<Request, Response> {
     
     private List<AsyncExchange<Request, Response>> m_conversation = new ArrayList<AsyncExchange<Request, Response>>();
     private boolean m_isComplete = false;
-    private ResponseValidator<Response> m_bannerValidator;
+    private boolean m_hasBanner = false;
     
     /**
      * 
@@ -92,23 +92,15 @@ public class AsyncClientConversation<Request, Response> {
     public void addExchange(AsyncExchange<Request, Response> request) {
         m_conversation.add(request);
     }
-
-    /**
-     * @return
-     */
-    public boolean hasBannerValidator() {
-        return m_bannerValidator != null;
+    
+    public void setHasBanner(boolean hasBanner){
+        m_hasBanner = hasBanner;
+    }
+    
+    public boolean hasBanner(){
+        return m_hasBanner;
     }
 
-    /**
-     * @param message
-     * @return
-     */
-    public boolean validateBanner(Response message) {
-        boolean retVal = m_bannerValidator.validate(message);
-        m_bannerValidator = null;
-        return retVal;
-    }
 
     /**
      * @return
@@ -136,13 +128,6 @@ public class AsyncClientConversation<Request, Response> {
         }
         
         return ex.validateResponse(message);
-    }
-
-    /**
-     * @param bannerValidator
-     */
-    public void expectBanner(ResponseValidator<Response> bannerValidator) {
-        m_bannerValidator = bannerValidator;        
     }
 
     /**

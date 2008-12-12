@@ -13,39 +13,47 @@ public class LineOrientedResponse {
     private String m_response;
     
     public LineOrientedResponse(String response) {
-        m_response = response;
+        setResponse(response);
     }
     
     public void receive(BufferedReader in) throws IOException {
-        m_response = in.readLine();
+        setResponse(in.readLine());
     }
 
     public boolean startsWith(String prefix) {
-        return m_response != null && m_response.startsWith(prefix);
+        return getResponse() != null && getResponse().startsWith(prefix);
     }
     
     public boolean contains(String pattern) {
-        return m_response != null && m_response.contains(pattern);
+        return getResponse() != null && getResponse().contains(pattern);
     }
     
     public boolean endsWith(String suffix) {
-        return m_response != null && m_response.endsWith(suffix);
+        return getResponse() != null && getResponse().endsWith(suffix);
     }
     
     public boolean matches(String regex) {
-        return m_response != null && m_response.matches(regex);
+        return getResponse() != null && getResponse().matches(regex);
     }
     
     public boolean find(String regex) {
-        return m_response != null && Pattern.compile(regex).matcher(m_response).find();
+        return getResponse() != null && Pattern.compile(regex).matcher(getResponse()).find();
     }
     
     public boolean equals(String response) {
-        return (response == null ? m_response == null : response.equals(m_response));
+        return (response == null ? getResponse() == null : response.equals(getResponse()));
     }
     
     public String toString() {
-        return String.format("Response: %s", m_response);
+        return String.format("Response: %s", getResponse());
+    }
+
+    public void setResponse(String response) {
+        m_response = response;
+    }
+
+    public String getResponse() {
+        return m_response;
     }
 
 }
