@@ -213,6 +213,17 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="msdpPeerEntry" label="MSDP Peer"
+        resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="mplsL3VpnVrf" label="MPLS L3VPN VRF"
+        resourceLabel="${mL3VVrfName} - ${mL3VVrfDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
     <groups>
       <group name="cisco-frame-relay" ifType="all">
@@ -341,6 +352,7 @@
         <mibObj oid=".1.3.6.1.2.1.43.10.2.1.4.1" instance="1" alias="lifeCount"    type="Gauge" />
         <mibObj oid=".1.3.6.1.2.1.43.10.2.1.5.1" instance="1" alias="powerOnCount" type="Gauge" />
       </group>
+
       <group name="printer-mib-supplies" ifType="ignore">
         <mibObj oid=".1.3.6.1.2.1.43.11.1.1.6" instance="prtMarkerSuppliesIndex" alias="prtMarkerSuppliesDescription" type="string" />
         <mibObj oid=".1.3.6.1.2.1.43.11.1.1.8" instance="prtMarkerSuppliesIndex" alias="prtMSMaxCapacity"             type="integer" />
@@ -350,6 +362,69 @@
         <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
         <!-- Memory in KBytes -->
         <mibObj oid=".1.3.6.1.2.1.25.2.2"     instance="0" alias="memorySize"     type="integer" />
+      </group>
+
+      <!-- Stats from the IETF IPMROUTE-STD-MIB -->
+      <group name="ietf-ipmroute-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.7" instance="0" alias="ifMRouteEntryCount" type="gauge" />
+      </group>
+      <group name="ietf-ipmroute-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.5" instance="ifIndex" alias="ifInMcastOctets" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.6" instance="ifIndex" alias="ifOutMcastOctets" type="counter" />
+      </group>
+      <group name="ietf-ipmroute-interfaces-hc" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.7" instance="ifIndex" alias="ifHCInMcastOctets" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.8" instance="ifIndex" alias="ifHCOutMcastOctets" type="counter" />
+      </group>
+
+      <!-- Stats from the IETF IGMP-STD-MIB -->
+      <group name="ietf-igmp-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.85.1.1.1.10" instance="ifIndex" alias="igmpIfWrongVerQrys" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.85.1.1.1.11" instance="ifIndex" alias="igmpIfJoins" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.85.1.1.1.13" instance="ifIndex" alias="igmpIfGroups" type="gauge" />
+      </group>
+
+      <!-- Stats from the IETF MSDP-MIB -->
+      <group name="ietf-msdp-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.3.92.1.1.3" instance="0" alias="msdpSACacheEntries" type="gauge" />
+      </group>
+      <group name="ietf-msdp-peers" ifType="all">
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.1" instance="msdpPeerEntry" alias="msdpPeerRemoteAddr" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.4" instance="msdpPeerEntry" alias="msdpPeerRPFFailures" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.5" instance="msdpPeerEntry" alias="msdpPeerInSAs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.6" instance="msdpPeerEntry" alias="msdpPeerOutSAs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.7" instance="msdpPeerEntry" alias="msdpPeerInSAReqs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.8" instance="msdpPeerEntry" alias="msdpPeerOutSAReqs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.9" instance="msdpPeerEntry" alias="msdpPeerInSARsps" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.10" instance="msdpPeerEntry" alias="msdpPeerOutSARsps" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.11" instance="msdpPeerEntry" alias="msdpPeerInCtrlMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.12" instance="msdpPeerEntry" alias="msdpPeerOutCtrlMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.13" instance="msdpPeerEntry" alias="msdpPeerInDataPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.14" instance="msdpPeerEntry" alias="msdpPeerOutDataPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.15" instance="msdpPeerEntry" alias="msdpPeerEstabTrans" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.18" instance="msdpPeerEntry" alias="msdpPeerLocalAddr" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.26" instance="msdpPeerEntry" alias="msdpPeerRemotePort" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.27" instance="msdpPeerEntry" alias="msdpPeerLocalPort" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.30" instance="msdpPeerEntry" alias="msdpPeerConnAttmpts" type="gauge" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.31" instance="msdpPeerEntry" alias="msdpPeerInNotifs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.32" instance="msdpPeerEntry" alias="msdpPeerOutNotifs" type="counter" />
+      </group>
+
+      <!-- Stats from the IETF MPLS-L3VPN-STD-MIB -->
+      <group name="ietf-mpls-l3vpn-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.1.1" instance="0" alias="mL3VConfiguredVrfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.1.2" instance="0" alias="mL3VActiveVrfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.1.3" instance="0" alias="mL3VConnectedIfs" type="gauge" />
+      </group>
+      <group name="ietf-mpls-l3vpn-vrfs" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.1" instance="mplsL3VpnVrf" alias="mL3VVrfName" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.3" instance="mplsL3VpnVrf" alias="mL3VVrfDescr" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.7" instance="mplsL3VpnVrf" alias="mL3VVrfActiveIfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.8" instance="mplsL3VpnVrf" alias="mL3VVrfAssocIfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.1" instance="mplsL3VpnVrf" alias="mL3VVrfPerfRtsAdded" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.2" instance="mplsL3VpnVrf" alias="mL3VVrfPerfRtsDeled" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.3" instance="mplsL3VpnVrf" alias="mL3VVrfPerfCurRts" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.4" instance="mplsL3VpnVrf" alias="mL3VVrfPerfRtsDrpd" type="counter" />
       </group>
 
       <!-- Alvarion mibs -->
@@ -670,6 +745,56 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.23" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWDS"     type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.24" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsSD" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.25" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsDS" type="gauge" />
+      </group>
+
+      <!-- Stats from the CISCO-IPMROUTE-MIB -->
+      <group name="cisco-ipmroute-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.1" instance="0" alias="ciscoIpMRouteEnt" type="gauge" />
+      </group>
+      <group name="cisco-ipmroute-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.1" instance="ifIndex" alias="csIpMRIfInMCOcts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.2" instance="ifIndex" alias="csIpMRIfOutMCOcts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.3" instance="ifIndex" alias="csIpMRIfInMCPkt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.4" instance="ifIndex" alias="csIpMRIfHCInMCPkt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.5" instance="ifIndex" alias="csIpMRIfOutMCPkt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.6" instance="ifIndex" alias="csIpMRIfHCOutMCPkt" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-MVPN-MIB -->
+      <group name="cisco-mvpn-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.10.113.1.1.1" instance="0" alias="ciscoMvpnMvrfNum" type="gauge" />
+      </group>
+      <group name="cisco-mvpn-vrfs" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.10.113.1.2.1.1.3" instance="mplsL3VpnVrf" alias="cscoMvpnGenAssocIfs" type="gauge" />
+      </group>
+
+      <!-- Stats from the CISCO-PIM-MIB -->
+      <group name="cisco-pim-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.184.1.1.1" instance="0" alias="cpimInvRegMsgsRcvd" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.184.1.1.2" instance="0" alias="cpimInvPrnMsgsRcvd" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-IGMP-SNOOPING-MIB -->
+      <group name="cisco-igmp-snooping-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.1" instance="ifIndex" alias="cisTxGeneralQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.2" instance="ifIndex" alias="cisTxGrpSpecQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.3" instance="ifIndex" alias="cisTxReports" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.4" instance="ifIndex" alias="cisTxLeaves" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.5" instance="ifIndex" alias="cisRxGeneralQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.6" instance="ifIndex" alias="cisRxGrpSpecQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.7" instance="ifIndex" alias="cisRxReports" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.8" instance="ifIndex" alias="cisRxLeaves" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.9" instance="ifIndex" alias="cisRxValidPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.10" instance="ifIndex" alias="cisRxInvalidPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.11" instance="ifIndex" alias="cisRxOtherPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.12" instance="ifIndex" alias="cisRxMACGenQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.13" instance="ifIndex" alias="cisRxTopoNotifs" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.14" instance="ifIndex" alias="cisV3Allows" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.15" instance="ifIndex" alias="cisV3Blocks" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.16" instance="ifIndex" alias="cisV3IsIncluded" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.17" instance="ifIndex" alias="cisV3IsExcluded" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.18" instance="ifIndex" alias="cisV3ToIncluded" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.19" instance="ifIndex" alias="cisV3ToExcluded" type="counter" />
       </group>
 
       <group name="ipunity-as-call-scalars" ifType="ignore" >
@@ -1177,6 +1302,51 @@
       <group name="juniper-erx-temperature" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.3" instance="juniSystemTempIndex" alias="juniSTValue"         type="integer" />
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.4" instance="juniSystemTempIndex" alias="juniSTPhysicalIndex" type="string" />
+      </group>
+
+      <group name="juniper-mroute-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.65.1.2.4.1.1" instance="ifIndex" alias="juniMRtIfActiveGrp" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.65.1.2.4.1.2" instance="ifIndex" alias="juniMRtIfBlockedGrp" type="Gauge32" />
+      </group>
+
+      <group name="juniper-pim-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.1"  instance="0" alias="juniPimHelloRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.2"  instance="0" alias="juniPimJoinPrunRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.3"  instance="0" alias="juniPimAssertRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.4"  instance="0" alias="juniPimGraftRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.5"  instance="0" alias="juniPimGraftAckRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.6"  instance="0" alias="juniPimHelloSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.7"  instance="0" alias="juniPimJoinPrunSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.8"  instance="0" alias="juniPimAssertSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.9"  instance="0" alias="juniPimGraftSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.10" instance="0" alias="juniPimGraftAckSent" type="Counter32" />
+      </group>
+
+      <group name="juniper-pim-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.1"  instance="ifIndex" alias="juniPimIfHelloRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.2"  instance="ifIndex" alias="juniPimIfJnPrunRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.3"  instance="ifIndex" alias="juniPimIfAssertRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.4"  instance="ifIndex" alias="juniPimIfGraftRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.5"  instance="ifIndex" alias="juniPimIfGftAckRcvd" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.6"  instance="ifIndex" alias="juniPimIfHelloSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.7"  instance="ifIndex" alias="juniPimIfJnPrunSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.8"  instance="ifIndex" alias="juniPimIfAssertSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.9"  instance="ifIndex" alias="juniPimIfGraftSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.10" instance="ifIndex" alias="juniPimIfGftAckSent" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.43.1.1.11.1.12" instance="ifIndex" alias="juniPimIfNeighbors" type="Gauge32" />
+      </group>
+
+      <group name="juniper-igmp-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.2"  instance="ifIndex" alias="juniIgmpPxIfIpAddr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.9"  instance="ifIndex" alias="juniIgmpPxIfGroups" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.10" instance="ifIndex" alias="juniIgmpPxIfWrngVer" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.11" instance="ifIndex" alias="juniIgmpPxIfV1QryRx" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.12" instance="ifIndex" alias="juniIgmpPxIfV2QryRx" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.13" instance="ifIndex" alias="juniIgmpPxIfV1RptRx" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.14" instance="ifIndex" alias="juniIgmpPxIfV2RptRx" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.15" instance="ifIndex" alias="juniIgmpPxIfV1JRpTx" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.16" instance="ifIndex" alias="juniIgmpPxIfV2JRpTx" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.4874.2.2.40.1.2.1.1.17" instance="ifIndex" alias="juniIgmpPxIfLvRpTx" type="Counter32" />
       </group>
 
       <!-- MGE UPS MIBs -->
