@@ -132,6 +132,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param bannerValidator
      */
     protected void expectBanner(ResponseValidator<Response> bannerValidator) {
+        getConversation().setHasBanner(true);
         getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(null, bannerValidator));
     }
     
@@ -143,6 +144,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     protected void send(Request request, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(request, responseValidator));
     }
+    
     
     /**
      * 

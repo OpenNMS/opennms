@@ -30,31 +30,93 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;
+
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
-public class AsyncHttpDetector extends AsyncBasicDetector<String, String> {
+public class AsyncHttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpStatusResponse> {
 
+    private static String DEFAULT_URL="/";
+    private static int DEFAULT_MAX_RET_CODE = 399;
+    private String m_url;
+    private int m_maxRetCode;
+    private boolean m_checkRetCode = false;
     
+    public AsyncHttpDetector() {
+        super(80, 3000, 0);
+        setProtocolCodecFilter(new ProtocolCodecFilter(new HttpProtocolCodecFactory()));
+        setServiceName("HTTP");
+        setUrl(DEFAULT_URL);
+        setMaxRetCode(DEFAULT_MAX_RET_CODE);
+    }
+    
+    
+    
+    protected void onInit() {
+        send(request(httpCommand("GET")), contains("HTTP", getUrl(), isCheckRetCode(), getMaxRetCode()));
+    }
     
     /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * @param string
+     * @return
      */
-    public AsyncHttpDetector() {
-        super(80, 3000, 3);
-        setServiceName("HTTP");
-        //setProtocolCodecFilter(new ProtocolCodecFilter( ));
+    protected String httpCommand(String command) {
+        
+        return String.format("%s %s  HTTP/1.0\r\n\r\n", command, getUrl());
+    }
+    
+    protected LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
+    }
+    
+    protected ResponseValidator<HttpStatusResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
+        return new ResponseValidator<HttpStatusResponse>(){
+
+            public boolean validate(HttpStatusResponse message) {
+                
+                try {
+                    return message.validateResponse(pattern, url, isCheckCode, maxRetCode);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            
+        };
+    }
+    
+    
+    //Public setters and getters
+    
+    public void setUrl(String url) {
+        m_url = url;
     }
 
-    @Override
-    protected void onInit() {
-        
-        
+    public String getUrl() {
+        return m_url;
     }
+
+    public void setMaxRetCode(int maxRetCode) {
+        m_maxRetCode = maxRetCode;
+    }
+
+    public int getMaxRetCode() {
+        return m_maxRetCode;
+    }
+
+    public void setCheckRetCode(boolean checkRetCode) {
+        m_checkRetCode = checkRetCode;
+    }
+
+    public boolean isCheckRetCode() {
+        return m_checkRetCode;
+    }  
 
 }

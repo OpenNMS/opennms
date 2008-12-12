@@ -47,6 +47,7 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
     
     private final String m_multilineIndicator;
     private Charset m_charset;
+    private String CURRENT_RESPONSE = "CURRENT_RESPONSE";
     
     public MultiLineDecoder(Charset charset, String multilineIndicator) {
         m_charset = charset;
@@ -55,7 +56,12 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
     
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
-     // Remember the initial position.
+        MultilineOrientedResponse response = (MultilineOrientedResponse) session.getAttribute(CURRENT_RESPONSE);
+        if(response == null) {
+            response = new MultilineOrientedResponse();
+            session.setAttribute(CURRENT_RESPONSE, response);
+        }
+        // Remember the initial position.
         int start = in.position();
         
         // Now find the first CRLF in the buffer.
@@ -73,14 +79,13 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
                     // The bytes between in.position() and in.limit()
                     // now contain a full CRLF terminated line.
                     
-                   if(!checkIndicator(in.slice())) {
-                       //TODO: make sure that this is working appropriately 
-                       in.position(0);
-                        //MultilineOrientedResponse resp = parseCommand(in.slice());
-                        //System.out.printf("*** Response from Server Decoded:\n %s \n******", resp.toString());
-                        //out.write(resp);
-                        out.write(parseCommand(in.slice()));
-                        return true;
+                   if(!checkIndicator(in.slice())) { 
+                       response.addLine(in.getString(m_charset.newDecoder()));
+                       out.write(response);
+                       session.removeAttribute(CURRENT_RESPONSE);
+                       return true;
+                    }else {
+                       response.addLine(in.getString(m_charset.newDecoder()));
                     }
                     
                     
@@ -111,12 +116,6 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
     private boolean checkIndicator(IoBuffer in) throws CharacterCodingException {
         String line = in.getString(m_charset.newDecoder());
         return line.substring(3, 4).equals(m_multilineIndicator);
-    }
-    
-    private MultilineOrientedResponse parseCommand(IoBuffer in) throws CharacterCodingException {
-        MultilineOrientedResponse response = new MultilineOrientedResponse();
-        response.setResponse(in.getString(m_charset.newDecoder()));
-        return response;
     }
 
 }

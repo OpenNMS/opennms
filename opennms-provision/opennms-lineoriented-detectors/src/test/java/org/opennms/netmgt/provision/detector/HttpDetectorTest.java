@@ -37,30 +37,35 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 
 public class HttpDetectorTest {
     
-    private HttpDetector m_detector;
+    private AsyncHttpDetector m_detector;
+    //private HttpDetector m_detector;
     private SimpleServer m_server;
     
-    private String serverOKResponse = "HTTP/1.1 200 OK\r\n"
-                                    + "Date: Tue, 28 Oct 2008 20:47:55 GMT\r\n"
-                                    + "Server: Apache/2.0.54\r\n"
-                                    + "Last-Modified: Fri, 16 Jun 2006 01:52:14 GMT\r\n"
-                                    + "ETag: \"778216aa-2f-aa66cf80\"\r\n"
-                                    + "Accept-Ranges: bytes\r\n"
-                                    + "Content-Length: 47\r\n"
-                                    + "Vary: Accept-Encoding,User-Agent\r\n"
-                                    + "Connection: close\rn"
-                                    + "Content-Type: text/html\r\n"
-                                    + "<html>\r\n"
+    private String headers = "HTTP/1.1 200 OK\r\n"
+                            + "Date: Tue, 28 Oct 2008 20:47:55 GMT\r\n"
+                            + "Server: Apache/2.0.54\r\n"
+                            + "Last-Modified: Fri, 16 Jun 2006 01:52:14 GMT\r\n"
+                            + "ETag: \"778216aa-2f-aa66cf80\"\r\n"
+                            + "Accept-Ranges: bytes\r\n"
+                            + "Vary: Accept-Encoding,User-Agent\r\n"
+                            + "Connection: close\r\n"
+                            + "Content-Type: text/html\r\n";
+    
+    private String serverContent = "<html>\r\n"
                                     + "<body>\r\n"
                                     + "<!-- default -->\r\n"
                                     + "</body>\r\n"
-                                    + "</html>";
+                                    + "</html>\r\n";
+    
+    private String serverOKResponse = headers + String.format("Content-Length: %s\r\n", serverContent.length()) + "\r\n" + serverContent;
+                    
     
     private String notFoundResponse = "HTTP/1.1 404 Not Found\r\n"
                                     + "Date: Tue, 28 Oct 2008 20:47:55 GMT\r\n"
@@ -68,10 +73,11 @@ public class HttpDetectorTest {
                                     + "Last-Modified: Fri, 16 Jun 2006 01:52:14 GMT\r\n"
                                     + "ETag: \"778216aa-2f-aa66cf80\"\r\n"
                                     + "Accept-Ranges: bytes\r\n"
-                                    + "Content-Length: 47\r\n"
+                                    + "Content-Length: 52\r\n"
                                     + "Vary: Accept-Encoding,User-Agent\r\n"
                                     + "Connection: close\rn"
                                     + "Content-Type: text/html\r\n"
+                                    + "\r\n"
                                     + "<html>\r\n"
                                     + "<body>\r\n"
                                     + "<!-- default -->\r\n"
@@ -84,150 +90,125 @@ public class HttpDetectorTest {
     
     @Before
     public void setUp() throws Exception {
-        m_detector = new HttpDetector();        
+        m_detector = new AsyncHttpDetector();
+        
+        
     }
     
     @After
     public void tearDown() throws IOException {
-        
+       if(m_server != null) {
+           m_server.stopServer();   
+       } 
     }
     
     @Test
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_detector.init();
-        
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(notAServerResponse));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        m_server = createServer(notAServerResponse);
         m_detector.setPort(m_server.getLocalPort());
         
-       assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testDetectorFailNotFoundResponseMaxRetCode399() throws Exception {
-        m_detector.isCheckRetCode(true);
+        m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
-        m_detector.setMaxRetCode(399);
+        m_detector.setMaxRetCode(301);
         m_detector.init();
         
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(notFoundResponse));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        m_server = createServer(notFoundResponse);
         m_detector.setPort(m_server.getLocalPort());
         
-       assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testDetectorSucessMaxRetCode399() throws Exception {
-        m_detector.isCheckRetCode(true);
+        m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
         m_detector.setMaxRetCode(399);
         m_detector.init();
         
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(getServerOKResponse()));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testDetectorFailMaxRetCodeBelow200() throws Exception {
-        m_detector.isCheckRetCode(true);
+        m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
         m_detector.setMaxRetCode(199);
         m_detector.init();
         
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(getServerOKResponse()));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testDetectorMaxRetCode600() throws Exception {
-        m_detector.isCheckRetCode(true);
+        m_detector.setCheckRetCode(true);
         m_detector.setMaxRetCode(600);
         m_detector.init();
         
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(getServerOKResponse()));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
+    
     
     @Test
     public void testDetectorSucessCheckCodeTrue() throws Exception {
-        m_detector.isCheckRetCode(true);
+        m_detector.setCheckRetCode(true);
+        m_detector.setUrl("http://localhost/");
         m_detector.init();
-        
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(getServerOKResponse()));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        m_detector.setIdleTime(1000);
+        m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
     public void testDetectorSuccessCheckCodeFalse() throws Exception {
-        m_detector.isCheckRetCode(false);
+        m_detector.setCheckRetCode(false);
         m_detector.init();
-        m_server = new SimpleServer() {
-          
-            public void onInit() {
-                addResponseHandler(contains("GET"), shutdownServer(getServerOKResponse()));
-            }
-        };
-        m_server.init();
-        m_server.startServer();
+        
+        m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
-       assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+       assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
-
+    
     public void setServerOKResponse(String serverOKResponse) {
         this.serverOKResponse = serverOKResponse;
     }
 
     public String getServerOKResponse() {
         return serverOKResponse;
+    }
+    
+    
+    private SimpleServer createServer(final String httpResponse) throws Exception {
+        SimpleServer server = new SimpleServer() {
+            
+            public void onInit() {
+                addResponseHandler(contains("GET"), shutdownServer(httpResponse));
+            }
+        };
+        server.init();
+        server.startServer();
+        
+        return server;
+    }
+    private boolean doCheck(DetectFuture future) throws InterruptedException {
+        future.await();
+        return future.isServiceDetected();
     }
 }
