@@ -48,7 +48,7 @@ public class FtpDetectorTest {
         
         m_server.setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
         m_detector.setPort(m_server.getLocalPort());
-        
+        m_detector.setIdleTime(100);
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(),new NullDetectorMonitor()))); 
     }
     
