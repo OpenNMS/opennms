@@ -64,7 +64,7 @@ public class MultilineOrientedResponse {
     public boolean expectedCodeRange(int beginCodeRange, int endCodeRange) {
 
         for(String line : m_responseList) {
-            if(!validateCodeRange(line, beginCodeRange, endCodeRange)) {
+            if(!validateCodeRange(getCode(line), beginCodeRange, endCodeRange)) {
                 return false;
             }
          }
@@ -73,7 +73,13 @@ public class MultilineOrientedResponse {
             
     }
     
-    //HTTP multiline response
+    private String getCode(String firstResponseLine) {
+        String codeString = firstResponseLine.substring(0, 3);
+        return codeString;
+    }
+
+    
+    //Kept in here 
     public boolean containedInHTTP(String pattern, String url, boolean isCheckCode, int maxRetCode) {
 
         
