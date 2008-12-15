@@ -29,9 +29,12 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;
 
-public class HttpDetector extends MultilineOrientedDetector {
+public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpStatusResponse> {
     
     private static String DEFAULT_URL="/";
     private static int DEFAULT_MAX_RET_CODE = 399;
@@ -39,16 +42,18 @@ public class HttpDetector extends MultilineOrientedDetector {
     private int m_maxRetCode;
     private boolean m_checkRetCode = false;
     
-    protected HttpDetector() {
+    public HttpDetector() {
         super(80, 3000, 0);
+        setProtocolCodecFilter(new ProtocolCodecFilter(new HttpProtocolCodecFactory()));
         setServiceName("HTTP");
         setUrl(DEFAULT_URL);
         setMaxRetCode(DEFAULT_MAX_RET_CODE);
     }
     
+    
+    
     protected void onInit() {
-        send(request(httpCommand("GET")), contains("HTTP/",  getUrl(), isCheckRetCode(), getMaxRetCode()));
-        expectClose();
+        send(request(httpCommand("GET")), contains("HTTP", getUrl(), isCheckRetCode(), getMaxRetCode()));
     }
     
     /**
@@ -56,20 +61,32 @@ public class HttpDetector extends MultilineOrientedDetector {
      * @return
      */
     protected String httpCommand(String command) {
-        return String.format("%s%s", getUrl(), command);
+        
+        return String.format("%s %s  HTTP/1.0\r\n\r\n", command, getUrl());
     }
+    
+    protected LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
+    }
+    
+    protected ResponseValidator<HttpStatusResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
+        return new ResponseValidator<HttpStatusResponse>(){
 
-    protected ResponseValidator<MultilineOrientedResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
-        return new ResponseValidator<MultilineOrientedResponse>() {
-
-            public boolean validate(MultilineOrientedResponse response) {
-              
-                return response.containedInHTTP(pattern, url, isCheckCode, maxRetCode);
+            public boolean validate(HttpStatusResponse message) {
+                
+                try {
+                    return message.validateResponse(pattern, url, isCheckCode, maxRetCode);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    return false;
+                }
             }
             
         };
     }
-
+    
+    
     //Public setters and getters
     
     public void setUrl(String url) {
@@ -88,12 +105,11 @@ public class HttpDetector extends MultilineOrientedDetector {
         return m_maxRetCode;
     }
 
-    public void isCheckRetCode(boolean checkRetCode) {
+    public void setCheckRetCode(boolean checkRetCode) {
         m_checkRetCode = checkRetCode;
     }
 
     public boolean isCheckRetCode() {
         return m_checkRetCode;
-    }  
-
+    }
 }

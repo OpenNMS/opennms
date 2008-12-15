@@ -29,8 +29,6 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import org.opennms.netmgt.provision.support.Client;
-
 
 public class HttpsDetector extends HttpDetector {
     
@@ -40,24 +38,11 @@ public class HttpsDetector extends HttpDetector {
         setPort(443);
         setTimeout(500);
         setRetries(1);
+        setUseSSLFilter(true);
+        setServiceName("HTTP");
+        setUrl("/");
+        setMaxRetCode(500);
     }
     
-    protected void onInit() {
-        send(request(httpCommand("GET")), contains("HTTP/",getUrl(), isCheckRetCode(), getMaxRetCode()));
-        expectClose();
-    }
     
-    /**
-     * @param string
-     * @return
-     */
-    protected String httpCommand(String command) {
-        //String.format("GET %s  HTTP/1.0\r\n\r\n", url)
-        return String.format("%s %s   HTTP/1.0\r\n", command, getUrl());
-    }
-    
-    @Override
-    protected Client<LineOrientedRequest, MultilineOrientedResponse> getClient() {
-        return new SSLClient();
-    }
 }
