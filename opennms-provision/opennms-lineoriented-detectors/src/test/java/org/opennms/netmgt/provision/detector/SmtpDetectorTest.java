@@ -139,19 +139,19 @@ public class SmtpDetectorTest {
     }
     
     @Test
-    public void testDetectorFailServerStopped() throws IOException, InterruptedException {
+    public void testDetectorFailServerStopped() throws Exception {
         m_server.stopServer();
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
-    public void testDetectorFailWrongPort() throws InterruptedException {
+    public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(1);
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     
     @Test
-    public void testDetectorSucess() throws InterruptedException {
+    public void testDetectorSucess() throws Exception {
         assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor())));
     }
     

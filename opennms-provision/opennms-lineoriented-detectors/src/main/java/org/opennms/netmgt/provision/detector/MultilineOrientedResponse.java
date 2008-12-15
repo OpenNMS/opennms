@@ -182,6 +182,6 @@ public class MultilineOrientedResponse {
 //    }
     
     public String toString() {
-        return String.format("Response: %s", m_responseList.toArray());
+        return m_responseList.isEmpty() ? "MultilineOrientedResponse" : String.format("Response: %s", m_responseList.toArray());
     }
 }

@@ -70,7 +70,7 @@ public class CitrixDetectorTest {
     }
     
     @Test
-    public void testMyDetector() {
+    public void testMyDetector() throws Exception {
         m_detector.setPort(20000);
         m_detector.init();
         
@@ -82,7 +82,7 @@ public class CitrixDetectorTest {
     }
     
     @Test
-    public void testDetectorFailWrongPort() {
+    public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(20000);
         m_detector.init();
         
@@ -94,7 +94,7 @@ public class CitrixDetectorTest {
     }
     
     @Test
-    public void testDetectorSuccess() {
+    public void testDetectorSuccess() throws Exception {
         m_detector.setPort(m_server.getLocalPort());
         m_detector.init();
         

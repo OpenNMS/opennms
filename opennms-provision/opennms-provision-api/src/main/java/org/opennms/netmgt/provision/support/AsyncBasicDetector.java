@@ -33,7 +33,12 @@ package org.opennms.netmgt.provision.support;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.future.ConnectFuture;
@@ -43,12 +48,14 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
+import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchangeImpl;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
  * @author Donald Desloge
@@ -61,6 +68,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" )));
     private int m_idleTime = 1;
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
+    private boolean useSSLFilter = false;
     
     /**
      * 
@@ -75,7 +83,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     abstract protected void onInit();
     
     @Override
-    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) {
+    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception {
         DetectFuture future = null;
         
         SocketConnector connector = new NioSocketConnector();
@@ -85,6 +93,13 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         // Set connect timeout.
         connector.setConnectTimeoutMillis( getTimeout() );
         connector.setHandler( createDetectorHandler(future) );
+        
+        if(isUseSSLFilter()) {
+            SslFilter filter = new SslFilter(createClientSSLContext());
+            filter.setUseClientMode(true);
+            connector.getFilterChain().addFirst("SSL", filter);
+        }
+        
         connector.getFilterChain().addLast( "logger", getLoggingFilter() != null ? getLoggingFilter() : new LoggingFilter() );
         connector.getFilterChain().addLast( "codec", getProtocolCodecFilter());
         connector.getSessionConfig().setIdleTime( IdleStatus.READER_IDLE, getIdleTime() );
@@ -94,9 +109,30 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         ConnectFuture cf = connector.connect( socketAddress );
         cf.addListener(retryAttemptListener( connector, future, socketAddress, getRetries() ));
         
+        
+        //Added for SSL Support, mainly for the HTTPS detector
+//        if(isUseSSLFilter()) {
+//            IoSession session = cf.getSession();
+//            SslFilter filter = new SslFilter(createClientSSLContext());
+//            filter.setUseClientMode(true);
+//            session.getFilterChain().addBefore("codec", "SSL", filter);
+//        }
+        
         return future;
     }
     
+    /**
+     * @return
+     * @throws NoSuchAlgorithmException 
+     * @throws KeyManagementException 
+     */
+    private SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
+        TrustManager[] tm = { new RelaxedX509TrustManager() };
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, tm, new java.security.SecureRandom());
+        return sslContext;
+    }
+
     /**
      * Handles the retry attempts. Listens to see when the ConnectFuture is finished and checks if there was 
      * an exception thrown. If so, it then attempts a retry if there are more retries.
@@ -226,6 +262,14 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
           
             
         };
+    }
+
+    public void setUseSSLFilter(boolean useSSLFilter) {
+        this.useSSLFilter = useSSLFilter;
+    }
+
+    public boolean isUseSSLFilter() {
+        return useSSLFilter;
     }
        
 
