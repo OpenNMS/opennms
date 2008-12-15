@@ -45,7 +45,6 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 public class HttpDetectorTest {
     
     private AsyncHttpDetector m_detector;
-    //private HttpDetector m_detector;
     private SimpleServer m_server;
     
     private String headers = "HTTP/1.1 200 OK\r\n"
