@@ -73,8 +73,9 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      * @param InetAddress address
      * @param DetectMonitor monitor
      * @return DetectFuture
+     * @throws Exception 
      */
-    abstract public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor);
+    abstract public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception;
     
     public void setPort(int port) {
         m_port = port;

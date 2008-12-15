@@ -75,12 +75,12 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         System.out.println("Session idle");
         getFuture().setServiceDetected(false);
-        session.close();
+        session.close(false);
     }
 
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        System.out.println("Exception Caught");
         super.exceptionCaught(session, cause);
+        System.out.println("Exception was caught in the handler");
         cause.printStackTrace();
     }
 
@@ -96,15 +96,15 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
                    session.write(request);
                }else if(request == null && m_conversation.isComplete()){
                    getFuture().setServiceDetected(true);
-                   session.close();
+                   session.close(false);
                }else {
                    
                    getFuture().setServiceDetected(false);
-                   session.close();
+                   session.close(false);
                }
             }else {
                 getFuture().setServiceDetected(false);
-                session.close();
+                session.close(false);
             }
             
         }catch(Exception e){
@@ -120,6 +120,10 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
      */
     public void setConversation(AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;        
+    }
+    
+    public AsyncClientConversation<Request, Response> getConversation() {
+        return m_conversation;
     }
     
 }

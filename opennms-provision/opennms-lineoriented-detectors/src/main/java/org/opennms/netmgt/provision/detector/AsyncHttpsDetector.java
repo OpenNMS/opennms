@@ -28,19 +28,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision;
-
-import java.net.InetAddress;
+package org.opennms.netmgt.provision.detector;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
-public interface AsyncServiceDetector {
+public class AsyncHttpsDetector extends AsyncHttpDetector {
     
-    public void init();
-    
-    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception;
+    protected AsyncHttpsDetector() {
+        setServiceName("Https");
+        setPort(443);
+        setTimeout(500);
+        setRetries(1);
+        setUseSSLFilter(true);
+        setServiceName("HTTP");
+        setUrl("/");
+        setMaxRetCode(500);
+    }
     
     
 }
