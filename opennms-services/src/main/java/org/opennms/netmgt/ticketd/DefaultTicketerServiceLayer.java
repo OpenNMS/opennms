@@ -33,12 +33,18 @@
  */
 package org.opennms.netmgt.ticketd;
 
+import org.apache.log4j.Category;
 import org.opennms.api.integration.ticketing.*;
 import org.opennms.api.integration.ticketing.Ticket.State;
+import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -54,7 +60,14 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	
 	private AlarmDao m_alarmDao;
     private Plugin m_ticketerPlugin;
-
+    private EventIpcManager m_eventIpcManager;
+    
+    static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
+    
+    public DefaultTicketerServiceLayer() {
+        m_eventIpcManager = EventIpcManagerFactory.getIpcManager();
+    }
+    
 	/**
 	 * Needs access to the AlarmDao.
 	 * 
@@ -93,17 +106,30 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 			throw new ObjectRetrievalFailureException("Unable to locate Alarm with ID: "+alarmId, null);
 		}
 
-		setTicketState(ticketId, Ticket.State.CANCELLED);
-        
-        alarm.setTTicketState(TroubleTicketState.CANCELLED);
+	
+		try {
+            setTicketState(ticketId, Ticket.State.CANCELLED);
+            alarm.setTTicketState(TroubleTicketState.CANCELLED);
+        } catch (PluginException e) {
+            alarm.setTTicketState(TroubleTicketState.CANCEL_FAILED);
+            log().error("Unable to cancel ticket for alarm: " + e.getMessage());
+            m_eventIpcManager.sendNow(createEvent(e.getMessage()));
+            // e.printStackTrace();
+        }
+
         m_alarmDao.saveOrUpdate(alarm);
         
 	}
 
-    private void setTicketState(String ticketId, State state) { 
-        Ticket ticket = m_ticketerPlugin.get(ticketId);
-        ticket.setState(state);
-        m_ticketerPlugin.saveOrUpdate(ticket);
+    private void setTicketState(String ticketId, State state) throws PluginException { 
+        try {
+            Ticket ticket = m_ticketerPlugin.get(ticketId);
+            ticket.setState(state);
+            m_ticketerPlugin.saveOrUpdate(ticket);
+        } catch (PluginException e) {            
+            log().error("Unable to set ticket state");
+            throw e;
+        }
     }
     
 
@@ -114,9 +140,16 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	public void closeTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
-       setTicketState(ticketId, State.CLOSED);
+        try {
+            setTicketState(ticketId, State.CLOSED);
+            alarm.setTTicketState(TroubleTicketState.CLOSED);
+        } catch (PluginException e) {
+            alarm.setTTicketState(TroubleTicketState.CLOSE_FAILED);
+            log().error("Unable to close ticket for alarm: " + e.getMessage());
+            m_eventIpcManager.sendNow(createEvent(e.getMessage()));
+            //e.printStackTrace();
+        }
         
-		alarm.setTTicketState(TroubleTicketState.CLOSED);
 		m_alarmDao.saveOrUpdate(alarm);
 	}
 
@@ -125,15 +158,23 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	 * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#createTicketForAlarm(int)
 	 */
 	public void createTicketForAlarm(int alarmId) {
+	    
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
         Ticket ticket = createTicketFromAlarm(alarm);
         
-        m_ticketerPlugin.saveOrUpdate(ticket);
-
-        alarm.setTTicketId(ticket.getId());
-		alarm.setTTicketState(TroubleTicketState.OPEN);
+        try {
+            m_ticketerPlugin.saveOrUpdate(ticket);
+            alarm.setTTicketId(ticket.getId());
+            alarm.setTTicketState(TroubleTicketState.OPEN);
+        } catch (PluginException e) {
+            alarm.setTTicketState(TroubleTicketState.CREATE_FAILED);
+            log().error("Unable to create ticket for alarm: "  + e.getMessage());
+            m_eventIpcManager.sendNow(createEvent(e.getMessage()));
+        }
+        
 		m_alarmDao.saveOrUpdate(alarm);
+		
 	}
 
 	/**
@@ -166,21 +207,51 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 		
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
-		Ticket ticket = m_ticketerPlugin.get(ticketId);
+		Ticket ticket = null;
+		
+        try {
+            ticket = m_ticketerPlugin.get(ticketId);
+            if (ticket.getState() == Ticket.State.CANCELLED) {
+                alarm.setTTicketState(TroubleTicketState.CANCELLED);
+            } else if (ticket.getState() == Ticket.State.CLOSED) {
+                alarm.setTTicketState(TroubleTicketState.CLOSED);
+            } else if (ticket.getState() == Ticket.State.OPEN) {
+                alarm.setTTicketState(TroubleTicketState.OPEN);
+            } else {
+                alarm.setTTicketState(TroubleTicketState.OPEN);
+            }
+        } catch (PluginException e) {
+            alarm.setTTicketState(TroubleTicketState.UPDATE_FAILED);
+            log().error("Unable to update ticket for alarm: " + e.getMessage());
+            m_eventIpcManager.sendNow(createEvent(e.getMessage()));
+        }
         
-		if (ticket.getState() == Ticket.State.CANCELLED) {
-			alarm.setTTicketState(TroubleTicketState.CANCELLED);
-		} else if (ticket.getState() == Ticket.State.CLOSED) {
-			alarm.setTTicketState(TroubleTicketState.CLOSED);
-		} else if (ticket.getState() == Ticket.State.OPEN) {
-			alarm.setTTicketState(TroubleTicketState.OPEN);
-		} else {
-			//TODO: need to add failure states
-			alarm.setTTicketState(TroubleTicketState.OPEN);
-		}
 		m_alarmDao.saveOrUpdate(alarm);
 	}
     
     // TODO what if the alarm doesn't exist?
+	
+	private Event createEvent(String reason) {
+        EventBuilder bldr = new EventBuilder(COMMS_ERROR_UEI, "Ticketd");
+        bldr.addParam("reason", reason);
+        return bldr.getEvent();
+    }
 
+	public EventIpcManager getEventIpcManager() {
+        return m_eventIpcManager;
+    }
+
+    public void setEventIpcManager(EventIpcManager ipcManager) {
+        m_eventIpcManager = ipcManager;
+    }
+	
+	 /**
+     * Covenience logging.
+     * 
+     * @return a log4j Category for this class
+     */
+    Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+    
 }
