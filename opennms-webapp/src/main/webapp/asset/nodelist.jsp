@@ -89,14 +89,16 @@
   <% if( assets.length > 0 ) { %>
       <table class="standard">
         <tr>
-          <td class="standardheader" width="10%">Asset</td>
           <td class="standardheader">Matching Text</td>
+          <td class="standardheader">Asset Link</td>
+          <td class="standardheader">Node Link</td>
         </tr>
 
       <% for( int i=0; i < assets.length; i++ ) { %>
         <tr>
-          <td class="standard"><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
           <td class="standard"><%=assets[i].matchingValue%></td>
+          <td class="standard"><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
+	  <td class="standard"><a href="element/node.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
         </tr>
       <% } %>
       </table>
