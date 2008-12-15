@@ -15,7 +15,7 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 public class HttpsDetectorTest{
     
-    private AsyncHttpsDetector m_detector;
+    private HttpsDetector m_detector;
     private SSLServer m_server;
     
     private String serverOKResponse = "HTTP/1.1 200 OK\r\n"
@@ -56,7 +56,7 @@ public class HttpsDetectorTest{
     
     @Before
     public void setUp() throws Exception {
-        m_detector = new AsyncHttpsDetector();
+        m_detector = new HttpsDetector();
         m_detector.setRetries(0);
     }
     
