@@ -105,6 +105,7 @@
     <module>opennms-services</module>
     <module>opennms-remote-poller</module>
     <module>opennms-integration-otrs</module>
+    <module>opennms-integration-rt</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
@@ -306,6 +307,10 @@
             <property>
               <name>runOtrsTests</name>
               <value>${runOtrsTests}</value>
+            </property>
+            <property>
+              <name>runRtTests</name>
+              <value>${runRtTests}</value>
             </property>
             <property>
               <name>runMailTests</name>
@@ -726,7 +731,7 @@
       <dependency>
         <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-ticketing</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -823,6 +828,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-integration-otrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-integration-rt</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

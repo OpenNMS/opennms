@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2008 Dev 12: Allow you to retry failed ticket create or close - jonathan@opennms.org
 // 2008 Oct 04: Severity -> OnmsSeverity name change. - dj@opennms.org
 // 2008 Sep 27: Use new Severity enum. - dj@opennms.org
 // 2007 Feb 20: Make the style match that of the event page. - dj@opennms.org
@@ -308,19 +309,19 @@
       <form method="post" action="alarm/ticket/create.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
-        <form:input type="submit" value="Create Ticket" disabled="${!empty alarm.troubleTicketState}" />
+        <form:input type="submit" value="Create Ticket" disabled="${(!empty alarm.troubleTicketState) && (alarm.troubleTicketState != 'CREATE_FAILED')}" />
       </form>
 
       <form method="post" action="alarm/ticket/update.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
-        <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicketState)}"/>
+        <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicket)}"/>
       </form>
 
       <form method="post" action="alarm/ticket/close.htm">
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getServletPath() + "?" + request.getQueryString()%>" />
-        <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || (alarm.troubleTicketState != 'OPEN')}" />
+        <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || ((alarm.troubleTicketState != 'OPEN') && (alarm.troubleTicketState != 'CLOSE_FAILED')) }" />
       </form>
       
       <% } // alarmTroubleTicketEnabled %>
