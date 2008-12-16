@@ -28,12 +28,14 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
-import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
+import org.opennms.netmgt.provision.detector.simple.client.NrpeClient;
+import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
+import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
 
 /**
  * @author Donald Desloge
@@ -61,7 +63,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     private boolean m_useSsl = DEFAULT_USE_SSL;
     private int m_padding = 2;
     
-    protected NrpeDetector() {
+    public NrpeDetector() {
         super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
         setServiceName("NRPE");
     }

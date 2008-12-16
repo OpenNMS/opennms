@@ -28,51 +28,36 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import java.nio.charset.Charset;
 
-/**
- * @author Donald Desloge
- *
- */
-public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
 
-     /**
+
+
+
+public class SmtpDetector extends AsyncMultilineDetector{
+    
+    /**
      * @param defaultPort
      * @param defaultTimeout
      * @param defaultRetries
      */
-    public AsyncMultilineDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        super(defaultPort, defaultTimeout, defaultRetries);
+    public SmtpDetector() {
+        super(25, 1000, 2);
+        setServiceName("SMTP");
     }
 
-    @Override
-    abstract protected void onInit();
-    
-    protected ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
-        return new ResponseValidator<MultilineOrientedResponse>() {
-            
-            public boolean validate(MultilineOrientedResponse response) {
-                return response.expectedCodeRange(beginRange, endRange);
-            }
-            
-        };
+    public void onInit() {
+        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory( Charset.forName("UTF-8"), "-")));
+        
+        expectBanner(startsWith("220"));
+        send(request("HELO LOCALHOST"), startsWith("250"));
+        send(request("QUIT"), startsWith("221"));
     }
     
-    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
-        return new ResponseValidator<MultilineOrientedResponse>(){
-
-            public boolean validate(MultilineOrientedResponse response) {
-                return response.startsWith(pattern);
-            }
-            
-        };
-    }
     
-    public LineOrientedRequest request(String command) {
-        return new LineOrientedRequest(command);
-    }
-
+    
 }

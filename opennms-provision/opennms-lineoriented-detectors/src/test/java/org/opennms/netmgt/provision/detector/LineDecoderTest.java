@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;

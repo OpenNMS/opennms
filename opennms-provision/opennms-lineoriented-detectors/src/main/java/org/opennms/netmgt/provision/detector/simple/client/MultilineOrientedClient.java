@@ -28,7 +28,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,6 +38,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
 
 /**

@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -27,24 +28,43 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple.request;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
 
-public class ImapDetector extends AsyncLineOrientedDetector {
-//LineOrientedDetector
-    protected ImapDetector() {
-        super(143, 5000, 0);
-        setServiceName("IMAP");
+/**
+ * @author Donald Desloge
+ *
+ */
+public class NrpeRequest {
+    
+    public static final NrpeRequest Null = new NrpeRequest(null) {
+        @Override
+        public void send(OutputStream out) throws IOException {
+        }
+    };
+    
+    private final byte[] m_command;
+    
+    public NrpeRequest(byte[] command) {
+        if (command != null) {
+            m_command = command.clone();
+        } else {
+            m_command = null;
+        }
+    }
+
+    /**
+     * @param socket
+     * @throws IOException 
+     */
+    public void send(OutputStream out) throws IOException {
+        out.write( m_command);
     }
     
-    public void onInit(){
-        expectBanner(startsWith("* OK "));
-        send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
-        expectClose();
+    public String toString() {
+        return String.format("Request: %s", Arrays.toString(m_command));
     }
-    
-    public void expectClose() {
-        send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
-    }
-
 }

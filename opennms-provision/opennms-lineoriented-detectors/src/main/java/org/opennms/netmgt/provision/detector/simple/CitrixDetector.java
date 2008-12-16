@@ -28,7 +28,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
 
 /**
@@ -37,7 +37,7 @@ package org.opennms.netmgt.provision.detector;
  */
 public class CitrixDetector extends AsyncLineOrientedDetector {
 //MultilineOrientedDetector
-    protected CitrixDetector() {
+    public CitrixDetector() {
         super(1494, 500, 2);
         setServiceName("CITRIX");
     }

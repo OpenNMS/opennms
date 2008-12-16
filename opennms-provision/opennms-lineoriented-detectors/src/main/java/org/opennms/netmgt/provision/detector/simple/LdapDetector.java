@@ -8,6 +8,7 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -27,22 +28,49 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
+import org.opennms.netmgt.provision.detector.simple.client.LdapDetectorClient;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.Client;
 
-public class HttpsDetector extends HttpDetector {
+import com.novell.ldap.LDAPConnection;
+
+/**
+ * @author thedesloge
+ *
+ */
+public class LdapDetector extends LineOrientedDetector {
     
+    /**
+     * <P>
+     * The default ports on which the host is checked to see if it supports
+     * LDAP.
+     * </P>
+     */
+    private static final int DEFAULT_PORT = LDAPConnection.DEFAULT_PORT;
+
+    /**
+     * @param defaultPort
+     * @param defaultTimeout
+     * @param defaultRetries
+     */
+    protected LdapDetector() {
+        super(DEFAULT_PORT, 5000, 0);
+        setServiceName("LDAP");
+    }
+
     
-    protected HttpsDetector() {
-        setServiceName("Https");
-        setPort(443);
-        setTimeout(500);
-        setRetries(1);
-        setUseSSLFilter(true);
-        setServiceName("HTTP");
-        setUrl("/");
-        setMaxRetCode(500);
+    @Override
+    protected void onInit() {
+        //expectClose();
     }
     
-    
+    @Override
+    protected Client<LineOrientedRequest, LineOrientedResponse> getClient(){
+        return new LdapDetectorClient();
+        
+    }
+
 }

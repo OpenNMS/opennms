@@ -35,6 +35,7 @@ import java.net.InetAddress;
 
 import jcifs.netbios.NbtAddress;
 
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.Client;
 
 /**

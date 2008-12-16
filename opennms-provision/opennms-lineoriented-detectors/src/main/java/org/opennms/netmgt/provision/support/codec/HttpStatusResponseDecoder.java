@@ -4,7 +4,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.opennms.netmgt.provision.detector.HttpStatusResponse;
+import org.opennms.netmgt.provision.detector.simple.response.HttpStatusResponse;
 
 public class HttpStatusResponseDecoder extends LineOrientedDecoder {
 

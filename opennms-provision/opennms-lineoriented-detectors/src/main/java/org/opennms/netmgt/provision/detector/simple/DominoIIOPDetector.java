@@ -28,7 +28,9 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
+
+import org.opennms.netmgt.provision.detector.simple.client.DominoIIOPClient;
 
 /**
  * @author Donald Desloge
@@ -63,7 +65,7 @@ public class DominoIIOPDetector extends LineOrientedDetector {
     
     private int m_iorPort = DEFAULT_IORPORT;
     
-    protected DominoIIOPDetector() {
+    public DominoIIOPDetector() {
         super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
         setServiceName(PROTOCOL_NAME);
     }

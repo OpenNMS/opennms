@@ -37,6 +37,7 @@ import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 

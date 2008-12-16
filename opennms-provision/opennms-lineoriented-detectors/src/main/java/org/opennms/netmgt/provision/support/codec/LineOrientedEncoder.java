@@ -38,7 +38,7 @@ import org.apache.mina.core.session.AttributeKey;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.opennms.netmgt.provision.detector.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 
 /**
  * @author Donald Desloge

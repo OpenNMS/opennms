@@ -28,40 +28,54 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.Charset;
-
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.opennms.netmgt.provision.support.AsyncBasicDetector;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
-import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
+import org.opennms.netmgt.provision.detector.simple.client.LineOrientedClient;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.BasicDetector;
+import org.opennms.netmgt.provision.support.Client;
+import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
  * @author Donald Desloge
  *
  */
-public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineOrientedRequest, LineOrientedResponse> {
+public abstract class LineOrientedDetector extends BasicDetector<LineOrientedRequest, LineOrientedResponse> {
 
     /**
      * @param defaultPort
      * @param defaultTimeout
      * @param defaultRetries
      */
-    public AsyncLineOrientedDetector(int defaultPort, int defaultTimeout,
-            int defaultRetries) {
+    protected LineOrientedDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
         super(defaultPort, defaultTimeout, defaultRetries);
-        setProtocolCodecFilter( new ProtocolCodecFilter ( new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
+
     }
 
-    @Override
-    abstract protected void onInit();
+    public ResponseValidator<LineOrientedResponse> startsWith(final String pattern) {
+        return new ResponseValidator<LineOrientedResponse>() {
+            public boolean validate(LineOrientedResponse response) {
+                return response.startsWith(pattern);
+            }
+            
+        };
+    }
     
-    protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
+    public ResponseValidator<LineOrientedResponse> equals(final String pattern) {
+        return new ResponseValidator<LineOrientedResponse>() {
+            public boolean validate(LineOrientedResponse response) {
+                return response.equals(pattern);
+            }
+            
+        };
+    }
+    
+    public ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
             public boolean validate(LineOrientedResponse response) {
-                return response.startsWith(prefix);
+                return response.matches(regex);
             }
             
         };
@@ -80,6 +94,15 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
     
     public LineOrientedRequest request(String command) {
         return new LineOrientedRequest(command);
+    }
+    
+    public void expectClose() {
+        send(LineOrientedRequest.Null, equals(null));
+    }
+    
+    @Override
+    protected Client<LineOrientedRequest, LineOrientedResponse> getClient() {
+        return new LineOrientedClient();
     }
 
 }

@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple.response;
 
 import java.io.BufferedReader;
 import java.io.IOException;

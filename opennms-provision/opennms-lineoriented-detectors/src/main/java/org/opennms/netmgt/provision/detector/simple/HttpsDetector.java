@@ -8,9 +8,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications;
- * Created 10/16/2008
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -30,19 +27,22 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
 
-
-public class Pop3Detector extends AsyncLineOrientedDetector{
-
-    public Pop3Detector() {
-        super(110, 5000, 1);
+public class HttpsDetector extends HttpDetector {
+    
+    
+    public HttpsDetector() {
+        setServiceName("Https");
+        setPort(443);
+        setTimeout(500);
+        setRetries(1);
+        setUseSSLFilter(true);
+        setServiceName("HTTP");
+        setUrl("/");
+        setMaxRetCode(500);
     }
-
-    protected void onInit(){
-        expectBanner(startsWith("+OK"));
-        send(request("QUIT"), startsWith("+OK"));
-    }
-   
+    
+    
 }

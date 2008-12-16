@@ -28,59 +28,60 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
-import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import java.nio.charset.Charset;
+
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
 
 /**
  * @author Donald Desloge
  *
  */
-public abstract class MultilineOrientedDetector extends BasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
+public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineOrientedRequest, LineOrientedResponse> {
 
     /**
      * @param defaultPort
      * @param defaultTimeout
      * @param defaultRetries
      */
-    protected MultilineOrientedDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+    public AsyncLineOrientedDetector(int defaultPort, int defaultTimeout,
+            int defaultRetries) {
         super(defaultPort, defaultTimeout, defaultRetries);
-    }
-    
-    protected LineOrientedRequest request(String command) {
-        return new LineOrientedRequest(command);
-    }
-    
-    protected void expectClose() {
-        send(LineOrientedRequest.Null, equals(null));
-        
-    }
-    
-    public ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
-        return new ResponseValidator<MultilineOrientedResponse>() {
-            
-            public boolean validate(MultilineOrientedResponse response) {
-                return response.equals(pattern);
-            }
-            
-        };
-    }
-    
-    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
-        return new ResponseValidator<MultilineOrientedResponse>(){
-
-            public boolean validate(MultilineOrientedResponse response) {
-                return response.startsWith(pattern);
-            }
-            
-        };
+        setProtocolCodecFilter( new ProtocolCodecFilter ( new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
     }
 
     @Override
-    protected Client<LineOrientedRequest, MultilineOrientedResponse> getClient() {
-        return new MultilineOrientedClient();
+    abstract protected void onInit();
+    
+    protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
+        return new ResponseValidator<LineOrientedResponse>() {
+
+            public boolean validate(LineOrientedResponse response) {
+                return response.startsWith(prefix);
+            }
+            
+        };
+    }
+    
+    public ResponseValidator<LineOrientedResponse> find(final String regex){
+        return new ResponseValidator<LineOrientedResponse>() {
+
+            public boolean validate(LineOrientedResponse response) {
+                return response.find(regex);
+            }
+          
+            
+        };
+    }
+    
+    public LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
     }
 
 }
