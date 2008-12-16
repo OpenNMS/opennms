@@ -102,8 +102,7 @@
     <module>opennms-config</module>
     <module>opennms-services</module>
     <module>opennms-remote-poller</module>
-    <module>opennms-integration-otrs</module>
-    <module>opennms-integration-rt</module>
+    <module>integrations</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
