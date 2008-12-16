@@ -42,11 +42,16 @@ package org.opennms.netmgt.model;
 public enum TroubleTicketState {
     OPEN,
     CREATE_PENDING,
+    CREATE_FAILED,
     UPDATE_PENDING,
+    UPDATE_FAILED,
     CLOSED,
     CLOSE_PENDING,
+    CLOSE_FAILED,
     RESOLVED,
     RESOLVE_PENDING,
+    RESOLVE_FAILED,
     CANCELLED,
-    CANCEL_PENDING
+    CANCEL_PENDING,
+    CANCEL_FAILED
 }
