@@ -861,6 +861,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-provisiond</artifactId>
         <version>${project.version}</version>
       </dependency>
