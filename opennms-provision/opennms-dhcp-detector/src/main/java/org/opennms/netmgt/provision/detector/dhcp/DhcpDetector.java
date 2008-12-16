@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.dhcp;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
