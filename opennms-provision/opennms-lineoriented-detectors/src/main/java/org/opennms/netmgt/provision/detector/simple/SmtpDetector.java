@@ -34,10 +34,13 @@ import java.nio.charset.Charset;
 
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 
 
-
+@Component
+@Scope("prototype")
 public class SmtpDetector extends AsyncMultilineDetector{
     
     /**

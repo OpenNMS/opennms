@@ -34,6 +34,8 @@ import org.opennms.netmgt.provision.detector.simple.client.LdapDetectorClient;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.novell.ldap.LDAPConnection;
 
@@ -41,6 +43,9 @@ import com.novell.ldap.LDAPConnection;
  * @author thedesloge
  *
  */
+
+@Component
+@Scope("prototype")
 public class LdapDetector extends LineOrientedDetector {
     
     /**
