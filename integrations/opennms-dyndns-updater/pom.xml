@@ -13,11 +13,7 @@
 
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
