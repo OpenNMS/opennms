@@ -36,6 +36,8 @@ import org.opennms.netmgt.provision.support.AsyncBasicDetector;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;
 
+@Component
+@Scope("prototype")
 public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpStatusResponse> {
     
     private static String DEFAULT_URL="/";
