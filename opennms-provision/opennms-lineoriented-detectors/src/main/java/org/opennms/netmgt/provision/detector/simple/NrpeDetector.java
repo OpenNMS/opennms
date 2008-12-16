@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-@Scope("protype")
+@Scope("prototype")
 public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
     private final static int DEFAULT_PORT = 5666;
