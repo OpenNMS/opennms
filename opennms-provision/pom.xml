@@ -26,6 +26,5 @@
     <module>opennms-jmx-detectors</module>
     <module>opennms-jdbc-detector</module>
     <module>opennms-ssh-detector</module>
-    <module>opennms-rancid</module>
   </modules>
 </project>
