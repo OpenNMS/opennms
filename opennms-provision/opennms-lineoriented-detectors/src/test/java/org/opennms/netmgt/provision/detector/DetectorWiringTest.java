@@ -43,7 +43,13 @@ import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpDetector;
+import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
+import org.opennms.netmgt.provision.detector.simple.ImapDetector;
+import org.opennms.netmgt.provision.detector.simple.LdapDetector;
+import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
+import org.opennms.netmgt.provision.detector.simple.SmtpDetector;
+import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -90,6 +96,42 @@ public class DetectorWiringTest implements ApplicationContextAware {
     @Test
     public void testFtpDetectorWiring() {
         FtpDetector bean = (FtpDetector) m_applicationContext.getBean("ftpDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testHttpsDetectorWiring() {
+        HttpsDetector bean = (HttpsDetector) m_applicationContext.getBean("httpsDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test 
+    public void testImapDetectorWiring() {
+        ImapDetector bean = (ImapDetector) m_applicationContext.getBean("imapDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testLdapDetectorWiring() {
+        LdapDetector bean = (LdapDetector) m_applicationContext.getBean("ldapDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testNrpeDetectorWiring() {
+        NrpeDetector bean = (NrpeDetector) m_applicationContext.getBean("nrpeDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test 
+    public void testSmtpDetectorWiring() {
+        SmtpDetector bean = (SmtpDetector) m_applicationContext.getBean("smtpDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testTcpDetectorWiring() {
+        TcpDetector bean = (TcpDetector) m_applicationContext.getBean("tcpDetector");
         assertNotNull(bean);
     }
 
