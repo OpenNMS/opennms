@@ -31,11 +31,16 @@
 package org.opennms.netmgt.provision.detector.simple;
 
 import org.opennms.netmgt.provision.detector.simple.client.DominoIIOPClient;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Donald Desloge
  *
  */
+
+@Component
+@Scope("prototype")
 public class DominoIIOPDetector extends LineOrientedDetector {
     
     /**
