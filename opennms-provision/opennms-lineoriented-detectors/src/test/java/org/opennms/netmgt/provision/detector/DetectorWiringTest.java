@@ -62,9 +62,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/detectors.xml",
-})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class DetectorWiringTest implements ApplicationContextAware {
     
     protected ApplicationContext m_applicationContext;
