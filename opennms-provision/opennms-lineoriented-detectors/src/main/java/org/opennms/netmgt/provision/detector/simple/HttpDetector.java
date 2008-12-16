@@ -27,9 +27,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.opennms.netmgt.provision.detector.simple.response.HttpStatusResponse;
 import org.opennms.netmgt.provision.support.AsyncBasicDetector;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;

@@ -32,7 +32,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
 public class TcpDetector extends AsyncLineOrientedDetector {
 

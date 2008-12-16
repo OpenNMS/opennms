@@ -28,49 +28,53 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple;
 
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
-import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
+import org.opennms.netmgt.provision.support.AsyncBasicDetector;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
  * @author Donald Desloge
  *
  */
-public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressResponse> {
+public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
-    /**
+     /**
      * @param defaultPort
      * @param defaultTimeout
      * @param defaultRetries
      */
-    public SmbDetector() {
-        super(0, 1000, 0);
-        setServiceName("SMB");
+    public AsyncMultilineDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+        super(defaultPort, defaultTimeout, defaultRetries);
     }
 
     @Override
-    protected void onInit() {
-        expectBanner(validateAddressIsNotSame());
-        
-    }
+    abstract protected void onInit();
     
-    private ResponseValidator<NbtAddressResponse> validateAddressIsNotSame(){
-        return new ResponseValidator<NbtAddressResponse>() {
-
-            public boolean validate(NbtAddressResponse response) throws Exception {
-                return response.validateAddressIsNotSame();
+    protected ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
+        return new ResponseValidator<MultilineOrientedResponse>() {
+            
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.expectedCodeRange(beginRange, endRange);
             }
             
         };
     }
     
-    @Override
-    protected Client<LineOrientedRequest, NbtAddressResponse> getClient() {
-        return new SmbClient();
-    }
+    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
+        return new ResponseValidator<MultilineOrientedResponse>(){
 
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.startsWith(pattern);
+            }
+            
+        };
+    }
+    
+    public LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
+    }
 
 }

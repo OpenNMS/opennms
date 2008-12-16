@@ -17,7 +17,7 @@
  * contact: OpenNMS Licensing <license@opennms.org> http://www.opennms.org/
  * http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple.response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
