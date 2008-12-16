@@ -38,14 +38,20 @@ package org.opennms.netmgt.provision.persist;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
+@XmlRootElement(name="foreign-source")
 public class OnmsForeignSource {
+    @XmlElement(name="name")
     private String m_name;
     
+    @XmlElement(name="scan-interval")
     private long m_scanInterval = 60 * 60 * 24 * 1000; // 1 day
 
     private List<PluginConfig> m_detectors = Collections.emptyList();
@@ -101,4 +107,11 @@ public class OnmsForeignSource {
         m_policies = policies;
     }
     
+    public String toString() {
+        if (m_name != null) {
+            return m_name;
+        } else {
+            return super.toString();
+        }
+    }
 }
