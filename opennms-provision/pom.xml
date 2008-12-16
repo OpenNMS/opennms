@@ -14,6 +14,7 @@
     <module>opennms-simple-detectors</module>
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
+    <module>opennms-provision-persistence</module>
 <!--
     <module>opennms-scanners</module>
 -->
