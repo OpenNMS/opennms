@@ -1,6 +1,7 @@
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple.response;
 
 import java.util.regex.Pattern;
+
 
 
 public class HttpStatusResponse extends LineOrientedResponse {

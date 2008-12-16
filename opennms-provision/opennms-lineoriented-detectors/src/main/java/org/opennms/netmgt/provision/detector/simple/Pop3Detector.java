@@ -8,6 +8,8 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications;
+ * Created 10/16/2008
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,36 +30,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
-
-import java.nio.charset.Charset;
-
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
+package org.opennms.netmgt.provision.detector.simple;
 
 
 
+public class Pop3Detector extends AsyncLineOrientedDetector{
 
-public class SmtpDetector extends AsyncMultilineDetector{
-    
-    /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
-     */
-    protected SmtpDetector() {
-        super(25, 1000, 2);
-        setServiceName("SMTP");
+    public Pop3Detector() {
+        super(110, 5000, 1);
     }
 
-    public void onInit() {
-        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory( Charset.forName("UTF-8"), "-")));
-        
-        expectBanner(startsWith("220"));
-        send(request("HELO LOCALHOST"), startsWith("250"));
-        send(request("QUIT"), startsWith("221"));
+    protected void onInit(){
+        expectBanner(startsWith("+OK"));
+        send(request("QUIT"), startsWith("+OK"));
     }
-    
-    
-    
+   
 }

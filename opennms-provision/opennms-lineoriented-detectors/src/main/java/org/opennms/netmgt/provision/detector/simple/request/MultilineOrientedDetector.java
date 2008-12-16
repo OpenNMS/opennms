@@ -28,8 +28,10 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector;
+package org.opennms.netmgt.provision.detector.simple.request;
 
+import org.opennms.netmgt.provision.detector.simple.client.MultilineOrientedClient;
+import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
@@ -38,68 +40,49 @@ import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator
  * @author Donald Desloge
  *
  */
-public abstract class LineOrientedDetector extends BasicDetector<LineOrientedRequest, LineOrientedResponse> {
+public abstract class MultilineOrientedDetector extends BasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
     /**
      * @param defaultPort
      * @param defaultTimeout
      * @param defaultRetries
      */
-    protected LineOrientedDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
+    protected MultilineOrientedDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
         super(defaultPort, defaultTimeout, defaultRetries);
-
-    }
-
-    public ResponseValidator<LineOrientedResponse> startsWith(final String pattern) {
-        return new ResponseValidator<LineOrientedResponse>() {
-            public boolean validate(LineOrientedResponse response) {
-                return response.startsWith(pattern);
-            }
-            
-        };
     }
     
-    public ResponseValidator<LineOrientedResponse> equals(final String pattern) {
-        return new ResponseValidator<LineOrientedResponse>() {
-            public boolean validate(LineOrientedResponse response) {
+    protected LineOrientedRequest request(String command) {
+        return new LineOrientedRequest(command);
+    }
+    
+    protected void expectClose() {
+        send(LineOrientedRequest.Null, equals(null));
+        
+    }
+    
+    public ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
+        return new ResponseValidator<MultilineOrientedResponse>() {
+            
+            public boolean validate(MultilineOrientedResponse response) {
                 return response.equals(pattern);
             }
             
         };
     }
     
-    public ResponseValidator<LineOrientedResponse> matches(final String regex){
-        return new ResponseValidator<LineOrientedResponse>() {
+    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
+        return new ResponseValidator<MultilineOrientedResponse>(){
 
-            public boolean validate(LineOrientedResponse response) {
-                return response.matches(regex);
+            public boolean validate(MultilineOrientedResponse response) {
+                return response.startsWith(pattern);
             }
             
         };
     }
-    
-    public ResponseValidator<LineOrientedResponse> find(final String regex){
-        return new ResponseValidator<LineOrientedResponse>() {
 
-            public boolean validate(LineOrientedResponse response) {
-                return response.find(regex);
-            }
-          
-            
-        };
-    }
-    
-    public LineOrientedRequest request(String command) {
-        return new LineOrientedRequest(command);
-    }
-    
-    public void expectClose() {
-        send(LineOrientedRequest.Null, equals(null));
-    }
-    
     @Override
-    protected Client<LineOrientedRequest, LineOrientedResponse> getClient() {
-        return new LineOrientedClient();
+    protected Client<LineOrientedRequest, MultilineOrientedResponse> getClient() {
+        return new MultilineOrientedClient();
     }
 
 }
