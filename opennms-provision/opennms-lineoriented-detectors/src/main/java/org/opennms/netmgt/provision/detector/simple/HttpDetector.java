@@ -35,6 +35,8 @@ import org.opennms.netmgt.provision.detector.simple.response.HttpStatusResponse;
 import org.opennms.netmgt.provision.support.AsyncBasicDetector;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.HttpProtocolCodecFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")

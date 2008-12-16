@@ -30,8 +30,11 @@
 package org.opennms.netmgt.provision.detector.simple;
 
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-
+@Component
+@Scope("prototype")
 public class ImapDetector extends AsyncLineOrientedDetector {
 
     public ImapDetector() {

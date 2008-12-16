@@ -34,6 +34,11 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope("prototype")
 public class TcpDetector extends AsyncLineOrientedDetector {
 
     public TcpDetector() {

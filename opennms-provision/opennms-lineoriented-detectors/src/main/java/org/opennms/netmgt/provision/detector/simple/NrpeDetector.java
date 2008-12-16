@@ -36,11 +36,15 @@ import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Donald Desloge
  *
  */
+@Component
+@Scope("protype")
 public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
     private final static int DEFAULT_PORT = 5666;

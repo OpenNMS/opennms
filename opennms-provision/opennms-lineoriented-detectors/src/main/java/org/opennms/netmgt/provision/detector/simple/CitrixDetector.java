@@ -30,11 +30,17 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 
 /**
  * @author Donald Desloge
  *
  */
+
+@Component
+@Scope("prototype")
 public class CitrixDetector extends AsyncLineOrientedDetector {
 //MultilineOrientedDetector
     public CitrixDetector() {

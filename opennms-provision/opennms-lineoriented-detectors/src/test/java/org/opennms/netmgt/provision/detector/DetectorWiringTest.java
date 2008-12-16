@@ -35,9 +35,20 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
+import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
+import org.opennms.netmgt.provision.detector.simple.FtpDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpDetector;
+import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
@@ -49,11 +60,41 @@ import org.opennms.netmgt.provision.detector.simple.HttpDetector;
         "classpath:/META-INF/opennms/detectors.xml",
 })
 public class DetectorWiringTest implements ApplicationContextAware {
-
+    
+    protected ApplicationContext m_applicationContext;
     
     @Test
-    public void testWiring() {
-        applicationContext.getBeanOfType(HttpDetector.class);
+    public void testHttpDetectorWiring() {
+       HttpDetector bean = (HttpDetector) m_applicationContext.getBean("httpDetector");
+       assertNotNull(bean);
+    }
+    
+    @Test
+    public void testPop3DetectorWiring() {
+        Pop3Detector bean = (Pop3Detector) m_applicationContext.getBean("pop3Detector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testCitrixDetectorWiring() {
+        CitrixDetector bean = (CitrixDetector) m_applicationContext.getBean("citrixDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testDominoIIOPDetectorWiring() {
+        DominoIIOPDetector bean = (DominoIIOPDetector) m_applicationContext.getBean("dominoIIOPDetector");
+        assertNotNull(bean);
+    }
+    
+    @Test
+    public void testFtpDetectorWiring() {
+        FtpDetector bean = (FtpDetector) m_applicationContext.getBean("ftpDetector");
+        assertNotNull(bean);
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_applicationContext = applicationContext;
     }
 
 }

@@ -28,7 +28,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector.simple;
+package org.opennms.netmgt.provision.detector.simple.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +41,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import org.opennms.netmgt.provision.detector.simple.client.MultilineOrientedClient;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;

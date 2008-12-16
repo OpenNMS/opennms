@@ -109,15 +109,6 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         ConnectFuture cf = connector.connect( socketAddress );
         cf.addListener(retryAttemptListener( connector, future, socketAddress, getRetries() ));
         
-        
-        //Added for SSL Support, mainly for the HTTPS detector
-//        if(isUseSSLFilter()) {
-//            IoSession session = cf.getSession();
-//            SslFilter filter = new SslFilter(createClientSSLContext());
-//            filter.setUseClientMode(true);
-//            session.getFilterChain().addBefore("codec", "SSL", filter);
-//        }
-        
         return future;
     }
     
@@ -186,7 +177,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * 
      * @param detectorHandler
      */
-    public void setDetectorHandler(BaseDetectorHandler<Request, Response> detectorHandler) {
+    protected void setDetectorHandler(BaseDetectorHandler<Request, Response> detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
     
@@ -195,25 +186,25 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param future
      * @return
      */
-    public IoHandler createDetectorHandler(DetectFuture future) {
+    protected IoHandler createDetectorHandler(DetectFuture future) {
         ((BaseDetectorHandler<Request, Response>) m_detectorHandler).setConversation(getConversation());
         m_detectorHandler.setFuture(future);
         return m_detectorHandler;
     }
 
-    public void setLoggingFilter(IoFilterAdapter filterLogging) {
+    protected void setLoggingFilter(IoFilterAdapter filterLogging) {
         m_filterLogging = filterLogging;
     }
 
-    public IoFilterAdapter getLoggingFilter() {
+    protected IoFilterAdapter getLoggingFilter() {
         return m_filterLogging;
     }
 
-    public void setProtocolCodecFilter(ProtocolCodecFilter protocolCodecFilter) {
+    protected void setProtocolCodecFilter(ProtocolCodecFilter protocolCodecFilter) {
         m_protocolCodecFilter = protocolCodecFilter;
     }
 
-    public ProtocolCodecFilter getProtocolCodecFilter() {
+    protected ProtocolCodecFilter getProtocolCodecFilter() {
         return m_protocolCodecFilter;
     }
 
@@ -225,15 +216,15 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         return m_idleTime;
     }
 
-    public IoHandler getDetectorHandler() {
+    protected IoHandler getDetectorHandler() {
         return m_detectorHandler;
     }
 
-    public void setConversation(AsyncClientConversation<Request, Response> conversation) {
+    protected void setConversation(AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;
     }
 
-    public AsyncClientConversation<Request, Response> getConversation() {
+    protected AsyncClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }
     

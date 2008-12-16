@@ -168,7 +168,6 @@ public class HttpDetectorTest {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
         m_detector.init();
-        m_detector.setIdleTime(1000);
         m_server = createServer(getServerOKResponse());
         m_detector.setPort(m_server.getLocalPort());
         
