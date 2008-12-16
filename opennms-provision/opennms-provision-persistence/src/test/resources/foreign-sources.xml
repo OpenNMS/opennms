@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foreign-sources>
+    <foreign-source name="cheese">
+        <scan-interval>1d</scan-interval>
+        <detectors>
+            <detector name="food" class="com.example.detectors.FoodDetector">
+                <parameter key="type" value="cheese" />
+                <parameter key="density" value="soft" />
+                <parameter key="sharpness" value="mild" />
+            </detector>
+        </detectors>
+        <policies>
+            <policy name="lower-case-node" class="com.example.policies.NodeCategoryPolicy">
+                <parameter key="nodeLabel" value="~^[a-z]$" />
+                <parameter key="category" value="Lower-Case-Nodes" />
+            </policy>
+            <policy name="all-ipinterfaces" class="com.example.policies.InclusiveInterfacePolicy" />
+            <policy name="cisco-snmp-interfaces" class="comp.example.policies.IfDescrSnmpInterfacePolicy">
+                <parameter key="ifDescr" value="~(?i:cisco)" />
+            </policy>
+        </policies>
+    </foreign-source>
+</foreign-sources>
