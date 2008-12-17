@@ -44,12 +44,12 @@ import org.opennms.netmgt.xml.event.Event;
 
 
 /**
- * A Dynamic DNS provider for integration with OpenNMS Provisoning daemon API.
+ * A Dynamic DNS provisioning adapter for integration with OpenNMS Provisoning daemon API.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class DnsProvisioningProvider implements ProvisioningProvider {
+public class DnsProvisioningAdapter implements ProvisioningAdapter {
     
     /*
      * A read-only DAO will be set by the Provisioning Daemon.
@@ -57,60 +57,60 @@ public class DnsProvisioningProvider implements ProvisioningProvider {
     NodeDao m_nodeDao = null;
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningProvider#addNode(org.opennms.netmgt.model.OnmsNode)
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
-    public void addNode(int nodeId) throws ProvisioningProviderException {
+    public void addNode(int nodeId) throws ProvisioningAdapterException {
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
             DnsRecord record = new DnsRecord(node);
-            DynamicDnsProvider.add(record);
+            DynamicDnsAdapter.add(record);
         } catch (Exception e) {
-            throw new ProvisioningProviderException("Dynamic DNS provisioning failed.", e);
+            throw new ProvisioningAdapterException("Dynamic DNS provisioning failed.", e);
         }
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningProvider#updateNode(org.opennms.netmgt.model.OnmsNode)
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
      */
-    public void updateNode(int nodeId) throws ProvisioningProviderException {
+    public void updateNode(int nodeId) throws ProvisioningAdapterException {
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
             DnsRecord record = new DnsRecord(node);
-            DynamicDnsProvider.update(record);
+            DynamicDnsAdapter.update(record);
         } catch (Exception e) {
-            throw new ProvisioningProviderException("Dynamic DNS provisioning failed.", e);
+            throw new ProvisioningAdapterException("Dynamic DNS provisioning failed.", e);
         }
     }
     
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningProvider#deleteNode(org.opennms.netmgt.model.OnmsNode)
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
      */
-    public void deleteNode(int nodeId) throws ProvisioningProviderException {
+    public void deleteNode(int nodeId) throws ProvisioningAdapterException {
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
             DnsRecord record = new DnsRecord(node);
-            DynamicDnsProvider.delete(record);
+            DynamicDnsAdapter.delete(record);
         } catch (Exception e) {
-            throw new ProvisioningProviderException("Dynamic DNS provisioning failed.", e);
+            throw new ProvisioningAdapterException("Dynamic DNS provisioning failed.", e);
         }
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningProvider#onEvent()
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#onEvent()
      */
     public void onEvent(Event e) {
         throw new UnsupportedOperationException("method not yet implemented.");
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningProvider#registeredEventList()
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#registeredEventList()
      */
     public List<String> getEventList() {
         throw new UnsupportedOperationException("method not yet implemented.");
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningProvider#registeredEventList()
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#registeredEventList()
      */
     public void setReadOnlyNodeDao(NodeDao dao) {
         throw new UnsupportedOperationException("method not yet implemented.");
@@ -134,7 +134,7 @@ public class DnsProvisioningProvider implements ProvisioningProvider {
         }
     }
     
-    static class DynamicDnsProvider {
+    static class DynamicDnsAdapter {
         
         static boolean add(DnsRecord record) {
             throw new UnsupportedOperationException("method not yet implemented.");

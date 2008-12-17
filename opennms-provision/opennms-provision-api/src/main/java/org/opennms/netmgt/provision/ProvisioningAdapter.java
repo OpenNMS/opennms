@@ -35,26 +35,56 @@
  */
 package org.opennms.netmgt.provision;
 
+import java.util.List;
+
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.xml.event.Event;
+
+
 /**
- * For use with the ProvisioningExtension API.
+ * This class provides an API for implementing provider "extensions" to the OpenNMS
+ * Provisioning daemon.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class ProvisioningProviderException extends RuntimeException {
+public interface ProvisioningAdapter {
 
-    private static final long serialVersionUID = 1L;
+    /**
+     * This method is called by the Provisioner when a new node is provisioned. 
+     * @throws ProvisioningAdapterException
+     */
+    void addNode(int nodeId) throws ProvisioningAdapterException;
     
-    public ProvisioningProviderException(String message) {
-        super(message);
-    }
+    /**
+     * This method is called by the Provisioner when a node is updated. 
+     * @throws ProvisioningAdapterException
+     */
+    void updateNode(int nodeId) throws ProvisioningAdapterException;
+    
+    /**
+     * This method is called by the Provisioner when a node is deleted. 
+     * @throws ProvisioningAdapterException
+     */
+    void deleteNode(int nodeId) throws ProvisioningAdapterException;
+    
+    /**
+     * This method is called by the Provisioning daemon to get the list of event UEIs for which
+     * the provider requires.
+     *  
+     * @return a List of UEIs
+     */
+    List<String> getEventList();
 
-    public ProvisioningProviderException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ProvisioningProviderException(Throwable cause) {
-        super(cause);
-    }
-
+    /**
+     * The Provisioning daemon will call this method for any events that it receives on
+     * behalf of the provider. 
+     */
+    void onEvent(Event e);
+    
+    /**
+     * Providers can have RO access to the OpenNMS DB via RO Node DAO.
+     */
+    void setReadOnlyNodeDao(NodeDao dao);
+    
 }
