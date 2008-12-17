@@ -38,6 +38,7 @@ package org.opennms.netmgt.provision;
 import java.util.List;
 
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.xml.event.Event;
 
 
 /**
@@ -79,7 +80,7 @@ public interface ProvisioningProvider {
      * The Provisioning daemon will call this method for any events that it receives on
      * behalf of the provider. 
      */
-    void onEvent();
+    void onEvent(Event e);
     
     /**
      * Providers can have RO access to the OpenNMS DB via RO Node DAO.
