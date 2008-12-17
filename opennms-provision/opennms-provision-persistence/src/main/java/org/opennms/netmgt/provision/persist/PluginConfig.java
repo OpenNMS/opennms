@@ -51,8 +51,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlRootElement(name="plugin")
 public class PluginConfig {
+    @XmlAttribute(name="name")
     private String m_name;
+    
+    @XmlAttribute(name="class")
     private String m_pluginClass;
+
     @XmlJavaTypeAdapter(ParameterMapAdaptor.class)
     @XmlElement(name="parameters")
     private Map<String,String> m_parameters = new HashMap<String,String>();
@@ -68,7 +72,7 @@ public class PluginConfig {
     /**
      * @return the name
      */
-    @XmlAttribute(name="name")
+    @XmlTransient
     public String getName() {
         return m_name;
     }
@@ -81,7 +85,7 @@ public class PluginConfig {
     /**
      * @return the pluginClass
      */
-    @XmlAttribute(name="class")
+    @XmlTransient
     public String getPluginClass() {
         return m_pluginClass;
     }
