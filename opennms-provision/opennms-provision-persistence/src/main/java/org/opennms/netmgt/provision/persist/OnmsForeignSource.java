@@ -48,16 +48,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="foreign-source")
 public class OnmsForeignSource {
-    @XmlElement(name="name")
     private String m_name;
     
-    @XmlElement(name="scan-interval")
     private long m_scanInterval = 60 * 60 * 24 * 1000; // 1 day
 
     private List<PluginConfig> m_detectors = Collections.emptyList();
     
     private List<PluginConfig> m_policies = Collections.emptyList();
 
+    public OnmsForeignSource() {
+    }
+    
     public OnmsForeignSource(String name) {
         setName(name);
     }
@@ -77,6 +78,7 @@ public class OnmsForeignSource {
     /**
      * @return the scanInterval
      */
+    @XmlElement(name="scan-interval")
     public long getScanInterval() {
         return m_scanInterval;
     }
