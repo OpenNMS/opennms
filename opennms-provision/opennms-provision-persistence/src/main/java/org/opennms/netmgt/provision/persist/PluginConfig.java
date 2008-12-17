@@ -35,20 +35,40 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
+@XmlRootElement(name="plugin")
 public class PluginConfig {
     private String m_name;
     private String m_pluginClass;
-    private Map<String,String> m_parameters;
+    @XmlJavaTypeAdapter(ParameterMapAdaptor.class)
+    @XmlElement(name="parameters")
+    private Map<String,String> m_parameters = new HashMap<String,String>();
+    
+    public PluginConfig() {
+    }
+    
+    public PluginConfig(String name, String clazz) {
+        setName(name);
+        setPluginClass(clazz);
+    }
+
     /**
      * @return the name
      */
+    @XmlAttribute(name="name")
     public String getName() {
         return m_name;
     }
@@ -61,6 +81,7 @@ public class PluginConfig {
     /**
      * @return the pluginClass
      */
+    @XmlAttribute(name="class")
     public String getPluginClass() {
         return m_pluginClass;
     }
@@ -73,6 +94,7 @@ public class PluginConfig {
     /**
      * @return the parameters
      */
+    @XmlTransient
     public Map<String, String> getParameters() {
         return m_parameters;
     }
@@ -81,5 +103,8 @@ public class PluginConfig {
      */
     public void setParameters(Map<String, String> parameters) {
         m_parameters = parameters;
+    }
+    public void addParameter(String key, String value) {
+        m_parameters.put(key, value);
     }
 }
