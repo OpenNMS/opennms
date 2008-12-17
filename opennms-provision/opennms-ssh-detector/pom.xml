@@ -29,5 +29,14 @@
     	<groupId>org.opennms</groupId>
     	<artifactId>opennms-model</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring-test</artifactId>
+    	<scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
