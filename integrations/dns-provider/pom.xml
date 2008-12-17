@@ -6,7 +6,7 @@
     <version>1.7.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-dyndns-updater</artifactId>
+  <artifactId>dns-provider</artifactId>
   <name>OpenNMS Dynamic DNS Updater</name>
 
   <dependencies>
