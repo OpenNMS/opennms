@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.detector.ssh.SshDetector;
 
 public class SSHDetectorTest{
 	//Tested on a local server with SSH

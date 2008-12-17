@@ -73,6 +73,7 @@ public class CitrixDetectorTest {
     @Test
     public void testMyDetector() throws Exception {
         m_detector.setPort(20000);
+        m_detector.setIdleTime(10);
         m_detector.init();
         
         //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
@@ -85,6 +86,7 @@ public class CitrixDetectorTest {
     @Test
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(20000);
+        m_detector.setIdleTime(10);
         m_detector.init();
         
         //assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
@@ -97,6 +99,7 @@ public class CitrixDetectorTest {
     @Test
     public void testDetectorSuccess() throws Exception {
         m_detector.setPort(m_server.getLocalPort());
+        m_detector.setIdleTime(10);
         m_detector.init();
         
         //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
