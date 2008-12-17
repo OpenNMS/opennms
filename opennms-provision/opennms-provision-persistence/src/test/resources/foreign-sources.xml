@@ -11,12 +11,12 @@
         </detectors>
         <policies>
             <policy name="lower-case-node" class="com.example.policies.NodeCategoryPolicy">
-                <parameter key="nodeLabel" value="~^[a-z]$" />
+                <parameter key="nodelabel" value="~^[a-z]$" />
                 <parameter key="category" value="Lower-Case-Nodes" />
             </policy>
             <policy name="all-ipinterfaces" class="com.example.policies.InclusiveInterfacePolicy" />
             <policy name="cisco-snmp-interfaces" class="comp.example.policies.IfDescrSnmpInterfacePolicy">
-                <parameter key="ifDescr" value="~(?i:cisco)" />
+                <parameter key="ifdescr" value="~(?i:cisco)" />
             </policy>
         </policies>
     </foreign-source>

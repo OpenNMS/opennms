@@ -38,8 +38,10 @@ package org.opennms.netmgt.provision.persist;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
@@ -48,12 +50,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="foreign-source")
 public class OnmsForeignSource {
+    @XmlAttribute(name="name")
     private String m_name;
     
+    @XmlAttribute(name="scan-interval")
     private long m_scanInterval = 60 * 60 * 24 * 1000; // 1 day
 
+    @XmlElement(name="detector")
     private List<PluginConfig> m_detectors = Collections.emptyList();
     
+    @XmlElement(name="plugin")
     private List<PluginConfig> m_policies = Collections.emptyList();
 
     public OnmsForeignSource() {
@@ -66,6 +72,7 @@ public class OnmsForeignSource {
     /**
      * @return the name
      */
+    @XmlTransient
     public String getName() {
         return m_name;
     }
@@ -78,7 +85,7 @@ public class OnmsForeignSource {
     /**
      * @return the scanInterval
      */
-    @XmlElement(name="scan-interval")
+    @XmlTransient
     public long getScanInterval() {
         return m_scanInterval;
     }
@@ -91,6 +98,7 @@ public class OnmsForeignSource {
     /**
      * @return the detectors
      */
+    @XmlTransient
     public List<PluginConfig> getDetectors() {
         return m_detectors;
     }
@@ -101,6 +109,7 @@ public class OnmsForeignSource {
         m_detectors = detectors;
     }
     
+    @XmlTransient
     public List<PluginConfig> getPolicies() {
         return m_policies;
     }
