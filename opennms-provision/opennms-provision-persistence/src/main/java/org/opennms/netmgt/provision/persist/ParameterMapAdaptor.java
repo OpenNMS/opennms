@@ -5,17 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ParameterMapAdaptor extends XmlAdapter<JAXBPluginParameter[], Map<String,String>> {
-
+    @XmlElementWrapper(name="")
+    @XmlElement(name="parameter")
+    JAXBPluginParameter[] parms;
+    
     @Override
     public JAXBPluginParameter[] marshal(Map<String, String> v) throws Exception {
-        List<JAXBPluginParameter> parms = new ArrayList<JAXBPluginParameter>();
+        List<JAXBPluginParameter> pluginParms = new ArrayList<JAXBPluginParameter>();
         for (Map.Entry<String,String> e : v.entrySet()) {
-            parms.add(new JAXBPluginParameter(e));
+            pluginParms.add(new JAXBPluginParameter(e));
         }
-        return parms.toArray(new JAXBPluginParameter[parms.size()]);
+        parms = pluginParms.toArray(new JAXBPluginParameter[pluginParms.size()]);
+        return parms;
     }
 
     @Override
