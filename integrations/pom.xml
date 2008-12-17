@@ -11,7 +11,5 @@
   <modules>
     <module>opennms-integration-otrs</module>
     <module>opennms-integration-rt</module>
-    <module>opennms-dyndns-updater</module>
-    <module>opennms-rancid</module>
   </modules>
 </project>
