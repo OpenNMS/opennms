@@ -43,6 +43,7 @@ import java.net.UnknownHostException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 

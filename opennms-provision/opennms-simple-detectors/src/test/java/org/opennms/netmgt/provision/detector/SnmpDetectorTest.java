@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ClassPathResource;
