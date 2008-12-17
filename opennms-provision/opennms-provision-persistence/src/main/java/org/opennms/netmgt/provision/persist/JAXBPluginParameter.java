@@ -3,7 +3,9 @@ package org.opennms.netmgt.provision.persist;
 import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlType(propOrder={"key", "value"})
 public class JAXBPluginParameter {
     @XmlAttribute
     private String key = null;

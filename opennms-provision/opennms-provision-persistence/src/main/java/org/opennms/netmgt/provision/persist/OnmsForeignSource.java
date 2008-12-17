@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -56,10 +57,12 @@ public class OnmsForeignSource {
     @XmlAttribute(name="scan-interval")
     private long m_scanInterval = 60 * 60 * 24 * 1000; // 1 day
 
+    @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")
     private List<PluginConfig> m_detectors = Collections.emptyList();
     
-    @XmlElement(name="plugin")
+    @XmlElementWrapper(name="policies")
+    @XmlElement(name="policy")
     private List<PluginConfig> m_policies = Collections.emptyList();
 
     public OnmsForeignSource() {
