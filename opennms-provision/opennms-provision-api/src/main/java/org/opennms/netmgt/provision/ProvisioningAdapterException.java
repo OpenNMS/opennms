@@ -35,56 +35,26 @@
  */
 package org.opennms.netmgt.provision;
 
-import java.util.List;
-
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.xml.event.Event;
-
-
 /**
- * This class provides an API for implementing provider "extensions" to the OpenNMS
- * Provisioning daemon.
+ * For use with the ProvisioningExtension API.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public interface ProvisioningProvider {
+public class ProvisioningAdapterException extends RuntimeException {
 
-    /**
-     * This method is called by the Provisioner when a new node is provisioned. 
-     * @throws ProvisioningProviderException
-     */
-    void addNode(int nodeId) throws ProvisioningProviderException;
+    private static final long serialVersionUID = 1L;
     
-    /**
-     * This method is called by the Provisioner when a node is updated. 
-     * @throws ProvisioningProviderException
-     */
-    void updateNode(int nodeId) throws ProvisioningProviderException;
-    
-    /**
-     * This method is called by the Provisioner when a node is deleted. 
-     * @throws ProvisioningProviderException
-     */
-    void deleteNode(int nodeId) throws ProvisioningProviderException;
-    
-    /**
-     * This method is called by the Provisioning daemon to get the list of event UEIs for which
-     * the provider requires.
-     *  
-     * @return a List of UEIs
-     */
-    List<String> getEventList();
+    public ProvisioningAdapterException(String message) {
+        super(message);
+    }
 
-    /**
-     * The Provisioning daemon will call this method for any events that it receives on
-     * behalf of the provider. 
-     */
-    void onEvent(Event e);
-    
-    /**
-     * Providers can have RO access to the OpenNMS DB via RO Node DAO.
-     */
-    void setReadOnlyNodeDao(NodeDao dao);
-    
+    public ProvisioningAdapterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ProvisioningAdapterException(Throwable cause) {
+        super(cause);
+    }
+
 }
