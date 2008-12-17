@@ -729,6 +729,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.api.integration</groupId>
+        <artifactId>opennms-provisioning</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-ticketing</artifactId>
         <version>1.0.2</version>
       </dependency>
