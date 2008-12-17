@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.xml.event.Event;
 
 
 /**
@@ -97,7 +98,7 @@ public class DnsProvisioningProvider implements ProvisioningProvider {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningProvider#onEvent()
      */
-    public void onEvent() {
+    public void onEvent(Event e) {
         throw new UnsupportedOperationException("method not yet implemented.");
     }
 
