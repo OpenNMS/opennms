@@ -98,13 +98,28 @@
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
+    <resourceType name="ainfCpuInstance" label="SNMP Informant Advanced CPU"
+                  resourceLabel="CPU${ainfCpuInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
     <resourceType name="sinfLDskInstance" label="SNMP Informant Logical Disk"
                   resourceLabel="${sinfLDskInstance}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
+    <resourceType name="ainfLDskInstance" label="SNMP Informant Advanced Logical Disk"
+                  resourceLabel="${ainfLDskInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
     <resourceType name="sinfNetInstance" label="SNMP Informant Network Interface"
                   resourceLabel="${sinfNetInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType name="ainfNetInstance" label="SNMP Informant Advanced Network Interface"
+                  resourceLabel="${ainfNetInstance}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
@@ -1683,6 +1698,19 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11" instance="sinfCpuInstance" alias="sinfCpuIntrsPerSec"  type="Gauge32" />
       </group>
 
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-cpu" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.1"  instance="ainfCpuInstance" alias="ainfCpuInstance"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.5"  instance="ainfCpuInstance" alias="ainfCpuPctDPCTime"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.6"  instance="ainfCpuInstance" alias="ainfCpuPctIdleTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.7"  instance="ainfCpuInstance" alias="ainfCpuPctIntrTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.8"  instance="ainfCpuInstance" alias="ainfCpuPctPrivTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.9"  instance="ainfCpuInstance" alias="ainfCpuPctProcTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.14" instance="ainfCpuInstance" alias="ainfCpuDPCRate"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.15" instance="ainfCpuInstance" alias="ainfCpuDPCsQdPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.16" instance="ainfCpuInstance" alias="ainfCpuIntrsPerSec"  type="Gauge32" />
+      </group>
+
       <group name="snmpinformant-disk" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.1"  instance="sinfLDskInstance" alias="sinfLDskInstance"   type="string" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2"  instance="sinfLDskInstance" alias="sinfLDskPctDskRdTm" type="Gauge32" />
@@ -1705,6 +1733,34 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.19" instance="sinfLDskInstance" alias="sinfLDskWtsPerSec"  type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.20" instance="sinfLDskInstance" alias="sinfLDskFreeMbytes" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.21" instance="sinfLDskInstance" alias="sinfLDskSpltIOPrSc" type="Gauge32" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-disk" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.1"  instance="ainfLDskInstance" alias="ainfLDskInstance"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.2"  instance="ainfLDskInstance" alias="ainfLDskPctDskRdTm" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.3"  instance="ainfLDskInstance" alias="ainfLDskPctDskTm"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.4"  instance="ainfLDskInstance" alias="ainfLDskPctDskWtTm" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.5"  instance="ainfLDskInstance" alias="ainfLDskPctFreeSpc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.6"  instance="ainfLDskInstance" alias="ainfLDskIdleTm"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.7"  instance="ainfLDskInstance" alias="ainfLDskAvBytPerRd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.8"  instance="ainfLDskInstance" alias="ainfLDskAvBytPerXf" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.9"  instance="ainfLDskInstance" alias="ainfLDskAvBytPerWr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.10" instance="ainfLDskInstance" alias="ainfLDskAvDskQLn"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.11" instance="ainfLDskInstance" alias="ainfLDskAvDskRdQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.12" instance="ainfLDskInstance" alias="ainfLDskAvDskWtQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.13" instance="ainfLDskInstance" alias="ainfLDskAvSecPerRd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.14" instance="ainfLDskInstance" alias="ainfLDskAvSecPerXf" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.15" instance="ainfLDskInstance" alias="ainfLDskAvSecPerWt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.16" instance="ainfLDskInstance" alias="ainfLDskCurrentQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.17" instance="ainfLDskInstance" alias="ainfLDskBytPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.18" instance="ainfLDskInstance" alias="ainfLDskRdBytPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.19" instance="ainfLDskInstance" alias="ainfLDskRdsPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.20" instance="ainfLDskInstance" alias="ainfLDskXfersPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.21" instance="ainfLDskInstance" alias="ainfLDskWtBytPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.22" instance="ainfLDskInstance" alias="ainfLDskWtsPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.23" instance="ainfLDskInstance" alias="ainfLDskFreeMbytes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.24" instance="ainfLDskInstance" alias="ainfLDskSpltIOPrSc" type="Gauge32" />
       </group>
 
       <group name="snmpinformant-exchange-is" ifType="ignore">
@@ -1962,6 +2018,24 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.18" instance="0" alias="sinfMemSysDrvTotB"   type="Gauge" />
       </group>
 
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-memory" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.1"  instance="0" alias="ainfMemPctCommitUsd" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.4"  instance="0" alias="ainfMemAvailMB"      type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.12" instance="0" alias="ainfMemPageFaultsPS" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.15" instance="0" alias="ainfMemPagesInputPS" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.16" instance="0" alias="ainfMemPagesOutPS"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.17" instance="0" alias="ainfMemPagesPerSec"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.19" instance="0" alias="ainfMemPNonpagedByt" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.21" instance="0" alias="ainfMemPPagedBytes"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.22" instance="0" alias="ainfMemPPagedResByt" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.23" instance="0" alias="ainfMemSysCacheResB" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.24" instance="0" alias="ainfMemSysCodeResB"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.25" instance="0" alias="ainfMemSysCodeTotB"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.26" instance="0" alias="ainfMemSysDrvResB"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.27" instance="0" alias="ainfMemSysDrvTotB"   type="Gauge" />
+      </group>
+
       <group name="snmpinformant-processes" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.4.1" instance="0" alias="sinfProcesses" type="Gauge" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.4.2" instance="0" alias="sinfThreads"   type="Gauge" />
@@ -2000,6 +2074,28 @@
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.12" instance="sinfNetInstance" alias="netPktsRcvdPerSec"   type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.13" instance="sinfNetInstance" alias="netPktsSentPerSec"   type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.14" instance="sinfNetInstance" alias="netPktsPerSec"       type="Gauge32" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-network" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.1"  instance="ainfNetInstance" alias="ainfNetInstance"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.2"  instance="ainfNetInstance" alias="ainBytesRcvdPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.3"  instance="ainfNetInstance" alias="ainBytesSentPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.4"  instance="ainfNetInstance" alias="ainBytesTotalPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.5"  instance="ainfNetInstance" alias="ainCurrentBandwidth" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.6"  instance="ainfNetInstance" alias="ainOutputQueueLen"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.7"  instance="ainfNetInstance" alias="ainPktsOutDiscard"   type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.8"  instance="ainfNetInstance" alias="ainPktsOutErrors"    type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.9"  instance="ainfNetInstance" alias="ainPktsRcvdDiscard"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.10" instance="ainfNetInstance" alias="ainPktsRcvdErrors"   type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.11" instance="ainfNetInstance" alias="ainPktsRcvdNUPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.12" instance="ainfNetInstance" alias="ainPktsRcvdUCPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.13" instance="ainfNetInstance" alias="ainPktsRcvdUnknown"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.14" instance="ainfNetInstance" alias="ainPktsRcvdPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.15" instance="ainfNetInstance" alias="ainPktsSentNUPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.16" instance="ainfNetInstance" alias="ainPktsSentUCPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.17" instance="ainfNetInstance" alias="ainPktsSentPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.18" instance="ainfNetInstance" alias="ainPktsPerSec"       type="Gauge32" />
       </group>
 
       <!-- This group requires the pay-for SNMP Informant Advanced agent -->
@@ -2789,13 +2885,17 @@
           <includeGroup>openmanage-temperatureprobe</includeGroup>
           <includeGroup>openmanage-powerusage</includeGroup>
           <includeGroup>snmpinformant-cpu</includeGroup>
+          <includeGroup>snmpinformant-adv-cpu</includeGroup>
           <includeGroup>snmpinformant-disk</includeGroup>
+          <includeGroup>snmpinformant-adv-disk</includeGroup>
           <includeGroup>snmpinformant-exchange-mta</includeGroup>
           <includeGroup>snmpinformant-exchange-is</includeGroup>
           <includeGroup>snmpinformant-memory</includeGroup>
+          <includeGroup>snmpinformant-adv-memory</includeGroup>
           <includeGroup>snmpinformant-processes</includeGroup>
           <includeGroup>snmpinformant-sqlserver</includeGroup>
           <includeGroup>snmpinformant-network</includeGroup>
+          <includeGroup>snmpinformant-adv-network</includeGroup>
           <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>windows-host</includeGroup>
