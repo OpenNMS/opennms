@@ -38,10 +38,11 @@ package org.opennms.netmgt.provision.persist;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -49,11 +50,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="plugin")
 public class PluginConfig {
     @XmlAttribute(name="name")
     private String m_name;
-    
+
     @XmlAttribute(name="class")
     private String m_pluginClass;
 
@@ -72,7 +74,6 @@ public class PluginConfig {
     /**
      * @return the name
      */
-    @XmlTransient
     public String getName() {
         return m_name;
     }
@@ -85,7 +86,6 @@ public class PluginConfig {
     /**
      * @return the pluginClass
      */
-    @XmlTransient
     public String getPluginClass() {
         return m_pluginClass;
     }
@@ -98,10 +98,10 @@ public class PluginConfig {
     /**
      * @return the parameters
      */
-    @XmlTransient
     public Map<String, String> getParameters() {
         return m_parameters;
     }
+    
     /**
      * @param parameters the parameters to set
      */
