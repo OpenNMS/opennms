@@ -304,6 +304,14 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
                 set(insStmt, 27, event.getAlarmData().getX733ProbableCause());
                 set(insStmt, 28, event.getAlarmData().getClearKey());
             }
+            
+            // Column 29 ifindex
+            if (event.hasIfIndex()) {
+                set(insStmt, 29, event.getIfIndex());
+            } else {
+                insStmt.setNull(29, Types.INTEGER);
+            }
+
 
             if (log().isDebugEnabled()) {
                 log().debug("m_insStmt is: " + insStmt.toString());

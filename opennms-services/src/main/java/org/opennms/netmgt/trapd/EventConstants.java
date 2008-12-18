@@ -39,6 +39,7 @@ package org.opennms.netmgt.trapd;
 import java.math.BigInteger;
 
 import org.opennms.core.utils.Base64;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class EventConstants extends Object {
@@ -72,6 +73,8 @@ public class EventConstants extends Object {
     public final static String XML_ENCODING_TEXT = "text";
 
     public final static String XML_ENCODING_BASE64 = "base64";
+    
+    public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
     /** Empty, private constructor so this object cannot be instantiated. */
     private EventConstants() {

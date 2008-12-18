@@ -99,6 +99,9 @@ public class EventCreator implements TrapProcessor {
 
     public void processVarBind(SnmpObjId name, SnmpValue value) {
         m_parms.addParm(SyntaxToEvent.processSyntax(name.toString(), value));
+        if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
+            m_event.setIfIndex(value.toInt());
+        }
     }
 
     public void setTrapAddress(InetAddress trapAddress) {

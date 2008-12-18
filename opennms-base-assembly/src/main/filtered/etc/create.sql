@@ -555,6 +555,7 @@ create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 --#			  event
 --#  eventParms		: The <parms> element from the Event Data Stream DTD
 --#  nodeID             : Unique integer identifier for node
+--#  ifindex		: The <ifindex> element from the Event Data Stream DTD
 --#  ipAddr             : IP Address of node's interface
 --#  serviceID          : Unique integer identifier of service/poller package
 --#  eventDescr		: Free-form textual description of the event
@@ -655,6 +656,7 @@ create table events (
 	eventMouseOverText	varchar(64),
 	eventLog		char(1) not null,
 	eventDisplay		char(1) not null,
+    ifIndex             integer,
 	eventAckUser		varchar(256),
 	eventAckTime		timestamp with time zone,
 	alarmID			integer,
@@ -941,6 +943,7 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# lastEventTime: timestamp of the last event matching this alarm
 --# description : description from the event
 --# logMsg      : the logmsg from the event
+--# ifIndex      : the ifindex from the event
 --# operInstruct: the operator instructions from the event
 --# tticketID   : helpdesk integration field
 --# tticketState: helpdesk integration field
@@ -990,6 +993,7 @@ create table alarms (
 	x733AlarmType           VARCHAR(31),
 	x733ProbableCause       INTEGER default 0 not null,
 	qosAlarmState           VARCHAR(31),
+    ifIndex                 integer,
     clearKey				VARCHAR(256)
 	
 );
@@ -1002,6 +1006,9 @@ CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, s
 CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 CREATE INDEX alarm_eventid_idx ON alarms(lastEventID);
+CREATE INDEX alarm_lasteventtime_idx on alarms(lasteventtime);
+CREATE INDEX alarm_firstautomationtime_idx on alarms(firstautomationtime);
+CREATE INDEX alarm_lastautomationtime_idx on alarms(lastautomationtime);
 
 --########################################################################
 --#

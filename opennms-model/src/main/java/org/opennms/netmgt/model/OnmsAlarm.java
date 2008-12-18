@@ -95,6 +95,9 @@ public class OnmsAlarm implements Serializable {
     /** nullable persistent field */
     private Integer m_alarmType;
 
+    /** nullable persistent field */
+    private Integer m_ifIndex;
+
     /** persistent field */
     private Integer m_counter;
 
@@ -588,6 +591,15 @@ public class OnmsAlarm implements Serializable {
     
     public void setDetails(Map<String, String> alarmDetails) {
         m_details = alarmDetails;
+    }
+
+    @Column(name="ifIndex")
+    public Integer getIfIndex() {
+        return m_ifIndex;
+    }
+
+    public void setIfIndex(Integer ifIndex) {
+        m_ifIndex = ifIndex;
     }
 
 
