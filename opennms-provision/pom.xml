@@ -11,7 +11,7 @@
   <name>OpenNMS Provisioning</name>
   <modules>
     <module>opennms-provision-api</module>
-    <module>opennms-simple-detectors</module>
+    <module>opennms-detector-simple</module>
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
     <module>opennms-provision-persistence</module>
@@ -19,12 +19,12 @@
     <module>opennms-scanners</module>
 -->
     <module>opennms-detector-datagram</module>
-    <module>opennms-lineoriented-detectors</module>
+    <module>opennms-detector-lineoriented</module>
     <module>opennms-mock-simpleserver</module>
-    <module>opennms-radius-detector</module>
-    <module>opennms-dhcp-detector</module>
-    <module>opennms-jmx-detectors</module>
-    <module>opennms-jdbc-detector</module>
-    <module>opennms-ssh-detector</module>
+    <module>opennms-detector-radius</module>
+    <module>opennms-detector-dhcp</module>
+    <module>opennms-detector-jmx</module>
+    <module>opennms-detector-jdbc</module>
+    <module>opennms-detector-ssh</module>
   </modules>
 </project>
