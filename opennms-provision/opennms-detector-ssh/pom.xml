@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
-  <artifactId>opennms-ssh-detector</artifactId>
+  <artifactId>opennms-detector-ssh</artifactId>
   <name>OpenNMS SSH Detector</name>
   <url>http://www.opennms.org</url>
   <dependencies>

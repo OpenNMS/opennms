@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
-  <artifactId>opennms-radius-detector</artifactId>
+  <artifactId>opennms-detector-radius</artifactId>
   <name>OpenNMS Radius Detector</name>
   <url>http://www.opennms.org</url>
   <dependencies>
