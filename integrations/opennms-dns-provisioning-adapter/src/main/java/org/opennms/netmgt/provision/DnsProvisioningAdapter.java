@@ -36,10 +36,16 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Date;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.StoppableEventListener;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -49,23 +55,28 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
+@EventListener(name="Provisiond:DnsProvisioningAdaptor")
 public class DnsProvisioningAdapter implements ProvisioningAdapter {
     
     /*
      * A read-only DAO will be set by the Provisioning Daemon.
      */
-    NodeDao m_nodeDao = null;
+    private NodeDao m_nodeDao;
+    private StoppableEventListener m_eventListener;
+    private EventForwarder m_eventForwarder;
+    private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
     public void addNode(int nodeId) throws ProvisioningAdapterException {
+        OnmsNode node = null;
         try {
-            OnmsNode node = m_nodeDao.get(nodeId);
+            node = m_nodeDao.get(nodeId);
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.add(record);
         } catch (Exception e) {
-            throw new ProvisioningAdapterException("Dynamic DNS provisioning failed.", e);
+            sendAndThrow(nodeId, e);
         }
     }
 
@@ -78,7 +89,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.update(record);
         } catch (Exception e) {
-            throw new ProvisioningAdapterException("Dynamic DNS provisioning failed.", e);
+            sendAndThrow(nodeId, e);
         }
     }
     
@@ -91,31 +102,49 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.delete(record);
         } catch (Exception e) {
-            throw new ProvisioningAdapterException("Dynamic DNS provisioning failed.", e);
+            sendAndThrow(nodeId, e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#onEvent()
-     */
-    public void onEvent(Event e) {
-        throw new UnsupportedOperationException("method not yet implemented.");
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#registeredEventList()
-     */
-    public List<String> getEventList() {
-        throw new UnsupportedOperationException("method not yet implemented.");
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#registeredEventList()
-     */
-    public void setReadOnlyNodeDao(NodeDao dao) {
+    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+    public void handleInterfaceAddedEvent(Event e) {
         throw new UnsupportedOperationException("method not yet implemented.");
     }
     
+    private void sendAndThrow(int nodeId, Exception e) {
+        m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());
+        throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
+    }
+
+    private EventBuilder buildEvent(String uei, int nodeId) {
+        EventBuilder builder = new EventBuilder(uei, "Provisioner", new Date());
+        builder.setNodeid(nodeId);
+        return builder;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+    public void setNodeDao(NodeDao dao) {
+        m_nodeDao = dao;
+    }
+    
+    public void setEventListener(StoppableEventListener eventListener) {
+        m_eventListener = eventListener;
+    }
+
+    public StoppableEventListener getEventListener() {
+        return m_eventListener;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
+
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
+    }
+
     class DnsRecord {
         private InetAddress m_ip;
         private String m_hostname;
