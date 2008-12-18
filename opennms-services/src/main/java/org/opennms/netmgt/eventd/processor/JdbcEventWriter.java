@@ -351,6 +351,13 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventSource
             set(insStmt, 33, Constants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
 
+            // ifindex
+            if (event.hasIfIndex()) {
+                set(insStmt, 34, event.getIfIndex());
+            } else {
+                insStmt.setNull(34, Types.INTEGER);
+            }
+            
             // execute
             insStmt.executeUpdate();
         } finally {

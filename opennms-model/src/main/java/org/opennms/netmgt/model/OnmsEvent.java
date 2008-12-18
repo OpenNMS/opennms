@@ -115,6 +115,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	/** persistent field */
 	private Integer m_eventSeverity;
+	
+	/** nullable persistent field */
+    private Integer m_ifIndex;
 
 	/** nullable persistent field */
 	private String m_eventPathOutage;
@@ -625,5 +628,14 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	public void visit(EntityVisitor visitor) {
 		throw new RuntimeException("visitor method not implemented");
 	}
+
+	   @Column(name="ifIndex")
+	    public Integer getIfIndex() {
+	        return m_ifIndex;
+	    }
+
+	    public void setIfIndex(Integer ifIndex) {
+	        m_ifIndex = ifIndex;
+	    }
 
 }

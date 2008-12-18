@@ -56,7 +56,12 @@ public final class EventdConstants {
      * The SQL insertion string used by eventd to store the event information
      * into the database.
      */
-    public final static String SQL_DB_INS_EVENT = "INSERT into events (eventID, eventUei, nodeID, eventTime, eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public final static String SQL_DB_INS_EVENT = "INSERT into events (eventID, eventUei, nodeID, eventTime, " +
+    		"eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, " +
+    		"eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, " +
+    		"eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, " +
+    		"eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource,ifIndex) " +
+    		"values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
      * The SQL query to test for alarm reduction
@@ -91,14 +96,14 @@ public final class EventdConstants {
             "               lastEventID, firstEventTime, lastEventTime, description, logMsg, " +
             "               operInstruct, tticketID, tticketState, mouseOverText, suppressedUntil, " +
             "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei, " +
-            "               x733AlarmType, x733ProbableCause, clearKey) " +
+            "               x733AlarmType, x733ProbableCause, clearKey,ifIndex) " +
             "VALUES (?,?,?,?,?," +
             "        ?,?,?,?,?," +
             "        ?,?,?," +
             "        ?,?,?,?," +
             "        ?,?,?," +
             "        ?,?,?,?,?," +
-            "        ?,?,?)";
+            "        ?,?,?,?)";
 
     /**
      * The SQL string used by eventd to update number of duplicate events in
