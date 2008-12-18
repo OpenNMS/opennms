@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
-  <artifactId>opennms-dhcp-detector</artifactId>
+  <artifactId>opennms-detector-dhcp</artifactId>
   <name>OpenNMS DHCP Detector</name>
   <url>http://www.opennms.org</url>
   <dependencies>
