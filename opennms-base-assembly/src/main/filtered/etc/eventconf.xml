@@ -1766,6 +1766,20 @@
     </logmsg>
     <severity>Warning</severity>
     <alarm-data reduction-key="%uei%:%host%:%parm[aid]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  
+  <event> 
+    <uei>uei.opennms.org/provisioner/provisioningAdapterFailed</uei>
+    <event-label>OpenNMS-defined Provisioning Adapter Failed message</event-label>
+    <descr>
+      A provisioning adapter failed for host: %host%.&lt;p&gt;
+      &lt;p&gt;Message: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt; %host%:%parm[host]%:%parm[reason]% &lt;/p&gt;
+    </logmsg>
+    <severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
   </event> 
   
   <event-file>events/ia.events.xml</event-file>
