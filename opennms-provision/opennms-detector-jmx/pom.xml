@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
-  <artifactId>opennms-jmx-detectors</artifactId>
+  <artifactId>opennms-detector-jmx</artifactId>
   <name>OpenNMS JMX Detectors</name>
   <url>http://www.opennms.org</url>
   <dependencies>
