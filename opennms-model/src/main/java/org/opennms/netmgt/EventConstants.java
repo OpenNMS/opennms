@@ -530,32 +530,30 @@ public class EventConstants {
     public final static String EVENTSCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/eventsConfigChange";
     
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
-       public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
-       public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
-       public static final String LOCATION_MONITOR_STARTED_UEI="uei.opennms.org/remote/locationMonitorStarted";
-       public static final String LOCATION_MONITOR_STOPPED_UEI="uei.opennms.org/remote/locationMonitorStopped";
-       public static final String LOCATION_MONITOR_PAUSED_UEI="uei.opennms.org/remote/locationMonitorPaused";
-       public static final String LOCATION_MONITOR_DISCONNECTED_UEI="uei.opennms.org/remote/locationMonitorDisconnected";
-       public static final String LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorReconnected";
-       public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
-       
-       public final static String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
+    public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
+    public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
+    public static final String LOCATION_MONITOR_STARTED_UEI="uei.opennms.org/remote/locationMonitorStarted";
+    public static final String LOCATION_MONITOR_STOPPED_UEI="uei.opennms.org/remote/locationMonitorStopped";
+    public static final String LOCATION_MONITOR_PAUSED_UEI="uei.opennms.org/remote/locationMonitorPaused";
+    public static final String LOCATION_MONITOR_DISCONNECTED_UEI="uei.opennms.org/remote/locationMonitorDisconnected";
+    public static final String LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorReconnected";
+    public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
 
-       public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
+    public final static String RELOAD_IMPORT_UEI = "uei.opennms.org/internal/importer/reloadImport";
+    public static final String IMPORT_STARTED_UEI = "uei.opennms.org/internal/importer/importStarted";
+    public static final String IMPORT_SUCCESSFUL_UEI = "uei.opennms.org/internal/importer/importSuccessful";
+    public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
+    public static final String PROVISIONING_ADAPTER_FAILED = "uei.opennms.org/provisioner/provisioningAdapterFailed";
 
-       public static final String IMPORT_SUCCESSFUL_UEI = "uei.opennms.org/internal/importer/importSuccessful";
+    public static final String PARM_FAILURE_MESSAGE = "failureMessage";
 
-       public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
+    public static final String PARM_IMPORT_STATS = "importStats";
 
-       public static final String PARM_FAILURE_MESSAGE = "failureMessage";
+    public static final String PARM_IMPORT_RESOURCE = "importResource";
 
-       public static final String PARM_IMPORT_STATS = "importStats";
-       
-       public static final String PARM_IMPORT_RESOURCE = "importResource";
-
-       public static final String PARM_ALARM_ID = "alarmId";
-       public static final String PARM_ALARM_UEI = "alarmUei";
-       public static final String PARM_TROUBLE_TICKET = "troubleTicket";
+    public static final String PARM_ALARM_ID = "alarmId";
+    public static final String PARM_ALARM_UEI = "alarmUei";
+    public static final String PARM_TROUBLE_TICKET = "troubleTicket";
 
 
     public final static String TROUBLETICKET_CREATE_UEI = "uei.opennms.org/troubleTicket/create";
