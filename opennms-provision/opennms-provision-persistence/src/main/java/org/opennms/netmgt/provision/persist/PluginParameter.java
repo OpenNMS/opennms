@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JAXBPluginParameter {
+public class PluginParameter {
     @XmlAttribute
     private String key = null;
     @XmlAttribute
     private String value = null;
 
-    public JAXBPluginParameter() {
+    public PluginParameter() {
     }
     
-    public JAXBPluginParameter(Entry<String, String> e) {
+    public PluginParameter(Entry<String, String> e) {
         key = e.getKey();
         value = e.getValue();
     }
