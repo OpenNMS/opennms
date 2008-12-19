@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
@@ -54,8 +55,9 @@ public class OnmsForeignSource {
     @XmlAttribute(name="name")
     private String m_name;
     
-    @XmlAttribute(name="scan-interval")
-    private long m_scanInterval = 60 * 60 * 24 * 1000; // 1 day
+    @XmlElement(name="scan-interval")
+    @XmlJavaTypeAdapter(StringIntervalAdapter.class)
+    private Long m_scanInterval = Long.valueOf(60 * 60 * 24 * 1000); // 1 day
 
     @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")

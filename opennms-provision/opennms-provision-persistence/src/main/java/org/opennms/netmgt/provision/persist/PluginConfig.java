@@ -35,7 +35,9 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -43,12 +45,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
+ * A PluginConfig represents a portion of a configuration that defines a reference
+ * to a Java class "plugin" along with a set of parameters used to configure the
+ * behavior of that plugin.
+ * 
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="plugin")
@@ -59,46 +64,87 @@ public class PluginConfig {
     @XmlAttribute(name="class")
     private String m_pluginClass;
 
-    @XmlJavaTypeAdapter(ParameterMapAdaptor.class)
-    @XmlElement(name="parameters")
-    private Map<String,String> m_parameters = new HashMap<String,String>();
-    
+    // @XmlJavaTypeAdapter(ParameterMapAdaptor.class)
+    @XmlTransient
+    private Map<String,String> m_parameters = new LinkedHashMap<String,String>();
+
+    /**
+     * Creates an empty plugin configuration.
+     */
     public PluginConfig() {
     }
     
+    /**
+     * Creates a plugin configuration with the given name and class.
+     * 
+     * @param name the human-readable name of the plugin
+     * @param clazz the name of the plugin's java class
+     */
     public PluginConfig(String name, String clazz) {
         setName(name);
         setPluginClass(clazz);
     }
 
     /**
-     * @return the name
+     * Get the name of the plugin.
+     * 
+     * @return the human-readable name of the plugin
      */
     public String getName() {
         return m_name;
     }
     /**
-     * @param name the name to set
+     * Sets the name of the plugin.
+     * 
+     * @param name the human-readable name to set
      */
     public void setName(String name) {
         m_name = name;
     }
     /**
-     * @return the pluginClass
+     * Get the name of the plugin's java class.
+     * 
+     * @return the plugin's class name
      */
     public String getPluginClass() {
         return m_pluginClass;
     }
     /**
-     * @param pluginClass the plugin class to set
+     * Set the name of the plugin's java class.
+     * 
+     * @param pluginClass the plugin class name to set
      */
-    public void setPluginClass(String pluginClass) {
-        m_pluginClass = pluginClass;
+    public void setPluginClass(String clazz) {
+        m_pluginClass = clazz;
     }
+    /**
+     * Get a {@link List} of the plugin parameters.
+     * @return the parameters
+     */
+    @XmlElement(name="parameter")
+    public List<PluginParameter> getParameterList() {
+        List<PluginParameter> p = new ArrayList<PluginParameter>();
+        for (Map.Entry<String,String> e : m_parameters.entrySet()) {
+            p.add(new PluginParameter(e));
+        }
+        return p;
+    }
+    
+    /**
+     * @param parameters the parameters to set
+     */
+    public void setParameterList(List<PluginParameter> list) {
+        Map<String,String> m = new LinkedHashMap<String,String>();
+        for (PluginParameter p : list) {
+            m.put(p.getKey(), p.getValue());
+        }
+        m_parameters = m;
+    }
+    
     /**
      * @return the parameters
      */
-    public Map<String, String> getParameters() {
+    public Map<String,String> getParameters() {
         return m_parameters;
     }
     
@@ -108,6 +154,19 @@ public class PluginConfig {
     public void setParameters(Map<String, String> parameters) {
         m_parameters = parameters;
     }
+
+    /**
+     * @param key the parameter name
+     * @return the parameter value
+     */
+    public String getParameter(String key) {
+        return m_parameters.get(key);
+    }
+
+    /**
+     * @param key the parameter name
+     * @param value the parameter value
+     */
     public void addParameter(String key, String value) {
         m_parameters.put(key, value);
     }

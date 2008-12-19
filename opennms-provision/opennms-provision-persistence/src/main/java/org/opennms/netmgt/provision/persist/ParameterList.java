@@ -12,24 +12,24 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="pluginConfigParameter")
-public class JAXBPluginList {
-    public List<JAXBPluginParameter> parameter;
-    public JAXBPluginList() {
-        parameter = new LinkedList<JAXBPluginParameter>();
+public class ParameterList {
+    public List<PluginParameter> parameter;
+    public ParameterList() {
+        parameter = new LinkedList<PluginParameter>();
     }
 
-    public JAXBPluginList(Map<String,String> m) {
-        parameter = new LinkedList<JAXBPluginParameter>();
+    public ParameterList(Map<String,String> m) {
+        parameter = new LinkedList<PluginParameter>();
         for (Map.Entry<String,String> e : m.entrySet()) {
-            parameter.add(new JAXBPluginParameter(e));
+            parameter.add(new PluginParameter(e));
         }
     }
 
-    public void setParameter(List<JAXBPluginParameter> list) {
+    public void setParameter(List<PluginParameter> list) {
         parameter = list;
     }
     
-    public List<JAXBPluginParameter> getParameter() {
+    public List<PluginParameter> getParameter() {
         return parameter;
     }
 }
