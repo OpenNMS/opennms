@@ -35,6 +35,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,8 +48,8 @@ import org.springframework.util.Assert;
  *
  */
 public class MockForeignSourceRepository implements ForeignSourceRepository {
-    private Map<String,OnmsRequisition> m_requisitions = new HashMap<String,OnmsRequisition>();
-    private Map<String,OnmsForeignSource> m_foreignSources = new HashMap<String,OnmsForeignSource>();
+    private final Map<String,OnmsRequisition> m_requisitions = new HashMap<String,OnmsRequisition>();
+    private final Map<String,OnmsForeignSource> m_foreignSources = new HashMap<String,OnmsForeignSource>();
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.ForeignSourceRepository#createRequisition(org.springframework.core.io.Resource)
@@ -68,6 +69,10 @@ public class MockForeignSourceRepository implements ForeignSourceRepository {
         return m_foreignSources.get(foreignSourceName);
     }
 
+    public Collection<OnmsForeignSource> getAll() {
+        return m_foreignSources.values();
+    }
+    
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.ForeignSourceRepository#getRequisition(java.lang.String)
      */
