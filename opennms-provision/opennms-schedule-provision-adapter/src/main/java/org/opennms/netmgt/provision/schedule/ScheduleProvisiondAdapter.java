@@ -30,6 +30,14 @@
  */
 package org.opennms.netmgt.provision.schedule;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.provision.ProvisioningAdapter;
 import org.opennms.netmgt.provision.ProvisioningAdapterException;
 
@@ -38,20 +46,56 @@ import org.opennms.netmgt.provision.ProvisioningAdapterException;
  *
  */
 public class ScheduleProvisiondAdapter implements ProvisioningAdapter {
-
+    
+    public static class Scheduler implements Runnable{
+        
+        private int m_id;
+        
+        public void run() {
+            System.out.printf("Notifying Provisiond that node: %s needs to be scanned", getId());
+            
+        }
+        
+        public void setId(int id) {
+            m_id = id;
+        }
+        
+        public int getId() {
+            return m_id;
+        }
+        
+        
+    }
+    
+    /**
+     * A read-only DAO will be set by the Provisioning Daemon.
+     */
+    private NodeDao m_nodeDao;
+    private ScheduledExecutorService m_scheduler;
+    private int m_scheduleInterval;
+    private Map<String, ScheduledFuture<?>> m_scheduleQueue = new HashMap<String, ScheduledFuture<?>>();
+    
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(int)
      */
     public void addNode(int nodeId) throws ProvisioningAdapterException {
-        // TODO Auto-generated method stub
-
+        //OnmsNode node = m_nodeDao.get(nodeId);
+        //Date timestamp = node.getCreateTime();
+        Scheduler scheduledTask = new Scheduler();
+        scheduledTask.setId(nodeId);
+        ScheduledFuture<?> future = m_scheduler.schedule(scheduledTask, 10, SECONDS);
+        m_scheduleQueue.put(Integer.toString(nodeId), future);
+        
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(int)
      */
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
-        // TODO Auto-generated method stub
+        ScheduledFuture<?> future = m_scheduleQueue.remove(Integer.toString(nodeId));
+        if(future != null) {
+            future.cancel(true);
+        }
 
     }
 
@@ -59,8 +103,32 @@ public class ScheduleProvisiondAdapter implements ProvisioningAdapter {
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(int)
      */
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
-        // TODO Auto-generated method stub
+        deleteNode(nodeId);
+        addNode(nodeId);
+    }
 
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setScheduler(ScheduledExecutorService schedulder) {
+        m_scheduler = schedulder;
+    }
+
+    public ScheduledExecutorService getSchedulder() {
+        return m_scheduler;
+    }
+
+    public void setScheduleInterval(int scheduleInterval) {
+        m_scheduleInterval = scheduleInterval;
+    }
+
+    public int getScheduleInterval() {
+        return m_scheduleInterval;
     }
 
 }
