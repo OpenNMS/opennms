@@ -26,5 +26,6 @@
     <module>opennms-detector-jmx</module>
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
+    <module>opennms-schedule-provision-adapter</module>
   </modules>
 </project>
