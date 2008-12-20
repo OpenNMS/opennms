@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # host is required if not connecting of Unix domain socket
-PG_HOST=""
+PG_HOST="localhost"
 PG_PORT=5432
 PG_DB=opennms
 PG_ARCH_TABLE=event_archives
@@ -47,7 +47,7 @@ function runDbMaint() {
   #runsql "DELETE FROM outages where iflostservice < '2007/1/1'::timestamp;"
 
   # Table trimming
-  runsql "DELETE FROM outages where (ifregainedservice - iflostservice)::interval < interval '35 seconds;"
+  runsql "DELETE FROM outages where (ifregainedservice - iflostservice)::interval < interval '35 seconds';"
   runsql "DELETE FROM notifications WHERE pagetime < now() - interval '3 months';"
   runsql "DELETE 
             FROM events 
@@ -83,7 +83,7 @@ function doWork() {
   runsql "UPDATE outages SET svcregainedeventid = 0 FROM $PG_ARCH_TABLE WHERE outages.svcregainedeventid = $PG_ARCH_TABLE.eventid AND $PG_ARCH_TABLE.txID = $nextval;"
   runsql "UPDATE notifications SET eventid = 0 FROM $PG_ARCH_TABLE WHERE notifications.eventid = $PG_ARCH_TABLE.eventid AND $PG_ARCH_TABLE.txID = $nextval;"
   runsql "UPDATE alarms SET lasteventid = 0 FROM $PG_ARCH_TABLE WHERE alarms.lasteventid = $PG_ARCH_TABLE.eventid AND $PG_ARCH_TABLE.txID = $nextval;"
-  runsql  "DELETE FROM events e USING $PG_ARCH_TABLE ea WHERE ea.eventid = e.eventid AND ea.txID = $nextval;"
+  runsql  "DELETE FROM events USING $PG_ARCH_TABLE WHERE $PG_ARCH_TABLE.eventid = events.eventid AND $PG_ARCH_TABLE.txID = $nextval;"
 }
 
 runSetup
