@@ -85,6 +85,11 @@
         catch( NumberFormatException e ) {}
    }
 
+   String ifIndexString = request.getParameter("ifIndex");
+   int ifIndex = -1;
+   if (ifIndexString != null ) {
+	   ifIndex= WebSecurityUtils.safeParseInt(ifIndexString);
+   }
     //optional parameter: header 
    String header = request.getParameter( "header" );
    if( header == null ) {
@@ -105,7 +110,7 @@
     //throttle from the beginning of the result set
     int offset = 0;
     
-    if( ipAddr != null ) {
+    if( ipAddr != null && ! ipAddr.equals("0.0.0.0")) {
         if( serviceIdString != null ) {
             int serviceId = WebSecurityUtils.safeParseInt(serviceIdString);
             events = EventFactory.getEventsForService(nodeId, ipAddr, serviceId, sortStyle, ackType, throttle, offset);
@@ -113,6 +118,8 @@
         else {
             events = EventFactory.getEventsForInterface(nodeId, ipAddr, sortStyle, ackType, throttle, offset);
         }
+    } else if (ifIndex != -1 ) {
+        events = EventFactory.getEventsForInterface(nodeId, ifIndex, sortStyle, ackType, throttle, offset);
     }
     else {
         events = EventFactory.getEventsForNode(nodeId, sortStyle, ackType, throttle, offset);            

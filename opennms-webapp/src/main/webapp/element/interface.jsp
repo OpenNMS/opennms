@@ -102,7 +102,8 @@
         services = new Service[0];
     }
 
-    String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
+    String eventUrl1 = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
+    String eventUrl2 = "event/list?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
     
     String telnetIp = null;
     Service telnetService = NetworkElementFactory.getService(nodeId, ipAddr, this.telnetServiceId);
@@ -171,10 +172,22 @@ function doDelete() {
 
       <div id="linkbar">
       <ul>
+        <%
+        if (! ipAddr.equals("0.0.0.0")) {
+        %>
 	<li>
-        <a href="<%=eventUrl%>">View Events</a>
+        <a href="<%=eventUrl1%>">View Events by Ip address</a>
 	</li>
-
+		<% } %>
+		
+        <%
+        if (ifIndex > 0 ) {
+        %>
+	<li>
+        <a href="<%=eventUrl2%>">View Events by ifIndex</a>
+	</li>
+		<% } %>
+		
         <%
         if( telnetIp != null ) {
         %>
@@ -359,17 +372,30 @@ function doDelete() {
 
             <!-- interface desktop information box -->
           
-            <!-- events list box -->
-            <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = eventUrl; %>
+            <!-- events list box 1 using ipaddress-->
+            <% if (!ipAddr.equals("0.0.0.0")) {
+            	String eventHeader1 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter Ip address:" + ipAddr + ")</a>"; %>
+            <% String moreEventsUrl1 = eventUrl1; %>
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
               <jsp:param name="ipAddr" value="<%=ipAddr%>" />
               <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<%=eventHeader%>" />
-              <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
+              <jsp:param name="header" value="<%=eventHeader1%>" />
+              <jsp:param name="moreUrl" value="<%=moreEventsUrl1%>" />
             </jsp:include>
-            
+            <% } %>
+            <!-- events list box 2 using ifindex -->
+			<% if (ifIndex > 0 ) { %>
+            <% String eventHeader2 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter ifIndex = " + ifIndex + ")</a>"; %>
+            <% String moreEventsUrl2 = eventUrl2; %>
+            <jsp:include page="/includes/eventlist.jsp" flush="false" >
+              <jsp:param name="node" value="<%=nodeId%>" />
+              <jsp:param name="throttle" value="5" />
+              <jsp:param name="header" value="<%=eventHeader2%>" />
+              <jsp:param name="moreUrl" value="<%=moreEventsUrl2%>" />
+              <jsp:param name="ifIndex" value="<%=ifIndex%>" />
+            </jsp:include>
+            <% } %>
             <!-- Recent outages box -->
             <jsp:include page="/includes/interfaceOutages-box.jsp" flush="false" />
             

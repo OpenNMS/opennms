@@ -46,6 +46,7 @@ import java.util.Vector;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.web.event.filter.Filter;
+import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
 import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
@@ -563,6 +564,26 @@ public class EventFactory extends Object {
         Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress) };
         return (EventFactory.getEvents(sortStyle, ackType, filters, throttle, offset));
     }
+
+    /**
+     * Return some maximum number of events or less (optionally only
+     * unacknowledged events) sorted by the given sort style for the given node
+     * and IP address.
+     * 
+     * @param throttle
+     *            a value less than one means no throttling
+     * @param offset
+     *            which row to start on in the result list
+     */
+    public static Event[] getEventsForInterface(int nodeId, int ifIndex, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+        if (sortStyle == null || ackType == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new  IfIndexFilter(ifIndex)};
+        return (EventFactory.getEvents(sortStyle, ackType, filters, throttle, offset));
+    }
+
 
     /**
      * Return all unacknowledged events sorted by time for that have the given
