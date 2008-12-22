@@ -58,14 +58,13 @@ import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.Base64;
-import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -137,7 +136,7 @@ public class HttpMonitor extends IPv4Monitor {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
 
             httpClient.setTimeoutTracker(new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT));
-            log().debug("Port = " + currentPort + ", Address = " + ((InetAddress) iface.getAddress()) + ", " + httpClient.getTimeoutTracker());
+            log().debug("Port = " + currentPort + ", Address = " + (iface.getAddress()) + ", " + httpClient.getTimeoutTracker());
             
             httpClient.setCurrentPort(currentPort);
 
@@ -148,7 +147,7 @@ public class HttpMonitor extends IPv4Monitor {
                 try {
                     httpClient.getTimeoutTracker().startAttempt();                    
                     httpClient.connect();
-                    log().debug("HttpMonitor: connected to host: " + ((InetAddress) iface.getAddress()) + " on port: " + currentPort);
+                    log().debug("HttpMonitor: connected to host: " + (iface.getAddress()) + " on port: " + currentPort);
 
                     httpClient.sendHttpCommand();
                     
@@ -177,19 +176,19 @@ public class HttpMonitor extends IPv4Monitor {
                     }
                     
                 } catch (NoRouteToHostException e) {
-                    log().warn("checkStatus: No route to host exception for address " + ((InetAddress) iface.getAddress()) + ": " + e.getMessage());
+                    log().warn("checkStatus: No route to host exception for address " + (iface.getAddress()) + ": " + e.getMessage());
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (InterruptedIOException e) {
                     log().info("checkStatus: did not connect to host with " + httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (ConnectException e) {
-                    log().warn("Connection exception for " + ((InetAddress) iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex] + ":"+ e.getMessage());
+                    log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex] + ":"+ e.getMessage());
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    log().warn("IOException while polling address " + ((InetAddress) iface.getAddress()), e);
-                    httpClient.setReason("IOException while polling address: "+((InetAddress) iface.getAddress())+": "+e.getMessage());
+                    log().warn("IOException while polling address " + (iface.getAddress()), e);
+                    httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();
                 }
@@ -305,7 +304,7 @@ public class HttpMonitor extends IPv4Monitor {
         private String m_currentLine;
         private int m_serviceStatus;
         private String m_reason;
-        private StringBuffer m_html = new StringBuffer();
+        private final StringBuffer m_html = new StringBuffer();
         private int m_serverResponseCode;
         private TimeoutTracker m_timeoutTracker;
         private int m_currentPort;
@@ -427,7 +426,7 @@ public class HttpMonitor extends IPv4Monitor {
                 if (m_currentLine.startsWith("HTTP/")) {
                     serverResponseValue = parseHttpResponse();
 
-                    if (SnmpPeerFactory.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
+                    if (IPLike.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
                         log().debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
                         m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
@@ -453,7 +452,7 @@ public class HttpMonitor extends IPv4Monitor {
             try {
                 serverResponse = Integer.parseInt(t.nextToken());
             } catch (NumberFormatException nfE) {
-                log().info("Error converting response code from host = " + ((InetAddress) m_iface.getAddress()) + ", response = " + m_currentLine);
+                log().info("Error converting response code from host = " + (m_iface.getAddress()) + ", response = " + m_currentLine);
             }
             return serverResponse;
         }
@@ -511,8 +510,8 @@ public class HttpMonitor extends IPv4Monitor {
                 cmd += "Authorization: Basic "+determineBasicAuthentication(m_parameters) +"\r\n";
             }
 
-            for (Iterator<String> it = m_parameters.keySet().iterator(); it.hasNext();) {
-                String parmKey = (String) it.next();
+            for (String string : m_parameters.keySet()) {
+                String parmKey = string;
                 if (parmKey.matches("header[0-9]+$")) {
                     cmd += determineHttpHeader(m_parameters, parmKey)+"\r\n";
                 }

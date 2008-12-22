@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.config;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.common.Range;
 
 /**
@@ -181,14 +182,14 @@ final class MergeableRange implements Comparable {
         Range newRange = null;
         
         if (specific.getValue() == getFirst().getValue()) {
-            getRange().setBegin(SnmpPeerFactory.toIpAddr(specific.getValue()+1));
+            getRange().setBegin(InetAddressUtils.toIpAddrString((specific.getValue()+1)));
         } else if (specific.getValue() == getLast().getValue()) {
-            getRange().setEnd(SnmpPeerFactory.toIpAddr(specific.getValue()-1));
+            getRange().setEnd(InetAddressUtils.toIpAddrString((specific.getValue()-1)));
         } else {
             newRange = new Range();
-            newRange.setBegin(SnmpPeerFactory.toIpAddr(specific.getValue()+1));
+            newRange.setBegin(InetAddressUtils.toIpAddrString((specific.getValue()+1)));
             newRange.setEnd(getRange().getEnd());
-            getRange().setEnd(SnmpPeerFactory.toIpAddr(specific.getValue()-1));
+            getRange().setEnd(InetAddressUtils.toIpAddrString((specific.getValue()-1)));
         }
         return newRange;
     }
