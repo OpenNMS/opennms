@@ -32,6 +32,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
@@ -181,8 +183,9 @@ public final class NSClientPeerFactory extends PeerFactory {
             Definition definition = definitionsIterator.next();
             if (definition.getSpecificCount() == 0
                 && definition.getRangeCount() == 0) {
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("optimize: Removing empty definition element");
+                }
                 definitionsIterator.remove();
             }
         }
@@ -254,15 +257,17 @@ public final class NSClientPeerFactory extends PeerFactory {
                 for (Integer begin : rangesMap.keySet()) {
                     int beginInt = begin.intValue();
 
-                    if (specificInt < beginInt - 1)
+                    if (specificInt < beginInt - 1) {
                         continue;
+                    }
 
                     Range range = rangesMap.get(begin);
 
                     int endInt = new IPv4Address(range.getEnd()).getAddress();
 
-                    if (specificInt > endInt + 1)
+                    if (specificInt > endInt + 1) {
                         continue;
+                    }
 
                     if (specificInt >= beginInt && specificInt <= endInt) {
                         specificsMap.remove(specific);
@@ -330,8 +335,9 @@ public final class NSClientPeerFactory extends PeerFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized NSClientPeerFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The NSClientPeerFactory has not been initialized");
+        }
 
         return m_singleton;
     }
@@ -360,26 +366,24 @@ public final class NSClientPeerFactory extends PeerFactory {
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Iterator<Definition> definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                definitionsIterator.next();
-
-            if ((currentDefinition.getPassword() != null
-                 && currentDefinition.getPassword().equals(password))
-                || (currentDefinition.getPassword() == null
-                    && m_config.getPassword() != null
-                    && m_config.getPassword().equals(password))) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Found existing definition "
-                              + "with read-community " + password);
-                definition = currentDefinition;
-                break;
+        for (Definition currentDefinition : definitions) {
+        if ((currentDefinition.getPassword() != null
+             && currentDefinition.getPassword().equals(password))
+            || (currentDefinition.getPassword() == null
+                && m_config.getPassword() != null
+                && m_config.getPassword().equals(password))) {
+            if (log.isDebugEnabled()) {
+                log.debug("define: Found existing definition "
+                          + "with read-community " + password);
             }
+            definition = currentDefinition;
+            break;
         }
+      }
         if (definition == null) {
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("define: Creating new definition");
+            }
 
             definition = new Definition();
             definition.setPassword(password);
@@ -390,69 +394,65 @@ public final class NSClientPeerFactory extends PeerFactory {
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Iterator<Definition> definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                definitionsIterator.next();
-
-            // Ignore this definition if it was the one identified by the first
-            // step
-            if (currentDefinition == definition)
-                continue;
-
-            // Remove any specific elements that match IP
-            while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Removed an existing specific "
-                              + "element with IP " + ip);
-            }
-
-            // Split and replace any range elements that contain IP
-            ArrayList<Range> ranges =
-                new ArrayList<Range>(currentDefinition.getRangeCollection());
-            Range[] rangesArray = currentDefinition.getRange();
-            for (int rangesArrayIndex = 0;
-                 rangesArrayIndex < rangesArray.length;
-                 rangesArrayIndex++) {
-                Range range = rangesArray[rangesArrayIndex];
-                int begin = new IPv4Address(range.getBegin()).getAddress();
-                int end = new IPv4Address(range.getEnd()).getAddress();
-                if (address >= begin && address <= end) {
-                    if (log.isDebugEnabled())
-                        log.debug("define: Splitting range element "
-                                  + "with begin " + range.getBegin() + " and "
-                                  + "end " + range.getEnd());
-
-                    if (begin == end) {
-                        ranges.remove(range);
-                        continue;
-                    }
-
-                    if (address == begin) {
-                        range.setBegin(IPv4Address.addressToString(address + 1));
-                        continue;
-                    }
-
-                    if (address == end) {
-                        range.setEnd(IPv4Address.addressToString(address - 1));
-                        continue;
-                    }
-
-                    Range head = new Range();
-                    head.setBegin(range.getBegin());
-                    head.setEnd(IPv4Address.addressToString(address - 1));
-
-                    Range tail = new Range();
-                    tail.setBegin(IPv4Address.addressToString(address + 1));
-                    tail.setEnd(range.getEnd());
-
-                    ranges.remove(range);
-                    ranges.add(head);
-                    ranges.add(tail);
-                }
-            }
-            currentDefinition.setRange(ranges);
+        for (Definition currentDefinition : definitions) {
+        // Ignore this definition if it was the one identified by the first
+        // step
+        if (currentDefinition == definition) {
+            continue;
         }
+
+        // Remove any specific elements that match IP
+        while (currentDefinition.removeSpecific(ip.getHostAddress())) {
+            if (log.isDebugEnabled()) {
+                log.debug("define: Removed an existing specific "
+                          + "element with IP " + ip);
+            }
+        }
+
+        // Split and replace any range elements that contain IP
+        ArrayList<Range> ranges =
+            new ArrayList<Range>(currentDefinition.getRangeCollection());
+        Range[] rangesArray = currentDefinition.getRange();
+        for (Range range : rangesArray) {
+        int begin = new IPv4Address(range.getBegin()).getAddress();
+        int end = new IPv4Address(range.getEnd()).getAddress();
+        if (address >= begin && address <= end) {
+            if (log.isDebugEnabled()) {
+                log.debug("define: Splitting range element "
+                          + "with begin " + range.getBegin() + " and "
+                          + "end " + range.getEnd());
+            }
+
+            if (begin == end) {
+                ranges.remove(range);
+                continue;
+            }
+
+            if (address == begin) {
+                range.setBegin(IPv4Address.addressToString(address + 1));
+                continue;
+            }
+
+            if (address == end) {
+                range.setEnd(IPv4Address.addressToString(address - 1));
+                continue;
+            }
+
+            Range head = new Range();
+            head.setBegin(range.getBegin());
+            head.setEnd(IPv4Address.addressToString(address - 1));
+
+            Range tail = new Range();
+            tail.setBegin(IPv4Address.addressToString(address + 1));
+            tail.setEnd(range.getEnd());
+
+            ranges.remove(range);
+            ranges.add(head);
+            ranges.add(tail);
+        }
+       }
+        currentDefinition.setRange(ranges);
+      }
 
         // Store the altered list of definitions
         m_config.setDefinition(definitions);
@@ -489,14 +489,14 @@ public final class NSClientPeerFactory extends PeerFactory {
 
             // check the ranges
             //
-            long lhost = toLong(agentConfig.getAddress());
+            long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
             for (Range rng : def.getRangeCollection()) {
                 try {
                     InetAddress begin = InetAddress.getByName(rng.getBegin());
                     InetAddress end = InetAddress.getByName(rng.getEnd());
 
-                    long start = toLong(begin);
-                    long stop = toLong(end);
+                    long start = InetAddressUtils.toIpAddrLong(begin);
+                    long stop = InetAddressUtils.toIpAddrLong(end);
 
                     if (start <= lhost && lhost <= stop) {
                         setNSClientAgentConfig(agentConfig, def );
@@ -510,7 +510,7 @@ public final class NSClientPeerFactory extends PeerFactory {
             
             // check the matching IP expressions
             for (String ipMatch : def.getIpMatchCollection()) {
-                if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
+                if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
                     setNSClientAgentConfig(agentConfig, def);
                     break DEFLOOP;
                 }
@@ -572,7 +572,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      */
     private long determineTimeout(Definition def) {
         long timeout = NSClientAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
+        return (def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
     }
 
     private int determineRetries(Definition def) {        

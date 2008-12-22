@@ -39,6 +39,7 @@ import java.net.UnknownHostException;
 import java.util.Comparator;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.common.Range;
 
@@ -52,8 +53,8 @@ public class RangeComparator implements Comparator {
     public int compare(Object rng1, Object rng2) {
         long compared = 0;
         try {
-            final long range1Begin = SnmpPeerFactory.toLong(InetAddress.getByName(((Range)rng1).getBegin()));
-            final long range2Begin = SnmpPeerFactory.toLong(InetAddress.getByName(((Range)rng2).getBegin()));
+            final long range1Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(((Range)rng1).getBegin()));
+            final long range2Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(((Range)rng2).getBegin()));
             compared = range1Begin - range2Begin;
         } catch (UnknownHostException e) {
             log.error("compare: Exception sorting ranges.", e);

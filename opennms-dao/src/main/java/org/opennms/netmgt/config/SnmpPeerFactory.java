@@ -47,12 +47,13 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
@@ -202,8 +203,9 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized SnmpPeerFactory getInstance() {
-        if (!m_loaded)
+        if (!m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
+        }
 
         return m_singleton;
     }
@@ -251,25 +253,24 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Iterator<Definition> definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition = definitionsIterator.next();
-
-            if ((currentDefinition.getReadCommunity() != null
-                 && currentDefinition.getReadCommunity().equals(community))
-                || (currentDefinition.getReadCommunity() == null
-                    && m_config.getReadCommunity() != null
-                    && m_config.getReadCommunity().equals(community))) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Found existing definition "
-                              + "with read-community " + community);
-                definition = currentDefinition;
-                break;
+        for (Definition currentDefinition : definitions) {
+        if ((currentDefinition.getReadCommunity() != null
+             && currentDefinition.getReadCommunity().equals(community))
+            || (currentDefinition.getReadCommunity() == null
+                && m_config.getReadCommunity() != null
+                && m_config.getReadCommunity().equals(community))) {
+            if (log.isDebugEnabled()) {
+                log.debug("define: Found existing definition "
+                          + "with read-community " + community);
             }
+            definition = currentDefinition;
+            break;
         }
+      }
         if (definition == null) {
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("define: Creating new definition");
+            }
 
             definition = new Definition();
             definition.setReadCommunity(community);
@@ -280,68 +281,65 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Iterator<Definition> definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition = definitionsIterator.next();
-
-            // Ignore this definition if it was the one identified by the first
-            // step
-            if (currentDefinition == definition)
-                continue;
-
-            // Remove any specific elements that match IP
-            while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Removed an existing specific "
-                              + "element with IP " + ip);
-            }
-
-            // Split and replace any range elements that contain IP
-            ArrayList<Range> ranges =
-                new ArrayList<Range>(currentDefinition.getRangeCollection());
-            Range[] rangesArray = currentDefinition.getRange();
-            for (int rangesArrayIndex = 0;
-                 rangesArrayIndex < rangesArray.length;
-                 rangesArrayIndex++) {
-                Range range = rangesArray[rangesArrayIndex];
-                int begin = new IPv4Address(range.getBegin()).getAddress();
-                int end = new IPv4Address(range.getEnd()).getAddress();
-                if (address >= begin && address <= end) {
-                    if (log.isDebugEnabled())
-                        log.debug("define: Splitting range element "
-                                  + "with begin " + range.getBegin() + " and "
-                                  + "end " + range.getEnd());
-
-                    if (begin == end) {
-                        ranges.remove(range);
-                        continue;
-                    }
-
-                    if (address == begin) {
-                        range.setBegin(IPv4Address.addressToString(address + 1));
-                        continue;
-                    }
-
-                    if (address == end) {
-                        range.setEnd(IPv4Address.addressToString(address - 1));
-                        continue;
-                    }
-
-                    Range head = new Range();
-                    head.setBegin(range.getBegin());
-                    head.setEnd(IPv4Address.addressToString(address - 1));
-
-                    Range tail = new Range();
-                    tail.setBegin(IPv4Address.addressToString(address + 1));
-                    tail.setEnd(range.getEnd());
-
-                    ranges.remove(range);
-                    ranges.add(head);
-                    ranges.add(tail);
-                }
-            }
-            currentDefinition.setRange(ranges);
+        for (Definition currentDefinition : definitions) {
+        // Ignore this definition if it was the one identified by the first
+        // step
+        if (currentDefinition == definition) {
+            continue;
         }
+
+        // Remove any specific elements that match IP
+        while (currentDefinition.removeSpecific(ip.getHostAddress())) {
+            if (log.isDebugEnabled()) {
+                log.debug("define: Removed an existing specific "
+                          + "element with IP " + ip);
+            }
+        }
+
+        // Split and replace any range elements that contain IP
+        ArrayList<Range> ranges =
+            new ArrayList<Range>(currentDefinition.getRangeCollection());
+        Range[] rangesArray = currentDefinition.getRange();
+        for (Range range : rangesArray) {
+        int begin = new IPv4Address(range.getBegin()).getAddress();
+        int end = new IPv4Address(range.getEnd()).getAddress();
+        if (address >= begin && address <= end) {
+            if (log.isDebugEnabled()) {
+                log.debug("define: Splitting range element "
+                          + "with begin " + range.getBegin() + " and "
+                          + "end " + range.getEnd());
+            }
+
+            if (begin == end) {
+                ranges.remove(range);
+                continue;
+            }
+
+            if (address == begin) {
+                range.setBegin(IPv4Address.addressToString(address + 1));
+                continue;
+            }
+
+            if (address == end) {
+                range.setEnd(IPv4Address.addressToString(address - 1));
+                continue;
+            }
+
+            Range head = new Range();
+            head.setBegin(range.getBegin());
+            head.setEnd(IPv4Address.addressToString(address - 1));
+
+            Range tail = new Range();
+            tail.setBegin(IPv4Address.addressToString(address + 1));
+            tail.setEnd(range.getEnd());
+
+            ranges.remove(range);
+            ranges.add(head);
+            ranges.add(tail);
+        }
+       }
+        currentDefinition.setRange(ranges);
+      }
 
         // Store the altered list of definitions
         m_config.setDefinition(definitions);
@@ -389,14 +387,14 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
 
             // check the ranges
             //
-            long lhost = toLong(agentConfig.getAddress());
+            long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
             for (Range rng : def.getRangeCollection()) {
                 try {
                     InetAddress begin = InetAddress.getByName(rng.getBegin());
                     InetAddress end = InetAddress.getByName(rng.getEnd());
 
-                    long start = toLong(begin);
-                    long stop = toLong(end);
+                    long start = InetAddressUtils.toIpAddrLong(begin);
+                    long stop = InetAddressUtils.toIpAddrLong(end);
 
                     if (start <= lhost && lhost <= stop) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
@@ -410,7 +408,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
             
             // check the matching ip expressions
             for (String ipMatch : def.getIpMatchCollection()) {
-                if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
+                if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
                     setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                     break DEFLOOP;
                 }
@@ -653,7 +651,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
      */
     private long determineTimeout(Definition def) {
         long timeout = SnmpAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
+        return (def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
     }
 
     private int determineRetries(Definition def) {        
@@ -713,20 +711,6 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
     }
 
     /**
-     * display an IP as a dotted quad xxx.xxx.xxx.xxx
-     */
-    public static String toIpAddr (long ip) {
-        StringBuffer sb = new StringBuffer( 15 );
-        for ( int shift=24; shift >0; shift-=8 ) {
-            //process 3 bytes, from high order byte down.
-            sb.append( Long.toString( (ip >>> shift) & 0xff ));
-            sb.append('.');
-        }
-        sb.append(Long.toString( ip & 0xff ));
-        return sb.toString();
-    }
-    
-    /**
      * Enhancement: Allows specific or ranges to be merged into snmp configuration
      * with many other attributes.  Uses new classes the wrap Castor generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
@@ -760,7 +744,9 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
             log().error("marshallConfig: Error validating configuration", e);
         } finally {
             try {
-                if (writer != null) writer.close();
+                if (writer != null) {
+                    writer.close();
+                }
             } catch (IOException e) {
                 log().error("marshallConfig: I/O Error closing string writer!", e);
             }

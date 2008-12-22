@@ -43,8 +43,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.PeerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -60,11 +60,11 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class ScanManager {
     
-    private SystemGroup m_systemGroup;
-    private IfTable m_ifTable;
-    private IpAddrTable m_ipAddrTable;
-    private IfXTable m_ifXTable;
-    private InetAddress m_address;
+    private final SystemGroup m_systemGroup;
+    private final IfTable m_ifTable;
+    private final IpAddrTable m_ipAddrTable;
+    private final IfXTable m_ifXTable;
+    private final InetAddress m_address;
 
     ScanManager(InetAddress address) {
         m_address = address;
@@ -164,7 +164,7 @@ public class ScanManager {
         Set<String> ipAddrs = getIpAddrTable().getIpAddresses();
         for(Iterator<String> it = ipAddrs.iterator(); it.hasNext(); ) {
             String ipAddr = it.next();
-            if (PeerFactory.verifyIpMatch(ipAddr, "127.*.*.*")) {
+            if (IPLike.matches(ipAddr, "127.*.*.*")) {
                 it.remove();
             }
         }
@@ -209,8 +209,9 @@ public class ScanManager {
         
         CollectionTracker tracker = createCollectionTracker();
         
-        if (log().isDebugEnabled())
+        if (log().isDebugEnabled()) {
             log().debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
+        }
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", tracker);
         walker.start();
@@ -220,14 +221,18 @@ public class ScanManager {
         
             // Log any failures
             //
-            if (getSystemGroup().failed())
+            if (getSystemGroup().failed()) {
                 log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
-            if (getIfTable().failed())
+            }
+            if (getIfTable().failed()) {
                 log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
-            if (getIpAddrTable().failed())
+            }
+            if (getIpAddrTable().failed()) {
                 log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
-            if (getIfXTable().failed())
+            }
+            if (getIfXTable().failed()) {
                 log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
+            }
         
         } catch (InterruptedException e) {
         
