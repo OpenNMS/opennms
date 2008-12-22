@@ -61,6 +61,7 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -103,7 +104,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
         "classpath:/modelImporterTest.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
-
+@JUnitTemporaryDatabase()
 public class BaseProvisionerTest {
 
     @Autowired
