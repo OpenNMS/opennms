@@ -47,6 +47,8 @@
 package org.opennms.netmgt.eventd.processor;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.eventd.EventUtil;
@@ -57,6 +59,8 @@ import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Tticket;
+import org.opennms.netmgt.xml.eventconf.Decode;
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -427,8 +431,8 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     /**
      * Expand parms in the event logmsg
      */
-    private void expandParms(Logmsg logmsg, Event event) {
-        String strRet = EventUtil.expandParms(logmsg.getContent(), event);
+    private void expandParms(Logmsg logmsg, Event event, Map<String, Map<String, String>> decode) {
+        String strRet = EventUtil.expandParms(logmsg.getContent(), event, decode);
         if (strRet != null) {
             logmsg.setContent(strRet);
         }
@@ -496,7 +500,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      * value of the parameter number 'num', if present - %parm[##]% is replaced
      * by the number of parameters
      */
-    private void expandParms(Event event) {
+    private void expandParms(Event event, Map<String, Map<String, String>> decode) {
         String strRet = null;
 
         // description
@@ -510,7 +514,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
         // logmsg
         if (event.getLogmsg() != null) {
-            expandParms(event.getLogmsg(), event);
+            expandParms(event.getLogmsg(), event, decode);
         }
 
         // operinstr
@@ -719,10 +723,23 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setAlarmData(alarmData);
             }
 
-        } // end fill of event using econf
+        } 
+        
+        Map<String, Map<String, String>> decode = new HashMap<String, Map<String,String>>();
+        if (econf.getVarbindsdecode() != null) {
+           Varbindsdecode[] vardecodeArray = econf.getVarbindsdecode();
+           for (int i=0; i<vardecodeArray.length; i++) {
+               Decode[] decodeArray = vardecodeArray[i].getDecode();
+               Map<String, String> valueMap = new HashMap<String, String>();
+               for (int j=0; j<decodeArray.length;j++) {
+                   valueMap.put(decodeArray[j].getVarbindvalue(), decodeArray[j].getVarbinddecodedstring());
+               }
+               decode.put(vardecodeArray[i].getParmid(), valueMap);
+           }
+        }// end fill of event using econf
 
         // do the event parm expansion
-        expandParms(e);
+        expandParms(e, decode);
 
     } // end expandEvent()
 
