@@ -79,6 +79,15 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
         OnmsNode node = null;
         try {
             node = m_nodeDao.get(nodeId);
+//            RancidNode rn = new RancidNode("demo", "gugli_DIC2_1759");
+//            rn.setDeviceType(RancidNode.DEVICE_TYPE_BAYNET);
+//            rn.setComment("Dic2 1759");
+//            RWSClientApi.createRWSRancidNode("http://www.rionero.com/rws-current",rn);
+
+            RancidNode r_node = new RancidNode("demo", node.getLabel());
+            r_node.setDeviceType(node.getType());
+            RWSClientApi.createRWSRancidNode("http://www.rionero.com/rws-current",r_node);
+        
 //            DnsRecord record = new DnsRecord(node);
 //            DynamicDnsAdapter.add(record);
         } catch (Exception e) {

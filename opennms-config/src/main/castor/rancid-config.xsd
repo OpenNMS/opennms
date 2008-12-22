@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/rancid"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/rancid"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the rancid-configuration.xml configuration file. Version: $Id$</documentation>
+  </annotation>
+   
+	<element name="rancid-configuration">
+	    <annotation>
+	        <documentation>Top-level element for the rancid-configuration.xml configuration file.</documentation>
+	    </annotation>
+	
+		<complexType>
+	    	<sequence>
+	        	<element minOccurs="1" maxOccurs="unbounded" ref="this:base-url"/>
+	        	<element maxOccurs="unbounded" minOccurs="1" ref="this:mapping"/>
+	 		</sequence>
+	   </complexType>
+	 </element>
+	
+	<element name="base-url">
+	    <annotation>
+	        <documentation>Base Url(s) for Rancid Servers.</documentation>
+	    </annotation>
+		<complexType>
+	        <attribute name="server_url" type="string"/>
+	        <attribute name="server_port" type="int"/>
+	        <attribute name="server_path" type="string"/>	        
+		</complexType>
+	 </element>
+	  
+	 <element name="mapping">
+	 	<complexType>
+	        <attribute name="sysoid" type="string"/>
+	        <attribute name="rancid-type" type="string"/>
+	 	</complexType>
+	  </element>
+</schema>
