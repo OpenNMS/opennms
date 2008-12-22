@@ -45,19 +45,19 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.capsd.*;
 
 /**
  * Provides a collection of utility methods used by the DeleteEvent Processor
  * for dealing with Events
  * 
- * @author brozow
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * 
  */
 public class EventUtils {
@@ -71,7 +71,7 @@ public class EventUtils {
      * @param ueiList
      *            the list of events the listener is interested
      */
-    public static void addEventListener(EventListener listener, List ueiList) {
+    public static void addEventListener(EventListener listener, List<String> ueiList) {
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(listener, ueiList);
     }
@@ -82,14 +82,16 @@ public class EventUtils {
      * @param e
      *            the event
      * @throws InsufficientInformationException
-     *             if an event id is not evailable
+     *             if an event id is not available
      */
     static public void checkEventId(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
+        }
 
-        if (!e.hasDbid())
+        if (!e.hasDbid()) {
             throw new InsufficientInformationException("eventID is unavailable");
+        }
     }
 
     /**
@@ -101,11 +103,13 @@ public class EventUtils {
      *             if an interface is not available
      */
     static public void checkInterface(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
+        }
 
-        if (e.getInterface() == null || e.getInterface().length() == 0)
+        if (e.getInterface() == null || e.getInterface().length() == 0) {
             throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
     }
 
     /**
@@ -117,11 +121,13 @@ public class EventUtils {
      *             if an interface is not available
      */
     static public void checkHost(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
+        }
 
-        if (e.getHost() == null || e.getHost().length() == 0)
+        if (e.getHost() == null || e.getHost().length() == 0) {
             throw new InsufficientInformationException("host for event is unavailable");
+        }
     }
 
     /**
@@ -133,11 +139,13 @@ public class EventUtils {
      *             if a node id is not available
      */
     static public void checkNodeId(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
+        }
 
-        if (!e.hasNodeid())
+        if (!e.hasNodeid()) {
             throw new InsufficientInformationException("nodeid for event is unavailable");
+        }
     }
 
     /**
@@ -149,11 +157,13 @@ public class EventUtils {
      *             if the event does not have a service
      */
     public static void checkService(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
+        }
 
-        if (e.getService() == null || e.getService().length() == 0)
+        if (e.getService() == null || e.getService().length() == 0) {
             throw new InsufficientInformationException("service for event is unavailable");
+        }
     }
 
     /**
@@ -164,10 +174,11 @@ public class EventUtils {
      * @return the eventId of the event or -1 of no eventId is assigned
      */
     public static long getEventID(Event e) {
-        // get eventid
+        // get event ID
         long eventID = -1;
-        if (e.hasDbid())
+        if (e.hasDbid()) {
             eventID = e.getDbid();
+        }
         return eventID;
     }
 
@@ -180,15 +191,16 @@ public class EventUtils {
      * @param parmName
      *            the name of the parameter to retrieve
      * @param defaultValue
-     *            the value to return if the paramter can not be retrieved or
+     *            the value to return if the parameter can not be retrieved or
      *            parsed
      * @return the value of the parameter as a long
      */
     public static long getLongParm(Event e, String parmName, long defaultValue) {
         String longVal = getParm(e, parmName);
 
-        if (longVal == null)
+        if (longVal == null) {
             return defaultValue;
+        }
 
         try {
             return Long.parseLong(longVal);
@@ -208,8 +220,9 @@ public class EventUtils {
     public static long getNodeId(Event e) {
         // convert the node id
         long nodeID = -1;
-        if (e.hasNodeid())
+        if (e.hasNodeid()) {
             nodeID = e.getNodeid();
+        }
         return nodeID;
     }
 
@@ -241,12 +254,13 @@ public class EventUtils {
      */
     public static String getParm(Event e, String parmName, String defaultValue) {
         Parms parms = e.getParms();
-        if (parms == null)
+        if (parms == null) {
             return defaultValue;
+        }
 
-        Enumeration parmEnum = parms.enumerateParm();
+        Enumeration<Parm> parmEnum = parms.enumerateParm();
         while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+            Parm parm = parmEnum.nextElement();
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
                     return parm.getValue().getContent();
@@ -268,20 +282,21 @@ public class EventUtils {
      * @param parmname
      *            the name of the parameter
      * @throws InsufficientInformationException
-     *             if the paramter is not set on the event or if its value has
+     *             if the parameter is not set on the event or if its value has
      *             no content
      */
     public static void requireParm(Event e, String parmName) throws InsufficientInformationException {
         Parms parms = e.getParms();
-        if (parms == null)
+        if (parms == null) {
             throw new InsufficientInformationException("parameter " + parmName + " required but but no parms are available.");
+        }
 
-        Enumeration parmEnum = parms.enumerateParm();
+        Enumeration<Parm> parmEnum = parms.enumerateParm();
         while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+            Parm parm = parmEnum.nextElement();
             if (parmName.equals(parm.getParmName())) {
                 if (parm.getValue() != null && parm.getValue().getContent() != null) {
-                    // we found a matching parm
+                    // we found a matching parameter
                     return;
                 } else {
                     throw new InsufficientInformationException("parameter " + parmName + " required but only null valued parms available");
@@ -300,7 +315,7 @@ public class EventUtils {
      * @param newEvent
      *            the event to send
      * @param isXmlRpcEnabled
-     *            FIXME
+     *            whether or not an XMLRPC event should be sent
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd
@@ -308,8 +323,9 @@ public class EventUtils {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("sendEvent: successfully sent event " + newEvent);
+            }
         } catch (Throwable t) {
             log.warn("run: unexpected throwable exception caught during send to middleware", t);
             if (isXmlRpcEnabled) {
