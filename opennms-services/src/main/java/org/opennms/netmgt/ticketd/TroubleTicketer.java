@@ -116,7 +116,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	}
 
 	/**
-	 * Eventlistner Interface required implementation
+	 * Event listener Interface required implementation
 	 * @param e Event received from Eventd
 	 */
 	public void onEvent(Event e) {

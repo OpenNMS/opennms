@@ -35,6 +35,8 @@
 package org.opennms.protocols.dns;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +46,6 @@ import org.junit.Test;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DNSAddressRequestTest {
-    private static final String question = "localhost"; // FIXME: "localhost."?
-
     private static final byte[] responseBytes = new byte[] {
             (byte) 0x5e,
             (byte) 0x94,
@@ -77,13 +77,13 @@ public class DNSAddressRequestTest {
             (byte) 0x01      
     };
     
-    private DNSAddressRequest m_request = new DNSAddressRequest(question);
+    private DNSAddressRequest m_request;
     
     @Before
-    public void setUp() {
+    public void setUp() throws UnknownHostException {
+        final String question = InetAddress.getLocalHost().getCanonicalHostName();
         m_request = new DNSAddressRequest(question);
     }
-
 
     @Test(expected=IOException.class)
     public void testServerFailed() throws IOException {
