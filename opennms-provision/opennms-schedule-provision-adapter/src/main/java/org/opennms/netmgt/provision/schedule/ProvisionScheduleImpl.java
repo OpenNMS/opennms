@@ -30,26 +30,13 @@
  */
 package org.opennms.netmgt.provision.schedule;
 
-import org.junit.Before;
-import org.junit.Test;
-
 
 /**
  * @author Donald Desloge
  *
  */
-public class ScheduleProvisionAdapterTest {
+public class ProvisionScheduleImpl {
     
     
-    
-    @Before
-    public void setUp() {
-        
-        
-    }
-    
-    @Test
-    public void testScheduleMechanism() {
-       
-    }
+
 }

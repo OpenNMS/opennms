@@ -30,26 +30,15 @@
  */
 package org.opennms.netmgt.provision.schedule;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.springframework.core.io.Resource;
 
 /**
  * @author Donald Desloge
  *
  */
-public class ScheduleProvisionAdapterTest {
+public interface Notifier {
     
+    public void doImport(Resource resource);
+    public void doNodeScan(int nodeId);
     
-    
-    @Before
-    public void setUp() {
-        
-        
-    }
-    
-    @Test
-    public void testScheduleMechanism() {
-       
-    }
 }
