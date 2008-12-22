@@ -149,6 +149,10 @@ public class MockEventUtil {
         return createNodeEvent(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
     }
     
+    public static Event createNodeDownEventWithReason(String source, MockNode node, String reason) {
+        return createNodeEventWithReason(source, EventConstants.NODE_DOWN_EVENT_UEI, node, reason);
+    }
+    
     public static Event createNodeUpEvent(String source, MockNode node) {
         return createNodeEvent(source, EventConstants.NODE_UP_EVENT_UEI, node);
     }
@@ -163,6 +167,10 @@ public class MockEventUtil {
     
     public static Event createNodeEvent(String source, String uei, MockNode node) {
         return createEvent(source, uei, node.getNodeId(), null, null, null);
+    }
+    
+    public static Event createNodeEventWithReason(String source, String uei, MockNode node, String reason) {
+        return createEvent(source, uei, node.getNodeId(), null, null, reason);
     }
     
     public static Event createNewSuspectEvent(String source, String uei, String ipAddr) {

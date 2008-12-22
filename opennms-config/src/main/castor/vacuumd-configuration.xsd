@@ -28,8 +28,7 @@
         <element name="automations">
           <complexType>
             <sequence>
-              <element maxOccurs="unbounded" minOccurs="0"
-                       ref="this:automation"/>
+              <element ref="this:automation" maxOccurs="unbounded" minOccurs="0" />
             </sequence>
           </complexType>
         </element>
@@ -41,7 +40,7 @@
 
           <complexType>
             <sequence>
-              <element maxOccurs="unbounded" minOccurs="0" ref="this:trigger"/>
+              <element ref="this:trigger" maxOccurs="unbounded" minOccurs="0" />
             </sequence>
           </complexType>
         </element>
@@ -53,7 +52,7 @@
 
           <complexType>
             <sequence>
-              <element maxOccurs="unbounded" minOccurs="0" ref="this:action"/>
+              <element ref="this:action" maxOccurs="unbounded" minOccurs="0" />
             </sequence>
           </complexType>
         </element>
@@ -61,8 +60,7 @@
         <element name="auto-events">
           <complexType>
             <sequence>
-              <element maxOccurs="unbounded" minOccurs="0"
-                       ref="this:auto-event"/>
+              <element ref="this:auto-event" maxOccurs="unbounded" minOccurs="0" />
             </sequence>
           </complexType>
         </element>
@@ -228,11 +226,11 @@
   <element name="action-event">
     <complexType>
       <sequence>
-        <element ref="this:assignment" minOccurs="1" maxOccurs="unbounded" >
-        </element>
+        <element ref="this:assignment" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
       <attribute name="name" type="string" use="required" />
       <attribute name="for-each-result" type="boolean" use="optional" default="false" />
+      <attribute name="add-all-parms" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
   

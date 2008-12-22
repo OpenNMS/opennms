@@ -46,6 +46,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
@@ -188,7 +189,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetAutomations() {
-        assertEquals(6, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(7, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     public final void testGetAutoEvents() {
@@ -199,7 +200,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetTriggers() {
-        assertEquals(5,VacuumdConfigFactory.getInstance().getTriggers().size());
+        assertEquals(6,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
     
     /**
@@ -246,7 +247,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     public final void testRunTrigger() throws InterruptedException {
         // Get all the triggers defined in the config
         Collection<Trigger> triggers = VacuumdConfigFactory.getInstance().getTriggers();
-        assertEquals(5, triggers.size());
+        assertEquals(6, triggers.size());
 
         Trigger trigger = VacuumdConfigFactory.getInstance().getTrigger("selectAll");
         String triggerSql = trigger.getStatement().getContent();
@@ -339,6 +340,21 @@ public class VacuumdTest extends OpenNMSTestCase {
     }
 
     /**
+     * This tests the capabilities of the cosmicClear automation as shipped in the standard build.
+     * @throws InterruptedException 
+     */
+    public final void testSendEventWithParms() throws InterruptedException {
+        // create node down events with severity 6
+        bringNodeDownCreatingEventWithReason(1, "Testing node1");
+        Thread.sleep(1000);
+        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("escalate"));
+        ap.run();
+        Thread.sleep(500);
+        Map<String, Object> queryResult = getJdbcTemplate().queryForMap("SELECT eventuei, eventparms FROM events WHERE eventuei = 'uei.opennms.org/vacuumd/alarmEscalated'");
+        assertEquals("Parmater list sent from action event doesn't match", queryResult.get("eventParms"), "eventReason=Testing node1(string,text);alarmId=1(string,text)");
+    }
+    
+    /**
      * Test the ability to find tokens in a statement.
      */
     public void testGetTokenizedColumns() {
@@ -401,6 +417,11 @@ public class VacuumdTest extends OpenNMSTestCase {
         m_eventdIpcMgr.sendNow(node.createDownEvent());
     }
 
+    private void bringNodeDownCreatingEventWithReason(int nodeid, String reason) {
+        MockNode node = m_network.getNode(nodeid);
+        m_eventdIpcMgr.sendNow(node.createDownEventWithReason(reason));
+    }
+    
     private void bringNodeUpCreatingEvent(int nodeid) {
         MockNode node = m_network.getNode(nodeid);
         m_eventdIpcMgr.sendNow(node.createUpEvent());

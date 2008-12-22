@@ -106,18 +106,16 @@ public class MockNode extends MockContainer {
         visitMembers(v);
     }
 
-    /**
-     * @return
-     */
     public Event createUpEvent() {
         return MockEventUtil.createNodeUpEvent("Test", this);
     }
 
-    /**
-     * @return
-     */
     public Event createDownEvent() {
         return MockEventUtil.createNodeDownEvent("Test", this);
+    }
+    
+    public Event createDownEventWithReason(String reason) {
+        return MockEventUtil.createNodeDownEventWithReason("Test", this, reason);
     }
     
     public Event createNewEvent() {

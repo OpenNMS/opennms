@@ -10,11 +10,11 @@
 //
 // Modifications:
 //
+// 2008 Dec 21: Added eventParm column - david@opennms.org
 // 2008 Oct 04: Use new OnmsSeverity object and remove package name from OnmsEvent. - dj@opennms.org
 // 2008 Sep 26: Move some of the alarm "constant" information into here
 // 2007 Apr 05: Make annotation nullability and default values match what's in create.sql. - dj@opennms.org
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -157,6 +157,9 @@ public class OnmsAlarm implements Serializable {
 
     /** persistent field */
     private OnmsEvent m_lastEvent;
+    
+    /** persistent field */
+    private String m_eventParms;
 
     /** persistent field */
     private String m_managedObjectInstance;
@@ -478,6 +481,15 @@ public class OnmsAlarm implements Serializable {
     public void setLastEvent(OnmsEvent event) {
         this.m_lastEvent = event;
         if (event!=null) this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
+    }
+    
+    @Column(name="eventParms", length=1024)
+    public String getEventParms() {
+        return this.m_eventParms;
+    }
+
+    public void setEventParms(String eventparms) {
+        this.m_eventParms = eventparms;
     }
 
     public String toString() {
