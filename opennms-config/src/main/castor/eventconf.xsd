@@ -124,6 +124,13 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:varbindsdecode">
+          <annotation>
+            <documentation>The varbind decoding tag used to decode value 
+            into a string</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="unbounded" minOccurs="0" ref="this:operaction">
           <annotation>
             <documentation>The operator action to be taken when this event
@@ -508,6 +515,41 @@
       </simpleContent>
     </complexType>
   </element>
+
+  <element name="varbindsdecode">
+    <annotation>
+      <documentation>This element is used for converting event 
+      varbind value in static decoded string.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+          <element maxOccurs="1" minOccurs="1" name="parmid" type="string">
+          <annotation>
+            <documentation>The identifier of the parameters to be
+            decoded
+            </documentation>
+          </annotation>
+        </element>     
+          <element maxOccurs="unbounded" minOccurs="1" ref="this:decode">
+          <annotation>
+            <documentation>The value to string decoding map
+            </documentation>
+          </annotation>
+        </element>     
+        </sequence>
+    </complexType>
+   </element>
+
+  <element name="decode">
+    <annotation>
+      <documentation>This element is used for converting event 
+      varbind value in static decoded string.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="varbindvalue" type="string" use="required" />
+      <attribute name="varbinddecodedstring" type="string" use="required" />
+    </complexType>
+   </element>
 
   <element name="alarm-data">
     <annotation>
