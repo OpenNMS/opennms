@@ -30,26 +30,23 @@
  */
 package org.opennms.netmgt.provision.schedule;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.opennms.netmgt.provision.ProvisioningAdapter;
+import org.springframework.core.io.Resource;
 
 /**
  * @author Donald Desloge
  *
  */
-public class ScheduleProvisionAdapterTest {
+public interface ProvisionSchedule extends ProvisioningAdapter {
     
+    public void setImportResource(Resource resource);
+    public void setImportSchedule(String cronExpression);
+    public void setNotifier(Notifier notif);
     
+    public void init();
+    public void start();
+    public void stop();
     
-    @Before
-    public void setUp() {
-        
-        
-    }
+    public void scheduleChanged(String foreignSourceId);
     
-    @Test
-    public void testScheduleMechanism() {
-       
-    }
 }
