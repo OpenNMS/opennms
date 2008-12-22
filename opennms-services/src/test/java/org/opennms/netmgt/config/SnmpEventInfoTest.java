@@ -45,6 +45,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.test.ConfigurationTestUtils;
 
@@ -109,7 +110,7 @@ public class SnmpEventInfoTest extends TestCase {
         assertNotNull(matchingDef);
         assertFalse(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertTrue(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
-        assertEquals(SnmpPeerFactory.toLong(InetAddress.getByName("192.168.0.5")), SnmpPeerFactory.toLong(InetAddress.getByName(matchingDef.getConfigDef().getSpecific(0))));
+        assertEquals(InetAddressUtils.toIpAddrLong(InetAddress.getByName("192.168.0.5")), InetAddressUtils.toIpAddrLong(InetAddress.getByName(matchingDef.getConfigDef().getSpecific(0))));
         assertEquals("abc", matchingDef.getConfigDef().getReadCommunity());
         assertEquals(1, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
     }

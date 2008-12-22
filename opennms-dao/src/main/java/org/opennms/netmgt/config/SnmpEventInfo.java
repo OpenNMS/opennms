@@ -43,6 +43,7 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.common.Range;
@@ -147,7 +148,7 @@ public class SnmpEventInfo {
     }
     public void setFirstIPAddress(String firstIPAddress) throws UnknownHostException {
         m_firstIPAddress = firstIPAddress;
-        m_first = SnmpPeerFactory.toLong(InetAddress.getByName(firstIPAddress));
+        m_first = InetAddressUtils.toIpAddrLong(InetAddress.getByName(firstIPAddress));
     }
     
     public void setFirstIPAddress(InetAddress firstIPAddress) {
@@ -156,7 +157,7 @@ public class SnmpEventInfo {
             m_first = 0;
         } else {
             m_firstIPAddress = firstIPAddress.getHostAddress();
-            m_first = SnmpPeerFactory.toLong(firstIPAddress);
+            m_first = InetAddressUtils.toIpAddrLong(firstIPAddress);
         }
     }
     public String getLastIPAddress() {
@@ -167,7 +168,7 @@ public class SnmpEventInfo {
 			m_last = 0;
 		} else {
 	        m_lastIPAddress = lastIPAddress;
-	        m_last = SnmpPeerFactory.toLong(InetAddress.getByName(lastIPAddress));
+	        m_last = InetAddressUtils.toIpAddrLong(InetAddress.getByName(lastIPAddress));
 		}
     }
     
@@ -177,7 +178,7 @@ public class SnmpEventInfo {
             m_last = 0;
         } else {
             m_lastIPAddress = lastIPAddress.getHostAddress();
-            m_last = SnmpPeerFactory.toLong(lastIPAddress);
+            m_last = InetAddressUtils.toIpAddrLong(lastIPAddress);
         }
     }
     public long getFirst() {

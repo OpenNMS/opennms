@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.snmp.Definition;
@@ -522,14 +523,14 @@ final class MergeableDefinition {
                 getConfigDef().removeRange(defRng);
             } else if (range.withInRange(defRng)) {
                 Range newRange = new Range();
-                newRange.setBegin(SnmpPeerFactory.toIpAddr(range.getLast().getValue()+1));
+                newRange.setBegin(InetAddressUtils.toIpAddrString((range.getLast().getValue()+1)));
                 newRange.setEnd(defRng.getEnd());
                 getConfigDef().addRange(newRange);
-                defRng.setEnd(SnmpPeerFactory.toIpAddr(range.getFirst().getValue()-1));
+                defRng.setEnd(InetAddressUtils.toIpAddrString((range.getFirst().getValue()-1)));
             } else if (range.overlapsBegin(defRng)) {
-                defRng.setBegin(SnmpPeerFactory.toIpAddr(range.getLast().getValue()+1));
+                defRng.setBegin(InetAddressUtils.toIpAddrString((range.getLast().getValue()+1)));
             } else if (range.overlapsEnd(defRng)) {
-                defRng.setEnd(SnmpPeerFactory.toIpAddr(range.getFirst().getValue()-1));
+                defRng.setEnd(InetAddressUtils.toIpAddrString((range.getFirst().getValue()-1)));
             }
         }
     }

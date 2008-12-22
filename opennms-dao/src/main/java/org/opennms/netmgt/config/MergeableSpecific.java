@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -55,7 +56,7 @@ public final class MergeableSpecific implements Comparable {
         Category log = ThreadCategory.getInstance(getClass());
         m_specific = specific;
         try {
-            m_value = SnmpPeerFactory.toLong(InetAddress.getByName(specific));
+            m_value = InetAddressUtils.toIpAddrLong(InetAddress.getByName(specific));
         } catch (UnknownHostException e) {
             log.error("ComparableSpecific(): Exception in construction.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());

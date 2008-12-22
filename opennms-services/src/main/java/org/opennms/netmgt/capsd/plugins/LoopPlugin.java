@@ -36,8 +36,8 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.capsd.Plugin;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
 /**
  * @author david
@@ -45,7 +45,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  */
 public class LoopPlugin implements Plugin {
 
-    private String m_protocolName = "LOOP";
+    private final String m_protocolName = "LOOP";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
@@ -66,11 +66,12 @@ public class LoopPlugin implements Plugin {
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         
-        if (qualifiers == null)
+        if (qualifiers == null) {
             return false;
+        }
         
         String ipMatch = getIpMatch(qualifiers);
-        if (SnmpPeerFactory.verifyIpMatch(address.getHostAddress(), ipMatch)) {
+        if (IPLike.matches(address.getHostAddress(), ipMatch)) {
             return isSupported(qualifiers);
         } else {
             return false;

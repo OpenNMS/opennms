@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
@@ -77,7 +78,7 @@ public class ConfigureSnmpTest extends TestCase {
      */
     public void testToLongToAddr() throws UnknownHostException {
         String addr = "192.168.1.1";
-        assertEquals(addr, SnmpPeerFactory.toIpAddr(SnmpPeerFactory.toLong(InetAddress.getByName(addr))));
+        assertEquals(addr, InetAddressUtils.toIpAddrString(InetAddressUtils.toIpAddrLong(InetAddress.getByName(addr))));
     }
 
     /**
@@ -94,7 +95,7 @@ public class ConfigureSnmpTest extends TestCase {
         
         assertNotNull(info);
         assertEquals("192.168.1.1", info.getFirstIPAddress());
-        assertEquals(SnmpPeerFactory.toLong(InetAddress.getByName("192.168.1.1")), info.getFirst());
+        assertEquals(InetAddressUtils.toIpAddrLong(InetAddress.getByName("192.168.1.1")), info.getFirst());
         assertNull(info.getLastIPAddress());
         assertTrue(info.isSpecific());
     }

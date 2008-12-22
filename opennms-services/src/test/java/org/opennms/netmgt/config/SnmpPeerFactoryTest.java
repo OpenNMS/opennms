@@ -180,47 +180,6 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals(55, agentConfig.getMaxVarsPerPdu());
     }
 
-    public void testCountChar() {
-        assertEquals(2, SnmpPeerFactory.countChar('-', "test-this-please"));
-        assertEquals(3, SnmpPeerFactory.countChar('-', "test-this-please-"));
-        assertEquals(4, SnmpPeerFactory.countChar('-', "-test-this-please-"));
-    }
-    
-    public void testMatchRange() {
-        assertTrue(SnmpPeerFactory.matchRange("192", "191-193"));
-        assertTrue(SnmpPeerFactory.matchRange("192", "192"));
-        assertTrue(SnmpPeerFactory.matchRange("192", "192-200"));
-        assertTrue(SnmpPeerFactory.matchRange("192", "1-255"));
-        assertTrue(SnmpPeerFactory.matchRange("192", "*"));
-        assertFalse(SnmpPeerFactory.matchRange("192", "1-9"));
-    }
-    
-    public void testMatchOctet() {
-        assertTrue(SnmpPeerFactory.matchNumericListOrRange("192", "191,192,193"));
-        assertFalse(SnmpPeerFactory.matchNumericListOrRange("192", "190,191,194"));
-        assertTrue(SnmpPeerFactory.matchNumericListOrRange("192", "10,172,190-193"));
-        assertFalse(SnmpPeerFactory.matchNumericListOrRange("192", "10,172,193-199"));
-        assertTrue(SnmpPeerFactory.matchNumericListOrRange("205", "200-300,400-500"));
-        assertTrue(SnmpPeerFactory.matchNumericListOrRange("405", "200-300,400-500"));
-        assertFalse(SnmpPeerFactory.matchNumericListOrRange("505", "200-300,400-500"));
-    }
-    
-    public void testVerifyIpMatch() {
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.*.*.*"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "192.*.*.*"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.168.*.*"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.*.0.*"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.*.*.1"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.*.*.0-7"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "192.168.0.0-7"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "192.166,167,168.*.0,1,5-10"));
-        assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "10.0.0.1"));
-        assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "*.168.*.2"));
-        assertFalse(SnmpPeerFactory.verifyIpMatch("192.168.0.1", "10.168.0.1"));
-        assertTrue(SnmpPeerFactory.verifyIpMatch("10.1.1.1", "10.1.1.1"));
-        
-    }
-    
     public void testGetMaxRepetitions() throws UnknownHostException {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.5.5.255"));
         assertEquals("ipmatch", agentConfig.getReadCommunity());
