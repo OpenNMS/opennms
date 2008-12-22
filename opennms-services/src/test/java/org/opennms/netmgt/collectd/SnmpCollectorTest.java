@@ -38,26 +38,20 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.easymock.EasyMock;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CollectdPackage;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -66,33 +60,20 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
-public class SnmpCollectorTest extends TestCase {
+public class SnmpCollectorTest extends AbstractCollectorTest {
     private SnmpCollector m_snmpCollector;
 
     private MockSnmpAgent m_agent;
 
-    private FileAnticipator m_fileAnticipator;
-
-    private File m_snmpRrdDirectory;
-
-    private PlatformTransactionManager m_transMgr;
-    
     final String SNMP_CONFIG = "<?xml version=\"1.0\"?>\n"
         + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800000\"\n"
         + "               read-community=\"public\"\n"
@@ -127,30 +108,12 @@ public class SnmpCollectorTest extends TestCase {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringReader(SNMP_CONFIG)));
         
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
-
-        m_transMgr = new DataSourceTransactionManager(m_db) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void doCommit(DefaultTransactionStatus status) {
-                super.doCommit(status);
-                System.err.println("call to commit a transaction");
-            }
-
-            @Override
-            protected void doBegin(Object transaction, TransactionDefinition definition) {
-                super.doBegin(transaction, definition);
-                System.err.println("Call to begin a transaction");
-            }
-            
-        };
+        initializeDatabaseSchemaConfig("/org/opennms/netmgt/config/test-database-schema.xml");
         
-        m_fileAnticipator = new FileAnticipator();
+        setTransMgr();
+        setFileAnticipator();
     }
-
+    
     @Override
     public void runTest() throws Throwable {
         super.runTest();
@@ -169,18 +132,6 @@ public class SnmpCollectorTest extends TestCase {
         super.tearDown();
     }
 
-    private void persistCollectionSet(CollectionSpecification spec, CollectionSet collectionSet) {
-        RrdRepository repository=spec.getRrdRepository("default");
-        ServiceParameters params=new ServiceParameters(spec.getReadOnlyPropertyMap());
-        BasePersister persister;
-        if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
-            persister= new GroupPersister(params, repository);
-        } else {
-            persister= new OneToOnePersister(params, repository);
-        }
-        collectionSet.visit(persister);
-    }
-    
     public void testCollect() throws Exception {
 //        initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
         initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
@@ -191,7 +142,7 @@ public class SnmpCollectorTest extends TestCase {
 
         OnmsIpInterface iface = createInterface();
 
-        CollectionSpecification spec = createCollectionSpec("SNMP");
+        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
 
         CollectionAgent agent = createCollectionAgent(iface);
         
@@ -245,7 +196,7 @@ public class SnmpCollectorTest extends TestCase {
 
         OnmsIpInterface iface = createInterface();
 
-        CollectionSpecification spec = createCollectionSpec("SNMP");
+        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
 
         CollectionAgent agent = createCollectionAgent(iface);
         
@@ -298,25 +249,6 @@ public class SnmpCollectorTest extends TestCase {
         
     }
 
-    private void collectNTimes(CollectionSpecification spec,
-            CollectionAgent agent, int numUpdates) throws InterruptedException, CollectionException {
-        for(int i = 0; i < numUpdates; i++) {
-
-            // now do the actual collection
-            CollectionSet collectionSet=spec.collect(agent);
-            assertEquals("collection status",
-                    ServiceCollector.COLLECTION_SUCCEEDED,
-                    collectionSet.getStatus());
-            
-            persistCollectionSet(spec, collectionSet);
-        
-            System.err.println("COLLECTION "+i+" FINISHED");
-        
-            //need a one second time elapse to update the RRD
-            Thread.sleep(1000);
-        }
-    }
-    
     public void testUsingFetch() throws Exception {
 
         int stepSize = 1;
@@ -357,7 +289,7 @@ public class SnmpCollectorTest extends TestCase {
 
         OnmsIpInterface iface = createInterface();
 
-        CollectionSpecification spec = createCollectionSpec("SNMP");
+        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
 
         CollectionAgent agent = createCollectionAgent(iface);
 
@@ -400,61 +332,9 @@ public class SnmpCollectorTest extends TestCase {
         
     }
 
-    private String rrd(String file) {
-        return file + RrdUtils.getExtension();
-    }
-
-    private void anticipateFiles(File baseDir, String... fileNames) {
-        for (String fileName : fileNames) {
-            m_fileAnticipator.expecting(baseDir, fileName);
-        }
-    }
-    
-    private void anticipateRrdFiles(File baseDir, String... rrdBaseNames) {
-        for(String rrdBaseName : rrdBaseNames) {
-            m_fileAnticipator.expecting(baseDir, rrd(rrdBaseName));
-        }
-    }
-
-    private File anticipatePath(File rootDir, String... pathElements) {
-        File parent = rootDir;
-        assertTrue(pathElements.length > 0);
-        for (String pathElement : pathElements) {
-            parent = m_fileAnticipator.expecting(parent, pathElement);
-        }
-        return parent;
-        
-    }
-
-    private void initializeDataCollectionConfig(String dataCollectionConfig)
-            throws IOException, MarshalException, ValidationException,
-            RrdException {
-        
-        Reader rdr = getDataCollectionConfigReader(dataCollectionConfig);
-        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(rdr));
-        rdr.close();
-        
-    }
-
     private void createSnmpCollector() {
         m_snmpCollector = new SnmpCollector();
         m_snmpCollector.initialize(null); // no properties are passed
-    }
-
-    private CollectionSpecification createCollectionSpec(String svcName) {
-        Package pkg = new Package();
-        Filter filter = new Filter();
-        filter.setContent("IPADDR IPLIKE *.*.*.*");
-        pkg.setFilter(filter);
-        Service service = new Service();
-        service.setName(svcName);
-        pkg.addService(service);
-
-        CollectdPackage wpkg = new CollectdPackage(pkg, "foo", false);
-        CollectionSpecification spec = new CollectionSpecification(wpkg,
-                                                                   svcName,
-                                                                   m_snmpCollector);
-        return spec;
     }
 
     private OnmsIpInterface createInterface() {
@@ -483,26 +363,6 @@ public class SnmpCollectorTest extends TestCase {
         
         snmpIface2.addIpInterface(iface);
         return iface;
-    }
-
-    private CollectionAgent createCollectionAgent(OnmsIpInterface iface) {
-        IpInterfaceDao ifDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(ifDao.load(iface.getId())).andReturn(iface).anyTimes();
-        EasyMock.replay(ifDao);
-        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifDao, m_transMgr);
-        return agent;
-    }
-    
-
-    private Reader getDataCollectionConfigReader(String classPathLocation) throws IOException {
-        return ConfigurationTestUtils.getReaderForResourceWithReplacements(this, classPathLocation, new String[] { "%rrdRepository%", getSnmpRrdDirectory().getAbsolutePath() });
-    }
-
-    private File getSnmpRrdDirectory() throws IOException {
-        if (m_snmpRrdDirectory == null) {
-            m_snmpRrdDirectory = m_fileAnticipator.tempDir("snmp");
-        }
-        return m_snmpRrdDirectory;
     }
 
     private void initializeAgent(String testData) throws InterruptedException {
