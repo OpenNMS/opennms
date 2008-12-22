@@ -994,7 +994,8 @@ create table alarms (
 	x733ProbableCause       INTEGER default 0 not null,
 	qosAlarmState           VARCHAR(31),
     ifIndex                 integer,
-    clearKey				VARCHAR(256)
+    clearKey				VARCHAR(256),
+    eventParms              text
 	
 );
 

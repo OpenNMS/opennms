@@ -241,18 +241,26 @@ public class EventBuilder {
         }
     }
 
-    public void setLogDest(String dest) {
+    public EventBuilder setLogDest(String dest) {
         ensureLogmsg();
         m_event.getLogmsg().setDest(dest);
+        return this;
     }
 
-    public void setLogMessage(String content) {
+    public EventBuilder setLogMessage(String content) {
         ensureLogmsg();
         m_event.getLogmsg().setContent(content);
+        return this;
     }
 
-    public void setDescription(String descr) {
+    public EventBuilder setDescription(String descr) {
         m_event.setDescr(descr);
+        return this;
+    }
+
+    public EventBuilder addParms(final Parms parms) {
+        m_event.setParms(parms);
+        return this;
     }
 
 }

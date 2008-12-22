@@ -26,13 +26,17 @@
     </statement>
     <automations>
            <automation name="autoEscalate" interval="10000" trigger-name="selectWithCounter" auto-event-name="escalationEvent" action-name="escalate" active="true" />
+           <automation name="escalate" interval="10000" trigger-name="selectEscalatable" action-event="escalationEvent" action-name="escalate" active="true" />
            <automation name="testActionEvent" interval="10000" trigger-name="selectAll" action-event="escalationEvent" action-name="escalate" active="true" />
            <automation name="cleanUpAlarms" interval="300000" action-name="deleteDayOldAlarms" active="true" />
            <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
-           <automation name="stormDetect" interval="60000" trigger-name="stormTrigger" action-name="null" auto-event-name="stormAlert" active="true" />           <automation name="testZeroResults" interval="60000" trigger-name="zeroResults" action-name="null" auto-event-name="stormAlert" active="true" />    </automations>
+           <automation name="stormDetect" interval="60000" trigger-name="stormTrigger" action-name="null" auto-event-name="stormAlert" active="true" />
+           <automation name="testZeroResults" interval="60000" trigger-name="zeroResults" action-name="null" auto-event-name="stormAlert" active="true" />
+    </automations>
     <triggers>
            <trigger name="zeroResults" operator="&lt;" row-count="1" >
-               <statement>SELECT * FROM alarms where alarmid &lt; 0</statement>           </trigger>
+               <statement>SELECT * FROM alarms where alarmid &lt; 0</statement>
+           </trigger>
            <trigger name="selectAll" operator="&gt;=" row-count="1" >
                <statement>SELECT * FROM alarms</statement>
            </trigger>
@@ -44,6 +48,12 @@
            </trigger>
            <trigger name="stormTrigger" operator="&gt;=" row-count="1" >
                <statement>SELECT * FROM events</statement>
+           </trigger>
+           <trigger name="selectEscalatable" operator="&gt;=" row-count="1" >
+               <statement>SELECT * 
+                            FROM alarms 
+                           WHERE eventuei = 'uei.opennms.org/nodes/nodeDown' 
+                             AND nodeid = 1</statement>
            </trigger>
     </triggers>
     <actions>
@@ -76,7 +86,7 @@
         </auto-event>
     </auto-events>
     <action-events>
-      <action-event name="escalationEvent" for-each-result="true">
+      <action-event name="escalationEvent" for-each-result="true" add-all-parms="true" >
         <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
         <assignment type="field" name="nodeid" value="${nodeid}" />
         <assignment type="field" name="interface" value="${ipaddr}" />

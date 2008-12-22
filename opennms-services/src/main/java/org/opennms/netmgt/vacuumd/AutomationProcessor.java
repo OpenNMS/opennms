@@ -59,6 +59,7 @@ import org.opennms.netmgt.config.vacuumd.Assignment;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
@@ -516,14 +517,14 @@ public class AutomationProcessor implements ReadyRunnable {
         }
         
         public void assign(EventBuilder bldr, PropertiesUtils.SymbolTable symbols) {
-
+            
             String val = PropertiesUtils.substitute(m_assignment.getValue(), symbols);
             
             if (m_assignment.getValue().equals(val) && s_pattern.matcher(val).matches()) {
-                // no substituion was made the value was a token pattern so skip it 
+                // no substitution was made the value was a token pattern so skip it 
                 return;
             }
-
+            
             if ("field".equals(m_assignment.getType())) {
                 bldr.setField(m_assignment.getName(), val);
             } else {
@@ -604,6 +605,9 @@ public class AutomationProcessor implements ReadyRunnable {
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
                 
                 try {
+                    if (m_actionEvent.isAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
+                        bldr.addParms(Parameter.decode(triggerResultSet.getString("eventParms")));
+                    }
                     buildEvent(bldr, symbols);
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();
@@ -612,6 +616,16 @@ public class AutomationProcessor implements ReadyRunnable {
                 sendEvent(bldr.getEvent());
             }
 
+        }
+
+        private boolean resultHasColumn(ResultSet resultSet, String columnName) {
+            try {
+                if (resultSet.findColumn(columnName) > 0) {
+                    return true;
+                }
+            } catch (SQLException e) {
+            }
+            return false;
         }
 
         public boolean forEachResult() {

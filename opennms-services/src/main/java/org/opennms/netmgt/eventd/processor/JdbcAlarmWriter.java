@@ -57,6 +57,7 @@ import java.sql.Types;
 
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.springframework.beans.factory.InitializingBean;
@@ -316,7 +317,16 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
             if (log().isDebugEnabled()) {
                 log().debug("m_insStmt is: " + insStmt.toString());
             }
+            
+            // Column 30 eventParms
 
+            // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
+            String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
+            if (parametersString != null) {
+                parametersString=parametersString.replace((char)0, ' ');
+            }
+
+            set(insStmt, 30, parametersString);
             insStmt.executeUpdate();
         } catch (SQLException e) {
             throw new SQLErrorCodeSQLExceptionTranslator().translate("foo", "bar", e);
