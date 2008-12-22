@@ -308,8 +308,7 @@ public class MockEventUtil {
         if (prefix == null) {
             prefix = "Event";
         }
-        // FIXME: Do we need to spit something out to stderr?
-        System.err.println(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
+        ThreadCategory.getInstance(MockEventUtil.class).info(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
     }
 
     public static void printEvents(String prefix, Collection<Event> events) {
