@@ -37,12 +37,6 @@
  */
 package org.opennms.netmgt.dao.db;
 
-import org.opennms.test.ConfigurationTestUtils;
-import org.springframework.jdbc.core.RowCountCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.util.StringUtils;
-
-import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -56,6 +50,13 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+
+import javax.sql.DataSource;
+
+import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.util.StringUtils;
 
 /**
  * 
@@ -76,12 +77,12 @@ public class TemporaryDatabase implements DataSource {
 
     private static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
 
-    private String m_testDatabase;
+    private final String m_testDatabase;
 
-    private String m_driver;
-    private String m_url;
-    private String m_adminUser;
-    private String m_adminPassword;
+    private final String m_driver;
+    private final String m_url;
+    private final String m_adminUser;
+    private final String m_adminPassword;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;

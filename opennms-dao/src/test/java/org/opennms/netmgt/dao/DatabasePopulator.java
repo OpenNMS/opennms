@@ -100,37 +100,22 @@ public class DatabasePopulator {
     private OnmsNode m_node1;
 
     public void populateDatabase() {
-        OnmsDistPoller distPoller = createDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
         
+        OnmsCategory ac = getCategory("DEV_AC");
+        OnmsCategory mid = getCategory("IMP_mid");
+        OnmsCategory ops = getCategory("OPS_Online");
         
-        OnmsCategory ac = new OnmsCategory("DEV_AC");
-        OnmsCategory mid = new OnmsCategory("IMP_mid");
-        OnmsCategory ops = new OnmsCategory("OPS_Online");
+        OnmsCategory catRouter = getCategory("Routers");
+        OnmsCategory catSwitches = getCategory("Switches");
+        OnmsCategory catServers = getCategory("Servers");
+        getCategory("Production");
+        getCategory("Test");
+        getCategory("Development");
         
-        OnmsCategory catRouter = new OnmsCategory("Routers");
-        OnmsCategory catSwitches = new OnmsCategory("Switches");
-        OnmsCategory catServers = new OnmsCategory("Servers");
-        OnmsCategory catProduction = new OnmsCategory("Production");
-        OnmsCategory catTest = new OnmsCategory("Test");
-        OnmsCategory catDevelopment = new OnmsCategory("Development");
-        
-        getCategoryDao().save(ac);
-        getCategoryDao().save(mid);
-        getCategoryDao().save(ops);
-        
-        getCategoryDao().save(catRouter);
-        getCategoryDao().save(catSwitches);
-        getCategoryDao().save(catServers);
-        getCategoryDao().save(catProduction);
-        getCategoryDao().save(catTest);
-        getCategoryDao().save(catDevelopment);
-
-        getCategoryDao().flush();
-
-
-        createServiceType("ICMP");
-        createServiceType("SNMP");
-        createServiceType("HTTP");
+        getServiceType("ICMP");
+        getServiceType("SNMP");
+        getServiceType("HTTP");
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
         
@@ -260,28 +245,37 @@ public class DatabasePopulator {
         getAlarmDao().flush();
     }
 
+    private OnmsCategory getCategory(String categoryName) {
+        OnmsCategory cat = getCategoryDao().findByName(categoryName);
+        if (cat == null) {
+            cat = new OnmsCategory(categoryName);
+            getCategoryDao().save(cat);
+            getCategoryDao().flush();
+        }
+        return cat;
+    }
 
-    private OnmsDistPoller createDistPoller(String localhost, String localhostIp) {
-        OnmsDistPoller distPoller = new OnmsDistPoller(localhost, localhostIp);
-        getDistPollerDao().save(distPoller);
-        getDistPollerDao().flush();
+    private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
+        OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
+        if (distPoller == null) {
+            distPoller = new OnmsDistPoller(localhost, localhostIp);
+            getDistPollerDao().save(distPoller);
+            getDistPollerDao().flush();
+        }
         return distPoller;
     }
 
-
-    private OnmsServiceType createServiceType(String name) {
-        OnmsServiceType serviceType = new OnmsServiceType(name);
-        getServiceTypeDao().save(serviceType);
-        getServiceTypeDao().flush();
+    private OnmsServiceType getServiceType(String name) {
+        OnmsServiceType serviceType = getServiceTypeDao().findByName(name);
+        if (serviceType == null) {
+            serviceType = new OnmsServiceType(name);
+            getServiceTypeDao().save(serviceType);
+            getServiceTypeDao().flush();
+        }
         return serviceType;
     }
 
     
-    private OnmsServiceType getServiceType(String svcName) {
-        return getServiceTypeDao().findByName(svcName);
-    }
-
-
     public AlarmDao getAlarmDao() {
         return m_alarmDao;
     }
