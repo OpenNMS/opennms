@@ -34,5 +34,14 @@
     	<groupId>org.opennms</groupId>
     	<artifactId>opennms-dao</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>org.easymock</groupId>
+    	<artifactId>easymock</artifactId>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>quartz</groupId>
+    	<artifactId>quartz</artifactId>
+    </dependency>
   </dependencies>
 </project>
