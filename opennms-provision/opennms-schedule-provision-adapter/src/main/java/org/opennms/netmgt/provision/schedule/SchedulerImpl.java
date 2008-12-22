@@ -30,47 +30,38 @@
  */
 package org.opennms.netmgt.provision.schedule;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.text.ParseException;
-import java.util.Date;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.quartz.CronTrigger;
-
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 /**
- * @author Donald Desloge
+ * @author thedesloge
  *
  */
-public class ScheduleProvisionAdapterTest {
+public class SchedulerImpl implements Scheduler {
     
+    private final PeriodFormatter m_fmt;
+    private String m_schedule;
     
-    
-    @Before
-    public void setUp() {
+    public SchedulerImpl(String schedule) {
+        m_schedule = schedule;
         
-        
+        m_fmt = new PeriodFormatterBuilder()
+        .appendYears().appendSuffix("y").appendSeparator(" ")
+        .appendMonths().appendSuffix("M").appendSeparator(" ")
+        .appendDays().appendSuffix("d").appendSeparator(" ")
+        .appendHours().appendSuffix("h").appendSeparator(" ")
+        .appendMinutes().appendSuffix("m").appendSeparator(" ")
+        .appendSeconds().appendSuffix("s").appendSeparator(" ")
+        .appendMillis().appendSuffix("ms")
+        .toFormatter();
     }
     
-    @Test
-    public void testCRONExpressionConversion() throws ParseException {
-       CronTrigger trigger = new CronTrigger();
-       trigger.setCronExpression("0 0 12 * * ?");
-       Date d = trigger.getFireTimeAfter(new Date());
-       assertNotNull(d);
-       Date currentTime = new Date();
-       long delta = (d.getTime() - currentTime.getTime());
-       assertNotNull(delta);
-       System.out.println(delta);
+    public Long getSchedule() {
+        return m_fmt.parsePeriod(m_schedule).normalizedStandard().toStandardDuration().getMillis();
     }
-    
-    @Test
-    public void testSchedulerOutput() {
-       SchedulerImpl schedule = new SchedulerImpl("1s");
-       
-       Long interval = schedule.getSchedule();
-       assertNotNull(interval);
+
+    public void setSchedule(String schedule) {
+        m_schedule = schedule;
     }
+
 }
