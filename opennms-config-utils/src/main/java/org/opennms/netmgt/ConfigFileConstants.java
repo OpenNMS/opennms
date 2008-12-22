@@ -440,6 +440,11 @@ public final class ConfigFileConstants {
      * The XMP agent configuration file
      */
     public static final int XMP_CONFIG_FILE_NAME;
+    
+    /**
+     * The Rancid configuration file
+     */
+    public static final int RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME;   
 
     //
     // Initialize the class data. This section is used to initialize the
@@ -551,10 +556,12 @@ public final class ConfigFileConstants {
         XMP_COLLECTION_CONFIG_FILE_NAME = 68;
         
         XMP_CONFIG_FILE_NAME = 69;
+        
+        RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME = 70;
 
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[70];
+        FILE_ID_TO_NAME = new String[71];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -641,6 +648,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
         FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
+        FILE_ID_TO_NAME[RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME] = "rancid_provisioning-adpt-config.xml";
     }
 
     /**
