@@ -5808,8 +5808,17 @@
  initial(1) learn(2) listen(3) speak(4) standby(5) active(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: HSRP State Change.&lt;/p&gt;</logmsg>
+ <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: HSRP State Change to %parm[#1]%.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <varbindsdecode>
+ <parmid>parm[#1]</parmid>
+ <decode varbindvalue="1" varbinddecodedstring="initial"/> 
+ <decode varbindvalue="2" varbinddecodedstring="learn"/> 
+ <decode varbindvalue="3" varbinddecodedstring="listen"/> 
+ <decode varbindvalue="4" varbinddecodedstring="speak"/> 
+ <decode varbindvalue="5" varbinddecodedstring="standby"/> 
+ <decode varbindvalue="6" varbinddecodedstring="active"/> 
+ </varbindsdecode>
 </event>
 <!-- End of Cisco MIB: CISCO-HSRP-MIB -->
 <!-- Start of Cisco MIB: CISCO-ICSUDSU-MIB -->
