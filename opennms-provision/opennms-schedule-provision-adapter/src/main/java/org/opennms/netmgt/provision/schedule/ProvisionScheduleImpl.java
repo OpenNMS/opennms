@@ -30,13 +30,103 @@
  */
 package org.opennms.netmgt.provision.schedule;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.provision.ProvisioningAdapterException;
+import org.springframework.core.io.Resource;
+
 
 /**
  * @author Donald Desloge
  *
  */
-public class ProvisionScheduleImpl {
+public class ProvisionScheduleImpl implements ProvisionSchedule {
     
+    public static class ScheduleHolder{
+        
+        private SchedulerImpl m_scheduler;
+        private String m_nodeId;
+        
+        public ScheduleHolder(String schedule, String nodeId) {
+            setScheduler(new SchedulerImpl(schedule));
+            setNodeId(nodeId);
+        }
+        
+        public Long getNextScheduledInterval() {
+            return m_scheduler.getSchedule();
+        }
+        
+        public void setScheduler(SchedulerImpl scheduler) {
+            m_scheduler = scheduler;
+        }
+
+        public SchedulerImpl getScheduler() {
+            return m_scheduler;
+        }
+
+        public void setNodeId(String nodeId) {
+            this.m_nodeId = nodeId;
+        }
+
+        public String getNodeId() {
+            return m_nodeId;
+        }
+        
+    }
     
+    private List<ScheduleHolder> m_scheduleQueue = new ArrayList<ScheduleHolder>();
+    
+    public void init() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void scheduleChanged(String foreignSourceId) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setImportResource(Resource resource) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setImportSchedule(String cronExpression) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setNotifier(Notifier notif) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void start() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void stop() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void addNode(int nodeId) throws ProvisioningAdapterException {
+        // TODO Auto-generated method stub
+        //addNode to scheduler and get the schedule from the provisioned import
+        
+        
+    }
+
+    public void deleteNode(int nodeId) throws ProvisioningAdapterException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void updateNode(int nodeId) throws ProvisioningAdapterException {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

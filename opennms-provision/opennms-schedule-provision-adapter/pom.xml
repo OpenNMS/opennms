@@ -43,5 +43,9 @@
     	<groupId>quartz</groupId>
     	<artifactId>quartz</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>joda-time</groupId>
+    	<artifactId>joda-time</artifactId>
+    </dependency>
   </dependencies>
 </project>
