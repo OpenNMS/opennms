@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -22,8 +22,6 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class InsServerListener extends InsServerAbstractListener {
 	
-	private Category log;
-
 	private ServerSocket listener;
 	
 	private Set<InsSession> activeSessions=new HashSet<InsSession>();
@@ -32,8 +30,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * listens for incoming connection on defined port (default is 8154)
 	 */
 	public void run() {
-        ThreadCategory.setPrefix("OpenNMS.InsProxy");
-		log=ThreadCategory.getInstance(this.getClass());
+	    Category log = getLog();
 		if(criteriaRestriction ==null)
 			throw new IllegalStateException("The property criteriaRestriction cannot be null!");
 		log.info("InsServerListener started: listening on port "+listeningPort);
@@ -63,6 +60,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * Stops the listener
 	 */
 	public void interrupt() {
+        Category log = getLog();
 		log.info("InsServerListener Interrupted!");
 		try {
 			listener.close();
@@ -73,6 +71,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	}
 	
 	private synchronized void cleanActiveSessions(){
+        Category log = getLog();
 		synchronized (activeSessions){
 			Iterator<InsSession> it = activeSessions.iterator();
 			while(it.hasNext()){
@@ -91,8 +90,26 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * @param event
 	 */
 	public void flushEvent(Event event){
-		log.debug("Flushing "+event.getUei());
-		
+	      Category log = getLog();
+	      log.debug("Flushing "+event.getUei());
+          int nodeid = (int) event.getNodeid();
+
+          if (event.getIfIndex() > 0 ) {
+              event.setIfAlias(getIfAlias(nodeid,event.getIfIndex()));
+          } else if (!event.getInterface().equals("0.0.0.0")) {
+              OnmsSnmpInterface iface = getIfAlias(nodeid,event.getInterface()); 
+              if (iface != null ) {
+                  event.setIfIndex(iface.getIfIndex());
+                  event.setIfAlias(iface.getIfAlias());
+              } else {
+                  event.setIfIndex(-1);
+                  event.setIfAlias("-1");
+              }
+          } else {
+              event.setIfIndex(-1);
+              event.setIfAlias("-1");
+          }
+	         
 		synchronized (activeSessions){
 			cleanActiveSessions();
 			Iterator<InsSession> it = activeSessions.iterator();
