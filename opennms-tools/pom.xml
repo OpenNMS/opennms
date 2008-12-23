@@ -28,6 +28,7 @@
         <module>mib2events</module>
         <module>quickbase-troubleticketer</module>
         <module>jrobin-spike-hunter</module>
+        <module>scriptd-event-proxy</module>
       </modules>
     </profile>
   </profiles>
