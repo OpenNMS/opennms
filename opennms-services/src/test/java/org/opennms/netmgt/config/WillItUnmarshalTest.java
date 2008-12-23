@@ -396,8 +396,16 @@ public class WillItUnmarshalTest {
         unmarshalExample("scriptd-configuration.xml", ScriptdConfiguration.class);
     }
     @Test
-    public void testExampleScriptdConfigurationWithEventProxy() throws Exception {
-        unmarshalExample("scriptd-configuration-with-event-proxy.xml", ScriptdConfiguration.class);
+    public void testExampleEventProxyProxyEvents() throws Exception {
+        unmarshalExample("event-proxy/Proxy.events.xml", Events.class);
+    }
+    @Test
+    public void testExampleEventProxyScriptdConfiguration() throws Exception {
+        unmarshalExample("event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class);
+    }
+    @Test
+    public void testExampleEventProxyVacuumdConfiguration() throws Exception {
+        unmarshalExample("event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class);
     }
     @Test
     public void testSiteStatusViews() throws Exception {
