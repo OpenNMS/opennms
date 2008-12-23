@@ -42,4 +42,7 @@ package org.opennms.netmgt.provision;
  */
 public interface Policy<T> {
     public T apply(T entity);
+    
+    public String getParameter(String key);
+    public void setParameter(String key, String value);
 }

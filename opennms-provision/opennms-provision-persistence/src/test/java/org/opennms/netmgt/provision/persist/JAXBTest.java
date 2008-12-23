@@ -50,7 +50,7 @@ public class JAXBTest {
 //        fs.setScanInterval(scanInterval)
 
         List<PluginConfig> detectors = new ArrayList<PluginConfig>();
-        final PluginConfig detector = new PluginConfig("food", "com.example.detectors.FoodDetector");
+        final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
         detector.addParameter("sharpness", "mild");
@@ -58,13 +58,16 @@ public class JAXBTest {
         fs.setDetectors(detectors);
 
         List<PluginConfig> policies = new ArrayList<PluginConfig>();
-        PluginConfig policy = new PluginConfig("lower-case-node", "com.example.policies.NodeCategoryPolicy");
+        PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("nodelabel", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
         policies.add(policy);
-        policy = new PluginConfig("all-ipinterfaces", "com.example.policies.InclusiveInterfacePolicy");
+        policy = new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
         policies.add(policy);
-        policy = new PluginConfig("cisco-snmp-interfaces", "comp.example.policies.IfDescrSnmpInterfacePolicy");
+        policy = new PluginConfig("10-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy");
+        policy.addParameter("match", "~^10\\..*$");
+        policies.add(policy);
+        policy = new PluginConfig("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.IfDescrSnmpInterfacePolicy");
         policy.addParameter("ifdescr", "~(?i:cisco)");
         policies.add(policy);
         fs.setPolicies(policies);

@@ -31,38 +31,62 @@ import org.springframework.transaction.annotation.Transactional;
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class
 })
-@ContextConfiguration(locations={ "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+})
 
 @JUnitTemporaryDatabase()
-public class IPManagementMatchPolicyTest {
+public class MatchingInterfacePolicyTest {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
     private DatabasePopulator m_populator;
 
+    private List<OnmsIpInterface> m_interfaces;
+    
     @Before
     public void setUp() {
         m_populator.populateDatabase();
+        m_interfaces = m_ipInterfaceDao.findAll();
     }
     
     @Test
     @Transactional
-    public void testPolicy() {
+    public void testInclusivePolicy() {
         OnmsIpInterface o = null;
-        IPManagementMatchPolicy p = new IPManagementMatchPolicy();
+        InclusiveInterfacePolicy p = new InclusiveInterfacePolicy();
 
-        List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findAll();
         List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
         
-        for (OnmsIpInterface iface : interfaces) {
+        for (OnmsIpInterface iface : m_interfaces) {
             o = p.apply(iface);
             if (o != null) {
                 matchedInterfaces.add(o);
             }
         }
         
-        assertEquals(interfaces, matchedInterfaces);
+        assertEquals(m_interfaces, matchedInterfaces);
+    }
+
+    @Test
+    @Transactional
+    public void testMatchingPolicy() {
+        OnmsIpInterface o = null;
+        
+        MatchingInterfacePolicy p = new MatchingInterfacePolicy();
+
+        List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
+        
+        for (OnmsIpInterface iface : m_interfaces) {
+            o = p.apply(iface);
+            if (o != null) {
+                matchedInterfaces.add(o);
+            }
+        }
+        
+        assertEquals(m_interfaces, matchedInterfaces);
     }
 
 }

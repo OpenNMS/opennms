@@ -3,19 +3,22 @@
     <foreign-source name="cheese">
         <scan-interval>1d</scan-interval>
         <detectors>
-            <detector name="food" class="com.example.detectors.FoodDetector">
+            <detector name="food" class="org.opennms.netmgt.provision.persist.detectors.FoodDetector">
                 <parameter key="type" value="cheese" />
                 <parameter key="density" value="soft" />
                 <parameter key="sharpness" value="mild" />
             </detector>
         </detectors>
         <policies>
-            <policy name="lower-case-node" class="com.example.policies.NodeCategoryPolicy">
+            <policy name="lower-case-node" class="org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy">
                 <parameter key="nodelabel" value="~^[a-z]$" />
                 <parameter key="category" value="Lower-Case-Nodes" />
             </policy>
-            <policy name="all-ipinterfaces" class="com.example.policies.InclusiveInterfacePolicy" />
-            <policy name="cisco-snmp-interfaces" class="comp.example.policies.IfDescrSnmpInterfacePolicy">
+            <policy name="all-ipinterfaces" class="org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy" />
+            <policy name="10-ipinterfaces" class="org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy">
+            	<parameter key="match" value="~^10\..*$" />
+            </policy>
+            <policy name="cisco-snmp-interfaces" class="org.opennms.netmgt.provision.persist.policies.IfDescrSnmpInterfacePolicy">
                 <parameter key="ifdescr" value="~(?i:cisco)" />
             </policy>
         </policies>
