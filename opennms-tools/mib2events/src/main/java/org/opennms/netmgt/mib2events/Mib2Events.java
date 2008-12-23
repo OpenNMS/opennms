@@ -11,8 +11,11 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -48,11 +51,13 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.w3c.dom.Document;
 
 public class Mib2Events {
@@ -415,6 +420,11 @@ public class Mib2Events {
 
         // FIXME Disabled for now so we match mib2opennms functionality
         //evt.setAlarmData(getTrapEventAlarmData());
+        
+        List<Varbindsdecode> decode = getTrapVarbindsDecode(trapValueSymbol);
+        if (!decode.isEmpty()) {
+            evt.setVarbindsdecode(decode);
+        }
 
 		// Construct the event mask object
 		// The "ID" mask element (trap enterprise)
@@ -440,7 +450,45 @@ public class Mib2Events {
 		return evt;
 	}
 	
-	private static Events convertMibToEvents(Mib mib, String ueibase) {
+	private static List<Varbindsdecode> getTrapVarbindsDecode(MibValueSymbol trapValueSymbol) {
+        Map<String, Varbindsdecode> decode = new LinkedHashMap<String, Varbindsdecode>();
+        
+        int vbNum = 1;
+        for (MibValue vb : getTrapVars(trapValueSymbol)) {
+            String parmName = "parm[#" + vbNum + "]";
+
+            SnmpObjectType snmpObjectType = ((SnmpObjectType) ((ObjectIdentifierValue) vb).getSymbol().getType());
+            if (snmpObjectType.getSyntax().getClass().equals(IntegerType.class)) {
+                IntegerType integerType = (IntegerType) snmpObjectType.getSyntax();
+                
+                if (integerType.getAllSymbols().length > 0) {
+                    SortedMap<Integer, String> map = new TreeMap<Integer, String>();
+                    for (MibValueSymbol sym : integerType.getAllSymbols()) {
+                        map.put(new Integer(sym.getValue().toString()), sym.getName());
+                    }
+
+                    for (Entry<Integer, String> entry : map.entrySet()) {
+                        if (!decode.containsKey(parmName)) {
+                            Varbindsdecode newVarbind = new Varbindsdecode();
+                            newVarbind.setParmid(parmName);
+                            decode.put(newVarbind.getParmid(), newVarbind);
+                        }
+
+                        Decode d = new Decode();
+                        d.setVarbinddecodedstring(entry.getValue());
+                        d.setVarbindvalue(entry.getKey().toString());
+                        decode.get(parmName).addDecode(d);
+                    }
+                }
+            }
+            
+            vbNum++;
+        }
+        
+        return new ArrayList<Varbindsdecode>(decode.values());
+    }
+
+    private static Events convertMibToEvents(Mib mib, String ueibase) {
         Events events = new Events();
 		for (MibSymbol sym : getAllSymbolsFromMib(mib)) {
 			if (!(sym instanceof MibValueSymbol)) {
