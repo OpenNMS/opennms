@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 
 @JUnitTemporaryDatabase()
-public class MatchingInterfacePolicyTest {
+public class InterfacePolicyTest {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
@@ -76,17 +76,23 @@ public class MatchingInterfacePolicyTest {
         OnmsIpInterface o = null;
         
         MatchingInterfacePolicy p = new MatchingInterfacePolicy();
+        p.setParameter("ipaddress", "~^10\\..*$");
 
+        List<OnmsIpInterface> tenInterfaces = new ArrayList<OnmsIpInterface>();
         List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
         
         for (OnmsIpInterface iface : m_interfaces) {
+            System.err.println(iface);
             o = p.apply(iface);
             if (o != null) {
                 matchedInterfaces.add(o);
             }
+            if (iface.getIpAddress().startsWith("10.")) {
+                tenInterfaces.add(iface);
+            }
         }
         
-        assertEquals(m_interfaces, matchedInterfaces);
+        assertEquals(tenInterfaces, matchedInterfaces);
     }
 
 }

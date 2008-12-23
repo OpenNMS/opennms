@@ -65,7 +65,7 @@ public class JAXBTest {
         policy = new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
         policies.add(policy);
         policy = new PluginConfig("10-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy");
-        policy.addParameter("match", "~^10\\..*$");
+        policy.addParameter("ipaddress", "~^10\\..*$");
         policies.add(policy);
         policy = new PluginConfig("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.IfDescrSnmpInterfacePolicy");
         policy.addParameter("ifdescr", "~(?i:cisco)");
