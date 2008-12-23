@@ -18,13 +18,13 @@ import org.exolab.castor.xml.ValidationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -38,7 +38,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 class InsSession extends InsAbstractSession {
 
-	private Category log;
 
 	private Socket server;
 
@@ -82,13 +81,12 @@ class InsSession extends InsAbstractSession {
 	private List<Event> m_events = new ArrayList<Event>();
 
 	InsSession(Socket server) throws IOException {
-	    ThreadCategory.setPrefix("OpenNMS.InsProxy");
-		log = ThreadCategory.getInstance(this.getClass());
 		this.server = server;
 		streamToClient = new PrintStream(server.getOutputStream());
 	}
 
 	public void run() {
+        Category log = getLog();
 		input = "";
 
 		try {
@@ -144,38 +142,21 @@ class InsSession extends InsAbstractSession {
 
 				if (status == AUTHENTICATED_STATUS || status == DATAFLOW_STATUS) {
 					if (line.equalsIgnoreCase(LIST_CURRENT_ALARM_REQUEST)) {
-						log.debug("Sending alarms to the client");
-						refreshAlarms();
+				        log.debug("Fetching Events from Database");
+					    getEventsByCriteria();
 						status = DATAFLOW_STATUS;
 						synchronized (streamToClient) {
-							streamToClient.println(ACTIVE_ALARM_BEGIN);
-							List<Event> events = getEvents();
-							if (events != null && events.size() > 0) {
-                                Iterator<Event> ite = events.iterator();
-                                while (ite.hasNext()) {
-                                    StringWriter sw = new StringWriter();
-                                    Event xmlEvent = ite.next();
-                                    try {
-                                        log.info("Marshal Event with id: " + xmlEvent.getDbid()); 
-                                        xmlEvent.marshal(sw);
-                                        log.info("Flushing Event with id: " + xmlEvent.getDbid()); 
-                                        sw.flush();
-                                        log.info("String Writer:" + sw.getBuffer().toString()); 
-                                        if (sw != null) {
-                                            streamToClient.print(sw.toString());
-                                        } else {
-                                            log.warn("String Writer is null");
-//                                          break readingFromClient;
-                                        }
-                                    } catch (MarshalException e) {
-                                        log.error("Marshall Exception: " + e);
-                                    } catch (ValidationException e) {
-                                        log.error("Validation Exception: " + e);
-                                    }
-                                }
-							}
-                            streamToClient.println(ACTIVE_ALARM_END);
-                            continue readingFromClient;
+							 streamToClient.println(ACTIVE_ALARM_BEGIN);
+	                         StringWriter sw = getOutput();
+  		                     if (sw != null) {
+   		                        log.info("String Writer:" + sw.getBuffer().toString()); 
+		                        streamToClient.print(sw.toString());
+		                     } else {
+		                        log.error("String Writer is null");
+//			                      break readingFromClient;
+		                     }
+                             streamToClient.println(ACTIVE_ALARM_END);
+                             continue readingFromClient;
 							
 						}
 					} else {
@@ -206,8 +187,34 @@ class InsSession extends InsAbstractSession {
 		else
 			return null;
 	}
-	
+
+	private StringWriter getOutput() {
+        Category log = getLog();
+        log.debug("Sending alarms to the client");
+        StringWriter sw = new StringWriter();
+        List<Event> events = getEvents();
+        if (events != null && events.size() > 0) {
+            Iterator<Event> ite = events.iterator();
+            while (ite.hasNext()) {
+                Event xmlEvent = ite.next();
+                try {
+                    log.info("Marshal Event with id: " + xmlEvent.getDbid()); 
+                    xmlEvent.marshal(sw);
+                    log.info("Flushing Event with id: " + xmlEvent.getDbid()); 
+                    sw.flush();
+                } catch (MarshalException e) {
+                    log.error("Marshall Exception: " + e);
+                } catch (ValidationException e) {
+                    log.error("Validation Exception: " + e);
+                }
+            }
+        }
+        return sw;
+
+	}
+
 	private Event getXMLEvent(OnmsEvent ev) {
+        Category log = getLog();
         log.info("Working on XML Event for id: " + ev.getId()); 
         log.debug("Setting Event id: " + ev.getId()); 
         Event e = new Event();
@@ -301,13 +308,23 @@ class InsSession extends InsAbstractSession {
             log.info("No Event severity found.");
         }
 
-        //TODO FIXME SEND IFINDEX and IFALIAS To INS                                                        
-//          if (ev.getIfIndex() != null) 
-//              e.setIfIndex(ev.getIfIndex().toString());
-        e.setIfIndex(-1);
-//          if (ev.getIfAlias() != null)
-//              e.setIfAlias(ev.getIfAlias());
-        e.setIfAlias("ifalias");
+          if (ev.getIfIndex() != null) {
+              e.setIfIndex(ev.getIfIndex());
+              e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
+          } else if (!ev.getIpAddr().equals("0.0.0.0")) {
+              OnmsSnmpInterface iface = getIfAlias(ev.getNode().getId(), ev.getIpAddr());
+              if (iface != null) {
+                  e.setIfIndex(iface.getIfIndex());
+                  e.setIfAlias(iface.getIfAlias());
+              } else {
+                  e.setIfIndex(-1);
+                  e.setIfAlias("-1");
+              }
+          } else {
+              e.setIfIndex(-1);
+              e.setIfAlias("-1");
+          }
+
         
         // operator Instruction
         if (ev.getEventOperInstruct() != null) {
@@ -319,9 +336,11 @@ class InsSession extends InsAbstractSession {
 
         // parms
         if (ev.getEventParms() != null ) {
+            log.debug("Setting Event Parms: " + ev.getEventParms());
             Parms parms = Parameter.decode(ev.getEventParms());
-        
             if (parms != null ) e.setParms(parms);
+        } else {
+            log.info("No Event parms found.");
         }
 
         AlarmData ad = new AlarmData();
@@ -351,15 +370,18 @@ class InsSession extends InsAbstractSession {
         return e;
     }
 	
-	private void refreshAlarms() {
-	    clearEvents();
-	    log.debug("Entering refresh alarms");
+	private void getEventsByCriteria() {
+        Category log = getLog();
+        log.debug("Entering getEventsByCriteria.....");
+        log.debug("clearing events");
+        clearEvents();
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final EventDao eventDao = BeanUtils.getBean(bf,"eventDao", EventDao.class);
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
                 transTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(final TransactionStatus status) {
+                    Category log = getLog();
                     log.debug("entering transaction call back: selection with criteria: " + criteriaRestriction);
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(criteriaRestriction));
@@ -395,5 +417,10 @@ class InsSession extends InsAbstractSession {
     private List<Event> getEvents() {
         return m_events;      
     }
-
+    
+    final static char MULTIPLE_VAL_DELIM = ';';
+    final static char NAME_VAL_DELIM = '=';
+    final static char DB_ATTRIB_DELIM = ',';
+    
+ 
 }
