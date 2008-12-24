@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import net.percederberg.mibble.Mib;
 import net.percederberg.mibble.MibLoader;
@@ -59,11 +60,11 @@ import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class Mib2Events {
-    // FIXME Left at mib2opennms to match what mib2opennms does
-    //private static final String DEFAULT_UEIBASE = "uei.opennms.org/mib2events/";
-    private static final String DEFAULT_UEIBASE = "uei.opennms.org/mib2opennms/";
+    private static final String DEFAULT_UEIBASE = "uei.opennms.org/mib2events/";
+    private static final String MIB2OPENNMS_UEIBASE = "uei.opennms.org/mib2opennms/";
 
     /** Command-line help. */
     private static final String COMMAND_HELP =
@@ -72,11 +73,13 @@ public class Mib2Events {
         "comes with ABSOLUTELY NO WARRANTY; for details, see the LICENSE.txt\n" +
         "file.\n" +
         "\n" +
-        "Syntax: Mib2Events --mib <file(s) or URL(s)> --ueibase <base-uei>\n" +
+        "Syntax: Mib2Events --mib <file or URL> --ueibase <base-uei>\n" +
         "\n" +
         "	--mib		The pathname or URL of a MIB to load\n" +
         "	--ueibase	The base UEI for resulting event definitions\n" +
         "			(default: uei.opennms.org/mib2events/)\n" +
+        "   --compat    Turn on compatability mode to create output similar to\n" +
+        "               that of mib2opennms\n" +
         "\n" +
         "EXAMPLES\n" +
         "\n" +
@@ -86,9 +89,11 @@ public class Mib2Events {
         "Mib2Events --mib OSPF-TRAP-MIB.my --ueibase uei.opennms.org/vendors/ietf/\n";
 
     private String m_mibLocation;
-    private String m_ueiBase = DEFAULT_UEIBASE;
+    private String m_ueiBase = null;
     private MibLoader m_loader;
     private Mib m_mib;
+
+    private boolean m_compat = false;
 
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
@@ -115,7 +120,12 @@ public class Mib2Events {
 
         PrintStream out = System.out;
         out.println("<!-- Start of auto generated data from MIB: " + convertor.getMib().getName() + " -->");
-        convertor.printEvents(out);
+        try {
+            convertor.printEvents(out);
+        } catch (Exception e) {
+            printError(convertor.getMibLocation(), e);
+            System.exit(1);
+        }
         out.println("<!-- End of auto generated data from MIB: " + convertor.getMib().getName() + " -->");
     }
 
@@ -125,7 +135,6 @@ public class Mib2Events {
 
     public void convert() throws IOException, MibLoaderException {
         m_loader = new MibLoader();
-        m_mib = null;
 
         URL url;
         try {
@@ -143,7 +152,7 @@ public class Mib2Events {
         }
     }
 
-    private void printEvents(PrintStream out) {
+    private void printEvents(PrintStream out) throws MarshalException, ValidationException, ParserConfigurationException, SAXException, IOException {
         if (m_loader == null) {
             throw new IllegalStateException("convert() must be called first");
         }
@@ -153,42 +162,54 @@ public class Mib2Events {
                 continue;
             }
 
-            Events events = convertMibToEvents(mib, m_ueiBase);
+            Events events = convertMibToEvents(mib, getEffectiveUeiBase());
 
             if (events.getEventCount() < 1) {
                 System.err.println("No trap definitions found in this MIB (" + mib.getName() + "), exiting");
                 System.exit(0);
             }
 
-            try {
-                // FIXME We should just spit out a valid events inclusion file, but for now we match mib2opennms
-                //StringWriter writer = new StringWriter();
-                //
-                //events.marshal(writer);
-                //
-                //String noNameSpace = writer.toString().replaceAll(" xmlns=\"[^\"]*\"", "");
-                //prettyPrintXML(new ByteArrayInputStream(noNameSpace.getBytes()), out);
+            if (!m_compat) {
+                StringWriter writer = new StringWriter();
 
+                events.marshal(writer);
+
+                stripXmlNameSpace(writer.toString(), out);
+            } else {
                 for (Event event : events.getEventCollection()) {
                     StringWriter writer = new StringWriter();
 
                     event.marshal(writer);
 
-                    String noNameSpace = writer.toString().replaceAll(" xmlns=\"[^\"]*\"", "");
-
                     ByteArrayOutputStream formattedXml = new ByteArrayOutputStream();
-                    prettyPrintXML(new ByteArrayInputStream(noNameSpace.getBytes()), formattedXml);
+
+                    stripXmlNameSpace(writer.toString(), formattedXml);
+
                     String noXmlProcessingInstruction = formattedXml.toString().replaceAll("(?m)<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>\n", "");
-                    String singleQuotesLogMsgDest = noXmlProcessingInstruction.replaceAll("dest=\"logndisplay\"", "dest='logndisplay'");
-                    out.print(singleQuotesLogMsgDest);
+                    out.print(noXmlProcessingInstruction.replaceAll("dest=\"logndisplay\"", "dest='logndisplay'"));
                 }
-            } catch (MarshalException e) {
-                System.err.println("Fatal: caught MarshalException:" + e);
-            } catch (ValidationException e) {
-                System.err.println("Fatal: caught ValidationException:" + e);
-            } catch (Exception e) {
-                System.err.println("Fatal: Unhandled exception: " + e);
             }
+        }
+    }
+
+    private void stripXmlNameSpace(String xml, OutputStream out) throws ParserConfigurationException, SAXException, IOException {
+        String noNameSpace = xml.replaceAll(" xmlns=\"[^\"]*\"", "");
+        prettyPrintXML(new ByteArrayInputStream(noNameSpace.getBytes()), out);
+    }
+
+    private String getUeiBase() {
+        return m_ueiBase;
+    }
+
+    private String getEffectiveUeiBase() {
+        if (getUeiBase() != null) {
+            return getUeiBase();
+        }
+        
+        if (m_compat) {
+            return MIB2OPENNMS_UEIBASE;
+        } else {
+            return DEFAULT_UEIBASE;
         }
     }
 
@@ -196,6 +217,7 @@ public class Mib2Events {
         Options opts = new Options();
         opts.addOption("m", "mib", true, "Pathname or URL of MIB file to scan for traps");
         opts.addOption("b", "ueibase", true, "Base UEI for resulting events");
+        opts.addOption("c", "compat", false, "Turn on compatability mode to create output as similar to mib2opennms as possible");
 
         CommandLineParser parser = new GnuParser();
         try {
@@ -208,6 +230,9 @@ public class Mib2Events {
             }
             if (cmd.hasOption("b")) {
                 m_ueiBase = cmd.getOptionValue('b');
+            }
+            if (cmd.hasOption("c")) {
+                m_compat  = true;
             }
         } catch (ParseException e) {
             printHelp("Failed to parse command line options");
@@ -236,6 +261,13 @@ public class Mib2Events {
         StringBuffer buf = new StringBuffer();
         buf.append("Could not open URL:\n\t");
         buf.append(url);
+        printError(buf.toString());
+    }
+    
+    public static void printError(String msg, Exception e) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("Error: ");
+        buf.append(msg);
         printError(buf.toString());
     }
 
@@ -312,11 +344,10 @@ public class Mib2Events {
         return v2notif.getObjects();
     }
 
-    public static Logmsg getTrapEventLogmsg(MibValueSymbol trapValueSymbol) {
+    public Logmsg getTrapEventLogmsg(MibValueSymbol trapValueSymbol) {
         Logmsg msg = new Logmsg();
         msg.setDest("logndisplay");
 
-        // FIXME There some detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
         final StringBuffer dbuf = new StringBuffer();
         dbuf.append("<p>");
         dbuf.append("\n");
@@ -400,13 +431,14 @@ public class Mib2Events {
 
     public static AlarmData getTrapEventAlarmData() {
         AlarmData ad = new AlarmData();
+        // FIXME This is incorrect most of the time...
         ad.setReductionKey("%uei%:%dpname%:%nodeid%:%interface%");
         ad.setAlarmType(1);
         ad.setAutoClean(false);
         return ad;
     }
 
-    public static Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
+    public Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
         Event evt = new Event();
         Mask mask = new Mask();
         Maskelement me;
@@ -418,12 +450,15 @@ public class Mib2Events {
         evt.setSeverity("Indeterminate");
         evt.setDescr(getTrapEventDescr(trapValueSymbol));
 
-        // FIXME Disabled for now so we match mib2opennms functionality
-        //evt.setAlarmData(getTrapEventAlarmData());
+        if (!m_compat) {
+            //evt.setAlarmData(getTrapEventAlarmData());
+        }
 
-        List<Varbindsdecode> decode = getTrapVarbindsDecode(trapValueSymbol);
-        if (!decode.isEmpty()) {
-            evt.setVarbindsdecode(decode);
+        if (!m_compat) {
+            List<Varbindsdecode> decode = getTrapVarbindsDecode(trapValueSymbol);
+            if (!decode.isEmpty()) {
+                evt.setVarbindsdecode(decode);
+            }
         }
 
         // Construct the event mask object
@@ -488,7 +523,7 @@ public class Mib2Events {
         return new ArrayList<Varbindsdecode>(decode.values());
     }
 
-    private static Events convertMibToEvents(Mib mib, String ueibase) {
+    private Events convertMibToEvents(Mib mib, String ueibase) {
         Events events = new Events();
         for (MibSymbol sym : getAllSymbolsFromMib(mib)) {
             if (!(sym instanceof MibValueSymbol)) {
@@ -510,7 +545,7 @@ public class Mib2Events {
         return mib.getAllSymbols();
     }
 
-    public static void prettyPrintXML(InputStream docStream, OutputStream out) throws Exception {
+    public static void prettyPrintXML(InputStream docStream, OutputStream out) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = builder.parse(docStream);
 
