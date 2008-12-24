@@ -1,0 +1,173 @@
+<!-- Start of auto generated data from MIB: EMC-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1139.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/emcDeviceStatusTrap</uei>
+	<event-label>EMC-MIB defined trap event: emcDeviceStatusTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent for each device found 'NOT READY' during
+the most recent test of each attached Symmetrix for Device
+Not Ready conditions.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			emcDeviceStatusTrap trap received 
+			symmEventDescr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1139.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/emcSymmetrixStatusTrap</uei>
+	<event-label>EMC-MIB defined trap event: emcSymmetrixStatusTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent for each new WARNING and FATAL error 
+condition found during the most recent 'health'
+test of each attached Symmetrix. 
+
+Format of the message is:
+
+  Symmetrix s/n: %s, Dir - %d, %04X, %s, %s
+
+an example of which is:
+
+  Symmetrix s/n: 12345, Dir - 31, 470, Thu Apr  6 10:53:16 2000, Environmental alarm: Battery Fault&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			emcSymmetrixStatusTrap trap received 
+			symmEventDescr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1139.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/emcRatiosOutofRangeTrap</uei>
+	<event-label>EMC-MIB defined trap event: emcRatiosOutofRangeTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent for each attached Symmetrix when the
+Hit Ratio, Write Ratio, or IO/sec Ratio were out of the
+specified range during the most recent test for these
+conditions. The ratios are preconfigured at agent
+startup, and apply to all Symmetrixes attached.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			emcRatiosOutofRangeTrap trap received 
+			symmEventDescr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1139.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/discoveryTableChange</uei>
+	<event-label>EMC-MIB defined trap event: discoveryTableChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever the periodic check of attached
+Symmetrixes reveals newly attached Symmetrixes, or changes
+in the configuration of previously attached Symmetrixes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	discoveryChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			discoveryTableChange trap received 
+			discoveryChangeTime=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1139.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/emcSymmetrixEventTrap</uei>
+	<event-label>EMC-MIB defined trap event: emcSymmetrixEventTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever a non-specific (i.e. not traps 1-4)
+event occurs in the agent, or for a specific Symmetrix.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			emcSymmetrixEventTrap trap received 
+			symmEventDescr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: EMC-MIB -->
