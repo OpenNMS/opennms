@@ -1821,7 +1821,11 @@
   <event-file>events/DellRacHost.events.xml</event-file>
   <event-file>events/DellStorageManagement.events.xml</event-file>
   <event-file>events/DPS.events.xml</event-file>
+  <event-file>events/EMC.events.xml</event-file>
+  <event-file>events/EMC-Cellera.events.xml</event-file>
+  <event-file>events/EMC-Clariion.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
+  <event-file>events/fcmgmt.events.xml</event-file>
   <event-file>events/Fore.events.xml</event-file>
   <event-file>events/Fortinet.events.xml</event-file>
   <event-file>events/FoundryNetworks.events.xml</event-file>
