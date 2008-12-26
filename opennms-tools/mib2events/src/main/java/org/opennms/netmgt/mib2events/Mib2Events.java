@@ -95,6 +95,7 @@ public class Mib2Events {
     private Mib m_mib;
 
     private boolean m_compat = false;
+    private static final Pattern TRAP_OID_PATTERN = Pattern.compile("(.*)\\.(\\d+)$");
 
     public static void main(String[] args) throws FileNotFoundException {
         BasicConfigurator.configure();
@@ -273,36 +274,29 @@ public class Mib2Events {
     }
 
     public static String getTrapEnterprise(MibValueSymbol trapValueSymbol) {
-        if (trapValueSymbol.getType() instanceof SnmpNotificationType) {
-            String trapOid = "." + trapValueSymbol.getValue().toString();
-            // FIXME This isn't right, I think, but it matches mib2opennms functionality... it should chop up just the last number, not the last *two*
-            Matcher m = Pattern.compile("(.*)\\.\\d+\\.\\d+$").matcher(trapOid);
-            if (m.matches()) {
-                return m.group(1);
-            } else {
-                throw new IllegalStateException("Could not pull last two numbers out of trap OID '" + trapOid + "' to get SNMPv1 'enterprise' value");
-            }
-        } else if (trapValueSymbol.getType() instanceof SnmpTrapType) {
-            SnmpTrapType v1trap = (SnmpTrapType) trapValueSymbol.getType();
-            return "." + v1trap.getEnterprise().toString();
-        } else {
-            throw new IllegalStateException("Trying to get a trap enterprise number from a non-trap, non-notification object");
-        }
+        return getMatcherForOid(getTrapOid(trapValueSymbol)).group(1);
     }
 
     public static String getTrapSpecificType(MibValueSymbol trapValueSymbol) {
+        return getMatcherForOid(getTrapOid(trapValueSymbol)).group(2);
+    }
+    
+    public static Matcher getMatcherForOid(String trapOid) {
+        Matcher m = TRAP_OID_PATTERN.matcher(trapOid);
+        if (!m.matches()) {
+            throw new IllegalStateException("Could not match the trap OID '" + trapOid + "' against '" + m.pattern().pattern() + "'");
+        }
+        return m;
+    }
+    
+    private static String getTrapOid(MibValueSymbol trapValueSymbol) {
         if (trapValueSymbol.getType() instanceof SnmpNotificationType) {
-            String trapOid = trapValueSymbol.getValue().toString();
-            Matcher m = Pattern.compile(".*\\.(\\d+)$").matcher(trapOid);
-            if (m.matches()) {
-                return m.group(1);
-            } else {
-                throw new IllegalStateException("Could not pull last number out of trap OID '" + trapOid + "' to get SNMPv1 'specific' value");
-            }
+            return "." + trapValueSymbol.getValue().toString();
         } else if (trapValueSymbol.getType() instanceof SnmpTrapType) {
-            return trapValueSymbol.getValue().toString();
+            SnmpTrapType v1trap = (SnmpTrapType) trapValueSymbol.getType();
+            return "." + v1trap.getEnterprise().toString() + "." + trapValueSymbol.getValue().toString();
         } else {
-            throw new IllegalStateException("Trying to get a trap enterprise number from a non-trap, non-notification object");
+            throw new IllegalStateException("Trying to get trap information from an object that's not a trap and not a notification");
         }
     }
 
@@ -441,8 +435,6 @@ public class Mib2Events {
 
     public Event getTrapEvent(MibValueSymbol trapValueSymbol, String ueibase) {
         Event evt = new Event();
-        Mask mask = new Mask();
-        Maskelement me;
 
         // Set the event's UEI, event-label, logmsg, severity, and descr
         evt.setUei(getTrapEventUEI(trapValueSymbol, ueibase));
@@ -462,28 +454,29 @@ public class Mib2Events {
             }
         }
 
-        // Construct the event mask object
-        // The "ID" mask element (trap enterprise)
-        me = new Maskelement();
-        me.setMename("id");
-        me.addMevalue(getTrapEnterprise(trapValueSymbol));
-        mask.addMaskelement(me);
+        evt.setMask(new Mask());
 
-        // The "generic" mask element (hard-wired to enterprise-specific(6))
-        me = new Maskelement();
-        me.setMename("generic");
-        me.addMevalue("6");
-        mask.addMaskelement(me);
+        // The "ID" mask element (trap enterprise)
+        addMaskElement(evt, "id", getTrapEnterprise(trapValueSymbol));
+
+        // The "generic" mask element: hard-wired to enterprise-specific(6)
+        addMaskElement(evt, "generic", "6");
 
         // The "specific" mask element (trap specific-type)
-        me = new Maskelement();
-        me.setMename("specific");
-        me.addMevalue(getTrapSpecificType(trapValueSymbol));
-        mask.addMaskelement(me);
-
-        evt.setMask(mask);
+        addMaskElement(evt, "specific", getTrapSpecificType(trapValueSymbol));
 
         return evt;
+    }
+
+    private void addMaskElement(Event event, String name, String value) {
+        if (event.getMask() == null) {
+            throw new IllegalStateException("Event mask is null, must have been set before this method was called");
+        }
+        
+        Maskelement me = new Maskelement();
+        me.setMename(name);
+        me.addMevalue(value);
+        event.getMask().addMaskelement(me);
     }
 
     private static List<Varbindsdecode> getTrapVarbindsDecode(MibValueSymbol trapValueSymbol) {
