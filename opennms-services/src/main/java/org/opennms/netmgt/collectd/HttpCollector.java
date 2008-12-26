@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2008 Dec 25: Make HttpCollectionSet have many HttpCollectionResources
+//              so that all resources get properly persisted when a collection
+//              has many URIs, without re-breaking storeByGroup for this
+//              collector (bug 2940)
 // 2007 Aug 07: Move HTTP datacollection config package from
 //              org.opennms.netmgt.config.datacollection to
 //              org.opennms.netmgt.config.httpdatacollection. - dj@opennms.org
@@ -49,6 +53,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,7 +139,7 @@ public class HttpCollector implements ServiceCollector {
         private Map<String, String> m_parameters;
         private Uri m_uriDef;
         private int m_status;
-        private HttpCollectionResource m_collectionResource;
+        private List<HttpCollectionResource> m_collectionResourceList;
         public Uri getUriDef() {
             return m_uriDef;
         }
@@ -156,12 +161,14 @@ public class HttpCollector implements ServiceCollector {
                  collectionName=m_parameters.get("http-collection");               
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
+            m_collectionResourceList = new ArrayList<HttpCollectionResource>();
             List<Uri> uriDefs = collection.getUris().getUriCollection();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
-                m_collectionResource=new HttpCollectionResource(m_agent, uriDef);
+                HttpCollectionResource collectionResource = new HttpCollectionResource(m_agent, uriDef);
                 try {
-                    doCollection(this);
+                    doCollection(this, collectionResource);
+                    m_collectionResourceList.add(collectionResource);
                 } catch (HttpCollectorException e) {
                     log().error("collect: http collection failed: " + e, e);
 
@@ -174,7 +181,6 @@ public class HttpCollector implements ServiceCollector {
                 }
             }
             m_status=ServiceCollector.COLLECTION_SUCCEEDED;
-
         }
 
         public CollectionAgent getAgent() {
@@ -197,20 +203,18 @@ public class HttpCollector implements ServiceCollector {
             return m_status;
         }
         
-        public void storeResults(List<HttpCollectionAttribute> results) {
-            m_collectionResource.storeResults(results);
+        public void storeResults(List<HttpCollectionAttribute> results, HttpCollectionResource collectionResource) {
+            collectionResource.storeResults(results);
         }
 
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitCollectionSet(this);
-            m_collectionResource.visit(visitor);
+            for (HttpCollectionResource collectionResource : m_collectionResourceList) {
+                collectionResource.visit(visitor);
+            }
             visitor.completeCollectionSet(this);
         }
         
-        public HttpCollectionResource getResource() {
-            return m_collectionResource;
-        }
-
 		public boolean ignorePersist() {
 			return false;
 		}       
@@ -229,7 +233,7 @@ public class HttpCollector implements ServiceCollector {
      * @param collectionSet
      * @throws HttpCollectorException
      */
-    private void doCollection(final HttpCollectionSet collectionSet) throws HttpCollectorException {
+    private void doCollection(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource) throws HttpCollectorException {
 
         HttpClient client = null;
         HttpMethod method = null;
@@ -243,7 +247,7 @@ public class HttpCollector implements ServiceCollector {
             log().info("doCollection: collecting for client: "+client+" using method: "+method);
             client.executeMethod(method);
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
-            persistResponse(collectionSet, client, method);
+            persistResponse(collectionSet, collectionResource, client, method);
         } catch (URIException e) {
             throw new HttpCollectorException("Error building HttpClient URI", client);
         } catch (HttpException e) {
@@ -356,7 +360,7 @@ public class HttpCollector implements ServiceCollector {
         
     }
     
-    private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet) {
+    private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
         log().debug("processResponse:");
         log().debug("responseBody = " + responseBodyAsString);
         log().debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
@@ -394,7 +398,7 @@ public class HttpCollector implements ServiceCollector {
                         Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
                         HttpCollectionAttribute bute = 
                             new HttpCollectionAttribute(
-                                                        collectionSet.getResource(),
+                                                        collectionResource,
                                                         new HttpCollectionAttributeType(attribDef, groupType), 
                                                         attribDef.getAlias(),
                                                         attribDef.getType(), 
@@ -407,7 +411,7 @@ public class HttpCollector implements ServiceCollector {
                 } else {
                     HttpCollectionAttribute bute =
                         new HttpCollectionAttribute(
-                                                    collectionSet.getResource(),
+                                                    collectionResource,
                                                     new HttpCollectionAttributeType(attribDef, groupType),
                                                     attribDef.getAlias(),
                                                     attribDef.getType(),
@@ -441,15 +445,15 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) throws IOException {
-        List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet);
+    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpMethod method) throws IOException {
+        List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet, collectionResource);
         if (butes.isEmpty()) {
             log().warn("doCollection: no attributes defined for collection were found in response text matching regular expression '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
             throw new HttpCollectorException("No attributes specified were found: ", client);
         }
         
         //put the results into the collectionset for later
-        collectionSet.storeResults(butes);
+        collectionSet.storeResults(butes, collectionResource);
         //String collectionName = collectionSet.getParameters().get("http-collection");
         //RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
 
