@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2008 Dec 26: Make eventValuePassesMaskValue static. - dj@opennms.org
 // 2008 Jan 05: Format code, create log(), use Java 5 generics. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -116,7 +117,7 @@ public class EventConfData extends Object {
      * 
      * @return true if the values passes the mask
      */
-    protected boolean eventValuePassesMaskValue(String eventvalue, List maskValues) {
+    protected static boolean eventValuePassesMaskValue(String eventvalue, List maskValues) {
         boolean maskMatch = false;
 
         Iterator valiter = maskValues.iterator();
