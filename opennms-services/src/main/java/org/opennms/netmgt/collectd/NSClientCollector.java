@@ -192,7 +192,6 @@ public class NSClientCollector implements ServiceCollector {
 		}        
     }
     
-    @SuppressWarnings("unchecked")
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         
         String collectionName=parameters.get("collection");
@@ -279,7 +278,7 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, String> parameters) {
         log().debug("initialize: Initializing NSClientCollector.");
         m_scheduledNodes.clear();
         initNSClientPeerFactory();
@@ -375,7 +374,7 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
-    public void initialize(CollectionAgent agent, Map parameters) {
+    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: " + agent);
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
@@ -416,7 +415,7 @@ public class NSClientCollector implements ServiceCollector {
         private String m_address;
         private HashMap<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
 
-        public NSClientAgentState(InetAddress address, Map parameters) {
+        public NSClientAgentState(InetAddress address, Map<String, String> parameters) {
             m_address = address.getHostAddress();
             m_agentConfig = NSClientPeerFactory.getInstance().getAgentConfig(address);
             m_manager = new NsclientManager(m_address);

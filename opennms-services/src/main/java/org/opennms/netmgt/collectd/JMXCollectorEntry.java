@@ -38,9 +38,13 @@ import java.util.TreeMap;
  */
 
 
-public class JMXCollectorEntry extends TreeMap {
+public class JMXCollectorEntry extends TreeMap<String, String> {
 	
-	private String objectName;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private String m_objectName;
     
     /**
      * <P>
@@ -73,8 +77,8 @@ public class JMXCollectorEntry extends TreeMap {
      * 
      * @param vars
      *            The array of collected JMX variable bindings
-     * @param objList
-     *            List of MibObject objects representing each of of the oid's
+     * @param types
+     *            String Array of MibObject objects representing each of of the oid's
      *            configured for collection.
      * @param ifIndex
      *            The ifIndex (as a String) of the interface for which the
@@ -84,7 +88,7 @@ public class JMXCollectorEntry extends TreeMap {
     public JMXCollectorEntry(String objectName, String[] vars, String[] types) {
         this();
         
-        this.objectName = objectName;
+        this.m_objectName = objectName;
         
         for (int i = 0; i < vars.length;i++ ) {
             put(vars[i], types[i]);
@@ -94,15 +98,15 @@ public class JMXCollectorEntry extends TreeMap {
     /* (non-Javadoc)
      * @see java.util.TreeMap#keySet()
      */
-    public Set attributeNames() {
+    public Set<String> attributeNames() {
         return super.keySet();
     }
 
 	public String getObjectName() {
-		return objectName;
+		return m_objectName;
 	}
 
 	public void setObjectName(String objectName) {
-		this.objectName = objectName;
+		this.m_objectName = objectName;
 	}
 }

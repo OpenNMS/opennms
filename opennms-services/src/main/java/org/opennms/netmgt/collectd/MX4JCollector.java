@@ -55,7 +55,7 @@ public class MX4JCollector extends JMXCollector {
    * 
    * @see org.opennms.netmgt.collectd.JMXCollector#getMBeanServerConnection(java.util.Map, java.net.InetAddress)
    */
-  public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
+  public ConnectionWrapper getMBeanServerConnection(Map<String, String> parameterMap, InetAddress address) {
       return MX4JConnectionFactory.getMBeanServerConnection(parameterMap, address);
   }
 }
