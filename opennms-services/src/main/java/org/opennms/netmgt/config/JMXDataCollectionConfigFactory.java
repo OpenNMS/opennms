@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.Attr;
 import org.opennms.netmgt.config.collectd.Attrib;
+import org.opennms.netmgt.config.collectd.JmxCollection;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.Mbean;
 import org.opennms.netmgt.config.collectd.Mbeans;
@@ -95,12 +97,12 @@ public final class JMXDataCollectionConfigFactory {
     /**
      * Map of group maps indexed by SNMP collection name.
      */
-    private Map m_collectionGroupMap;
+    private Map<String, Map<String, Mbean>> m_collectionGroupMap;
 
     /**
      * Map of JmxCollection objects indexed by data collection name
      */
-    private Map m_collectionMap;
+    private Map<String, JmxCollection> m_collectionMap;
 
     /**
      * Private constructor
@@ -146,24 +148,24 @@ public final class JMXDataCollectionConfigFactory {
         // This is parsed and built at initialization for
         // faster processing at run-timne.
         // 
-        m_collectionMap = new HashMap();
-        m_collectionGroupMap = new HashMap();
+        m_collectionMap = new HashMap<String, JmxCollection>();
+        m_collectionGroupMap = new HashMap<String, Map<String, Mbean>>();
         
         // BOZO isn't the collection name defined in the jmx-datacollection.xml file and
         // global to all the mbeans?
-        java.util.Collection collections = m_config.getJmxCollectionCollection();
-        Iterator citer = collections.iterator();
+        Collection<JmxCollection> collections = m_config.getJmxCollectionCollection();
+        Iterator<JmxCollection> citer = collections.iterator();
         while (citer.hasNext()) {
-            org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) citer.next();
+            JmxCollection collection = citer.next();
 
             // Build group map for this collection
-            Map groupMap = new HashMap();
+            Map<String, Mbean> groupMap = new HashMap<String, Mbean>();
 
             Mbeans mbeans = collection.getMbeans();
-            java.util.Collection groupList = mbeans.getMbeanCollection();
-            Iterator giter = groupList.iterator();
+            Collection<Mbean> groupList = mbeans.getMbeanCollection();
+            Iterator<Mbean> giter = groupList.iterator();
             while (giter.hasNext()) {
-                Mbean mbean = (Mbean) giter.next();
+                Mbean mbean = giter.next();
                 groupMap.put(mbean.getName(), mbean);
             }
 
@@ -265,8 +267,10 @@ public final class JMXDataCollectionConfigFactory {
      * 
      * @return a list of MIB objects
      */
-    public Map getAttributeMap(String cName, String aSysoid, String anAddress) {
+    public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
         Category log = ThreadCategory.getInstance(getClass());
+        
+        Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
 
         if (log.isDebugEnabled())
             log.debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress);
@@ -274,36 +278,33 @@ public final class JMXDataCollectionConfigFactory {
         if (aSysoid == null) {
             if (log.isDebugEnabled())
                 log.debug("getMibObjectList: aSysoid parameter is NULL...");
-            return new HashMap();
+            return attributeMap;
         }
 
         // Retrieve the appropriate Collection object
         // 
         org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
         if (collection == null) {
-            return new HashMap();
+            return attributeMap;
         }
-        
-        HashMap map = new HashMap();
         
         Mbeans beans = collection.getMbeans();
         
-        
-        Enumeration en = beans.enumerateMbean();
+        Enumeration<Mbean> en = beans.enumerateMbean();
         while (en.hasMoreElements()) {
-        	   ArrayList list = new ArrayList();
-            Mbean mbean = (Mbean)en.nextElement();
+            List<Attrib> list = new ArrayList<Attrib>();
+            Mbean mbean = en.nextElement();
             Attrib[] attributes = mbean.getAttrib();
             for (int i = 0; i < attributes.length; i++) {
-            	 list.add(attributes[i]);
+                list.add(attributes[i]);
             }
-            map.put(mbean.getObjectname(), list);
+            attributeMap.put(mbean.getObjectname(), list);
         }
-        return map;
+        return attributeMap;
     }
     
-    public HashMap getMBeanInfo(String cName) {
-        HashMap map = new HashMap();
+    public Map<String, BeanInfo> getMBeanInfo(String cName) {
+        Map<String, BeanInfo> map = new HashMap<String, BeanInfo>();
         
         // Retrieve the appropriate Collection object
         // 
@@ -313,7 +314,7 @@ public final class JMXDataCollectionConfigFactory {
             log().warn("no collection named '" + cName + "' was found");
         } else {
             Mbeans beans = collection.getMbeans();
-            Enumeration en = beans.enumerateMbean();
+            Enumeration<Mbean> en = beans.enumerateMbean();
             while (en.hasMoreElements()) {
                 BeanInfo beanInfo = new BeanInfo();
                 
@@ -337,15 +338,15 @@ public final class JMXDataCollectionConfigFactory {
         return map;
     }
 
-    public HashMap getMBeanInfo_save(String cName) {
-        HashMap map = new HashMap();
+    public Map<String, String[]> getMBeanInfo_save(String cName) {
+        Map<String, String[]> map = new HashMap<String, String[]>();
         
         // Retrieve the appropriate Collection object
         // 
         org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
         
         Mbeans beans = collection.getMbeans();
-        Enumeration en = beans.enumerateMbean();
+        Enumeration<Mbean> en = beans.enumerateMbean();
         while (en.hasMoreElements()) {
             Mbean mbean = (Mbean)en.nextElement();
             int count = mbean.getAttribCount();
@@ -370,8 +371,10 @@ public final class JMXDataCollectionConfigFactory {
      * @param mibObjectList
      *            List of MibObject objects currently being built 
      */ 
-    static void processObjectList(List objectList, List mibObjectList) { 
-        Iterator i = objectList.iterator();
+    static void processObjectList(List<Attrib> objectList, List<Attr> mibObjectList) {
+        //TODO: Make mibObjectList a Set
+        //TODO: Delete this method, it is not referenced anywhere
+        Iterator<Attrib>i = objectList.iterator();
         while (i.hasNext()) {
             Attrib mibObj = (Attrib) i.next();
 
@@ -414,10 +417,10 @@ public final class JMXDataCollectionConfigFactory {
      * 
      * @return list of RRA strings.
      */
-    public List getRRAList(String cName) {
-        org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
+    public List<String> getRRAList(String cName) {
+        JmxCollection collection = m_collectionMap.get(cName);
         if (collection != null)
-            return (List) collection.getRrd().getRraCollection();
+            return collection.getRrd().getRraCollection();
         else
             return null;
 

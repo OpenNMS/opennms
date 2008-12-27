@@ -559,8 +559,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     
-    @SuppressWarnings("unchecked")
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, String> parameters) {
         
         log().debug("initialize: Initializing HttpCollector.");
         
@@ -646,8 +645,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    public void initialize(CollectionAgent agent, Map parameters) {
+    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
         final Integer scheduledNodeKey = new Integer(agent.getNodeId());
         final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);

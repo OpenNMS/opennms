@@ -41,7 +41,6 @@ import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -192,7 +191,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *                the plug-in from functioning.
      */
 
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, String> parameters) {
         // Log4j category
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -278,7 +277,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            interface belongs..
      */
 
-    public void initialize(CollectionAgent agent, Map parameters) {
+    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) agent.getAddress();
 
@@ -344,8 +343,7 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         JMXNodeInfo nodeInfo = new JMXNodeInfo(nodeID);
-        log.debug("nodeInfo: " + ipAddr.getHostAddress() + " " + nodeID + " "
-                  + agent);
+        log.debug("nodeInfo: " + ipAddr.getHostAddress() + " " + nodeID + " " + agent);
 
         /*
          * Retrieve list of MBean objects to be collected from the
@@ -353,13 +351,10 @@ public abstract class JMXCollector implements ServiceCollector {
          * These objects pertain to the node itself not any individual
          * interfaces.
          */
-        Map attrMap =JMXDataCollectionConfigFactory.getInstance().getAttributeMap(
-                                                                                   collectionName,
-                                                                                   serviceName,
-                                                                                   ipAddr.getHostAddress());
+        Map<String, List<Attrib>> attrMap = JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, serviceName, ipAddr.getHostAddress());
         nodeInfo.setAttributeMap(attrMap);
 
-        HashMap dsList = buildDataSourceList(collectionName, attrMap);
+        Map<String, JMXDataSource> dsList = buildDataSourceList(collectionName, attrMap);
         nodeInfo.setDsMap(dsList);
         nodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
 
@@ -381,8 +376,7 @@ public abstract class JMXCollector implements ServiceCollector {
         // Nothing to release...
     }
 
-    public abstract ConnectionWrapper getMBeanServerConnection(
-            Map parameterMap, InetAddress address);
+    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, String> parameterMap, InetAddress address);
 
     /**
      * Perform data collection.
@@ -400,14 +394,12 @@ public abstract class JMXCollector implements ServiceCollector {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
-        HashMap mbeans = nodeInfo.getMBeans();
+        Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
         
 
         String port = ParameterMap.getKeyedString(map, "port", null);
-        String friendlyName = ParameterMap.getKeyedString(map,
-                                                          "friendly-name",
-                                                          port);
+        String friendlyName = ParameterMap.getKeyedString(map,"friendly-name", port);
         if (useFriendlyName) {
             collDir = friendlyName;
         }
@@ -437,8 +429,8 @@ public abstract class JMXCollector implements ServiceCollector {
                      * getAttributes, the update the RRD.
                      */
 
-                    for (Iterator iter = mbeans.values().iterator(); iter.hasNext();) {
-                        BeanInfo beanInfo = (BeanInfo) iter.next();
+                    for (Iterator<BeanInfo> iter = mbeans.values().iterator(); iter.hasNext();) {
+                        BeanInfo beanInfo = iter.next();
                         String objectName = beanInfo.getObjectName();
                         String excludeList = beanInfo.getExcludes();
                         //All JMX collected values are per node
@@ -456,10 +448,10 @@ public abstract class JMXCollector implements ServiceCollector {
                                 ObjectName oName = new ObjectName(objectName);
                                 if (mbeanServer.isRegistered(oName)) {
                                     AttributeList attrList = mbeanServer.getAttributes(oName, attrNames);
-                                    HashMap dsMap = nodeInfo.getDsMap();
+                                    Map<String, JMXDataSource> dsMap = nodeInfo.getDsMap();
                                     for(Object attribute : attrList) {
                                         Attribute attrib=(Attribute)attribute;
-                                        JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
+                                        JMXDataSource ds = dsMap.get(objectName + "|"
                                                      + attrib.getName());
                                         JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
                                         collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
@@ -474,17 +466,11 @@ public abstract class JMXCollector implements ServiceCollector {
                              * This section is for ObjectNames that use the
                              * '*' wildcard
                              */
-                            Set mbeanSet =
-                                mbeanServer.queryNames(new ObjectName(objectName),
-                                                       null);
-                            for (Iterator objectNameIter = mbeanSet.iterator();
-                                 objectNameIter.hasNext(); ) {
-                                ObjectName oName =
-                                    (ObjectName) objectNameIter.next();
+                            Set<ObjectName> mbeanSet = mbeanServer.queryNames(new ObjectName(objectName), null);
+                            for (Iterator<ObjectName> objectNameIter = mbeanSet.iterator(); objectNameIter.hasNext(); ) {
+                                ObjectName oName = objectNameIter.next();
                                 if (log.isDebugEnabled()) {
-                                    log.debug(serviceName
-                                              + " Collector - getAttributesWC: "
-                                              + oName + " #attributes: "
+                                    log.debug(serviceName + " Collector - getAttributesWC: " + oName + " #attributes: "
                                               + attrNames.length + " "
                                               + beanInfo.getKeyAlias());
                                 }
@@ -495,11 +481,11 @@ public abstract class JMXCollector implements ServiceCollector {
                                         if (mbeanServer.isRegistered(oName)) {
                                             AttributeList attrList = mbeanServer.getAttributes(oName,
                                                                           attrNames);
-                                            HashMap dsMap = nodeInfo.getDsMap();
+                                            Map<String, JMXDataSource> dsMap = nodeInfo.getDsMap();
 
                                             for(Object attribute : attrList) {
                                                 Attribute attrib=(Attribute)attribute;
-                                                JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
+                                                JMXDataSource ds = dsMap.get(objectName + "|"
                                                              + attrib.getName());
                                                 JMXCollectionAttributeType attribType=
                                                     new JMXCollectionAttributeType(ds, 
@@ -534,14 +520,12 @@ public abstract class JMXCollector implements ServiceCollector {
                                                     (AttributeList)
                                                     mbeanServer.getAttributes(oName,
                                                                               attrNames);
-                                                HashMap dsMap = nodeInfo.getDsMap();
+                                                Map<String, JMXDataSource> dsMap = nodeInfo.getDsMap();
 
                                                 for(Object attribute : attrList) {
                                                     Attribute attrib=(Attribute)attribute;
-                                                    JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
-                                                                 + attrib.getName());
-                                                    JMXCollectionAttributeType attribType=
-                                                        new JMXCollectionAttributeType(ds, 
+                                                    JMXDataSource ds = dsMap.get(objectName + "|" + attrib.getName());
+                                                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, 
                                                                                        oName.getKeyProperty(beanInfo.getKeyField()),  
                                                                                        beanInfo.getKeyAlias(), 
                                                                                        attribGroupType);
@@ -636,8 +620,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            collected via JMX.
      * @return list of RRDDataSource objects
      */
-    private HashMap buildDataSourceList(String collectionName,
-            Map attributeMap) {
+    private Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
         Category log = ThreadCategory.getInstance(getClass());
 
         log.debug("buildDataSourceList - ***");
@@ -647,7 +630,7 @@ public abstract class JMXCollector implements ServiceCollector {
          * the expansion data source's. Use this list as a basis
          * for building a data source list for the current interface.
          */
-        HashMap dsList = new HashMap();
+        HashMap<String, JMXDataSource> dsList = new HashMap<String, JMXDataSource>();
 
         /*
          * Loop through the MBean object list to be collected for this
@@ -657,18 +640,18 @@ public abstract class JMXCollector implements ServiceCollector {
          */
 
         log.debug("attributeMap size: " + attributeMap.size());
-        Iterator objNameIter = attributeMap.keySet().iterator();
+        Iterator<String> objNameIter = attributeMap.keySet().iterator();
         while (objNameIter.hasNext()) {
             String objectName = objNameIter.next().toString();
 
             log.debug("ObjectName: " + objectName);
 
-            ArrayList list = (ArrayList) attributeMap.get(objectName);
+            List<Attrib> list = attributeMap.get(objectName);
             log.debug("Attributes: " + list.size());
 
-            Iterator iter = list.iterator();
+            Iterator<Attrib> iter = list.iterator();
             while (iter.hasNext()) {
-                Attrib attr = (Attrib) iter.next();
+                Attrib attr = iter.next();
                 JMXDataSource ds = null;
 
                 /*

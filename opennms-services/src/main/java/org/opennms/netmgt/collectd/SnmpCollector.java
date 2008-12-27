@@ -220,7 +220,7 @@ public class SnmpCollector implements ServiceCollector {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, String> parameters) {
         initSnmpPeerFactory();
         initDataCollectionConfig();
         initDatabaseConnectionFactory();
@@ -327,7 +327,7 @@ public class SnmpCollector implements ServiceCollector {
      *            Key/value pairs associated with the package to which the
      *            interface belongs..
      */
-    public void initialize(CollectionAgent agent, Map parameters) {
+    public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         agent.validateAgent();
         
         // XXX: Expermintal code that creates an OnmsSnmpCollection only once
