@@ -65,11 +65,11 @@ public interface ServiceCollector {
         "COLLECTION_FAILED"
         };
 
-    public void initialize(Map parameters);
+    public void initialize(Map<String, String> parameters);
 
     public void release();
 
-    public void initialize(CollectionAgent agent, Map parameters);
+    public void initialize(CollectionAgent agent, Map<String, String> parameters);
 
     public void release(CollectionAgent agent);
 

@@ -32,6 +32,9 @@ package org.opennms.netmgt.collectd;
 
 import java.util.*;
 
+import org.opennms.netmgt.config.BeanInfo;
+import org.opennms.netmgt.config.collectd.Attrib;
+
 /**
  * This class encapsulates all of the node-level data required by the JMX data
  * collector in order to successfully perform data collection for a scheduled
@@ -43,27 +46,27 @@ import java.util.*;
 public class JMXNodeInfo {
     private int m_nodeId;
 
-    private Map m_oidList;
-    private HashMap m_mbeans;
+    private Map<String, List<Attrib>> m_oidList;
+    private Map<String, BeanInfo> m_mbeans;
 
-    private HashMap m_dsList;
+    private Map<String, JMXDataSource> m_dsList;
 
     public JMXNodeInfo(int nodeId) {
         m_nodeId = nodeId;
         m_oidList = null;
         m_dsList = null;
-        m_mbeans = new HashMap();
+        m_mbeans = new HashMap<String, BeanInfo>();
     }
 
     public int getNodeId() {
         return m_nodeId;
     }
     
-    public void setMBeans(HashMap map) {
+    public void setMBeans(Map<String, BeanInfo> map) {
         m_mbeans = map;
     }
     
-    public HashMap getMBeans() {
+    public Map<String, BeanInfo> getMBeans() {
         return m_mbeans;
     }
 
@@ -71,19 +74,20 @@ public class JMXNodeInfo {
         m_nodeId = nodeId;
     }
 
-    public void setDsMap(HashMap dsList) {
+    public void setDsMap(Map<String, JMXDataSource> dsList) {
         m_dsList = dsList;
     }
 
-    public void setAttributeMap(Map oidList) {
+    public Map<String, List<Attrib>> getAttributeMap() {
+        return m_oidList;
+    }
+
+    public void setAttributeMap(Map<String, List<Attrib>> oidList) {
         m_oidList = oidList;
     }
 
-    public HashMap getDsMap() {
+    public Map<String, JMXDataSource> getDsMap() {
         return m_dsList;
     }
 
-    public Map getAttributeMap() {
-        return m_oidList;
-    }
 } // end class

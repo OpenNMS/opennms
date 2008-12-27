@@ -1378,8 +1378,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 Class<?> cc = Class.forName(collector.getClassName());
                 ServiceCollector sc = (ServiceCollector) cc.newInstance();
 
-                // Attempt to initialize the service collector
-                sc.initialize(Collections.EMPTY_MAP);
+                sc.initialize(Collections.<String, String>emptyMap());
 
                 setServiceCollector(svcName, sc);
             } catch (Throwable t) {
