@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 Dec 29: Code and comment formatting, remove some obvious comments,
+//              and make the logic in processVarBindAt a little more clear.
+//              - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -101,41 +107,44 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         protected void processVarBindAt(int i) {
-            
             SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
             SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
             processVarBind(name, value);
         }
-        
     }
 
     public static class Snmp4JV2TrapInformation extends TrapInformation {
-
         /**
          * The received PDU
          */
         private PDU m_pdu;
+        
         /**
          * The name of the PDU's type
          */
         private String m_pduTypeString;
+
         /**
          * The snmp sysUpTime OID is the first varbind
          */
         static final int SNMP_SYSUPTIME_OID_INDEX = 0;
+
         /**
          * The snmp trap OID is the second varbind
          */
         static final int SNMP_TRAP_OID_INDEX = 1;
+
         /**
          * The sysUpTimeOID, which should be the first varbind in a V2 trap
          */
         static final OID SNMP_SYSUPTIME_OID = new OID(".1.3.6.1.2.1.1.3.0");
+
         /**
          * The sysUpTimeOID, which should be the first varbind in a V2 trap, but in
          * the case of Extreme Networks only mostly
          */
         static final OID EXTREME_SNMP_SYSUPTIME_OID = new OID(".1.3.6.1.2.1.1.3");
+
         /**
          * The snmpTrapOID, which should be the second varbind in a V2 trap
          */
@@ -191,7 +200,6 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         protected TrapIdentity getTrapIdentity() {
-            // Get the value for the snmpTrapOID
             OID snmpTrapOid = (OID) getVarBindAt(SNMP_TRAP_OID_INDEX).getVariable();
             OID lastVarBindOid = getVarBindAt(getPduLength() - 1).getOid();
             Variable lastVarBindValue = getVarBindAt(getPduLength() - 1).getVariable();
@@ -211,50 +219,50 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         protected void validate() {
-            //
-            // verify the type
-            //
         	int pduType = getPdu().getType();
             if (pduType != PDU.TRAP && pduType != PDU.INFORM) {
-                // if not V2 trap or inform, do nothing
                 throw new IllegalArgumentException("Received not SNMPv2 Trap|Inform from host " + getTrapAddress() + " PDU Type = " + PDU.getTypeString(getPdu().getType()));
             }
+            
             if (log().isDebugEnabled()) {
                 log().debug("V2 "+m_pduTypeString+" numVars or pdu length: " + getPduLength());
             }
-            if (getPduLength() < 2) // check number of varbinds
-            {
+            
+            if (getPduLength() < 2) {
                 throw new IllegalArgumentException("V2 "+m_pduTypeString+" from " + getTrapAddress() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed at least 2");
             }
-            // The first varbind has the sysUpTime
-            // Modify the sysUpTime varbind to add the trailing 0 if it is
-            // missing
-            // The second varbind has the snmpTrapOID
-            // Confirm that these two are present
-            //
+            
             OID varBindName0 = getVarBindAt(0).getOid();
             OID varBindName1 = getVarBindAt(1).getOid();
+
+            /*
+             * Modify the sysUpTime varbind OID to add the trailing 0 if it is
+             * missing, which is seen with some Extreme equipment.
+             */
             if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID)) {
                 log().info("V2 "+m_pduTypeString+" from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
                 varBindName0 = SNMP_SYSUPTIME_OID;
             }
+            
+            /*
+             * Confirm that the two required varbinds (sysUpTime and
+             * snmpTrapOID) are present and in that order.
+             */
             if ((!(varBindName0.equals(SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(SNMP_TRAP_OID)))) {
                 throw new IllegalArgumentException("V2 "+m_pduTypeString+" from " + getTrapAddress() + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
             }
         }
 
         protected void processVarBindAt(int i) {
-        	if (i<2) {
-                if (i == 0) {
-                	log().debug("Skipping processing of varbind it is the sysuptime and the first varbind, it is not processed as a parm per RFC2089");
-                } else {
-                	log().debug("Skipping processing of varbind it is the trap OID and the second varbind, it is not processed as a parm per RFC2089");				
-    			}
-        	} else {
-        		SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
-        		SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
-        		processVarBind(name, value);
-        	}
+            if (i == 0) {
+                log().debug("Skipping processing of varbind " + i + ": it is sysuptime and the first varbind, and is not processed as a parm per RFC2089");
+            } else if (i == 1) {
+                log().debug("Skipping processing of varbind " + i + ": it is the trap OID and the second varbind, and is not processed as a parm per RFC2089");				
+            } else {
+                SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
+                SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
+                processVarBind(name, value);
+            }
         }
     }
         
@@ -290,10 +298,11 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         	}
         }
         
-        if (e.getPDU() instanceof PDUv1)
+        if (e.getPDU() instanceof PDUv1) {
             m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
-        else
+        } else {
             m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
+        }
     }
     
     private Category log() {
