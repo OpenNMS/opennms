@@ -13,7 +13,9 @@
     <module>opennms-provision-api</module>
     <module>opennms-mock-simpleserver</module>
     <module>opennms-detector-lineoriented</module> 
+<!--
     <module>opennms-detector-simple</module>
+-->
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
     <module>opennms-provision-persistence</module>
