@@ -157,7 +157,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
 
         /**
-         * The run method preforms the actual work for the runnable. It loops
+         * The run method performs the actual work for the runnable. It loops
          * infinitely until the shutdown flag is set, during which time it
          * processes queue elements. Each element in the queue should be a
          * instance of {@link org.opennms.netmgt.xml.event.Event}. After each
