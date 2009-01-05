@@ -128,6 +128,7 @@ public class BaseProvisioner implements InitializingBean {
         List<NodeScanSchedule> schedules = m_provisionService.getScheduleForNodes();
         
         System.err.println("Schedules has size "+schedules.size());
+        
         for(NodeScanSchedule schedule : schedules) {
             m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
         }
