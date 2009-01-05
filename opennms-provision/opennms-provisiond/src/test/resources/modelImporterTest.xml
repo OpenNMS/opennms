@@ -34,7 +34,7 @@
     <property name="nodeDao" ref="nodeDao" />
     <property name="serviceTypeDao" ref="serviceTypeDao" />
     <property name="categoryDao" ref="categoryDao" />
-    <!-- <property name="foreignSourceRepository" ref="foreignSourceRepo" /> -->
+    <property name="foreignSourceRepository" ref="foreignSourceRepo" />
   </bean>
 
   <bean id="importer" class="org.opennms.netmgt.provision.service.Provisioner">
