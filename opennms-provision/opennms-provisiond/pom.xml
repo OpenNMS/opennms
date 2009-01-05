@@ -13,6 +13,11 @@
 
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-daemon</artifactId>
     </dependency>
     <dependency>

@@ -100,9 +100,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/modelImporterTest.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitTemporaryDatabase()
 public class BaseProvisionerTest {
@@ -111,7 +111,7 @@ public class BaseProvisionerTest {
     private MockEventIpcManager m_mockEventIpcManager;
     
     @Autowired
-    private BaseProvisioner m_provisioner;
+    private Provisioner m_provisioner;
     
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
@@ -163,7 +163,7 @@ public class BaseProvisionerTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
@@ -174,6 +174,8 @@ public class BaseProvisionerTest {
         //System.setProperty("mock.debug", "false");
         
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
+        
+        m_provisioner.start();
     }
 
 

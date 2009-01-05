@@ -34,8 +34,10 @@ package org.opennms.netmgt.provision.service;
 import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -543,6 +545,8 @@ public class DefaultProvisionService implements ProvisionService {
         return type;
     }
     
+    
+    
 
     @Transactional
     public OnmsCategory createCategoryIfNecessary(String name) {
@@ -683,6 +687,10 @@ public class DefaultProvisionService implements ProvisionService {
         node.setParent(parent);
 
         getNodeDao().update(node);
+    }
+
+    public List<NodeScanSchedule> getScheduleForNodes() {
+        return Collections.emptyList();
     }
 
 

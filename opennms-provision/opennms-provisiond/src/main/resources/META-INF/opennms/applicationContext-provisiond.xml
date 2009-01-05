@@ -25,6 +25,10 @@
     <constructor-arg><value>${importer.writeThreads}</value></constructor-arg>
   </bean>
   
+  <bean id="rescanThreads" class="java.lang.Integer">
+    <constructor-arg><value>10</value></constructor-arg>
+  </bean>
+  
   <bean id="cronExpression" class="java.lang.String">
     <constructor-arg><value>${importer.importSchedule}</value></constructor-arg>
   </bean>
@@ -35,6 +39,19 @@
   
   <bean id="transactionAwareEventForwarder" class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
     <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+  
+  <bean id="scanExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+    <property name="poolSize" ref="scanThreads" />
+  </bean>
+  
+  <bean id="writeExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+    <property name="poolSize" ref="writeThreads" />
+  </bean>
+  
+
+  <bean id="scheduledExecutor" class="java.util.concurrent.ScheduledThreadPoolExecutor">
+    <constructor-arg ref="rescanThreads" />
   </bean>
   
   <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService">
@@ -49,8 +66,8 @@
     <property name="provisionService" ref="provisionService" />
     <property name="importResource" ref="importResource"/>
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
-    <property name="scanThreads" ref="scanThreads" />
-    <property name="writeThreads" ref="writeThreads" />
+    <property name="writeExecutor" ref="writeExecutor" />
+    <property name="scanExecutor" ref="scanExecutor" />
   </bean>
 
   <bean id="modelImportingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

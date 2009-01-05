@@ -29,6 +29,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
@@ -157,5 +158,7 @@ public interface ProvisionService {
             String foreignSource, String foreignId, 
             String parentForeignId, String parentNodeLabel
            );
+
+    public abstract List<NodeScanSchedule> getScheduleForNodes();
 
 }

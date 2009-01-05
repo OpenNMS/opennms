@@ -172,7 +172,7 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
     }
 
     public void start() throws Exception {
-        // no need to do anything
+        scheduleRescanForExistingNodes();
     }
 
 }
