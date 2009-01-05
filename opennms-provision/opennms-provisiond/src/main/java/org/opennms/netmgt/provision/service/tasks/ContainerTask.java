@@ -26,21 +26,38 @@ import java.util.List;
 /*
  * ContainerTask
  * @author brozow
+ * 
+ * TODO derive directly from Task
  */
 public class ContainerTask extends Task {
 
+    /**
+     * TaskTrigger
+     *
+     * @author brozow
+     */
+    private final class TaskTrigger extends Task {
+        public TaskTrigger(DefaultTaskCoordinator coordinator) {
+            super(coordinator);
+        }
+
+
+        @Override
+        protected void completeSubmit() {
+            getCoordinator().markTaskAsCompleted(TaskTrigger.this);
+        }
+
+
+        public String toString() { return "Trigger For "+ContainerTask.this; }
+    }
+
     protected Task m_triggerTask;
     protected List<Task> m_children = new ArrayList<Task>();
-    protected String m_childPreferredExecutor = DEFAULT_EXECUTOR;
     
     public ContainerTask(DefaultTaskCoordinator coordinator) {
         super(coordinator);
-        super.setPreferredExecutor(ADMIN_EXECUTOR);
-        m_triggerTask = coordinator.createTask(new Runnable() {
-            public void run() {};
-            public String toString() { return "Trigger For "+ContainerTask.this; }
-        });
-        m_triggerTask.setPreferredExecutor(ADMIN_EXECUTOR);
+        m_triggerTask = new TaskTrigger(coordinator);
+
     }
 
     @Override
@@ -59,18 +76,6 @@ public class ContainerTask extends Task {
         super.schedule();
     }
     
-    protected String getChildPreferredExecutor() {
-        return m_childPreferredExecutor;
-    }
-    
-    @Override
-    public void setPreferredExecutor(String preferredExecutor) {
-        m_childPreferredExecutor = preferredExecutor;
-        for(Task task : m_children) {
-            setPreferredExecutorOfChild(task);
-        }
-    }
-
     protected Task getTriggerTask() {
         return m_triggerTask;
     }
@@ -78,7 +83,7 @@ public class ContainerTask extends Task {
     public void add(Task task) {
         super.addPrerequisite(task);
         addChildDependencies(task);
-        setPreferredExecutorOfChild(task);
+        //setPreferredExecutorOfChild(task);
         if (isScheduled()) {
             task.schedule();
         } else {
@@ -86,19 +91,25 @@ public class ContainerTask extends Task {
         }
     }
 
-    private void setPreferredExecutorOfChild(Task task) {
-        if (task instanceof ContainerTask) {
-            ContainerTask container = (ContainerTask)task;
-            if (container.getChildPreferredExecutor().equals(DEFAULT_EXECUTOR)) {
-                container.setPreferredExecutor(getChildPreferredExecutor());
-            }
-        } else {
-            if (task.getPreferredExecutor().equals(DEFAULT_EXECUTOR)) {
-                task.setPreferredExecutor(getChildPreferredExecutor());
-            }
-        }
-    }
+//    private void setPreferredExecutorOfChild(Task task) {
+//        if (task instanceof ContainerTask) {
+//            ContainerTask container = (ContainerTask)task;
+//            if (container.getChildPreferredExecutor().equals(DEFAULT_EXECUTOR)) {
+//                container.setPreferredExecutor(getChildPreferredExecutor());
+//            }
+//        } else if (task instanceof SyncTask){
+//            SyncTask syncTask = (SyncTask)task;
+//            if (syncTask.getPreferredExecutor().equals(DEFAULT_EXECUTOR)) {
+//                syncTask.setPreferredExecutor(getChildPreferredExecutor());
+//            }
+//        }
+//    }
     
+    @Override
+    protected void completeSubmit() {
+        getCoordinator().markTaskAsCompleted(this);
+    }
+
     public void add(Runnable runnable) {
         add(getCoordinator().createTask(runnable));
     }

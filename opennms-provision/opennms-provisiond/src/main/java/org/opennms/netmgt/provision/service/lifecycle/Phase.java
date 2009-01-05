@@ -36,6 +36,7 @@ import java.lang.reflect.Method;
 
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.tasks.BatchTask;
+import org.opennms.netmgt.provision.service.tasks.SyncTask;
 import org.opennms.netmgt.provision.service.tasks.Task;
 
 class Phase extends BatchTask {
@@ -70,7 +71,7 @@ class Phase extends BatchTask {
         for(Method method : provider.getClass().getMethods()) {
             String schedulingHint = isPhaseMethod(method);
             if (schedulingHint != null) {
-                this.setPreferredExecutor(schedulingHint);
+                //this.setPreferredExecutor(schedulingHint);
                 add(createPhaseMethod(provider, method, schedulingHint));
             }
         }
@@ -119,7 +120,7 @@ class Phase extends BatchTask {
             m_phase = phase;
             m_target = target;
             m_method = method;
-            Task phaseRunnerTask = phase.getCoordinator().createTask(phaseRunner());
+            SyncTask phaseRunnerTask = phase.getCoordinator().createTask(phaseRunner());
             phaseRunnerTask.setPreferredExecutor(schedulingHint);
             add(phaseRunnerTask);
         }
