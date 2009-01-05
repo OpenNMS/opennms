@@ -32,12 +32,8 @@ package org.opennms.netmgt.provision.schedule;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.quartz.CronTrigger;
 
 
 /**
@@ -55,22 +51,11 @@ public class ScheduleProvisionAdapterTest {
     }
     
     @Test
-    public void testCRONExpressionConversion() throws ParseException {
-       CronTrigger trigger = new CronTrigger();
-       trigger.setCronExpression("0 0 12 * * ?");
-       Date d = trigger.getFireTimeAfter(new Date());
-       assertNotNull(d);
-       Date currentTime = new Date();
-       long delta = (d.getTime() - currentTime.getTime());
-       assertNotNull(delta);
-       System.out.println(delta);
-    }
-    
-    @Test
     public void testSchedulerOutput() {
-       SchedulerImpl schedule = new SchedulerImpl("1s");
+       SchedulerImpl schedule = new SchedulerImpl("1d");
        
-       Long interval = schedule.getSchedule();
+       Long interval = schedule.getScheduleInterval();
+       System.out.println("interval: " + interval);
        assertNotNull(interval);
     }
 }
