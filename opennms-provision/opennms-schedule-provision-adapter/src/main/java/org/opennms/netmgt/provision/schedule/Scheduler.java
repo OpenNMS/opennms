@@ -36,7 +36,7 @@ package org.opennms.netmgt.provision.schedule;
  */
 public interface Scheduler {
     
-    public Long getSchedule();
+    public Long getScheduleInterval();
     
 
 }

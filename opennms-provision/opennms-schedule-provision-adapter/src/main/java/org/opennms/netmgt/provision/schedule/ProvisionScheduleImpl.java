@@ -45,7 +45,7 @@ public class ProvisionScheduleImpl implements ProvisionSchedule {
     
     public static class ScheduleHolder{
         
-        private SchedulerImpl m_scheduler;
+        private Scheduler m_scheduler;
         private String m_nodeId;
         
         public ScheduleHolder(String schedule, String nodeId) {
@@ -54,14 +54,14 @@ public class ProvisionScheduleImpl implements ProvisionSchedule {
         }
         
         public Long getNextScheduledInterval() {
-            return m_scheduler.getSchedule();
+            return m_scheduler.getScheduleInterval();
         }
         
-        public void setScheduler(SchedulerImpl scheduler) {
+        public void setScheduler(Scheduler scheduler) {
             m_scheduler = scheduler;
         }
 
-        public SchedulerImpl getScheduler() {
+        public Scheduler getScheduler() {
             return m_scheduler;
         }
 
@@ -72,6 +72,10 @@ public class ProvisionScheduleImpl implements ProvisionSchedule {
         public String getNodeId() {
             return m_nodeId;
         }
+        
+    }
+    
+    public static class NodeInfo{
         
     }
     
@@ -92,7 +96,7 @@ public class ProvisionScheduleImpl implements ProvisionSchedule {
         
     }
 
-    public void setImportSchedule(String cronExpression) {
+    public void setImportSchedule(String schedule) {
         // TODO Auto-generated method stub
         
     }
@@ -114,9 +118,7 @@ public class ProvisionScheduleImpl implements ProvisionSchedule {
 
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         // TODO Auto-generated method stub
-        //addNode to scheduler and get the schedule from the provisioned import
-        
-        
+        //addNode to scheduler and get the schedule from the provisioned import  
     }
 
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {

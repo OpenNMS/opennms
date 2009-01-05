@@ -34,7 +34,7 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
 public class SchedulerImpl implements Scheduler {
@@ -46,8 +46,6 @@ public class SchedulerImpl implements Scheduler {
         m_schedule = schedule;
         
         m_fmt = new PeriodFormatterBuilder()
-        .appendYears().appendSuffix("y").appendSeparator(" ")
-        .appendMonths().appendSuffix("M").appendSeparator(" ")
         .appendDays().appendSuffix("d").appendSeparator(" ")
         .appendHours().appendSuffix("h").appendSeparator(" ")
         .appendMinutes().appendSuffix("m").appendSeparator(" ")
@@ -56,7 +54,7 @@ public class SchedulerImpl implements Scheduler {
         .toFormatter();
     }
     
-    public Long getSchedule() {
+    public Long getScheduleInterval() {
         return m_fmt.parsePeriod(m_schedule).normalizedStandard().toStandardDuration().getMillis();
     }
 
