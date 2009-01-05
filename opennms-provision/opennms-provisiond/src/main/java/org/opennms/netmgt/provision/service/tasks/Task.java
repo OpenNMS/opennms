@@ -45,14 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author brozow
  */
-public class Task extends Async {
-    
-    public static final String DEFAULT_EXECUTOR = "default";
-    public static final String ADMIN_EXECUTOR = "admin";
-    
-    private final DefaultTaskCoordinator m_coordinator;
-    private final Runnable m_action;
-    private String m_preferredExecutor = DEFAULT_EXECUTOR;
+public abstract class Task {
     
     private static enum State {
         NEW,
@@ -61,6 +54,7 @@ public class Task extends Async {
         COMPLETED
     }
 
+    private final DefaultTaskCoordinator m_coordinator;
     private final AtomicReference<State> m_state = new AtomicReference<State>(State.NEW);
     
     private final AtomicBoolean m_scheduleCalled = new AtomicBoolean(false);
@@ -71,14 +65,9 @@ public class Task extends Async {
     private final Set<Task> m_prerequisites = new HashSet<Task>();
     
     public Task(DefaultTaskCoordinator coordinator) {
-        this(coordinator, null);
+        m_coordinator = coordinator;
     }
 
-    public Task(DefaultTaskCoordinator coordinator, Runnable action) {
-        m_coordinator = coordinator;
-        m_action = action;
-    }
-    
     public DefaultTaskCoordinator getCoordinator() {
         return m_coordinator;
     }
@@ -127,9 +116,32 @@ public class Task extends Async {
         }
     }
     
+    void submitIfReady() {
+        if (isReady()) {
+            doSubmit();
+            submitted();
+            completeSubmit();
+        }
+    }
+
+    /**
+     * This method submits a task to be executed and is called when all dependencies are completed for that task
+     * This method should place a runnable on an executor or sumbit the task in some other way so that it will
+     * run as soon as possible.  Tasks that have no processing to be done may override completeSubmit
+     */
+    protected void doSubmit() {
+    }
+
     final void submitted() {
         setState(State.SCHEDULED, State.SUBMITTED);
     }
+
+    /**
+     * This method exists to allow a task to have no processing
+     */
+    protected void completeSubmit() {
+    }
+
     
     final void completed() {
         m_state.compareAndSet(State.SUBMITTED, State.COMPLETED);
@@ -140,29 +152,26 @@ public class Task extends Async {
      * This is for thread safety and efficiency.  use 'addDependency' to update these
      */
     final boolean isReady() {
-        return m_state.get() == State.SCHEDULED && m_prerequisites.isEmpty() && m_pendingPrereqs.get() == 0;
+        return isInReadyState() && m_prerequisites.isEmpty() && getPendingPrereqCount() == 0;
+    }
+
+    private int getPendingPrereqCount() {
+        return m_pendingPrereqs.get();
+    }
+
+    private boolean isInReadyState() {
+        return m_state.get() == State.SCHEDULED;
     }
     
-    final void incrPendingPrereq() {
+    final void incrPendingPrereqCount() {
         m_pendingPrereqs.incrementAndGet();
     }
 
-    final void decrPendingPrereq() {
+    final void decrPendingPrereqCount() {
         m_pendingPrereqs.decrementAndGet();
     }
 
 
-    /**
-     * This method is used by the TaskCoordinator to create runnable that will run this task
-     */
-    final Runnable getRunnable() {
-        return new Runnable() {
-          public void run() {
-              Task.this.run();
-          }
-        };
-    }
-    
     /**
      * Called from execute after the 'body' of the task has completed
      */
@@ -173,22 +182,11 @@ public class Task extends Async {
     
 
     /**
-     * This is the run method where the 'work' related to the Task gets down.  This method can be overridden
-     * or a Runnable can be passed to the task in the constructor.  The Task is not complete until this method
-     * finishes
-     */
-    public void run() {
-        if (m_action != null) {
-            m_action.run();
-        }
-    }
-    
-    /**
      * This is called to add the task to the queue of tasks that can be considered to be runnable
      */
     public void schedule() {
         m_scheduleCalled.set(true);
-        m_coordinator.schedule(this);
+        getCoordinator().schedule(this);
     }
 
     /**
@@ -210,7 +208,7 @@ public class Task extends Async {
      * until prereq was been complted.
      */
     public void addPrerequisite(Task prereq) {
-        m_coordinator.addDependency(prereq, this);
+        getCoordinator().addDependency(prereq, this);
     }
     
     /**
@@ -218,7 +216,7 @@ public class Task extends Async {
      * until this task has been completed.
      */
     public void addDependent(Task dependent) {
-        m_coordinator.addDependency(this, dependent);
+        getCoordinator().addDependency(this, dependent);
     }
 
     /**
@@ -235,16 +233,13 @@ public class Task extends Async {
         m_latch.await(timeout, unit);
     }
 
-    public String toString() {
-        return m_action == null ? super.toString() : m_action.toString();
-    }
-
-    public String getPreferredExecutor() {
-        return m_preferredExecutor;
+    protected void submitRunnable(Runnable runnable, String preferredExecutor) {
+        getCoordinator().submitToExecutor(preferredExecutor, runnable, this);
     }
     
-    public void setPreferredExecutor(String preferredExecutor) {
-        m_preferredExecutor = preferredExecutor;
+    public String toString() {
+        return String.format("Task[%s]", super.toString());
     }
+
 
 }
