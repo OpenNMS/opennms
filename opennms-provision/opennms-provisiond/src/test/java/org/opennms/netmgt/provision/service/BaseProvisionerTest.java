@@ -40,6 +40,7 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -136,6 +137,9 @@ public class BaseProvisionerTest {
     
     @Autowired
     private ResourceLoader m_resourceLoader;
+    
+    @Autowired
+    private ProvisionService m_provisionService;
     
     private EventAnticipator m_eventAnticipator;
     
@@ -363,6 +367,20 @@ public class BaseProvisionerTest {
         
 
     }
+    
+    //Scheduler tests
+    @Test
+    public void testProvisionServiceGetScheduleForNodes() throws Exception {
+       importFromResource("classpath:/tec_dump.xml.smalltest");
+       
+       List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+       
+       assertEquals(m_nodeDao.countAll(), schedulesForNode.size());
+    }
+    
+    //public void test
+    
+    //Scheduler Tests
     
     private void verifyCounts(CountingVisitor visitor) {
         //System.err.println(visitor);
