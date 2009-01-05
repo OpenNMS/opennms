@@ -36,8 +36,10 @@
 //
 package org.opennms.netmgt.provision.service;
 
+import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -57,8 +59,9 @@ public class BaseProvisioner implements InitializingBean {
     private CoreImportActivities m_provider;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
-	private int m_scanThreads = 50;
-	private int m_writeThreads = 4;
+    private Executor m_scanExecutor;
+    private Executor m_writeExecutor;
+    private ScheduledExecutorService m_scheduledExecutor;
 	
 	public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
@@ -67,12 +70,24 @@ public class BaseProvisioner implements InitializingBean {
 	public ProvisionService getProvisionService() {
 	    return m_provisionService;
 	}
+	
+	public void setScanExecutor(Executor scanExecutor) {
+	    m_scanExecutor = scanExecutor;
+	}
+	
+	public void setWriteExecutor(Executor writeExecutor) {
+	    m_writeExecutor = writeExecutor;
+	}
+	
+	public void setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
+	    m_scheduledExecutor = scheduledExecutor;
+	}
 
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
-        
-        Executor m_scanExecutor = Executors.newFixedThreadPool(m_scanThreads);
-        Executor m_writeExecutor = Executors.newFixedThreadPool(m_writeThreads);
+        Assert.notNull(m_scanExecutor, "scanExecutor property must be set");
+        Assert.notNull(m_writeExecutor, "writeExecutor property must be set");
+        Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
         
         DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator();
         coordinator.setDefaultExecutor("scan");
@@ -108,6 +123,25 @@ public class BaseProvisioner implements InitializingBean {
         
         
     }
+    
+    protected void scheduleRescanForExistingNodes() {
+        List<NodeScanSchedule> schedules = m_provisionService.getScheduleForNodes();
+        
+        System.err.println("Schedules has size "+schedules.size());
+        for(NodeScanSchedule schedule : schedules) {
+            m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
+        }
+        
+        
+    }
+    
+    protected Runnable nodeScanner(final NodeScanSchedule schedule) {
+        return new Runnable() {
+            public void run() {
+                System.out.println(String.format("Gotta write the node scan code for node %s", schedule.getNodeId()));
+            }
+        };
+    }
 
     protected void importModelFromResource(Resource resource) throws Exception {
     	importModelFromResource(null, resource, new NoOpProvisionMonitor());
@@ -115,12 +149,10 @@ public class BaseProvisioner implements InitializingBean {
 
     protected void importModelFromResource(String foreignSource, Resource resource, ProvisionMonitor monitor)
             throws Exception {
-        doImport(resource, monitor, m_scanThreads, m_writeThreads, new ImportManager(),
-                 foreignSource);
+        doImport(resource, monitor, new ImportManager(), foreignSource);
     }
 
     private void doImport(Resource resource, final ProvisionMonitor monitor,
-            final int scanThreads, final int writeThreads,
             ImportManager importManager, final String foreignSource) throws Exception {
         
         importManager.getClass();
@@ -144,23 +176,6 @@ public class BaseProvisioner implements InitializingBean {
 
     public Category log() {
     	return ThreadCategory.getInstance(getClass());
-	}
-
-
-    public int getScanThreads() {
-		return m_scanThreads;
-	}
-
-	public void setScanThreads(int poolSize) {
-		m_scanThreads = poolSize;
-	}
-
-	public int getWriteThreads() {
-		return m_writeThreads;
-	}
-
-	public void setWriteThreads(int writeThreads) {
-		m_writeThreads = writeThreads;
 	}
 
 }
