@@ -94,7 +94,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
                 int count = 0;
                 while(true) {
                     Runnable r = m_queue.take().get();
-                    System.out.printf("Processing completion %d with queue size %d\n", ++count, m_queue.size());
+                    //System.out.printf("Processing completion %d with queue size %d\n", ++count, m_queue.size());
                     //System.err.printf("Processing %s\n", r);
                     //System.err.printf("Processing %s, queue is %s\n", r, m_queue);
                     if (r != null) {
@@ -128,13 +128,13 @@ public class DefaultTaskCoordinator implements InitializingBean {
     public DefaultTaskCoordinator() {
         m_queue = new LinkedBlockingQueue<Future<Runnable>>();
         m_actor = new RunnableActor(m_queue);
-        addExecutor(Task.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor());
+        addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor());
     }
     
     public DefaultTaskCoordinator(Executor defaultExecutor) {
         this();
-        m_defaultExecutor = Task.DEFAULT_EXECUTOR;
-        addExecutor(Task.DEFAULT_EXECUTOR, defaultExecutor);
+        m_defaultExecutor = SyncTask.DEFAULT_EXECUTOR;
+        addExecutor(SyncTask.DEFAULT_EXECUTOR, defaultExecutor);
         afterPropertiesSet();
     }
 
@@ -151,8 +151,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
         
     }
     
-    public Task createTask(Runnable r) {
-        return new Task(this, r);
+    public SyncTask createTask(Runnable r) {
+        return new SyncTask(this, r);
     }
     
     public BatchTask createBatch() {
@@ -173,7 +173,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
     
     public void addDependency(Task prereq, Task dependent) {
         // this is only needed when add dependencies while running
-        dependent.incrPendingPrereq();
+        dependent.incrPendingPrereqCount();
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
     
@@ -207,7 +207,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         return new Runnable() {
             public void run() {
                 task.scheduled();
-                submitIfReady(task); 
+                task.submitIfReady(); 
             }
             public String toString() {
                 return String.format("schedule(%s)", task);
@@ -215,7 +215,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         };
     }
     
-    private Runnable taskCompleter(final Task task) {
+    Runnable taskCompleter(final Task task) {
         return new Runnable() {
             public void run() {
                 notifyDependents(task);
@@ -237,10 +237,10 @@ public class DefaultTaskCoordinator implements InitializingBean {
             //System.err.printf("Checking the prereqs for %s\n", dependent);
             dependent.doRemovePrerequisite(completed);
             if (dependent.isReady()) {
-                System.err.printf("\tTask %s %s ready with hint: %s\n", dependent, dependent.isReady() ? "is" : "is not", dependent.getPreferredExecutor());
+                System.err.printf("\tTask %s %s ready.\n", dependent, dependent.isReady() ? "is" : "is not");
             }
             
-            submitIfReady(dependent);
+            dependent.submitIfReady();
         }   
     }
 
@@ -253,14 +253,14 @@ public class DefaultTaskCoordinator implements InitializingBean {
             public void run() {
                 prereq.doAddDependent(dependent);
                 dependent.doAddPrerequisite(prereq);
-                dependent.decrPendingPrereq();
+                dependent.decrPendingPrereqCount();
 
                 /**
                  *  the prereq task may have completed between the time this adder was enqueued
                  *  and the time we got here.  In this case there will be no tasks to kick this
                  *  one off... so check it here. 
                  */
-                submitIfReady(dependent);
+                dependent.submitIfReady();
             }
             public String toString() {
                 return String.format("%s.addPrerequisite(%s)", dependent, prereq);
@@ -268,24 +268,28 @@ public class DefaultTaskCoordinator implements InitializingBean {
         };
     }
     
+    
     private CompletionService<Runnable> getCompletionService(String name) {
         CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
         CompletionService<Runnable> selected = completionService != null ? completionService : m_defaultCompletionService;
         System.err.printf("USING COMPLETION SERVICE %s : %s!!!!!!\n", name, selected);
         return selected;
     }
-
-    private void submitIfReady(final Task task) {
-        if (task.isReady()) {
-            
-            final String preferredExecutor = task.getPreferredExecutor();
-            getCompletionService(preferredExecutor).submit(task.getRunnable(), taskCompleter(task));
-            
-            System.out.printf("SUBMIT: Task %s to executor %s\n", task, preferredExecutor);
-            task.submitted();
-        }
+    
+    void markTaskAsCompleted(Task task) {
+        onProcessorThread(taskCompleter(task));
     }
 
+    void submitToExecutor(String executorPreference, Runnable workToBeDone, Task owningTask) {
+        submitToExecutor(executorPreference, workToBeDone, taskCompleter(owningTask));
+    }
+    
+    void submitToExecutor(String executorPreference, Runnable workToBeDone, Runnable completionProcessor) {
+        final String preferredExecutor = executorPreference;
+        getCompletionService(preferredExecutor).submit(workToBeDone, completionProcessor);
+        System.out.printf("SUBMIT: Task %s to executor %s\n", workToBeDone, preferredExecutor);
+    }
+    
     public void addExecutor(String executorName, Executor executor) {
         m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
     }
