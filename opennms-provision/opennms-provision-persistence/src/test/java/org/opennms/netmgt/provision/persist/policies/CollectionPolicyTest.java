@@ -9,11 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -37,57 +37,60 @@ import org.springframework.transaction.annotation.Transactional;
 })
 
 @JUnitTemporaryDatabase()
-public class InterfacePolicyTest {
+public class CollectionPolicyTest {
     @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
     @Autowired
     private DatabasePopulator m_populator;
 
-    private List<OnmsIpInterface> m_interfaces;
+    private List<OnmsSnmpInterface> m_interfaces;
     
     @Before
     public void setUp() {
         m_populator.populateDatabase();
-        m_interfaces = m_ipInterfaceDao.findAll();
+        m_interfaces = m_snmpInterfaceDao.findAll();
     }
     
     @Test
     @Transactional
-    public void testInclusivePolicy() {
-        OnmsIpInterface o = null;
-        InclusiveInterfacePolicy p = new InclusiveInterfacePolicy();
+    public void testMatchingIfDescr() {
+        MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
+        p.setParameter("ifdescr", "~^ATM.*");
 
-        List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
-        
-        for (OnmsIpInterface iface : m_interfaces) {
-            o = p.apply(iface);
-            if (o != null) {
-                matchedInterfaces.add(o);
-            }
-        }
-        
-        assertEquals(m_interfaces, matchedInterfaces);
+        matchPolicy(p, "192.168.1.1");
     }
 
     @Test
     @Transactional
-    public void testMatchingPolicy() {
-        OnmsIpInterface o = null;
-        
-        MatchingInterfacePolicy p = new MatchingInterfacePolicy();
-        p.setParameter("ipaddress", "~^10\\..*$");
+    public void testMatchingIfName() {
+        MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
+        p.setParameter("ifname", "eth0");
 
-        List<OnmsIpInterface> populatedInterfaces = new ArrayList<OnmsIpInterface>();
-        List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
+        matchPolicy(p, "192.168.1.2");
+    }
+
+    @Test
+    @Transactional
+    public void testMatchingIfType() {
+        MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
+        p.setParameter("iftype", "6");
+
+        matchPolicy(p, "192.168.1.2");
+    }
+
+    private void matchPolicy(MatchingSnmpInterfacePolicy p, String matchingIp) {
+        OnmsSnmpInterface o;
+        List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<OnmsSnmpInterface>();
+        List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<OnmsSnmpInterface>();
         
-        for (OnmsIpInterface iface : m_interfaces) {
+        for (OnmsSnmpInterface iface : m_interfaces) {
             System.err.println(iface);
             o = p.apply(iface);
             if (o != null) {
                 matchedInterfaces.add(o);
             }
-            if (iface.getIpAddress().startsWith("10.")) {
+            if (iface.getIpAddress().equalsIgnoreCase(matchingIp)) {
                 populatedInterfaces.add(iface);
             }
         }

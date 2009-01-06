@@ -44,6 +44,21 @@ public class SnmpInterfaceBuilder {
         return this;
     }
 
+    public SnmpInterfaceBuilder setIfDescr(String ifDescr) {
+        m_snmpIf.setIfDescr(ifDescr);
+        return this;
+    }
+    
+    public SnmpInterfaceBuilder setIfName(String ifName) {
+        m_snmpIf.setIfName(ifName);
+        return this;
+    }
+    
+    public SnmpInterfaceBuilder setIfType(Integer ifType) {
+        m_snmpIf.setIfType(ifType);
+        return this;
+    }
+
     public OnmsSnmpInterface getSnmpInterface() {
         return m_snmpIf;
     }

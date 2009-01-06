@@ -17,13 +17,4 @@ public class MatchingInterfacePolicy extends BasePolicy<OnmsIpInterface> {
         }
         return iface;
     }
-
-    private boolean match(String s, String matcher) {
-        if (matcher.startsWith("~")) {
-            matcher = matcher.replaceFirst("~", "");
-            return s.matches(matcher);
-        } else {
-            return s.equals(matcher);
-        }
-    }
 }

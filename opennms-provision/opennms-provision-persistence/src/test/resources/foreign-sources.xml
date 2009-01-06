@@ -18,8 +18,8 @@
             <policy name="10-ipinterfaces" class="org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy">
             	<parameter key="ipaddress" value="~^10\..*$" />
             </policy>
-            <policy name="cisco-snmp-interfaces" class="org.opennms.netmgt.provision.persist.policies.IfDescrSnmpInterfacePolicy">
-                <parameter key="ifdescr" value="~(?i:cisco)" />
+            <policy name="cisco-snmp-interfaces" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+                <parameter key="ifdescr" value="~^(?i:LEC).*$" />
             </policy>
         </policies>
     </foreign-source>
