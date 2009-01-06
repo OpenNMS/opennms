@@ -85,6 +85,4 @@ public class NodeScanSchedule {
         this.scanInterval = scanInterval;
     }
     
-    
-    
 }

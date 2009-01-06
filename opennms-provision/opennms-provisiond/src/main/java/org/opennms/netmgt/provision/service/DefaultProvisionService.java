@@ -384,6 +384,8 @@ public class DefaultProvisionService implements ProvisionService {
     
     private ForeignSourceRepository m_foreignSourceRepository;
     
+    private List<NodeScanSchedule> m_scheduledNodes;
+    
     
     private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
@@ -508,6 +510,8 @@ public class DefaultProvisionService implements ProvisionService {
     
         getNodeDao().update(db);
         
+        //TODO: update the node in the scheduledList of Nodes
+        
     }
     
     @Transactional
@@ -520,6 +524,8 @@ public class DefaultProvisionService implements ProvisionService {
     
     	    node.visit(new DeleteEventVisitor(getEventForwarder()));
     	}
+    	
+    	//TODO: Should remove the node from the scheduled list of nodes
     
     }
     
@@ -535,7 +541,8 @@ public class DefaultProvisionService implements ProvisionService {
         EntityVisitor eventAccumlator = new AddEventVisitor(getEventForwarder());
 
         node.visit(eventAccumlator);
-
+        
+        //TODO: Update node in schedule
     }
     
     @Transactional
@@ -692,9 +699,23 @@ public class DefaultProvisionService implements ProvisionService {
 
         getNodeDao().update(node);
     }
-
+    
+    public void addNodeToSchedule(OnmsNode node) {
+        //TODO
+    }
+    
+    public void removeNodeFromSchedule(OnmsNode node) {
+        //TODO
+    }
+    
+    public void updateNodeInSchedule(OnmsNode node) {
+        // TODO Auto-generated method stub
+        
+    }
+    
     public List<NodeScanSchedule> getScheduleForNodes() {
         List<OnmsNode> nodes = m_nodeDao.findAll();
+        
         List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
         
         long now = System.currentTimeMillis();
@@ -723,6 +744,6 @@ public class DefaultProvisionService implements ProvisionService {
 
     public ForeignSourceRepository getForeignSourceRepository() {
         return m_foreignSourceRepository;
-    }   
+    }
 
 }
