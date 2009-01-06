@@ -9,12 +9,15 @@
 		
 		<service name="SNMP" interval="300000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
-                        <parameter key="thresholding-enabled" value="true"/>
+		</service>
+        <service name="WMI" interval="300000" user-defined="false" status="off">
+			<parameter key="collection" value="default"/>
 		</service>
 
-	</package>
+    </package>
 	
 	<collector service="SNMP"         class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+    <collector service="WMI"          class-name="org.opennms.netmgt.collectd.WmiCollector"/>
 
 </collectd-configuration>
 

@@ -111,6 +111,7 @@
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
     <module>opennms-webapp</module>
+    <module>opennms-wmi</module>
     <module>opennms-base-assembly</module>
   </modules>
   <build>
@@ -965,6 +966,11 @@
         <artifactId>opennms-webapp-ng</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-wmi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
@@ -1423,6 +1429,16 @@
         <groupId>jep</groupId>
         <artifactId>jep</artifactId>
         <version>2.40</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jinterop</groupId>
+        <artifactId>jinterop</artifactId>
+        <version>2.01</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jinterop</groupId>
+        <artifactId>jinteropdeps</artifactId>
+        <version>2.01</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
