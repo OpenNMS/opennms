@@ -106,6 +106,8 @@ import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
+import org.opennms.netmgt.config.wmi.WmiConfig;
+import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -511,7 +513,15 @@ public class WillItUnmarshalTest {
     public void testExampleTl1dConfiguration() throws Exception {
         unmarshalExample("tl1d-configuration.xml", Tl1dConfiguration.class);
     }
-    
+    @Test
+    public void testWmiConfiguration() throws Exception {
+        unmarshal("wmi-config.xml", WmiConfig.class);
+    }
+    @Test
+    public void testWmiDatacollectionConfiguration() throws Exception {
+        unmarshal("wmi-datacollection-config.xml", WmiDatacollectionConfig.class);
+    }
+
     @Test
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");

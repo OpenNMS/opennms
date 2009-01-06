@@ -228,6 +228,13 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+     <!-- Resource Type for WMI TCP/IP Network Interfaces -->
+     <resourceType name="win32_tcpip_ni_pck" label="Windows TCPIP Network Interfaces"
+                  resourceLabel="Interface: ${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <resourceType name="msdpPeerEntry" label="MSDP Peer"
         resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<wmi-datacollection-config rrdRepository="/usr/share/opennms/share/rrd/snmp/">
+    <wmi-collection name="default">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+
+        <wpms>
+            <!--  A group for collecting Terminal Service  statistics.
+             *  Check the keyvalue "ActiveSessions" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm    name="win32_terminalservices"
+                    wmiClass="Win32_PerfFormattedData_TermService_TerminalServices"
+                    keyvalue="ActiveSessions"
+                    recheckInterval="3600000"
+                    ifType="all">
+                <!--  Collect these attributes.
+                 *  Name is the unique name used for keyvalue.
+                 *  Alias is the local name for the RRD file.
+
+                 *  wmiObject is the WMI object instance.
+                 *  Type is used to convert values around.
+                -->
+                <!-- The number of active sessions, including the console. -->
+                <attrib name="ActiveSessions"
+                        alias="win32_ts_active"
+                        wmiObject="ActiveSessions"
+                        type="Gauge"/>
+
+                <!-- The number of inactive (idle, disconnected) sessions. -->
+                <attrib name="InactiveSessions"
+                        alias="win32_ts_inactive"
+                        wmiObject="InactiveSessions"
+                        type="Gauge"/>
+
+                <!-- The total number of sessions. -->
+                <attrib name="TotalSessions"
+                        alias="win32_ts_total"
+                        wmiObject="TotalSessions"
+                        type="Gauge"/>
+            </wpm>
+
+            <!-- A collection of server session statistics -->
+            <wpm    name="win32_serversessions"
+                    wmiClass="Win32_PerfFormattedData_PerfNet_Server"
+                    keyvalue="ServerSessions"
+                    recheckInterval="3600000"
+                    ifType="all">
+                <!-- The number of sessions currently active in the server. -->
+                <attrib name="ServerSessions"
+                        alias="win32_serversession"
+                        wmiObject="ServerSessions"
+                        type="Gauge" />
+                <!-- The number of sessions that have been closed due to unexpected error conditions. -->
+                <attrib name="SessionsErroredOut"
+                        alias="win32_sessnerrorout"
+                        wmiObject="SessionsErroredOut"
+                        type="Gauge" />
+                <!-- The number of sessions that have been forced to logoff. -->
+                <attrib name="SessionsForcedOff"
+                        alias="win32_sessnforceoff"
+                        wmiObject="SessionsForcedOff"
+                        type="Gauge" />
+                <!-- The number of sessions that have terminated normally. -->
+                <attrib name="SessionsLoggedOff"
+                        alias="win32_sessnslogdoff"
+                        wmiObject="SessionsLoggedOff"
+                        type="Gauge" />
+                <!-- The number of sessions that have been closed due to their idle time exceeding the autodisconnect parameter for the server. -->
+                <attrib name="SessionsTimedOut"
+                        alias="win32_sessntimedout"
+                        wmiObject="SessionsTimedOut"
+                        type="Gauge" />
+            </wpm>
+
+            <!-- A collection of server error statistics -->
+            <wpm    name="win32_servererrors"
+                    wmiClass="Win32_PerfFormattedData_PerfNet_Server"
+                    keyvalue="ErrorsSystem"
+                    recheckInterval="3600000"
+                    ifType="all">
+                <!-- The number of times an internal Server Error was detected. -->
+                <attrib name="ErrorsSystem"
+                        alias="win32_svrerr_errsys"
+                        wmiObject="ErrorsSystem"
+                        type="Counter" />
+                <!-- The number of times accesses to files opened successfully were denied. -->
+                <attrib name="ErrorsGrantedAccess"
+                        alias="win32_svrerr_grtaxs"
+                        wmiObject="ErrorsGrantedAccess"
+                        type="Counter" />
+                <!-- The number of times opens on behalf of clients have failed with STATUS_ACCESS_DENIED. -->
+                <attrib name="ErrorsAccessPermissions"
+                        alias="win32_svrerr_axsprm"
+                        wmiObject="ErrorsAccessPermissions"
+                        type="Counter" />
+                <!-- The number of failed logon attempts to the server. -->
+                <attrib name="ErrorsLogon"
+                        alias="win32_svrerr_errlgn"
+                        wmiObject="ErrorsLogon"
+                        type="Counter" />
+            </wpm>
+
+            <!-- A collection of network interface statistics -->
+            <wpm    name="win32_tcpip_ni_pck"
+                    wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface"
+                    keyvalue="Name"
+                    recheckInterval="3600000"
+                    ifType="ignore">
+                <!-- The number of packets per second -->
+                <attrib name="PacketsPersec"
+                        alias="win32_ipni_pktps"
+                        wmiObject="PacketsPersec"
+                        type="Gauge"/>
+                <!-- The number of packets per second -->
+                <attrib name="PacketsReceivedNonUnicastPersec"
+                        alias="win32_ipni_pktrnups"
+                        wmiObject="PacketsReceivedNonUnicastPersec"
+                        type="Gauge"/>
+                <!-- The number of packets per second -->
+                <attrib name="PacketsReceivedPersec"
+                        alias="win32_ipni_pktrps"
+                        wmiObject="PacketsReceivedPersec"
+                        type="Gauge"/>
+                <!-- The number of packets per second -->
+                <attrib name="PacketsReceivedUnicastPersec"
+                        alias="win32_ipni_pktrups"
+                        wmiObject="PacketsReceivedUnicastPersec"
+                        type="Gauge"/>
+                <!-- The number of packets per second -->
+                <attrib name="PacketsSentNonUnicastPersec"
+                        alias="win32_ipni_pktsnups"
+                        wmiObject="PacketsSentNonUnicastPersec"
+                        type="Gauge"/>
+                <!-- The number of packets per second -->
+                <attrib name="PacketsSentUnicastPersec"
+                        alias="win32_ipni_pktsups"
+                        wmiObject="PacketsSentUnicastPersec"
+                        type="Gauge"/>
+            </wpm>
+        </wpms>
+    </wmi-collection>
+</wmi-datacollection-config>

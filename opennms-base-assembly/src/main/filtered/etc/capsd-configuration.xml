@@ -171,4 +171,16 @@
         <property key="retry" value="1" />
         <property key="service-name" value="Task Scheduler" />
     </protocol-plugin>
+	<!-- Uncomment this for WMI checks
+    <protocol-plugin protocol="WMI" class-name="org.opennms.netmgt.capsd.plugins.WmiPlugin" scan="on" user-defined="false">
+        <property key="timeout" value="2000" />
+        <property key="retry" value="1" />
+        <property key="matchType" value="all"/>
+        <property key="wmiClass" value="Win32_ComputerSystem" />
+        <property key="wmiObject" value="Status" />
+        <property key="compareOp" value="EQ" />
+        <property key="compareValue" value="OK" />
+        <property key="service-name" value="WMI" />
+    </protocol-plugin>
+    -->
 </capsd-configuration>
