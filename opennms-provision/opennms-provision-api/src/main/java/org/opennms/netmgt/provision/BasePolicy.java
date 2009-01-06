@@ -17,4 +17,16 @@ public abstract class BasePolicy<T> implements Policy<T> {
     public void setParameter(String key, String value) {
         m_parameters.put(key, value);
     }
+
+    protected boolean match(String s, String matcher) {
+        if (s == null) {
+            return false;
+        }
+        if (matcher.startsWith("~")) {
+            matcher = matcher.replaceFirst("~", "");
+            return s.matches(matcher);
+        } else {
+            return s.equals(matcher);
+        }
+    }
 }
