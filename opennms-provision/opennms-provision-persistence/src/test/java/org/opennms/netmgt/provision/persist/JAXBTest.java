@@ -59,7 +59,7 @@ public class JAXBTest {
 
         List<PluginConfig> policies = new ArrayList<PluginConfig>();
         PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
-        policy.addParameter("nodelabel", "~^[a-z]$");
+        policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
         policies.add(policy);
         policy = new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
