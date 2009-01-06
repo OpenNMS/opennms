@@ -87,6 +87,7 @@ public class KSC_PerformanceReportFactory {
             "2_day",
             "7_day",
             "1_month",
+            "3_month",
             "6_month",
             "1_year",
             "Today",
@@ -305,6 +306,8 @@ public class KSC_PerformanceReportFactory {
             begin_time.add(Calendar.DATE, -7);
         } else if (interval.equals("1_month")) {
             begin_time.add(Calendar.DATE, -30);
+        } else if (interval.equals("3_month")) {
+            begin_time.add(Calendar.DATE, -90);
         } else if (interval.equals("6_month")) {
             begin_time.add(Calendar.DATE, -183);
         } else if (interval.equals("1_year")) {
