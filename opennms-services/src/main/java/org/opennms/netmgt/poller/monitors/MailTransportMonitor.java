@@ -266,18 +266,19 @@ public class MailTransportMonitor extends IPv4Monitor {
                     log().debug("searchMailSubject: retrieved message subject:"+mailMessage.getSubject());
                     
                     if (!found && mailMessage.match(searchTerm)) {
+                        found = true;
                         log().debug("searchMailSubject: message with subject: '"+subject+"' found.");
                         
                         if (mailParms.isEnd2EndTestInProgress()) {
                             mailMessage.setFlag(Flag.DELETED, true);
                             log().debug("searchMailSubject: flagging message: "+subject+" for deletion for end2end test.");
                         }
-                        found = true;
-                        if (found && !mailParms.getReadTest().isDeleteAllMail()) {
-                            break;
-                        } else {
-                            mailMessage.setFlag(Flag.DELETED, true);
-                        }
+                    }
+                    
+                    if (found && !mailParms.getReadTest().isDeleteAllMail()) {
+                        break;
+                    } else {
+                        mailMessage.setFlag(Flag.DELETED, true);
                     }
                 }
                 
