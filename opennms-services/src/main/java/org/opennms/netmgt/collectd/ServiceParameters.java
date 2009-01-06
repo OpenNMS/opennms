@@ -127,6 +127,8 @@ public class ServiceParameters {
             return getParameters().get("http-collection");
         } else if(getParameters().containsKey("nsclient-collection")) {
             return getParameters().get("nsclient-collection");
+        } else if(m_parameters.containsKey("wmi-collection")) {
+            return m_parameters.get("wmi-collection");
         } else {
             return "default";
         }

@@ -140,6 +140,13 @@
       <artifactId>opennms-snmp-snmp4j</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-wmi</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+
     <!-- this is a runtime depdency we need at install time -->
     <dependency>
       <groupId>alt.dev.jmta</groupId>
