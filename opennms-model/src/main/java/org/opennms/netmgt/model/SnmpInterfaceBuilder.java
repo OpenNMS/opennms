@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -32,20 +32,20 @@
 package org.opennms.netmgt.model;
 
 public class SnmpInterfaceBuilder {
-	
-	private OnmsSnmpInterface m_snmpIf;
 
-	public SnmpInterfaceBuilder(OnmsSnmpInterface snmpIf) {
-		m_snmpIf = snmpIf;
-	}
+    private final OnmsSnmpInterface m_snmpIf;
 
-	public SnmpInterfaceBuilder setIfSpeed(long ifSpeed) {
-		m_snmpIf.setIfSpeed(new Long(ifSpeed));
-		return this;
-	}
-        
-        public OnmsSnmpInterface getSnmpInterface() {
-            return m_snmpIf;
-        }
+    public SnmpInterfaceBuilder(OnmsSnmpInterface snmpIf) {
+        m_snmpIf = snmpIf;
+    }
+
+    public SnmpInterfaceBuilder setIfSpeed(long ifSpeed) {
+        m_snmpIf.setIfSpeed(new Long(ifSpeed));
+        return this;
+    }
+
+    public OnmsSnmpInterface getSnmpInterface() {
+        return m_snmpIf;
+    }
 
 }
