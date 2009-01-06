@@ -30,7 +30,7 @@
                 trigger-name="selectResolvers" 
                 action-name="clearProblems" />
                 
-    <automation name="cleanUp" interval="30000" active="true"
+    <automation name="cleanUp" interval="60000" active="true"
                 action-name="deletePastClearedAlarms" />
                 
     <automation name="fullCleanUp" interval="300000" active="true" 
@@ -277,39 +277,22 @@
       <statement>
         DELETE FROM alarms
          WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &gt; now() - interval '2 minutes'
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 minutes'
            AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 3))
       </statement>
     </action>
 
-<!--  May need to add a check for Open ticket state and wait for the state to be closed based on
-      update ticket action-event -->
+    <!-- May need to add a check for Open ticket state and wait for the state to be closed based on
+         update ticket action-event -->
     <action name="deleteAllPastClearedAlarms" >
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &gt; now() - interval '24 hours'
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
            AND (tticketState IS NULL OR tticketState = 3)
       </statement>
     </action>
   
-<!--
-    <action name="clearProblems" >
-      <statement>
-        UPDATE alarms 
-           SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmType=1 
-           AND severity &gt; 2 
-           AND lastEventTime &lt;  ${lastEventTime} 
-           AND eventUei = ${clearUei} 
-           AND COALESCE(dpName, '') = COALESCE(${dpName}, '') 
-           AND COALESCE(nodeID, 0) = COALESCE(${nodeID}, 0) 
-           AND COALESCE(ipaddr, '') = COALESCE(${ipaddr}, '') 
-           AND COALESCE(serviceID, 0) = COALESCE(${serviceID}, 0)
-      </statement> 
-    </action>
--->
-
     <!--  New and optimized version of clearing problems -->
     <action name="clearProblems" >
       <statement>
