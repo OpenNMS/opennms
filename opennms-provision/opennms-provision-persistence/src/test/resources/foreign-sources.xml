@@ -11,7 +11,7 @@
         </detectors>
         <policies>
             <policy name="lower-case-node" class="org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy">
-                <parameter key="nodelabel" value="~^[a-z]$" />
+                <parameter key="label" value="~^[a-z]$" />
                 <parameter key="category" value="Lower-Case-Nodes" />
             </policy>
             <policy name="all-ipinterfaces" class="org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy" />
