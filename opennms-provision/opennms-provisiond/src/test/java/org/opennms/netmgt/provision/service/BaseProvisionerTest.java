@@ -72,6 +72,10 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
 import org.opennms.test.mock.MockLogAppender;
@@ -143,6 +147,9 @@ public class BaseProvisionerTest {
     
     private EventAnticipator m_eventAnticipator;
     
+    private ForeignSourceRepository m_foreignSourceRepository;
+    private OnmsForeignSource m_foreignSource;
+    
     
 //    public void onSetUpInTransactionIfEnabled() throws Exception {
 //        super.onSetUpInTransactionIfEnabled();
@@ -180,6 +187,15 @@ public class BaseProvisionerTest {
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
         m_provisioner.start();
+        
+        m_foreignSource = new OnmsForeignSource();
+        m_foreignSource.setName("imported:");
+        m_foreignSource.setScanInterval(8600000);
+        
+        m_foreignSourceRepository = new MockForeignSourceRepository();
+        m_foreignSourceRepository.save(m_foreignSource);
+        
+        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
     }
 
 
@@ -370,6 +386,15 @@ public class BaseProvisionerTest {
     
     //Scheduler tests
     @Test
+    public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
+       importFromResource("classpath:/tec_dump.xml.smalltest");
+       
+       List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+       
+       assertEquals(m_nodeDao.countAll(), schedulesForNode.size());
+    }
+    
+    @Test
     public void testProvisionServiceGetScheduleForNodes() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
        
@@ -378,7 +403,31 @@ public class BaseProvisionerTest {
        assertEquals(m_nodeDao.countAll(), schedulesForNode.size());
     }
     
-    //public void test
+    @Test
+    public void testProvisionServiceAddNodeToSchedule() throws Exception{
+        
+        OnmsNode node = new OnmsNode();
+        node.setForeignSource("imported:");
+        
+        m_provisionService.addNodeToSchedule(node);
+    }
+    
+    @Test
+    public void testProvisionServiceRemoveNodeFromSchedule() throws Exception{
+        OnmsNode node = new OnmsNode();
+        node.setForeignSource("imported:");
+        
+        m_provisionService.removeNodeFromSchedule( node);
+    }
+    
+    @Test
+    public void testProvisionServiceRemoveAllFromSchedule() throws Exception{
+        OnmsNode node = new OnmsNode();
+        node.setForeignSource("imported:");
+        
+        m_provisionService.updateNodeInSchedule(node);
+    }
+    
     
     //Scheduler Tests
     

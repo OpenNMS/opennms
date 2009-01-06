@@ -36,6 +36,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /*
@@ -158,7 +159,20 @@ public interface ProvisionService {
             String foreignSource, String foreignId, 
             String parentForeignId, String parentNodeLabel
            );
-
+    
+    /**
+     * Returns a list of scheduled nodes.
+     * 
+     * @return
+     */
     public abstract List<NodeScanSchedule> getScheduleForNodes();
+    
+    public abstract void addNodeToSchedule(OnmsNode node);
+    
+    public abstract void removeNodeFromSchedule(OnmsNode node);
+    
+    public abstract void updateNodeInSchedule(OnmsNode node);
+    
+    public abstract void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
 
 }
