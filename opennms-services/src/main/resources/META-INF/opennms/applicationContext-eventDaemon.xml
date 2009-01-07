@@ -65,7 +65,7 @@
         <ref local="eventExpander"/>
         <ref local="eventWriter"/>
         <ref local="eventIpcBroadcastProcessor"/>
-        <ref local="alarmWriter"/>
+<!--        <ref local="alarmWriter"/> -->
       </list>
     </property>
   </bean>

@@ -34,5 +34,7 @@ package org.opennms.netmgt.dao;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
+
+    OnmsAlarm findByReductionKey(String reductionKey);
     
 }

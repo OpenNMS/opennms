@@ -247,7 +247,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 			Integer eventseverity, String eventlog, String eventdisplay,
 			org.opennms.netmgt.model.OnmsNode node, Set<OnmsNotification> notifications,
 			Set<OnmsOutage> outagesBySvcregainedeventid, Set<OnmsOutage> outagesBySvclosteventid,
-			Set alarms) {
+			Set<OnmsAlarm> alarms) {
 		m_eventId = eventid;
 		m_eventUei = eventuei;
 		m_eventTime = eventtime;

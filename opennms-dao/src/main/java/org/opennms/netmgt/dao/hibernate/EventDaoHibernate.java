@@ -8,8 +8,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -33,6 +31,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.springframework.dao.DataAccessException;
 
 public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
 		implements EventDao {
@@ -40,5 +39,11 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
 	public EventDaoHibernate() {
 		super(OnmsEvent.class);
 	}
+
+    public int deletePreviousEventsForAlarm(Integer id, OnmsEvent e) throws DataAccessException {
+        String hql = "delete from OnmsEvent where alarmid = ? and eventid != ?";
+        Object[] values = {id, e.getId()};
+        return bulkDelete(hql, values);
+    }
 
 }
