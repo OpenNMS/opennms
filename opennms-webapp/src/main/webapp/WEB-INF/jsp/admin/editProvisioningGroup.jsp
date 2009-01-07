@@ -7,8 +7,8 @@
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Application" /> 
-	<jsp:param name="headTitle" value="Application" />
+	<jsp:param name="title" value="Provisioning Groups" /> 
+	<jsp:param name="headTitle" value="Provisioning Groups" />
 	<jsp:param name="breadcrumb"
                value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb"
