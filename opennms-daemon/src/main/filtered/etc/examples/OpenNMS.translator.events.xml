@@ -9,11 +9,11 @@ Place this file in /opt/opennms/etc/events directory and make entry in the /opt/
       <descr>
         &lt;p&gt;A linkDown trap signifies that the sending protocol entity recognizes a failure in one of the communication link represented in the agent's configuration. &lt;/p&gt;
         &lt;p&gt;Instance: %parm[#1]% &lt;/p&gt;
-        &lt;p&gt;IfDescr: %parm[#2]% &lt;/p&gt;
-        &lt;p&gt;IfName: %parm[#3]% &lt;/p&gt;
-        &lt;p&gt;IfAlias: %parm[#4]% &lt;/p&gt;
+        &lt;p&gt;IfDescr: %parm[#5]% &lt;/p&gt;
+        &lt;p&gt;IfName: %parm[#6]% &lt;/p&gt;
+        &lt;p&gt;IfAlias: %parm[#7]% &lt;/p&gt;
       </descr>
-      <logmsg dest='logndisplay'>Agent Interface Down (linkDown Trap) on interface index:%parm[#1]%; ifDescr: %parm[#2]%; ifName:%parm[#3]%; ifAlias:%parm[#4]%</logmsg>
+      <logmsg dest='logndisplay'>Agent Interface Down (linkDown Trap) on interface index:%parm[#1]%; ifDescr: %parm[#5]%; ifName:%parm[#6]%; ifAlias:%parm[#7]%</logmsg>
       <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" />
   </event>
@@ -24,11 +24,11 @@ Place this file in /opt/opennms/etc/events directory and make entry in the /opt/
       <descr>
         &lt;p&gt;A linkUp trap signifies that the sending protocol entity recognizes that one of the communication links represented in the agent's configuration has come up. &lt;/p&gt;
         &lt;p&gt;Instance: %parm[#1]% &lt;/p&gt;
-        &lt;p&gt;IfDescr: %parm[#2]% &lt;/p&gt;
-        &lt;p&gt;IfName: %parm[#3]% &lt;/p&gt;
-        &lt;p&gt;IfAlias: %parm[#4]% &lt;/p&gt;
+        &lt;p&gt;IfDescr: %parm[#5]% &lt;/p&gt;
+        &lt;p&gt;IfName: %parm[#6]% &lt;/p&gt;
+        &lt;p&gt;IfAlias: %parm[#7]% &lt;/p&gt;
       </descr>
-      <logmsg dest='logndisplay'>Agent Interface Down (linkUp Trap) on interface index:%parm[#1]%; ifDescr:%parm[#2]; ifName:%parm[#3]%; IfAlias:%parm[#4]%</logmsg>
+      <logmsg dest='logndisplay'>Agent Interface Down (linkUp Trap) on interface index:%parm[#1]%; ifDescr:%parm[#5]%; ifName:%parm[#6]%; IfAlias:%parm[#7]%</logmsg>
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[1]%" clear-key="uei.opennms.org/internal/translator/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" />
   </event>
