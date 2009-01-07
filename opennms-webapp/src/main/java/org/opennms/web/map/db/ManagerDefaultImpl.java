@@ -69,7 +69,6 @@ import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsConstants;
 
 import org.opennms.web.map.config.MapPropertiesFactory;
-import org.opennms.web.map.config.MapStartUpConfig;
 import org.opennms.web.map.db.datasources.DataSourceInterface;
 
 import org.opennms.web.map.view.Manager;
@@ -115,7 +114,8 @@ public class ManagerDefaultImpl implements Manager {
 		}
 		
 	}
-    org.opennms.web.map.db.Manager dbManager = null;
+
+	org.opennms.web.map.db.Manager dbManager = null;
     
     MapPropertiesFactory mapsPropertiesFactory = null;
     
@@ -124,7 +124,6 @@ public class ManagerDefaultImpl implements Manager {
     String filter = null;
     
     VMap sessionMap = null;
-    MapStartUpConfig mapStartUpConfig = null;
 
     boolean adminMode=false;
 
@@ -164,14 +163,6 @@ public class ManagerDefaultImpl implements Manager {
 		this.mapsPropertiesFactory = mapsPropertiesFactory;
 	}
 
-	public boolean isAdminMode() {
-		return adminMode;
-	}
-	
-	public void setAdminMode(boolean adminMode) {
-		this.adminMode = adminMode;
-	}
-    
     public List<String> getCategories() throws MapsException {
     	List<String> categories=new ArrayList<String>();
     	try {
@@ -198,14 +189,6 @@ public class ManagerDefaultImpl implements Manager {
     	return categories;
     }
 
-	public MapStartUpConfig getMapStartUpConfig() {
-		return mapStartUpConfig;
-	}
-
-	public void setMapStartUpConfig(MapStartUpConfig mapStartUpConfig) {
-		this.mapStartUpConfig = mapStartUpConfig;
-	}
-
     /**
      * Manage Maps using default implementation of Factory and Manager
      */
@@ -224,16 +207,6 @@ public class ManagerDefaultImpl implements Manager {
 
     public VMap openMap() throws MapNotFoundException {
     	if (sessionMap != null) return sessionMap;
-    	else if(mapStartUpConfig.getMapToOpenId() > 0) {
-    		log.debug("Opening map with id "+mapStartUpConfig.getMapToOpenId());
-    		try {
-				sessionMap = openMap(mapStartUpConfig.getMapToOpenId(),!adminMode);
-			} catch (Exception e) {
-				log.error("Cannot open map.",e);
-				throw new MapNotFoundException();
-			}
-    		return sessionMap;
-    	}
     	throw new MapNotFoundException();
     }
     
@@ -654,9 +627,6 @@ public class ManagerDefaultImpl implements Manager {
     	return Arrays.asList(maps);
     }
     
-	public List<VMapInfo> getVisibleMapsMenu() throws MapsException {
-		return getVisibleMapsMenu(mapStartUpConfig.getUser());
-	}
     /**
      * Take all the maps in the tree of maps considering the with name in input
      * as the root of the tree. If there are more maps with <i>mapName</i> (case insensitive)
@@ -1089,10 +1059,6 @@ public class ManagerDefaultImpl implements Manager {
     	return result;
     }
     
-	public boolean isUserAdmin() {
-		return getMapStartUpConfig().isAdminRole();
-	}
-	
 	private String getSeverityLabel(int severity) throws MapsException {
 		
 		return EventUtil.getSeverityLabel(severity);

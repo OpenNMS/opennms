@@ -82,7 +82,7 @@
 	<c:otherwise>
 
 	<!-- Header -->
-	<div id="header">
+	<div id="header" style="">
 		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
 		<div id="headerinfo">
 			<h2>${param.title}</h2>
