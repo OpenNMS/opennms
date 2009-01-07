@@ -322,7 +322,7 @@
                 
         <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
           <property name="name" value="Map"/>
-          <property name="url" value="Index.map"/>
+          <property name="url" value="map/index.jsp"/>
           <property name="locationMatch" value="map"/>
           <property name="file" value="${opennms.home}/etc/map.enable"/>
         </bean>

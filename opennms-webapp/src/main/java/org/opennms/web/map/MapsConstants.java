@@ -59,14 +59,14 @@ public final class MapsConstants extends JSTLConstants{
 
 	// load infos
 	
+	public static final String MAPS_STARTUP_ACTION = "StartUp";
+	
 	public static final String LOADMAPS_ACTION = "LoadMaps";
 	
 	public static final String LOADNODES_ACTION = "LoadNodes";
 
 	public static final String LOADMAPINFO_ACTION = "LoadMapInfo";
 	
-	public static final String LOAD_ELEM_INFO_ACTION = "LoadElementInfo";
-
 	//map action
 	
 	public static final String NEWMAP_ACTION = "NewMap";

@@ -46,8 +46,6 @@ import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsException;
 import org.opennms.web.map.MapsManagementException;
 
-import org.opennms.web.map.config.MapStartUpConfig;
-
 
 /**
  * @author maurizio
@@ -55,28 +53,10 @@ import org.opennms.web.map.config.MapStartUpConfig;
  */
 public interface Manager {
 
-	//to use when modifying maps
-	//public void startSession() throws MapsException;
-
-	//public void endSession() throws MapsException;
-
-	//the mapStartUpConfig mantains dynamic infos from client 
-	public MapStartUpConfig getMapStartUpConfig() throws MapsException;
-	
-	public void setMapStartUpConfig(MapStartUpConfig config) throws MapsException;
-	
 	// client/server configuration parameters
 	
 	public List<String> getCategories() throws MapsException;
 	
-    // Useful to manage nodes
-    
-    public boolean isUserAdmin();
-    
-    public boolean isAdminMode();
-    
-    public void setAdminMode(boolean mode);
-    
 	/**
      * Create a new empty VMap and return it.
      * 
@@ -216,13 +196,6 @@ public interface Manager {
      * @throws MapsException
      */
     public List<VMapInfo> getVisibleMapsMenu(String user)throws MapsException;
-
-    /**
-     * gets all visible maps for user setted previousely
-     * @return a List of MapMenu objects.
-     * @throws MapsException
-     */
-    public List<VMapInfo> getVisibleMapsMenu()throws MapsException;
 
     /**
      * Take all the maps in the tree of maps considering the with name in input
@@ -375,7 +348,7 @@ public interface Manager {
      */
     public List<VElement> refreshElements(VElement[] mapElements) throws MapsException;    
 
-    public List<VElement> refreshMap()throws MapsException;
+    public List<VElement> refreshMap() throws MapsException;
     
     public VElement refreshElement(VElement mapElement) throws MapsException;    
     
@@ -403,6 +376,7 @@ public interface Manager {
 	public VElementInfo[] getAllElementInfo() throws MapsException;
 	
 	public VElementInfo[] getElementInfoLike(String like) throws MapsException;
+	
 	/**
      * Gets all nodes on the passed map (and its submaps) with theirs occurrences
      * @param map

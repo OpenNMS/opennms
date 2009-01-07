@@ -42,10 +42,14 @@ package org.opennms.web.map;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.map.config.MapPropertiesFactory;
+import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
@@ -85,21 +89,6 @@ public class ResponseAssembler {
 		} 
 		log.debug("getRefreshResponse: String assembled: "+response);
 		return response;
-	}
-	
-	protected static String getLoadInfosResponse(String action, Map<String , String> infos){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		String str=getActionOKMapResponse(action);
-		if(infos!=null){
-			Iterator it = infos.keySet().iterator();
-			while(it.hasNext()){
-				String key = (String) it.next();
-				str+="+"+key+": "+(String)infos.get(key);
-			}
-		}
-		log.debug("getLoadInfosResponse: String assembled: "+str);
-		return str;
 	}
 	
 	protected static String getAddMapsResponse(String action,  List<Integer> mapsWithLoopInfo, List<VElement> velems, List<VLink> links){
@@ -322,6 +311,12 @@ public class ResponseAssembler {
 		return strToSend;
 		
 	}
+	
+    protected static String getStartupResponse(String action,MapPropertiesFactory mpf, Manager manager, boolean isUserAdmin)throws Exception{
+              InitializationObj initObj = new InitializationObj(mpf, manager, isUserAdmin);
+               JSON json = JSONSerializer.toJSON(initObj);
+               return json.toString();
+       }
 
 	protected static String getActionOKMapResponse(String action) {
 

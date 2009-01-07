@@ -43,6 +43,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
 import java.util.Properties;
 import java.util.Set;
 
@@ -81,7 +83,7 @@ public class MapPropertiesFactory extends Object {
 	 */
 	protected Category log = null;
 
-	protected Map[] propertiesMaps = null;
+//	protected Map[] propertiesMaps = null;
 
 	protected  Map<String,Status> statusesMap = null;
 
@@ -159,7 +161,7 @@ public class MapPropertiesFactory extends Object {
 	}
 
 	public void setContextMenu(ContextMenu cmenu) {
-		cmenu = cmenu;
+		this.cmenu = cmenu;
 	}
 
 	public boolean isContextMenuEnabled() {
@@ -251,20 +253,6 @@ public class MapPropertiesFactory extends Object {
 	}
 
 	/**
-	 * gets an Array of java.util.Map: 
-	 *  -severitiesMap: severity label (String) to Severity
-	 *	-statusesMap: status (String) uei to Status
-	 * 	-availsMap: min (String) of avail to Avail
-	 *	-iconsMap: icon (String) label to String (icon filename)
-	 *	-bgImagesMap: background (String) image label to String (background image filename)
-	 *	-sourcesMap: source label (String) to DataSource 
-	 *	-factoriesMap: factory label (String) to MapsFactory
-	 */
-	public Map[] getMapProperties() throws IOException, FileNotFoundException {
-		return propertiesMaps;
-	}
-
-	/**
 	 * Gets the java.util.Map with key = severity label and value the Severity
 	 * corresponding to the label
 	 * 
@@ -284,7 +272,7 @@ public class MapPropertiesFactory extends Object {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public Map getAvailabilitiesMap() {
+	public Map<String, Avail> getAvailabilitiesMap() {
 		return availsMap;
 	}
 
@@ -293,9 +281,9 @@ public class MapPropertiesFactory extends Object {
 			avail = -1;
 		Avail rightAv = null;
 		int bestfound = -1;
-		Iterator ite = availsMap.values().iterator();
+		Iterator<Avail> ite = availsMap.values().iterator();
 		while (ite.hasNext()) {
-			Avail av = (Avail) ite.next();
+			Avail av = ite.next();
 			if (avail > av.getMin() && avail >= bestfound) {
 				rightAv = av;
 				bestfound = av.getMin();
@@ -396,7 +384,7 @@ public class MapPropertiesFactory extends Object {
 	 *	-sourcesMap: source label (String) to DataSource 
 	 *	-factoriesMap: factory label (String) to MapsFactory
 	 */
-	protected Map[] parseMapProperties() throws FileNotFoundException,
+	protected void parseMapProperties() throws FileNotFoundException,
 			IOException {
 		log.debug("Parsing map.properties...");
 		severitiesMap = new HashMap<String,Severity>();
@@ -491,10 +479,10 @@ public class MapPropertiesFactory extends Object {
 			severitiesMap.put(label, sev);
 		}
 		orderedSeverities = new Severity[severitiesMap.size()];
-		Iterator it = severitiesMap.values().iterator();
+		Iterator<Severity> it_sev = severitiesMap.values().iterator();
 		int k = 0;
-		while (it.hasNext()) {
-			orderedSeverities[k++] = (Severity) it.next();
+		while (it_sev.hasNext()) {
+			orderedSeverities[k++] = it_sev.next();
 		}
 		Arrays.sort(orderedSeverities);
 
@@ -628,10 +616,10 @@ public class MapPropertiesFactory extends Object {
 		}
 
 		orderedStatuses = new Status[statusesMap.size()];
-		it = statusesMap.values().iterator();
+		Iterator<Status> it_status = statusesMap.values().iterator();
 		k = 0;
-		while (it.hasNext()) {
-			orderedStatuses[k++] = (Status) it.next();
+		while (it_status.hasNext()) {
+			orderedStatuses[k++] = it_status.next();
 		}
 		Arrays.sort(orderedStatuses);
 
@@ -676,10 +664,10 @@ public class MapPropertiesFactory extends Object {
 		}
 
 		orderedAvails = new Avail[availsMap.size()];
-		it = availsMap.values().iterator();
+		Iterator<Avail> it_avail = availsMap.values().iterator();
 		k = 0;
-		while (it.hasNext()) {
-			orderedAvails[k++] = (Avail) it.next();
+		while (it_avail.hasNext()) {
+			orderedAvails[k++] = it_avail.next();
 		}
 		Arrays.sort(orderedAvails);
 		
@@ -703,9 +691,9 @@ public class MapPropertiesFactory extends Object {
 			throw new IllegalStateException(
 					"Required Default Status not found.");
 		}
-		Iterator ite = availsMap.values().iterator();
+		Iterator<Avail> ite = availsMap.values().iterator();
 		while (ite.hasNext()) {
-			Avail av = (Avail) ite.next();
+			Avail av = ite.next();
 			if (av.getId() == WebSecurityUtils.safeParseInt(disableAvailId)){
 				disabledAvail=av;
 				break;
@@ -749,10 +737,10 @@ public class MapPropertiesFactory extends Object {
 			bgImagesMap.put(bg[i], filename);
 		}
 
-		propertiesMaps = new Map[] { severitiesMap, statusesMap, availsMap,
-				iconsMap, bgImagesMap};
+//		propertiesMaps = new Map[] { severitiesMap, statusesMap, availsMap,
+//				iconsMap, bgImagesMap};
 
-		return (propertiesMaps);
+//		return (propertiesMaps);
 	}
 
 
@@ -942,16 +930,16 @@ public class MapPropertiesFactory extends Object {
     	return MapsConstants.COLOR_SEMAPHORE_BY_SEVERITY;
     }
 
-    public java.util.Map<Integer, String> getMapElementDimensions() {
+    public java.util.Map<String, String> getMapElementDimensions() {
     	// TODO To be implemented (via map.properties-MapPropertiesFactory)
-    	java.util.Map<Integer, String> dims = new java.util.TreeMap<Integer, String>();
+    	java.util.Map<String, String> dims = new TreeMap<String, String>();
     	
-    	dims.put(6,"smallest");
-    	dims.put(10,"very small");
-    	dims.put(15,"small");
-    	dims.put(20,"normal");
-    	dims.put(25,"big");
-    	dims.put(30,"biggest");
+    	dims.put("06","smallest");
+    	dims.put("10","very small");
+    	dims.put("15","small");
+    	dims.put("20","normal");
+    	dims.put("25","big");
+    	dims.put("30","biggest");
     	
     	return dims;
     }

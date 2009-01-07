@@ -40,7 +40,7 @@
 
     <div id="prefooter"></div>
 
-    <div id="footer">
+    <div id="footer" style="">
       <p>
         OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2008
 	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>

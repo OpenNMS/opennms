@@ -36,19 +36,19 @@ package org.opennms.web.map;
  *
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.config.MapPropertiesFactory;
-import org.opennms.web.map.config.MapStartUpConfig;
 import org.opennms.web.map.view.*;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -60,7 +60,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * 
  */
 public class MapStartUpController extends SimpleFormController {
-	Category log;
+	Category log; 
 
 	private Manager manager;
 	
@@ -93,43 +93,32 @@ public class MapStartUpController extends SimpleFormController {
 		this.mapsConstants = mapsConstants;
 	}
 
-	protected ModelAndView onSubmit(Object arg0) throws Exception {
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
-		MapStartUpConfig config = (MapStartUpConfig) arg0;
-		manager.setMapStartUpConfig(config);
-		manager.setAdminMode(false);
-		Map<String, Object> models = new HashMap<String, Object> ();
-		models.put("manager", manager);
-		models.put("mapsConstants", mapsConstants);
-		models.put("mapsPropertiesFactory", mapsPropertiesFactory);
-		return new ModelAndView("/map/map",models);
-	}
-	
-	public Object formBackingObject(HttpServletRequest request) throws Exception {
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
+				.getOutputStream()));
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
+		
+		try{
+	        String user = request.getRemoteUser();
 
-		String user = request.getRemoteUser();
-		boolean isAdmin = request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE);
-		boolean fullscreen = Boolean.parseBoolean(request.getParameter("fullscreen"));
-		
-		int refresh = WebSecurityUtils.safeParseInt(request.getParameter("refresh"));
-		
-		String dimension = request.getParameter("dimension");
-	
-		String mapToOpen = request.getParameter("mapToOpen");
-		
-		int mapToOpenId = MapsConstants.MAP_NOT_OPENED;
-		if (mapToOpen != null) mapToOpenId = WebSecurityUtils.safeParseInt(mapToOpen); 
+	        if (log.isDebugEnabled()) 
+	            log.debug("MapStartUp for user:" + user);
+	    
+			bw.write(ResponseAssembler.getStartupResponse(MapsConstants.MAPS_STARTUP_ACTION, mapsPropertiesFactory,
+			                                              manager,
+			                                              request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE)));
+		} catch (Exception e) {
+			log.error("Error in map's startup",e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.MAPS_STARTUP_ACTION));
+		} finally {
+			bw.close();
+		}
 
-		if (log.isDebugEnabled()) 
-			log.debug("StartUpValues: user/hasRoleAdmin/dimension/mapToOpen/refresh/fullscreen:" + user +"/"+ isAdmin + "/"+ dimension +"/" + mapToOpen +"/" + refresh +"/" + fullscreen );
-		String[] dim = dimension.split("x");
-		int mapwidth=WebSecurityUtils.safeParseInt(dim[0]);
-		int mapheight=WebSecurityUtils.safeParseInt(dim[1]);
-	
-		MapStartUpConfig config = new MapStartUpConfig(user,isAdmin,mapwidth,mapheight,refresh,fullscreen,mapToOpenId); 
-		return config;	
+		return null;
 	}
+	
+
 
 }

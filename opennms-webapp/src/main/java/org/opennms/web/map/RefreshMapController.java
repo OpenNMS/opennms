@@ -83,19 +83,10 @@ public class RefreshMapController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		String elems = request.getParameter("elems");
 		String action = request.getParameter("action");
-		log.debug("Received action="+action+" elems="+elems);
+		log.debug("Received action="+action);
 		
 		
-		
-		
-		
-		if ((manager.isAdminMode())) {
-			log.warn("Admin mode. It should be Refresh Mode.");
-		}					
-
-
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream()));
 		VMap map = null;
@@ -108,7 +99,7 @@ public class RefreshMapController implements Controller {
 				// Second Refresh Link Object on Map
 				// Now is done using a very simple way
 				// but really it's slow
-				// the alternativ is anyway to analize all 
+				// the alternative is anyway to analize all 
 				// links, 1 against other.
 				// So with this solution more traffic
 				// less stress on server

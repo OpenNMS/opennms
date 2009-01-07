@@ -68,24 +68,24 @@
     	</map>
     </constructor-arg>
   </bean -->
-  <bean id="mapApplianceValidator" class="org.opennms.web.map.MapApplianceValidator"/>
-  <bean id="mapStartUpValidator" class="org.opennms.web.map.MapStartUpConfigValidator"/>
-  <bean id="openMapValidator" class="org.opennms.web.map.OpenMapValidator"/>
-  <bean id="newMapValidator" class="org.opennms.web.map.NewMapValidator"/>
-  <bean id="clearMapValidator" class="org.opennms.web.map.ClearMapValidator"/>
-  <bean id="closeMapValidator" class="org.opennms.web.map.CloseMapValidator"/>
-  <bean id="saveMapValidator" class="org.opennms.web.map.SaveMapValidator"/>
+  <!-- bean id="mapApplianceValidator" class="org.opennms.web.map.MapApplianceValidator"/-->
+  <!-- bean id="mapStartUpValidator" class="org.opennms.web.map.MapStartUpConfigValidator"/-->
+  <!-- bean id="openMapValidator" class="org.opennms.web.map.OpenMapValidator"/-->
+  <!-- bean id="newMapValidator" class="org.opennms.web.map.NewMapValidator"/-->
+  <!-- bean id="clearMapValidator" class="org.opennms.web.map.ClearMapValidator"/-->
+  <!-- bean id="closeMapValidator" class="org.opennms.web.map.CloseMapValidator"/-->
+  <!-- bean id="saveMapValidator" class="org.opennms.web.map.SaveMapValidator"/-->
 
-  <bean id="HomeMapPage" class="org.opennms.web.map.IndexMapController">
+  <!--bean id="HomeMapPage" class="org.opennms.web.map.IndexMapController">
   	<property name="manager"><ref bean="manager"/></property>
     <property name="mapsConstants"><ref bean="mapsConstants"/></property>  	
-  </bean>
+  </bean-->
 
   <bean id="MapStartUp" class="org.opennms.web.map.MapStartUpController">
-   	<property name="sessionForm" value="false"/>
-  	<property name="commandName" value="config"/>
-  	<property name="commandClass" value="org.opennms.web.map.config.MapStartUpConfig"/>
-  	<property name="validator"><ref bean="mapStartUpValidator"/></property>
+   	<!-- property name="sessionForm" value="false"/-->
+  	<!-- property name="commandName" value="config"/-->
+  	<!-- property name="commandClass" value="org.opennms.web.map.config.MapStartUpConfig"/-->
+  	<!-- property name="validator"><ref bean="mapStartUpValidator"/></property-->
     <property name="manager"><ref bean="manager"/></property>
     <property name="mapsConstants"><ref bean="mapsConstants"/></property>
     <property name="mapsPropertiesFactory"><ref bean="mapsPropertiesFactory"/></property>
@@ -163,8 +163,8 @@
   <bean id="urlMapping"   class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <props>
-      	<prop key="/Index.map">HomeMapPage</prop>
-      	<prop key="/Map.map">MapStartUp</prop>
+      	<!-- prop key="/Index.map">HomeMapPage</prop-->
+      	<prop key="/MapStartUp.map">MapStartUp</prop>
         <prop key="/OpenMap.map">OpenMap</prop>
         <prop key="/NewMap.map">NewMap</prop>
         <prop key="/CloseMap.map">CloseMap</prop>

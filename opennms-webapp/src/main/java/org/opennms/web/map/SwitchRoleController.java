@@ -86,9 +86,8 @@ public class SwitchRoleController implements Controller {
 			
 			if(adminModeStr!=null ){
 				adminMode=Boolean.parseBoolean(adminModeStr);
-				if (manager.isUserAdmin()){
+				if (request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE)){
 					log.info("Swithing to mode admin: "+adminMode);
-					manager.setAdminMode(adminMode);
 					bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.SWITCH_MODE_ACTION));
 				} else {
 					throw new MapsManagementException("Non-admin user ("+request.getRemoteUser()+") invoking switch role action ");

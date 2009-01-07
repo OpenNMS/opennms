@@ -81,7 +81,7 @@ public class SaveMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream()));
-		if (!manager.isUserAdmin()) {
+		if (!request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE)) {
 			log.warn("User is not in Admin mode, cannot save");
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SAVEMAP_ACTION));
 			bw.close();
@@ -104,9 +104,6 @@ public class SaveMapController implements Controller {
 		
 
 		try {
-			if (!manager.isUserAdmin()) {
-				throw new MapsException("User not admin: cannot save map");
-			}
 			VMap map = manager.openMap();
 
 			if ((packetStr == null && totalPacketsStr == null)
@@ -167,9 +164,9 @@ public class SaveMapController implements Controller {
 				map.removeAllElements();
 				log.info("SaveMap: saving all elements.");
 				
-				Iterator it = elems.iterator();
+				Iterator<VElement> it = elems.iterator();
 				while (it.hasNext()) {
-					map.addElement((VElement) it.next());
+					map.addElement(it.next());
 				}
 				
 				map.setUserLastModifies(request.getRemoteUser());

@@ -48,7 +48,6 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
-import org.opennms.web.map.config.MapStartUpConfig;
 import org.opennms.web.map.view.*;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -80,16 +79,24 @@ public class OpenMapController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
+
+		log.debug(request.getQueryString());
 		String mapIdStr = request.getParameter("MapId");
-		
+		log.debug("MapId=" + mapIdStr);
+		String mapWidthStr = request.getParameter("MapWidth");
+        log.debug("MapWidth=" + mapWidthStr);
+        String mapHeightStr = request.getParameter("MapHeight");
+        log.debug("MapHeight=" + mapHeightStr);
+        String adminModeStr = request.getParameter("adminMode");
+        log.debug("adminMode=" + adminModeStr);
 		
 		String user = request.getRemoteUser();
 		
 		String role = MapsConstants.ROLE_USER;
 
-		if ((manager.isUserAdmin())) {
+		if ((request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE))) {
 			role=MapsConstants.ROLE_ADMIN;
-			log.info("Admin mode");
+			log.info(user + " has Admin mode");
 		}					
 
 		float widthFactor = 1;
@@ -99,18 +106,16 @@ public class OpenMapController implements Controller {
 				.getOutputStream()));
 
 		try {
-			MapStartUpConfig config = null;
-			config=manager.getMapStartUpConfig();
-			int mapWidth = config.getScreenWidth();
-			int mapHeight = config.getScreenHeight();
-
+			int mapWidth = WebSecurityUtils.safeParseInt(mapWidthStr);
+			int mapHeight = WebSecurityUtils.safeParseInt(mapHeightStr);
+			
 			log.debug("Current mapWidth=" + mapWidth
 						+ " and MapHeight=" + mapHeight);
 			VMap map = null;
 			if(mapIdStr!=null){
 				int mapid = WebSecurityUtils.safeParseInt(mapIdStr);
 				log.debug("Opening map "+mapid+" for user "+user);
-				map = manager.openMap(mapid, user, !manager.isAdminMode());
+				map = manager.openMap(mapid, user, !(adminModeStr.equals("true")));
 			}else{
 				log.debug("Opening map without passing mapid");
 				map = manager.openMap();
