@@ -48,12 +48,18 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Category;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
@@ -70,8 +76,35 @@ public class Main {
 
     private Main(String[] args) {
         m_args = args;
+        initializeLogging();
     }
     
+    private void initializeLogging() {
+        Logger logger = Logger.getRootLogger();
+        logger.setLevel(Level.WARN);
+
+        Layout layout = new PatternLayout("%d %-5p [%t] %c: %m%n");
+        FileAppender a = new FileAppender();
+        a.setName("default");
+        a.setAppend(true);
+        a.setBufferedIO(true);
+        String logFile = null;
+        if (System.getProperty("os.name").contains("Windows")) {
+            logFile = System.getProperty("java.io.tmpdir") + File.separator + "opennms-remote-poller.log";
+        } else {
+            logFile = System.getProperty("user.home") + File.separator + ".opennms" + File.separator + "remote-poller.log";
+        }
+        File logDirectory = new File(logFile).getParentFile();
+        if (!logDirectory.exists()) {
+            logDirectory.mkdirs();
+        }
+        a.setFile(logFile);
+        a.setLayout(layout);
+        a.activateOptions();
+        logger.removeAllAppenders();
+        logger.addAppender(a);
+    }
+
     private void run() {
         
         try {
@@ -107,6 +140,8 @@ public class Main {
         Options options = new Options();
         
         options.addOption("h", "help", false, "this help");
+        
+        options.addOption("d", "debug", false, "write debug messages to the log");
         options.addOption("g", "gui", false, "start a GUI (default: false)");
         options.addOption("l", "location", true, "the location name of this remote poller");
         options.addOption("u", "url", true, "the RMI URL for OpenNMS (rmi://server-name/)");
@@ -119,6 +154,10 @@ public class Main {
             System.exit(1);
         }
 
+        if (m_cl.hasOption("d")) {
+            Logger.getRootLogger().setLevel(Level.DEBUG);
+        }
+        
         if (m_cl.hasOption("l")) {
             m_locationName = m_cl.getOptionValue("l");
         }
