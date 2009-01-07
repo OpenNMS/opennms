@@ -3,28 +3,7 @@ Post-Installation Tasks
 ==============================================================================
 
 ------------------------------------------------------------------------------
-System Limits -- Mac OS X 10.3
-------------------------------------------------------------------------------
-
-On MacOSX 10.3, to be able to give PostgreSQL enough buffers and such to
-run properly, you will need to change the shared memory buffers in the
-/etc/rc file.
-
-On our test system we multiplied the supplied values by 4 and all seems to
-run OK.  Just look for the sysctl lines and set them to:
-
-  sysctl -w kern.maxfiles=65536
-  sysctl -w kern.sysv.shmmax=16777216
-  sysctl -w kern.sysv.shmmin=1
-  sysctl -w kern.sysv.shmmni=128
-  sysctl -w kern.sysv.shmseg=32
-  sysctl -w kern.sysv.shmall=4096
-
-Your mileage may vary, you may need to raise them higher, depending on how
-large your network is.
-
-------------------------------------------------------------------------------
-System Limits -- Mac OS X 10.4 and Higher
+System Limits
 ------------------------------------------------------------------------------
 
 On recent versions of Mac OS X, these settings are now properly read from
@@ -38,7 +17,7 @@ On recent versions of Mac OS X, these settings are now properly read from
   kern.sysv.shmall=4096
 
 ------------------------------------------------------------------------------
-PostgreSQL Limits -- All Platforms
+PostgreSQL Limits
 ------------------------------------------------------------------------------
 
 Once you do that, you will want to edit
@@ -60,7 +39,7 @@ max_connections and shared_buffers seem to work alright, but your mileage
 may vary.
 
 ------------------------------------------------------------------------------
-Database Setup -- All Platforms
+Database Setup
 ------------------------------------------------------------------------------
 
 Make sure PostgreSQL is started before you install.  If it isn't, you will
@@ -87,5 +66,9 @@ quick start guide at http://sourceforge.net/docman/?group_id=4141) and run:
 
   sudo @PREFIX@/bin/pgsql.sh start
   sudo @PREFIX@/bin/opennms start
-  sudo @PREFIX@/bin/tomcat5 start
+
+If you want them to start automatically on boot, you can do:
+
+  sudo daemonic enable postgresqlXX
+  sudo daemonic enable opennms
 
