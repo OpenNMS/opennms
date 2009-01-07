@@ -94,6 +94,7 @@
     <module>opennms-joesnmp</module>
     <module>opennms-install</module>
     <module>opennms-model</module>
+    <module>opennms-alarmd</module>
     <module>opennms-config-utils</module>
     <module>opennms-dao</module>
     <module>opennms-daemon</module>
@@ -741,6 +742,11 @@
 
       <!--  opennms dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarmd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>drools-correlation-engine</artifactId>
