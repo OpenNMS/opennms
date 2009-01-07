@@ -11,9 +11,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
- * reserved.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -37,6 +34,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -45,11 +43,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
-        HibernateDaoSupport implements OnmsDao<T, K> {
+public abstract class AbstractDaoHibernate<T, K extends Serializable> extends HibernateDaoSupport implements OnmsDao<T, K> {
 
     Class<T> m_entityClass;
 
@@ -95,8 +93,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
     protected int queryInt(final String query) {
         HibernateCallback callback = new HibernateCallback() {
 
-            public Object doInHibernate(Session session)
-                    throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 return session.createQuery(query).uniqueResult();
             }
 
@@ -158,19 +155,24 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         return queryInt("select count(*) from " + m_entityClass.getName());
     }
 
-    public void delete(T entity) {
+    public void delete(T entity) throws DataAccessException {
         getHibernateTemplate().delete(entity);
+    }
+    
+    public void delete(Collection<T> entities) throws DataAccessException {
+        getHibernateTemplate().deleteAll(entities);
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> findAll() {
+    public List<T> findAll() throws DataAccessException {
         return getHibernateTemplate().loadAll(m_entityClass);
     }
     
 
     @SuppressWarnings("unchecked")
-    public List<T> findMatching(final OnmsCriteria onmsCrit) {
-        onmsCrit.resultsOfType(m_entityClass);
+    public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
+        onmsCrit.resultsOfType(m_entityClass); //FIXME: why is this here?
+        
         HibernateCallback callback = new HibernateCallback() {
 
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -190,26 +192,28 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         };
         return getHibernateTemplate().executeFind(callback);
     }
-
-    public T get(K id) {
-        return m_entityClass.cast(getHibernateTemplate().get(m_entityClass,
-                                                             id));
+    
+    public int bulkDelete(String hql, Object[] values ) throws DataAccessException {
+        return getHibernateTemplate().bulkUpdate(hql, values);
+    }
+    
+    public T get(K id) throws DataAccessException {
+        return m_entityClass.cast(getHibernateTemplate().get(m_entityClass, id));
     }
 
-    public T load(K id) {
-        return m_entityClass.cast(getHibernateTemplate().load(m_entityClass,
-                                                              id));
+    public T load(K id) throws DataAccessException {
+        return m_entityClass.cast(getHibernateTemplate().load(m_entityClass, id));
     }
 
-    public void save(T entity) {
+    public void save(T entity) throws DataAccessException {
         getHibernateTemplate().save(entity);
     }
 
-    public void saveOrUpdate(T entity) {
+    public void saveOrUpdate(T entity) throws DataAccessException {
         getHibernateTemplate().saveOrUpdate(entity);
     }
 
-    public void update(T entity) {
+    public void update(T entity) throws DataAccessException {
         getHibernateTemplate().update(entity);
     }
 
