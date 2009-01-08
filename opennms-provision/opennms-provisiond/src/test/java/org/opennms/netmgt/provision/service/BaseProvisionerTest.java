@@ -112,7 +112,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/modelImporterTest.xml",
+        "classpath:/modelImporterTest.xml"
 })
 @JUnitTemporaryDatabase()
 public class BaseProvisionerTest {
