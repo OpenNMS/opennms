@@ -241,7 +241,12 @@ public class DefaultTaskCoordinator implements InitializingBean {
             }
             
             dependent.submitIfReady();
-        }   
+        }
+        
+        System.err.printf("CLEAN: removing dependents of %s\n", completed);
+        completed.clearDependents();
+        
+        
     }
 
     /**
