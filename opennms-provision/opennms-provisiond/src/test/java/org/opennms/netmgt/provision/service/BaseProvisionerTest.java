@@ -38,8 +38,10 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,6 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
@@ -78,6 +81,7 @@ import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -89,6 +93,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Unit test for ModelImport application.
@@ -107,11 +112,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/modelImporterTest.xml"
+        "classpath:/modelImporterTest.xml",
 })
 @JUnitTemporaryDatabase()
 public class BaseProvisionerTest {
-
+    
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
     
@@ -144,6 +149,9 @@ public class BaseProvisionerTest {
     
     @Autowired
     private ProvisionService m_provisionService;
+    
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
     
     private EventAnticipator m_eventAnticipator;
     
@@ -391,41 +399,128 @@ public class BaseProvisionerTest {
        
        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
        
-       assertEquals(m_nodeDao.countAll(), schedulesForNode.size());
+       assertEquals(getNodeDao().countAll(), schedulesForNode.size());
     }
     
     @Test
-    public void testProvisionServiceGetScheduleForNodes() throws Exception {
+    public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
        
        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
        
-       assertEquals(m_nodeDao.countAll(), schedulesForNode.size());
+       assertEquals(10, schedulesForNode.size());
+       
+       importFromResource("classpath:/tec_dump.xml.smalltest.delete");
+       
+       schedulesForNode = m_provisionService.getScheduleForNodes();
+       
+       assertEquals(9, schedulesForNode.size());
     }
     
     @Test
-    public void testProvisionServiceAddNodeToSchedule() throws Exception{
+    public void testProvisionerAddNodeToSchedule() throws Exception{
         
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        assertEquals(0, m_provisioner.getScheduleLength());
+        
+       
+        
+        OnmsNode node = createNode();
+        assertEquals(1, node.getId().intValue());
+        
+        assertNotNull(m_nodeDao.get(1));
+        
+        Event addedEvent = new Event();
+        addedEvent.setUei(EventConstants.ADD_NODE_EVENT_UEI);
+        addedEvent.setNodeid(1);
+        
+        m_mockEventIpcManager.broadcastNow(addedEvent);
+        
+        assertEquals(1, m_provisioner.getScheduleLength());
+        
+    }
+
+    /**
+     * @param i 
+     * 
+     */
+    private OnmsNode createNode() {
         OnmsNode node = new OnmsNode();
+        //node.setId(nodeId);
+        node.setLastCapsdPoll(new Date());
         node.setForeignSource("imported:");
         
-        m_provisionService.addNodeToSchedule(node);
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        return node;
     }
     
     @Test
-    public void testProvisionServiceRemoveNodeFromSchedule() throws Exception{
-        OnmsNode node = new OnmsNode();
-        node.setForeignSource("imported:");
+    public void testProvisionerRemoveNodeInSchedule() throws Exception{
+        importFromResource("classpath:/tec_dump.xml.smalltest");
         
-        m_provisionService.removeNodeFromSchedule( node);
+        m_provisioner.scheduleRescanForExistingNodes();
+        assertEquals(10, m_provisioner.getScheduleLength());
+        
+        Event addedEvent = new Event();
+        addedEvent.setUei(EventConstants.DELETE_NODE_EVENT_UEI);
+        addedEvent.setNodeid(2);
+        
+        m_mockEventIpcManager.broadcastNow(addedEvent);
+        
+        assertEquals(9, m_provisioner.getScheduleLength());
     }
     
     @Test
-    public void testProvisionServiceRemoveAllFromSchedule() throws Exception{
-        OnmsNode node = new OnmsNode();
-        node.setForeignSource("imported:");
+    public void testProvisionServiceScanIntervalCalcWorks() {
+        long now = System.currentTimeMillis();
         
-        m_provisionService.updateNodeInSchedule(node);
+        Date date = new Date();
+        date.setTime(System.currentTimeMillis() - 43200000);
+        long lastPoll = date.getTime();
+        long nextPoll = lastPoll + 86400000;
+        long initialDelay = Math.max(0, nextPoll - now);
+        
+        assertEquals(43200000, initialDelay);
+        
+    }
+    
+    @Test
+    public void testProvisionerNodeRescanSchedule() throws Exception {
+        importFromResource("classpath:/tec_dump.xml.smalltest");
+        
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        
+        assertEquals(10, schedulesForNode.size());
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        
+        assertEquals(10, m_provisioner.getScheduleLength());
+    }
+    
+    @Test
+    public void testProvisionerUpdateScheduleAfterImport() throws Exception {
+        importFromResource("classpath:/tec_dump.xml.smalltest");
+        
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
+        
+        assertEquals(10, schedulesForNode.size());
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        
+        assertEquals(10, m_provisioner.getScheduleLength());
+        
+        //reimport with one missing node
+        importFromResource("classpath:/tec_dump.xml.smalltest.delete");
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        schedulesForNode = m_provisionService.getScheduleForNodes();
+        
+        //check the schedule to make sure that it deletes the node
+        assertEquals(schedulesForNode.size(), m_provisioner.getScheduleLength());
+        assertEquals(getNodeDao().countAll(), m_provisioner.getScheduleLength());
+        
     }
     
     

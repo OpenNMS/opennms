@@ -36,9 +36,14 @@
 //
 package org.opennms.netmgt.provision.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
@@ -62,6 +67,7 @@ public class BaseProvisioner implements InitializingBean {
     private Executor m_scanExecutor;
     private Executor m_writeExecutor;
     private ScheduledExecutorService m_scheduledExecutor;
+    private Map<Integer, ScheduledFuture<?>> m_scheduledNodes;
 	
 	public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
@@ -88,6 +94,8 @@ public class BaseProvisioner implements InitializingBean {
         Assert.notNull(m_scanExecutor, "scanExecutor property must be set");
         Assert.notNull(m_writeExecutor, "writeExecutor property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
+        
+        if(m_scheduledNodes == null) m_scheduledNodes = new HashMap<Integer, ScheduledFuture<?>>();
         
         DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator();
         coordinator.setDefaultExecutor("scan");
@@ -124,15 +132,21 @@ public class BaseProvisioner implements InitializingBean {
         
     }
     
-    protected void scheduleRescanForExistingNodes() {
+    protected void scheduleRescanForExistingNodes() {        
         List<NodeScanSchedule> schedules = m_provisionService.getScheduleForNodes();
         
+        checkNodeListForRemovals(schedules);
+        
         for(NodeScanSchedule schedule : schedules) {
-            m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
+            if(!m_scheduledNodes.containsKey(schedule.getNodeId())) {
+                addToScheduleQueue(schedule);
+            }else {
+                updateNodeScheduleInQueue(schedule);
+            }            
         }
         
     }
-    
+
     protected Runnable nodeScanner(final NodeScanSchedule schedule) {
         return new Runnable() {
             public void run() {
@@ -140,7 +154,66 @@ public class BaseProvisioner implements InitializingBean {
             }
         };
     }
+    
+    //Helper functions for the schedule
+    protected void addToScheduleQueue(NodeScanSchedule schedule) {
+        m_scheduledNodes.put(schedule.getNodeId(), m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS));
+    }
+    
+    protected void updateNodeScheduleInQueue(NodeScanSchedule schedule) {
+        ScheduledFuture<?> scheduledFuture = m_scheduledNodes.get(schedule.getNodeId());
+        
+        if(!scheduledFuture.isDone() && !scheduledFuture.isCancelled()) {
+            scheduledFuture.cancel(true);
+            scheduledFuture = m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
+        }
+    }
+    
+    protected void removeNodeFromScheduleQueue(Integer nodeId) {
+        ScheduledFuture<?> scheduledFuture = m_scheduledNodes.remove(nodeId);
+        
+        if(scheduledFuture != null && !scheduledFuture.isDone()) {
+            scheduledFuture.cancel(true);
+        }
+        
+    }
+    
+    protected void removeFromScheduleQueue(List<Integer> nodeIds) {
+        for(Integer nodeId : nodeIds) {
+            removeNodeFromScheduleQueue(nodeId);
+        }
+    }
+    
+    /**
+     * @param schedules
+     */
+    protected void checkNodeListForRemovals(List<NodeScanSchedule> schedules) {
+        Set<Integer> keySet = m_scheduledNodes.keySet();
+        List<Integer> markedForDelete = new ArrayList<Integer>(); 
+        
+        for(int nodeId : keySet) {
+            boolean isDirty = false;
+            
+            for(NodeScanSchedule schedule : schedules) {
+                if(schedule.getNodeId() == nodeId) {
+                    isDirty = true;
+                }
+            }
+            
+            if(!isDirty) {
+                markedForDelete.add(nodeId);
+            }
+        }
+        
+        removeFromScheduleQueue(markedForDelete);
+    }
+   
 
+    public int getScheduleLength() {
+        return m_scheduledNodes.size();
+    }
+    //^ Helper functions for the schedule
+    
     protected void importModelFromResource(Resource resource) throws Exception {
     	importModelFromResource(null, resource, new NoOpProvisionMonitor());
     }

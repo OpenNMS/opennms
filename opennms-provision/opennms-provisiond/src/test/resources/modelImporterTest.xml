@@ -44,5 +44,10 @@
     <property name="scheduledExecutor" ref="scheduledExecutor" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
-
+  
+   <!-- <bean name="capsdEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="importer" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean> -->
+  
 </beans>

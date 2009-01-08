@@ -62,6 +62,7 @@ import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 /**
  * DefaultProvisionService
@@ -700,42 +701,40 @@ public class DefaultProvisionService implements ProvisionService {
         getNodeDao().update(node);
     }
     
-    public void addNodeToSchedule(OnmsNode node) {
-        //TODO
-    }
-    
-    public void removeNodeFromSchedule(OnmsNode node) {
-        //TODO
-    }
-    
-    public void updateNodeInSchedule(OnmsNode node) {
-        // TODO Auto-generated method stub
-        
+    public NodeScanSchedule getScheduleForNode(int nodeId) {
+        OnmsNode node = getNodeDao().get(nodeId);
+        return createScheduleForNode(node);
     }
     
     public List<NodeScanSchedule> getScheduleForNodes() {
-        List<OnmsNode> nodes = m_nodeDao.findAll();
+        List<OnmsNode> nodes = getNodeDao().findAll();
         
         List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
         
-        long now = System.currentTimeMillis();
         for(OnmsNode node : nodes) {
-            OnmsForeignSource fs = m_foreignSourceRepository.get(node.getForeignSource());
-            
-            long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
-            long nextPoll = lastPoll + fs.getScanInterval();
-            long initialDelay = Math.max(0, nextPoll - now);
-            
-            NodeScanSchedule nSchedule = new NodeScanSchedule();
-            nSchedule.setForeignSource(node.getForeignSource());
-            nSchedule.setInitialDelay(initialDelay);
-            nSchedule.setNodeId(node.getId());
-            nSchedule.setScanInterval(fs == null ? 1000 : fs.getScanInterval());
-            
-            scheduledNodes.add(nSchedule);
+            scheduledNodes.add(createScheduleForNode(node));
         }
         
         return scheduledNodes;
+    }
+    
+    private NodeScanSchedule createScheduleForNode(OnmsNode node) {
+        Assert.notNull(node, "Node may not be null");
+        long now = System.currentTimeMillis();
+        
+        OnmsForeignSource fs = m_foreignSourceRepository.get(node.getForeignSource());
+        
+        long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
+        long nextPoll = lastPoll + fs.getScanInterval();
+        long initialDelay = Math.max(0, nextPoll - now);
+        
+        NodeScanSchedule nSchedule = new NodeScanSchedule();
+        nSchedule.setForeignSource(node.getForeignSource());
+        nSchedule.setInitialDelay(initialDelay);
+        nSchedule.setNodeId(node.getId()); 
+        nSchedule.setScanInterval(fs == null ? 1000 : fs.getScanInterval());
+        
+        return nSchedule;
     }
 
     public void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository) {
