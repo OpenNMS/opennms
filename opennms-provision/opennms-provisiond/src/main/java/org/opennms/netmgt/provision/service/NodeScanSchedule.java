@@ -32,57 +32,57 @@
 package org.opennms.netmgt.provision.service;
 
 public class NodeScanSchedule {
-    private int nodeId;
-    private String foreignSource;
-    private long initialDelay;
-    private long scanInterval;
+    private int m_nodeId;
+    private String m_foreignSource;
+    private long m_initialDelay;
+    private long m_scanInterval;
     /**
      * @return the nodeId
      */
     public int getNodeId() {
-        return nodeId;
+        return m_nodeId;
     }
     /**
      * @param nodeId the nodeId to set
      */
     public void setNodeId(int nodeId) {
-        this.nodeId = nodeId;
+        this.m_nodeId = nodeId;
     }
     /**
      * @return the foreignSource
      */
     public String getForeignSource() {
-        return foreignSource;
+        return m_foreignSource;
     }
     /**
      * @param foreignSource the foreignSource to set
      */
     public void setForeignSource(String foreignSource) {
-        this.foreignSource = foreignSource;
+        this.m_foreignSource = foreignSource;
     }
     /**
      * @return the initialDelay
      */
     public long getInitialDelay() {
-        return initialDelay;
+        return m_initialDelay;
     }
     /**
      * @param initialDelay the initialDelay to set
      */
     public void setInitialDelay(long initialDelay) {
-        this.initialDelay = initialDelay;
+        this.m_initialDelay = initialDelay;
     }
     /**
      * @return the scanInterval
      */
     public long getScanInterval() {
-        return scanInterval;
+        return m_scanInterval;
     }
     /**
      * @param scanInterval the scanInterval to set
      */
     public void setScanInterval(long scanInterval) {
-        this.scanInterval = scanInterval;
+        this.m_scanInterval = scanInterval;
     }
     
 }
