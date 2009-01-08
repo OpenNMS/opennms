@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +55,7 @@ import org.springframework.core.style.ToStringCreator;
 
 @Entity
 @Table(name="notifications")
-public class OnmsNotification {
+public class OnmsNotification implements Acknowledgeable, Serializable {
 
     private static final long serialVersionUID = -1162549324168290004L;
 
@@ -295,6 +296,11 @@ public class OnmsNotification {
     @Column(name="notifConfigName", length=63 )
     public void setNotifConfigName(String notifConfigName) {
         m_notifConfigName = notifConfigName;
+    }
+
+    public void acknowledge(Date ackDate, String ackUser) {
+        m_answeredBy = ackUser;
+        m_respondTime = ackDate;
     }
 
 }

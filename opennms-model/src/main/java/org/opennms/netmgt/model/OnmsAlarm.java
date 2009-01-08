@@ -64,7 +64,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement
 @Entity
 @Table(name="alarms")
-public class OnmsAlarm implements Serializable {
+public class OnmsAlarm implements Acknowledgeable, Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
     
     public static final int PROBLEM_TYPE = 1;
@@ -612,6 +612,11 @@ public class OnmsAlarm implements Serializable {
 
     public void setIfIndex(Integer ifIndex) {
         m_ifIndex = ifIndex;
+    }
+
+    public void acknowledge(Date date, String user) {
+        m_alarmAckTime = date;
+        m_alarmAckUser = user;
     }
 
 

@@ -164,30 +164,26 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     }
 
     protected void infof(String format, Object... args) {
-        Category log = log();
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
+        if (log().isInfoEnabled()) {
+            log().info(String.format(format, args));
         }
     }
 
     protected void infof(Throwable t, String format, Object... args) {
-        Category log = log();
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args), t);
+        if (log().isInfoEnabled()) {
+            log().info(String.format(format, args), t);
         }
     }
 
     protected void debugf(String format, Object... args) {
-        Category log = log();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(format, args));
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args));
         }
     }
 
     protected void debugf(Throwable t, String format, Object... args) {
-        Category log = log();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(format, args), t);
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args), t);
         }
     }
 
