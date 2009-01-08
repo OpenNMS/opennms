@@ -1,3 +1,47 @@
+// Function used by Menu
+
+function elemStrokeWidth(mouseEvent, elemName, value) {
+	elemName = spaceTrans(elemName);
+	var thisElem = document.getElementById(elemName);
+	if(thisElem){
+		thisElem.setAttributeNS(null,'stroke-width', value);
+	}
+}
+
+function elemStrokeColor(mouseEvent, elemName, value) {
+	elemName = spaceTrans(elemName);
+	var thisElem = document.getElementById(elemName);
+	if(thisElem){
+		thisElem.setAttributeNS(null,'stroke', value)
+	}
+}
+
+function elemShow(mouseEvent, elemName) {
+	elemName = spaceTrans(elemName);
+	var thisElem = document.getElementById(elemName);
+	if(thisElem){
+		thisElem.setAttributeNS(null,'display', 'inline');
+	}
+}
+
+function elemHide(mouseEvent, elemName) {
+	elemName = spaceTrans(elemName);
+	var thisElem = document.getElementById(elemName);
+	if(thisElem){
+		thisElem.setAttributeNS(null,'display', 'none');
+	}
+}
+
+function elemColor(mouseEvent, elemName, value) {
+	elemName = spaceTrans(elemName);
+	var thisElem = document.getElementById(elemName);
+	if(thisElem){
+		thisElem.setAttributeNS(null,'fill', value);
+	}
+}
+
+
+
 function createGroup(parentNode, id, display, onmouseoverActions, onmouseoutActions){
 	
 	var group = document.createElementNS(svgNS,"g");
