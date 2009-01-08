@@ -238,6 +238,10 @@ public abstract class Task {
     public void waitFor(long timeout, TimeUnit unit) throws InterruptedException {
         m_latch.await(timeout, unit);
     }
+    
+    protected void markTaskAsCompleted() {
+        getCoordinator().markTaskAsCompleted(this);
+    }
 
     protected void submitRunnable(Runnable runnable, String preferredExecutor) {
         getCoordinator().submitToExecutor(preferredExecutor, runnable, this);
