@@ -294,6 +294,7 @@
                 <option value="30">30 alarms</option>
                 <option value="50">50 alarms</option>
                 <option value="100">100 alarms</option>
+                <option value="-1">all alarms</option>
               </select>
             </td>
           </tr>
