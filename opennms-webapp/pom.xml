@@ -248,6 +248,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-acegi</artifactId>
     </dependency>
+    <!-- Rancid -->
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>rancid-api</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
