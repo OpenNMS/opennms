@@ -109,7 +109,11 @@
 %>
 
 <p class="pager">
+ <% if (limit > 0 ) { %> 
   Results: (<%=startResult%>-<%=endResult%> of <%=count%>)
+ <% } else { %>
+  All Results
+ <% } %> 
 	
   <% if( count > limit ) { %>  
     <span>
