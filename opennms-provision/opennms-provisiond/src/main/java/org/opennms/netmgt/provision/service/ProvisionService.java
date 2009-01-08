@@ -167,11 +167,7 @@ public interface ProvisionService {
      */
     public abstract List<NodeScanSchedule> getScheduleForNodes();
     
-    public abstract void addNodeToSchedule(OnmsNode node);
-    
-    public abstract void removeNodeFromSchedule(OnmsNode node);
-    
-    public abstract void updateNodeInSchedule(OnmsNode node);
+    public abstract NodeScanSchedule getScheduleForNode(int nodeId);
     
     public abstract void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
 

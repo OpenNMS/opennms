@@ -55,7 +55,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class Provisioner extends BaseProvisioner implements SpringServiceDaemon, DisposableBean, EventListener {
+
+public class Provisioner extends BaseProvisioner implements SpringServiceDaemon, DisposableBean, EventListener{
 	
 	public static final String NAME = "Provisioner";
 
@@ -76,6 +77,7 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
      * as a parameter of an event.
      * @param event
      */
+	//@EventHandler(uei=EventConstants.RELOAD_IMPORT_UEI)
     private void doImport(Event event) {
         Resource resource = null;
         try {
@@ -98,6 +100,21 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 			log().error(msg, e);
             send(importFailedEvent((msg+": "+e.getMessage()), resource));
         }
+    }
+    
+    /**
+     * @param e
+     */
+    private void handleNodeAddedEvent(Event e) {
+        addToScheduleQueue(getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue()));
+    }
+    
+
+    /**
+     * @param e
+     */
+    private void handleNodeDeletedEvent(Event e) {
+        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
     }
     
     private String getEventUrl(Event event) {
@@ -148,11 +165,14 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 	public void afterPropertiesSet() throws Exception {
 	    super.afterPropertiesSet();
 		m_eventSubscriptionService.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
+		m_eventSubscriptionService.addEventListener(this, EventConstants.ADD_NODE_EVENT_UEI);
+		m_eventSubscriptionService.addEventListener(this, EventConstants.DELETE_NODE_EVENT_UEI);
 	}
 
 	public void destroy() throws Exception {
 		m_eventSubscriptionService.removeEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
-		
+		m_eventSubscriptionService.removeEventListener(this, EventConstants.ADD_NODE_EVENT_UEI);
+		m_eventSubscriptionService.removeEventListener(this, EventConstants.DELETE_NODE_EVENT_UEI);
 	}
 
 	public String getName() {
@@ -164,6 +184,14 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 
 		if (EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
 		    doImport(e);
+		}
+		
+		if(EventConstants.ADD_NODE_EVENT_UEI.equals(e.getUei())) {
+		    handleNodeAddedEvent(e);
+		}
+		
+		if(EventConstants.DELETE_NODE_EVENT_UEI.equals(e.getUei())) {
+		    handleNodeDeletedEvent(e);
 		}
 	}
 
