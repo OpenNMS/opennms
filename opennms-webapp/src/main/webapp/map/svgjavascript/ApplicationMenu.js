@@ -12,6 +12,11 @@ function enableMenu(){
 	var viewMenu = 	document.getElementById("View")
 	if(viewMenu != null)
 		viewMenu.setAttributeNS(null,'display', 'inline');
+
+	var refreshMenu = 	document.getElementById("Refresh")
+	if(viewMenu != null)
+		viewMenu.setAttributeNS(null,'inline', 'none');
+
 }
 
 function disableMenu(){
@@ -27,12 +32,18 @@ function disableMenu(){
 	var viewMenu = 	document.getElementById("View")
 	if(viewMenu != null)
 		viewMenu.setAttributeNS(null,'display', 'none');
+
+	var refreshMenu = 	document.getElementById("Refresh")
+	if(viewMenu != null)
+		viewMenu.setAttributeNS(null,'display', 'none');
+
 }
 	
 function hideAll(evt){
 	elemHide(evt, "MapChoices");
 	elemHide(evt, "NodeChoices");
 	elemHide(evt, "ViewChoices");
+	elemHide(evt, "RefreshChoices");
 }
 	
 function hideSubMenus(evt){
@@ -76,7 +87,7 @@ function openNodeMenu(evt){
 		hideAll(evt);
 
 		elemShow(evt, "NodeChoices");
-		}
+	}
 }	
 
 
@@ -85,129 +96,167 @@ function openViewMenu(evt){
 	if(menuOpenFlag==true){
 		hideAll(evt);
 		elemShow(evt, "ViewChoices");
-		}
+	}
+}
+
+function openRefreshMenu(evt){
+	elemColor(evt,'RefreshGroup',downColor);
+	if(menuOpenFlag==true){
+		hideAll(evt);
+		elemShow(evt, "RefreshChoices");
+	}
+}
+
+function instantiateMapGroupAdminMode() {
+	// *** MAP MENU ***
+	var action='MapMenu';
+	addMenuElement(menuSvgElement, "inline", 0, 0 , 70, 20,  action, "Map",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
+	
+	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
+	
+	action = "New";
+	addMenuElement(MapChoices, "inline", 0, 21 , 80, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "newMap();hideAll(evt);menuOpenFlag=false;");
+	action="Open";
+	addMenuElement(MapChoices, "inline", 0, 41 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
+	action="Close";
+	addMenuElement(MapChoices, "inline", 0, 61 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
+	action="Rename";
+	addMenuElement(MapChoices, "inline", 0, 81 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRenameMapBox(); hideAll(evt);menuOpenFlag=false;");
+	action="Delete";
+	addMenuElement(MapChoices, "inline", 0, 101 , 80, 20, action, action,  "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="Save";
+	addMenuElement(MapChoices, "inline", 0, 121 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "saveMap();hideAll(evt);menuOpenFlag=false;");
+	action="Clear";
+	addMenuElement(MapChoices, "inline", 0, 141 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "clearMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="RefreshMode";
+	addMenuElement(MapChoices, "inline", 0, 181 , 80, 20, action, "Refresh Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToNormalMode();hideAll(evt);menuOpenFlag=false;");
+	action="SetBG";
+	addMenuElement(MapChoices, "inline", 0, 161 , 80, 20, action, "Set Background", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'SetBGColorGroup'); elemShow(evt,'SetBGImageGroup')" , "elemColor(evt,'"+action+"',upColor)", "elemShow(evt,'SetBGColor'); elemShow(evt,'SetBGImage')");
+	action="SetBGColor";
+	addMenuElement(MapChoices, "none", 60, 161 , 80, 20, action, "Color", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "setBackground();  hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	action="SetBGImage";
+	addMenuElement(MapChoices, "none", 60, 181 , 80, 20, action, "Image", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "addBGImagesList();hideAll(evt);menuOpenFlag=false;");
+
+}
+
+function instantiateMapGroupNormalMode() {
+	// *** MAP MENU ***
+	var action='MapMenu';
+	addMenuElement(menuSvgElement, "inline", 0, 0 , 70, 20,  action, "Map",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
+	
+	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
+	
+	action="Open";
+	addMenuElement(MapChoices, "inline", 0, 21 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
+	
+	action="Close";
+	addMenuElement(MapChoices, "inline", 0, 41 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
+	
+	action="AdminMode";
+	addMenuElement(MapChoices, "inline", 0, 61 , 80, 20, action, "Admin Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToAdminMode();hideAll(evt);menuOpenFlag=false;");
+
+}
+
+function instantiateMapGroup() {
+	// *** MAP MENU ***
+	var action='MapMenu';
+	addMenuElement(menuSvgElement, "inline", 0, 0 , 70, 20,  action, "Map",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
+
+	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
+	
+	action="Open";
+	addMenuElement(MapChoices, "inline", 0, 21 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
+	action="Close";
+	addMenuElement(MapChoices, "inline", 0, 41 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
+
+}
+
+function instantiateRefreshGroupAdminMode() {
+	action='Refresh';
+	addMenuElement(menuSvgElement, "inline", 141, 0 , 70, 20,  action, "Refresh",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openRefreshMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'RefreshChoices');" );
+
+	var RefreshChoices = createGroup(menuSvgElement, "RefreshChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
+	action = "LoadMaps";
+	addMenuElement(RefreshChoices, "inline", 141, 21 , 80, 20,  action, "Load Maps", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "LoadMaps(); hideAll(evt);menuOpenFlag=false;");
+	action = "LoadNodes";
+	addMenuElement(RefreshChoices, "inline", 141, 41 , 80, 20,  action, "Load Nodes", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "LoadNodes(); hideAll(evt);menuOpenFlag=false;");
+}
+
+function instantiateRefreshGroupNormalMode() {
+	action='Refresh';
+	addMenuElement(menuSvgElement, "inline", 141, 0 , 70, 20,  action, "Refresh",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openRefreshMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'RefreshChoices');" );
+
+	var RefreshChoices = createGroup(menuSvgElement, "RefreshChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
+	action = "RefreshMap";
+	addMenuElement(RefreshChoices, "inline", 141, 21 , 80, 20,  action, "Refresh Map", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "RefreshNodes(); hideAll(evt);menuOpenFlag=false;");
 }
 
 function instantiateNodeGroup() {
 	// *** NODE MENU ***
 	action='Node';
-	addMenuElement(menuSvgElement, "inline", 51, 0 , 50, 20,  action, "Node",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openNodeMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'NodeChoices');" );
+	addMenuElement(menuSvgElement, "inline", 71, 0 , 70, 20,  action, "Node",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openNodeMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'NodeChoices');" );
 	
 	var NodeChoices = createGroup(menuSvgElement, "NodeChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
 	action = "Add";
-	addMenuElement(NodeChoices, "inline", 51, 21 , 120, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementList() ; hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 21 , 80, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementList() ; hideAll(evt);menuOpenFlag=false;");
 	action = "AddByCategory";
-	addMenuElement(NodeChoices, "inline", 51, 41 , 120, 20,  action, "Add By Category", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addCategoryList();hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 41 , 80, 20,  action, "Add By Category", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addCategoryList();hideAll(evt);menuOpenFlag=false;");
 	action = "AddByLabel";
-	addMenuElement(NodeChoices, "inline", 51, 61 , 120, 20,  action, "Add By Label", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addNodeLabelBox();hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 61 , 80, 20,  action, "Add By Label", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addNodeLabelBox();hideAll(evt);menuOpenFlag=false;");
 	action = "AddRange";
-	addMenuElement(NodeChoices, "inline", 51, 81 , 120, 20,  action, "Add Range", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRangeBox();hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 81 , 80, 20,  action, "Add Range", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRangeBox();hideAll(evt);menuOpenFlag=false;");
 	action = "AddNeigh";
-	addMenuElement(NodeChoices, "inline", 51, 101 , 120, 20,  action, "Add Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeigh(); hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 101 , 80, 20,  action, "Add Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeigh(); hideAll(evt);menuOpenFlag=false;");
 	action = "AddNodeNeigh";
-	addMenuElement(NodeChoices, "inline", 51, 121 , 120, 20,  action, "Add With Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeighList();hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 121 , 80, 20,  action, "Add With Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeighList();hideAll(evt);menuOpenFlag=false;");
 	action = "AddMap";
-	addMenuElement(NodeChoices, "inline", 51, 141 , 120, 20,  action, "Add Map As Node", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapAsNodeList(); hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(NodeChoices, "inline", 71, 141 , 80, 20,  action, "Add Map As Node", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapAsNodeList(); hideAll(evt);menuOpenFlag=false;");
 	action = "SetIcon";
-	addMenuElement(NodeChoices, "inline", 51, 161 , 120, 20,  action, "Set Icon", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addIconList();hideAll(evt);menuOpenFlag=false;" );
+	addMenuElement(NodeChoices, "inline", 71, 161 , 80, 20,  action, "Set Icon", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addIconList();hideAll(evt);menuOpenFlag=false;" );
 	action = "DelNode";
-	addMenuElement(NodeChoices, "inline", 51, 181 , 120, 20,  action, "Delete", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMapElementMenu();hideAll(evt);menuOpenFlag=false;"  );
+	addMenuElement(NodeChoices, "inline", 71, 181 , 80, 20,  action, "Delete", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMapElementMenu();hideAll(evt);menuOpenFlag=false;"  );
 }
 
 function instantiateViewGroup() {
 
 	// *** VIEW MENU ***
 	action='View';
-	addMenuElement(menuSvgElement, "inline", 51, 0 , 50, 20,  action, "View",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor); hideSubMenus(evt);", "openViewMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'ViewChoices');" );
+	addMenuElement(menuSvgElement, "inline", 71, 0 , 70, 21,  action, "View",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor); hideSubMenus(evt);", "openViewMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'ViewChoices');" );
 	
 	var ViewChoices = createGroup(menuSvgElement, "ViewChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
 	
 	action="ToggleFullScreen";
-	addMenuElement(ViewChoices, "inline", 51, 21 , 100, 20, action, "Toggle Screen", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);" , "elemColor(evt,'"+action+"',upColor)","top.toggle(\"footer\"); top.toggle(\"header\");hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(ViewChoices, "inline", 71, 21 , 80, 20, action, "Toggle Screen", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);" , "elemColor(evt,'"+action+"',upColor)","top.toggle(\"footer\"); top.toggle(\"header\");hideAll(evt);menuOpenFlag=false;");
 	action = "SetDimension";	
-	addMenuElement(ViewChoices, "inline", 51, 41 , 100, 20,  action, "Set Dimension", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addDimensionList();hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(ViewChoices, "inline", 71, 41 , 80, 20,  action, "Set Dimension", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addDimensionList();hideAll(evt);menuOpenFlag=false;");
 	action="ColorNodesBy";
-	addMenuElement(ViewChoices, "inline", 51, 61 , 100, 20, action, "View by...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'ColorNodesBySeverityGroup'); elemShow(evt,'ColorNodesByAvailGroup'); elemShow(evt,'ColorNodesByStatusGroup')" , "elemColor(evt,'"+action+"',upColor)","");
+	addMenuElement(ViewChoices, "inline", 71, 61 , 80, 20, action, "View by...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'ColorNodesBySeverityGroup'); elemShow(evt,'ColorNodesByAvailGroup'); elemShow(evt,'ColorNodesByStatusGroup')" , "elemColor(evt,'"+action+"',upColor)","");
 	action="ColorNodesBySeverity";
-	addMenuElement(ViewChoices, "none", 120, 61 , 95, 20, action, "Severity", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='S';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
+	addMenuElement(ViewChoices, "none", 130, 61 , 80, 20, action, "Severity", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='S';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
 	action="ColorNodesByAvail";	
-	addMenuElement(ViewChoices, "none", 120, 81 , 95, 20, action, "Availability", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='A';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" );
+	addMenuElement(ViewChoices, "none", 130, 81 , 80, 20, action, "Availability", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='A';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" );
 	action="ColorNodesByStatus";	
-	addMenuElement(ViewChoices, "none", 120, 101 , 95, 20, action, "Status", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='T';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;");
+	addMenuElement(ViewChoices, "none", 130, 101 , 80, 20, action, "Status", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='T';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;");
 	
 }
 
 function instantiateRWAdminMenu(){
 	removeMenuChilds();
-	// *** MAP MENU ***
-	var action='MapMenu';
-	addMenuElement(menuSvgElement, "inline", 0, 0 , 50, 20,  action, "Map",  "elemColor(evt,'Map',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
-	
-	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
-	
-	action = "New";
-	addMenuElement(MapChoices, "inline", 0, 21 , 100, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "newMap();hideAll(evt);menuOpenFlag=false;");
-	action="Open";
-	addMenuElement(MapChoices, "inline", 0, 41 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
-	action="Close";
-	addMenuElement(MapChoices, "inline", 0, 61 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
-	action="Rename";
-	addMenuElement(MapChoices, "inline", 0, 81 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRenameMapBox(); hideAll(evt);menuOpenFlag=false;");
-	action="Delete";
-	addMenuElement(MapChoices, "inline", 0, 101 , 100, 20, action, action,  "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="Save";
-	addMenuElement(MapChoices, "inline", 0, 121 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "saveMap();hideAll(evt);menuOpenFlag=false;");
-	action="Clear";
-	addMenuElement(MapChoices, "inline", 0, 141 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "clearMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="RefreshMode";
-	addMenuElement(MapChoices, "inline", 0, 181 , 100, 20, action, "Refresh Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToNormalMode();hideAll(evt);menuOpenFlag=false;");
-	action="SetBG";
-	addMenuElement(MapChoices, "inline", 0, 161 , 100, 20, action, "Set Background...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'SetBGColorGroup'); elemShow(evt,'SetBGImageGroup')" , "elemColor(evt,'"+action+"',upColor)", "elemShow(evt,'SetBGColor'); elemShow(evt,'SetBGImage')");
-	action="SetBGColor";
-	addMenuElement(MapChoices, "none", 96, 160 , 100, 20, action, "Color", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "setBackground();  hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="SetBGImage";
-	addMenuElement(MapChoices, "none", 96, 180 , 100, 20, action, "Image", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "addBGImagesList();hideAll(evt);menuOpenFlag=false;");
-
+	instantiateMapGroupAdminMode();
 	instantiateNodeGroup();	
+	instantiateRefreshGroupAdminMode();
 }
  
 function instantiateRWNormalMenu(){
 	removeMenuChilds();
-
-	// *** MAP MENU ***
-	var action='MapMenu';
-	addMenuElement(menuSvgElement, "inline", 0, 0 , 50, 20,  action, "Map",  "elemColor(evt,'MapMenu',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
-	
-	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'MapMenu',downColor)","elemColor(evt,'MapMenu',upColor)");
-	
-	action="Open";
-	addMenuElement(MapChoices, "inline", 0, 21 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
-	
-	action="Close";
-	addMenuElement(MapChoices, "inline", 0, 41 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
-	
-	action="AdminMode";
-	addMenuElement(MapChoices, "inline", 0, 61 , 100, 20, action, "Admin Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToAdminMode();hideAll(evt);menuOpenFlag=false;");
-	
+	instantiateMapGroupNormalMode();
 	instantiateViewGroup();
+	instantiateRefreshGroupNormalMode();
 }
 
 function instantiateROMenu(){
 	removeMenuChilds();
-	var ROMenu = menuSvgElement;
-	
-	// *** MAP MENU ***
-	var action='MapMenu';
-	addMenuElement(menuSvgElement, "inline", 0, 0 , 50, 20,  action, "Map",  "elemColor(evt,'MapMenu',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
-
-	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
-	
-	action="Open";
-	addMenuElement(MapChoices, "inline", 0, 21 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
-	action="Close";
-	addMenuElement(MapChoices, "inline", 0, 41 , 100, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
-
-	
+	instantiateMapGroup();	
 	instantiateViewGroup();
 }
 

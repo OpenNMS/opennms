@@ -201,7 +201,7 @@ function load(evt){
 	mapHeight=parseInt(mapWidth*3/4);			
 	
 	// Define the position of the work panel
-	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+3);
+	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+5);
 
 	postMapRequestAll( "MapStartUp."+suffix, "GET", null, handleInit, "text/xml", null, true );
 }
@@ -211,42 +211,43 @@ function load(evt){
 	<svg id="MapPanel"/>
 
 	<!-- ******** W O R K P A N E L ********* -->	
-	<svg id="WorkPanel" width="225" height="520" y="0">
+	<svg id="WorkPanel" width="211" height="600" y="0">
+
+		<!-- ********* TOOLBAR M E N U ********* -->
+
+		<rect x="0" y="0"    id="toolbar" width="100%" height="21px" stroke="blue" />
+		<rect x="0" y="400"   id="mendbar" width="100%" height="21px" stroke="blue" fill="dimgray"/>
+		<text x="5" y="403"   id="countDownText" font-family="Arial,Helvetica" fill="white"/>
+		<svg id="Menu"/>
 
 
 		<!-- ********* map informations ********* -->
-		<text id="MapInfo" display="none" x="3" y="50" font-size='12'>Map info</text>	
+		<text id="MapInfo" display="none" x="3" y="50" font-family="Arial,Helvetica" font-size='12'>Map info</text>	
 	
 		<!-- ********* maps history ********* -->
 		<svg id="history" y="150" x="3" width="150" heigth="100">
 		    <g id="prevGroup" display="none">
 				<polygon id="prev" points="0,30 5,27 5,33" style="stroke:grey;fill:blue"/>
 				<polygon id="prev" points="6,30 11,27 11,33" style="stroke:grey;fill:blue"/>
-				<text id="prevMapName" x='13' y='33' font-size='10' style='fill:grey'></text>
+				<text id="prevMapName" x='13' y='33' font-family="Arial,Helvetica" font-size='10' style='fill:grey'></text>
 				<rect  style="cursor:pointer" id="prevAction"  x="0" y="25" rx="2" ry="2" width="14" height="10" opacity="0"/>
 		    </g>
 		    
 		    <g id="nextGroup" display="none">
 				<polygon id="next" points="0,37 0,43 5,40" style="stroke:grey;fill:blue"/>
 				<polygon id="next" points="6,37 6,43 11,40" style="stroke:grey;fill:blue"/>
-				<text id="nextMapName" x='13' y='43' font-size='10' style='fill:grey'></text>
+				<text id="nextMapName" x='13' y='43' font-family="Arial,Helvetica" font-size='10' style='fill:grey'></text>
 				<rect  style="cursor:pointer" id="nextAction"  x="0" y="35" rx="2" ry="2" width="14" height="10" opacity="0"/>
 		    </g>	    
 	    
 		</svg>	
 
 
-		<!-- ********* TOOLBAR M E N U ********* -->
-
-		<rect x="0" y="0" id="toolbar" width="100%" height="21px" stroke="blue" />
-		<text y="2"  x="110" id="countDownText" />
-		<svg id="Menu"/>
-		
 		<!-- ********* TOP I N F O ********* -->
 		
 
     	<svg  y="200" width="200" height="200" id="TopInfo">
-			<text id="TopInfoText" x="5" y="20"></text>
+			<text id="TopInfoText" x="5" y="20" font-family="Arial,Helvetica"></text>
 			<g id="nodes" />
 			<g id="categories" />
 			<g id="maps" />
@@ -260,21 +261,21 @@ function load(evt){
 		<!-- ********* DOWN I N F O ********* -->
 
 		<svg  y="300" width="200" height="100" id="DownInfo">
-			<text id="DownInfoText" x="5" y="20"></text>
+			<text id="DownInfoText" x="5" y="20" font-family="Arial,Helvetica"></text>
 		</svg>	
 
 
 		<svg>
 			<g id="LoadingText" x="40%" y="50%" display="none">
 			<rect  x="40%" y="40%" fill="white" stroke="white" width="60" height="20"  />
-			<text  x="40%" y="40%"><tspan font-size='12'   dx="3" dy="13">Loading...</tspan></text>
+			<text  x="40%" y="40%"><tspan font-size='12'   dx="3" dy="13" font-family="Arial,Helvetica">Loading...</tspan></text>
 			</g>
 		</svg>
 
 		<svg>
 			<g id="RefreshingText" x="40%" y="50%"  display="none">
 				<rect  x="40%" y="40%" fill="white" stroke="white" width="75" height="20"  />
-				<text  x="40%" y="40%"><tspan  font-size='12' dx="3" dy="13">Refreshing...</tspan></text>
+				<text  x="40%" y="40%"><tspan  font-size='12' dx="3" dy="13" font-family="Arial,Helvetica">Refreshing...</tspan></text>
 			</g>
 		</svg>	
 

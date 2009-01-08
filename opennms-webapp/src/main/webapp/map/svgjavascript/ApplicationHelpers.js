@@ -1,49 +1,6 @@
 /* *************** functions for the SVG management of the client application map ********************************************** */
 // Here are some basic SVG function used to create application objects
 
-// Function used by Menu
-
-function elemStrokeWidth(mouseEvent, elemName, value) {
-	elemName = spaceTrans(elemName);
-	var thisElem = document.getElementById(elemName);
-	if(thisElem){
-		thisElem.setAttributeNS(null,'stroke-width', value);
-	}
-}
-
-function elemStrokeColor(mouseEvent, elemName, value) {
-	elemName = spaceTrans(elemName);
-	var thisElem = document.getElementById(elemName);
-	if(thisElem){
-		thisElem.setAttributeNS(null,'stroke', value)
-	}
-}
-
-function elemShow(mouseEvent, elemName) {
-	elemName = spaceTrans(elemName);
-	var thisElem = document.getElementById(elemName);
-	if(thisElem){
-		thisElem.setAttributeNS(null,'display', 'inline');
-	}
-}
-
-function elemHide(mouseEvent, elemName) {
-	elemName = spaceTrans(elemName);
-	var thisElem = document.getElementById(elemName);
-	if(thisElem){
-		thisElem.setAttributeNS(null,'display', 'none');
-	}
-}
-
-function elemColor(mouseEvent, elemName, value) {
-	elemName = spaceTrans(elemName);
-	var thisElem = document.getElementById(elemName);
-	if(thisElem){
-		thisElem.setAttributeNS(null,'fill', value);
-	}
-}
-
-
 //reloads the grid of nodes on the map object
 function reloadGrid(){
 	var gridRectWidth=parseInt(mapElemDimension*X_FACTOR);	

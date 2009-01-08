@@ -39,8 +39,8 @@ var refreshingMapElems=false;
 var deletingMapElem=false;
 var addingMapElemNeighbors=false;
 var settingMapElemIcon=false;
-
-
+var stopCountdown=false;
+var countdownStarted=false;
 // ************ TopInfo variables ************
 
 // Variable used to identify a Button SVG Object in TopInfo SVG box
