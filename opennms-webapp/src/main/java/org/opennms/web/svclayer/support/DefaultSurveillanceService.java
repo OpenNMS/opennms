@@ -148,7 +148,6 @@ public class DefaultSurveillanceService implements SurveillanceService {
             return m_view.getColumns().getColumnDefCount();
         }
 
-        @SuppressWarnings("unchecked")
         public Set<OnmsCategory> getCategoriesForRow(int rowIndex) {
             return getOnmsCategoriesFromViewCategories(getRowDef(rowIndex).getCategoryCollection());
         }
@@ -157,7 +156,6 @@ public class DefaultSurveillanceService implements SurveillanceService {
             return m_view.getRows().getRowDef(rowIndex);
         }
 
-        @SuppressWarnings("unchecked")
         public Set<OnmsCategory> getCategoriesForColumn(int colIndex) {
             return getOnmsCategoriesFromViewCategories(getColumnDef(colIndex).getCategoryCollection());
         }
