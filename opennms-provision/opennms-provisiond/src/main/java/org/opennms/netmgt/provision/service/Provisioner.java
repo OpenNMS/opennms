@@ -162,6 +162,10 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 		m_eventSubscriptionService = eventManager;
 	}
 
+	public void setEventForwarder(EventForwarder eventForwarder) {
+	    m_eventForwarder = eventForwarder;
+	}
+	
 	public void afterPropertiesSet() throws Exception {
 	    super.afterPropertiesSet();
 		m_eventSubscriptionService.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);

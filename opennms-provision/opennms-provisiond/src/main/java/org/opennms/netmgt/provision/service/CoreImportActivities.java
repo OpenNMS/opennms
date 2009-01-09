@@ -38,6 +38,7 @@ import java.util.Map;
 import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
+import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
@@ -52,6 +53,7 @@ import org.springframework.core.io.Resource;
  *
  * @author brozow
  */
+@ActivityProvider
 public class CoreImportActivities {
     
     ProvisionService m_provisionService;
