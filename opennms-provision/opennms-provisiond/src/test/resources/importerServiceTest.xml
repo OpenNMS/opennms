@@ -18,6 +18,6 @@
   </bean>
   
   <bean id="cronExpression" class="java.lang.String">
-    <constructor-arg><value>0/10 * * * * ?</value></constructor-arg>
+    <constructor-arg><value>0 15 10 * * ? 2020</value></constructor-arg>
   </bean>
 </beans>
