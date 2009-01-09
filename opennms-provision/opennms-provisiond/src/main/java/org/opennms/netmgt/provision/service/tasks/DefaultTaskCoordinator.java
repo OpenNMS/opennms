@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionService;
@@ -83,7 +84,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      */
     
     private class RunnableActor extends Thread {
-        private BlockingQueue<Future<Runnable>> m_queue;
+        private final BlockingQueue<Future<Runnable>> m_queue;
         public RunnableActor(BlockingQueue<Future<Runnable>> queue) {
             m_queue = queue;
             start();
@@ -299,4 +300,10 @@ public class DefaultTaskCoordinator implements InitializingBean {
         m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
     }
 
+    public void setExecutors(Map<String,Executor> executors) {
+        m_taskCompletionServices.clear();
+        for (Map.Entry<String, Executor> e : executors.entrySet()) {
+            addExecutor(e.getKey(), e.getValue());
+        }
+    }
 }

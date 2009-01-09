@@ -37,7 +37,7 @@ import java.util.List;
 
 
 /**
- * LifeCycleBuilder
+ * LifeCycle
  *
  * @author brozow
  */
@@ -45,13 +45,18 @@ public class LifeCycle {
    
     private static final String[] OF_STRINGS = new String[0];
     
-    private String m_lifeCycleName;
-    private List<String> m_phases = new ArrayList<String>();
+    private final String m_lifeCycleName;
+    private final List<String> m_phases;
     
     public LifeCycle(String lifeCycleName) {
-        m_lifeCycleName = lifeCycleName;
+        this(lifeCycleName, new ArrayList<String>());
     }
-    
+
+    public LifeCycle(String lifeCycleName, List<String> phaseNames) {
+        m_lifeCycleName = lifeCycleName;
+        m_phases = phaseNames;
+    }
+
     public String getLifeCycleName() {
         return m_lifeCycleName;
     }
@@ -65,10 +70,9 @@ public class LifeCycle {
         m_phases.addAll(Arrays.asList(phases));
         return this;
     }
-    
+
     public String[] getPhaseNames() {
         return m_phases.toArray(OF_STRINGS);
     }
-
 
 }

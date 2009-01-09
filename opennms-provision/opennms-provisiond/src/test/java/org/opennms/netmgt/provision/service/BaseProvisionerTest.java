@@ -93,7 +93,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Unit test for ModelImport application.
@@ -112,7 +112,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/modelImporterTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
 public class BaseProvisionerTest {
@@ -150,31 +151,11 @@ public class BaseProvisionerTest {
     @Autowired
     private ProvisionService m_provisionService;
     
-    @Autowired
-    private TransactionTemplate m_transactionTemplate;
-    
     private EventAnticipator m_eventAnticipator;
+
+   private ForeignSourceRepository m_foreignSourceRepository;
     
-    private ForeignSourceRepository m_foreignSourceRepository;
     private OnmsForeignSource m_foreignSource;
-    
-    
-//    public void onSetUpInTransactionIfEnabled() throws Exception {
-//        super.onSetUpInTransactionIfEnabled();
-//        
-//        initSnmpPeerFactory();
-//    }
-//
-//    private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
-//        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
-//                "<snmp-config port=\"161\" retry=\"0\" timeout=\"2000\"\n" + 
-//                "             read-community=\"public\" \n" + 
-//                "                 version=\"v1\">\n" + 
-//                "\n" + 
-//                "</snmp-config>");
-//        
-//        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-//    }
     
     @BeforeClass
     public static void setUpSnmpConfig() {
@@ -208,6 +189,7 @@ public class BaseProvisionerTest {
 
 
     @Test
+    @Transactional
     public void testVisit() throws Exception {
 
         SpecFile specFile = new SpecFile();
@@ -218,6 +200,7 @@ public class BaseProvisionerTest {
     }
 
     @Test
+    @Transactional
     public void testSendEventsOnImport() throws Exception {
         
         MockNetwork network = new MockNetwork();
@@ -253,6 +236,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testFindQuery() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -262,6 +246,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testBigImport() throws Exception {
         File file = new File("/tmp/tec_dump.xml.large");
         if (file.exists()) {
@@ -275,6 +260,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
         
@@ -301,6 +287,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testPopulate() throws Exception {
         
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -362,8 +349,9 @@ public class BaseProvisionerTest {
      * @throws ModelImportException
      */
     @Test
+    @Transactional
     public void testImportUtf8() throws Exception {
-        
+
         m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"));
         
         assertEquals(1, getNodeDao().countAll());
@@ -379,6 +367,7 @@ public class BaseProvisionerTest {
      * @throws ModelImportException
      */
     @Test
+    @Transactional
     public void testDelete() throws Exception {
         
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -394,6 +383,7 @@ public class BaseProvisionerTest {
     
     //Scheduler tests
     @Test
+    @Transactional
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
        
@@ -403,6 +393,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
        
@@ -418,6 +409,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testProvisionerAddNodeToSchedule() throws Exception{
         
         
@@ -457,6 +449,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -473,6 +466,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testProvisionServiceScanIntervalCalcWorks() {
         long now = System.currentTimeMillis();
         
@@ -487,6 +481,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testProvisionerNodeRescanSchedule() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
@@ -500,6 +495,7 @@ public class BaseProvisionerTest {
     }
     
     @Test
+    @Transactional
     public void testProvisionerUpdateScheduleAfterImport() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
         

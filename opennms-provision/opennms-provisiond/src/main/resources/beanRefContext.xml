@@ -8,6 +8,7 @@
        <list>
          <value>META-INF/opennms/applicationContext-provisiond.xml</value>
          <value>classpath*:/META-INF/opennms/detectors.xml</value>
+         <value>classpath*:/META-INF/opennms/provisiond-extensions.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daemonContext" />
