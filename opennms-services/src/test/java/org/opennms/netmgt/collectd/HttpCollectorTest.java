@@ -38,33 +38,24 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
-import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
@@ -171,7 +162,8 @@ public class HttpCollectorTest extends AbstractCollectorTest {
         // Wait for any RRD writes to finish up
         Thread.sleep(1000);
     }
-    
+
+    @Test
     public final void testPersist() throws Exception {
         InetAddress opennmsDotOrg = InetAddress.getByName(m_testHostName);
         
