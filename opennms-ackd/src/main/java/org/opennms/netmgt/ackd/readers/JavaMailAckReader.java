@@ -53,9 +53,9 @@ import org.opennms.netmgt.ackd.AckService;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.model.Acknowledgment;
-import org.opennms.netmgt.poller.monitors.TimeoutTracker;
-import org.opennms.netmgt.utils.JavaMailer;
-import org.opennms.netmgt.utils.JavaMailerException;
+//import org.opennms.netmgt.poller.monitors.TimeoutTracker;
+//import org.opennms.netmgt.utils.JavaMailer;
+//import org.opennms.netmgt.utils.JavaMailerException;
 
 public class JavaMailAckReader implements AckReader {
 
@@ -115,6 +115,7 @@ public class JavaMailAckReader implements AckReader {
         
         List<Acknowledgment> acks;
         
+/*
         try {
             List<Message> msgs = readMessages();
             acks = detectAcks(msgs);
@@ -123,13 +124,14 @@ public class JavaMailAckReader implements AckReader {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+*/        
     }
     
     private List<Acknowledgment> detectAcks(List<Message> msgs) {
         return null;
     }
 
+/*
     private List<Message> readMessages() throws JavaMailerException {
         List<Message> messages = null;
         
@@ -158,11 +160,13 @@ public class JavaMailAckReader implements AckReader {
         Store mailStore = null;
         Folder mailFolder = null;
         
+
         try {
             JavaMailer readMailer = new JavaMailer(jmProps);
             TimeoutTrackerMap map = new TimeoutTrackerMap(Integer.valueOf(3), Integer.valueOf(3000), Boolean.TRUE);
-            TimeoutTracker tracker = new TimeoutTracker(map.getParameterMap(), 1, 3000);
+            //TimeoutTracker tracker = new TimeoutTracker(map.getParameterMap(), 1, 3000);
             
+
             for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
                 tracker.startAttempt();
                 
@@ -180,12 +184,15 @@ public class JavaMailAckReader implements AckReader {
                     continue;
                 }
             }
+
             
         } finally {
             
         }
+
         return messages;
     }
+*/
     
     private Boolean searchForReplies(List<Message> messages, ReadmailConfig config) {
         return null;
