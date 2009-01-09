@@ -32,6 +32,7 @@
 package org.opennms.netmgt.provision.service.lifecycle;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
@@ -65,5 +66,11 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
     public void addLifeCycle(LifeCycle lifeCycle) {
         m_lifeCycles.put(lifeCycle.getLifeCycleName(), lifeCycle);
     }
-    
+
+    public void setLifeCycles(List<LifeCycle> lifecycles) {
+        m_lifeCycles.clear();
+        for (LifeCycle l : lifecycles) {
+            addLifeCycle(l);
+        }
+    }
 }

@@ -7,12 +7,6 @@
 
   <tx:annotation-driven />
 
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location">
-      <value>file:${opennms.home}/etc/model-importer.properties</value>
-    </property>
-  </bean>
-  
   <bean id="importResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg><value>${importer.importURL}</value></constructor-arg>
   </bean>
@@ -54,6 +48,53 @@
     <constructor-arg ref="rescanThreads" />
   </bean>
   
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location">
+      <value>file:${opennms.home}/etc/model-importer.properties</value>
+    </property>
+  </bean>
+
+  <bean id="taskCoordinator" class="org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator">
+  	<property name="defaultExecutor" value="scan" />
+  	<property name="executors">
+  		<map>
+  			<entry key="scan" value-ref="scanExecutor" />
+  			<entry key="scan" value-ref="writeExecutor" />
+  		</map>
+  	</property>
+  </bean>
+  
+  <bean id="lifeCycleRepository" class="org.opennms.netmgt.provision.service.lifecycle.DefaultLifeCycleRepository">
+  	<constructor-arg ref="taskCoordinator" />
+  	<property name="lifeCycles">
+  		<list>
+  			<bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+  				<constructor-arg value="import" />
+  				<constructor-arg>
+  					<list>
+  						<value>validate</value>
+						<value>audit</value>
+						<value>scan</value>
+						<value>delete</value>
+						<value>update</value>
+						<value>insert</value>
+						<value>relate</value>
+  					</list>
+  				</constructor-arg>
+  			</bean>
+  			<bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+  				<constructor-arg value="nodeScan" />
+  				<constructor-arg>
+  					<list>
+						<value>scan</value>
+						<value>persist</value>
+  					</list>
+  				</constructor-arg>
+  			</bean>
+  		</list>
+  	</property>
+  </bean> 
+
   <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService">
     <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
     <property name="distPollerDao" ref="distPollerDao" />
@@ -62,12 +103,22 @@
     <property name="categoryDao" ref="categoryDao" />
   </bean>
 
+  <bean id="coreImportActivities" class="org.opennms.netmgt.provision.service.CoreImportActivities">
+  	<constructor-arg ref="provisionService" />
+  </bean>
+  
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
     <property name="provisionService" ref="provisionService" />
     <property name="importResource" ref="importResource"/>
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
-    <property name="writeExecutor" ref="writeExecutor" />
-    <property name="scanExecutor" ref="scanExecutor" />
+    <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
+    <property name="lifeCycleRepository" ref="lifeCycleRepository" />
+    <property name="scheduledExecutor" ref="scheduledExecutor" />
+    <property name="providers">
+    	<list>
+    		<ref bean="coreImportActivities" />
+    	</list>
+    </property>
   </bean>
 
   <bean id="modelImportingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

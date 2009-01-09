@@ -41,33 +41,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.service.lifecycle.DefaultLifeCycleRepository;
-import org.opennms.netmgt.provision.service.lifecycle.LifeCycle;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public class BaseProvisioner implements InitializingBean {
 
-    private CoreImportActivities m_provider;
+    private List<Object> m_providers;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
-    private Executor m_scanExecutor;
-    private Executor m_writeExecutor;
     private ScheduledExecutorService m_scheduledExecutor;
-    private Map<Integer, ScheduledFuture<?>> m_scheduledNodes;
+    private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new HashMap<Integer, ScheduledFuture<?>>();
 	
 	public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
@@ -77,59 +71,22 @@ public class BaseProvisioner implements InitializingBean {
 	    return m_provisionService;
 	}
 	
-	public void setScanExecutor(Executor scanExecutor) {
-	    m_scanExecutor = scanExecutor;
-	}
-	
-	public void setWriteExecutor(Executor writeExecutor) {
-	    m_writeExecutor = writeExecutor;
-	}
-	
 	public void setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
 	    m_scheduledExecutor = scheduledExecutor;
 	}
 
+	public void setLifeCycleRepository(LifeCycleRepository lifeCycleRepository) {
+	    m_lifeCycleRepository = lifeCycleRepository;
+	}
+
+	public void setProviders(List<Object> providers) {
+	    m_providers = providers;
+	}
+	
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
-        Assert.notNull(m_scanExecutor, "scanExecutor property must be set");
-        Assert.notNull(m_writeExecutor, "writeExecutor property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
-        
-        if(m_scheduledNodes == null) m_scheduledNodes = new HashMap<Integer, ScheduledFuture<?>>();
-        
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator();
-        coordinator.setDefaultExecutor("scan");
-        coordinator.addExecutor("scan", m_scanExecutor);
-        coordinator.addExecutor("write", m_writeExecutor);
-        coordinator.afterPropertiesSet();
-        
-        DefaultLifeCycleRepository lifeCycleRepository = new DefaultLifeCycleRepository(coordinator);
-        
-        LifeCycle importLifeCycle = new LifeCycle("import")
-            .addPhase("validate")
-            .addPhase("audit")
-            .addPhase("scan")
-            .addPhase("delete")
-            .addPhase("update")
-            .addPhase("insert")
-            .addPhase("relate");
-            
-            
-        lifeCycleRepository.addLifeCycle(importLifeCycle);
-        
-        LifeCycle nodeScanLifeCycle = new LifeCycle("nodeScan")
-            .addPhase("scan")
-            .addPhase("persist");
-        
-
-        lifeCycleRepository.addLifeCycle(nodeScanLifeCycle);
-        
-        m_lifeCycleRepository = lifeCycleRepository;
-        
-        
-        m_provider = new CoreImportActivities(getProvisionService());
-        
-        
+        Assert.notNull(m_lifeCycleRepository, "lifeCycleRepository property must be set");
     }
     
     protected void scheduleRescanForExistingNodes() {        
@@ -228,21 +185,13 @@ public class BaseProvisioner implements InitializingBean {
         
         importManager.getClass();
         
-        LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_provider);
+        LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_providers.toArray());
         doImport.setAttribute("resource", resource);
         doImport.setAttribute("foreignSource", foreignSource);
         
         doImport.trigger();
         
         doImport.waitFor();
-
-//        SpecFile specFile = m_provider.loadSpecFile(resource, foreignSource);
-//        ImportOperationsManager opsMgr = m_provider.auditNodes(specFile);
-//        opsMgr.persistOperations(doImport);
-//        relateNodes(specFile);
-
-            
-
     }
 
     public Category log() {
