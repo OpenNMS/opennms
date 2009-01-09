@@ -2,10 +2,11 @@
 <wmi-datacollection-config rrdRepository="@install.share.dir@/rrd/snmp/">
     <wmi-collection name="default">
         <rrd step="300">
-            <rra>RRA:AVERAGE:0.5:1:8928</rra>
-            <rra>RRA:AVERAGE:0.5:12:8784</rra>
-            <rra>RRA:MIN:0.5:12:8784</rra>
-            <rra>RRA:MAX:0.5:12:8784</rra>
+		  <rra>RRA:AVERAGE:0.5:1:2016</rra>
+		  <rra>RRA:AVERAGE:0.5:12:1488</rra>
+		  <rra>RRA:AVERAGE:0.5:288:366</rra>
+		  <rra>RRA:MAX:0.5:288:366</rra>
+		  <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
 
         <wpms>
@@ -83,11 +84,11 @@
             <wpm name="wmiPhysicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
                  keyvalue="Name" recheckInterval="3600000" ifType="all">
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
-                <attrib name="PercentDiskReadTime" alias="wmiPDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
+                <attrib name="PercentPhysDiskReadTime" alias="wmiPDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing write requests -->
-                <attrib name="PercentDiskWriteTime" alias="wmiPDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
+                <attrib name="PercentPhysDiskWriteTime" alias="wmiPDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
                 <!-- Rate at which I/Os to the disk were split into multiple I/Os -->
-                <attrib name="SplitIOPerSec" alias="wmiPDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
+                <attrib name="SplitPhysIOPerSec" alias="wmiPDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
             </wpm>
 
             <!--  A group for collecting Logical Disk statistics.
@@ -100,13 +101,13 @@
                 <!-- Unallocated space on the disk drive in megabytes -->
                 <attrib name="FreeMegabytes" alias="wmiLDPctFreeMBytes" wmiObject="FreeMegabytes" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
-                <attrib name="PercentDiskReadTime" alias="wmiLDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
+                <attrib name="PercentLogDiskReadTime" alias="wmiLDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing write requests -->
-                <attrib name="PercentDiskWriteTime" alias="wmiLDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
+                <attrib name="PercentLogDiskWriteTime" alias="wmiLDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
                 <!-- Ratio of the free space available on the logical disk unit to the total usable space -->
                 <attrib name="PercentFreeSpace" alias="wmiLDPctFreeSpace" wmiObject="PercentFreeSpace" type="Gauge"/>
                 <!-- Rate at which I/Os to the disk were split into multiple I/Os -->
-                <attrib name="SplitIOPerSec" alias="wmiLDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
+                <attrib name="SplitLogIOPerSec" alias="wmiLDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
             </wpm>
 
             <!-- A collection of network interface statistics -->
