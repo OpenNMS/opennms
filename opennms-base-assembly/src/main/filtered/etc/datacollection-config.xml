@@ -249,7 +249,7 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-     <!-- Resource Type for WMI Logical
+     <!-- Resource Type for WMI Logical Disks -->
      <resourceType name="wmiLogicalDisk" label="Windows Logical Disk"
                   resourceLabel="Disk: ${index}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
