@@ -9,139 +9,178 @@
         </rrd>
 
         <wpms>
+            <!--  A group for collecting System Memory statistics.
+             *  Check the keyvalue "Name" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="wmiOSMemory" wmiClass="Win32_PerfFormattedData_PerfOS_Memory"
+                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                <!-- Amount of physical memory in bytes available to processes -->
+                <attrib name="AvailableBytes" alias="wmiOSMemAvailBytes" wmiObject="AvailableBytes" type="Gauge"/>
+                <!-- Number of bytes currently being used by the file system cache -->
+                <attrib name="CacheBytes" alias="wmiOSMemCacheBytes" wmiObject="CacheBytes" type="Gauge"/>
+                <!-- Number of faults which occur when a page is not found in the file system cache -->
+                <attrib name="CacheFaultsPerSec" alias="wmiOSMemCacheFaults" wmiObject="CacheFaultsPerSec" type="Counter"/>
+                <!-- Amount of virtual memory, in bytes, that can be committed without having to extend the paging files -->
+                <attrib name="CommitLimit" alias="wmiOSMemCommitLimit" wmiObject="CommitLimit" type="Gauge"/>
+                <!-- Amount of committed virtual memory, in bytes -->
+                <attrib name="CommittedBytes" alias="wmiOSMemCommitted" wmiObject="CommittedBytes" type="Gauge"/>
+                <!-- Overall rate at which faulted pages are handled by the processor -->
+                <attrib name="PageFaultsPerSec" alias="wmiOSMemPgFaultsSec" wmiObject="PageFaultsPerSec" type="Gauge"/>
+                <!-- Number of calls to allocate space in the nonpaged pool -->
+                <attrib name="PoolNonpagedAllocs" alias="wmiOSMemNPPAllocs" wmiObject="PoolNonpagedAllocs" type="Counter"/>
+                <!-- Number of calls to allocate space in the paged pool -->
+                <attrib name="PoolPagedAllocs" alias="wmiOSMemPPAllocs" wmiObject="PoolPagedAllocs" type="Counter"/>
+            </wpm>
+
+            <!--  A group for collecting System Objects statistics.
+             *  Check the keyvalue "Name" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="wmiOSObjects" wmiClass="Win32_PerfFormattedData_PerfOS_Objects"
+                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                <!-- Number of events in the computer at the time of data collection -->
+                <!-- An event is used when two or more threads wish to synchronize execution -->
+                <attrib name="Events" alias="wmiOSObjEvents" wmiObject="Events" type="Gauge"/>
+                <!-- Count of the number of mutexes in the computer -->
+                <attrib name="Mutexes" alias="wmiOSObjMutexes" wmiObject="Mutexes" type="Gauge"/>
+                <!-- Number of processes in the computer -->
+                <attrib name="Processes" alias="wmiOSObjProcesses" wmiObject="Processes" type="Gauge"/>
+                <!-- Number of sections in the computer. Sounds like shared memory segments. -->
+                <attrib name="Sections" alias="wmiOSObjSections" wmiObject="Sections" type="Gauge"/>
+                <!-- Number of semaphores in the computer -->
+                <attrib name="Semaphores" alias="wmiOSObjSemaphores" wmiObject="Semaphores" type="Gauge"/>
+                <!-- Number of threads in the computer -->
+                <attrib name="Threads" alias="wmiOSObjThreads" wmiObject="Threads" type="Gauge"/>
+            </wpm>
+
+            <!--  A group for collecting System Processor statistics.
+             *  Check the keyvalue "Name" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="wmiOSCpu" wmiClass="Win32_PerfFormattedData_PerfOS_Processor"
+                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                <!-- Average number of hardware interrupts that the processor is receiving and servicing in each second -->
+                <attrib name="InterruptsPerSec" alias="wmiOSCpuIntsPerSec" wmiObject="InterruptsPerSec" type="Gauge"/>
+                <!-- Percentage of time that the processor is executing a non-idle thread -->
+                <attrib name="PercentProcessorTime" alias="wmiOSCpuPctProcTime" wmiObject="PercentProcessorTime" type="Gauge"/>
+                <!-- Percentage of time that the processor spent receiving and servicing deferred procedure calls -->
+                <attrib name="PercentDPCTime" alias="wmiOSCpuPctDPCTime" wmiObject="PercentDPCTime" type="Gauge"/>
+                <!-- Percentage of time that the processor spent receiving and servicing hardware interrupts -->
+                <attrib name="PercentInterruptTime" alias="wmiOSCpuPctIntrTime" wmiObject="PercentInterruptTime" type="Gauge"/>
+                <!-- Percentage of nonidle processor time spent in user mode -->
+                <attrib name="PercentUserTime" alias="wmiOSCpuPctUserTime" wmiObject="PercentUserTime" type="Gauge"/>
+            </wpm>
+
+            <!--  A group for collecting Physical Disk statistics.
+             *  Check the keyvalue "Name" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="wmiPhysicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
+                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
+                <attrib name="PercentDiskReadTime" alias="wmiPDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
+                <!-- Percentage of elapsed time that the selected disk drive is busy servicing write requests -->
+                <attrib name="PercentDiskWriteTime" alias="wmiPDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
+                <!-- Rate at which I/Os to the disk were split into multiple I/Os -->
+                <attrib name="SplitIOPerSec" alias="wmiPDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
+            </wpm>
+
+            <!--  A group for collecting Logical Disk statistics.
+             *  Check the keyvalue "Name" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="wmiLogicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_LogicalDisk"
+                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                <!-- Unallocated space on the disk drive in megabytes -->
+                <attrib name="FreeMegabytes" alias="wmiLDPctFreeMBytes" wmiObject="FreeMegabytes" type="Gauge"/>
+                <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
+                <attrib name="PercentDiskReadTime" alias="wmiLDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
+                <!-- Percentage of elapsed time that the selected disk drive is busy servicing write requests -->
+                <attrib name="PercentDiskWriteTime" alias="wmiLDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
+                <!-- Ratio of the free space available on the logical disk unit to the total usable space -->
+                <attrib name="PercentFreeSpace" alias="wmiLDPctFreeSpace" wmiObject="PercentFreeSpace" type="Gauge"/>
+                <!-- Rate at which I/Os to the disk were split into multiple I/Os -->
+                <attrib name="SplitIOPerSec" alias="wmiLDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
+            </wpm>
+
+            <!-- A collection of network interface statistics -->
+            <wpm name="wmiTcpipNetworkInterface" wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface"
+                 keyvalue="Name" recheckInterval="3600000" ifType="ignore">
+                <!-- The total number of bytes per second, sent and received -->
+                <attrib name="BytesTotalPerSec" alias="wmiIpNetBytesSec" wmiObject="BytesTotalPerSec" type="Counter"/>
+                <!-- The number of bytes received per second -->
+                <attrib name="BytesReceivedPerSec" alias="wmiIpNetIBytesSec" wmiObject="BytesReceivedPerSec" type="Counter"/>
+                <!-- The number of bytes sent per second -->
+                <attrib name="BytesSentPerSec" alias="wmiIpNetOBytesSec" wmiObject="BytesSentPerSec" type="Counter"/>
+                <!-- The total number of packets per second, sent and received -->
+                <attrib name="PacketsPersec" alias="wmiIpNetPktsSec" wmiObject="PacketsPersec" type="Counter"/>
+                <!-- The total number of packets received per second -->
+                <attrib name="PacketsReceivedPersec" alias="wmiIpNetIPktsSec" wmiObject="PacketsReceivedPersec" type="Counter"/>
+                <!-- The number of non-unicast packets received per second -->
+                <attrib name="PacketsReceivedNonUnicastPersec" alias="wmiIpNetINUPktsSec" wmiObject="PacketsReceivedNonUnicastPersec" type="Counter"/>
+                <!-- The number of unicast packets received per second -->
+                <attrib name="PacketsReceivedUnicastPersec" alias="wmiIpNetIUCPktsSec" wmiObject="PacketsReceivedUnicastPersec" type="Counter"/>
+                <!-- The total number of packets sent per second -->
+                <attrib name="PacketsSentPersec" alias="wmiIpNetOPktsSec" wmiObject="PacketsSentPersec" type="Counter"/>
+                <!-- The number of non-unicast packets sent per second -->
+                <attrib name="PacketsSentNonUnicastPersec" alias="wmiIpNetONUPktsSec" wmiObject="PacketsSentNonUnicastPersec" type="Counter"/>
+                <!-- The number of unicast packets sent per second -->
+                <attrib name="PacketsSentUnicastPersec" alias="wmiIpNetOUCPktsSec" wmiObject="PacketsSentUnicastPersec" type="Counter"/>
+            </wpm>
+
             <!--  A group for collecting Terminal Service  statistics.
              *  Check the keyvalue "ActiveSessions" - if it's there (should be) collect this whole group.
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm    name="win32_terminalservices"
-                    wmiClass="Win32_PerfFormattedData_TermService_TerminalServices"
-                    keyvalue="ActiveSessions"
-                    recheckInterval="3600000"
-                    ifType="all">
+            <wpm name="win32_terminalservices" wmiClass="Win32_PerfFormattedData_TermService_TerminalServices"
+                 keyvalue="ActiveSessions" recheckInterval="3600000" ifType="all">
                 <!--  Collect these attributes.
                  *  Name is the unique name used for keyvalue.
                  *  Alias is the local name for the RRD file.
-
                  *  wmiObject is the WMI object instance.
                  *  Type is used to convert values around.
                 -->
                 <!-- The number of active sessions, including the console. -->
-                <attrib name="ActiveSessions"
-                        alias="win32_ts_active"
-                        wmiObject="ActiveSessions"
-                        type="Gauge"/>
-
+                <attrib name="ActiveSessions" alias="wmiTSSessActive" wmiObject="ActiveSessions" type="Gauge"/>
                 <!-- The number of inactive (idle, disconnected) sessions. -->
-                <attrib name="InactiveSessions"
-                        alias="win32_ts_inactive"
-                        wmiObject="InactiveSessions"
-                        type="Gauge"/>
-
+                <attrib name="InactiveSessions" alias="wmiTSSessInactive" wmiObject="InactiveSessions" type="Gauge"/>
                 <!-- The total number of sessions. -->
-                <attrib name="TotalSessions"
-                        alias="win32_ts_total"
-                        wmiObject="TotalSessions"
-                        type="Gauge"/>
+                <attrib name="TotalSessions" alias="wmiTSSessTotal" wmiObject="TotalSessions" type="Gauge"/>
             </wpm>
 
             <!-- A collection of server session statistics -->
-            <wpm    name="win32_serversessions"
-                    wmiClass="Win32_PerfFormattedData_PerfNet_Server"
-                    keyvalue="ServerSessions"
-                    recheckInterval="3600000"
-                    ifType="all">
+            <wpm name="win32_serversessions" wmiClass="Win32_PerfFormattedData_PerfNet_Server"
+                 keyvalue="ServerSessions" recheckInterval="3600000" ifType="all">
                 <!-- The number of sessions currently active in the server. -->
-                <attrib name="ServerSessions"
-                        alias="win32_serversession"
-                        wmiObject="ServerSessions"
-                        type="Gauge" />
+                <attrib name="ServerSessions" alias="wmiServerSessions" wmiObject="ServerSessions" type="Gauge" />
                 <!-- The number of sessions that have been closed due to unexpected error conditions. -->
-                <attrib name="SessionsErroredOut"
-                        alias="win32_sessnerrorout"
-                        wmiObject="SessionsErroredOut"
-                        type="Gauge" />
+                <attrib name="SessionsErroredOut" alias="wmiServerSessErrOut" wmiObject="SessionsErroredOut" type="Counter" />
                 <!-- The number of sessions that have been forced to logoff. -->
-                <attrib name="SessionsForcedOff"
-                        alias="win32_sessnforceoff"
-                        wmiObject="SessionsForcedOff"
-                        type="Gauge" />
+                <attrib name="SessionsForcedOff" alias="wmiServerSessFcdOff" wmiObject="SessionsForcedOff" type="Counter" />
                 <!-- The number of sessions that have terminated normally. -->
-                <attrib name="SessionsLoggedOff"
-                        alias="win32_sessnslogdoff"
-                        wmiObject="SessionsLoggedOff"
-                        type="Gauge" />
+                <attrib name="SessionsLoggedOff" alias="wmiServerSessLgdOff" wmiObject="SessionsLoggedOff" type="Counter" />
                 <!-- The number of sessions that have been closed due to their idle time exceeding the autodisconnect parameter for the server. -->
-                <attrib name="SessionsTimedOut"
-                        alias="win32_sessntimedout"
-                        wmiObject="SessionsTimedOut"
-                        type="Gauge" />
+                <attrib name="SessionsTimedOut" alias="wmiServerSessTmdOut" wmiObject="SessionsTimedOut" type="Counter" />
             </wpm>
 
             <!-- A collection of server error statistics -->
-            <wpm    name="win32_servererrors"
-                    wmiClass="Win32_PerfFormattedData_PerfNet_Server"
-                    keyvalue="ErrorsSystem"
-                    recheckInterval="3600000"
-                    ifType="all">
+            <wpm name="win32_servererrors" wmiClass="Win32_PerfFormattedData_PerfNet_Server" keyvalue="ErrorsSystem"
+                 recheckInterval="3600000" ifType="all">
                 <!-- The number of times an internal Server Error was detected. -->
-                <attrib name="ErrorsSystem"
-                        alias="win32_svrerr_errsys"
-                        wmiObject="ErrorsSystem"
-                        type="Counter" />
+                <attrib name="ErrorsSystem" alias="wmiServerErrsSystem" wmiObject="ErrorsSystem" type="Counter" />
                 <!-- The number of times accesses to files opened successfully were denied. -->
-                <attrib name="ErrorsGrantedAccess"
-                        alias="win32_svrerr_grtaxs"
-                        wmiObject="ErrorsGrantedAccess"
-                        type="Counter" />
+                <attrib name="ErrorsGrantedAccess" alias="wmiServerErrsGtdAxs" wmiObject="ErrorsGrantedAccess" type="Counter" />
                 <!-- The number of times opens on behalf of clients have failed with STATUS_ACCESS_DENIED. -->
-                <attrib name="ErrorsAccessPermissions"
-                        alias="win32_svrerr_axsprm"
-                        wmiObject="ErrorsAccessPermissions"
-                        type="Counter" />
+                <attrib name="ErrorsAccessPermissions" alias="wmiServerErrsAxsPrm" wmiObject="ErrorsAccessPermissions" type="Counter" />
                 <!-- The number of failed logon attempts to the server. -->
-                <attrib name="ErrorsLogon"
-                        alias="win32_svrerr_errlgn"
-                        wmiObject="ErrorsLogon"
-                        type="Counter" />
-            </wpm>
-
-            <!-- A collection of network interface statistics -->
-            <wpm    name="win32_tcpip_ni_pck"
-                    wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface"
-                    keyvalue="Name"
-                    recheckInterval="3600000"
-                    ifType="ignore">
-                <!-- The number of packets per second -->
-                <attrib name="PacketsPersec"
-                        alias="win32_ipni_pktps"
-                        wmiObject="PacketsPersec"
-                        type="Gauge"/>
-                <!-- The number of packets per second -->
-                <attrib name="PacketsReceivedNonUnicastPersec"
-                        alias="win32_ipni_pktrnups"
-                        wmiObject="PacketsReceivedNonUnicastPersec"
-                        type="Gauge"/>
-                <!-- The number of packets per second -->
-                <attrib name="PacketsReceivedPersec"
-                        alias="win32_ipni_pktrps"
-                        wmiObject="PacketsReceivedPersec"
-                        type="Gauge"/>
-                <!-- The number of packets per second -->
-                <attrib name="PacketsReceivedUnicastPersec"
-                        alias="win32_ipni_pktrups"
-                        wmiObject="PacketsReceivedUnicastPersec"
-                        type="Gauge"/>
-                <!-- The number of packets per second -->
-                <attrib name="PacketsSentNonUnicastPersec"
-                        alias="win32_ipni_pktsnups"
-                        wmiObject="PacketsSentNonUnicastPersec"
-                        type="Gauge"/>
-                <!-- The number of packets per second -->
-                <attrib name="PacketsSentUnicastPersec"
-                        alias="win32_ipni_pktsups"
-                        wmiObject="PacketsSentUnicastPersec"
-                        type="Gauge"/>
+                <attrib name="ErrorsLogon" alias="wmiServerErrsLogon" wmiObject="ErrorsLogon" type="Counter" />
             </wpm>
         </wpms>
     </wmi-collection>
