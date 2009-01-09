@@ -41,7 +41,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.core.utils.ParameterMap;
 
 /**
  * @author brozow

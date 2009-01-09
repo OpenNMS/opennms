@@ -50,6 +50,7 @@ import javax.mail.search.SubjectTerm;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;

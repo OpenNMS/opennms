@@ -44,10 +44,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This OpenNMS capsd plugin checks if a given server is running a server that

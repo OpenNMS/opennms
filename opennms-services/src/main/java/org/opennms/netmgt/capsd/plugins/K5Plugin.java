@@ -40,8 +40,8 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.utils.ParameterMap;
 
 
 /**

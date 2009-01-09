@@ -34,14 +34,13 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Convenience class for looking up string and integer values in a parameter

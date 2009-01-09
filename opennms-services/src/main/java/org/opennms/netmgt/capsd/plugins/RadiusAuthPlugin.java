@@ -46,9 +46,9 @@ import net.sourceforge.jradiusclient.exception.RadiusException;
 import net.sourceforge.jradiusclient.util.ChapUtil;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This plugin is used to check a host for Radius Authentication support.

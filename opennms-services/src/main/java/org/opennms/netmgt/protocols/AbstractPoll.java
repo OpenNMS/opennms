@@ -36,8 +36,8 @@ package org.opennms.netmgt.protocols;
 
 import java.util.Collections;
 
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.monitors.TimeoutTracker;
 
 public abstract class AbstractPoll implements Poll {
     // default timeout of 3 seconds
