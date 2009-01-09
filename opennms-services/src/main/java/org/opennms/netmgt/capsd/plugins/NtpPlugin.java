@@ -42,9 +42,9 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.ntp.NtpMessage;
 
 /**

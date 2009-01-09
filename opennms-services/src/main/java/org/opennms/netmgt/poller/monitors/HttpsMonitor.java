@@ -56,8 +56,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**

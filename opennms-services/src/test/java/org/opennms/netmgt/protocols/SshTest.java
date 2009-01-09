@@ -40,7 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.poller.monitors.TimeoutTracker;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.protocols.ssh.Ssh;
 
 import junit.framework.TestCase;

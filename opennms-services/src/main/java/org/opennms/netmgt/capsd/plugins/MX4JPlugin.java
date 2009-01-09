@@ -34,7 +34,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 

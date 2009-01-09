@@ -36,6 +36,8 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Collections;
 
+import org.opennms.core.utils.TimeoutTracker;
+
 import junit.framework.TestCase;
 
 /**

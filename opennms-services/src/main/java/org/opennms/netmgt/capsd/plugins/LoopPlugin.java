@@ -37,8 +37,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.Plugin;
-import org.opennms.netmgt.utils.ParameterMap;
 /**
  * @author david
  *

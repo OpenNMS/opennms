@@ -33,7 +33,7 @@ package org.opennms.netmgt.threshd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.core.utils.ParameterMap;
 
 public class LatencyParameters {
 

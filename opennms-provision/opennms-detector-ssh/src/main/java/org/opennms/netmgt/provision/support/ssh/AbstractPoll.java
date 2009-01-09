@@ -37,6 +37,7 @@ package org.opennms.netmgt.provision.support.ssh;
 import java.util.Collections;
 
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.core.utils.TimeoutTracker;
 
 public abstract class AbstractPoll implements Poll {
     // default timeout of 3 seconds

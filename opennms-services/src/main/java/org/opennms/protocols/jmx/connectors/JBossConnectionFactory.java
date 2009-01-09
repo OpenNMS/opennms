@@ -33,7 +33,6 @@ package org.opennms.protocols.jmx.connectors;
 import java.lang.reflect.*;
 import java.io.*;
 import java.net.*;
-import java.util.Hashtable;
 import java.util.*;
 
 import javax.naming.Context;
@@ -41,8 +40,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.jmx.MBeanServerProxy;
 import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 
