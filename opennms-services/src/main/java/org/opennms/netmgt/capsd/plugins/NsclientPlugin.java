@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
@@ -42,7 +43,6 @@ import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>

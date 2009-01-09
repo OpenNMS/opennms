@@ -38,8 +38,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than

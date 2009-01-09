@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.core.utils.TimeoutTracker;
 
 /**
  * This class is designed to be used by the service poller framework to test the
