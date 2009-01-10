@@ -63,7 +63,9 @@ public class GroupPersister extends BasePersister {
     }
 
     public void completeGroup(AttributeGroup group) {
-        if (shouldPersist()) commitBuilder();
+        if (shouldPersist()) {
+            commitBuilder();
+        }
         popShouldPersist();
     }
 

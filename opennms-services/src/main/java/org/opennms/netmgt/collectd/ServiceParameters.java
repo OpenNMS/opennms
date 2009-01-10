@@ -36,9 +36,9 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.Map;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
@@ -55,6 +55,14 @@ public class ServiceParameters {
     
     public Map<String, String> getParameters() {
         return m_parameters;
+    }
+
+    public String toString() {
+        return "domain: " + getDomain() + ", "
+        + "storeByNodeID: " + getStoreByNodeID() + ", "
+        + "storeByIfAlias: " + getStoreByIfAlias() + ", "
+        + "storFlagOverride: " + getStorFlagOverride() + ", "
+        + "ifAliasComment: " + getIfAliasComment();
     }
 
     String getDomain() {
@@ -91,11 +99,7 @@ public class ServiceParameters {
     }
 
     void logIfAliasConfig() {
-    	log().info("domain: " + getDomain() + ", "
-    			+ "storeByNodeID: " + getStoreByNodeID() + ", "
-    			+ "storeByIfAlias: " + getStoreByIfAlias() + ", "
-				+ "storFlagOverride: " + getStorFlagOverride() + ", "
-				+ "ifAliasComment: " + getIfAliasComment());
+    	log().info(this.toString());
     }
 
     private Category log() {
