@@ -29,15 +29,11 @@
 //
 package org.opennms.netmgt.notifd;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockNode;
@@ -81,7 +77,7 @@ public class TaskCreationTest extends NotificationsTestCase {
     public void testMakeEmailTask() throws Exception {
         long startTime = now();
 
-        NotificationTask task = m_eventProcessor.makeEmailTask(startTime, m_params, 1, "brozow@opennms.org", m_commands, new LinkedList(), null);
+        NotificationTask task = m_eventProcessor.makeEmailTask(startTime, m_params, 1, "brozow@opennms.org", m_commands, new LinkedList<NotificationTask>(), null);
 
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
@@ -97,7 +93,7 @@ public class TaskCreationTest extends NotificationsTestCase {
     public void testMakeUserTask() throws Exception {
         long startTime = now();
 
-        NotificationTask task = m_eventProcessor.makeUserTask(startTime, m_params, 1, "brozow", m_commands, new LinkedList(), null);
+        NotificationTask task = m_eventProcessor.makeUserTask(startTime, m_params, 1, "brozow", m_commands, new LinkedList<NotificationTask>(), null);
 
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
@@ -125,7 +121,7 @@ public class TaskCreationTest extends NotificationsTestCase {
     public void testMakeGroupTasks() throws Exception {
         long startTime = now();
         
-        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, INTERVAL);
+        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList<NotificationTask>(), null, INTERVAL);
 
         assertTasksWithEmail(tasks, "brozow@opennms.org", "david@opennms.org");
         assertStartInterval(tasks, startTime, INTERVAL);
@@ -142,14 +138,14 @@ public class TaskCreationTest extends NotificationsTestCase {
         
         long dayTime = getTimeStampFor("21-FEB-2005 11:59:56");
         
-        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, INTERVAL);
+        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList<NotificationTask>(), null, INTERVAL);
         
         assertTasksWithEmail(dayTasks, "brozow@opennms.org", "david@opennms.org");
         assertStartInterval(dayTasks, dayTime, INTERVAL);
         
         long nightTime = getTimeStampFor("21-FEB-2005 23:00:00");
 
-        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, INTERVAL);
+        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList<NotificationTask>(), null, INTERVAL);
 
         assertTasksWithEmail(nightTasks, "brozow@opennms.org", "david@opennms.org");
         // delayed start due to group duty schedule
@@ -160,14 +156,14 @@ public class TaskCreationTest extends NotificationsTestCase {
     public void testMakeRoleTasks() throws Exception {
         long dayTime = getTimeStampFor("21-FEB-2005 11:59:56");
 
-        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, INTERVAL);
+        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList<NotificationTask>(), null, INTERVAL);
 
         assertTasksWithEmail(tasks, "brozow@opennms.org");
         assertStartInterval(tasks, dayTime, INTERVAL);
         
         long sundayTime = getTimeStampFor("30-JAN-2005 11:59:56"); // sunday
 
-        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, INTERVAL);
+        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList<NotificationTask>(), null, INTERVAL);
         
         assertTasksWithEmail(sundayTasks, "brozow@opennms.org", "admin@opennms.org");
         assertStartInterval(sundayTasks, sundayTime, INTERVAL);
