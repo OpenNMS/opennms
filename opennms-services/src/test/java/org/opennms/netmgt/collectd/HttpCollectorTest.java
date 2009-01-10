@@ -36,187 +36,193 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.HttpCollectionConfigFactory;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockDatabase;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.mock.JUnitMockHttpServer;
+import org.opennms.netmgt.mock.JUnitMockHttpServerExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
+import org.opennms.test.FileAnticipator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class HttpCollectorTest extends AbstractCollectorTest {
 
-    private HttpCollectionConfigFactory m_factory;
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    JUnitCollectorExecutionListener.class,
+    JUnitMockHttpServerExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+})
+@JUnitMockHttpServer(port=10342)
+public class HttpCollectorTest {
+
+    @Autowired
+    private MockEventIpcManager m_mockEventIpcManager;
     
-    private String m_testHostName = "www.opennms.org";
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
     
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        System.setProperty("opennms.home", "/opt/opennms");
-        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
-        MockLogAppender.setupLogging();
+    private TestContext m_context;
 
-        MockNetwork m_network = new MockNetwork();
-        m_network.setCriticalService("ICMP");
-        m_network.addNode(1, "testnode");
-        m_network.addInterface(InetAddress.getByName(m_testHostName).getHostAddress());
-        m_network.addService("ICMP");
-        m_network.addService("HTTP");
+    private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
-        MockDatabase m_db = new MockDatabase();
-        m_db.populate(m_network);
+    private final String m_testHostName = "127.0.0.1";
 
-        DataSourceFactory.setInstance(m_db);
-        
-        MockEventIpcManager eventIpcManager = new MockEventIpcManager();
-        
-        EventIpcManagerFactory.setIpcManager(eventIpcManager);
-        
-        RrdTestUtils.initialize();
-        
-        initializeDatabaseSchemaConfig("/org/opennms/netmgt/config/test-database-schema.xml");
-        
-        setTransMgr();
-        setFileAnticipator();
+    private CollectionSpecification m_collectionSpecification;
+
+    private CollectionAgent m_collectionAgent;
+
+    public void setTestContext(TestContext t) {
+        m_context = t;
     }
 
-    private void initializeHttpDatacollectionConfigFactory(String pathName) throws MarshalException, ValidationException, IOException {
-        m_factory = new HttpCollectionConfigFactory(getDataCollectionConfigReader(pathName));
-        HttpCollectionConfigFactory.setInstance(m_factory);
-        HttpCollectionConfigFactory.init();
+    private OnmsServiceType getServiceType(String name) {
+        OnmsServiceType serviceType = m_serviceTypeDao.findByName(name);
+        if (serviceType == null) {
+            serviceType = new OnmsServiceType(name);
+            m_serviceTypeDao.save(serviceType);
+            m_serviceTypeDao.flush();
+        }
+        return serviceType;
     }
 
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @Before
+    public void setUp() throws Exception {
+        assertNotNull(m_mockEventIpcManager);
+        assertNotNull(m_ipInterfaceDao);
+        assertNotNull(m_nodeDao);
+
+        if (m_nodeDao.findByLabel("testnode").size() == 0) {
+            NetworkBuilder builder = new NetworkBuilder(m_distPoller);
+            builder.addNode("testnode");
+            builder.addInterface(InetAddress.getByName(m_testHostName).getHostAddress()).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+            builder.addService(getServiceType("ICMP"));
+            builder.addService(getServiceType("HTTP"));
+            if (m_nodeDao == null) {
+                throw new Exception("node DAO does not exist!");
+            }
+            OnmsNode n = builder.getCurrentNode();
+            assertNotNull(n);
+            m_nodeDao.save(n);
+            m_nodeDao.flush();
+        }
+
+        HttpCollector collector = new HttpCollector();
+
+        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
+        assertEquals(1, ifaces.size());
+        OnmsIpInterface iface = ifaces.iterator().next();
+        
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("collection", "default");
+        collector.initialize(parameters);
+
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", collector, "default");
+        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
-    
+
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
      *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
      */
     @Test
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config.xml", datacollectionType="http",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
     public final void testCollect() throws Exception {
-        InetAddress opennmsDotOrg = InetAddress.getByName(m_testHostName);
-        
-        initializeHttpDatacollectionConfigFactory("/org/opennms/netmgt/config/http-datacollection-config.xml");
-        RrdTestUtils.initializeNullStrategy();
-        HttpCollector collector = new HttpCollector();
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setId(1);
-        OnmsIpInterface iface = new OnmsIpInterface(opennmsDotOrg.getHostAddress(), node );
-        iface.setId(2);
-        node.addIpInterface(iface);
+        m_collectionSpecification.initialize(m_collectionAgent);
 
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("collection", "default");
-        collector.initialize(parameters);
-        
-        CollectionSpecification spec = createCollectionSpec("HTTP", collector, "default");
-        
-        CollectionAgent agent = createCollectionAgent(iface);
-        
-        // node level collection
-        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
-        anticipateRrdFiles(nodeDir, "documentCount");
-        anticipateRrdFiles(nodeDir, "documentType");
-        anticipateRrdFiles(nodeDir, "greatAnswer");
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
-        spec.initialize(agent);
-        
-        CollectionSet collectionSet = spec.collect(agent);
-        assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
-                     collectionSet.getStatus());
-        persistCollectionSet(spec, collectionSet);
-        
-        spec.release(agent);
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
+        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
+    @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-persist-test-config.xml", datacollectionType="http",
+                    anticipateRrds={ "1/documentCount", "1/greatAnswer", "1/someNumber" }, anticipateFiles={ "1/strings.properties" })
     public final void testPersist() throws Exception {
-        InetAddress opennmsDotOrg = InetAddress.getByName(m_testHostName);
-        
-        initializeHttpDatacollectionConfigFactory("/org/opennms/netmgt/config/http-datacollection-persist-test-config.xml");
-        RrdTestUtils.initialize();
-        HttpCollector collector = new HttpCollector();
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setId(1);
-        OnmsIpInterface iface = new OnmsIpInterface(opennmsDotOrg.getHostAddress(), node );
-        iface.setId(2);
-        node.addIpInterface(iface);
+        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+        FileAnticipator anticipator = (FileAnticipator)m_context.getAttribute("fileAnticipator");
 
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("collection", "default");
-        collector.initialize(parameters);
-        
-        CollectionSpecification spec = createCollectionSpec("HTTP", collector, "default");
-        
-        CollectionAgent agent = createCollectionAgent(iface);
-        
-        // node level collection
-        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
-        anticipateRrdFiles(nodeDir, "documentCount", "documentType", "greatAnswer");
-        File documentCountRrdFile = new File(nodeDir, rrd("documentCount"));
-        File someNumberRrdFile = new File(nodeDir, rrd("someNumber"));
-        File greatAnswerRrdFile = new File(nodeDir, rrd("greatAnswer"));
-        
         int numUpdates = 2;
         int stepSizeInSecs = 1;
         
         int stepSizeInMillis = stepSizeInSecs*1000;
 
-        spec.initialize(agent);
+        m_collectionSpecification.initialize(m_collectionAgent);
         
-        collectNTimes(spec, agent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
         
-        // This is the value of documentCount from the first test page
+        // node level collection
+        File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
+        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("documentCount"));
+        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd("someNumber"));
+        File greatAnswerRrdFile = new File(nodeDir, CollectorTestUtils.rrd("greatAnswer"));
+
+       // This is the value of documentCount from the first test page
         // documentCount = Gauge32: 5
-        assertEquals(5.0, RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "documentCount", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("documentCount", Double.valueOf(5.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "documentCount", stepSizeInMillis, stepSizeInMillis));
 
         // This is the value of documentType from the first test page
         // someNumber = Gauge32: 17
-        assertEquals(17.0, RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "someNumber", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("documentType", Double.valueOf(17.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "someNumber", stepSizeInMillis, stepSizeInMillis));
 
         // This is the value of greatAnswer from the second test page
         //someNumber = Gauge32: 42
-        assertEquals(42.0, RrdUtils.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("greatAnswer", Double.valueOf(42.0), RrdUtils.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, stepSizeInMillis));
         
-        spec.release(agent);
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
+        m_collectionSpecification.release(m_collectionAgent);
     }
 
 }

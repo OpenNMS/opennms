@@ -78,5 +78,14 @@ public class RrdRepository {
         m_heartBeat = heartBeat;
     }
 
-
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(m_rrdBaseDir)
+            .append('[')
+            .append("Step:").append(m_step).append(',')
+            .append("HeartBeat:").append(m_heartBeat).append(',')
+            .append("RRAs:").append(m_rraList)
+            .append(']');
+        return sb.toString();
+    }
 }
