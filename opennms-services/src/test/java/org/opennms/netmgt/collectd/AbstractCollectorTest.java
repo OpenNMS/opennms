@@ -39,12 +39,10 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
 
 import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -65,11 +63,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 
-import junit.framework.TestCase;
 
 /**
  * @author jeffg
- *
+ * @deprecated Use JUnitCollector and SpringJUnit4ClassRunner (see HttpCollectorTest for examples)
  */
 public abstract class AbstractCollectorTest extends OpenNMSTestCase {
 

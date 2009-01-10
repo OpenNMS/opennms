@@ -4,7 +4,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                 xsi:schemaLocation="http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
                 rrdRepository="%rrdRepository%" > 
-                <http-collection name="default"> 
+                <http-collection name="default" timeout="1000" retries="0">
                    <rrd step="300"> 
                      <rra>RRA:AVERAGE:0.5:1:8928</rra> 
                      <rra>RRA:AVERAGE:0.5:12:8784</rra> 
@@ -13,11 +13,11 @@
                    </rrd> 
                    <uris>
                      <uri name="test-document-count">
-                       <url path="/index.php/HttpCollector_UnitTest_${ipaddr}"
+                       <url port="10342" path="/HttpCollector_UnitTest_${ipaddr}.txt"
                             user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
                             dotall="true" case-insensitive="true" unicode-case="true"
-                            matches=".*Document Count:\s+([0-9,]+(\.[0-9]*)?).*Document Type:\s+(go\u00e1).*Some Number:\s+([0-9,]+).*"
-                            response-range="100-399" virtual-host="www.opennms.org">
+                            matches=".*Document Count:\s+([0-9,]+(\.[0-9]*)?).*Document Type:\s+(blah).*Some Number:\s+([0-9,]+).*"
+                            response-range="100-399">
                        </url>
                        <attributes>
                          <attrib alias="documentCount" match-group="1" type="counter32"/>
@@ -26,11 +26,11 @@
                        </attributes>
                      </uri>
                      <uri name="test-second-uri">
-                       <url path="/index.php/HttpCollector_UnitTest2_${ipaddr}"
+                       <url port="10342" path="/HttpCollector_UnitTest2_${ipaddr}.txt"
                             user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
                             dotall="true"
                             matches=".*Answer.*everything:\s+([0-9,]+(\.[0-9]*)?).*Favorite interjection:\s+(.00.).*"
-                            response-range="100-399" virtual-host="www.opennms.org">
+                            response-range="100-399">
                        </url>
                        <attributes>
                          <attrib alias="greatAnswer" match-group="1" type="integer32"/>

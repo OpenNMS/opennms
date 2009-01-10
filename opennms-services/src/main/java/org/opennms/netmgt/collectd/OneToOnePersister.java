@@ -43,7 +43,7 @@ public class OneToOnePersister extends BasePersister {
     public OneToOnePersister(ServiceParameters params,  RrdRepository repository) {
         super(params, repository);
     }
-    
+
     public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
