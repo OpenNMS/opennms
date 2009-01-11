@@ -66,14 +66,14 @@
 					</documentation>
 				</annotation>
 			</attribute>
-            <attribute name="wmiClass" type="string" use="required">
+			<attribute name="wmiClass" type="string" use="required">
 				<annotation>
 					<documentation>
 						This is the WMI object class that we'll be checking.
 					</documentation>
 				</annotation>
 			</attribute>
-            <attribute name="keyvalue" type="string" use="required">
+			<attribute name="keyvalue" type="string" use="required">
 				<annotation>
 					<documentation>
 						The Key value which, if present, indicates that the rest of this group should be collected
@@ -88,14 +88,14 @@
 					</documentation>
 				</annotation>
 			</attribute>
-            <attribute name="ifType" type="string" use="required">
+			<attribute name="ifType" type="string" use="required">
 				<annotation>
 					<documentation>
 						Specifies the interface collection type.
 					</documentation>
 				</annotation>
 			</attribute>
-        </complexType>
+		</complexType>
 	</element>
 	<element name="attrib">
 		<annotation>
