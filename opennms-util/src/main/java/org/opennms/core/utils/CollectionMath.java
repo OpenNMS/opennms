@@ -76,8 +76,8 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the percentage of null values as a {@link Number} value
 	 */
-	public static Number percentNull(List<Number> list) {
-		return percentNull(convertNumberToBigDecimal(list));
+	public static Number percentNull(List<? extends Number> list) {
+		return percentNullBigDecimal(convertNumberToBigDecimal(list));
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the percentage of null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal percentNull(List<BigDecimal> list) {
+	private static BigDecimal percentNullBigDecimal(List<BigDecimal> list) {
 		if (list.size() > 0) {
 			return new BigDecimal(countNull(list)).divide(new BigDecimal(list.size()), 16, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(100));
 		} else {
@@ -98,8 +98,8 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the percentage of not-null values as a {@link Number} value
 	 */
-	public static Number percentNotNull(List<Number> list) {
-		return percentNotNull(convertNumberToBigDecimal(list));
+	public static Number percentNotNull(List<? extends Number> list) {
+		return percentNotNullBigDecimal(convertNumberToBigDecimal(list));
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the percentage of not-null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal percentNotNull(List<BigDecimal> list) {
+    private static BigDecimal percentNotNullBigDecimal(List<BigDecimal> list) {
 		if (list.size() > 0) {
 			return new BigDecimal(countNotNull(list)).divide(new BigDecimal(list.size()), 16, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(100));
 		} else {
@@ -120,8 +120,8 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the average of the not-null values as a {@link Number} value
 	 */
-	public static Number average(List<Number> list) {
-		return average(convertNumberToBigDecimal(list));
+	public static Number average(List<? extends Number> list) {
+		return averageBigDecimal(convertNumberToBigDecimal(list));
 	}
 	
 	/**
@@ -129,7 +129,7 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the average of the not-null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal average(List<BigDecimal> list) {
+    private static BigDecimal averageBigDecimal(List<BigDecimal> list) {
 		BigDecimal total = new BigDecimal(0);
 		List<BigDecimal> notNullEntries = getNotNullEntries(list);
 		if (notNullEntries.size() == 0) {
@@ -148,8 +148,8 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the median of the not-null values as a {@link Number} value
 	 */
-	public static Number median(List<Number> list) {
-		return median(convertNumberToBigDecimal(list));
+	public static Number median(List<? extends Number> list) {
+		return medianBigDecimal(convertNumberToBigDecimal(list));
 	}
 	
 	/**
@@ -157,7 +157,7 @@ public class CollectionMath {
 	 * @param list the {@link List} of {@link BigDecimal} values
 	 * @return the median of the not-null values as a {@link BigDecimal} value
 	 */
-	public static BigDecimal median(List<BigDecimal> list) {
+    private static BigDecimal medianBigDecimal(List<BigDecimal> list) {
 		List<BigDecimal> notNullEntries = getNotNullEntries(list);
 		Collections.sort(notNullEntries);
 		
@@ -181,12 +181,14 @@ public class CollectionMath {
 	 * @param list a {@link List} of {@link Number} values
 	 * @return a {@link List} of {@link BigDecimal} values
 	 */
-	private static List<BigDecimal> convertNumberToBigDecimal(List<Number> c) {
+	private static List<BigDecimal> convertNumberToBigDecimal(List<? extends Number> c) {
 		List<BigDecimal> bd = new ArrayList<BigDecimal>();
 		for (Number entry : c) {
 		    if (entry != null) {
 		        bd.add(new BigDecimal(entry.doubleValue()));
-		    }
+		    } else {
+		        bd.add(null);      
+            }
 		}
 		return bd;
 	}
