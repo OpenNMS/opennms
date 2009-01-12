@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
+import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
@@ -84,9 +85,7 @@ public class CoreImportActivities {
      */
 
     @Activity( lifecycle = "import", phase = "validate" )
-    public void loadSpecFile(LifeCycleInstance lifeCycle) throws ModelImportException, IOException {
-        Resource resource = lifeCycle.getAttribute("resource", Resource.class);
-        String foreignSource = lifeCycle.getAttribute("foreignSource", String.class);
+    public SpecFile loadSpecFile(@Attribute("foreignSource") String foreignSource, Resource resource) throws ModelImportException, IOException {
 
         System.out.println("Loading Spec File!");
         
@@ -99,18 +98,17 @@ public class CoreImportActivities {
         
         System.out.println("Finished Loading Spec File!");
 
-        lifeCycle.setAttribute("specFile", specFile);
+        return specFile;
     }
     
     
     
     @Activity( lifecycle = "import", phase = "audit" )
-    public void auditNodes(LifeCycleInstance lifeCycle) {
+    public ImportOperationsManager auditNodes(SpecFile specFile) {
         
         System.out.println("Auditing Nodes");
         
-        SpecFile specFile = lifeCycle.getAttribute("specFile", SpecFile.class);
-        
+
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
         
         String foreignSource = specFile.getForeignSource();
@@ -122,15 +120,15 @@ public class CoreImportActivities {
         
         opsMgr.auditNodes(specFile);
         
-        lifeCycle.setAttribute("opsMgr", opsMgr);
-        
         System.out.println("Finished Auditing Nodes");
+        
+        return opsMgr;
     }
     
     @Activity( lifecycle = "import", phase = "scan")
-    public Task scanNodes(LifeCycleInstance lifeCycle) {
-        ImportOperationsManager opsMgr = lifeCycle.getAttribute("opsMgr", ImportOperationsManager.class);
-        
+    public Task scanNodes(LifeCycleInstance lifeCycle, ImportOperationsManager opsMgr) {
+
+
         System.out.println("Scheduling Nodes");
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
@@ -149,32 +147,28 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "nodeScan", phase = "scan" )
-    public void scanNode(LifeCycleInstance lifeCycle) {
+    public void scanNode(ImportOperation operation) {
         
-        ImportOperation operation = lifeCycle.getAttribute("operation", ImportOperation.class);
-        
-
         System.out.println("Running scan phase of "+operation);
         operation.scan();
         System.out.println("Finished Running scan phase of "+operation);
     }
     
     @Activity( lifecycle = "nodeScan", phase = "persist" , schedulingHint = "write" )
-    public void persistNode(LifeCycleInstance lifeCycle) {
-        ImportOperation operation = lifeCycle.getAttribute("operation", ImportOperation.class);
+    public void persistNode(ImportOperation operation) {
+
         System.out.println("Running persist phase of "+operation);
         operation.persist();
         System.out.println("Finished Running persist phase of "+operation);
+
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
-    public Task relateNodes(final LifeCycleInstance lifeCycle) {
+    public Task relateNodes(final LifeCycleInstance lifeCycle, final SpecFile specFile) {
         
         
         System.out.println("Running relate phase");
         
-        final SpecFile specFile = lifeCycle.getAttribute("specFile", SpecFile.class);
-
         final BatchTask batch = new BatchTask(lifeCycle.getCoordinator());
         
         ImportVisitor visitor = new AbstractImportVisitor() {
