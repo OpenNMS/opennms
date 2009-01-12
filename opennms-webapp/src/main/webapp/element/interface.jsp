@@ -383,8 +383,7 @@ function doDelete() {
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 
-<%!//from the book _SNMP, SNMPv2, SNMPv3, and RMON 1 and 2_  (3rd Ed)
-  //by William Stallings, pages 128-129
+<%! // from http://www.iana.org/assignments/ianaiftype-mib
   public static final String[] IFTYPES = new String[] {
     "&nbsp;",                     //0 (not supported)
     "other",                    //1
@@ -582,7 +581,61 @@ function doDelete() {
     "frDlciEndPt",              //193
     "atmVciEndPt",              //194
     "opticalChannel",           //195
-    "opticalTransport"          //196
+    "opticalTransport",         //196
+    "propAtm",                  //197
+    "voiceOverCable",           //198
+    "infiniband",               //199
+    "teLink",                   //200
+    "q2931",                    //201
+    "virtualTg",                //202
+    "sipTg",                    //203
+    "sipSig",                   //204
+    "docsCableUpstreamChannel", //205
+    "econet",                   //206
+    "pon155",                   //207
+    "pon622",                   //208
+    "bridge",                   //209
+    "linegroup",                //210
+    "voiceEMFGD",               //211
+    "voiceFGDEANA",             //212
+    "voiceDID",                 //213
+    "mpegTransport",            //214
+    "sixToFour",                //215
+    "gtp",                      //216
+    "pdnEtherLoop1",            //217
+    "pdnEtherLoop2",            //218
+    "opticalChannelGroup",      //219
+    "homepna",                  //220
+    "gfp",                      //221
+    "ciscoISLvlan",             //222
+    "actelisMetaLOOP",          //223
+    "fcipLink",                 //224
+    "rpr",                      //225
+    "qam",                      //226
+    "lmp",                      //227
+    "cblVectaStar",             //228
+    "docsCableMCmtsDownstream", //229
+    "adsl2",                    //230
+    "macSecControlledIF",       //231
+    "macSecUncontrolledIF",     //232
+    "aviciOpticalEther",        //233
+    "atmbond",                  //234
+    "voiceFGDOS",               //235
+    "mocaVersion1",             //236
+    "ieee80216WMAN",            //237
+    "adsl2plus",                //238
+    "dvbRcsMacLayer",           //239
+    "dvbTdm",                   //240
+    "dvbRcsTdma",               //241
+    "x86Laps",                  //242
+    "wwanPP",                   //243
+    "wwanPP2",                  //244
+    "voiceEBS",                 //245
+    "ifPwType",                 //246
+    "ilan",                     //247
+    "pip",                      //248
+    "aluELP",                   //249
+    "gpon",                     //250
   };
 
 
