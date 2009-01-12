@@ -42,4 +42,5 @@ public interface SaveOrUpdateOperation extends ImportOperation{
 
     void foundCategory(String name);
 
+    void foundAsset(String name, String value);
 }

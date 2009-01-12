@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -87,7 +88,19 @@ public class SpecFile {
         for (Interface iface : node.getInterfaceCollection()) {
             visitInterface(visitor, iface);
         }
+        for (Asset asset : node.getAssetCollection()) {
+            visitAsset(visitor, asset);
+        }
         visitor.completeNode(node);
+    }
+
+    private void visitAsset(ImportVisitor visitor, Asset asset) {
+        doVisitAsset(visitor, asset);
+    }
+
+    private void doVisitAsset(ImportVisitor visitor, Asset asset) {
+        visitor.visitAsset(asset);
+        visitor.completeAsset(asset);
     }
 
     private void visitCategory(ImportVisitor visitor, Category category) {

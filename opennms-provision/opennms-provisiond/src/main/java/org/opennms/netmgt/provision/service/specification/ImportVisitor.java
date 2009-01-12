@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.provision.service.specification;
 
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -49,6 +50,7 @@ public interface ImportVisitor {
     public void completeMonitoredService(MonitoredService svc);
     public void visitCategory(Category category);
     public void completeCategory(Category category);
-    
+    public void visitAsset(Asset asset);
+    public void completeAsset(Asset asset);
 
 }
