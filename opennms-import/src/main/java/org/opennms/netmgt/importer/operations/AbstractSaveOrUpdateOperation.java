@@ -38,7 +38,6 @@ package org.opennms.netmgt.importer.operations;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -57,10 +56,12 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperation implements SaveOrUpdateOperation {
 
-	private OnmsNode m_node;
+	private final OnmsNode m_node;
     private NodeDao m_nodeDao;
     private DistPollerDao m_distPollerDao;
     private OnmsIpInterface m_currentInterface;
@@ -125,8 +126,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     protected abstract List<Event> doPersist();
 
 	protected void updateSnmpData() {
-		if (m_collector != null) 
-			m_collector.run();
+		if (m_collector != null) {
+            m_collector.run();
+        }
 		
 		updateSnmpDataForNode();
 		
@@ -154,7 +156,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	}
 
     private void updateSnmpDataForInterface(OnmsIpInterface ipIf) {
-    	if (m_collector == null || !m_collector.hasIpAddrTable() || !m_collector.hasIfTable()) return;
+    	if (m_collector == null || !m_collector.hasIpAddrTable() || !m_collector.hasIfTable()) {
+            return;
+        }
 
     	String ipAddr = ipIf.getIpAddress();
     	log().debug("Creating SNMP info for interface "+ipAddr);
@@ -162,7 +166,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     	InetAddress inetAddr = ipIf.getInetAddress();
 
     	int ifIndex = m_collector.getIfIndex(inetAddr);
-    	if (ifIndex == -1) return;
+    	if (ifIndex == -1) {
+            return;
+        }
 
         // first look to see if an snmpIf was created already
         OnmsSnmpInterface snmpIf = m_node.getSnmpInterfaceWithIfIndex(ifIndex);
@@ -204,8 +210,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
 	private String getNetMask(int ifIndex) {
 		InetAddress[] ifAddressAndMask = m_collector.getIfAddressAndMask(ifIndex);
-		if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null)
-			return ifAddressAndMask[1].getHostAddress();
+		if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null) {
+            return ifAddressAndMask[1].getHostAddress();
+        }
 		return null;
 	}
 
@@ -237,6 +244,11 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_node.getCategories().add(category);
     }
 
+    public void foundAsset(String name, String value) {
+        BeanWrapper w = new BeanWrapperImpl(m_node.getAssetRecord());
+        w.setPropertyValue(name, value);
+    }
+    
     private OnmsServiceType getServiceType(String serviceName) {
         preloadExistingTypes();
         OnmsServiceType type = getTypes().get(serviceName);
@@ -257,8 +269,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         
         if (getTypes() == null) {
             setTypes(new HashMap<String, OnmsServiceType>());
-            for (Iterator<OnmsServiceType> it = m_svcTypeDao.findAll().iterator(); it.hasNext();) {
-                OnmsServiceType svcType = it.next();
+            for (OnmsServiceType svcType : m_svcTypeDao.findAll()) {
                 getTypes().put(svcType.getName(), svcType);
             }
         }
@@ -267,8 +278,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     private void preloadExistingCategories() {
         if (getCategories() == null) {
             setCategories(new HashMap<String, OnmsCategory>());
-            for(Iterator<OnmsCategory> it = m_categoryDao.findAll().iterator(); it.hasNext();) {
-                OnmsCategory category = it.next();
+            for (OnmsCategory category : m_categoryDao.findAll()) {
                 getCategories().put(category.getName(), category);
             }
         }
@@ -289,7 +299,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     private OnmsCategory getCategory(String name) {
         preloadExistingCategories();
         
-        OnmsCategory category = (OnmsCategory)getCategories().get(name);
+        OnmsCategory category = getCategories().get(name);
         if (category == null) {    
             category = m_categoryDao.findByName(name);
             if (category == null) {

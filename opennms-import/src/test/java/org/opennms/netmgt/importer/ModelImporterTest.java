@@ -44,6 +44,7 @@ import java.io.StringReader;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -119,6 +120,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         private int m_svcCompleted;
         private int m_categoryCount;
         private int m_categoryCompleted;
+        private int m_assetCount;
+        private int m_assetCompleted;
         
         public int getModelImportCount() {
             return m_modelImportCount;
@@ -160,6 +163,14 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
             return m_categoryCompleted;
         }
 
+        private int getAssetCount() {
+            return m_assetCount;
+        }
+
+        private int getAssetCompletedCount() {
+            return m_assetCompleted;
+        }
+
         public void visitModelImport(ModelImport mi) {
             m_modelImportCount++;
         }
@@ -182,6 +193,10 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
             m_categoryCount++;
         }
         
+        public void visitAsset(Asset asset) {
+            m_assetCount++;
+        }
+        
         public String toString() {
             return (new ToStringCreator(this)
                 .append("modelImportCount", getModelImportCount())
@@ -194,6 +209,8 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
                 .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
                 .append("categoryCount", getCategoryCount())
                 .append("categoryCompletedCount", getCategoryCompletedCount())
+                .append("assetCount", getAssetCount())
+                .append("assetCompletedCount", getAssetCompletedCount())
                 .toString());
         }
 
@@ -215,6 +232,10 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
 
         public void completeCategory(Category category) {
             m_categoryCompleted++;
+        }
+        
+        public void completeAsset(Asset asset) {
+            m_assetCompleted++;
         }
         
     }
@@ -279,11 +300,6 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         assertEquals(1, mi.getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
         assertEquals("\u00f1ode2", mi.getNodeDao().get(1).getLabel());
-        
-//        ImportVisitor visitor = new ImportAccountant();
-//        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
-//        mi.visitImport(visitor);
-        
     }
     
     /**
@@ -302,24 +318,21 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         mi.importModelFromResource(new ClassPathResource(specFile));
         
         assertEquals(10, mi.getNodeDao().countAll());
-        
-//        ImportVisitor visitor = new ImportAccountant();
-//        mi.loadResource(File.separator+"tec_dump.xml.smalltest.delete");
-//        mi.visitImport(visitor);
-        
     }
     private void verifyCounts(CountingVisitor visitor) {
-        //System.err.println(visitor);
+        System.err.println(visitor);
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(3, visitor.getCategoryCount());
         assertEquals(4, visitor.getInterfaceCount());
         assertEquals(6, visitor.getMonitoredServiceCount());
+        assertEquals(3, visitor.getAssetCount());
         assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
         assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
         assertEquals(visitor.getCategoryCount(), visitor.getCategoryCompletedCount());
         assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
         assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
+        assertEquals(visitor.getAssetCount(), visitor.getAssetCompletedCount());
     }
 
     private void createAndFlushServiceTypes() {

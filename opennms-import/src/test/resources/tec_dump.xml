@@ -18,5 +18,8 @@
         <this:category name="AC"/>
         <this:category name="UK"/>
         <this:category name="low"/>
+       	<this:asset name="manufacturer" value="Dell" />
+       	<this:asset name="operatingSystem" value="Windows Pi" />
+        <this:asset name="description" value="Large and/or In Charge" />
 	</this:node>
 </this:model-import>

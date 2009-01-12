@@ -53,6 +53,7 @@ import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -369,16 +370,25 @@ public class BaseProvisionerTest {
     @Test
     @Transactional
     public void testDelete() throws Exception {
-        
         importFromResource("classpath:/tec_dump.xml.smalltest");
-        
         assertEquals(10, getNodeDao().countAll());
-        
         importFromResource("classpath:/tec_dump.xml.smalltest.delete");
-        
         assertEquals(9, getNodeDao().countAll());
-        
+    }
 
+    /**
+     * This test makes sure that asset information is getting imported properly.
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void testAssets() throws Exception {
+        importFromResource("classpath:/tec_dump.xml");
+        assertEquals(1, getNodeDao().countAll());
+        OnmsNode n = getNodeDao().get(1);
+        assertEquals("Asset Record: Manufacturer",     "Dell",                   n.getAssetRecord().getManufacturer());
+        assertEquals("Asset Record: Operating System", "Windows Pi",             n.getAssetRecord().getOperatingSystem());
+        assertEquals("Asset Record: Description",      "Large and/or In Charge", n.getAssetRecord().getDescription());
     }
     
     //Scheduler tests
@@ -433,21 +443,6 @@ public class BaseProvisionerTest {
         
     }
 
-    /**
-     * @param i 
-     * 
-     */
-    private OnmsNode createNode() {
-        OnmsNode node = new OnmsNode();
-        //node.setId(nodeId);
-        node.setLastCapsdPoll(new Date());
-        node.setForeignSource("imported:");
-        
-        m_nodeDao.save(node);
-        m_nodeDao.flush();
-        return node;
-    }
-    
     @Test
     @Transactional
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
@@ -520,10 +515,18 @@ public class BaseProvisionerTest {
     }
     
     
-    //Scheduler Tests
+    private OnmsNode createNode() {
+        OnmsNode node = new OnmsNode();
+        //node.setId(nodeId);
+        node.setLastCapsdPoll(new Date());
+        node.setForeignSource("imported:");
+        
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        return node;
+    }
     
     private void verifyCounts(CountingVisitor visitor) {
-        //System.err.println(visitor);
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
         assertEquals(3, visitor.getCategoryCount());
@@ -537,8 +540,6 @@ public class BaseProvisionerTest {
     }
 
     static class CountingVisitor implements ImportVisitor {
-        
-
         private int m_modelImportCount;
         private int m_modelImportCompleted;
         private int m_nodeCount;
@@ -549,6 +550,8 @@ public class BaseProvisionerTest {
         private int m_svcCompleted;
         private int m_categoryCount;
         private int m_categoryCompleted;
+        private int m_assetCount;
+        private int m_assetCompleted;
         
         public int getModelImportCount() {
             return m_modelImportCount;
@@ -590,6 +593,14 @@ public class BaseProvisionerTest {
             return m_categoryCompleted;
         }
 
+        public int getAssetCount() {
+            return m_assetCount;
+        }
+        
+        public int getAssetCompletedCount() {
+            return m_assetCompleted;
+        }
+        
         public void visitModelImport(ModelImport mi) {
             m_modelImportCount++;
         }
@@ -612,6 +623,10 @@ public class BaseProvisionerTest {
             m_categoryCount++;
         }
         
+        public void visitAsset(Asset asset) {
+            m_assetCount++;
+        }
+        
         public String toString() {
             return (new ToStringCreator(this)
                 .append("modelImportCount", getModelImportCount())
@@ -624,6 +639,8 @@ public class BaseProvisionerTest {
                 .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
                 .append("categoryCount", getCategoryCount())
                 .append("categoryCompletedCount", getCategoryCompletedCount())
+                .append("assetCount", getAssetCount())
+                .append("assetCompletedCount", getAssetCompletedCount())
                 .toString());
         }
 
@@ -645,6 +662,10 @@ public class BaseProvisionerTest {
 
         public void completeCategory(Category category) {
             m_categoryCompleted++;
+        }
+        
+        public void completeAsset(Asset asset) {
+            m_assetCompleted++;
         }
         
     }

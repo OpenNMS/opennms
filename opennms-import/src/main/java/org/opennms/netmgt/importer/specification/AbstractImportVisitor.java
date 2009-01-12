@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.importer.specification;
 
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -73,4 +74,9 @@ public class AbstractImportVisitor implements ImportVisitor {
     public void completeCategory(Category category) {
     }
 
+    public void visitAsset(Asset asset) {
+    }
+    
+    public void completeAsset(Asset asset) {
+    }
 }
