@@ -64,6 +64,8 @@ public class RtTicketerPlugin implements Plugin {
 	private String m_user;
 	private String m_password;
 	
+	private static final String TAG_REGEX = "<[^>]*>"; 
+	
 	public RtTicketerPlugin() {
 		
 		m_configDao = new DefaultRtConfigDao();
@@ -250,11 +252,18 @@ public class RtTicketerPlugin implements Plugin {
 	private String newRtTicket(Ticket newTicket) throws PluginException {
 		
 		String rtTicketNumber = null;
+		
+		// Remove any HTML tags in the ticket details.
+		
+		Pattern tagPattern = Pattern.compile(TAG_REGEX);
+		Matcher tagMatcher = tagPattern.matcher(newTicket.getDetails());
+		String rtTicketText = tagMatcher.replaceAll("");
+		
 		StringBuilder contentBuilder = new StringBuilder("id: ticket/new\n");
 		contentBuilder.append("Queue: " + m_configDao.getQueue() + "\n");
 		contentBuilder.append("Requestor: " + m_configDao.getRequestor() + "\n");
 		contentBuilder.append("Subject: " + newTicket.getSummary() + "\n");
-		contentBuilder.append("text: " + newTicket.getDetails() + "\n");
+		contentBuilder.append("text: " + rtTicketText + "\n");
 		
 		PostMethod post = new PostMethod(m_configDao.getBaseURL() + "/REST/1.0/edit");
 
