@@ -84,8 +84,8 @@ public class BaseImporter implements ImportOperationFactory {
     private MonitoredServiceDao m_monitoredServiceDao;
     private AssetRecordDao m_assetRecordDao;
     private CategoryDao m_categoryDao;
-    private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
-    private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
+    private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
+    private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
 
@@ -288,18 +288,20 @@ public class BaseImporter implements ImportOperationFactory {
 		}
 		
 		private OnmsNode findParent(Node node) {
-			if (node.getParentForeignId() != null)
-				return findNodeByForeignId(m_foreignSource, node.getParentForeignId());
-			else if (node.getParentNodeLabel() != null)
-				return findNodeByNodeLabel(node.getParentNodeLabel());
+			if (node.getParentForeignId() != null) {
+                return findNodeByForeignId(m_foreignSource, node.getParentForeignId());
+            } else if (node.getParentNodeLabel() != null) {
+                return findNodeByNodeLabel(node.getParentNodeLabel());
+            }
 			
 			return null;
 		}
 
 		private OnmsNode findNodeByNodeLabel(String label) {
 			Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
-			if (nodes.size() == 1)
-				return nodes.iterator().next();
+			if (nodes.size() == 1) {
+                return nodes.iterator().next();
+            }
 			
 			log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
 			return null;

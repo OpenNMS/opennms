@@ -56,7 +56,6 @@ import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.service.ImportAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
-import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
 
 /**
@@ -66,9 +65,9 @@ import org.opennms.netmgt.provision.service.specification.SpecFile;
  */
 public class ImportOperationsManager {
     
-	private List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
-    private List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
-    private Map<String, Integer> m_foreignIdToNodeMap;
+	private final List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
+    private final List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
+    private final Map<String, Integer> m_foreignIdToNodeMap;
     
     private final ProvisionService m_provisionService;
     
@@ -135,7 +134,7 @@ public class ImportOperationsManager {
     
     class DeleteIterator implements Iterator<ImportOperation> {
     	
-    	private Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
+    	private final Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
 		public boolean hasNext() {
 			return m_foreignIdIterator.hasNext();
@@ -209,6 +208,7 @@ public class ImportOperationsManager {
         return Collections.list(new OperationIterator());
     }
     
+    @SuppressWarnings("unused")
     private Runnable sequence(final Executor pool, final Runnable a, final Runnable b) {
         return new Runnable() {
             public void run() {
@@ -234,6 +234,7 @@ public class ImportOperationsManager {
         specFile.visitImport(new ImportAccountant(this));
     }
 
+    @SuppressWarnings("unused")
     private Runnable persister(final ImportOperation oper) {
         Runnable r = new Runnable() {
         	public void run() {
@@ -243,6 +244,7 @@ public class ImportOperationsManager {
         return r;
     }
     
+    @SuppressWarnings("unused")
     private Runnable scanner(final ImportOperation oper) {
         return new Runnable() {
             public void run() {

@@ -33,6 +33,7 @@
 
 package org.opennms.netmgt.importer;
 
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
@@ -42,7 +43,7 @@ import org.opennms.netmgt.importer.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 
 public class ImportAccountant extends AbstractImportVisitor {
-	private ImportOperationsManager m_opsMgr;
+	private final ImportOperationsManager m_opsMgr;
     private SaveOrUpdateOperation m_currentOp;
         
     public ImportAccountant(ImportOperationsManager opsMgr) {
@@ -69,4 +70,7 @@ public class ImportAccountant extends AbstractImportVisitor {
         m_currentOp.foundCategory(category.getName());
     }
 
+    public void visitAsset(Asset asset) {
+        m_currentOp.foundAsset(asset.getName(), asset.getValue());
+    }
 }

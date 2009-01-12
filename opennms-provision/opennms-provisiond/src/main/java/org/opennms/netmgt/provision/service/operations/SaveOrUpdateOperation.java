@@ -45,6 +45,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.provision.service.ProvisionService;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 public abstract class SaveOrUpdateOperation extends ImportOperation {
 
@@ -135,5 +137,8 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         return m_node;
     }
 
-
+    public void foundAsset(String name, String value) {
+        BeanWrapper w = new BeanWrapperImpl(m_node.getAssetRecord());
+        w.setPropertyValue(name, value);
+    }
 }

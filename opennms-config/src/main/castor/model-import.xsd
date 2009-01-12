@@ -23,6 +23,7 @@
       <sequence>
         <element ref="this:interface" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:asset" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="node-label" use="required">
         <simpleType>
@@ -129,12 +130,21 @@
     <annotation>
       <documentation>
         This element is used to specify OpenNMS specific categories.  Note: currently, these categories are defined in a separate configuration file and
-        are related directly to monitored services. I have separated out this element so that it can be refereneced by other entities (nodes, interfaces, etc.)
+        are related directly to monitored services. I have separated out this element so that it can be referenced by other entities (nodes, interfaces, etc.)
         however, they will be ignored until the domain model is changed and the service layer is adapted for this behavior. 
       </documentation>
     </annotation>
     <complexType>
     	  <attribute name="name" type="string" use="required" />
+    </complexType>
+  </element>
+  <element name="asset">
+    <annotation>
+      <documentation>This element is used to specify an asset record attribute.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
     </complexType>
   </element>
 </schema>
