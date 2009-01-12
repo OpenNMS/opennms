@@ -271,6 +271,16 @@ public class EventConstants {
     public final static String INTERFACE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/interfaceDown";
 
     /**
+     * The snmp interface oper status down event UEI
+     */
+    public final static String SNMP_INTERFACE_OPER_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperDown";
+
+    /**
+     * The snmp interface admin down event UEI
+     */
+    public final static String SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminDown";
+    
+    /**
      * The node down event UEI
      */
     public final static String NODE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/nodeDown";
@@ -289,6 +299,16 @@ public class EventConstants {
      * The interface up event UEI
      */
     public final static String INTERFACE_UP_EVENT_UEI = "uei.opennms.org/nodes/interfaceUp";
+
+    /**
+     * The snmp interface oper status up event UEI
+     */
+    public final static String SNMP_INTERFACE_OPER_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperUp";
+
+    /**
+     * The snmp interface admin up event UEI
+     */
+    public final static String SNMP_INTERFACE_ADMIN_UP_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminUp";
 
     /**
      * The node regained service event UEI
@@ -528,6 +548,11 @@ public class EventConstants {
      * The event config was changed by the user via the web UI, or manually, and should be reloaded
      */
     public final static String EVENTSCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/eventsConfigChange";
+    
+    /**
+     * The Snmp Poller config was changed by the user via the web UI, or manually, and should be reloaded
+     */
+    public final static String SNMPPOLLERCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/reloadSnmpPollerConfig";
     
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
     public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
@@ -837,6 +862,21 @@ public class EventConstants {
      * Parm use for promoteEnqueuedData event
      */
     public static final String PARM_FILES_TO_PROMOTE = "filesToPromote";
+    
+    /**
+     * Parameter used in event snmp poller definition
+     */ 
+    public final static String PARM_SNMP_INTERFACE_IFINDEX="snmpifindex";
+
+    public final static String PARM_SNMP_INTERFACE_IP="ipaddr"; 
+
+    public final static String PARM_SNMP_INTERFACE_NAME="snmpifname";
+
+    public final static String PARM_SNMP_INTERFACE_DESC="snmpifdescr";
+
+    public final static String PARM_SNMP_INTERFACE_ALIAS="snmpifalias";
+
+    public final static String PARM_SNMP_INTERFACE_MASK="mask";
     
     //
     // End event parms
