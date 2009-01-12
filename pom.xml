@@ -983,6 +983,11 @@
         <artifactId>opennms-wmi</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>rancid-api</artifactId>
+        <version>0.1</version>
+      </dependency>
 
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
