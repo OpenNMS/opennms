@@ -37,7 +37,7 @@
  * Created on Sep 16, 2004
  *
  */
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
 /**
  * Exception used to create proper return code

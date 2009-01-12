@@ -48,6 +48,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.JavaMailer;
+import org.opennms.core.utils.JavaMailerException;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;

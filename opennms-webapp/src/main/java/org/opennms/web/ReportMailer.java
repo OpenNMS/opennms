@@ -45,12 +45,12 @@ import javax.servlet.ServletException;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.JavaMailer;
+import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.utils.JavaMailer;
-import org.opennms.netmgt.utils.JavaMailerException;
 import org.opennms.report.availability.AvailabilityReport;
 
 /**
