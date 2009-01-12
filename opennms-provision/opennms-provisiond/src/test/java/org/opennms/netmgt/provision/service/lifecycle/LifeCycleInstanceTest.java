@@ -32,13 +32,16 @@
 package org.opennms.netmgt.provision.service.lifecycle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.util.Vector;
 import java.util.concurrent.Executors;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
+import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 
 
@@ -213,7 +216,11 @@ public class LifeCycleInstanceTest {
         LifeCycle lifeCycle = new LifeCycle("sample")
         .addPhases("phase1", "phase2", "phase3");
         
+        LifeCycle injection = new LifeCycle("injection")
+        .addPhases("phase1", "phase2", "phase3");
+        
         repository.addLifeCycle(lifeCycle);
+        repository.addLifeCycle(injection);
         
         m_lifeCycleFactory = repository;
 
@@ -294,6 +301,70 @@ public class LifeCycleInstanceTest {
         
         assertEquals("phase1 phase2 phase3", lifecycle.getAttribute(PHASE_DATA, String.class));
     }
+
+    
+    @ActivityProvider
+    public static class InjectionTestActivities {
+        
+        // this should be called first
+        @Activity(phase="phase1", lifecycle="injection")
+        @Attribute("one")
+        public Integer doPhaseOne(Phase phase1, Vector dataAccumulator) {
+
+            dataAccumulator.add(phase1.getName());
+            
+            return 1;
+            
+        }
+
+        // this should be called in the middle
+        @Activity(phase="phase2", lifecycle = "injection")
+        @Attribute("two")
+        public Integer doPhaseTwo(Phase phase2, Vector dataAccumulator) {
+
+            dataAccumulator.add(phase2.getName());
+            
+            return 2;
+
+        }
+
+        // this should be called last
+        @Activity(phase="phase3", lifecycle = "injection")
+        public void doPhaseThree(@Attribute("one") Integer one, Phase phase3, Vector dataAccumulator, @Attribute("two") Integer two) {
+
+            dataAccumulator.add(phase3.getName());
+            dataAccumulator.add(one.toString());
+            dataAccumulator.add(two.toString());
+
+        }
+
+        
+    }
+    
+    
+    @Test
+    public void testInjectionLifeCycle() throws Exception {
+        LifeCycleInstance lifecycle = m_lifeCycleFactory.createLifeCycleInstance("injection", new InjectionTestActivities());
+        lifecycle.setAttribute("dataAccumulator", new Vector());
+        
+        lifecycle.trigger();
+        
+        lifecycle.waitFor();
+        
+        Vector results = lifecycle.getAttribute("dataAccumulator" , Vector.class);
+        assertNotNull(results);
+
+        assertEquals(Integer.valueOf(1), lifecycle.getAttribute("one", Integer.class));
+        assertEquals("phase1", results.get(0));
+        assertEquals("phase2", results.get(1));
+        assertEquals("phase3", results.get(2));
+        assertEquals("1", results.get(3));
+        assertEquals("2", results.get(4));
+        
+        assertEquals(5, results.size());
+        
+    }
+
 
     @ActivityProvider
     public static class NestedLifeCycleActivites extends ActivityProviderSupport {

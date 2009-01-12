@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 import org.opennms.netmgt.provision.service.tasks.SequenceTask;
@@ -75,6 +76,8 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
             m_phases[i] = new Phase(this, phaseNames[i], m_providers);
             add(m_phases[i]);
         }
+        
+        setAttribute("lifeCycleInstance", this);
     }
 
     public List<String> getPhaseNames() {
@@ -114,6 +117,21 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     public void setAttribute(String key, Object value) {
         m_attributes.put(key, value);
     }
+    
+    public <T> T findAttributeByType(Class<T> clazz) {
+        T result = null;
+        for(Entry entry : m_attributes.entrySet()) {
+            if (clazz.isInstance(entry.getValue())) {
+                if (result != null) {
+                    throw new IllegalStateException("More than one attribute of type "+clazz+" in lifecycle "+this);
+                } else {
+                    result = clazz.cast(entry.getValue());
+                }
+            }
+        }
+        return result;
+    }
+
     
     public LifeCycleInstance createNestedLifeCycle(String lifeCycleName) {
         return m_repository.createLifeCycleInstance(lifeCycleName, m_providers);
