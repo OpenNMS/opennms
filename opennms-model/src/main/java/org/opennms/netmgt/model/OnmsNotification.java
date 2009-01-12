@@ -299,8 +299,10 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     }
 
     public void acknowledge(Date ackDate, String ackUser) {
-        m_answeredBy = ackUser;
-        m_respondTime = ackDate;
+        if(m_answeredBy == null || m_respondTime == null) {
+            m_answeredBy = ackUser;
+            m_respondTime = ackDate;
+        }
     }
 
 }

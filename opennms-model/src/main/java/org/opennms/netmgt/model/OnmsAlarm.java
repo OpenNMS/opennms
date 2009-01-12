@@ -615,8 +615,10 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     public void acknowledge(Date date, String user) {
-        m_alarmAckTime = date;
-        m_alarmAckUser = user;
+        if (m_alarmAckTime == null || m_alarmAckUser == null) {
+            m_alarmAckTime = date;
+            m_alarmAckUser = user;
+        }
     }
 
 
