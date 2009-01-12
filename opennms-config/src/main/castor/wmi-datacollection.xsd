@@ -95,6 +95,17 @@
 					</documentation>
 				</annotation>
 			</attribute>
+			<attribute name="resourceType" type="string" use="required">
+				<annotation>
+					<documentation>
+						Specifies the name of the resource type that pertains to the attributes
+						in this group. For scalar attributes (those occurring once per node,
+						such as available system memory) this should be "node".  For
+						multi-instanced attributes, this should be the name of a custom
+						resource type declared in datacollection-config.xml.
+					</documentation>
+				</annotation>
+			</attribute>
 		</complexType>
 	</element>
 	<element name="attrib">

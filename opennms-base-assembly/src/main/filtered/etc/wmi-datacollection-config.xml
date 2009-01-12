@@ -16,7 +16,7 @@
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
             <wpm name="wmiOSMemory" wmiClass="Win32_PerfFormattedData_PerfOS_Memory"
-                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                 keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- Amount of physical memory in bytes available to processes -->
                 <attrib name="AvailableBytes" alias="wmiOSMemAvailBytes" wmiObject="AvailableBytes" type="Gauge"/>
                 <!-- Number of bytes currently being used by the file system cache -->
@@ -41,7 +41,7 @@
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
             <wpm name="wmiOSObjects" wmiClass="Win32_PerfFormattedData_PerfOS_Objects"
-                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                 keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- Number of events in the computer at the time of data collection -->
                 <!-- An event is used when two or more threads wish to synchronize execution -->
                 <attrib name="Events" alias="wmiOSObjEvents" wmiObject="Events" type="Gauge"/>
@@ -63,7 +63,7 @@
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
             <wpm name="wmiOSCpu" wmiClass="Win32_PerfFormattedData_PerfOS_Processor"
-                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                 keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiOSCpu">
                 <!-- Average number of hardware interrupts that the processor is receiving and servicing in each second -->
                 <attrib name="InterruptsPerSec" alias="wmiOSCpuIntsPerSec" wmiObject="InterruptsPerSec" type="Gauge"/>
                 <!-- Percentage of time that the processor is executing a non-idle thread -->
@@ -82,7 +82,7 @@
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
             <wpm name="wmiPhysicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
-                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                 keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiPhysicalDisk">
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
                 <attrib name="PercentPhysDiskReadTime" alias="wmiPDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing write requests -->
@@ -97,7 +97,7 @@
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
             <wpm name="wmiLogicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_LogicalDisk"
-                 keyvalue="Name" recheckInterval="3600000" ifType="all">
+                 keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiLogicalDisk">
                 <!-- Unallocated space on the disk drive in megabytes -->
                 <attrib name="FreeMegabytes" alias="wmiLDPctFreeMBytes" wmiObject="FreeMegabytes" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
@@ -112,7 +112,7 @@
 
             <!-- A collection of network interface statistics -->
             <wpm name="wmiTcpipNetworkInterface" wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface"
-                 keyvalue="Name" recheckInterval="3600000" ifType="ignore">
+                 keyvalue="Name" recheckInterval="3600000" ifType="ignore" resourceType="wmiTcpipNetworkInterface">
                 <!-- The total number of bytes per second, sent and received -->
                 <attrib name="BytesTotalPerSec" alias="wmiIpNetBytesSec" wmiObject="BytesTotalPerSec" type="Counter"/>
                 <!-- The number of bytes received per second -->
@@ -141,7 +141,7 @@
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
             <wpm name="win32_terminalservices" wmiClass="Win32_PerfFormattedData_TermService_TerminalServices"
-                 keyvalue="ActiveSessions" recheckInterval="3600000" ifType="all">
+                 keyvalue="ActiveSessions" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!--  Collect these attributes.
                  *  Name is the unique name used for keyvalue.
                  *  Alias is the local name for the RRD file.
@@ -158,7 +158,7 @@
 
             <!-- A collection of server session statistics -->
             <wpm name="win32_serversessions" wmiClass="Win32_PerfFormattedData_PerfNet_Server"
-                 keyvalue="ServerSessions" recheckInterval="3600000" ifType="all">
+                 keyvalue="ServerSessions" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- The number of sessions currently active in the server. -->
                 <attrib name="ServerSessions" alias="wmiServerSessions" wmiObject="ServerSessions" type="Gauge" />
                 <!-- The number of sessions that have been closed due to unexpected error conditions. -->
@@ -173,7 +173,7 @@
 
             <!-- A collection of server error statistics -->
             <wpm name="win32_servererrors" wmiClass="Win32_PerfFormattedData_PerfNet_Server" keyvalue="ErrorsSystem"
-                 recheckInterval="3600000" ifType="all">
+                 recheckInterval="3600000" ifType="all" resourceType="node">
                 <!-- The number of times an internal Server Error was detected. -->
                 <attrib name="ErrorsSystem" alias="wmiServerErrsSystem" wmiObject="ErrorsSystem" type="Counter" />
                 <!-- The number of times accesses to files opened successfully were denied. -->
