@@ -450,6 +450,18 @@
       </logmsg>
       <severity>Minor</severity>
     </event>
+    <event>
+      <uei>uei.opennms.org/internal/reloadSnmpPollerConfig</uei>
+      <event-label>OpenNMS-defined internal event: reloadSnmpPollerConfig</event-label>
+      <descr>
+        &lt;p&gt;The administrator has changed the SnmpPoller
+        configuration. SnmpPoller will load the new configuration.&lt;/p&gt;
+      </descr>
+      <logmsg dest='logndisplay'>
+        &lt;p&gt;The SnmpPoller configuration files have changed.&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+    </event>
   <event>
     <uei>uei.opennms.org/internal/configureSNMP</uei>
     <event-label>OpenNMS-defined internal event: configureSNMP</event-label>
@@ -646,6 +658,36 @@
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceOperDown</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Oper Status Down</event-label>
+    <descr>
+      &lt;p&gt;The operation status of interface is down
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface
+      find the operation status down. 
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Operational status Down: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceAdminDown</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Admin Status Down</event-label>
+    <descr>
+      &lt;p&gt;The administration status of interface is down
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface
+      find the administration status down. 
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Administration status Down: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
     <uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
     <event-label>OpenNMS-defined node event: interfaceIPHostNameChanged</event-label>
     <descr>
@@ -714,6 +756,36 @@
     <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/nodes/interfaceDown" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
   </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceOperUp</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Oper Status Up</event-label>
+    <descr>
+      &lt;p&gt;The operation status of interface is up
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface
+      find the operation status up.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Operational status Up: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Admin Status Up</event-label>
+    <descr>
+      &lt;p&gt;The administration status of interface is down
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface
+      find the administration status up.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Administration status Up: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+  </event> 
   <event>
     <uei>uei.opennms.org/nodes/nodeAdded</uei>
     <event-label>OpenNMS-defined node event: nodeAdded</event-label>
