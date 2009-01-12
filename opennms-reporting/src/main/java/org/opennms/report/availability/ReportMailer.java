@@ -38,9 +38,9 @@ package org.opennms.report.availability;
 import java.io.IOException;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.JavaMailer;
+import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.JavaMailer;
-import org.opennms.netmgt.utils.JavaMailerException;
 
 /**
  * 

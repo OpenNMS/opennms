@@ -39,10 +39,10 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.JavaMailer;
+import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.utils.JavaMailer;
-import org.opennms.netmgt.utils.JavaMailerException;
 
 /**
  * Implements NotificationStragey pattern used to send notifications via the

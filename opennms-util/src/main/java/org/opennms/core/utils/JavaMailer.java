@@ -36,7 +36,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -70,8 +70,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.StringUtils;
 
 /**
