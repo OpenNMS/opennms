@@ -1283,12 +1283,12 @@
       <dependency>
         <groupId>net.jradius</groupId>
         <artifactId>jradius-core</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-20080911</version>
       </dependency>
       <dependency>
         <groupId>net.jradius</groupId>
         <artifactId>jradius-dictionary</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-20080911</version>
       </dependency>
       <dependency>
         <groupId>org.jrobin</groupId>
