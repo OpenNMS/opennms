@@ -157,7 +157,7 @@ public class WmiCollector implements ServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getName());
+                                resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
                             } else {
                                 resource = new WmiSingleInstanceCollectionResource(agent);
                             }
