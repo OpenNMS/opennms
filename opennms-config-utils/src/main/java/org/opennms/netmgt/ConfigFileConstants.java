@@ -123,6 +123,10 @@ public final class ConfigFileConstants {
      */
     public static final int POLL_OUTAGES_CONFIG_FILE_NAME;
 
+    /** The opennms snmp poller config file
+     */
+    public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
+
     /**
      * The opennms rtc config file
      */
@@ -572,10 +576,12 @@ public final class ConfigFileConstants {
         XMP_COLLECTION_CONFIG_FILE_NAME = 71;
         
         XMP_CONFIG_FILE_NAME = 72;
+
+        SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[73];
+        FILE_ID_TO_NAME = new String[74];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -652,7 +658,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
         FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
-		FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
+	FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
         FILE_ID_TO_NAME[MONITORING_LOCATIONS_FILE_NAME] = "monitoring-locations.xml";
@@ -665,6 +671,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME] = "rancid_provisioning-adpt-config.xml";
         FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
         FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
+        FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
     }
 
     /**
