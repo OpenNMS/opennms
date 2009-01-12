@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -29,42 +29,20 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.lifecycle;
+package org.opennms.netmgt.provision.service.lifecycle.annotations;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * LifeCycle
+ * Attribute
  *
  * @author brozow
  */
-public interface LifeCycleInstance {
-
-    List<String> getPhaseNames();
-
-    String getName();
-    
-    void setAttribute(String key, Object value);
-
-    Object getAttribute(String key);
-
-    <T> T findAttributeByType(Class<T> clazz);
-
-    <T> T getAttribute(String key, Class<T> type);
-
-    <T> T getAttribute(String key, T defaultValue);
-
-    LifeCycleInstance createNestedLifeCycle(String lifeCycleName);
-
-    void trigger();
-
-    void waitFor() throws InterruptedException, ExecutionException;
-
-    DefaultTaskCoordinator getCoordinator();
-
-    
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.PARAMETER})
+public @interface Attribute {
+    String value();
 }

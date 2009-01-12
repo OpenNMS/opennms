@@ -31,10 +31,13 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
+import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.tasks.BatchTask;
 import org.opennms.netmgt.provision.service.tasks.SyncTask;
 import org.opennms.netmgt.provision.service.tasks.Task;
@@ -148,12 +151,60 @@ class Phase extends BatchTask {
         }
 
         private void doInvoke(LifeCycleInstance lifeCycle) throws IllegalAccessException, InvocationTargetException {
-            Object retVal = m_method.invoke(m_target, lifeCycle);
-            if (retVal instanceof Task) {
+            
+            lifeCycle.setAttribute("currentPhase", m_phase);
+            
+            Object[] args = findArguments(lifeCycle);
+            
+            Object retVal = m_method.invoke(m_target, args);
+            Attribute retValAttr = m_method.getAnnotation(Attribute.class);
+            if (retValAttr != null) {
+                lifeCycle.setAttribute(retValAttr.value(), retVal);
+            }
+            else if (retVal instanceof Task) {
                 add((Task)retVal);
-            } 
+            } else if (retVal != null) {
+                lifeCycle.setAttribute(retVal.getClass().getName(), retVal);
+            }
         }
-        
+
+        private Object[] findArguments(LifeCycleInstance lifeCycle) {
+            
+            Type[] types = m_method.getGenericParameterTypes();
+
+            Object[] args = new Object[types.length];
+            for(int i = 0; i < types.length; i++) {
+                Attribute annot = getParameterAnnotation(m_method, i, Attribute.class);
+                if (annot != null) {
+                    args[i] = lifeCycle.getAttribute(annot.value());
+                } else {
+                    Type type = types[i];
+                    if (type instanceof Class) {
+                        Class<?> clazz = (Class<?>)type;
+                        args[i] = lifeCycle.findAttributeByType(clazz);
+                    } else {
+                        args[i] = null;
+                    }
+                }
+                
+            }
+
+            return args;
+        }
+
+
+        private <T extends Annotation> T getParameterAnnotation(Method method, int parmIndex, Class<T> annotationClass) {
+            Annotation[] annotations = method.getParameterAnnotations()[parmIndex];
+            
+            for(Annotation a : annotations) {
+                if (annotationClass.isInstance(a)) {
+                    return annotationClass.cast(a);
+                }
+            }
+            
+            return null;
+        }
+
         public String toString() {
             return String.format("%s.%s(%s)", m_target.getClass().getSimpleName(), m_method.getName(), m_phase.getLifeCycleInstance());
         }
