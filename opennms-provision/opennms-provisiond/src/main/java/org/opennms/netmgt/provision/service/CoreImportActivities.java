@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
+import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
@@ -45,7 +46,6 @@ import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.specification.ImportVisitor;
 import org.opennms.netmgt.provision.service.specification.SpecFile;
-import org.opennms.netmgt.provision.service.tasks.BatchTask;
 import org.opennms.netmgt.provision.service.tasks.Task;
 import org.springframework.core.io.Resource;
 
@@ -125,26 +125,26 @@ public class CoreImportActivities {
         return opsMgr;
     }
     
-    @Activity( lifecycle = "import", phase = "scan")
-    public Task scanNodes(LifeCycleInstance lifeCycle, ImportOperationsManager opsMgr) {
+    @Activity( lifecycle = "import", phase = "scan" )
+    public void scanNodes(LifeCycleInstance lifeCycle, Phase currentPhase, ImportOperationsManager opsMgr) {
 
-
+        
+        
         System.out.println("Scheduling Nodes");
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
-        BatchTask batch = new BatchTask(lifeCycle.getCoordinator());
-        
+
         for(final ImportOperation op : operations) {
             LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle("nodeScan");
+            
             System.out.printf("Created  LifeCycle %s for op %s\n", nodeScan, op);
             nodeScan.setAttribute("operation", op);
-            batch.add((Task)nodeScan);
+            currentPhase.add((Task)nodeScan);
         }
 
 
-
-        return batch;
     }
+    
     
     @Activity( lifecycle = "nodeScan", phase = "scan" )
     public void scanNode(ImportOperation operation) {
@@ -164,17 +164,14 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
-    public Task relateNodes(final LifeCycleInstance lifeCycle, final SpecFile specFile) {
-        
+    public void relateNodes(final Phase currentPhase, final SpecFile specFile) {
         
         System.out.println("Running relate phase");
-        
-        final BatchTask batch = new BatchTask(lifeCycle.getCoordinator());
         
         ImportVisitor visitor = new AbstractImportVisitor() {
             public void visitNode(Node node) {
                 System.out.println("Scheduling relate of node "+node);
-                batch.add(parentSetter(node, specFile.getForeignSource()));
+                currentPhase.add(parentSetter(node, specFile.getForeignSource()));
             }
         };
         
@@ -182,7 +179,6 @@ public class CoreImportActivities {
         
         System.out.println("Finished Running relate phase");
 
-        return batch;
     }
     
     private Runnable parentSetter(final Node node, final String foreignSource) {
