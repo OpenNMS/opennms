@@ -41,14 +41,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opennms</groupId>
-			<artifactId>opennms-services</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-services</artifactId>
-			<type>test-jar</type>
-			<version>${project.version}</version>
-			<scope>test</scope>
+			<artifactId>opennms-util</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>axis</groupId>

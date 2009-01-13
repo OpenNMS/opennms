@@ -46,12 +46,8 @@ import org.opennms.integration.otrs.ticketservice.TicketServiceLocator;
 import org.opennms.integration.otrs.ticketservice.TicketServicePort_PortType;
 import org.opennms.integration.otrs.ticketservice.TicketStateUpdate;
 import org.opennms.integration.otrs.ticketservice.TicketWithArticles;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventBuilder;
 
 import org.opennms.api.integration.ticketing.*;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for OTRS
@@ -61,99 +57,100 @@ import org.opennms.netmgt.xml.event.Event;
  */
 
 public class OtrsTicketerPlugin implements Plugin {
-	
-	static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
-	
-	// TODO: Springify this
-	
-	EventIpcManager m_eventIpcManager;
-	
+    
 	private DefaultOtrsConfigDao m_configDao; 
+	
+	private String m_endpoint; 
 	
 	public OtrsTicketerPlugin() {
 		
 		m_configDao = new DefaultOtrsConfigDao();
-		m_eventIpcManager = EventIpcManagerFactory.getIpcManager();
+		m_endpoint = m_configDao.getEndpoint();
+		
 	}
 
-	public Ticket get(String ticketId) {
+	public Ticket get(String ticketId) throws PluginException {
 
 		TicketWithArticles ticketWithArticles = null;
 
-		long otrsTicketNumber = Long.parseLong(ticketId.trim());
-
-		TicketServicePort_PortType port = getTicketServicePort();
-
+		// don't try to get ticket if it's marked as not available
+		
 		Ticket opennmsTicket = new Ticket();
 
-		if (port != null) {
-
-			Credentials creds = new Credentials();
-
-			creds.setUser(m_configDao.getUserName());
-			creds.setPass(m_configDao.getPassword());
-
-			// get the ticket from OTRS system
+		if (ticketId == null)  {
+		    
+		    log().error("No OTRS ticketID available in OpenNMS Ticket");
+		    throw new PluginException("No OTRS ticketID available in OpenNMS Ticket");
+		    
+		} else {
+		    
+		    TicketServicePort_PortType port = getTicketServicePort(m_endpoint);
+	   
+		    if (port != null) {
+		    
+    		    long otrsTicketNumber = Long.parseLong(ticketId.trim());
+    
+    			Credentials creds = new Credentials();
+    
+    			creds.setUser(m_configDao.getUserName());
+    			creds.setPass(m_configDao.getPassword());
+    
+    			// get the ticket from OTRS system
+    			
+    			try {
+    				ticketWithArticles = port.getByNumber(otrsTicketNumber, creds);
+    			} catch (RemoteException e) {
+    				log().error("Failed to retrieve OTRS ticket" + e);
+    				throw new PluginException("Failed to retrieve OTRS ticket");
+    			}
+    			
+		    }
 			
-			try {
-				ticketWithArticles = port.getByNumber(otrsTicketNumber, creds);
-			} catch (RemoteException e) {
-				log().error("Failed to retrieve OTRS ticket" + e);
-				m_eventIpcManager.sendNow(createEvent("Failed to retrieve OTRS ticket"));
-			}
+		}
 
-			
+		// add ticket basics from the OTRS ticket
+		
+		log().debug(
+				"Adding Ticket details from OTRS ticket # "
+						+ ticketWithArticles.getTicket().getTicketNumber());
+		opennmsTicket.setId(ticketWithArticles.getTicket().getTicketNumber().toString());
+		opennmsTicket.setSummary(ticketWithArticles.getTicket().getTitle());
+		
+		// Note that we user "Owner" from the OTRS ticket here. There is nothing to ensure
+		// That this is a valid OpenNMS user
+		
+		opennmsTicket.setUser(ticketWithArticles.getTicket().getOwner());
+		opennmsTicket.setState(otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
+		
+		log().debug("Retrieved ticket state : " + otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
+		
+		// add all the article details from the OTRS ticket
+		// this is not strictly essential as we have no way of viewing this atm.
+		
+		String opennmsTicketDetails = "";
+
+		for (Article article : ticketWithArticles.getArticles()) {
+			log().debug(
+					"Adding Article details from OTRS article ID "
+							+ article.getArticleID());
+			opennmsTicketDetails = opennmsTicketDetails + "\n"
+					+ "From:    " + article.getFrom() + "\n" + "Subject: "
+					+ article.getSubject() + "\n" + "Body:\n"
+					+ article.getBody() + "\n";
 		}
 		
-		// construct an opennms ticket from the returned OTRS ticket and articles
-
-		if (ticketWithArticles != null) {
-
-			// add ticket basics from the OTRS ticket
-			
-			log().debug(
-					"Adding Ticket details from OTRS ticket # "
-							+ ticketWithArticles.getTicket().getTicketNumber());
-			opennmsTicket.setId(ticketWithArticles.getTicket().getTicketNumber().toString());
-			opennmsTicket.setSummary(ticketWithArticles.getTicket().getTitle());
-			
-			// Note that we user "Owner" from the OTRS ticket here. There is nothing to ensure
-			// That this is a valid OpenNMS user
-			
-			opennmsTicket.setUser(ticketWithArticles.getTicket().getOwner());
-			opennmsTicket.setState(otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
-			
-			log().debug("Retrieved ticket state : " + otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
-			
-			// add all the article details from the OTRS ticket
-			// this is not strictly essential as we have no way of viewing this atm.
-			
-			String opennmsTicketDetails = "";
-
-			for (Article article : ticketWithArticles.getArticles()) {
-				log().debug(
-						"Adding Article details from OTRS article ID "
-								+ article.getArticleID());
-				opennmsTicketDetails = opennmsTicketDetails + "\n"
-						+ "From:    " + article.getFrom() + "\n" + "Subject: "
-						+ article.getSubject() + "\n" + "Body:\n"
-						+ article.getBody() + "\n";
-			}
-			
-			opennmsTicket.setDetails(opennmsTicketDetails);
-
-		}
+		opennmsTicket.setDetails(opennmsTicketDetails);
 
 		return opennmsTicket;
 
 	}
 
 
-	public void saveOrUpdate(Ticket newTicket) {
+	public void saveOrUpdate(Ticket newTicket) throws PluginException {
 		
 		TicketIDAndNumber idAndNumber = null;
 		
-		TicketServicePort_PortType port = getTicketServicePort();
+		TicketServicePort_PortType port = getTicketServicePort(m_endpoint);
 		
 		Ticket currentTicket = null;
 		
@@ -162,28 +159,24 @@ public class OtrsTicketerPlugin implements Plugin {
 		creds.setUser(m_configDao.getUserName());
 		creds.setPass(m_configDao.getPassword());
 		
-		if (newTicket.getId() != null) {
-
-			currentTicket = get(newTicket.getId()); 
-		
-		} 
-		
 		try {
+		    
+		    // If there's no external ID in the OpenNMS ticket, we need to create one
 			
-			if (currentTicket == null) {
+			if ((newTicket.getId() == null) ) {
 				
 				idAndNumber =  newOTRSTicket(newTicket, port, creds);
 
-				log().debug("creating new ticket : " + idAndNumber.getTicketNumber());
-				
 				newTicket.setId(String.valueOf(idAndNumber.getTicketNumber()));
 
-				log().debug("Ticket ID is " + newTicket.getId());
+				log().debug("created new ticket: " + newTicket.getId());
 				
 				newOTRSArticle(idAndNumber.getTicketNumber(), newTicket, port, creds);
 				
 				
 			} else {
+			    
+			    currentTicket = get(newTicket.getId()); 
 				
 				log().debug("updating existing ticket : " + currentTicket.getId());
 				
@@ -203,16 +196,9 @@ public class OtrsTicketerPlugin implements Plugin {
 			
 		} catch (RemoteException e) {
 			log().error("Failed to create or update OTRS ticket" + e);
-			createEvent("Failed to create or update OTRS ticket");
+			throw new PluginException("Failed to create or update OTRS ticket");
 		}
-		
-		
-	}
-
-	private Event createEvent(String reason) {
-		EventBuilder bldr = new EventBuilder(COMMS_ERROR_UEI, "Ticketd");
-		bldr.addParam("reason", reason);
-		return bldr.getEvent();
+			
 	}
 
 	private void updateOTRSState(Ticket ticket, TicketServicePort_PortType port,
@@ -320,7 +306,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
             	    case OPEN:
                         // ticket is new
-			newOtrsArticle.setBody(m_configDao.getTicketOpenedMessage());
+            	        newOtrsArticle.setBody(m_configDao.getTicketOpenedMessage());
                         break;
                     case CANCELLED:
                         // not sure how often we see this
@@ -439,11 +425,11 @@ public class OtrsTicketerPlugin implements Plugin {
      * @return TicketServicePort to connect to the remote service.
      */
     
-    private TicketServicePort_PortType getTicketServicePort() {
+    private TicketServicePort_PortType getTicketServicePort(String endpoint) throws PluginException {
         
         TicketServiceLocator service = new TicketServiceLocator();
         
-        service.setTicketServicePortEndpointAddress(m_configDao.getEndpoint());
+        service.setTicketServicePortEndpointAddress(endpoint);
 
         TicketServicePort_PortType port = null;
 
@@ -451,7 +437,7 @@ public class OtrsTicketerPlugin implements Plugin {
             port = service.getTicketServicePort();
         } catch (ServiceException e) {
             log().error("Failed initialzing OTRS TicketServicePort" + e);
-            m_eventIpcManager.sendNow(createEvent("Failed initialzing OTRS TicketServicePort"));
+            throw new PluginException("Failed initialzing OTRS TicketServicePort");
         }
         
         return port;
@@ -466,13 +452,13 @@ public class OtrsTicketerPlugin implements Plugin {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	public EventIpcManager getEventIpcManager() {
-		return m_eventIpcManager;
-	}
+    public String getEndpoint() {
+        return m_endpoint;
+    }
 
-	public void setEventIpcManager(EventIpcManager ipcManager) {
-		m_eventIpcManager = ipcManager;
-	}
+    public void setEndpoint(String endpoint) {
+        m_endpoint = endpoint;
+    }
 	
 	
 
