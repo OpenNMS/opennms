@@ -177,6 +177,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.createAlias("node.ipInterfaces.monitoredServices", "monitoredService");
         criteria.createAlias("node.ipInterfaces.monitoredServices.serviceType", "serviceType");
         criteria.add(Restrictions.eq("serviceType.id", serviceId));
+        criteria.add(Restrictions.ne("monitoredService.status", "D"));
     }
 
     private void addCriteriaForIfalias(OnmsCriteria criteria, String ifAlias) {
