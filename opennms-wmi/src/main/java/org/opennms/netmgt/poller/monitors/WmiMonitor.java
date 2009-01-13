@@ -130,8 +130,9 @@ public class WmiMonitor extends IPv4Monitor {
 		String compOp = DEFAULT_WMI_COMP_OP;
 		String wmiClass = DEFAULT_WMI_CLASS;
 		String wmiObject = DEFAULT_WMI_OBJECT;
-		
-		if (parameters != null) {
+        String wmiWqlStr = "NOTSET";
+
+        if (parameters != null) {
             if (parameters.get("timeout") != null) {
             	int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout());
                 agentConfig.setTimeout(timeout);
@@ -162,7 +163,8 @@ public class WmiMonitor extends IPv4Monitor {
 			compVal = ParameterMap.getKeyedString(parameters, "compareValue",
 					DEFAULT_WMI_COMP_VAL);
 			compOp = ParameterMap.getKeyedString(parameters, "compareOp", DEFAULT_WMI_COMP_OP);
-			wmiClass = ParameterMap.getKeyedString(parameters, "wmiClass",
+            wmiWqlStr = ParameterMap.getKeyedString(parameters, "wql", "NOTSET");
+            wmiClass = ParameterMap.getKeyedString(parameters, "wmiClass",
 					DEFAULT_WMI_CLASS);
 			wmiObject = ParameterMap.getKeyedString(parameters, "wmiObject",
 					DEFAULT_WMI_OBJECT);
@@ -195,10 +197,15 @@ public class WmiMonitor extends IPv4Monitor {
                 if (log().isDebugEnabled())
                         log().debug("Completed initializing WmiManager object.");
 
-                // Set up the parameters the client will use to validate the
-				// response.
-				WmiParams clientParams = new WmiParams(compVal, compOp,
-						wmiClass, wmiObject);
+                WmiParams clientParams = null;
+                if(wmiWqlStr.equals("NOTSET")) {
+                    // Set up the parameters the client will use to validate the
+				    // response.
+				    clientParams = new WmiParams(compVal, compOp, wmiClass, wmiObject);
+                } else {
+                    // Create parameters to run a WQL query.
+                    clientParams = new WmiParams(compVal, compOp, wmiWqlStr);
+                }
 
                 if (log().isDebugEnabled())
                         log().debug("Attempting to perform operation: \\\\" + wmiClass + "\\" + wmiObject);
