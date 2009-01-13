@@ -7,12 +7,13 @@
 
 	<section id="current-release">
 		<title>Current Release</title>
-		<para>There are no known major issues in OpenNMS 1.6.2.</para>
 		<para>
-			There are, however, a number of bugs and features which are slated for
-			future 1.6 releases.  They can be viewed (and voted on) in the bugzilla <ulink
-			url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.6.3&amp;cmdtype=doit">1.6.3
-			milestone</ulink>
+			OpenNMS 1.7.x is a development release, and has not gone through the amount of testing
+			that stable releases typically get.  Development happens quickly, and it is quite likely
+			there are bugs in any given unstable release.
+		</para>
+		<para>
+			If it breaks in half, you get to keep both halves.
 		</para>
 	</section>
 	

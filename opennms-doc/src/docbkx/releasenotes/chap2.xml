@@ -92,6 +92,14 @@
 						<para>An Adobe AIR based client was added.</para>
 					</glossdef>
 				</glossentry>
+				<glossentry>
+					<glossterm>WMI Support</glossterm>
+					<glossdef>
+						<para>Support has been added for polling and datacollection from <ulink
+						url="http://msdn.microsoft.com/en-us/library/aa394582(VS.85).aspx">Windows
+						Management Instrumentation</ulink>.</para>
+					</glossdef>
+				</glossentry>
 			</glosslist>
 		</section>
 
