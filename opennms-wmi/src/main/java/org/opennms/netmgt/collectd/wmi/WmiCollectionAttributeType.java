@@ -51,7 +51,7 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
         }
 
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            if (m_attribute.getType().equals("string")) {
+            if (m_attribute.getType().equalsIgnoreCase("string")) {
                 persister.persistStringAttribute(attribute);
             } else {
                 persister.persistNumericAttribute(attribute);
