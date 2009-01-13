@@ -13,6 +13,12 @@
         <itemizedlist>
 
           <listitem>
+          	<para>Ticketing integration support was added for <ulink
+            url="http://bestpractical.com/rt/">RT (Request Tracker)</ulink> (Bug <ulink
+          	url="http://bugzilla.opennms.org/show_bug.cgi?id=2278">#2278</ulink>)</para>
+          </listitem>
+
+          <listitem>
           	<para>Jabber notifications now support configurations where the XMPP domain
           	server hostname don't match, e.g. Google Talk (Bug <ulink
           	url="http://bugzilla.opennms.org/show_bug.cgi?id=1387">#1387</ulink>)</para>
