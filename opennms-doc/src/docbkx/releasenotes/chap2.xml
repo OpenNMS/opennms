@@ -97,6 +97,87 @@
 
 	</section>
 
+	<section id="opennms-1.6.2">
+		<title>Changes in OpenNMS 1.6.2</title>
+		
+		<section id="opennms-1.6.2-features">
+			<title>New Features</title>
+
+				<itemizedlist>
+
+					<listitem>
+						<para>Ticketing integration support was added for <ulink
+						url="http://bestpractical.com/rt/">RT (Request Tracker)</ulink> (Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=2278">#2278</ulink>)</para>
+					</listitem>
+
+					<listitem>
+						<para>Jabber notifications now support configurations where the XMPP domain
+						server hostname don't match, e.g. Google Talk (Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=1387">#1387</ulink>)</para>
+					</listitem>
+
+					<listitem>
+						<para>KSC reports now auto-refresh every 5 minutes (Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=2899">#2899</ulink>)</para>
+					</listitem>
+
+					<listitem>
+					<para>New data collections and traps were added for various IETF, Cisco,
+					Juniper, AIX, and SNMP Informant MIBs. (Bugs <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2933">#2933</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2934">#2934</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2947">#2947</ulink>,
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2954">#2954</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+		
+		<section id="opennms-1.6.1-bugfixes">
+			<title>Bug Fixes</title>
+			
+			<itemizedlist>
+			
+					<listitem>
+						<para>Jabber notifications would stop sending if the connection to the XMPP
+						server failed; it now reconnects automatically.	(Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=1860">#1860</ulink>)</para>
+					</listitem>
+
+					<listitem>
+						<para>A couple of unhandled exceptions were fixed.	(Bugs <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=1599">#1599</ulink> and
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1748">#1748</ulink>)</para>
+					</listitem>
+
+					<listitem>
+						<para>The PL/pgsql version of IPLIKE did not work with expressions that used
+						multiple comma-separated values.	(Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=2803">#2803</ulink>)</para>
+					</listitem>
+
+					<listitem>
+						<para>HTTP data collection only stored values for one URL, even if multiple
+						URLs were specified in the http-datacollection-config.xml.	(Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=2940">#2940</ulink>)</para>
+					</listitem>
+
+					<listitem>
+						<para>The mail transport monitor would not always honor the delete-all-mail
+						attribute.	(Bug <ulink
+						url="http://bugzilla.opennms.org/show_bug.cgi?id=2969">#2969</ulink>)</para>
+					</listitem>
+
+				</itemizedlist>
+		</section>
+		
+		<para>The full list of changes is available in <ulink
+			url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.6.2&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
+		
+	</section>		
+
 	<section id="opennms-1.6.1">
 		<title>Changes in OpenNMS 1.6.1</title>
 		
