@@ -37,13 +37,10 @@
 package org.opennms.netmgt.provision.service.operations;
 
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -55,23 +52,20 @@ import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class ScanManager {
     
-    private final SystemGroup m_systemGroup;
-    private final IfTable m_ifTable;
-    private final IpAddrTable m_ipAddrTable;
-    private final IfXTable m_ifXTable;
     private final InetAddress m_address;
+    private SystemGroup m_systemGroup;
+    private IfTable m_ifTable;
+    private IpAddrTable m_ipAddrTable;
+    private IfXTable m_ifXTable;
 
     ScanManager(InetAddress address) {
         m_address = address;
-        m_systemGroup = new SystemGroup(address);
-        m_ifTable = new IfTable(address);
-        m_ipAddrTable = new IpAddrTable(address);
-        m_ifXTable = new IfXTable(address);
     }
     
     public SystemGroup getSystemGroup() {
@@ -117,130 +111,61 @@ public class ScanManager {
     }
 
     void updateSnmpData(OnmsNode node) {
-        run();
-        
-        getSystemGroup().updateSnmpDataForNode(node);
-        
-        Set<String> ipAddrs = getIpAddressesToUpdate(node);
-        
-        Set<Integer> ifIndices = getIfIndicesToUpdate(node);
-        
-        for(Integer ifIndex : ifIndices) {
-            getIfTable().updateSnmpInterfaceData(node, ifIndex);
-        }
-        
-        for(Integer ifIndex : ifIndices) {
-            getIfXTable().updateSnmpInterfaceData(node, ifIndex);
-        }
-                
-        for(String ipAddr : ipAddrs) {   
-            getIpAddrTable().updateIpInterfaceData(node, ipAddr);
-        }
-
-    }
-
-    /**
-     * @param node
-     * @return
-     */
-    private Set<Integer> getIfIndicesToUpdate(OnmsNode node) {
-        //return getIfIndicesForImportedIpAddresses(node);
-        if (getIfTable().failed()) {
-            return Collections.emptySet();
-        } else {
-            return getIfTable().getIfIndices();
-        }
-    }
-
-    /**
-     * @param node
-     * @return
-     */
-    private Set<String> getIpAddressesToUpdate(OnmsNode node) {
-        //return getImportedIpAddresses(node);
-        if (getIpAddrTable().failed()) {
-            return Collections.emptySet();
-        }
-        Set<String> ipAddrs = getIpAddrTable().getIpAddresses();
-        for(Iterator<String> it = ipAddrs.iterator(); it.hasNext(); ) {
-            String ipAddr = it.next();
-            if (IPLike.matches(ipAddr, "127.*.*.*")) {
-                it.remove();
-            }
-        }
-        return ipAddrs;
-    }
-
-    /**
-     * @param node
-     * @return
-     */
-    private Set<Integer> getIfIndicesForImportedIpAddresses(OnmsNode node) {
-        Set<Integer> ifIndices = new LinkedHashSet<Integer>();
-        for(OnmsIpInterface ipIf : node.getIpInterfaces()) {
-            Integer ifIndex = getIpAddrTable().getIfIndex(ipIf.getInetAddress());
-            if (ifIndex != null) {
-                ifIndices.add(ifIndex);
-            }
-        }
-        return ifIndices;
-    }
-
-    /**
-     * @param node
-     * @return
-     */
-    private Set<String> getImportedIpAddresses(OnmsNode node) {
-        Set<String> ipAddrs = new LinkedHashSet<String>();
-        for (OnmsIpInterface ipIf : node.getIpInterfaces()) {
-            String ipAddr = ipIf.getIpAddress();
-            if (ipAddr != null) {
-                ipAddrs.add(ipAddr);
-            }
-        }
-        return ipAddrs;
-    }
-
-    /**
-     * 
-     */
-    private void run() {
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
-        
-        CollectionTracker tracker = createCollectionTracker();
-        
-        if (log().isDebugEnabled()) {
-            log().debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
-        }
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", tracker);
-        walker.start();
         
         try {
+
+            m_systemGroup = new SystemGroup(m_address);
+
+            Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
+            for(OnmsIpInterface iface : node.getIpInterfaces()) {
+                ipAddrs.add(new SnmpInstId(iface.getIpAddress()));
+            }
+
+            m_ipAddrTable = new IpAddrTable(m_address, ipAddrs);
+
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ipAddrTable", m_systemGroup, m_ipAddrTable);
+            walker.start();
+
             walker.waitFor();
+
+            Set<SnmpInstId> ifIndices = new TreeSet<SnmpInstId>();
+
+            for(Integer ifIndex : m_ipAddrTable.getIfIndices()) {
+                ifIndices.add(new SnmpInstId(ifIndex));
+            }
+
+            
+            m_ifTable = new IfTable(m_address, ifIndices);
+            m_ifXTable = new IfXTable(m_address, ifIndices);
+
+            SnmpAgentConfig agentConfig2 = agentConfig;
+            walker = SnmpUtils.createWalker(agentConfig2, "ifTable/ifXTable", m_ifTable, m_ifXTable);
+            walker.start();
+
+            walker.waitFor();
+
+            m_systemGroup.updateSnmpDataForNode(node);
         
-            // Log any failures
-            //
-            if (getSystemGroup().failed()) {
-                log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
+            for(SnmpInstId ifIndex : ifIndices) {
+                m_ifTable.updateSnmpInterfaceData(node, ifIndex.toInt());
             }
-            if (getIfTable().failed()) {
-                log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
+
+            for(SnmpInstId ifIndex : ifIndices) {
+                m_ifXTable.updateSnmpInterfaceData(node, ifIndex.toInt());
             }
-            if (getIpAddrTable().failed()) {
-                log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
+
+            for(SnmpInstId ipAddr : ipAddrs) {   
+                m_ipAddrTable.updateIpInterfaceData(node, ipAddr.toString());
             }
-            if (getIfXTable().failed()) {
-                log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
-            }
-        
+
         } catch (InterruptedException e) {
-        
-            tracker.setFailed(true);
-        
-            log().warn("IfSnmpCollector: collection interrupted, exiting", e);
-        
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
         }
+        
+
     }
 
     /**

@@ -41,6 +41,7 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -78,7 +79,11 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
      * @see IfXTableEntry
      */
     public IfXTable(InetAddress address) {
-        super(address, "ifXTable", IfXTableEntry.ms_elemList);
+        this(address, null);
+    }
+
+    public IfXTable(InetAddress address, Set<SnmpInstId> ifIndices) {
+        super(address, "ifXTable", IfXTableEntry.ms_elemList, ifIndices);
     }
 
     protected IfXTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {

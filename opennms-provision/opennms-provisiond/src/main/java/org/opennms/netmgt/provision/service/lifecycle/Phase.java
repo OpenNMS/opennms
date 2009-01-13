@@ -42,7 +42,7 @@ import org.opennms.netmgt.provision.service.tasks.BatchTask;
 import org.opennms.netmgt.provision.service.tasks.SyncTask;
 import org.opennms.netmgt.provision.service.tasks.Task;
 
-class Phase extends BatchTask {
+public class Phase extends BatchTask {
     private LifeCycleInstance m_lifecycle;
     private String m_name;
     private Object[] m_providers;

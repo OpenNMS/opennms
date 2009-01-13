@@ -53,7 +53,10 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
     private String m_tableName;
 
     protected SnmpTable(InetAddress address, String tableName, NamedSnmpVar[] columns) {
-        super(NamedSnmpVar.getTrackersFor(columns));
+        this(address, tableName, columns, null);
+    }
+    protected SnmpTable(InetAddress address, String tableName, NamedSnmpVar[] columns, Set<SnmpInstId> instances) {
+        super(NamedSnmpVar.getTrackersFor(columns, instances));
         m_address = address;
         m_tableName = tableName;
     }
