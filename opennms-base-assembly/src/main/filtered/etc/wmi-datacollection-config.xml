@@ -64,6 +64,8 @@
             -->
             <wpm name="wmiOSCpu" wmiClass="Win32_PerfFormattedData_PerfOS_Processor"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiOSCpu">
+                <!-- Label for this Processor instance -->
+                <attrib name="ProcessorName" alias="wmiOSCpuName" wmiObject="Name" type="string"/>
                 <!-- Average number of hardware interrupts that the processor is receiving and servicing in each second -->
                 <attrib name="InterruptsPerSec" alias="wmiOSCpuIntsPerSec" wmiObject="InterruptsPerSec" type="Gauge"/>
                 <!-- Percentage of time that the processor is executing a non-idle thread -->
@@ -83,6 +85,8 @@
             -->
             <wpm name="wmiPhysicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiPhysicalDisk">
+                <!-- Label for this PhysicalDisk instance -->
+                <attrib name="PhysDiskName" alias="wmiPDName" wmiObject="Name" type="string"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
                 <attrib name="PercentPhysDiskReadTime" alias="wmiPDPctDiskRdTime" wmiObject="PercentDiskReadTime" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing write requests -->
@@ -98,6 +102,8 @@
             -->
             <wpm name="wmiLogicalDisk" wmiClass="Win32_PerfFormattedData_PerfDisk_LogicalDisk"
                  keyvalue="Name" recheckInterval="3600000" ifType="all" resourceType="wmiLogicalDisk">
+                <!-- Label for this LogicalDisk instance -->
+                <attrib name="LogDiskName" alias="wmiLDName" wmiObject="Name" type="string"/>
                 <!-- Unallocated space on the disk drive in megabytes -->
                 <attrib name="FreeMegabytes" alias="wmiLDPctFreeMBytes" wmiObject="FreeMegabytes" type="Gauge"/>
                 <!-- Percentage of elapsed time that the selected disk drive is busy servicing read requests -->
@@ -113,6 +119,8 @@
             <!-- A collection of network interface statistics -->
             <wpm name="wmiTcpipNetworkInterface" wmiClass="Win32_PerfRawData_Tcpip_NetworkInterface"
                  keyvalue="Name" recheckInterval="3600000" ifType="ignore" resourceType="wmiTcpipNetworkInterface">
+                <!-- The label for this Network Interface instance -->
+                <attrib name="TcpIpIfName" alias="wmiIpNetIfName" wmiObject="Name" type="string"/>
                 <!-- The total number of bytes per second, sent and received -->
                 <attrib name="BytesTotalPerSec" alias="wmiIpNetBytesSec" wmiObject="BytesTotalPerSec" type="Counter"/>
                 <!-- The number of bytes received per second -->

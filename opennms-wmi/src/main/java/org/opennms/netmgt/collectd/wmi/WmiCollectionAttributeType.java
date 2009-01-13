@@ -51,8 +51,11 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
         }
 
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            //Only numeric data comes back from WMI in data collection
-            persister.persistNumericAttribute(attribute);
+            if (m_attribute.getType().equals("string")) {
+                persister.persistStringAttribute(attribute);
+            } else {
+                persister.persistNumericAttribute(attribute);
+            }
         }
 
         public String getName() {
