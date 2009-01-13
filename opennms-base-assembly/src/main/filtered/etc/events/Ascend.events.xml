@@ -1,0 +1,2073 @@
+<events>
+<!-- Start of auto generated data from MIB: ASCEND-TRAP -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portInactive</uei>
+	<event-label>ASCEND-TRAP defined trap event: portInactive</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+has changed to the inactive state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portInactive trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portDualDelay</uei>
+	<event-label>ASCEND-TRAP defined trap event: portDualDelay</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+is delaying the dialing of a second call to avoid
+overloading devices that can not handle two calls in
+close succession.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portDualDelay trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portWaitSerial</uei>
+	<event-label>ASCEND-TRAP defined trap event: portWaitSerial</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+has detected DTR when in V.25bis mode and is waiting
+for an HDLC controller to come on line.  CTS is off.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portWaitSerial trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portHaveSerial</uei>
+	<event-label>ASCEND-TRAP defined trap event: portHaveSerial</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+is ready to accept V.25bis commands.  CTS is on.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portHaveSerial trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portRinging</uei>
+	<event-label>ASCEND-TRAP defined trap event: portRinging</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+is has been notified of an incoming call.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portRinging trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portCollectDigits</uei>
+	<event-label>ASCEND-TRAP defined trap event: portCollectDigits</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+is collecting digits from the RS-366 dialing
+interface.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portCollectDigits trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portWaiting</uei>
+	<event-label>ASCEND-TRAP defined trap event: portWaiting</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+is waiting for connect notification from the network
+after dialing or answer notification has been issued.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portWaiting trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portConnected</uei>
+	<event-label>ASCEND-TRAP defined trap event: portConnected</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+has connected to the far end, but end-to-end data
+flow has not yet been enabled.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portConnected trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portCarrier</uei>
+	<event-label>ASCEND-TRAP defined trap event: portCarrier</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+has connected to the far end and has end-to-end data
+flow.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portCarrier trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portLoopback</uei>
+	<event-label>ASCEND-TRAP defined trap event: portLoopback</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+has been placed in local loopback mode.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portLoopback trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portAcrPending</uei>
+	<event-label>ASCEND-TRAP defined trap event: portAcrPending</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+has set ACR on the RS-366 dialing interface and is
+waiting for the host device to detect the transition.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portAcrPending trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portDteNotReady</uei>
+	<event-label>ASCEND-TRAP defined trap event: portDteNotReady</event-label>
+	<descr>
+&lt;p&gt;The host port associated with the indicated ifIndex
+is waiting for the DTE to signal a ready condition
+when performing X.21 dialing.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portDteNotReady trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/consoleStateChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: consoleStateChange</event-label>
+	<descr>
+&lt;p&gt;The console associated with the passed console
+index has changed state.  The console entry
+can be read to see what its current state is.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	consoleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ssnStatusUserIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			consoleStateChange trap received 
+			consoleIndex=%parm[#1]% 
+			ssnStatusUserIPAddress=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/portUseExceeded</uei>
+	<event-label>ASCEND-TRAP defined trap event: portUseExceeded</event-label>
+	<descr>
+&lt;p&gt;The port associated with the indicated ifIndex has
+exceeded the number of DS0 minutes allocated to it.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portUseExceeded trap received 
+			ifIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/systemUseExceeded</uei>
+	<event-label>ASCEND-TRAP defined trap event: systemUseExceeded</event-label>
+	<descr>
+&lt;p&gt;The system DS0 usage has been exceeded.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			systemUseExceeded trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/maxTelnetAttempts</uei>
+	<event-label>ASCEND-TRAP defined trap event: maxTelnetAttempts</event-label>
+	<descr>
+&lt;p&gt;The maximum number of login attempts for a  telnet
+session has been exceeded.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ssnStatusUserIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			maxTelnetAttempts trap received 
+			ssnStatusUserIPAddress=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/eventTableOverwrite</uei>
+	<event-label>ASCEND-TRAP defined trap event: eventTableOverwrite</event-label>
+	<descr>
+&lt;p&gt;A new event has overwritten an unread event.
+This trap is sent only for systems which
+ support Ascend's accounting MIB.
+ Once sent, additional overwrites will not
+ cause another trap to be sent until at least
+ 1 table's worth of new events have occured.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			eventTableOverwrite trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/radiusServerChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: radiusServerChange</event-label>
+	<descr>
+&lt;p&gt;The current Radius server has been changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	radAuthServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	radAuthHostIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			radiusServerChange trap received 
+			radAuthServerIndex=%parm[#1]% 
+			radAuthHostIPAddress=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/multicastHeartBeatMonitor</uei>
+	<event-label>ASCEND-TRAP defined trap event: multicastHeartBeatMonitor</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when heartBeat fails to receive
+configured number of heartBeat packets from
+heartBeat servers&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	heartBeatMulticastGroupAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	heartBeatSourceAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	heartBeatSlotTimeInterval&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	heartBeatSlotCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	heartBeatPacketCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			multicastHeartBeatMonitor trap received 
+			heartBeatMulticastGroupAddress=%parm[#1]% 
+			heartBeatSourceAddress=%parm[#2]% 
+			heartBeatSlotTimeInterval=%parm[#3]% 
+			heartBeatSlotCount=%parm[#4]% 
+			heartBeatPacketCount=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/lanModemMovedToSuspectList</uei>
+	<event-label>ASCEND-TRAP defined trap event: lanModemMovedToSuspectList</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all the managers in the
+alarm group when a lan modem (digital modem) is moved
+to the suspect list.
+Refer to the lanModemGroup.suspectLanModemTable
+description.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	suspectLanModemSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	suspectLanModemPortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	suspectLanModemUsedCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	suspectLanModemBadCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	suspectLanModemLast32&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			lanModemMovedToSuspectList trap received 
+			suspectLanModemSlotIndex=%parm[#1]% 
+			suspectLanModemPortIndex=%parm[#2]% 
+			suspectLanModemUsedCount=%parm[#3]% 
+			suspectLanModemBadCount=%parm[#4]% 
+			suspectLanModemLast32=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/dirdoListFailure</uei>
+	<event-label>ASCEND-TRAP defined trap event: dirdoListFailure</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all the managers in the
+alarm group when a T_ONLINE call comes in and 
+no answer/subaddresses have been received.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dirdoListFailure trap received 
+			sysName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sysSlotStateChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: sysSlotStateChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all the managers in the
+slot group when a slot card's SLOT-STATE profile
+is created due to slot insertion, or the current-state
+transitions into oper-state-down, oper-state-up,
+oper-state-dump, or oper-state-none states.
+
+Refer to the slotTable.slotIndex and
+slotTable.slotStatus descriptions.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slotStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		operStateDown(1)
+		operStateUp(2)
+		operStateDiag(3)
+		operStateCoreDump(4)
+		operStateLoading(5)
+		operStatePost(6)
+		operStateNone(7)
+		operStateOccupied(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sysSlotStateChange trap received 
+			slotIndex=%parm[#1]% 
+			slotStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/powerSupplyStateChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: powerSupplyStateChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all the managers in the
+alarm group when a power supply module is
+added or removed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	powerSupplyState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		present(2)
+		absent(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			powerSupplyStateChange trap received 
+			powerSupplyState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/powerSupplyOperationalStateChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: powerSupplyOperationalStateChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all the managers in the
+alarm group when a power supply module incurs
+failure(s).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	powerSupplyOperationalState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		noFailure(2)
+		failed(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			powerSupplyOperationalStateChange trap received 
+			powerSupplyOperationalState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/multiShelfStateChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: multiShelfStateChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all the managers in the
+slot group when a master shelf detects up/down
+state changes of the peer shelf in a multi-shelf
+configuration.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	multiShelfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		idle(1)
+		outGoing(2)
+		inComing(3)
+		up(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			multiShelfStateChange trap received 
+			multiShelfState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sysLastRestartReasonTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: sysLastRestartReasonTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all managers having the
+alarm condition enabled if the sysLastRestartReason
+is not unknown (value of 0).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLastRestartReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		fatalAssert(1)
+		fatalPoolsNoBuffer(2)
+		fatalProfileBad(3)
+		fatalSwitchTypeBad(4)
+		fatalLif(5)
+		fatalLcdError(6)
+		fatalIsacTimeout(7)
+		fatalSCCSpuriousInterrupt(8)
+		fatalExecInvalidSwitch(9)
+		fatalExecNoMailDesc(10)
+		fatalExecNoMailPoll(11)
+		fatalExecNoTask(12)
+		fatalExecNoTimer(13)
+		fataExecNoTimerPool(14)
+		fatalExecWaitInCtricalSection(15)
+		fatalDspDead(16)
+		fatalDspProtocolError(17)
+		fatalDspInternalError(18)
+		fatalDspLossOfSync(19)
+		fatalDspUnUsed(20)
+		fatalDDDDead(21)
+		fatalDDDProtocolError(22)
+		fatalX25Buffers(23)
+		fatalX25Init(24)
+		fatalX25Stack(25)
+		fatalZeroMemoryAlloc(27)
+		fatalNegativeMemoryAllocate(28)
+		fatalTaskLoop(29)
+		fatalMemcpyTooLarge(30)
+		fatalMemcpyNoMagic(31)
+		fatalMemcpyWrongMagic(32)
+		fatalMemcoyBadStart(33)
+		fatalIDECTimeout(34)
+		fatalExecRestricted(35)
+		fatalStackOverflow(36)
+		fatalDRAMCard(37)
+		fatalMbufPanic(38)
+		fatalNoPriority2Task(39)
+		fatalProtectionFault(40)
+		fatalClipping(41)
+		fatalReadyHangFault(42)
+		fatalExcessPostCompl(43)
+		fatalWriteProtect(44)
+		fatalPureVirtual(45)
+		fatalATMSVC(46)
+		fatalFRSVC(47)
+		fatalInterruptCode(48)
+		fatalLinkedListCorruption(55)
+		fatalBadPower(60)
+		fatalWatchdogTimeout(61)
+		fatalUnexplainedNMI(62)
+		fatalPrimarySelected(98)
+		fatalOperatorReset(99)
+		fatalSystemUp(100)
+		warningBufferInUse(101)
+		warningBufferWrongPool(102)
+		warningBufferWrongHeap(103)
+		warningBufferNotMemAlloc(104)
+		warningBufferBadMemAlloc(105)
+		warningBufferBogusPool(106)
+		warningBufferBogusHeap(107)
+		warningBufferNegativeMemalloc(108)
+		warningBufferZeroMemalloc(109)
+		warningBufferBoundary(110)
+		warningBufferTooBig(111)
+		warningBufferNull(112)
+		warningBufferSegmentCountZero(113)
+		warningBufferTrailerMagic(114)
+		warningBufferTrailerBuffer(115)
+		warningBufferTrailerLength(116)
+		warningBufferTrailerUserMagic(117)
+		warningBufferWriteAfterFree(118)
+		warningBufferNotInUse(119)
+		warningBufferMemcpyMagic(120)
+		warningBufferMemcpyMagicNext(121)
+		warningBufferNoExtraDRAM(129)
+		errprPPPAsuncBufferInUse(130)
+		warningIpcpIpLookup(131)
+		warningBadChunk(135)
+		warningUnexpectedIF(136)
+		warningNoTimers(140)
+		warningLCDAllocFailure(145)
+		warningLCDNonSense(146)
+		warningMemcpyTooLarge(150)
+		warningMemcpyNoMagic(151)
+		warningMemcpyWrongMagic(152)
+		warningMemcpyBadStart(153)
+		warningWANBufferLeak(154)
+		warningTermSrvState(160)
+		warningTermSrvSemaphore(161)
+		warningTelnetFreeDrv(165)
+		warningSTACTimeout(170)
+		warningSTACDataNotOwned(171)
+		warningExecFailure(175)
+		warningExecNoMailbox(177)
+		warningExecNoResources(178)
+		warningUnexpected(179)
+		warningChannelMapStuck(180)
+		warningChannelDisplayStuck(181)
+		warningNewCallNoDiscRequest(182)
+		warningNewCallNoDiscResp(183)
+		warningDisconnectRequestDropped(184)
+		warningSpyderBuffer(185)
+		warningSpyderDesc(186)
+		warningSpyderLoseChannel(187)
+		warningHscxSlowRelay(188)
+		warningTcpSbcontTooBig(190)
+		warningTcpSequenceGap(191)
+		warningTcpTooMuchData(192)
+		warningTcpTooMuchWrite(193)
+		warningTcpBadOptions(194)
+		warningLmodSlotDown(195)
+		warningLmodDspDown(196)
+		warningLmodDspmodemDown(197)
+		warningTcpXmitLooping(198)
+		warningOspfFatal(200)
+		warningOspfWarn(201)
+		warningBriJumperNotPresent(210)
+		warningBriJumperConfiguration(211)
+		infoCardBounced(220)
+		infoCardDown(221)
+		warningTacacsplusBase(300)
+		warningTacacsplusPointerInconsistency(301)
+		warningTacacsplusIndexInconsistency(302)
+		warningTacacsplusTcpInconsistency(303)
+		warningTacacsplusTcpOutofrangesocket(304)
+		warningTacacsplusSocketMismatch(305)
+		warningTacacsplusUnexpectedAuthState(306)
+		warningTacacsplusMax(309)
+		warningCidrWrongTree(310)
+		warningCidrNoMem(311)
+		warningCidrBusy(312)
+		warningCidrNonempty(313)
+		warningCidrDupDelete(314)
+		warningSauthWrongInfo(320)
+		warningSauthBadAddr(321)
+		warningGdbProtectionFault(330)
+		warningInFilterList(381)
+		warningNoCountInFilterList(382)
+		warningMismatchCountFilterList(383)
+		warningCdtUnprotectedAccess(384)
+		infoSystemResetOccurred(385)
+		warningBadPowerSupply(400)
+		warningDspCrashMin(512)
+		warningEthernetNoTxBuf(550)
+		warningDspCrashMax(767)
+		warningDspWrongSlot(768)
+		warningUnalignedAccess(800)
+		warningH323NoResources(801)
+		warningExecRestricted(999)
+		warningEthernetCuBusy(1001)
+		warningEthernetAckFailure(1002)
+		warningEthernetReset(1003)
+		warningEthernetCuActive(1005)
+		warningEthernetWaitScb(1006)
+		warningEthernetNoMACAddress(1007)
+		warningBaeepromChange(2001)
+		warningBaeepromImageMismatch(2002)
+		warningFlashTypeBad(2010)
+		warningMaxiopLoadFailure(2022)
+		warningPrimaryHWsetupFailed(2100)
+		warningSecondaryHWsetupFailed(2101)
+		warningIpxsapFilterMagic(3001)
+		warningIpxsapFilterCountZero(3002)
+		warningIpxsapFilterCountMismatch(3003)
+		warningModemTxChannelStuck(4000)
+		warningModemTxChannelRecovered(4100)
+		notApplicable(9998)
+		unknown(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fatalLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sysLastRestartReasonTrap trap received 
+			sysLastRestartReason=%parm[#1]% 
+			fatalLogIndex=%parm[#2]% 
+			sysAbsoluteCurrentTime=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/atmpMaxTunnelExceeded</uei>
+	<event-label>ASCEND-TRAP defined trap event: atmpMaxTunnelExceeded</event-label>
+	<descr>
+&lt;p&gt;This is generated when the number of tunnels to a Home
+Network exceeds the maximum tunnels.  atmpHAIpAddress is
+the Home Agent and atmpHNProfileName is the name of the
+connection profile.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	atmpHNProfileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			atmpMaxTunnelExceeded trap received 
+			atmpHNProfileName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/atmpAgentErrorSentTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: atmpAgentErrorSentTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates errors at the Agent level or
+with Tunnel creation.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	atmpLastErrorGenerated&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no-error(1)
+		fa-auth-failed(2)
+		ha-atmp-disabled(3)
+		too-many-tunnel(4)
+		err-parameter(5)
+		bad-tunnel(6)
+		err-timeout(7)
+		hn-unreachable(8)
+		dns-failed(9)
+		err-general(10)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	atmpAgentSentErrorTo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			atmpAgentErrorSentTrap trap received 
+			atmpLastErrorGenerated=%parm[#1]% 
+			atmpAgentSentErrorTo=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/atmpAgentErrorRecvTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: atmpAgentErrorRecvTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates errors received from a peer
+agent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	atmpLastErrorRecv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no-error(1)
+		fa-auth-failed(2)
+		ha-atmp-disabled(3)
+		too-many-tunnel(4)
+		err-parameter(5)
+		bad-tunnel(6)
+		err-timeout(7)
+		hn-unreachable(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	atmpAgentRecvErrorFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			atmpAgentErrorRecvTrap trap received 
+			atmpLastErrorRecv=%parm[#1]% 
+			atmpAgentRecvErrorFrom=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sysConfigChangeTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: sysConfigChangeTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates a configuration change has occurred.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysConfigChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sysConfigChangeTrap trap received 
+			sysConfigChange=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sdtnPrimaryListEmptyTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: sdtnPrimaryListEmptyTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that the Transaction Server 
+Primary list has become empty.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sdtnPrimaryListEmptyTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sdtnSecondaryListEmptyTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: sdtnSecondaryListEmptyTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that the Transaction Server 
+Secondary list has become empty.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sdtnSecondaryListEmptyTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/systemClockDrifted</uei>
+	<event-label>ASCEND-TRAP defined trap event: systemClockDrifted</event-label>
+	<descr>
+&lt;p&gt;This trap indicates system clock has drifted but
+could not be corrected.
+This trap sent to managers when the alarm
+and clock drifted params are set to YES in a
+trap profile. If the clock drifting problem
+persists, the trap will only be sent every
+24 hours.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			systemClockDrifted trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>34</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/suspectAccessResource</uei>
+	<event-label>ASCEND-TRAP defined trap event: suspectAccessResource</event-label>
+	<descr>
+&lt;p&gt;The access resource suspected trap is sent to  
+all the managers in the alarm group when a 
+terminating resource such as modem become suspect. 
+The suspected resource(s) are not assigned to
+terminate calls until the resource in the available
+pool exhausted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourceSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourcePortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourceUsedCounts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourceBadCounts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourceLast32&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			suspectAccessResource trap received 
+			resourceSlotIndex=%parm[#1]% 
+			resourcePortIndex=%parm[#2]% 
+			resourceUsedCounts=%parm[#3]% 
+			resourceBadCounts=%parm[#4]% 
+			resourceLast32=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/watchdogWarningTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: watchdogWarningTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that a watchdog warning has
+occurred.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	watchdogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	watchdogName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	watchdogState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		operational(2)
+		failed(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			watchdogWarningTrap trap received 
+			watchdogIndex=%parm[#1]% 
+			watchdogName=%parm[#2]% 
+			watchdogState=%parm[#3]% 
+			sysAbsoluteCurrentTime=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/slotCardResetTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: slotCardResetTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to all managers having the
+alarm condition enabled&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fatalLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fatalLogReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		fatalAssert(1)
+		fatalPoolsNoBuffer(2)
+		fatalProfileBad(3)
+		fatalSwitchTypeBad(4)
+		fatalLif(5)
+		fatalLcdError(6)
+		fatalIsacTimeout(7)
+		fatalSCCSpuriousInterrupt(8)
+		fatalExecInvalidSwitch(9)
+		fatalExecNoMailDesc(10)
+		fatalExecNoMailPoll(11)
+		fatalExecNoTask(12)
+		fatalExecNoTimer(13)
+		fataExecNoTimerPool(14)
+		fatalExecWaitInCtricalSection(15)
+		fatalDspDead(16)
+		fatalDspProtocolError(17)
+		fatalDspInternalError(18)
+		fatalDspLossOfSync(19)
+		fatalDspUnUsed(20)
+		fatalDDDDead(21)
+		fatalDDDProtocolError(22)
+		fatalX25Buffers(23)
+		fatalX25Init(24)
+		fatalX25Stack(25)
+		fatalZeroMemoryAlloc(27)
+		fatalNegativeMemoryAllocate(28)
+		fatalTaskLoop(29)
+		fatalMemcpyTooLarge(30)
+		fatalMemcpyNoMagic(31)
+		fatalMemcpyWrongMagic(32)
+		fatalMemcoyBadStart(33)
+		fatalIDECTimeout(34)
+		fatalExecRestricted(35)
+		fatalStackOverflow(36)
+		fatalDRAMCard(37)
+		fatalMbufPanic(38)
+		fatalNoPriority2Task(39)
+		fatalProtectionFault(40)
+		fatalClipping(41)
+		fatalReadyHangFault(42)
+		fatalExcessPostCompl(43)
+		fatalWriteProtect(44)
+		fatalPureVirtual(45)
+		fatalATMSVC(46)
+		fatalFRSVC(47)
+		fatalInterruptCode(48)
+		fatalLinkedListCorruption(55)
+		fatalBadPower(60)
+		fatalWatchdogTimeout(61)
+		fatalUnexplainedNMI(62)
+		fatalPrimarySelected(98)
+		fatalOperatorReset(99)
+		fatalSystemUp(100)
+		warningBufferInUse(101)
+		warningBufferWrongPool(102)
+		warningBufferWrongHeap(103)
+		warningBufferNotMemAlloc(104)
+		warningBufferBadMemAlloc(105)
+		warningBufferBogusPool(106)
+		warningBufferBogusHeap(107)
+		warningBufferNegativeMemalloc(108)
+		warningBufferZeroMemalloc(109)
+		warningBufferBoundary(110)
+		warningBufferTooBig(111)
+		warningBufferNull(112)
+		warningBufferSegmentCountZero(113)
+		warningBufferTrailerMagic(114)
+		warningBufferTrailerBuffer(115)
+		warningBufferTrailerLength(116)
+		warningBufferTrailerUserMagic(117)
+		warningBufferWriteAfterFree(118)
+		warningBufferNotInUse(119)
+		warningBufferMemcpyMagic(120)
+		warningBufferMemcpyMagicNext(121)
+		warningBufferNoExtraDRAM(129)
+		errprPPPAsuncBufferInUse(130)
+		warningIpcpIpLookup(131)
+		warningBadChunk(135)
+		warningUnexpectedIF(136)
+		warningNoTimers(140)
+		warningLCDAllocFailure(145)
+		warningLCDNonSense(146)
+		warningMemcpyTooLarge(150)
+		warningMemcpyNoMagic(151)
+		warningMemcpyWrongMagic(152)
+		warningMemcpyBadStart(153)
+		warningWANBufferLeak(154)
+		warningTermSrvState(160)
+		warningTermSrvSemaphore(161)
+		warningTelnetFreeDrv(165)
+		warningSTACTimeout(170)
+		warningSTACDataNotOwned(171)
+		warningExecFailure(175)
+		warningExecNoMailbox(177)
+		warningExecNoResources(178)
+		warningUnexpected(179)
+		warningChannelMapStuck(180)
+		warningChannelDisplayStuck(181)
+		warningNewCallNoDiscRequest(182)
+		warningNewCallNoDiscResp(183)
+		warningDisconnectRequestDropped(184)
+		warningSpyderBuffer(185)
+		warningSpyderDesc(186)
+		warningSpyderLoseChannel(187)
+		warningHscxSlowRelay(188)
+		warningTcpSbcontTooBig(190)
+		warningTcpSequenceGap(191)
+		warningTcpTooMuchData(192)
+		warningTcpTooMuchWrite(193)
+		warningTcpBadOptions(194)
+		warningLmodSlotDown(195)
+		warningLmodDspDown(196)
+		warningLmodDspmodemDown(197)
+		warningTcpXmitLooping(198)
+		warningOspfFatal(200)
+		warningOspfWarn(201)
+		warningBriJumperNotPresent(210)
+		warningBriJumperConfiguration(211)
+		infoCardBounced(220)
+		infoCardDown(221)
+		warningTacacsplusBase(300)
+		warningTacacsplusPointerInconsistency(301)
+		warningTacacsplusIndexInconsistency(302)
+		warningTacacsplusTcpInconsistency(303)
+		warningTacacsplusTcpOutofrangesocket(304)
+		warningTacacsplusSocketMismatch(305)
+		warningTacacsplusUnexpectedAuthState(306)
+		warningTacacsplusMax(309)
+		warningCidrWrongTree(310)
+		warningCidrNoMem(311)
+		warningCidrBusy(312)
+		warningCidrNonempty(313)
+		warningCidrDupDelete(314)
+		warningSauthWrongInfo(320)
+		warningSauthBadAddr(321)
+		warningGdbProtectionFault(330)
+		warningInFilterList(381)
+		warningNoCountInFilterList(382)
+		warningMismatchCountFilterList(383)
+		warningCdtUnprotectedAccess(384)
+		infoSystemResetOccurred(385)
+		warningBadPowerSupply(400)
+		warningDspCrashMin(512)
+		warningEthernetNoTxBuf(550)
+		warningDspCrashMax(767)
+		warningDspWrongSlot(768)
+		warningUnalignedAccess(800)
+		warningH323NoResources(801)
+		warningExecRestricted(999)
+		warningEthernetCuBusy(1001)
+		warningEthernetAckFailure(1002)
+		warningEthernetReset(1003)
+		warningEthernetCuActive(1005)
+		warningEthernetWaitScb(1006)
+		warningEthernetNoMACAddress(1007)
+		warningBaeepromChange(2001)
+		warningBaeepromImageMismatch(2002)
+		warningFlashTypeBad(2010)
+		warningMaxiopLoadFailure(2022)
+		warningPrimaryHWsetupFailed(2100)
+		warningSecondaryHWsetupFailed(2101)
+		warningIpxsapFilterMagic(3001)
+		warningIpxsapFilterCountZero(3002)
+		warningIpxsapFilterCountMismatch(3003)
+		warningModemTxChannelStuck(4000)
+		warningModemTxChannelRecovered(4100)
+		notApplicable(9998)
+		unknown(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			slotCardResetTrap trap received 
+			fatalLogIndex=%parm[#1]% 
+			fatalLogReason=%parm[#2]% 
+			sysAbsoluteCurrentTime=%parm[#3]% 
+			slotIndex=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/controllerSwitchoverTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: controllerSwitchoverTrap</event-label>
+	<descr>
+&lt;p&gt;System controller changed. The primary system
+controller changed from cntrReduSwitchIndex
+to cntrReduCurrentIndex.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduSwitchReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		failure(2)
+		manual(3)
+		scheduled(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduSwitchIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduCurrentIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			controllerSwitchoverTrap trap received 
+			sysAbsoluteCurrentTime=%parm[#1]% 
+			cntrReduSwitchReason=%parm[#2]% 
+			cntrReduSwitchIndex=%parm[#3]% 
+			cntrReduCurrentIndex=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/callLogServChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: callLogServChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to indicate that the call 
+logging server has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	callLoggingServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	callLoggingServerIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			callLogServChange trap received 
+			callLoggingServerIndex=%parm[#1]% 
+			callLoggingServerIPAddress=%parm[#2]% 
+			sysAbsoluteCurrentTime=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/voipGkChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: voipGkChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when there is a change in the 
+gatekeeper which is registered with the gateway
+in a VOIP configuration.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	voipCfgGkIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	voipCfgGkIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			voipGkChange trap received 
+			voipCfgGkIndex=%parm[#1]% 
+			voipCfgGkIpAddress=%parm[#2]% 
+			sysAbsoluteCurrentTime=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>40</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/wanLineStateChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: wanLineStateChange</event-label>
+	<descr>
+&lt;p&gt;This trap is sent to indicate a change in the state
+of a T1/E1 line : trunk, quiesced or disabled&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	wanLineIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	wanLineUsage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		lu-unknown(1)
+		lu-unavailable(2)
+		lu-disabled(3)
+		lu-enabled(4)
+		lu-trunk(5)
+		lu-quiesced(6)
+		lu-drop-and-insert(7)
+		lu-t-online-user(8)
+		lu-t-online-zgr(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysAbsoluteCurrentTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			wanLineStateChange trap received 
+			wanLineIfIndex=%parm[#1]% 
+			wanLineUsage=%parm[#2]% 
+			sysAbsoluteCurrentTime=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/callLogDroppedPkt</uei>
+	<event-label>ASCEND-TRAP defined trap event: callLogDroppedPkt</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that a call logging packet was
+dropped. A count value of 1 indicates the start
+of dropping of call logging packets. A count value
+of 0 indicates that all is well again.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	callLoggingDroppedPacketCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			callLogDroppedPkt trap received 
+			callLoggingDroppedPacketCount=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>42</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/megacoLinkStatusTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: megacoLinkStatusTrap</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that operational status
+of a media gateway control link has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mgLinkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mgOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+		unknown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			megacoLinkStatusTrap trap received 
+			mgLinkName=%parm[#1]% 
+			mgOperStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>43</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sparingSlotStatusChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: sparingSlotStatusChange</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that the slot sparing state
+has changed at sparingSlotLastStatusChange to
+sparingSlotStatus.
+The slot affected is sparingSlotPrimaryIndex.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingSlotPrimaryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingSlotSparingIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingSlotStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		standby(1)
+		fault(2)
+		active(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingSlotLastStatusChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingSlotLastChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		manual(2)
+		automatic(3)
+		test(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sparingSlotStatusChange trap received 
+			sparingSlotPrimaryIndex=%parm[#1]% 
+			sparingSlotSparingIndex=%parm[#2]% 
+			sparingSlotStatus=%parm[#3]% 
+			sparingSlotLastStatusChange=%parm[#4]% 
+			sparingSlotLastChangeReason=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>44</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/sparingIfStatusChange</uei>
+	<event-label>ASCEND-TRAP defined trap event: sparingIfStatusChange</event-label>
+	<descr>
+&lt;p&gt;This trap indicates that the interface sparing state
+has changed at sparingIfLastStatusChange to
+sparingIfStatus.
+The slot affected is sparingIfPrimaryIndex.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingIfPrimaryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingIfSparingIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingIfStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		standby(1)
+		fault(2)
+		active(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingIfLastStatusChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sparingIfLastChangeReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		manual(2)
+		automatic(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sparingIfStatusChange trap received 
+			sparingIfPrimaryIndex=%parm[#1]% 
+			sparingIfSparingIndex=%parm[#2]% 
+			sparingIfStatus=%parm[#3]% 
+			sparingIfLastStatusChange=%parm[#4]% 
+			sparingIfLastChangeReason=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.529</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>45</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Ascend/traps/cntrReduAvailTrap</uei>
+	<event-label>ASCEND-TRAP defined trap event: cntrReduAvailTrap</event-label>
+	<descr>
+&lt;p&gt;The redundancy availability for the controller in slot
+cntrReduAvailSlotIndex changed from cntrReduAvailPrevState
+to cntrReduAvailCurrState at cntrReduAvailLastTime.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduAvailLastTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduAvailSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduAvailPrevState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cntrReduAvailCurrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cntrReduAvailTrap trap received 
+			cntrReduAvailLastTime=%parm[#1]% 
+			cntrReduAvailSlotIndex=%parm[#2]% 
+			cntrReduAvailPrevState=%parm[#3]% 
+			cntrReduAvailCurrState=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: ASCEND-TRAP -->
+</events>

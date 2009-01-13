@@ -87,7 +87,7 @@
             FROM alarms a
            WHERE a.tticketstate = 3
              AND a.severity &gt; 2
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
       </statement>
     </trigger>
   
@@ -101,7 +101,7 @@
                  now() AS _ts
             FROM alarms a
            WHERE a.severity &gt; 2 
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND a.alarmAckUser is NULL 
              AND a.tticketState IS NULL
              AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
@@ -120,7 +120,7 @@
                  now() AS _ts
             FROM alarms a
            WHERE a.severity = 7 
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND a.alarmAckUser is NULL 
              AND a.tticketState IS NULL
              AND lasteventtime &lt; now() - interval '5 minutes'
@@ -137,7 +137,7 @@
                  now() AS _ts
             FROM alarms a
            WHERE a.severity &gt; 2 
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND a.tticketState IS NOT NULL
              AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
       </statement>
@@ -171,7 +171,7 @@
             FROM alarms a
  LEFT OUTER JOIN service s
               ON s.serviceid = a.serviceid
-           WHERE alarmType = 1
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND severity &gt; 3
              AND severity &lt; 7
              AND alarmacktime IS NULL

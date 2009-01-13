@@ -29,6 +29,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Bridge MIB: New Spanning Tree Root.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/> 
 </event>
 
 <event>
@@ -59,6 +60,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Bridge MIB: Topology Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/> 
 </event>
 <!-- End of IETF Standard MIB: BRIDGE-MIB -->
 <!-- Start of IETF Standard MIB: DIAL-CONTROL-MIB -->
@@ -122,6 +124,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Dial Control Event: Peer Call Information.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -173,6 +176,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Dial Control Event: Peer Call Setup Notification.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of IETF Standard MIB: DIAL-CONTROL-MIB -->
 <!-- Start of IETF Standard MIB: DLSW-MIB -->
@@ -205,6 +209,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Rejected by Partner: %parm[#2]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/> 
 </event>
 
 <event>
@@ -235,6 +240,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Protocol Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/> 
 </event>
 
 <event>
@@ -265,6 +271,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
 </event>
 
 <event>
@@ -295,6 +302,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>  
 </event>
 
 <event>
@@ -329,6 +337,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Circuit Connection Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapcircuitDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
 </event>
 
 <event>
@@ -363,6 +372,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Circuit Connection Down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
 </event>
 <!-- End of IETF Standard MIB: DLSW-MIB -->
 <!-- Start of IETF Standard MIB: DOCS-CABLE-DEVICE-TRAP-MIB -->
@@ -1798,6 +1808,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;ENTITY Configuration Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of IETF Standard MIB: ENTITY-MIB -->
 <!-- Start of ATM MIB: IMA-MIB -->
@@ -1985,6 +1996,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;RFC1315 Event: Frame Relay DLCI Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of IETF Standard MIB: RFC1315-MIB -->
 <!-- Start of IETF Standard MIB: SNA-SDLC-MIB -->
@@ -2027,6 +2039,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: Port Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -2080,6 +2093,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -2348,7 +2362,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;VRRP Event: New Master.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
+ <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>

@@ -33,6 +33,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Accounting File Size exceeds threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -66,7 +67,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Accounting File Size at maximum.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
+ <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: ACCOUNTING-CONTROL-MIB -->
 <!-- Start of Cisco MIB: ADSL-LINE-MIB -->
@@ -878,6 +880,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Utilization over threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-5800-HEALTH-MON-MIB -->
 <!-- Start of Cisco MIB: CISCO-6400-CHASSIS-MIB -->
@@ -1164,6 +1167,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Device over-voltage.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-ACCESS-ENVMON-MIB -->
 <!-- Start of Cisco MIB: CISCO-ALPS-MIB -->
@@ -1605,6 +1609,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: BSTUN Peer State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-BSTUN-MIB -->
 <!-- Start of Cisco MIB: CISCO-C2900-MIB -->
@@ -2670,7 +2675,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Critical Call Manager failure.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 
 <event>
@@ -2704,7 +2709,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Phone failed to communicate with Call Manager.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="true" />
 </event>
 
 <event>
@@ -2738,7 +2743,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Phone successfully registered with Call Manager.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="true" />
 </event>
 
 <event>
@@ -2866,7 +2871,7 @@
  </descr>
  <logmsg dest='logndisplay'>Cisco Event: Call Manager Resource Out Error.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="3" auto-clean="false" />
 </event>
 
 <event>
@@ -2898,7 +2903,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Call Manager: No Route.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 
 <event>
@@ -3046,7 +3051,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Interface Link Quality Degraded.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
+ <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -3085,6 +3091,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Interface Link Quality Degraded.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-CHANNEL-MIB -->
 <!-- Start of Cisco MIB: CISCO-CIPCMPC-MIB -->
@@ -3192,6 +3199,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: VTAM attempted to open SAP that was already open.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -3226,6 +3234,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Connection Limit Exceeded.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-CIPCSNA-MIB -->
 <!-- Start of Cisco MIB: CISCO-CLUSTER-MIB -->
@@ -3552,6 +3561,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DLSW Transport Connection changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -3582,6 +3592,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DLSW Circuit Connection changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-DLSW-EXT-MIB -->
 <!-- Start of Cisco MIB: CISCO-DLSW-MIB -->
@@ -3613,6 +3624,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DLSW Transport Connection Rejected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
 </event>
 
 <event>
@@ -3642,6 +3654,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DLSW Transport Connection Protocol Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
 </event>
 
 <event>
@@ -3670,6 +3683,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DLSW Transport Connection now connected.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Cisco/traps/ciscoDlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 
 <event>
@@ -3699,6 +3713,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DLSW Transport Connection is disconnected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
 </event>
 
 <event>
@@ -3962,6 +3977,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU PU State Change Trap.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4004,6 +4020,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU PU Activation Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4039,6 +4056,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU PU State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4080,6 +4098,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU PU Activation Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4117,6 +4136,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU LU State Changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4159,6 +4179,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU LU Activation Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4200,6 +4221,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU LU State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4251,6 +4273,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: DSPU SAP State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-DSPU-MIB -->
 <!-- Start of Cisco MIB: CISCO-ENTITY-ALARM-MIB -->
@@ -4521,6 +4544,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Device is shutting down.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4559,6 +4583,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Device Voltage Alert.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4597,6 +4622,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Device Temperature Alert.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4632,6 +4658,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Device Fan Alert.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -4667,6 +4694,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Device Redundant Power Supply Alert.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-ENVMON-MIB -->
 <!-- Start of Cisco MIB: CISCO-EVENT-DISTR-MIB -->
@@ -5005,6 +5033,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: FASTHUB POST Failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5032,6 +5061,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: FASTHUB Redundant Power Source Failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5061,6 +5091,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: FASTHUB IP Address Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-FASTHUB-MIB -->
 <!-- Start of Cisco MIB: CISCO-FIREWALL-MIB -->
@@ -5315,6 +5346,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Flash Copy Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5349,6 +5381,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Flash Partitioning Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5385,6 +5418,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Flash Miscellaneous Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5487,6 +5521,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Configuration Reload Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5810,6 +5845,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: HSRP State Change to %parm[#1]%.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
  <varbindsdecode>
  <parmid>parm[#1]</parmid>
  <decode varbindvalue="1" varbinddecodedstring="initial"/> 
@@ -5845,7 +5881,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: CSU/DSU Change in T1 Loop Status.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
+ <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -5870,7 +5907,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: CSU/DSU Change in Sw56k Loop Status.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
+ <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-ICSUDSU-MIB -->
 <!-- Start of Cisco MIB: CISCO-IETF-ATM2-PVCTRAP-MIB -->
@@ -6057,7 +6095,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Crypto Session Establishment Test Completed.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
+ <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-IP-ENCRYPTION-MIB -->
 <!-- Start of Cisco MIB: CISCO-IPMROUTE-MIB -->
@@ -6742,7 +6781,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: ISDN Call Information: %parm[#5]%.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
+ <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -6787,7 +6827,8 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: ISDN Call Detail: %parm[#5]%.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
+ <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-ISDN-MIB -->
 <!-- Start of Cisco MIB: CISCO-ISDNU-IF-MIB -->
@@ -6821,6 +6862,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: ISDN Loop Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-ISDNU-IF-MIB -->
 <!-- Start of Cisco MIB: CISCO-ITP-SCCP-MIB -->
@@ -7580,6 +7622,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: OAM Loopback Calls Completed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-OAM-MIB -->
 <!-- Start of Cisco MIB: CISCO-OPTICAL-PATCH-MIB -->
@@ -7925,6 +7968,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: PING MIB Ping Completion.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-PING-MIB -->
 <!-- Start of Cisco MIB: CISCO-POP-MGMT-MIB -->
@@ -8119,6 +8163,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Repeater Illegal Source Address.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-REPEATER-MIB -->
 <!-- Start of Cisco MIB: CISCO-RF-MIB -->
@@ -8256,6 +8301,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: LS1010 Chassis Failure Notification.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -8281,6 +8327,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: LS1010 Chassis Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-RHINO-MIB -->
 <!-- Start of Cisco MIB: CISCO-RSRB-MIB -->
@@ -8313,6 +8360,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: RSRB Peer State Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-RSRB-MIB -->
 <!-- Start of Cisco MIB: CISCO-RTTMON-MIB -->
@@ -8547,6 +8595,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SIBU Console Logon Intruder Alert.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-SIBU-MANAGERS-MIB -->
 <!-- Start of Cisco MIB: CISCO-SIBU-STACKABLE-DUAL-SPEED-HUB-MIB -->
@@ -8709,6 +8758,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SNA LLC Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-SNA-LLC-MIB -->
 <!-- Start of Cisco MIB: CISCO-SP-MIB -->
@@ -8913,6 +8963,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK FDDI LER Alarm on.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
 </event>
 
 <event>
@@ -8947,6 +8998,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK FDDI LER Alarm off.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Cisco/traps/lerAlarmOn:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 
 <event>
@@ -8997,7 +9049,8 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK Module Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
-</event>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Cisco/traps/moduleDown:%dpname%:%nodeid%:%parm[#1]%"/>
+ </event>
 
 <event>
  <mask>
@@ -9046,6 +9099,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK Module Down.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
 </event>
 
 <event>
@@ -9086,6 +9140,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK Chassis Alarm On.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
 </event>
 
 <event>
@@ -9126,6 +9181,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK Chassis Alarm Off.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Cisco/traps/chassisAlarmOn:%dpname%:%nodeid%"/>
 </event>
 
 <event>
@@ -9159,6 +9215,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK IP Permit Denied.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -9380,6 +9437,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STUN Peer State Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-STUN-MIB -->
 <!-- Start of Cisco MIB: CISCO-SYSLOG-MIB -->
@@ -9466,7 +9524,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9509,7 +9567,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9552,7 +9610,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9595,7 +9653,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9638,7 +9696,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9681,7 +9739,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9724,7 +9782,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9767,7 +9825,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
  <mask>
@@ -9806,7 +9864,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: SYSLOG Notification: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <!-- End of Cisco MIB: CISCO-SYSLOG-MIB -->
 <!-- Start of Cisco MIB: CISCO-SYSTEM-MIB -->
@@ -10431,6 +10489,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: VLAN Membership Change Notification: %parm[#1]%.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-VLAN-MEMBERSHIP-MIB -->
 <!-- Start of Cisco MIB: CISCO-VOICE-APPS-MIB -->
@@ -10674,6 +10733,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: VOICE Poor Quality Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-VOICE-DIAL-CONTROL-MIB -->
 <!-- Start of Cisco MIB: CISCO-VTP-MIB -->
@@ -12072,7 +12132,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Ethernet Switch failed log on attempt.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
+ <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" alarm-type="3" />
 </event>
 
 <event>
@@ -12101,7 +12162,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Ethernet Switch failed POST.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
+ <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" alarm-type="3" />
 </event>
 
 <event>
@@ -12132,6 +12194,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Ethernet Switch Address Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" alarm-type="3" />
 </event>
 
 <event>
@@ -12162,6 +12225,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Ethernet Switch Broadcast Storm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" alarm-type="3" />
 </event>
 
 <event>
@@ -12189,6 +12253,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: Ethernet Switch Redundent Power Supply Error.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" alarm-type="3" />
 </event>
 
 <event>
@@ -12244,7 +12309,8 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: MADGER SW Power Supply Fan has Failed.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
+ <severity>Major</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -12271,6 +12337,7 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: MADGER SW External Fan has Failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -12299,7 +12366,8 @@
  &lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: MADGER SW Port Failed.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
+ <severity>Minor</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
 </event>
 
 <event>
@@ -12329,6 +12397,547 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: MADGER SW Port Test Failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
+ <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/elanRingnumFailed</uei>
+	<event-label>MADGERSW-MIB defined trap event: elanRingnumFailed</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when the ELAN ring number for
+an ATM LEC is already configured on another port.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchGenPortNum&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			elanRingnumFailed trap received 
+			ringswitchGenPortNum=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/routeDescriptorFailed</uei>
+	<event-label>MADGERSW-MIB defined trap event: routeDescriptorFailed</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when an ATM LEC has failed to
+register a route descriptor.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchGenPortNum&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchRouteDescrSegmentID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchRouteDescrBridgeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			routeDescriptorFailed trap received 
+			ringswitchGenPortNum=%parm[#1]% 
+			ringswitchRouteDescrSegmentID=%parm[#2]% 
+			ringswitchRouteDescrBridgeNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/fanSpeedFailed</uei>
+	<event-label>MADGERSW-MIB defined trap event: fanSpeedFailed</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a fan has failed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchFanSpeed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			fanSpeedFailed trap received 
+			ringswitchFanSpeed=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/psuFailed</uei>
+	<event-label>MADGERSW-MIB defined trap event: psuFailed</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a PSU has broken.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchPSUStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unit-absent(1)
+		unit-broken(2)
+		unit-normal(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psuFailed trap received 
+			ringswitchPSUStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/versionMismatch</uei>
+	<event-label>MADGERSW-MIB defined trap event: versionMismatch</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when there is a version
+mismatch between some installed software
+components.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchVersionMismatch&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		boot-eprom-and-boot-flash(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			versionMismatch trap received 
+			ringswitchVersionMismatch=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/genPortStatus</uei>
+	<event-label>MADGERSW-MIB defined trap event: genPortStatus</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when an interesting
+status change occurs on a port.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchGenPortLastStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		fddi-remove(1)
+		fddi-twisted(2)
+		fddi-bypass(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			genPortStatus trap received 
+			ringswitchGenPortLastStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/slotStatus</uei>
+	<event-label>MADGERSW-MIB defined trap event: slotStatus</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when an interesting
+status change occurs on a slot.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchSlotLastStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		atm-if-down(1)
+		atm-porta-down(2)
+		atm-portb-down(3)
+		fddi-if-down(4)
+		fddi-porta-iso(5)
+		fddi-portb-iso(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			slotStatus trap received 
+			ringswitchSlotLastStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/oneNodePerPortViolation</uei>
+	<event-label>MADGERSW-MIB defined trap event: oneNodePerPortViolation</event-label>
+	<descr>
+&lt;p&gt;Sent when two or more nodes are inserted in a 
+Group Switch port.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			oneNodePerPortViolation trap received 
+			ringswitchTRGrpSwtchIfIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/grpSwitchPortDisabled</uei>
+	<event-label>MADGERSW-MIB defined trap event: grpSwitchPortDisabled</event-label>
+	<descr>
+&lt;p&gt;Sent when a group switch port is disabled.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchPortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchTrapInfoReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		reason-unknown(1)
+		ring-poll-failure(2)
+		beaconing(3)
+		ring-purges(4)
+		isolating-errors(5)
+		removal-exceeded(6)
+		beaconing-fault(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			grpSwitchPortDisabled trap received 
+			ringswitchTRGrpSwtchIfIndex=%parm[#1]% 
+			ringswitchTRGrpSwtchPortIndex=%parm[#2]% 
+			ringswitchTRGrpSwtchTrapInfoReason=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/grpSwitchPortKilled</uei>
+	<event-label>MADGERSW-MIB defined trap event: grpSwitchPortKilled</event-label>
+	<descr>
+&lt;p&gt;Sent when a group switch port is disabled by 
+fault manager&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchPortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchTrapInfoReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		reason-unknown(1)
+		ring-poll-failure(2)
+		beaconing(3)
+		ring-purges(4)
+		isolating-errors(5)
+		removal-exceeded(6)
+		beaconing-fault(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			grpSwitchPortKilled trap received 
+			ringswitchTRGrpSwtchIfIndex=%parm[#1]% 
+			ringswitchTRGrpSwtchPortIndex=%parm[#2]% 
+			ringswitchTRGrpSwtchTrapInfoReason=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/downloadFailed</uei>
+	<event-label>MADGERSW-MIB defined trap event: downloadFailed</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a download
+operation has failed, and system operation
+may be compromised as the next reboot.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchDownloadFailed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		microcode(1)
+		boot-code(2)
+		fddi-code(3)
+		atm-code(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			downloadFailed trap received 
+			ringswitchDownloadFailed=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/grpSwitchPortFaultDetected</uei>
+	<event-label>MADGERSW-MIB defined trap event: grpSwitchPortFaultDetected</event-label>
+	<descr>
+&lt;p&gt;Sent when a group switch port causes a fault.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchPortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRGrpSwtchTrapInfoReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		reason-unknown(1)
+		ring-poll-failure(2)
+		beaconing(3)
+		ring-purges(4)
+		isolating-errors(5)
+		removal-exceeded(6)
+		beaconing-fault(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			grpSwitchPortFaultDetected trap received 
+			ringswitchTRGrpSwtchIfIndex=%parm[#1]% 
+			ringswitchTRGrpSwtchPortIndex=%parm[#2]% 
+			ringswitchTRGrpSwtchTrapInfoReason=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/fastFailoverWarning</uei>
+	<event-label>MADGERSW-MIB defined trap event: fastFailoverWarning</event-label>
+	<descr>
+&lt;p&gt;Sent when a fast failover switch port causes a 
+warning&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRIfFastFailoverPrimaryPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		left(1)
+		right(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchTRIfFastFailoverTrapInfoReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		primary-open-fail(1)
+		standby-open-fail(2)
+		links-swapped(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			fastFailoverWarning trap received 
+			ringswitchTRIfFastFailoverPrimaryPort=%parm[#1]% 
+			ringswitchTRIfFastFailoverTrapInfoReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.494.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/ethernetSTPBlockingTrap</uei>
+	<event-label>MADGERSW-MIB defined trap event: ethernetSTPBlockingTrap</event-label>
+	<descr>
+&lt;p&gt;Sent when a Ethernet port is forced into blocking mode
+due to the presence of a 3rd party bridge. Also sent
+when the port comes out of blocking&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchEthernetIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ringswitchEthernetIfSTPBlockingTrapInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		blocked(1)
+		unblocked(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ethernetSTPBlockingTrap trap received 
+			ringswitchEthernetIfIndex=%parm[#1]% 
+			ringswitchEthernetIfSTPBlockingTrapInfo=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
 </event>
 <!-- End of Cisco MIB: MADGERSW-MIB -->
 <!-- Start of Cisco MIB: METRO1500-MIB -->
@@ -14762,4 +15371,110 @@
         <severity>Cleared</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down"  clear-key="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
     </event>
+<!-- Start of auto generated data from MIB: CISCO-PROCESS-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.109.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/cpmCPURisingThreshold</uei>
+	<event-label>CISCO-PROCESS-MIB defined trap event: cpmCPURisingThreshold</event-label>
+	<descr>
+&lt;p&gt;A cpmCPURisingThreshold notification is sent
+when configured rising CPU utilization threshold
+(cpmCPURisingThresholdValue) is reached and
+CPU utilization remained above the threshold 
+for configured interval(cpmCPURisingThresholdPeriod)
+and such a notification is requested. 
+The cpmProcExtUtil5SecRev and cpmProcessTimeCreated 
+objects can be repeated multiple times
+in a notification indicating the top users of CPU.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmCPURisingThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmCPUTotalMonIntervalValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmCPUInterruptMonIntervalValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmProcExtUtil5SecRev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmProcessTimeCreated&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cpmCPURisingThreshold trap received 
+			cpmCPURisingThresholdValue=%parm[#1]% 
+			cpmCPUTotalMonIntervalValue=%parm[#2]% 
+			cpmCPUInterruptMonIntervalValue=%parm[#3]% 
+			cpmProcExtUtil5SecRev=%parm[#4]% 
+			cpmProcessTimeCreated=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.109.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/traps/cpmCPUFallingThreshold</uei>
+	<event-label>CISCO-PROCESS-MIB defined trap event: cpmCPUFallingThreshold</event-label>
+	<descr>
+&lt;p&gt;A cpmCPUFallingThresholdTrap is sent when the
+configured falling threshold
+(cpmCPURisingThresholdValue) 
+is reached and CPU utilization remained under 
+threshold for configured 
+interval (cpmCPUFallingThresholdPeriod) 
+and such a notification is requested.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmCPUFallingThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmCPUTotalMonIntervalValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cpmCPUInterruptMonIntervalValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cpmCPUFallingThreshold trap received 
+			cpmCPUFallingThresholdValue=%parm[#1]% 
+			cpmCPUTotalMonIntervalValue=%parm[#2]% 
+			cpmCPUInterruptMonIntervalValue=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: CISCO-PROCESS-MIB -->
 </events>
