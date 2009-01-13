@@ -34,6 +34,11 @@
 
 package org.opennms.netmgt.provision.service.snmp;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
+
+import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
@@ -56,7 +61,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * 
  */
-public final class NamedSnmpVar implements Collectable {
+public final class NamedSnmpVar {
     /**
      * String which contains the Class name of the expected SNMP data type for
      * the object.
@@ -214,9 +219,17 @@ public final class NamedSnmpVar implements Collectable {
         return m_isTabular;
     }
     
-    public CollectionTracker getCollectionTracker() {
-        return m_isTabular ? (CollectionTracker)new ColumnTracker(getSnmpObjId()) : 
-                             (CollectionTracker)new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
+    public CollectionTracker getCollectionTracker(Set<SnmpInstId> instances) {
+        if ( instances == null ) {
+            return m_isTabular ? new ColumnTracker(getSnmpObjId()) : 
+                             new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
+        } else {
+            Collection<Collectable> trackers = new ArrayList<Collectable>();
+            for(SnmpInstId inst : instances) {
+                trackers.add(new SingleInstanceTracker(getSnmpObjId(), inst));
+            }
+            return new AggregateTracker(trackers);
+        }
     }
 
     /**
@@ -227,12 +240,16 @@ public final class NamedSnmpVar implements Collectable {
         return m_column;
     }
 
-    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns) {
+    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns, Set<SnmpInstId> instances) {
         CollectionTracker[] trackers = new CollectionTracker[columns.length];
         for(int i = 0; i < columns.length; i++)
-            trackers[i] = columns[i].getCollectionTracker();
+            trackers[i] = columns[i].getCollectionTracker(instances);
         
          return trackers;
+    }
+
+    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] ms_elemList) {
+        return getTrackersFor(ms_elemList, null);
     }
 
 }

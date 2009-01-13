@@ -42,6 +42,7 @@ package org.opennms.netmgt.provision.service.snmp;
 import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -83,8 +84,23 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         super(address, "ipAddrTable", IpAddrTableEntry.ms_elemList);
     }
 
+    public IpAddrTable(InetAddress address, Set<SnmpInstId> ipAddrs) {
+        super(address, "ipAddrTable", IpAddrTableEntry.ms_elemList, ipAddrs);
+    }
+
     protected IpAddrTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IpAddrTableEntry();
+    }
+    
+    public Set<Integer> getIfIndices() {
+        Set<Integer> ifIndices = new TreeSet<Integer>();
+        for(IpAddrTableEntry entry : getEntries()) {
+            Integer ifIndex = entry.getIpAdEntIfIndex();
+            if (ifIndex != null) {
+                ifIndices.add(ifIndex);
+            }
+        }
+        return ifIndices;
     }
 
     public InetAddress[] getIfAddressAndMask(int ifIndex) {

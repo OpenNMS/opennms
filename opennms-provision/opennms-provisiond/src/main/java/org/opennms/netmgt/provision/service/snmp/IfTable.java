@@ -89,9 +89,13 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @see IfTableEntry
      */
     public IfTable(InetAddress address) {
-        super(address, "ifTable", IfTableEntry.ms_elemList);
+        this(address, null);
     }
     
+    public IfTable(InetAddress address, Set<SnmpInstId> ifIndices) {
+        super(address, "ifTable", IfTableEntry.ms_elemList, ifIndices);
+    }
+
     protected IfTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfTableEntry();
     }
