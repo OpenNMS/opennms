@@ -88,7 +88,7 @@ public class Main {
         a.setName("default");
         a.setAppend(true);
         a.setBufferedIO(true);
-        String logFile = null;
+        String logFile;
         if (System.getProperty("os.name").contains("Windows")) {
             logFile = System.getProperty("java.io.tmpdir") + File.separator + "opennms-remote-poller.log";
         } else {
@@ -96,7 +96,9 @@ public class Main {
         }
         File logDirectory = new File(logFile).getParentFile();
         if (!logDirectory.exists()) {
-            logDirectory.mkdirs();
+            if (!logDirectory.mkdirs()) {
+                throw new IllegalStateException("Could not create parent directory for log file '" + logFile + "'");
+            }
         }
         a.setFile(logFile);
         a.setLayout(layout);
