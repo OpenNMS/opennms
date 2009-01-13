@@ -1,0 +1,148 @@
+<events>
+<!-- Start of auto generated data from MIB: MPLS-VPN-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.3.118</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mpls/traps/mplsVrfIfUp</uei>
+	<event-label>MPLS-VPN-MIB defined trap event: mplsVrfIfUp</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when:
+a. The ifOperStatus of an interface associated with a VRF 
+   changes to the up(1) state.
+b. When an interface with ifOperStatus = up(1) is 
+   associated with a VRF.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsVrfIfUp trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.3.118</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mpls/traps/mplsVrfIfDown</uei>
+	<event-label>MPLS-VPN-MIB defined trap event: mplsVrfIfDown</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when:
+a. The ifOperStatus of an interface associated with a VRF 
+   changes to the down(1) state.
+b. When an interface with ifOperStatus = up(1) state is 
+   disassociated with a VRF.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsVrfIfDown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.3.118</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mpls/traps/mplsNumVrfRouteMidThreshExceeded</uei>
+	<event-label>MPLS-VPN-MIB defined trap event: mplsNumVrfRouteMidThreshExceeded</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the number of routes
+contained by the specified VRF exceeds the value indicated by
+mplsVrfMidRouteThreshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsNumVrfRouteMidThreshExceeded trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.3.118</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mpls/traps/mplsNumVrfRouteMaxThreshExceeded</uei>
+	<event-label>MPLS-VPN-MIB defined trap event: mplsNumVrfRouteMaxThreshExceeded</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the number of routes
+contained by the specified VRF reaches or attempts to exceed
+the maximum allowed value as indicated by
+mplsVrfMaxRouteThreshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsNumVrfRouteMaxThreshExceeded trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.3.118</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mpls/traps/mplsNumVrfSecIllegalLabelThreshExceeded</uei>
+	<event-label>MPLS-VPN-MIB defined trap event: mplsNumVrfSecIllegalLabelThreshExceeded</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the number of illegal
+label violations on a VRF as indicated by 
+mplsVpnVrfSecIllegalLabelViolations has exceeded 
+mplsVpnVrfSecIllegalLabelRcvThresh. The threshold is not 
+included in the varbind here because the value of 
+mplsVpnVrfSecIllegalLabelViolations should be one greater than 
+the threshold at the time this notification is issued.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsNumVrfSecIllegalLabelThreshExceeded trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: MPLS-VPN-MIB -->
+</events>

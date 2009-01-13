@@ -453,7 +453,7 @@ prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -527,7 +527,7 @@ jacency from forming.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -605,7 +605,7 @@ type.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -677,7 +677,7 @@ authentication key or authentication type.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -736,7 +736,7 @@ interface that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -790,7 +790,7 @@ that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1020,7 +1020,7 @@ MaxAge.&lt;/p&gt;&lt;table&gt;
 			ospfLsdbRouterId=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1081,7 +1081,7 @@ aged to MaxAge.&lt;/p&gt;&lt;table&gt;
 			ospfLsdbRouterId=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1119,7 +1119,7 @@ base has exceeded ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
 			ospfExtLsdbLimit=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1158,7 +1158,7 @@ ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
 			ospfExtLsdbLimit=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
 </event>
 <event>
 	<mask>

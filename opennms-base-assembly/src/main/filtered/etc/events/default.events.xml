@@ -84,7 +84,7 @@
         </descr>
         <logmsg dest='logndisplay'>Incorrect Community Name (authenticationFailure Trap) enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%</logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true" />
     </event>
     <event>
         <mask>
@@ -151,7 +151,7 @@
         </descr>
         <logmsg dest='logndisplay'>An SNMP Trap with no matching configuration was received from interface %interface%.</logmsg>
         <severity>Indeterminate</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%id%:%generic%:%specific%" alarm-type="1" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%id%:%generic%:%specific%" alarm-type="3" />
     </event>
     <event>
         <uei>uei.opennms.org/default/event</uei>
@@ -162,6 +162,6 @@
         </descr>
         <logmsg dest='logndisplay'>An event with no matching configuration was received from interface %interface%.</logmsg>
         <severity>Indeterminate</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" />
     </event>
 </events>
