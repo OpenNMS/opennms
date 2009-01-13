@@ -278,7 +278,42 @@ public class WmiManager {
 	}
 
 	public WmiResult performOp(WmiParams params) throws WmiException {
-		ArrayList<Object> wmiObjects = new ArrayList<Object>();
+        // If we defined a WQL query string, exec the query.
+        if( params.getWql() != null) {
+            return performExecQuery(params);
+        } else {
+            // Otherwise perform an InstanceOf.
+            return performInstanceOf(params);
+        }
+    }
+
+    public WmiResult performExecQuery(WmiParams params) throws WmiException {
+        ArrayList<Object> wmiObjects = new ArrayList<Object>();
+
+		OnmsWbemObjectSet wos = m_WmiClient.performExecQuery(params.getWql());
+
+        for(int i=0; i<wos.count(); i++) {
+            wmiObjects.add(wos.get(i).getWmiProperties().getByName(params.getWmiObject()).getWmiValue());
+        }
+
+        WmiResult result = new WmiResult(wmiObjects);
+
+		if (params.getCompareOperation().equals("NOOP")) {
+			result.setResultCode(WmiResult.RES_STATE_OK);
+		} else if (params.getCompareOperation().equals("EQ")
+				|| params.getCompareOperation().equals("NEQ")
+				|| params.getCompareOperation().equals("GT")
+				|| params.getCompareOperation().equals("LT")) {
+			performResultCheck(result, params);
+		} else {
+			result.setResultCode(WmiResult.RES_STATE_UNKNOWN);
+		}
+
+		return result;
+    }
+
+    public WmiResult performInstanceOf(WmiParams params) throws WmiException {
+        ArrayList<Object> wmiObjects = new ArrayList<Object>();
 
 		OnmsWbemObjectSet wos = m_WmiClient.performInstanceOf(params.getWmiClass());
 
