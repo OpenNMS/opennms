@@ -31,12 +31,12 @@
 //
 package org.opennms.netmgt.snmp;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.LinkedHashMap;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -58,11 +58,11 @@ public class SnmpUtils {
         }
     }
 
-    public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker[] trackers) {
+    public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker... trackers) {
         return getStrategy().createWalker(agentConfig, name, createTooBigTracker(agentConfig, trackers));
     }
 
-    private static TooBigReportingAggregator createTooBigTracker(SnmpAgentConfig agentConfig, CollectionTracker[] trackers) {
+    private static TooBigReportingAggregator createTooBigTracker(SnmpAgentConfig agentConfig, CollectionTracker... trackers) {
         return new TooBigReportingAggregator(trackers, agentConfig.getAddress());
     }
     
