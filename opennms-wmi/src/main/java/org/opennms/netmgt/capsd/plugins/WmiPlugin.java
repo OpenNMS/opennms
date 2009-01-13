@@ -150,8 +150,9 @@ public class WmiPlugin extends AbstractPlugin {
 		String compOp = DEFAULT_WMI_COMP_OP;
 		String wmiClass = DEFAULT_WMI_CLASS;
 		String wmiObject = DEFAULT_WMI_OBJECT;
-		
-		if (qualifiers != null) {
+        String wmiWqlStr = "NOTSET";
+
+        if (qualifiers != null) {
             if (qualifiers.get("timeout") != null) {
             	int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", agentConfig.getTimeout());
                 agentConfig.setTimeout(timeout);
@@ -182,15 +183,23 @@ public class WmiPlugin extends AbstractPlugin {
 			compVal = ParameterMap.getKeyedString(qualifiers, "compareValue",
 					DEFAULT_WMI_COMP_VAL);
 			compOp = ParameterMap.getKeyedString(qualifiers, "compareOp", DEFAULT_WMI_COMP_OP);
-			wmiClass = ParameterMap.getKeyedString(qualifiers, "wmiClass",
+            wmiWqlStr = ParameterMap.getKeyedString(qualifiers, "wql", "NOTSET");
+            wmiClass = ParameterMap.getKeyedString(qualifiers, "wmiClass",
 					DEFAULT_WMI_CLASS);
 			wmiObject = ParameterMap.getKeyedString(qualifiers, "wmiObject",
 					DEFAULT_WMI_OBJECT);
 		}
 
-		// Create the check parameters holder.
-		WmiParams clientParams = new WmiParams(compVal, compOp, wmiClass,
-				wmiObject);
+        WmiParams clientParams = null;
+
+        if(wmiWqlStr.equals("NOTSET")) {
+            // Create the check parameters holder.
+		    clientParams = new WmiParams(compVal, compOp, wmiClass, wmiObject);
+        } else {
+            // Define the WQL Query.
+            clientParams = new WmiParams(compVal, compOp, wmiWqlStr);
+        }
+
 
 		// Perform the operation specified in the parameters.
 		WmiResult result = isServer(address, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType,
@@ -243,8 +252,15 @@ public class WmiPlugin extends AbstractPlugin {
 
 				// Perform the operation specified in the parameters.
 				result = mgr.performOp(params);
-
-				log().debug(
+                if(params.getWql() != null) {
+                    log().debug(
+						"WmiPlugin: "
+								+ params.getWql()								
+								+ " : "
+								+ WmiResult.convertStateToString(result
+										.getResultCode()));
+                } else {
+				    log().debug(
 						"WmiPlugin: \\\\"
 								+ params.getWmiClass()
 								+ "\\"
@@ -252,8 +268,9 @@ public class WmiPlugin extends AbstractPlugin {
 								+ " : "
 								+ WmiResult.convertStateToString(result
 										.getResultCode()));
+                }
 
-				isAServer = true;
+                isAServer = true;
 
 				// Disconnect when complete.
 				mgr.close();

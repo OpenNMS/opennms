@@ -49,7 +49,9 @@ public class WmiParams {
 
 	private String m_WmiObject = null;
 
-	/**
+    private String m_WmWqlStr = null;
+
+    /**
 	 * Constructor, sets the critical threshold.
 	 * 
 	 * @param compVal
@@ -69,7 +71,23 @@ public class WmiParams {
 		m_WmiObject = wmiObject;
 	}
 
-	private WmiParams() {
+    /**
+	 * Constructor, sets the critical threshold.
+	 *
+	 * @param compVal
+	 *            the value to be used for the comparison.
+	 * @param compOp
+	 *            the operation to be used in the comparison.
+	 * @param wmiWql
+	 *            the WMI WQL Query to execute..
+	 */
+	public WmiParams(Object compVal, String compOp, String wmiWql) {
+		m_CompareValue = compVal;
+		m_CompareOperation = compOp;
+		m_WmWqlStr = wmiWql;
+	}
+
+    private WmiParams() {
 		// do nothing, disallow this default ctor. All params are required.
 	}
 
@@ -128,4 +146,12 @@ public class WmiParams {
 	public void setWmiObject(String wmiObject) {
 		m_WmiObject = wmiObject;
 	}
+
+    public String getWql() {
+        return m_WmWqlStr;
+    }
+
+    public void setWql(String wmiWql) {
+        this.m_WmWqlStr = wmiWql;
+    }
 }
