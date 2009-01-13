@@ -871,7 +871,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAuthClientServerUnavailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientServerUnavailable</event-label>
 	<descr>This trap will be generated when the requested authentication server is not available.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;UnavailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -897,12 +897,12 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAuthClientNoServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientNoServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientNoServerAvailable</event-label>
 	<descr>This trap will be generated when all of the requested servers were not available.</descr>
 	<logmsg dest='logndisplay'>Juniper Event: No RADIUS authentication server available.</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -919,7 +919,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAcctClientServerUnavailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientServerUnavailable</event-label>
 	<descr>This trap will be generated when the requested accounting server is not available.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;UnavailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -945,12 +945,12 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAcctClientNoServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientNoServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientNoServerAvailable</event-label>
 	<descr>This trap will be generated when all of the requested servers were not available.</descr>
 	<logmsg dest='logndisplay'>Juniper Event: No RADIUS accounting server available.</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -967,7 +967,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAuthClientServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientServerAvailable</event-label>
 	<descr>This trap will be generated when the requested authentication server becomes available again after a period of time.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;AvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -975,7 +975,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: RADIUS authentication server %parm[#1]% available.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -992,7 +992,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>6</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAcctClientServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientServerAvailable</event-label>
 	<descr>This trap will be generated when the requested accounting server becomes available again after a period of time.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;AvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -1000,7 +1000,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: RADUS accounting server %parm[#1]% available.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <!-- End of auto generated data from MIB: Juniper-RADIUS-CLIENT-MIB -->
 <!-- Start of data from MIB: Juniper-System-MIB -->
@@ -1713,7 +1713,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	included in the notification: juniSystemReloadSlotNumber</descr>
 	<logmsg dest='logndisplay'>Juniper Event: Reload command issued.</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1777,7 +1777,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: System Utilization Threshold falling. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemUtilizationThresholdRising:%dpname%:%nodeid%:%interface%" auto-clean="false" />
 </event>
 <!-- End of data from MIB: Juniper-System-MIB -->
 <!-- Start of data from MIB: Juniper-System-Clock-MIB -->
@@ -1965,7 +1965,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: First Time System Clock Set.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1996,7 +1996,156 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: Clock Offset Limit Crossed by %parm[#1]%s.</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
 </event>
 <!-- End of data from MIB: Juniper-System-Clock-MIB -->
+<!-- Start of auto generated data from MIB: Juniper-ADDRESS-POOL-MIB -->
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.4874.2.2.21.3</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/juniper/traps/juniAddressPoolHighAddrUtil</uei>
+        <event-label>Juniper-ADDRESS-POOL-MIB defined trap event: juniAddressPoolHighAddrUtil</event-label>
+        <descr>
+&lt;p&gt;Reports address pool utilization has reached the configured high
+utilization threshold.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniRouterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolInUse&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        
+        juniAddressPoolUtilPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        juniAddressPoolHighAddrUtil trap received 
+                        juniRouterName=%parm[#1]% 
+                        juniAddressPoolName=%parm[#2]% 
+                        juniAddressPoolSize=%parm[#3]% 
+                        juniAddressPoolInUse=%parm[#4]% 
+                        juniAddressPoolUtilPct=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+	    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.4874.2.2.21.3</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>2</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/juniper/traps/juniAddressPoolAbatedAddrUtil</uei>
+        <event-label>Juniper-ADDRESS-POOL-MIB defined trap event: juniAddressPoolAbatedAddrUtil</event-label>
+        <descr>
+&lt;p&gt;Reports address pool utilization has fallen to the configured abated
+threshold level.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniRouterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolInUse&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolUtilPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        juniAddressPoolAbatedAddrUtil trap received 
+                        juniRouterName=%parm[#1]% 
+                        juniAddressPoolName=%parm[#2]% 
+                        juniAddressPoolSize=%parm[#3]% 
+                        juniAddressPoolInUse=%parm[#4]% 
+                        juniAddressPoolUtilPct=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniAddressPoolHighAddrUtil:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>  
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.4874.2.2.21.3</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>3</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/juniper/traps/juniAddressPoolNoAddresses</uei>
+        <event-label>Juniper-ADDRESS-POOL-MIB defined trap event: juniAddressPoolNoAddresses</event-label>
+        <descr>
+&lt;p&gt;Reports address pool has exhausted its supply of addresses.  This trap
+is issued every time a request is made to allocate an address from a
+fully utilized pool.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniRouterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        juniAddressPoolSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        juniAddressPoolNoAddresses trap received 
+                        juniRouterName=%parm[#1]% 
+                        juniAddressPoolName=%parm[#2]% 
+                        juniAddressPoolSize=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+	    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: Juniper-ADDRESS-POOL-MIB -->        
 </events>
