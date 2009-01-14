@@ -726,19 +726,18 @@ public class DefaultProvisionService implements ProvisionService {
         long now = System.currentTimeMillis();
         
         OnmsForeignSource fs = m_foreignSourceRepository.get(node.getForeignSource());
-        if (fs == null) {
-            return null;
-        }
+
+        long scanInterval = fs == null ? 1000 : fs.getScanInterval();
         
         long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
-        long nextPoll = lastPoll + fs.getScanInterval();
+        long nextPoll = lastPoll + scanInterval;
         long initialDelay = Math.max(0, nextPoll - now);
         
         NodeScanSchedule nSchedule = new NodeScanSchedule();
         nSchedule.setForeignSource(node.getForeignSource());
         nSchedule.setInitialDelay(initialDelay);
         nSchedule.setNodeId(node.getId()); 
-        nSchedule.setScanInterval(fs == null ? 1000 : fs.getScanInterval());
+        nSchedule.setScanInterval(scanInterval);
         
         return nSchedule;
     }

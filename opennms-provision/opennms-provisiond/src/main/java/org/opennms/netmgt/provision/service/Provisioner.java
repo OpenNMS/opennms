@@ -42,24 +42,20 @@
 
 package org.opennms.netmgt.provision.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-
-public class Provisioner extends BaseProvisioner implements SpringServiceDaemon, DisposableBean, EventListener{
+@EventListener(name="Provisiond:EventListener")
+public class Provisioner extends BaseProvisioner implements SpringServiceDaemon {
 	
 	public static final String NAME = "Provisioner";
 
@@ -80,8 +76,8 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
      * as a parameter of an event.
      * @param event
      */
-	//@EventHandler(uei=EventConstants.RELOAD_IMPORT_UEI)
-    private void doImport(Event event) {
+	@EventHandler(uei=EventConstants.RELOAD_IMPORT_UEI)
+    public void doImport(Event event) {
         Resource resource = null;
         try {
             m_stats = new TimeTrackingMonitor();
@@ -108,7 +104,8 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
     /**
      * @param e
      */
-    private void handleNodeAddedEvent(Event e) {
+    @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
+    public void handleNodeAddedEvent(Event e) {
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue());
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
@@ -119,7 +116,8 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
     /**
      * @param e
      */
-    private void handleNodeDeletedEvent(Event e) {
+    @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
+    public void handleNodeDeletedEvent(Event e) {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
     }
     
@@ -174,35 +172,6 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 	
 	public void afterPropertiesSet() throws Exception {
 	    super.afterPropertiesSet();
-	    List<String> ueis = new ArrayList<String>();
-	    ueis.add(EventConstants.RELOAD_IMPORT_UEI);
-		ueis.add(EventConstants.NODE_ADDED_EVENT_UEI);
-		ueis.add(EventConstants.NODE_DELETED_EVENT_UEI);
-		m_eventSubscriptionService.addEventListener(this, ueis);
-	}
-
-	public void destroy() throws Exception {
-		m_eventSubscriptionService.removeEventListener(this);
-	}
-
-	public String getName() {
-		return NAME;
-	}
-
-	public void onEvent(Event e) {
-	    ThreadCategory.setPrefix(NAME);
-
-		if (EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
-		    doImport(e);
-		}
-		
-		if(EventConstants.NODE_ADDED_EVENT_UEI.equals(e.getUei())) {
-		    handleNodeAddedEvent(e);
-		}
-		
-		if(EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei())) {
-		    handleNodeDeletedEvent(e);
-		}
 	}
 
     protected String getEventForeignSource(Event event) {

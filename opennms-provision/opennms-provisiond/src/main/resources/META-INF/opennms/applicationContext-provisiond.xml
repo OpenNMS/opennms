@@ -120,6 +120,12 @@
     	</list>
     </property>
   </bean>
+  
+     <bean class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="daemon" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+ 
 
   <bean id="modelImportingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
     <property name="targetObject">
