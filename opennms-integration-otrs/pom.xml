@@ -25,7 +25,7 @@
 				<configuration>
 					<urls>
 						<url>
-							file://${project.basedir}/src/main/wsdl/TicketService.wsdl
+							file:///${project.basedir}/src/main/wsdl/TicketService.wsdl
 						</url>
 					</urls>
 					<packageSpace>
