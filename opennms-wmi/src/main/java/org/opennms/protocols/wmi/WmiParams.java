@@ -38,7 +38,10 @@ package org.opennms.protocols.wmi;
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  */
 public class WmiParams {
-	/**
+    public final static String WMI_OPERATION_INSTANCEOF = "InstanceOf";
+    public final static String WMI_OPERATION_WQL = "Wql";
+
+    /**
 	 * Contains the value to perform a comparison against.
 	 */
 	private Object m_CompareValue = null;
@@ -51,41 +54,34 @@ public class WmiParams {
 
     private String m_WmWqlStr = null;
 
-    /**
-	 * Constructor, sets the critical threshold.
-	 * 
-	 * @param compVal
-	 *            the value to be used for the comparison.
-	 * @param compOp
-	 *            the operation to be used in the comparison.
-	 * @param wmiClass
-	 *            the WMI class to be queried.
-	 * @param wmiObject
-	 *            the WMI object within wmiClass to be queried.
-	 */
-	public WmiParams(Object compVal, String compOp, String wmiClass,
-			String wmiObject) {
-		m_CompareValue = compVal;
-		m_CompareOperation = compOp;
-		m_WmiClass = wmiClass;
-		m_WmiObject = wmiObject;
-	}
+    private String m_WmiOperation = null;
 
     /**
 	 * Constructor, sets the critical threshold.
 	 *
+     * @param queryType
+     *            the type of query operation to perform.
 	 * @param compVal
 	 *            the value to be used for the comparison.
 	 * @param compOp
 	 *            the operation to be used in the comparison.
-	 * @param wmiWql
-	 *            the WMI WQL Query to execute..
+	 * @param wmiObj1
+	 *            the WMI class to be queried, or WQL to be executed.
+	 * @param wmiObj2
+	 *            the WMI object within to be queried.
 	 */
-	public WmiParams(Object compVal, String compOp, String wmiWql) {
+	public WmiParams(String queryType, Object compVal, String compOp, String wmiObj1,
+			String wmiObj2) {
 		m_CompareValue = compVal;
 		m_CompareOperation = compOp;
-		m_WmWqlStr = wmiWql;
-	}
+        if(queryType.equals(WMI_OPERATION_INSTANCEOF)) {
+            m_WmiClass = wmiObj1;
+        } else {
+            m_WmWqlStr = wmiObj1;
+        }
+        m_WmiObject = wmiObj2;
+        m_WmiOperation = queryType;
+    }
 
     private WmiParams() {
 		// do nothing, disallow this default ctor. All params are required.
@@ -153,5 +149,13 @@ public class WmiParams {
 
     public void setWql(String wmiWql) {
         this.m_WmWqlStr = wmiWql;
+    }
+
+    public String getWmiOperation() {
+        return m_WmiOperation;
+    }
+
+    public void setWmiOperation(String wmiOperation) {
+        this.m_WmiOperation = wmiOperation;
     }
 }

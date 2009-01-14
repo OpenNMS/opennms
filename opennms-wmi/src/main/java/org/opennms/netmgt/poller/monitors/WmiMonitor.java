@@ -80,8 +80,9 @@ public class WmiMonitor extends IPv4Monitor {
 	private final static String DEFAULT_WMI_COMP_VAL = "OK";
 	private final static String DEFAULT_WMI_MATCH_TYPE = "all";
 	private final static String DEFAULT_WMI_COMP_OP = "EQ";
-	
-	/**
+    private final static String DEFAULT_WMI_WQL = "NOTSET";
+
+    /**
 	 * Poll the specified address for service availability. During the poll an
 	 * attempt is made to connect the WMI agent on the specified host. If the 
 	 * connection request is successful, the parameters are parsed and turned 
@@ -130,7 +131,7 @@ public class WmiMonitor extends IPv4Monitor {
 		String compOp = DEFAULT_WMI_COMP_OP;
 		String wmiClass = DEFAULT_WMI_CLASS;
 		String wmiObject = DEFAULT_WMI_OBJECT;
-        String wmiWqlStr = "NOTSET";
+        String wmiWqlStr = DEFAULT_WMI_WQL;
 
         if (parameters != null) {
             if (parameters.get("timeout") != null) {
@@ -163,7 +164,7 @@ public class WmiMonitor extends IPv4Monitor {
 			compVal = ParameterMap.getKeyedString(parameters, "compareValue",
 					DEFAULT_WMI_COMP_VAL);
 			compOp = ParameterMap.getKeyedString(parameters, "compareOp", DEFAULT_WMI_COMP_OP);
-            wmiWqlStr = ParameterMap.getKeyedString(parameters, "wql", "NOTSET");
+            wmiWqlStr = ParameterMap.getKeyedString(parameters, "wql", DEFAULT_WMI_WQL);
             wmiClass = ParameterMap.getKeyedString(parameters, "wmiClass",
 					DEFAULT_WMI_CLASS);
 			wmiObject = ParameterMap.getKeyedString(parameters, "wmiObject",
@@ -197,18 +198,22 @@ public class WmiMonitor extends IPv4Monitor {
                 if (log().isDebugEnabled())
                         log().debug("Completed initializing WmiManager object.");
 
+                // Set up the parameters the client will use to validate the response.
+                // Note: We will check and see if we were provided with a WQL string.
                 WmiParams clientParams = null;
-                if(wmiWqlStr.equals("NOTSET")) {
-                    // Set up the parameters the client will use to validate the
-				    // response.
-				    clientParams = new WmiParams(compVal, compOp, wmiClass, wmiObject);
+                if(wmiWqlStr.equals(DEFAULT_WMI_WQL)) {
+
+				    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF,
+                                                 compVal, compOp, wmiClass, wmiObject);
+                    if (log().isDebugEnabled())
+                        log().debug("Attempting to perform operation: \\\\" + wmiClass + "\\" + wmiObject);
                 } else {
                     // Create parameters to run a WQL query.
-                    clientParams = new WmiParams(compVal, compOp, wmiWqlStr);
-                }
-
-                if (log().isDebugEnabled())
-                        log().debug("Attempting to perform operation: \\\\" + wmiClass + "\\" + wmiObject);
+                    clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL,
+                                                 compVal, compOp, wmiWqlStr, wmiObject);
+                    if (log().isDebugEnabled())
+                        log().debug("Attempting to perform operation: " + wmiWqlStr);
+                }                
                 
                 // Send the request to the server and receive the response..
 				response = mgr.performOp(clientParams);

@@ -213,7 +213,7 @@ public class WmiCollector implements ServiceCollector {
             manager = agentState.getManager();
             manager.init();
 
-            WmiParams params = new WmiParams("not-applicable", "NOOP",
+            WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "not-applicable", "NOOP",
                     wpm.getWmiClass(), wpm.getKeyvalue());
 
             WmiResult result = manager.performOp(params);
