@@ -401,7 +401,12 @@ public class BaseProvisionerTest {
        
        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
        
-       assertEquals(getNodeDao().countAll(), schedulesForNode.size());
+       int nodeCount = getNodeDao().countAll();
+       System.err.println("NodeCount: "+nodeCount);
+
+       
+       assertEquals(nodeCount, schedulesForNode.size());
+       assertEquals(nodeCount, m_provisioner.getScheduleLength());
     }
     
     @Test
@@ -418,6 +423,7 @@ public class BaseProvisionerTest {
        schedulesForNode = m_provisionService.getScheduleForNodes();
        
        assertEquals(9, schedulesForNode.size());
+       assertEquals(9, m_provisioner.getScheduleLength());
     }
     
     @Test
@@ -450,7 +456,7 @@ public class BaseProvisionerTest {
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
         
-        m_provisioner.scheduleRescanForExistingNodes();
+        //m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
         
         Event addedEvent = new Event();
@@ -486,7 +492,7 @@ public class BaseProvisionerTest {
         
         assertEquals(10, schedulesForNode.size());
         
-        m_provisioner.scheduleRescanForExistingNodes();
+        //m_provisioner.scheduleRescanForExistingNodes();
         
         assertEquals(10, m_provisioner.getScheduleLength());
     }
@@ -500,14 +506,14 @@ public class BaseProvisionerTest {
         
         assertEquals(10, schedulesForNode.size());
         
-        m_provisioner.scheduleRescanForExistingNodes();
+        //m_provisioner.scheduleRescanForExistingNodes();
         
         assertEquals(10, m_provisioner.getScheduleLength());
         
         //reimport with one missing node
         importFromResource("classpath:/tec_dump.xml.smalltest.delete");
         
-        m_provisioner.scheduleRescanForExistingNodes();
+        //m_provisioner.scheduleRescanForExistingNodes();
         schedulesForNode = m_provisionService.getScheduleForNodes();
         
         //check the schedule to make sure that it deletes the node
