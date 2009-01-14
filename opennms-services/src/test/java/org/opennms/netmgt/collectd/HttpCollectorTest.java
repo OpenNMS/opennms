@@ -124,7 +124,7 @@ public class HttpCollectorTest extends AbstractCollectorTest {
      */
     @Test
     @Ignore
-    public final void testCollect() throws Exception {
+    public final void XXXtestCollect() throws Exception {
         InetAddress opennmsDotOrg = InetAddress.getByName(m_testHostName);
         
         initializeHttpDatacollectionConfigFactory("/org/opennms/netmgt/config/http-datacollection-config.xml");
@@ -167,7 +167,7 @@ public class HttpCollectorTest extends AbstractCollectorTest {
 
     @Test
     @Ignore
-    public final void testPersist() throws Exception {
+    public final void XXXtestPersist() throws Exception {
         InetAddress opennmsDotOrg = InetAddress.getByName(m_testHostName);
         
         initializeHttpDatacollectionConfigFactory("/org/opennms/netmgt/config/http-datacollection-persist-test-config.xml");
