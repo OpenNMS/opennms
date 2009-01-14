@@ -712,7 +712,10 @@ public class DefaultProvisionService implements ProvisionService {
         List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
         
         for(OnmsNode node : nodes) {
-            scheduledNodes.add(createScheduleForNode(node));
+            NodeScanSchedule nodeScanSchedule = createScheduleForNode(node);
+            if (nodeScanSchedule != null) {
+                scheduledNodes.add(nodeScanSchedule);
+            }
         }
         
         return scheduledNodes;
@@ -723,6 +726,9 @@ public class DefaultProvisionService implements ProvisionService {
         long now = System.currentTimeMillis();
         
         OnmsForeignSource fs = m_foreignSourceRepository.get(node.getForeignSource());
+        if (fs == null) {
+            return null;
+        }
         
         long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
         long nextPoll = lastPoll + fs.getScanInterval();
