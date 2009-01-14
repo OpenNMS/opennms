@@ -78,10 +78,10 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ImportVisitor;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
-import org.opennms.netmgt.provision.service.specification.ImportVisitor;
-import org.opennms.netmgt.provision.service.specification.SpecFile;
+import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,10 +193,10 @@ public class ProvisionerTest {
     @Transactional
     public void testVisit() throws Exception {
 
-        SpecFile specFile = new SpecFile();
-        specFile.loadResource(new ClassPathResource("/NewFile2.xml"));
+        OnmsRequisition requisition = new OnmsRequisition();
+        requisition.loadResource(new ClassPathResource("/NewFile2.xml"));
         CountingVisitor visitor = new CountingVisitor();
-        specFile.visitImport(visitor);
+        requisition.visitImport(visitor);
         verifyCounts(visitor);
     }
 
