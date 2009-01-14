@@ -41,7 +41,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             ApplicationContext appContext = new ClassPathXmlApplicationContext("/META-INF/modelImport-appContext.xml");
-            BaseProvisioner importer = (BaseProvisioner)appContext.getBean("modelImporter");
+            Provisioner importer = (Provisioner)appContext.getBean("modelImporter");
             Resource resource = new FileSystemResource(args[0]);
             importer.importModelFromResource(resource);            
         } catch (Exception e) {
