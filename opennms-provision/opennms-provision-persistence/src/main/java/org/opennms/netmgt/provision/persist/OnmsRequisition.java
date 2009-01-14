@@ -36,6 +36,7 @@
 //
 package org.opennms.netmgt.provision.persist;
 
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -76,7 +77,19 @@ public class OnmsRequisition {
         for (Interface iface : node.getInterfaceCollection()) {
             visitInterface(visitor, iface);
         }
+        for (Asset asset : node.getAssetCollection()) {
+            visitAsset(visitor, asset);
+        }
         visitor.completeNode(node);
+    }
+
+    private void visitAsset(ImportVisitor visitor, Asset asset) {
+        doVisitAsset(visitor, asset);
+    }
+
+    private void doVisitAsset(ImportVisitor visitor, Asset asset) {
+        visitor.visitAsset(asset);
+        visitor.completeAsset(asset);
     }
 
     private void visitCategory(ImportVisitor visitor, Category category) {
