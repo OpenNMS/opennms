@@ -278,7 +278,7 @@ public class WmiManagerTest extends TestCase {
 	 */
 	public final void testPerformOpInvalidClass() throws WmiException {
 		// Create parameter holder.
-		WmiParams params = new WmiParams("2/12/2004 00:00:00", "EQ",
+		WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "2/12/2004 00:00:00", "EQ",
 				"Win32_BISO", "ReleaseDate");
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
@@ -327,7 +327,7 @@ public class WmiManagerTest extends TestCase {
 
 		//
 		// Create parameter holder.
-		WmiParams params = new WmiParams("2/12/2004 00:00:00", "EQ",
+		WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF,"2/12/2004 00:00:00", "EQ",
 				"Win32_BIOS", "RelDate");
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
@@ -376,7 +376,7 @@ public class WmiManagerTest extends TestCase {
 
 		//
 		// Create parameter holder.
-		WmiParams params = new WmiParams("2/12/2004 00:00:00", "EQ",
+		WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "2/12/2004 00:00:00", "EQ",
 				"Win32_BIOS", "ReleaseDate");
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
