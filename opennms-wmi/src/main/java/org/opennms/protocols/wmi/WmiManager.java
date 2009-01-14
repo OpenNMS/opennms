@@ -279,7 +279,7 @@ public class WmiManager {
 
 	public WmiResult performOp(WmiParams params) throws WmiException {
         // If we defined a WQL query string, exec the query.
-        if( params.getWql() != null) {
+        if( params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
             return performExecQuery(params);
         } else {
             // Otherwise perform an InstanceOf.
