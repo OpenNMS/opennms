@@ -117,7 +117,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
-public class BaseProvisionerTest {
+public class ProvisionerTest {
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -521,6 +521,8 @@ public class BaseProvisionerTest {
         assertEquals(getNodeDao().countAll(), m_provisioner.getScheduleLength());
         
     }
+    
+    
     
     
     private OnmsNode createNode() {
