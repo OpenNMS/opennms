@@ -159,27 +159,33 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         if (ipIf == null) {
             ipIf = new OnmsIpInterface(ipAddr, node);
         }
-        
+
         InetAddress inetAddr = ipIf.getInetAddress();
-        InetAddress mask = getNetMask(inetAddr);
         Integer ifIndex = getIfIndex(inetAddr);
-        
-        // first look to see if an snmpIf was created already
-        OnmsSnmpInterface snmpIf = node.getSnmpInterfaceWithIfIndex(ifIndex);
-        
-        if (snmpIf == null) {
-            // if not then create one
-            snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, node);
+
+        // if we've found an ifIndex for this interface
+        if (ifIndex != null) {
+
+            // first look to see if an snmpIf was created already
+            OnmsSnmpInterface snmpIf = node.getSnmpInterfaceWithIfIndex(ifIndex);
+
+            if (snmpIf == null) {
+                // if not then create one
+                snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, node);
+            }
+
+            // make sure the snmpIf has the ipAddr of the primary interface
+            snmpIf.setIpAddress(ipAddr);
+            InetAddress mask = getNetMask(inetAddr);
+            if (mask != null) {
+                snmpIf.setNetMask(mask.getHostAddress());
+            }
+
+            ipIf.setSnmpInterface(snmpIf);
+
         }
-    
-        // make sure the snmpIf has the ipAddr of the primary interface
-        snmpIf.setIpAddress(ipAddr);
-        if (mask != null) {
-            snmpIf.setNetMask(mask.getHostAddress());
-        }
-        
+
         ipIf.setIpHostName(ipAddr);
-        ipIf.setSnmpInterface(snmpIf);
     }
 
     /**

@@ -42,6 +42,9 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -106,7 +109,10 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
      * @param e
      */
     private void handleNodeAddedEvent(Event e) {
-        addToScheduleQueue(getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue()));
+        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue());
+        if (scheduleForNode != null) {
+            addToScheduleQueue(scheduleForNode);
+        }
     }
     
 
@@ -168,15 +174,15 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 	
 	public void afterPropertiesSet() throws Exception {
 	    super.afterPropertiesSet();
-		m_eventSubscriptionService.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
-		m_eventSubscriptionService.addEventListener(this, EventConstants.ADD_NODE_EVENT_UEI);
-		m_eventSubscriptionService.addEventListener(this, EventConstants.DELETE_NODE_EVENT_UEI);
+	    List<String> ueis = new ArrayList<String>();
+	    ueis.add(EventConstants.RELOAD_IMPORT_UEI);
+		ueis.add(EventConstants.NODE_ADDED_EVENT_UEI);
+		ueis.add(EventConstants.NODE_DELETED_EVENT_UEI);
+		m_eventSubscriptionService.addEventListener(this, ueis);
 	}
 
 	public void destroy() throws Exception {
-		m_eventSubscriptionService.removeEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
-		m_eventSubscriptionService.removeEventListener(this, EventConstants.ADD_NODE_EVENT_UEI);
-		m_eventSubscriptionService.removeEventListener(this, EventConstants.DELETE_NODE_EVENT_UEI);
+		m_eventSubscriptionService.removeEventListener(this);
 	}
 
 	public String getName() {
@@ -190,11 +196,11 @@ public class Provisioner extends BaseProvisioner implements SpringServiceDaemon,
 		    doImport(e);
 		}
 		
-		if(EventConstants.ADD_NODE_EVENT_UEI.equals(e.getUei())) {
+		if(EventConstants.NODE_ADDED_EVENT_UEI.equals(e.getUei())) {
 		    handleNodeAddedEvent(e);
 		}
 		
-		if(EventConstants.DELETE_NODE_EVENT_UEI.equals(e.getUei())) {
+		if(EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei())) {
 		    handleNodeDeletedEvent(e);
 		}
 	}

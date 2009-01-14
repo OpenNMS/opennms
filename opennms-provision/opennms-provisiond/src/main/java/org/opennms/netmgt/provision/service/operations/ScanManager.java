@@ -135,12 +135,12 @@ public class ScanManager {
                 ifIndices.add(new SnmpInstId(ifIndex));
             }
 
+
             
             m_ifTable = new IfTable(m_address, ifIndices);
             m_ifXTable = new IfXTable(m_address, ifIndices);
 
-            SnmpAgentConfig agentConfig2 = agentConfig;
-            walker = SnmpUtils.createWalker(agentConfig2, "ifTable/ifXTable", m_ifTable, m_ifXTable);
+            walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", m_ifTable, m_ifXTable);
             walker.start();
 
             walker.waitFor();
