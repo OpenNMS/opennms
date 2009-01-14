@@ -55,12 +55,10 @@
   {
     if (document.goForm.pass1.value == document.goForm.pass2.value) 
     {
-      document.newPasswordForm.currentPassword.value=document.goForm.currentPassword.value;
-      document.newPasswordForm.newPassword.value=document.goForm.pass1.value;
-      document.newPasswordForm.action="account/selfService/newPasswordAction";
-      document.newPasswordForm.submit();
-      
-      window.close();
+      document.goForm.currentPassword.value=document.goForm.oldpass.value;
+      document.goForm.newPassword.value=document.goForm.pass1.value;
+      document.goForm.action="account/selfService/newPasswordAction";
+      return true;
     } 
     else
     {
@@ -76,11 +74,9 @@
 <% } %>
 
 <br/>
-<form method="post" name="newPasswordForm">
-  <input type="hidden" name="currentPassword" value="">
-  <input type="hidden" name="newPassword" value="">
-</form>
-<form method="post" name="goForm">
+<form method="post" name="goForm" onSubmit="verifyGoForm()">
+<input type="hidden" name="currentPassword" value="">
+<input type="hidden" name="newPassword" value="">
 
 <table>
   <tr>
@@ -88,7 +84,7 @@
       Current Password:
     </td>
     <td width="100%">
-      <input type="password" name="currentPassword">
+      <input type="password" name="oldpass">
     </td>
   </tr>
 
@@ -112,10 +108,10 @@
   
   <tr>
     <td>
-      <input type="submit" value="OK" onClick="verifyGoForm()">
+      <input type="submit" value="OK"/>
     </td>
     <td>
-      <input type="button" value="Cancel" onClick="window.close()">
+      <input type="button" value="Cancel" onClick="window.location='account/selfService/index.jsp'"/>
     </tr>
 </table>
 </form>
