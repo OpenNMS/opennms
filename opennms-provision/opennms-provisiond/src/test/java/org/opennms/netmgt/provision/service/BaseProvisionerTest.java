@@ -230,7 +230,9 @@ public class BaseProvisionerTest {
 
             @Override
             public void visitElement(MockElement e) {
-                m_eventAnticipator.anticipateEvent(e.createNewEvent());
+                Event newEvent = e.createNewEvent();
+                System.out.println("Anticipate Event "+newEvent.getUei());
+                m_eventAnticipator.anticipateEvent(newEvent);
             }
             
         });
@@ -434,7 +436,7 @@ public class BaseProvisionerTest {
         assertNotNull(m_nodeDao.get(1));
         
         Event addedEvent = new Event();
-        addedEvent.setUei(EventConstants.ADD_NODE_EVENT_UEI);
+        addedEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
         addedEvent.setNodeid(1);
         
         m_mockEventIpcManager.broadcastNow(addedEvent);
@@ -452,7 +454,7 @@ public class BaseProvisionerTest {
         assertEquals(10, m_provisioner.getScheduleLength());
         
         Event addedEvent = new Event();
-        addedEvent.setUei(EventConstants.DELETE_NODE_EVENT_UEI);
+        addedEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
         addedEvent.setNodeid(2);
         
         m_mockEventIpcManager.broadcastNow(addedEvent);
