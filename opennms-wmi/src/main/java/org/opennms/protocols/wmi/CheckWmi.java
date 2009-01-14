@@ -125,7 +125,7 @@ public class CheckWmi {
 			// Hold the WMI objects from the results.
 			ArrayList<Object> wmiObjects;
 			// Create the check parameters holder.
-			WmiParams clientParams = new WmiParams(compVal, compOp, wmiClass,
+			WmiParams clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass,
 					wmiObject);
 			// Create the WMI Manager
 			WmiManager mgr = new WmiManager(host, user, pass, domain, matchType);
