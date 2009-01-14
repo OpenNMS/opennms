@@ -38,9 +38,9 @@ import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.provision.persist.AbstractImportVisitor;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
-import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
 
 public class ImportAccountant extends AbstractImportVisitor {
 	private final ImportOperationsManager m_opsMgr;

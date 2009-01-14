@@ -54,9 +54,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.provision.service.ImportAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
-import org.opennms.netmgt.provision.service.specification.SpecFile;
 
 /**
  * This nodes job is to tracks nodes that need to be deleted, added, or changed
@@ -230,7 +230,7 @@ public class ImportOperationsManager {
         return m_foreignSource;
     }
 
-    public void auditNodes(SpecFile specFile) {
+    public void auditNodes(OnmsRequisition specFile) {
         specFile.visitImport(new ImportAccountant(this));
     }
 

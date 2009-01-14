@@ -385,9 +385,6 @@ public class DefaultProvisionService implements ProvisionService {
     
     private ForeignSourceRepository m_foreignSourceRepository;
     
-    private List<NodeScanSchedule> m_scheduledNodes;
-    
-    
     private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 

@@ -36,6 +36,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.provision.persist.AbstractImportVisitor;
+import org.opennms.netmgt.provision.persist.ImportVisitor;
+import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
@@ -43,9 +46,6 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvid
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
-import org.opennms.netmgt.provision.service.specification.AbstractImportVisitor;
-import org.opennms.netmgt.provision.service.specification.ImportVisitor;
-import org.opennms.netmgt.provision.service.specification.SpecFile;
 import org.opennms.netmgt.provision.service.tasks.Task;
 import org.springframework.core.io.Resource;
 
@@ -85,11 +85,11 @@ public class CoreImportActivities {
      */
 
     @Activity( lifecycle = "import", phase = "validate" )
-    public SpecFile loadSpecFile(@Attribute("foreignSource") String foreignSource, Resource resource) throws ModelImportException, IOException {
+    public OnmsRequisition loadSpecFile(@Attribute("foreignSource") String foreignSource, Resource resource) throws ModelImportException, IOException {
 
         System.out.println("Loading Spec File!");
         
-        SpecFile specFile = new SpecFile();
+        OnmsRequisition specFile = new OnmsRequisition();
         specFile.loadResource(resource);
         
         if (foreignSource != null) {
@@ -104,7 +104,7 @@ public class CoreImportActivities {
     
     
     @Activity( lifecycle = "import", phase = "audit" )
-    public ImportOperationsManager auditNodes(SpecFile specFile) {
+    public ImportOperationsManager auditNodes(OnmsRequisition specFile) {
         
         System.out.println("Auditing Nodes");
         
@@ -164,7 +164,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
-    public void relateNodes(final Phase currentPhase, final SpecFile specFile) {
+    public void relateNodes(final Phase currentPhase, final OnmsRequisition specFile) {
         
         System.out.println("Running relate phase");
         
