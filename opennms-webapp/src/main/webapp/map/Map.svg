@@ -13,6 +13,7 @@
 	<script type="text/ecmascript" xlink:href="ECMAScript/textbox.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/button.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/selectionList.js"/>
+	<script type="text/ecmascript" xlink:href="ECMAScript/Window.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Point2D.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/PickColor.js"/>	
 
@@ -40,22 +41,28 @@ function startUp() {
 	map = new Map("#"+DEFAULT_BG_COLOR, "", "Background", mapWidth, mapHeight, 0, 0);
 	mapSvgElement.appendChild(map.getSvgNode());
 
-	LoadMaps();
-	LoadNodes();
+	// Instantiate the menus
+	mapMenu = 
+new Menu(menuSvgElement,mapMenuId,"Map",mapMenuX,mapMenuY,menuWidth,menuHeight,menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel); 	
+	
+	nodeMenu = 
+new Menu(menuSvgElement,nodeMenuId,"Node",nodeMenuX,nodeMenuY,menuWidth,menuHeight, menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel);
+	
+	viewMenu = 
+new Menu(menuSvgElement,viewMenuId,"View",viewMenuX,viewMenuY,menuWidth,menuHeight, menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel);
+
+	refreshMenu = 
+new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWidth,menuHeight, menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel);
+	
+	
+	loadMaps();
+	loadNodes();
 		
 	addLegend();
 
- 	
- 	if(isUserAdmin){
-		instantiateRWNormalMenu();
-	}else{
-		instantiateROMenu();	
-	}
-
 	enableMenu();
+ 	
 	displayCountDown("Set Refresh Time",true);
-
-
 	
 }
 
@@ -197,57 +204,89 @@ function load(evt){
 	// Reference var to the MapPanel SVG Object		
 	mapSvgElement = document.getElementById("MapPanel");
 
-	mapWidth=parseInt((screen.availWidth*97/100))-250;
+	//WorkPanel data
+	var workPanelWidth = 3*menuWidth;
+	var workPanelHeight = 600;
+	var workPanelDelta = 2;
+
+	mapWidth=parseInt((screen.availWidth*97/100))-workPanelWidth-workPanelDelta;
 	mapHeight=parseInt(mapWidth*3/4);			
 	
-	// Define the position of the work panel
-	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+5);
+	
+	// Define the position and dimension of the work panel objects
+	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+workPanelDelta);
+	document.getElementById('WorkPanel').setAttributeNS(null,"width",workPanelWidth);
+	document.getElementById('WorkPanel').setAttributeNS(null,"height",workPanelHeight);
 
+	document.getElementById('toolbar').setAttributeNS(null,"fill","navy");
+//	document.getElementById('toolbar').setAttributeNS(null,"stroke","blue");
+	document.getElementById('toolbar').setAttributeNS(null,"height",2*menuHeight+1);
+
+
+	document.getElementById('countDownText').setAttributeNS(null,"fill","white");
+	document.getElementById('countDownText').setAttributeNS(null,"font-family",textFamily);
+	document.getElementById('countDownText').setAttributeNS(null, "font-size",titleFontSize);
+	
+	
+	document.getElementById('MapInfo').setAttributeNS(null,"display","none");
+	document.getElementById('MapInfo').setAttributeNS(null,"font-family",textFamily);
+	document.getElementById('MapInfo').setAttributeNS(null, "font-size",textFontSize);
+	
+	document.getElementById('prevMapName').setAttributeNS(null,"font-family",textFamily);
+	document.getElementById('prevMapName').setAttributeNS(null, "font-size",textFontSize);
+
+	document.getElementById('nextMapName').setAttributeNS(null,"font-family",textFamily);
+	document.getElementById('nextMapName').setAttributeNS(null, "font-size",textFontSize);
+
+	document.getElementById('TopInfoText').setAttributeNS(null,"display","none");
+	document.getElementById('TopInfoText').setAttributeNS(null,"font-family",textFamily);
+	document.getElementById('TopInfoText').setAttributeNS(null, "font-size",titleFontSize);
+
+	
 	postMapRequestAll( "MapStartUp."+suffix, "GET", null, handleInit, "text/xml", null, true );
 }
 
 ]]></script>
 
+	<!-- ******** MAP P A N E L ********* -->	
+
 	<svg id="MapPanel"/>
 
-	<!-- ******** W O R K P A N E L ********* -->	
-	<svg id="WorkPanel" width="211" height="600" y="0">
+	<!-- ******** WINDOWS P A N E L S ********* -->	
+	<g id="Windows" />
+	<!-- ******** WORK P A N E L ********* -->	
+	<svg id="WorkPanel" y="0">
 
 		<!-- ********* TOOLBAR M E N U ********* -->
 
-		<rect x="0" y="0"    id="toolbar" width="100%" height="21px" stroke="blue" />
-		<rect x="0" y="400"   id="mendbar" width="100%" height="21px" stroke="blue" fill="dimgray"/>
-		<text x="5" y="403"   id="countDownText" font-family="Arial,Helvetica" fill="white"/>
+		<rect id="toolbar" x="0" y="0" width="100%"/>
+		<text id="countDownText"  x="3" y="3" />
 		<svg id="Menu"/>
 
 
-		<!-- ********* map informations ********* -->
-		<text id="MapInfo" display="none" x="3" y="50" font-family="Arial,Helvetica" font-size='12'>Map info</text>	
+		<!-- ********* MAP I N F O ********* -->
+		<text id="MapInfo" x="3" y="50"/>	
 	
 		<!-- ********* maps history ********* -->
-		<svg id="history" y="150" x="3" width="150" heigth="100">
+		<svg id="history" y="170" x="3" width="150" heigth="30">
 		    <g id="prevGroup" display="none">
 				<polygon id="prev" points="0,30 5,27 5,33" style="stroke:grey;fill:blue"/>
 				<polygon id="prev" points="6,30 11,27 11,33" style="stroke:grey;fill:blue"/>
-				<text id="prevMapName" x='13' y='33' font-family="Arial,Helvetica" font-size='10' style='fill:grey'></text>
+				<text id="prevMapName" x='13' y='33' style='fill:navy'></text>
 				<rect  style="cursor:pointer" id="prevAction"  x="0" y="25" rx="2" ry="2" width="14" height="10" opacity="0"/>
 		    </g>
 		    
 		    <g id="nextGroup" display="none">
 				<polygon id="next" points="0,37 0,43 5,40" style="stroke:grey;fill:blue"/>
 				<polygon id="next" points="6,37 6,43 11,40" style="stroke:grey;fill:blue"/>
-				<text id="nextMapName" x='13' y='43' font-family="Arial,Helvetica" font-size='10' style='fill:grey'></text>
+				<text id="nextMapName" x='13' y='43' style='fill:navy'></text>
 				<rect  style="cursor:pointer" id="nextAction"  x="0" y="35" rx="2" ry="2" width="14" height="10" opacity="0"/>
-		    </g>	    
-	    
+		    </g>	    	    
 		</svg>	
-
-
-		<!-- ********* TOP I N F O ********* -->
 		
-
-    	<svg  y="200" width="200" height="200" id="TopInfo">
-			<text id="TopInfoText" x="5" y="20" font-family="Arial,Helvetica"></text>
+		<!-- ********* TOP I N F O ********* -->
+    	<svg  y="220" width="100%" height="130" id="TopInfo">
+			<g id="TopInfoText" x="5" y="5"/>
 			<g id="nodes" />
 			<g id="categories" />
 			<g id="maps" />
@@ -260,10 +299,12 @@ function load(evt){
 
 		<!-- ********* DOWN I N F O ********* -->
 
-		<svg  y="300" width="200" height="100" id="DownInfo">
-			<text id="DownInfoText" x="5" y="20" font-family="Arial,Helvetica"></text>
+		<svg  y="350" id="DownInfo">
+			<text id="DownInfoText" x="5" y="30" />
 		</svg>	
 
+		<!-- ********* L E G E N D ********* -->
+		<svg id="legend" y="75%"  width="130" height="130"/>
 
 		<svg>
 			<g id="LoadingText" x="40%" y="50%" display="none">
@@ -304,7 +345,6 @@ function load(evt){
 			</g>
 		</svg>
 
-		<svg id="legend" y="75%"  width="130" height="130"/>
 
  	</svg> <!-- End WorkPanel -->
 </svg>

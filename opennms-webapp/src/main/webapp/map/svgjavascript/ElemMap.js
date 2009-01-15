@@ -19,30 +19,15 @@ ElemMap.prototype.init = function(id, name,  owner)
 	this.owner=owner;
 }
 
-ElemMap.prototype.getInfo = function()
-{
-	// get info 	
-	var text = document.createElementNS(svgNS,"text");
-	text.setAttributeNS(null, "x","3");
-	text.setAttributeNS(null, "y","20");
-	text.setAttributeNS(null, "id","DownInfoText");
-	text.setAttributeNS(null, "font-size",titleFontSize);
-	text.appendChild(document.createTextNode("Selected Map info"));
-	
-	var tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
-	var tspanContent = document.createTextNode("Name: " + this.name);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
-	tspanContent = document.createTextNode("Owner: " + this.owner);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	return text;
+ElemMap.prototype.getId = function() {
+   return this.id;
 }
+
+ElemMap.prototype.getName = function() {
+   return this.name;
+}
+
+ElemMap.prototype.getOwner = function() {
+	return this.owner
+}
+
