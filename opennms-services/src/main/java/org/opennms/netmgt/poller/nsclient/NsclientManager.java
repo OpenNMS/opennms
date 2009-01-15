@@ -731,7 +731,8 @@ public class NsclientManager {
                                                                           "\\s+-\\s+");
             for (int i = 0; i < services.length; i++) {
             	String stateValue = services[i].split(":\\s+")[1].trim();
-                if (stateValue.equals("Stopped") || stateValue.equals("Unknown")) {
+                if (stateValue.equals("Stopped") || stateValue.equals("Unknown") ||
+                        stateValue.equals("Not found")) {
                     pack.setResultCode(NsclientPacket.RES_STATE_CRIT);
                 }
             }
