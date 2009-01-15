@@ -1,14 +1,19 @@
 var grid;
+var urlParams;
 Ext.onReady(function(){
-    var urlObj = Ext.urlDecode(window.location.href, true);
-    
+	
+	var getParams = document.URL.split("?");
+	if(getParams.length > 1){
+		urlParams = Ext.urlDecode(getParams[1]);
+	}
+	
     // create the grid
     grid = new Ext.grid.GridPanel({
-    	title:'NodePage',
+    	title:'Node List',
         store: dataStore,
         colModel:colModel,
         width:'auto',
-        height:300,
+        height:600,
         
         bbar: pagingBar,
         
@@ -21,7 +26,9 @@ Ext.onReady(function(){
     	};
     })
     
+	dataStore.on("load", checkFilters, this);
     dataStore.load();
+    
 })
 
 var record = new Ext.data.Record.create([
@@ -43,30 +50,15 @@ var dataStore = new Ext.data.Store({
 })
 
 var pagingBar = new Ext.PagingToolbar({
-        pageSize: 10,
+        pageSize: 100,
         store: dataStore,
         displayInfo: true,
-        displayMsg: 'Displaying topics {0} - {1} of {2}',
-        emptyMsg: "No topics to display",
-        
-        items:[
-            '-', {
-            pressed: true,
-            enableToggle:true,
-            text: 'Show Preview',
-            cls: 'x-btn-text-icon details',
-            toggleHandler: function(btn, pressed){
-                var view = grid.getView();
-                view.showPreview = pressed;
-                view.refresh();
-		}
-	}]
+        emptyMsg: "No topics to display"
 });
 
 var colModel = new Ext.grid.ColumnModel([{
 		header :'Node Label',
 		name :'nodeLabel',
-		width :100,
 		sortable :true,
 		align :'center'
 	},{
@@ -101,6 +93,13 @@ var colModel = new Ext.grid.ColumnModel([{
 		align :'center'
 	}
 ]) 
+
+function checkFilters(){
+	if(urlParams.nodename != undefined){
+		dataStore.filter("nodeLabel", urlParams.nodename, true, false);
+	}
+	
+};
 
 function getNodes(){
 	var xmlHttp;
