@@ -268,5 +268,17 @@ function resetFlags(){
 	 settingMapElemIcon=false;
 }
 
+function verifyMapString() {
+	if(savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && isAdminMode) {
+	 if(confirm('Map \''+currentMapName+'\' not saved, proceed anyway?')==false)
+	 	return true;
+	}
+}
 
-
+function removeChilds(svgObject) {
+	    var ls = svgObject.childNodes;
+        while (ls.length > 0) {
+          var obj = ls.item(0);
+          svgObject.removeChild(obj);
+        }
+}

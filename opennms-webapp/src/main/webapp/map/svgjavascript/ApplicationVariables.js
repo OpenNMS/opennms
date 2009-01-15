@@ -9,8 +9,17 @@ var mapSvgElement;
 //the SVG map object to work on.
 var map;
 
+// The Javascript Object for menus!
+var mapMenu;
+var nodeMenu;
+var viewMenu;
+var refreshMenu;
+
 // Needed by ECMAScripts
 var myMapApp = new mapApp();
+
+// Windows Objects used now when double click on MapElements
+myMapApp.Windows = new Array();
 
 // The Map width and height definition
 var mapWidth;
@@ -19,14 +28,11 @@ var mapHeight;
 //string containing a string form of the current map saved. this is used to test if the map is changed
 var savedMapString=new String(); 
 
-//For Managing Menu
-var menuOpenFlag=false;
-
 // variable for setting refresh time
 var refreshNodesIntervalInSec=300; 
 
 // variable for setting element dimension
-var mapElemDimension=20;	
+var mapElemDimension=25;	
 
 // Variable that states the current mode of the map. If true the user can modify the maps
 var isAdminMode = false;

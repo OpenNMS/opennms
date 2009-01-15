@@ -945,7 +945,7 @@ public class MapPropertiesFactory extends Object {
     }
     
     public int getDefaultMapElementDimension() {
-    	return 20;
+    	return 25;
     }
     
 
