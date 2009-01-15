@@ -77,9 +77,10 @@ h2 {
 	font-size: 80%;
 }
 p h2, td h2 {
-	/* 70% * 114% = 80% */
+	///* 70% * 114% = 80% */
 	font-size: 114%;
 }
+
 h3 {
 	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
@@ -142,6 +143,7 @@ td div.clip {
 	height:1.5em; 
 	overflow:hidden;
 }
+
 /* Layouts */
 div.TwoColLeft {
 	width: 40%;
@@ -197,7 +199,6 @@ div.TwoColRAdmin {
 {
 	background: #999999; 
 }
-
 
 #nav, #nav ul	/* all lists */
 {
@@ -326,10 +327,10 @@ td.normal {
 }
 
 table {
-	border-collapse: collapse;
+	/*border-collapse: collapse;
 	width: 100%;
 	margin-top: 0;
-	margin-bottom: 10px;
+	margin-bottom: 10px;*/
 }
 aggr.status.table {
 	border-collapse: collapse;
@@ -355,14 +356,15 @@ th a:hover {
 	color: #CCC;
 }
 td {
-	border: 1px solid #999;
+	/*border: 1px solid #999;
 	padding: 4px 5px;
-	background-color: #FFF;
+	background-color: #FFF;*/
 }
 
 td td, td p {
 	font-size: 100%;
 	margin: 0;
+	padding: 0px;
 }
 
 table.wdth600 { 
@@ -386,7 +388,7 @@ td.standardwarning
 
 td.status1 {
 	background-color: #C7DBAF;
-}
+}*/
 
 
 #nodelist table
