@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -27,6 +28,9 @@ public class MockForeignSourceRepositoryTest {
     public class TestVisitor implements ImportVisitor {
         private final List<Node> m_nodes = new ArrayList<Node>();
         
+        public void completeAsset(Asset asset) {
+        }
+
         public void completeCategory(Category category) {
         }
 
@@ -41,6 +45,9 @@ public class MockForeignSourceRepositoryTest {
 
         public void completeNode(Node node) {
             m_nodes.add(node);
+        }
+
+        public void visitAsset(Asset asset) {
         }
 
         public void visitCategory(Category category) {
