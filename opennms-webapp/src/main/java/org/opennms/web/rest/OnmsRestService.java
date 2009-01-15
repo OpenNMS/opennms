@@ -79,6 +79,8 @@ public class OnmsRestService {
 			criteria.add(Restrictions.sqlRestriction(query));
 			params.remove("query");
 		}
+		
+		params.remove("_dc");
 
 		//By default, just do equals comparision
 		ComparisonOperation op=ComparisonOperation.EQ;
