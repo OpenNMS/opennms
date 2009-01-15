@@ -1,399 +1,263 @@
 // Menu Svg Object Basic Functions	
+function instantiateRWAdminMenu(){
+	mapMenu.removeChilds();
+	instantiateMapGroupAdminMode();
+	nodeMenu.removeChilds();
+	instantiateNodeGroup();	
+	refreshMenu.removeChilds();
+	instantiateRefreshGroupAdminMode();
+	mapMenu.activate();
+	nodeMenu.activate();
+	refreshMenu.activate();
+}
+ 
+function instantiateRWNormalMenu(){
+	mapMenu.removeChilds();
+	instantiateMapGroupNormalMode();
+
+	viewMenu.removeChilds();
+	instantiateViewGroup();
+
+	refreshMenu.removeChilds();
+	instantiateRefreshGroupNormalMode();
+
+	mapMenu.activate();
+	viewMenu.activate();
+	refreshMenu.activate();
+}
+
+function instantiateROMenu(){
+	mapMenu.removeChilds();
+	instantiateMapGroup();	
+
+	viewMenu.removeChilds();
+	instantiateViewGroup();
+
+	mapMenu.activate();
+	mapMenu.activate();
+}
 	
 function enableMenu(){
-	var mapMenu = document.getElementById("MapMenu");
-	if(mapMenu!=null)
-		mapMenu.setAttributeNS(null,'display', 'inline');
-	
-	var nodeMenu = 	document.getElementById("Node");
-	if(nodeMenu != null)
-		nodeMenu.setAttributeNS(null,'display', 'inline');
-		
-	var viewMenu = 	document.getElementById("View")
-	if(viewMenu != null)
-		viewMenu.setAttributeNS(null,'display', 'inline');
-
-	var refreshMenu = 	document.getElementById("Refresh")
-	if(viewMenu != null)
-		viewMenu.setAttributeNS(null,'inline', 'none');
-
+ 	if(isUserAdmin){
+ 		if (isAdminMode) {
+ 			instantiateRWAdminMenu();
+ 		} else {
+			instantiateRWNormalMenu();
+		}
+	}else{
+		instantiateROMenu();	
+	}
 }
 
 function disableMenu(){
-	var mapMenu = document.getElementById("MapMenu");
-	if(mapMenu!=null)
-		mapMenu.setAttributeNS(null,'display', 'none');
-	
-	
-	var nodeMenu = 	document.getElementById("Node");
-	if(nodeMenu != null)
-		nodeMenu.setAttributeNS(null,'display', 'none');
-		
-	var viewMenu = 	document.getElementById("View")
-	if(viewMenu != null)
-		viewMenu.setAttributeNS(null,'display', 'none');
-
-	var refreshMenu = 	document.getElementById("Refresh")
-	if(viewMenu != null)
-		viewMenu.setAttributeNS(null,'display', 'none');
-
-}
-	
-function hideAll(evt){
-	elemHide(evt, "MapChoices");
-	elemHide(evt, "NodeChoices");
-	elemHide(evt, "ViewChoices");
-	elemHide(evt, "RefreshChoices");
-}
-	
-function hideSubMenus(evt){
-	elemHide(evt,'SetBGColorGroup');
-	elemHide(evt,'ColorNodesBySeverityGroup');
-	elemHide(evt,'ColorNodesByStatusGroup');
-	elemHide(evt,'ColorNodesByAvailGroup');
-	elemHide(evt,'SetBGImageGroup');
-}
-	
-function removeMenuChilds(){
-	var obj, ls;
-	ls = menuSvgElement.childNodes;
-	while (ls.length > 0) {
-	  obj = ls.item(0);
-	  menuSvgElement.removeChild(obj);
-	}
+	mapMenu.deactivate();
+	nodeMenu.deactivate();
+	viewMenu.deactivate();
+	refreshMenu.deactivate();
 }
 
-function setMenuOpenFlag(evt, subMenuName){
-	if(menuOpenFlag==false){
-		menuOpenFlag=true;
-		elemShow(evt, subMenuName);
+function resetWorkPanel(menuName, menuOpening){
+	if (menuOpening) {
+		hideMapInfo();
+		hideHistory();
 	} else {
-		menuOpenFlag=false;
-		elemHide(evt, subMenuName);
-	}		
-}
+		showMapInfo();
+		showHistory();
+	}
+	if(mapMenuId != menuName)
+		mapMenu.close();
 	
-function openMapMenu(evt){
-	elemColor(evt,'MapMenuGroup',downColor);
-	if(menuOpenFlag==true){
-		hideAll(evt);
-		elemShow(evt, "MapChoices");
-	}
+	if(nodeMenuId != menuName)
+		nodeMenu.close();
+		
+	if(viewMenuId != menuName)
+		viewMenu.close();
+
+	if(refreshMenuId != menuName)
+		refreshMenu.close();
 }
 
-function openNodeMenu(evt){
-	elemColor(evt,'NodeGroup',downColor);
-	if(menuOpenFlag==true){
-		hideAll(evt);
-
-		elemShow(evt, "NodeChoices");
-	}
-}	
-
-
-function openViewMenu(evt){
-	elemColor(evt,'ViewGroup',downColor);
-	if(menuOpenFlag==true){
-		hideAll(evt);
-		elemShow(evt, "ViewChoices");
-	}
-}
-
-function openRefreshMenu(evt){
-	elemColor(evt,'RefreshGroup',downColor);
-	if(menuOpenFlag==true){
-		hideAll(evt);
-		elemShow(evt, "RefreshChoices");
-	}
+function closeAllMenu(){
+	mapMenu.close();
+	nodeMenu.close();
+	viewMenu.close();
+	refreshMenu.close();
 }
 
 function instantiateMapGroupAdminMode() {
-	// *** MAP MENU ***
-	var action='MapMenu';
-	addMenuElement(menuSvgElement, "inline", 0, 0 , 70, 20,  action, "Map",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
-	
-	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
-	
-	action = "New";
-	addMenuElement(MapChoices, "inline", 0, 21 , 80, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "newMap();hideAll(evt);menuOpenFlag=false;");
-	action="Open";
-	addMenuElement(MapChoices, "inline", 0, 41 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
-	action="Close";
-	addMenuElement(MapChoices, "inline", 0, 61 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
-	action="Rename";
-	addMenuElement(MapChoices, "inline", 0, 81 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRenameMapBox(); hideAll(evt);menuOpenFlag=false;");
-	action="Delete";
-	addMenuElement(MapChoices, "inline", 0, 101 , 80, 20, action, action,  "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="Save";
-	addMenuElement(MapChoices, "inline", 0, 121 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "saveMap();hideAll(evt);menuOpenFlag=false;");
-	action="Clear";
-	addMenuElement(MapChoices, "inline", 0, 141 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "clearMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="RefreshMode";
-	addMenuElement(MapChoices, "inline", 0, 181 , 80, 20, action, "Refresh Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToNormalMode();hideAll(evt);menuOpenFlag=false;");
-	action="SetBG";
-	addMenuElement(MapChoices, "inline", 0, 161 , 80, 20, action, "Set Background", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'SetBGColorGroup'); elemShow(evt,'SetBGImageGroup')" , "elemColor(evt,'"+action+"',upColor)", "elemShow(evt,'SetBGColor'); elemShow(evt,'SetBGImage')");
-	action="SetBGColor";
-	addMenuElement(MapChoices, "none", 60, 161 , 80, 20, action, "Color", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "setBackground();  hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="SetBGImage";
-	addMenuElement(MapChoices, "none", 60, 181 , 80, 20, action, "Image", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "addBGImagesList();hideAll(evt);menuOpenFlag=false;");
+	// ***ADMIN MODE MAP MENU ***
+	var itemId="SetBG";
+	var itemEl1id = "SetBGColor";
+	var itemEl2id = "SetBGImage";
+	var subitems = new Array(itemEl1id,itemEl2id);
+	var id = "New";
+	mapMenu.addElement(id, id, menuDeltaX,menuDeltaY,menuWidth,menuHeight, newMapSetUp, subitems);
+	id="Open";
+	mapMenu.addElement(id, id, menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, addMapsList, subitems);
+	id="Close";
+	mapMenu.addElement(id, id, menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, closeSetUp, subitems);
+	id="Rename";
+	mapMenu.addElement(id, id, menuDeltaX,4*menuDeltaY,menuWidth,menuHeight, addRenameMapBox, subitems);
+	id="Delete";
+	mapMenu.addElement(id, id, menuDeltaX,5*menuDeltaY,menuWidth,menuHeight, deleteMapSetUp, subitems);
+	id="Save";
+	mapMenu.addElement(id, id, menuDeltaX,6*menuDeltaY,menuWidth,menuHeight, saveMapSetUp, subitems);
+	id="Clear";
+	mapMenu.addElement(id, id, menuDeltaX,7*menuDeltaY,menuWidth,menuHeight, clearMapSetUp, subitems);
 
+	mapMenu.addItem(itemId, "Background",menuDeltaX,8*menuDeltaY,menuWidth,menuHeight, subitems);	
+	id="RefreshMode";
+	mapMenu.addElement(id, "Refresh Mode", menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, switchRoleSetUp, subitems);
+
+	mapMenu.addItemElement(itemEl1id, "Color", menuWidth+menuDeltaX,8*menuDeltaY,menuWidth,menuHeight, addBgColorBox);
+	mapMenu.addItemElement(itemEl2id, "Image", menuWidth+menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, addBGImagesList);
 }
 
 function instantiateMapGroupNormalMode() {
-	// *** MAP MENU ***
-	var action='MapMenu';
-	addMenuElement(menuSvgElement, "inline", 0, 0 , 70, 20,  action, "Map",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
-	
-	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
-	
-	action="Open";
-	addMenuElement(MapChoices, "inline", 0, 21 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
-	
-	action="Close";
-	addMenuElement(MapChoices, "inline", 0, 41 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
-	
-	action="AdminMode";
-	addMenuElement(MapChoices, "inline", 0, 61 , 80, 20, action, "Admin Mode", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "switchToAdminMode();hideAll(evt);menuOpenFlag=false;");
-
+	// *** MAP MENU FOR ADMINISTRATOR***
+	instantiateMapGroup();
+	id="AdminMode";
+	mapMenu.addElement(id, "Admin Mode", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, switchRoleSetUp,null);
 }
 
 function instantiateMapGroup() {
-	// *** MAP MENU ***
-	var action='MapMenu';
-	addMenuElement(menuSvgElement, "inline", 0, 0 , 70, 20,  action, "Map",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openMapMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'MapChoices');" );
-
-	var MapChoices = createGroup(menuSvgElement, "MapChoices","none", "elemColor(evt,'Map',downColor)","elemColor(evt,'Map',upColor)");
-	
-	action="Open";
-	addMenuElement(MapChoices, "inline", 0, 21 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapsList(); hideAll(evt);menuOpenFlag=false;");
-	action="Close";
-	addMenuElement(MapChoices, "inline", 0, 41 , 80, 20, action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "close();hideAll(evt);menuOpenFlag=false;");
-
+	// ***READ ONLY MAP MENU ***
+	var id="Open";
+	mapMenu.addElement(id, id, menuDeltaX,menuDeltaY,menuWidth,menuHeight, addMapsList,null);
+	id="Close";
+	mapMenu.addElement(id, id, menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, closeSetUp,null);	
 }
 
 function instantiateRefreshGroupAdminMode() {
-	action='Refresh';
-	addMenuElement(menuSvgElement, "inline", 141, 0 , 70, 20,  action, "Refresh",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openRefreshMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'RefreshChoices');" );
-
-	var RefreshChoices = createGroup(menuSvgElement, "RefreshChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
-	action = "LoadMaps";
-	addMenuElement(RefreshChoices, "inline", 141, 21 , 80, 20,  action, "Load Maps", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "LoadMaps(); hideAll(evt);menuOpenFlag=false;");
-	action = "LoadNodes";
-	addMenuElement(RefreshChoices, "inline", 141, 41 , 80, 20,  action, "Load Nodes", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "LoadNodes(); hideAll(evt);menuOpenFlag=false;");
+	// *** REFRESH MENU ***
+	var id = "LoadMaps";
+	refreshMenu.addElement(id, "Maps", menuDeltaX,menuDeltaY,menuWidth,menuHeight, loadMapsSetUp,null);
+	id = "LoadNodes";
+	refreshMenu.addElement(id, "Nodes", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, loadNodesSetUp,null);
 }
 
 function instantiateRefreshGroupNormalMode() {
-	action='Refresh';
-	addMenuElement(menuSvgElement, "inline", 141, 0 , 70, 20,  action, "Refresh",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openRefreshMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'RefreshChoices');" );
-
-	var RefreshChoices = createGroup(menuSvgElement, "RefreshChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
-	action = "RefreshMap";
-	addMenuElement(RefreshChoices, "inline", 141, 21 , 80, 20,  action, "Refresh Map", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "RefreshNodes(); hideAll(evt);menuOpenFlag=false;");
+	// *** REFRESH MENU ***
+	var id = "RefreshMap";
+	refreshMenu.addElement(id, "Refresh", menuDeltaX,menuDeltaY,menuWidth,menuHeight, refreshNodesSetUp,null);
 }
 
 function instantiateNodeGroup() {
 	// *** NODE MENU ***
-	action='Node';
-	addMenuElement(menuSvgElement, "inline", 71, 0 , 70, 20,  action, "Node",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor)", "openNodeMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'NodeChoices');" );
-	
-	var NodeChoices = createGroup(menuSvgElement, "NodeChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
-	action = "Add";
-	addMenuElement(NodeChoices, "inline", 71, 21 , 80, 20,  action, action, "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementList() ; hideAll(evt);menuOpenFlag=false;");
-	action = "AddByCategory";
-	addMenuElement(NodeChoices, "inline", 71, 41 , 80, 20,  action, "Add By Category", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addCategoryList();hideAll(evt);menuOpenFlag=false;");
-	action = "AddByLabel";
-	addMenuElement(NodeChoices, "inline", 71, 61 , 80, 20,  action, "Add By Label", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addNodeLabelBox();hideAll(evt);menuOpenFlag=false;");
-	action = "AddRange";
-	addMenuElement(NodeChoices, "inline", 71, 81 , 80, 20,  action, "Add Range", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addRangeBox();hideAll(evt);menuOpenFlag=false;");
-	action = "AddNeigh";
-	addMenuElement(NodeChoices, "inline", 71, 101 , 80, 20,  action, "Add Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeigh(); hideAll(evt);menuOpenFlag=false;");
-	action = "AddNodeNeigh";
-	addMenuElement(NodeChoices, "inline", 71, 121 , 80, 20,  action, "Add With Neighbors", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapElementNeighList();hideAll(evt);menuOpenFlag=false;");
-	action = "AddMap";
-	addMenuElement(NodeChoices, "inline", 71, 141 , 80, 20,  action, "Add Map As Node", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addMapAsNodeList(); hideAll(evt);menuOpenFlag=false;");
-	action = "SetIcon";
-	addMenuElement(NodeChoices, "inline", 71, 161 , 80, 20,  action, "Set Icon", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addIconList();hideAll(evt);menuOpenFlag=false;" );
-	action = "DelNode";
-	addMenuElement(NodeChoices, "inline", 71, 181 , 80, 20,  action, "Delete", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "deleteMapElementMenu();hideAll(evt);menuOpenFlag=false;"  );
+	var id = "Add";
+	nodeMenu.addElement(id, id, menuDeltaX,menuDeltaY,menuWidth,menuHeight, addMapElementList,null);
+	id = "AddByCategory";
+	nodeMenu.addElement(id, "Add Category", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, addCategoryList,null);
+	id = "AddByLabel";
+	nodeMenu.addElement(id, "Add Label", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, addNodeLabelBox,null);
+	id = "AddRange";
+	nodeMenu.addElement(id, "Add Range", menuDeltaX,4*menuDeltaY,menuWidth,menuHeight, addRangeBox,null);
+	id = "AddNeigh";
+	nodeMenu.addElement(id, "Add Neighs", menuDeltaX,5*menuDeltaY,menuWidth,menuHeight, addMapElementNeigh,null);
+	id = "AddNodeNeigh";
+	nodeMenu.addElement(id, "Add With Neighs", menuDeltaX,6*menuDeltaY,menuWidth,menuHeight, addMapElementNeighList,null);
+	id = "AddMap";
+	nodeMenu.addElement(id, "Add Map", menuDeltaX,7*menuDeltaY,menuWidth,menuHeight, addMapAsNodeList,null);
+	id = "SetIcon";
+	nodeMenu.addElement(id, "Set Icon", menuDeltaX,8*menuDeltaY,menuWidth,menuHeight, addIconList,null);
+	id = "DelNode";
+	nodeMenu.addElement(id, "Delete", menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, deleteMapElementList,null);
 }
 
 function instantiateViewGroup() {
 
-	// *** VIEW MENU ***
-	action='View';
-	addMenuElement(menuSvgElement, "inline", 71, 0 , 70, 21,  action, "View",  "elemColor(evt,'"+action+"',downColor)", "elemColor(evt, '"+action+"',upColor); hideSubMenus(evt);", "openViewMenu(evt); hideSubMenus(evt);setMenuOpenFlag(evt, 'ViewChoices');" );
-	
-	var ViewChoices = createGroup(menuSvgElement, "ViewChoices","none", "elemColor(evt,'"+action+"',downColor)","elemColor(evt,'"+action+"',upColor)");
-	
-	action="ToggleFullScreen";
-	addMenuElement(ViewChoices, "inline", 71, 21 , 80, 20, action, "Toggle Screen", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);" , "elemColor(evt,'"+action+"',upColor)","top.toggle(\"footer\"); top.toggle(\"header\");hideAll(evt);menuOpenFlag=false;");
-	action = "SetDimension";	
-	addMenuElement(ViewChoices, "inline", 71, 41 , 80, 20,  action, "Set Dimension", "elemColor(evt,'"+action+"',downColor); hideSubMenus(evt);", "elemColor(evt,'"+action+"',upColor)", "addDimensionList();hideAll(evt);menuOpenFlag=false;");
-	action="ColorNodesBy";
-	addMenuElement(ViewChoices, "inline", 71, 61 , 80, 20, action, "View by...", "elemColor(evt,'"+action+"',downColor); elemShow(evt,'ColorNodesBySeverityGroup'); elemShow(evt,'ColorNodesByAvailGroup'); elemShow(evt,'ColorNodesByStatusGroup')" , "elemColor(evt,'"+action+"',upColor)","");
-	action="ColorNodesBySeverity";
-	addMenuElement(ViewChoices, "none", 130, 61 , 80, 20, action, "Severity", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='S';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();");
-	action="ColorNodesByAvail";	
-	addMenuElement(ViewChoices, "none", 130, 81 , 80, 20, action, "Availability", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='A';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;" );
-	action="ColorNodesByStatus";	
-	addMenuElement(ViewChoices, "none", 130, 101 , 80, 20, action, "Status", "elemColor(evt,'"+action+"',downColor);", "elemColor(evt,'"+action+"',upColor)", "colorSemaphoreBy='T';refreshMapElements(); addLegend();hideAll(evt);menuOpenFlag=false;");
+	// *** VIEW MENU ***		
+	var itemId="ColorNodesBy";
+	var itemEl1id="ColorNodesBySeverity";
+	var itemEl2id="ColorNodesByAvail";	
+	var itemEl3id="ColorNodesByStatus";
+	var subitems= new Array(itemEl1id,itemEl2id,itemEl3id);
+	var id="ToggleFullScreen";
+	viewMenu.addElement(id, "Toggle Screen", menuDeltaX,menuDeltaY,menuWidth,menuHeight,toggleScreenSetUp, subitems);
+	id = "SetDimension";	
+	viewMenu.addElement(id, "Set Dimension", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight,addDimensionList, subitems);
+	viewMenu.addItem(itemId, "View by...", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, subitems);
+	viewMenu.addItemElement(itemEl1id, "Severity", menuDeltaX+menuWidth,3*menuDeltaY,menuWidth,menuHeight, viewBySeveritySetUp);
+	viewMenu.addItemElement(itemEl2id,    "Avail", menuDeltaX+menuWidth,4*menuDeltaY,menuWidth,menuHeight, viewByAvailSetUp);
+	viewMenu.addItemElement(itemEl3id,   "Status", menuDeltaX+menuWidth,5*menuDeltaY,menuWidth,menuHeight,viewByStatusSetUp);
 	
 }
 
-function instantiateRWAdminMenu(){
-	removeMenuChilds();
-	instantiateMapGroupAdminMode();
-	instantiateNodeGroup();	
-	instantiateRefreshGroupAdminMode();
-}
- 
-function instantiateRWNormalMenu(){
-	removeMenuChilds();
-	instantiateMapGroupNormalMode();
-	instantiateViewGroup();
-	instantiateRefreshGroupNormalMode();
-}
-
-function instantiateROMenu(){
-	removeMenuChilds();
-	instantiateMapGroup();	
-	instantiateViewGroup();
-}
-
-// functions called by Menu or Refresh
-
-function addMapElementList()
-{
-	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened');
-		return;
-	}
+// ***********functions called by Map Menu ************************
+// New Map
+function newMapSetUp() {	
+	closeAllMenu();
+	if (verifyMapString()) return;
+	hideMapInfo();
+	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
-	resetFlags();
-
-	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
-    selNodes.sortList("asc");    
-	button1  = new button("button1","nodes",addMapElement,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+	disableMenu();
+	newMap();
 }
 
-function addCategoryList()
-{
-	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened');
-		return;
-	}
-	clearTopInfo();
-	clearDownInfo();
-	resetFlags();
-	selCategories = new selectionList("categories","categories",categories,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mycategoriesResult);
-	selCategories.sortList("asc");
-	button1  = new button("button1","categories",addNodesByCategory,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
-}
-
-function addMapAsNodeList(){
-	clearTopInfo();
-	clearDownInfo();
-	resetFlags();
-	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
-	selMaps.sortList("asc");
-	button1  = new button("button1","maps",addMapAsNode,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
-}
-
+// Open Map
 function addMapsList()
 {
+	closeAllMenu();
+	hideMapInfo();
+	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
 	resetFlags();
 	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
 	selMaps.sortList("asc");
-	button1  = new button("button1","maps",openMap,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+	button1  = new button("button1","maps",openMapSetUp,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
 }
 
+// This function is called by open map and add map as node!
+function mapsResult() { }
 
-function addMapElementNeigh()
-{
-	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened');
-		return;
+mapsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
+	if(mapNr!=0){
+		writeDownInfo3("Selected Map Info", "Name: " +mapSortAss[arrayVal].getName(), "Owner: " + mapSortAss[arrayVal].getOwner() ); 
 	}
-	if( map.mapElements==null || map.mapElementSize==0)
-	{
-		alert('Map contains no nodes');
-		return;
-	}	
-
-	clearTopInfo();
-	resetFlags();
-	addingMapElemNeighbors=true;
-	writeDownInfo("Select the element to add");
+	selectedMapInList=arrayVal;
 }
 
-function addMapElementNeighList()
-{
-	
-	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened');
+function openMapSetUp(mapId) {
+	if (verifyMapString()) return;
+
+	var mapToOpen;
+	if(mapId != undefined && mapId > 0){
+		mapToOpen = mapId;
+	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
+		mapToOpen = mapSortAss[selectedMapInList].id;		
+	}else{
+		alert("No maps to open");
 		return;
 	}
-	
 	clearTopInfo();
 	clearDownInfo();
-	resetFlags();
-	
-	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
-	selNodes.sortList("asc");
-	button1  = new button("button1","nodes",addMapElementWithNeighbors,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
-	
+	openMap(mapToOpen);	
 }
- 
-function addIconList()
-{
+
+// Close Map
+function closeSetUp() {	
+	closeAllMenu();
 	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened');
+		alert("No maps opened");
 		return;
 	}
-	if( map.mapElements==null || map.mapElementSize==0)
-	{
-		alert('Map contains no nodes');
-		return;
-	}
+	
+	if (verifyMapString()) return;
+	
+	hideMapInfo();
+	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
-	resetFlags();
+	disableMenu();
+	close();
+}
 
-	selMEIcons = new selectionList("meicons","meicons",MEIcons,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myMEIconsResult);
-	selMEIcons.sortList("asc");
-} 
-
-function addBGImagesList()
-{
-	if(currentMapId==MAP_NOT_OPENED){
-		alert('No maps opened');
-		return;
-	}
-	clearTopInfo();
-	clearDownInfo();
-	resetFlags();
-
-	selBGImages = new selectionList("bgimages","bgimages",BGImages,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myBGImagesResult);	
-	selBGImages.sortList("asc");
-	button1  = new button("button1","bgimages",setBGImage,"rect","Set Icon",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
-} 
- 
-function addDimensionList()
-{
-
-	clearTopInfo();
-	clearDownInfo();
-	resetFlags();
-
-	selMapElemDim = new selectionList("mapelemdim","mapelemdim",MapElemDim,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,1,false,true,myMapElemDimResult);	
-	selMapElemDim.sortList("asc");
-	button1  = new button("button1","mapelemdim",setMapElemDim,"rect","Set Dimension",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
-} 
-
+// Rename Map
 function addRenameMapBox(){
+	closeAllMenu();
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
@@ -407,36 +271,451 @@ function addRenameMapBox(){
     }
 }
 
-function addRangeBox(){
-	if(currentMapId!=MAP_NOT_OPENED){
-		clearTopInfo();
-		clearDownInfo();
-		resetFlags();
+function renameMap(){
+	var newMapName = getTextBoxValue();
+	clearTopInfo();
+	if(newMapName != null && trimAll(newMapName)!=""){
+		currentMapName=newMapName;
+		viewMapInfo();
+		writeDownInfo("Map renamed.");
+	} else {
+		writeDownInfo("Name not valid.");
+	}
+}
 
-		textbox1 = new textbox("textbox1","textboxwithcommand","*.*.*.*",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[^a-zA-Z ]",undefined);
-		button1  = new button("button1","textboxwithcommand",addRangeOfNodes,"rect","Add Range",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
-		writeDownInfo3("Ip range valid are:","192.168.*.*","192.168.10-20.0-255");
- 	}else{
+// Delete Map
+function deleteMapSetUp() {	
+	closeAllMenu();
+	hideMapInfo();
+	hideHistory();
+	clearTopInfo();
+	clearDownInfo();
+	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
+	    if(confirm('Are you sure to delete the map?')==true){ 
+	 		disableMenu();
+			deleteMap();
+    	} else {
+    	return;
+    	}
+	}else{
+		alert('No maps to delete found');
+		return;
+    }	
+}
+
+// Save Map
+function saveMapSetUp() {	
+	closeAllMenu();
+	if(currentMapId!=MAP_NOT_OPENED){
+		hideHistory();
+		clearTopInfo();
+		disableMenu();
+		writeDownInfo("Saving map '" +currentMapName+"'");
+		saveMap();
+	}else{
+		alert("No maps opened");
+	}
+	
+}
+
+// Save Map
+function clearMapSetUp() {	
+	closeAllMenu();
+	if(currentMapId!=MAP_NOT_OPENED) {
+	    if(confirm('Are you sure to clear the map (remove all its elements and links)?')==true) {
+			hideHistory();
+			clearTopInfo();
+			disableMenu();
+			writeDownInfo("Clearing map '" +currentMapName+"'");
+			clearMap();
+     	}
+	}else{
+		alert("No maps opened");
+	}	
+}
+
+// Map Switch role
+function switchRoleSetUp(){
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+	switchRole();
+}
+
+// Set map background Color
+function addBgColorBox(){
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	if(currentMapId!=MAP_NOT_OPENED){
+		add_pick_color("pickColor");
+	}else{
 		alert('No maps opened');
     }
 }
 
+// Map Background Image List
+function addBGImagesList()
+{
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+
+	selBGImages = new selectionList("bgimages","bgimages",BGImages,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myBGImagesResult);	
+	selBGImages.sortList("asc");
+	button1  = new button("button1","bgimages",setBGImageSetUp,"rect","Set BG",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+} 
+
+// Function used by previuos function
+function BGImagesResult() { }
+
+BGImagesResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
+    if(mapNr!=0){
+            map.tryBackgroundImage(BGImagesSortAss[arrayVal]);
+    }
+    selectedBGImageInList=arrayVal;
+}
+
+function setBGImageSetUp() {
+	if(selectedBGImageInList!=0){ 
+		setBGImage();
+	}
+}
+
+function setBGImage(){
+	if(selectedBGImageInList!=0){ 
+		clearTopInfo();
+		currentMapBackGround = BGImagesSortAss[selectedBGImageInList];
+		map.setBackgroundImage(currentMapBackGround);
+		writeDownInfo("Background image set");
+	}
+}
+
+// *****************Functions Called by  Refresh Menu **********************
+
+// Reload Maps List
+function loadMapsSetUp() {	
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	loadMaps();
+	showMapInfo();
+	showHistory();
+}
+
+// Reload Nodes List
+function loadNodesSetUp() {	
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	loadNodes();
+	showMapInfo();
+	showHistory();
+}
+
+// Refresh Map
+function refreshNodesSetUp() {	
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+	disableMenu();
+	refreshNodes();
+	showMapInfo();
+	showHistory();
+}
+
+// *****************Functions Called by  Node Menu **********************
+// Add Node function
+function addMapElementList()
+{
+	closeAllMenu();
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+
+	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
+    selNodes.sortList("asc");    
+	button1  = new button("button1","nodes",addMapElementSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+}
+
+function nodesResult() { }
+
+nodesResult.prototype.getSelectionListVal = function(selBoxName,nodeNr,arrayVal) {
+	if(nodeNr!=0){
+			writeDownInfo3("Selected Node Info", "Label: " +nodeSortAss[arrayVal].getLabel(), "Id: "+nodeSortAss[arrayVal].getId()); 
+	}
+	selectedMapElemInList=arrayVal;
+}
+
+function addMapElementSetUp() {
+	if(selectedMapElemInList==0 ){
+		return;
+	}
+	addMapElement(nodeSortAss[selectedMapElemInList].id);	
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+}
+
+// Add Node by Category
+function addCategoryList()
+{
+	closeAllMenu();
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+	selCategories = new selectionList("categories","categories",categories,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mycategoriesResult);
+	selCategories.sortList("asc");
+	button1  = new button("button1","categories",addNodesByCategorySetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+}
+
+function categoriesResult() { }
+
+categoriesResult.prototype.getSelectionListVal = function(selBoxName,nodeNr,arrayVal) {
+        selectedCategoryInList=arrayVal;
+}
+
+function addNodesByCategorySetUp() {
+	if(selectedCategoryInList==0 )  {
+		return;
+	}
+	addNodesByCategory(categorySortAss[selectedCategoryInList]);	
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+}
+
+// Add node using nodelabel
 function addNodeLabelBox(){
+	closeAllMenu();
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
 		resetFlags();
 
 		textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[^]",undefined);
-		button1  = new button("button1","textboxwithcommand",addNodesByLabel,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
+		button1  = new button("button1","textboxwithcommand",addNodesByLabelSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
 		writeDownInfo("Label text accept wildcard");
  	}else{
 		alert('No maps opened');
     }
 }
 
-function deleteMapElementMenu()
+function addNodesByLabelSetUp() {
+	var label = getTextBoxValue();
+	if(label==""){
+		alert('Invalid Label (must not be blank)');
+		return;
+	}
+	addNodesByLabel(label);
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+}
+
+
+// Add node using ip range functions 
+function addRangeBox(){
+	closeAllMenu();
+	if(currentMapId!=MAP_NOT_OPENED){
+		clearTopInfo();
+		clearDownInfo();
+		resetFlags();
+
+		textbox1 = new textbox("textbox1","textboxwithcommand","*.*.*.*",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[^a-zA-Z ]",undefined);
+		button1  = new button("button1","textboxwithcommand",addRangeOfNodesSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
+		writeDownInfo3("Ip range valid are:","192.168.*.*","192.168.10-20.0-255");
+ 	}else{
+		alert('No maps opened');
+    }
+}
+
+function addRangeOfNodesSetUp() {
+	var range = getTextBoxValue();
+	if(!isValidRange(range)){
+		alert('Range not valid!');
+		return;
+	}
+	addRangeOfNodes(range);
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+}
+
+// Add Map using neighbor
+function addMapElementNeigh()
 {
+	closeAllMenu();
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	if( map.mapElements==null || map.mapElementSize==0)
+	{
+		alert('Map contains no nodes');
+		return;
+	}	
+
+	addingMapElemNeighbors=true;
+	clearTopInfo();
+	resetFlags();
+	writeDownInfo("click element to add neighb");
+}
+
+function addMapElemNeighSetUp(id) {
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+		
+	addMapElemNeigh(id);
+}
+
+// Add a node with all his neighb function
+function addMapElementNeighList()
+{
+	closeAllMenu();	
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+	
+	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
+	selNodes.sortList("asc");
+	button1  = new button("button1","nodes",addMapElementWithNeighborsSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);	
+}
+
+function addMapElementWithNeighborsSetUp() {
+	if(selectedMapElemInList==0 )  {
+		return;
+	}
+	addMapElementWithNeighbors(nodeSortAss[selectedMapElemInList].id);
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();		
+}
+
+// Add Map as a Node Functions
+function addMapAsNodeList(){
+	closeAllMenu();	
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+
+	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
+	selMaps.sortList("asc");
+	button1  = new button("button1","maps",addMapAsNodeSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+}
+ 
+function addMapAsNodeSetUp() {
+	if(selectedMapInList==0){
+		return;
+	}
+	
+	var mapId = mapSortAss[selectedMapInList].id;
+	if(mapId==currentMapId){
+		writeDownInfo("Cannot add map to itself");		
+		return;
+	}
+	addMapAsNode(mapId);
+
+	clearTopInfo();
+	clearDownInfo();
+	disableMenu();
+}
+
+// Add icons List function
+function addIconList()
+{
+	closeAllMenu();	
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}
+	if( map.mapElements==null || map.mapElementSize==0)
+	{
+		alert('Map contains no nodes');
+		return;
+	}
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+    settingMapElemIcon=true;
+
+	selMEIcons = new selectionList("meicons","meicons",MEIcons,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myMEIconsResult);
+	selMEIcons.sortList("asc");
+} 
+
+function setIconSetUp() {
+	writeDownInfo3("Icon setting ok.","Click on an element to set","another icon.");			
+} 
+
+function MEIconsResult() { }
+
+MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
+	
+	var iconPreviewNode = document.getElementById("iconPreview");
+	if (iconPreviewNode)
+       iconPreviewNode.parentNode.removeChild(iconPreviewNode);
+
+    if(mapNr!=0){
+        selectedMEIconInList=arrayVal;
+
+        var iconPreviewGroup = document.createElementNS(svgNS,"g");
+        iconPreviewGroup.setAttributeNS(null,"id", "iconPreview");
+
+        var iconPreviewRect = document.createElementNS(svgNS,"rect");
+        iconPreviewRect.setAttributeNS(null,"x", 57);
+        iconPreviewRect.setAttributeNS(null,"y", 80);
+        iconPreviewRect.setAttributeNS(null,"width", 35);
+        iconPreviewRect.setAttributeNS(null,"height", 35);
+        iconPreviewRect.setAttributeNS(null,"fill", "white");
+        iconPreviewRect.setAttributeNS(null,"stroke", "grey");
+        iconPreviewRect.setAttributeNS(null,"stroke-width", 1);
+
+        var iconPreview = document.createElementNS(svgNS,"image");
+        iconPreview.setAttributeNS(null,"x", 65);
+        iconPreview.setAttributeNS(null,"y", 87);
+        iconPreview.setAttributeNS(null,"width", 20);
+        iconPreview.setAttributeNS(null,"height", 25);
+        iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal] );
+        iconPreviewGroup.appendChild(iconPreviewRect);
+        iconPreviewGroup.appendChild(iconPreview);
+        selMEIcons.selectionBoxGroup.appendChild(iconPreviewGroup);
+
+        writeDownInfo2("Click on an element to set","icon.");
+	} else {
+		settingMapElemIcon=false;
+    }
+}
+
+// Delete Map Element List
+function deleteMapElementList()
+{
+	closeAllMenu()
 	if(currentMapId==MAP_NOT_OPENED){
 		alert('No maps opened');
 		return;
@@ -447,15 +726,94 @@ function deleteMapElementMenu()
 		alert('Map contains no nodes');
 		return;
 	}	
-	clearTopInfo();
-	resetFlags();
+
 	deletingMapElem=true;
 
+	clearTopInfo();
+	resetFlags();
 	writeDownInfo("Select the element to delete");
 }
 
+function deleteMapElementSetUp() {
+	writeDownInfo3("Element Deleted.","Click on an Other Element","to delete.");			
+
+}
+
+// ***************** function called by View Menu **********
+// Set element dimension 
+
+function addDimensionList()
+{
+
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	resetFlags();
+
+	selMapElemDim = new selectionList("mapelemdim","mapelemdim",MapElemDim,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,1,false,true,myMapElemDimResult);	
+	selMapElemDim.sortList("asc");
+	button1  = new button("button1","mapelemdim",setMapElemDimSetUp,"rect","Set",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+} 
+
+function MapElemDimResult() { }
+
+MapElemDimResult.prototype.getSelectionListVal = function(selBoxName,dimNr,arrayVal) {
+	selectedMapElemDimInList=arrayVal;
+}
+
+function setMapElemDimSetUp(){
+	
+	mapElemDimension=parseInt(MapElemDimSortAss[selectedMapElemDimInList]);
+	
+	clearTopInfo();
+	map.render();	
+			
+	disableMenu();
+	setMapElemDim()	
+}
+
+function viewBySeveritySetUp() {
+	closeAllMenu();
+	colorSemaphoreBy='S';
+	refreshMapElements();
+	clearTopInfo();
+	addLegend();
+	showMapInfo();
+	showHistory();
+}
+
+function viewByAvailSetUp() {
+	closeAllMenu();
+	colorSemaphoreBy='A';
+	refreshMapElements();
+	clearTopInfo();
+	addLegend();
+	showMapInfo();
+	showHistory();
+}
+
+function viewByStatusSetUp() {
+	closeAllMenu();
+	colorSemaphoreBy='T';
+	refreshMapElements();
+	clearTopInfo();
+	addLegend();
+	showMapInfo();
+	showHistory();
+}
+
+function toggleScreenSetUp() {
+	closeAllMenu();
+	top.toggle('footer');
+	top.toggle('header');
+	showMapInfo();
+	showHistory();
+}
+// ***************function called by clicking on count down ******************
 function addRefreshTimeList()
 {
+	
+	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();
 	resetFlags();
@@ -463,19 +821,27 @@ function addRefreshTimeList()
 	button1  = new button("button1","refreshTime",resetRefreshTimer,"rect","Set",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
 }
 
-function setBackground(){
-	if(currentMapId!=MAP_NOT_OPENED){
-		add_pick_color("pickColor");
-	}else{
-		alert('No maps opened');
-    }
-}
-// Top Info writing
-function writeTopInfo(svgObject) {
+function refreshTimeMinsResult() {selectedRefreshTimeList="30 seconds"; }
 
-	clearTopInfo();
+refreshTimeMinsResult.prototype.getSelectionListVal = function(selBoxName,dimNr,arrayVal) {
+	if(arrayVal) selectedRefreshTimeList=arrayVal;
+	else selectedRefreshTimeList="30 seconds";
+}
+
+function resetRefreshTimer(){
+   refreshNodesIntervalInSec=refreshTimeMinsSortAss[selectedRefreshTimeList];
+   clearTopInfo();
+}
+
+// Top Info writing
+function writeTopInfoText(svgObject) {
 	if (svgObject != null) {
-		document.getElementById("TopInfo").appendChild(svgObject);
+		var topInfoText = document.getElementById("TopInfoText");
+		if (topInfoText != null) {
+			clearTopInfo();
+			topInfoText.appendChild(svgObject);
+			topInfoText.setAttributeNS(null,"display","inline");	
+		}
 	}
 }
 
@@ -542,9 +908,11 @@ function clearTopInfo(){
 		button1 = null;
 	}
 	
-	var childNode = document.getElementById("TopInfoText");
-	if (childNode)
-		document.getElementById("TopInfo").removeChild(childNode);
+	var topInfoText = document.getElementById("TopInfoText");
+	if (topInfoText ) {
+         removeChilds(topInfoText);
+    }
+		
 
 } 
 
@@ -562,7 +930,8 @@ function writeDownInfo(info){
 	var text = document.createElementNS(svgNS,"text");
 	text.setAttributeNS(null, "x","5");
 	text.setAttributeNS(null, "y","20");
-	text.setAttributeNS(null, "font-size",textFontSize);
+	text.setAttributeNS(null, "font-size",titleFontSize);
+	text.setAttributeNS(null,"font-family",textFamily);
 	text.setAttributeNS(null, "id","DownInfoText");
 	
 	var tspanContent = document.createTextNode(info);
@@ -579,12 +948,14 @@ function writeDownInfo2(info1, info2){
 	text.setAttributeNS(null, "y","20");
 	text.setAttributeNS(null, "id","DownInfoText");
 	text.setAttributeNS(null, "font-size",titleFontSize);
+	text.setAttributeNS(null,"font-family",textFamily);
 	text.appendChild(document.createTextNode(info1));
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","7");
-	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "dy","25");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
+	tspan.setAttributeNS(null,"font-family",textFamily);
 	var tspanContent = document.createTextNode(info2);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);		
@@ -600,20 +971,23 @@ function writeDownInfo3(info1, info2, info3){
 	text.setAttributeNS(null, "y","20");
 	text.setAttributeNS(null, "id","DownInfoText");
 	text.setAttributeNS(null, "font-size",titleFontSize);
+	text.setAttributeNS(null,"font-family",textFamily);
 	text.appendChild(document.createTextNode(info1));
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","7");
-	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "dy","25");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
+	tspan.setAttributeNS(null,"font-family",textFamily);
 	var tspanContent = document.createTextNode(info2);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);		
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","7");
-	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "dy","25");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
+	tspan.setAttributeNS(null,"font-family",textFamily);
 	var tspanContent = document.createTextNode(info3);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);		
@@ -623,15 +997,36 @@ function writeDownInfo3(info1, info2, info3){
 
 // Manage MapInfo SVG Objects
 
+function hideMapInfo(){
+	var mapInfo = document.getElementById("MapInfo");
+	if(mapInfo!=null)
+		mapInfo.setAttributeNS(null,'display', 'none');
+}
+
+function showMapInfo(){
+	var mapInfo = document.getElementById("MapInfo");
+	if(mapInfo!=null)
+		mapInfo.setAttributeNS(null,'display', 'inline');
+}
+
 function viewMapInfo(){
-	
+	clearMapInfo();
 	var mapInfo= document.getElementById("MapInfo");
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","30");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "id","MapInfoTitle");
+	tspan.setAttributeNS(null, "font-size",titleFontSize);
+	
+	var tspanContent = document.createTextNode("Map Info");
+	tspan.appendChild(tspanContent);
+	mapInfo.appendChild(tspan);
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","25");
 	tspan.setAttributeNS(null, "id","mapName");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	
 	var tspanContent = document.createTextNode("Name: "+currentMapName+" ");
 	tspan.appendChild(tspanContent);
@@ -639,9 +1034,8 @@ function viewMapInfo(){
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
+	tspan.setAttributeNS(null, "dy","22");
 	tspan.setAttributeNS(null, "id","mapOwner");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	
 	var tspanContent = document.createTextNode("Owner: "+currentMapOwner+" ");
 	tspan.appendChild(tspanContent);
@@ -649,9 +1043,8 @@ function viewMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
+	tspan.setAttributeNS(null, "dy","22");
 	tspan.setAttributeNS(null, "id","mapUserLast");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	
 	var tspanContent = document.createTextNode("User last modified: "+currentMapUserlast+" ");
 	tspan.appendChild(tspanContent);
@@ -659,9 +1052,8 @@ function viewMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
+	tspan.setAttributeNS(null, "dy","22");
 	tspan.setAttributeNS(null, "id","mapCreateTime");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	
 	var tspanContent = document.createTextNode("Create time: "+currentMapCreatetime+" ");
 	tspan.appendChild(tspanContent);
@@ -669,15 +1061,60 @@ function viewMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
+	tspan.setAttributeNS(null, "dy","25");
 	tspan.setAttributeNS(null, "id","mapLastModTime");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	
 	var tspanContent = document.createTextNode("Last modified time: "+currentMapLastmodtime+" ");
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
 	
 	mapInfo.setAttributeNS(null,'display', 'inline');
+}
+
+function clearMapInfo(){
+   
+   var mapInfoTitle=document.getElementById("MapInfoTitle");
+   if(mapInfoTitle!=null)
+           mapInfoTitle.parentNode.removeChild(mapInfoTitle);
+   var mapNameNode=document.getElementById("mapName");
+   if(mapNameNode!=null)
+           mapNameNode.parentNode.removeChild(mapNameNode);
+   var mapOwnerNode=document.getElementById("mapOwner");
+   if(mapOwnerNode!=null)
+           mapOwnerNode.parentNode.removeChild(mapOwnerNode);
+   var mapUserLastNode=document.getElementById("mapUserLast");
+   if(mapUserLastNode!=null)
+           mapUserLastNode.parentNode.removeChild(mapUserLastNode);
+   var mapCreateTimeNode=document.getElementById("mapCreateTime");
+   if(mapCreateTimeNode!=null)
+           mapCreateTimeNode.parentNode.removeChild(mapCreateTimeNode);            
+   var mapLastModTimeNode=document.getElementById("mapLastModTime");
+   if(mapLastModTimeNode!=null)
+           mapLastModTimeNode.parentNode.removeChild(mapLastModTimeNode);          
+}
+
+//Assert loading..
+function assertLoading(){
+	var lt = document.getElementById("LoadingText");
+	if(loading==0){
+		lt.setAttributeNS(null,'display', 'none');
+	}else{
+		lt.setAttributeNS(null,'display', 'inline');
+	}
+}
+
+//Assert Refreshing....
+
+function assertRefreshing(loading){
+	var lt = document.getElementById("RefreshingText");
+	if(loading==0){
+		lt.setAttributeNS(null,'display', 'none');
+	}else{
+		lt.setAttributeNS(null,'display', 'inline');
+	}
+}
+
+function showHistory(){
 	if(mapHistory.length>mapHistoryIndex+1){
 		var next = mapHistory[mapHistoryIndex+1];
 		var nextName = mapHistoryName[mapHistoryIndex+1]; 
@@ -688,7 +1125,7 @@ function viewMapInfo(){
 			nextText.removeChild(nextText.firstChild);		
 		nextText.appendChild(textContent);
 		var nextAction = document.getElementById("nextAction");
-		nextAction.setAttribute("onclick","openMap("+next+");");
+		nextAction.setAttribute("onclick","openMapSetUp("+next+");");
 		document.getElementById("nextGroup").setAttributeNS(null,'display', 'inline');
 	}else{
 	    document.getElementById("nextGroup").setAttributeNS(null,'display', 'none');
@@ -703,63 +1140,11 @@ function viewMapInfo(){
 			prevText.removeChild(prevText.firstChild);
 		prevText.appendChild(textContent);
 		var prevAction = document.getElementById("prevAction");
-		prevAction.setAttribute("onclick","openMap("+prev+");");		
+		prevAction.setAttribute("onclick","openMapSetUp("+prev+");");		
 		document.getElementById("prevGroup").setAttributeNS(null,'display', 'inline');
 	}else{
 	    document.getElementById("prevGroup").setAttributeNS(null,'display', 'none');
-	}	
-	
-}
-
-function clearMapInfo(){
-	var mapInfo= document.getElementById("MapInfo");
-	var mapNameNode=document.getElementById("mapName");
-	if(mapNameNode!=null)
-		mapNameNode.parentNode.removeChild(mapNameNode);
-	var mapOwnerNode=document.getElementById("mapOwner");
-	if(mapOwnerNode!=null)
-		mapOwnerNode.parentNode.removeChild(mapOwnerNode);	
-	var mapUserLastNode=document.getElementById("mapUserLast");
-	if(mapUserLastNode!=null)
-		mapUserLastNode.parentNode.removeChild(mapUserLastNode);	
-	var mapCreateTimeNode=document.getElementById("mapCreateTime");
-	if(mapCreateTimeNode!=null)
-		mapCreateTimeNode.parentNode.removeChild(mapCreateTimeNode);		
-	var mapLastModTimeNode=document.getElementById("mapLastModTime");
-	if(mapLastModTimeNode!=null)
-		mapLastModTimeNode.parentNode.removeChild(mapLastModTimeNode);		
-}		
-
-function hideMapInfo(){
-	var mapInfoElem = document.getElementById("MapInfo");
-	if(mapInfoElem!=null)
-		mapInfoElem.setAttributeNS(null,'display', 'none');
-}
-
-//Assert loading..
-function assertLoading(){
-	var lt = document.getElementById("LoadingText");
-	if(loading==0){
-		lt.setAttributeNS(null,'display', 'none');
-		enableMenu();
-	}else{
-		lt.setAttributeNS(null,'display', 'inline');
-	}
-}
-
-//Assert Refreshing....
-
-function assertRefreshing(loading){
-	var lt = document.getElementById("RefreshingText");
-	if(loading==0){
-		lt.setAttributeNS(null,'display', 'none');
-		enableMenu();
-	}else{
-		lt.setAttributeNS(null,'display', 'inline');
-	}
-}
-
-function showHistory(){
+	}		
 	document.getElementById("history").setAttributeNS(null,'display', 'inline');
 }
 
@@ -785,8 +1170,6 @@ function displayCountDown(text, editTime){
 
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "dy","12");
-	tspan.setAttributeNS(null, "fill","white");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	var tspanContent = document.createTextNode(text);
 	tspan.appendChild(tspanContent);
 	textEl.appendChild(tspan);
@@ -833,6 +1216,7 @@ function addLegend() {
 	lgtext.setAttributeNS(null,"x", x);
 	lgtext.setAttributeNS(null,"y",y);
 	lgtext.setAttributeNS(null,"font-size",fontsize+1);
+	lgtext.setAttributeNS(null,"font-family",textFamily);
 	
 	var contentText = document.createTextNode("Severity View");
 
@@ -871,6 +1255,8 @@ function addLegend() {
 			var textel = document.createElementNS(svgNS,"text");
 			textel.setAttributeNS(null,"id", label+"Text");
 			textel.setAttributeNS(null,"font-size",fontsize);
+			textel.setAttributeNS(null,"font-family",textFamily);
+			
 			textel.setAttributeNS(null,"x", cx+ddx);
 			textel.setAttributeNS(null,"y",cy+ddy);
 			var labelText = document.createTextNode(label);
@@ -906,6 +1292,8 @@ function addLegend() {
 
 			var textel = document.createElementNS(svgNS,"text");
 			textel.setAttributeNS(null,"font-size",fontsize);
+			textel.setAttributeNS(null,"font-family",textFamily);
+
 			textel.setAttributeNS(null,"x", cx+ddx);
 			textel.setAttributeNS(null,"y",cy+ddy);
 			var labelText = document.createTextNode(STATUSES_TEXT[index]);
@@ -940,6 +1328,8 @@ function addLegend() {
 
 			var textel = document.createElementNS(svgNS,"text");
 			textel.setAttributeNS(null,"font-size",fontsize);
+			textel.setAttributeNS(null,"font-family",textFamily);
+
 			textel.setAttributeNS(null,"x", cx+ddx);
 			textel.setAttributeNS(null,"y",cy+ddy);
 			var labelText = document.createTextNode(SEVERITIES_LABEL[index]);
@@ -955,92 +1345,3 @@ function addLegend() {
 	legendSVG.appendChild(legendGroup);
 	
 }
-
-function refreshTimeMinsResult() {selectedRefreshTimeList="30 seconds"; }
-
-refreshTimeMinsResult.prototype.getSelectionListVal = function(selBoxName,dimNr,arrayVal) {
-	if(arrayVal) selectedRefreshTimeList=arrayVal;
-	else selectedRefreshTimeList="30 seconds";
-}
-
-function categoriesResult() { }
-
-categoriesResult.prototype.getSelectionListVal = function(selBoxName,nodeNr,arrayVal) {
-        selectedCategoryInList=arrayVal;
-}
-
-function nodesResult() { }
-
-nodesResult.prototype.getSelectionListVal = function(selBoxName,nodeNr,arrayVal) {
-	if(nodeNr!=0){
-			clearDownInfo();
-	        document.getElementById("DownInfo").appendChild(nodeSortAss[arrayVal].getInfo()); 
-	}
-	selectedMapElemInList=arrayVal;
-}
-
-function mapsResult() { }
-
-mapsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
-	if(mapNr!=0){
-		clearDownInfo();
-	    document.getElementById("DownInfo").appendChild(mapSortAss[arrayVal].getInfo()); 
-	}
-	selectedMapInList=arrayVal;
-}
-
-function BGImagesResult() { }
-
-BGImagesResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
-    if(mapNr!=0){
-            map.tryBackgroundImage(BGImagesSortAss[arrayVal]);
-    }
-    selectedBGImageInList=arrayVal;
-}
-
-function MapElemDimResult() { }
-
-MapElemDimResult.prototype.getSelectionListVal = function(selBoxName,dimNr,arrayVal) {
-	selectedMapElemDimInList=arrayVal;
-}
-
-function MEIconsResult() { }
-
-MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
-	
-	var iconPreviewNode = document.getElementById("iconPreview");
-	if (iconPreviewNode)
-       iconPreviewNode.parentNode.removeChild(iconPreviewNode);
-
-    if(mapNr!=0){
-        settingMapElemIcon=true;
-        selectedMEIconInList=arrayVal;
-
-        var iconPreviewGroup = document.createElementNS(svgNS,"g");
-        iconPreviewGroup.setAttributeNS(null,"id", "iconPreview");
-
-        var iconPreviewRect = document.createElementNS(svgNS,"rect");
-        iconPreviewRect.setAttributeNS(null,"x", 57);
-        iconPreviewRect.setAttributeNS(null,"y", 80);
-        iconPreviewRect.setAttributeNS(null,"width", 35);
-        iconPreviewRect.setAttributeNS(null,"height", 35);
-        iconPreviewRect.setAttributeNS(null,"fill", "white");
-        iconPreviewRect.setAttributeNS(null,"stroke", "grey");
-        iconPreviewRect.setAttributeNS(null,"stroke-width", 1);
-
-        var iconPreview = document.createElementNS(svgNS,"image");
-        iconPreview.setAttributeNS(null,"x", 65);
-        iconPreview.setAttributeNS(null,"y", 87);
-        iconPreview.setAttributeNS(null,"width", 20);
-        iconPreview.setAttributeNS(null,"height", 25);
-        iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal] );
-        iconPreviewGroup.appendChild(iconPreviewRect);
-        iconPreviewGroup.appendChild(iconPreview);
-        selMEIcons.selectionBoxGroup.appendChild(iconPreviewGroup);
-
-        writeDownInfo2("Click on an element to set","icon.");
-	} else {
-		settingMapElemIcon=false;
-    }
-}
-

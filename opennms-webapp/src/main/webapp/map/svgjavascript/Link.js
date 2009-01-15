@@ -155,14 +155,16 @@ Link.prototype.getInfo = function(evt)
 {
 	var text = document.createElementNS(svgNS,"text");
 	text.setAttributeNS(null, "x","3");
-	text.setAttributeNS(null, "y","20");
-	text.setAttributeNS(null, "id","TopInfoText");
-	text.appendChild(document.createTextNode("Link"));
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	text.setAttributeNS(null, "font-size",titleFontSize);
+	
+	var textLabel = document.createTextNode("Link info");
+	text.appendChild(textLabel);
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","30");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	var tspanContent = document.createTextNode(" links: " + this.mapElement1.label.text);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
@@ -170,14 +172,12 @@ Link.prototype.getInfo = function(evt)
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","10");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	tspanContent = document.createTextNode("    to: "+this.mapElement2.label.text);
 	tspan.appendChild(tspanContent);
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","10");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	tspanContent = document.createTextNode(" type: "+LINK_TEXT[this.typology]);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
@@ -185,7 +185,6 @@ Link.prototype.getInfo = function(evt)
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","10");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	tspanContent = document.createTextNode(" speed: "+LINK_SPEED[this.typology]);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	

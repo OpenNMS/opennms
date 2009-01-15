@@ -158,16 +158,15 @@ MapElement.prototype.getInfo = function()
 
 	var text = document.createElementNS(svgNS,"text");
 	text.setAttributeNS(null, "x","3");
-	text.setAttributeNS(null, "y","20");
-	text.setAttributeNS(null, "font-size",titleFontSize);
-	text.setAttributeNS(null, "id","TopInfoText");
-	text.appendChild(document.createTextNode("Map Element info"));
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	
+	var textLabel = document.createTextNode("Map Element info");
+	text.appendChild(textLabel);
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","20");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
-	tspan.setAttributeNS(null, "id","TopInfoLabelText");
 	
 	var tspanContent = document.createTextNode(this.label.text);
 	tspan.appendChild(tspanContent);
@@ -177,8 +176,6 @@ MapElement.prototype.getInfo = function()
 		tspan = document.createElementNS(svgNS,"tspan");
 		tspan.setAttributeNS(null, "x","3");
 		tspan.setAttributeNS(null, "dy","15");
-		tspan.setAttributeNS(null, "font-size",textFontSize);
-		tspan.setAttributeNS(null, "id","TopInfoLabelText");
 		tspanContent = document.createTextNode("Id: "+ this.getMapId() + "  (Map)");
 		tspan.appendChild(tspanContent);
 		text.appendChild(tspan);
@@ -188,7 +185,6 @@ MapElement.prototype.getInfo = function()
 		tspan = document.createElementNS(svgNS,"tspan");
 		tspan.setAttributeNS(null, "x","3");
 		tspan.setAttributeNS(null, "dy","15");
-		tspan.setAttributeNS(null, "font-size",textFontSize);
 		tspan.setAttributeNS(null, "id","TopInfoLabelText");
 		tspanContent = document.createTextNode("Id: "+ this.getNodeId() + "  (Node)");
 		tspan.appendChild(tspanContent);
@@ -198,7 +194,6 @@ MapElement.prototype.getInfo = function()
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	tspan.setAttributeNS(null, "fill",statusColor);
 	tspanContent = document.createTextNode("Status: " + status);
 	tspan.appendChild(tspanContent);
@@ -207,7 +202,6 @@ MapElement.prototype.getInfo = function()
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	tspan.setAttributeNS(null, "fill",availColor);
 	tspanContent = document.createTextNode("Availability: " + avail );
 	tspan.appendChild(tspanContent);
@@ -216,7 +210,6 @@ MapElement.prototype.getInfo = function()
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "font-size",textFontSize);
 	tspan.setAttributeNS(null, "fill",severityColor);
 	tspanContent = document.createTextNode("Severity: " + severityLabel );
 	tspan.appendChild(tspanContent);
