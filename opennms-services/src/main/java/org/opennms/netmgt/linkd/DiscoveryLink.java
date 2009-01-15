@@ -510,7 +510,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 						// 14). The less significant twelve bits is the Port
 						//Number expressed as an unsigned binary number. The
 						// value 0 is not used as a Port Number.
-						//NOTE�The number of bits that are considered to be
+						//NOTE -- The number of bits that are considered to be
 						// part of the Port Number (12 bits) differs from the
 						// 1998 and prior
 						//versions of this standard (formerly, the priority
