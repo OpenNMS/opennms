@@ -4,7 +4,7 @@
         xmlns:this="http://xmlns.opennms.org/xsd/javamail-configuration"
         elementFormDefault="qualified">
         
-  <element name="configurations" >
+  <element name="javamail-configuration" >
     <annotation>
       <documentation>
         Read and Send configuration list
