@@ -135,7 +135,7 @@ public class CoreImportActivities {
         
 
         for(final ImportOperation op : operations) {
-            LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle("nodeScan");
+            LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle("nodeImport");
             
             System.out.printf("Created  LifeCycle %s for op %s\n", nodeScan, op);
             nodeScan.setAttribute("operation", op);
@@ -146,7 +146,7 @@ public class CoreImportActivities {
     }
     
     
-    @Activity( lifecycle = "nodeScan", phase = "scan" )
+    @Activity( lifecycle = "nodeImport", phase = "scan" )
     public void scanNode(ImportOperation operation) {
         
         System.out.println("Running scan phase of "+operation);
@@ -154,7 +154,7 @@ public class CoreImportActivities {
         System.out.println("Finished Running scan phase of "+operation);
     }
     
-    @Activity( lifecycle = "nodeScan", phase = "persist" , schedulingHint = "write" )
+    @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "write" )
     public void persistNode(ImportOperation operation) {
 
         System.out.println("Running persist phase of "+operation);
