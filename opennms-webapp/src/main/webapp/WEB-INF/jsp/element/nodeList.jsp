@@ -66,7 +66,7 @@
 <script type="text/javascript" src="js/nodeGrid.js"></script>
 
 <div id="node-grid"></div>
-<!--<c:choose>
+<%--<c:choose>
   <c:when test="${command.listInterfaces}">
     <h3>Nodes and their interfaces</h3>
   </c:when>
@@ -93,7 +93,7 @@
         <element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
       </div>
 
-      <div class="spacer"></div>
+      <div class="spacer"><!-- --></div>
     </c:otherwise>
   </c:choose>
 </div>
@@ -184,6 +184,6 @@
     <a href="${thisURL}">Hide interfaces</a>
     </c:otherwise>
   </c:choose>
-</p>-->
+</p>--%>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
