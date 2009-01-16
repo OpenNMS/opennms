@@ -517,6 +517,15 @@ public class ProvisionerTest {
         assertEquals(1, m_provisioner.getScheduleLength());
         
     }
+    
+    @Test
+    @Transactional
+    public void testProvisionerRescanWorking() throws Exception{
+        importFromResource("classpath:/tec_dump.xml.smalltest");
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        assertEquals(10, m_provisioner.getScheduleLength());
+    }
 
     @Test
     @Transactional

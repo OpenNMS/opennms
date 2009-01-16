@@ -65,7 +65,7 @@
 <script type="text/javascript" src="extJS/ext-all.js"></script>
 <script type="text/javascript" src="js/nodeGrid.js"></script>
 
-<%--<div id="node-grid"></div> --%>
+<div id="node-grid"></div>
 <c:choose>
   <c:when test="${command.listInterfaces}">
     <h3>Nodes and their interfaces</h3>
