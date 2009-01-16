@@ -414,8 +414,8 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxContentsDescr=%parm[#5]% 
 			jnxOperatingState=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
 	<severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
 </event>
 <event>
 	<mask>
@@ -1518,8 +1518,8 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxContentsDescr=%parm[#5]% 
 			jnxOperatingTemp=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 	<severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-MIB -->
 <!-- Start of auto generated data from MIB: JUNIPER-LDP-MIB -->
