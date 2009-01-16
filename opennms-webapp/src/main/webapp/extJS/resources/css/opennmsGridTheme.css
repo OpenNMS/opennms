@@ -6,6 +6,15 @@
  * http://extjs.com/license
  */
 
+table {
+	margin-bottom: auto;	
+}
+
+/*Overriting style*/
+.x-grid3-header{
+	height:24px;	
+}
+
 .x-panel {
     border-style: solid;
     border-color: #d0d0d0;
@@ -16,7 +25,7 @@
     background-image:url(../images/onmsTheme/panel/green-top-bottom.gif);
 }
 .x-panel-header-text{
-	color:#000;	
+	color:#ffffff;	
 }
 
 .x-panel-body {

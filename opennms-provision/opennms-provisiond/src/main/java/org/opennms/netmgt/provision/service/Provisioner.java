@@ -37,10 +37,10 @@
 package org.opennms.netmgt.provision.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -74,7 +74,7 @@ public class Provisioner implements SpringServiceDaemon {
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
     private ScheduledExecutorService m_scheduledExecutor;
-    private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new HashMap<Integer, ScheduledFuture<?>>();
+    private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
     private volatile Resource m_importResource;
     private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
@@ -188,6 +188,7 @@ public class Provisioner implements SpringServiceDaemon {
         if(!scheduledFuture.isDone() && !scheduledFuture.isCancelled()) {
             scheduledFuture.cancel(true);
             scheduledFuture = scheduleNodeScan(schedule);
+            m_scheduledNodes.put(schedule.getNodeId(), scheduledFuture);
         }
     }
 

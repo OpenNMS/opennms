@@ -355,6 +355,7 @@ th a {
 th a:hover {
 	color: #CCC;
 }
+/*Conflicting style*/
 td {
 	border: 1px solid #999;
 	padding: 4px 5px;
