@@ -83,7 +83,7 @@
   				</constructor-arg>
   			</bean>
   			<bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
-  				<constructor-arg value="nodeScan" />
+  				<constructor-arg value="nodeImport" />
   				<constructor-arg>
   					<list>
 						<value>scan</value>
