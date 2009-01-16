@@ -1926,8 +1926,8 @@ extremeCpuUtilRisingThreshold&lt;/p&gt;&lt;table&gt;
 			extremeMasterMSMSlot=%parm[#2]% 
 			extremeMsmFailoverCause=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
 	<severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
 </event>
 <event>
 	<mask>

@@ -94,6 +94,7 @@ import org.opennms.netmgt.config.server.LocalServer;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
@@ -420,6 +421,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleSnmpConfig() throws Exception {
         unmarshalExample("snmp-config.xml", SnmpConfig.class);
+    }
+    @Test
+    public void testSnmpInterfacePollerConfiguration() throws Exception {
+        unmarshal("snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class);
     }
     @Test
     public void testStatsdConfiguration() throws Exception {
