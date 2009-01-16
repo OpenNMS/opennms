@@ -120,3 +120,10 @@ var winstatustextStyles = {"font-family":"Arial,Helvetica","font-size":textFontS
 var winbuttonStyles = {"fill":"none","stroke":"dimgray","stroke-width":1};
 var wintitlebarHeight = 17;
 var winstatusbarHeight = 13;
+
+var winwidth = 200;
+var winheight = 200;
+var winconstrXmin = 0;
+var winconstrYmin = 80;
+var winconstrXmax = 1024;
+var winconstrYmax = 700;
