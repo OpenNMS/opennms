@@ -6,11 +6,14 @@
  * http://extjs.com/license
  */
 
-table {
-	margin-bottom: auto;	
-}
-
 /*Overriting style*/
+table {
+	margin-bottom: auto;
+	width:auto;
+}
+/*Overriting style*/
+
+
 .x-grid3-header{
 	height:24px;	
 }
