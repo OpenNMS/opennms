@@ -5,8 +5,6 @@ function add_pick_color(noeud)
 resetPick();
 pick_prefixe=noeud;
 node=document.getElementById(noeud);
-node.setAttributeNS(null,"display","inline")
-
 };
 
 function resetPick(){
@@ -53,7 +51,6 @@ pick_appui=true}}
 
 function pick_bouger(evt)
 {
-//alert(evt.clientX);
 if (pick_appui==true)
 {
 var xcurs=evt.clientX-x_picker;if (xcurs<10) {xcurs=10};if (xcurs>140) {xcurs=140};
@@ -68,8 +65,6 @@ if (comp_vert<16) {pick_color=pick_color+"0"+comp_vert.toString(16)} else {pick_
 if (comp_bleu<16) {pick_color=pick_color+"0"+comp_bleu.toString(16)} else {pick_color=pick_color+comp_bleu.toString(16)};
 obj=document.getElementById("test");
 obj.setAttributeNS(null,"style","fill:"+pick_color);
-/*node=mapSvgDocument.getElementById("couleur");child=node.getFirstChild();
-child.setData(pick_color);*/
 
 }}
 
