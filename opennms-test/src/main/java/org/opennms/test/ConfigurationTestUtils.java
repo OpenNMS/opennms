@@ -58,11 +58,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 
+import junit.framework.Assert;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-
-import junit.framework.Assert;
 
 public class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
@@ -237,6 +237,14 @@ public class ConfigurationTestUtils extends Assert {
             rrdDir.mkdirs();
         }
         System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
+    }
+
+    public static void setRelativeImporterCacheDirectory(String relativeImporterCacheDirectory) {
+        File cacheDir = new File(getCurrentDirectory(), relativeImporterCacheDirectory);
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
+        System.setProperty("importer.cacheDir", cacheDir.getAbsolutePath());
     }
 
 }

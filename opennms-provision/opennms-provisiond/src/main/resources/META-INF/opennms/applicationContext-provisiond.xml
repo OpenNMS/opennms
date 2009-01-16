@@ -64,6 +64,10 @@
   	</property>
   </bean>
   
+  <bean id="foreignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
+  	<property name="repositoryPath" value="${importer.cacheDir}/foreign-sources" />
+  </bean>
+  
   <bean id="lifeCycleRepository" class="org.opennms.netmgt.provision.service.lifecycle.DefaultLifeCycleRepository">
   	<constructor-arg ref="taskCoordinator" />
   	<property name="lifeCycles">

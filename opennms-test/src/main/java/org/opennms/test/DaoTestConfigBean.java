@@ -51,9 +51,10 @@ import org.springframework.util.Assert;
  */
 public class DaoTestConfigBean implements InitializingBean {
     private String m_relativeHomeDirectory = null;
-    private String m_absoluteHomeDirectory = null; 
+    private final String m_absoluteHomeDirectory = null; 
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
+    private final String m_relativeImporterCacheDirectory = "target/test/opennms-home/share/importer-cache";
 
     public DaoTestConfigBean() {
     }
@@ -71,6 +72,7 @@ public class DaoTestConfigBean implements InitializingBean {
         
         ConfigurationTestUtils.setRrdBinary(m_rrdBinary);
         ConfigurationTestUtils.setRelativeRrdBaseDirectory(m_relativeRrdBaseDirectory);
+        ConfigurationTestUtils.setRelativeImporterCacheDirectory(m_relativeImporterCacheDirectory);
     }
 
     public String getRelativeHomeDirectory() {
@@ -97,3 +99,4 @@ public class DaoTestConfigBean implements InitializingBean {
         m_rrdBinary = rrdBinary;
     }
 }
+;

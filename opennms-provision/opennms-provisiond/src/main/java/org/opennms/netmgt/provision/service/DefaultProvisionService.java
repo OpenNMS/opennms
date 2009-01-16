@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
@@ -93,7 +94,7 @@ public class DefaultProvisionService implements ProvisionService {
     
         public void execute() {
             for (Iterator<OnmsSnmpInterface> it = getExistingInterfaces().iterator(); it.hasNext();) {
-                OnmsSnmpInterface iface = (OnmsSnmpInterface) it.next();
+                OnmsSnmpInterface iface = it.next();
                 OnmsSnmpInterface imported = getImportedVersion(iface);
     
                 if (imported == null) {
@@ -244,8 +245,9 @@ public class DefaultProvisionService implements ProvisionService {
         }
     
         private void update(OnmsIpInterface imported, OnmsIpInterface iface) {
-            if (!nullSafeEquals(iface.getIsManaged(), imported.getIsManaged()))
+            if (!nullSafeEquals(iface.getIsManaged(), imported.getIsManaged())) {
                 iface.setIsManaged(imported.getIsManaged());
+            }
             
             if (!nullSafeEquals(iface.getIsSnmpPrimary(), imported.getIsSnmpPrimary())) {
                 iface.setIsSnmpPrimary(imported.getIsSnmpPrimary());
@@ -256,11 +258,13 @@ public class DefaultProvisionService implements ProvisionService {
             	updateSnmpInterface(imported, iface);
             }
             
-           if (!nullSafeEquals(iface.getIpStatus(), imported.getIpStatus()))
-               iface.setIpStatus(imported.getIpStatus());
+           if (!nullSafeEquals(iface.getIpStatus(), imported.getIpStatus())) {
+            iface.setIpStatus(imported.getIpStatus());
+        }
            
-           if (!nullSafeEquals(iface.getIpHostName(), imported.getIpHostName()))
-        	   iface.setIpHostName(imported.getIpHostName());
+           if (!nullSafeEquals(iface.getIpHostName(), imported.getIpHostName())) {
+            iface.setIpHostName(imported.getIpHostName());
+        }
            
            updateServices(iface, imported);
         }
@@ -297,7 +301,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
     public static class ServiceUpdater {
         private final DefaultProvisionService m_provisionService;
-        private OnmsIpInterface m_iface;
+        private final OnmsIpInterface m_iface;
         private Map<OnmsServiceType, OnmsMonitoredService> m_svcTypToSvcMap;
     
         public ServiceUpdater(DefaultProvisionService provisionService, OnmsIpInterface iface, OnmsIpInterface imported) {
@@ -364,7 +368,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
     
         private OnmsMonitoredService getImportedVersion(OnmsMonitoredService svc) {
-            return (OnmsMonitoredService)m_svcTypToSvcMap.get(svc.getServiceType());
+            return m_svcTypToSvcMap.get(svc.getServiceType());
         }
     
         Set<OnmsMonitoredService> getExisting() {
@@ -385,8 +389,8 @@ public class DefaultProvisionService implements ProvisionService {
     
     private ForeignSourceRepository m_foreignSourceRepository;
     
-    private ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
-    private ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
+    private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
+    private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 
     /**
      * @param distPollerDao the distPollerDao to set
@@ -503,8 +507,9 @@ public class DefaultProvisionService implements ProvisionService {
     
         new InterfaceUpdater(this, db, node, snmpDataForInterfacesUpToDate).execute();
         
-    	if (!db.getCategories().equals(node.getCategories()))
+    	if (!db.getCategories().equals(node.getCategories())) {
             db.setCategories(node.getCategories());
+        }
     
         getNodeDao().update(db);
         
@@ -561,7 +566,7 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsCategory createCategoryIfNecessary(String name) {
         preloadExistingCategories();
         
-        OnmsCategory category = (OnmsCategory)m_categoryCache.get().get(name);
+        OnmsCategory category = m_categoryCache.get().get(name);
         if (category == null) {    
             category = loadCategory(name);
             m_categoryCache.get().put(category.getName(), category);
@@ -598,8 +603,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     private HashMap<String, OnmsServiceType> loadServiceTypeMap() {
         HashMap<String, OnmsServiceType> serviceTypeMap = new HashMap<String, OnmsServiceType>();
-        for (Iterator<OnmsServiceType> it = m_serviceTypeDao.findAll().iterator(); it.hasNext();) {
-            OnmsServiceType svcType = it.next();
+        for (OnmsServiceType svcType : m_serviceTypeDao.findAll()) {
             serviceTypeMap.put(svcType.getName(), svcType);
         }
         return serviceTypeMap;
@@ -626,8 +630,7 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional(readOnly=true)
     private HashMap<String, OnmsCategory> loadCategoryMap() {
         HashMap<String, OnmsCategory> categoryMap = new HashMap<String, OnmsCategory>();
-        for(Iterator<OnmsCategory> it = m_categoryDao.findAll().iterator(); it.hasNext();) {
-            OnmsCategory category = it.next();
+        for (OnmsCategory category : m_categoryDao.findAll()) {
             categoryMap.put(category.getName(), category);
         }
         return categoryMap;
@@ -650,8 +653,9 @@ public class DefaultProvisionService implements ProvisionService {
     
     private OnmsNode findNodebyNodeLabel(String label) {
         Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
-    	if (nodes.size() == 1)
-    		return nodes.iterator().next();
+    	if (nodes.size() == 1) {
+            return nodes.iterator().next();
+        }
     	
     	log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
     	return null;
@@ -664,11 +668,12 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional(readOnly=true)
     private OnmsNode findParent(String foreignSource, String parentForeignId, String parentNodeLabel) {
-        if (parentForeignId != null)
+        if (parentForeignId != null) {
             return findNodebyForeignId(foreignSource, parentForeignId);
-        else {
-            if (parentNodeLabel != null)
+        } else {
+            if (parentNodeLabel != null) {
                 return findNodebyNodeLabel(parentNodeLabel);
+            }
         }
     	
     	return null;
@@ -676,7 +681,9 @@ public class DefaultProvisionService implements ProvisionService {
     
     private void setPathDependency(OnmsNode node, OnmsNode parent) {
         
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         
         OnmsIpInterface critIface = null;
     	if (parent != null) {
@@ -690,7 +697,9 @@ public class DefaultProvisionService implements ProvisionService {
     
     private void setParent(OnmsNode node, OnmsNode parent) {
 
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
 
         log().info("Setting parent of node: "+node+" to: "+parent);
         node.setParent(parent);
@@ -721,8 +730,13 @@ public class DefaultProvisionService implements ProvisionService {
     private NodeScanSchedule createScheduleForNode(OnmsNode node) {
         Assert.notNull(node, "Node may not be null");
         long now = System.currentTimeMillis();
-        
-        OnmsForeignSource fs = m_foreignSourceRepository.get(node.getForeignSource());
+
+        OnmsForeignSource fs = null;
+        try {
+            fs = m_foreignSourceRepository.get(node.getForeignSource());
+        } catch (ForeignSourceRepositoryException e) {
+            log().warn("unable to get foreign source repository", e);
+        }
 
         long scanInterval = fs == null ? 86400000 : fs.getScanInterval();
         

@@ -47,6 +47,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * A PluginConfig represents a portion of a configuration that defines a reference
  * to a Java class "plugin" along with a set of parameters used to configure the
@@ -170,4 +174,36 @@ public class PluginConfig {
     public void addParameter(String key, String value) {
         m_parameters.put(key, value);
     }
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("name", getName())
+            .append("plugin-class", getPluginClass())
+            .append("parameters", getParameters())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PluginConfig) {
+            PluginConfig other = (PluginConfig) obj;
+            return new EqualsBuilder()
+                .append(getName(), other.getName())
+                .append(getPluginClass(), other.getPluginClass())
+                .append(getParameters(), other.getParameters())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+            .append(getName())
+            .append(getPluginClass())
+            .append(getParameters())
+            .toHashCode();
+      }
+
 }
