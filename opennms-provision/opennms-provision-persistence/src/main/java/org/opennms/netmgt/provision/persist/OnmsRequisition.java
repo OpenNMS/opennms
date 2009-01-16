@@ -36,6 +36,9 @@
 //
 package org.opennms.netmgt.provision.persist;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
@@ -51,6 +54,10 @@ public class OnmsRequisition {
 
     public void loadResource(Resource resource) {
         m_mi = CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, resource);
+    }
+
+    public void saveResource(Resource resource) {
+        CastorUtils.marshalWithTranslatedExceptionsViaString(m_mi, resource);
     }
 
     public void visitImport(ImportVisitor visitor) {
@@ -129,5 +136,31 @@ public class OnmsRequisition {
     public void setForeignSource(String foreignSource) {
         m_mi.setForeignSource(foreignSource);
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("foreign-source", getForeignSource())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OnmsRequisition) {
+            OnmsRequisition other = (OnmsRequisition) obj;
+            return new EqualsBuilder()
+                .append(getForeignSource(), other.getForeignSource())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+            .append(getForeignSource())
+            .append(m_mi)
+            .toHashCode();
+      }
 
 }
