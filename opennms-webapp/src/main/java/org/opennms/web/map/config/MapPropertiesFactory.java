@@ -111,6 +111,8 @@ public class MapPropertiesFactory extends Object {
 	
 	protected  String defaultMapIcon = null;
 	
+    protected  int defaultMapElementDimension = 25;
+
 	public static final  String MULTILINK_BEST_STATUS ="best"; 
 	
 	public static final  String MULTILINK_WORST_STATUS ="worst";
@@ -725,6 +727,12 @@ public class MapPropertiesFactory extends Object {
 		}
 		log.debug("default node icon: "+defaultNodeIcon);
 		
+		String defaultMapElementDimensionString = props.getProperty("icon.default.mapelementdimension");
+        if (defaultMapElementDimensionString != null) {
+            defaultMapElementDimension = WebSecurityUtils.safeParseInt(defaultMapElementDimensionString);
+        }
+        log.debug("default map element dimension: "+defaultMapElementDimension);
+
 		// look up background filenames
 		String[] bg = BundleLists
 				.parseBundleList(props.getProperty("bgimages"));
@@ -938,14 +946,15 @@ public class MapPropertiesFactory extends Object {
     	dims.put("10","very small");
     	dims.put("15","small");
     	dims.put("20","normal");
-    	dims.put("25","big");
-    	dims.put("30","biggest");
+    	dims.put("25","firefox");
+    	dims.put("30","bigger");
+        dims.put("35","biggest");
     	
     	return dims;
     }
     
     public int getDefaultMapElementDimension() {
-    	return 25;
+    	return defaultMapElementDimension;
     }
     
 

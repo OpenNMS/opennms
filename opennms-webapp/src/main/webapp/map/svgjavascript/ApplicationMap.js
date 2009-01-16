@@ -291,14 +291,14 @@ function handleAddElementResponse(data) {
 		map.addLink(id1,id2,typo,color,width,da,flash);
 	}	
 	
-	writeDownInfo(msg);
-
 	map.render();
 	reloadGrid();
 	
 	loading--;
 	assertLoading();
-
+	
+	showMapInfo();
+	writeDownInfo(msg);
 	enableMenu();
 		
 }
@@ -422,16 +422,18 @@ function handleLoadingNewMap(data) {
 
 			
 	//save the map in the map history
-	savedMapString=getMapString();
-	saveMapInHistory();
-	viewMapInfo();
-	showHistory();				
-
 	map.render();
 	reloadGrid();
 	
 	loading--;
 	assertLoading();
+
+	savedMapString=getMapString();
+	saveMapInHistory();
+	
+	writeMapInfo();
+	showHistory();				
+
 
 	enableMenu();
 }
@@ -467,35 +469,14 @@ function handleLoadingCloseMap(data) {
 			return;
 	}
 
-	var nodeST = str.split("+");
-	currentMapId=nodeST[0];
-	if(nodeST[1] !="null")
-		currentMapBackGround=nodeST[1];
-	else currentMapBackGround=DEFAULT_BG_COLOR;
-
-	if(nodeST[2] !="null")
-	currentMapAccess=nodeST[2];
-			else currentMapAccess="";
-
-	if(nodeST[3] !="null")
-		currentMapName=nodeST[3];
-	else currentMapName="";
-
-	if(nodeST[4] !="null")
-		currentMapOwner=nodeST[4];
-	else currentMapOwner="";
-
-	if(nodeST[5] !="null")
-		currentMapUserlast=nodeST[5];
-	else currentMapUserlast="";
-
-	if(nodeST[6] !="null")
-		currentMapCreatetime=nodeST[6];
-	else currentMapCreatetime="";
-
-	if(nodeST[7] !="null")
-		currentMapLastmodtime=nodeST[7];
-	else currentMapLastmodtime="";
+	currentMapId=MAP_NOT_OPENED;
+	currentMapBackGround=DEFAULT_BG_COLOR;
+	currentMapAccess="";
+	currentMapName=""; 
+	currentMapOwner=""; 
+	currentMapUserlast="";
+	currentMapCreatetime="";
+	currentMapLastmodtime="";
 
 	savedMapString=getMapString();
 	mapHistory=new Array();
@@ -507,6 +488,9 @@ function handleLoadingCloseMap(data) {
 	
 	loading--;
 	assertLoading();
+	
+	clearMapInfo();
+	hideMapInfo();
 
 	enableMenu();
 }
@@ -613,7 +597,7 @@ function handleLoadingMap(data) {
 	loading--;
 	assertLoading();
 
-	viewMapInfo();
+	writeMapInfo();
 	showHistory();				
 
 	if (!countdownStarted && !isAdminMode) {	
@@ -745,7 +729,7 @@ function handleSaveResponse(data) {
 	savedMapString = getMapString();			
 	saveMapInHistory();
 	
-	viewMapInfo();
+	writeMapInfo();
 	showHistory();
 	writeDownInfo("Map '" +currentMapName+"' saved.");
 
@@ -792,6 +776,8 @@ function handleDeleteResponse(data) {
 	mapHistoryName.splice(mapHistoryIndex,1);
 
 	writeDownInfo("Map deleted.");
+	clearMapInfo();
+	hideMapInfo();
 	showHistory();
 	
 	enableMenu();
@@ -860,13 +846,16 @@ function handleSwitchRole(data) {
 
 	if (failed) {
 	    alert('Failed to switch the role');
+	    return;
 	}
 
 	isAdminMode = !isAdminMode;
 	map.render();
-	enableMenu();
-
+	enableMenu();	
+	
 	if (isAdminMode) {
+		showMapInfo();
+		showHistory();
 		removeLegend();
 		for (mapElemId in map.mapElements) {
 			map.mapElements[mapElemId].setSemaphoreColor(getSemaphoreColorForNode(0,0,0));
@@ -879,7 +868,6 @@ function handleSwitchRole(data) {
 		}
 	}
 	
-
 }
 
 function refreshNodes(){

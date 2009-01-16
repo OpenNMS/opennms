@@ -192,6 +192,8 @@ function newMapSetUp() {
 	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
+	resetFlags();
 	disableMenu();
 	newMap();
 }
@@ -200,10 +202,9 @@ function newMapSetUp() {
 function addMapsList()
 {
 	closeAllMenu();
-	hideMapInfo();
-	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
 	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
 	selMaps.sortList("asc");
@@ -247,10 +248,10 @@ function closeSetUp() {
 	
 	if (verifyMapString()) return;
 	
-	hideMapInfo();
-	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
+	resetFlags();
 	disableMenu();
 	close();
 }
@@ -261,6 +262,7 @@ function addRenameMapBox(){
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
+		hidePickColor();
 		resetFlags();
 
 		//first a few styling parameters:
@@ -276,7 +278,7 @@ function renameMap(){
 	clearTopInfo();
 	if(newMapName != null && trimAll(newMapName)!=""){
 		currentMapName=newMapName;
-		viewMapInfo();
+		writeMapInfo();
 		writeDownInfo("Map renamed.");
 	} else {
 		writeDownInfo("Name not valid.");
@@ -286,10 +288,10 @@ function renameMap(){
 // Delete Map
 function deleteMapSetUp() {	
 	closeAllMenu();
-	hideMapInfo();
-	hideHistory();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
+	resetFlags();
 	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
 	    if(confirm('Are you sure to delete the map?')==true){ 
 	 		disableMenu();
@@ -307,10 +309,10 @@ function deleteMapSetUp() {
 function saveMapSetUp() {	
 	closeAllMenu();
 	if(currentMapId!=MAP_NOT_OPENED){
-		hideHistory();
 		clearTopInfo();
 		disableMenu();
 		writeDownInfo("Saving map '" +currentMapName+"'");
+		resetFlags();
 		saveMap();
 	}else{
 		alert("No maps opened");
@@ -321,9 +323,10 @@ function saveMapSetUp() {
 // Save Map
 function clearMapSetUp() {	
 	closeAllMenu();
+	hidePickColor();
+	resetFlags();
 	if(currentMapId!=MAP_NOT_OPENED) {
 	    if(confirm('Are you sure to clear the map (remove all its elements and links)?')==true) {
-			hideHistory();
 			clearTopInfo();
 			disableMenu();
 			writeDownInfo("Clearing map '" +currentMapName+"'");
@@ -339,6 +342,8 @@ function switchRoleSetUp(){
 	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
+	resetFlags();
 	disableMenu();
 	switchRole();
 }
@@ -348,8 +353,9 @@ function addBgColorBox(){
 	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();
+	resetFlags();
 	if(currentMapId!=MAP_NOT_OPENED){
-		add_pick_color("pickColor");
+		showPickColor();
 	}else{
 		alert('No maps opened');
     }
@@ -365,6 +371,7 @@ function addBGImagesList()
 	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
 
 	selBGImages = new selectionList("bgimages","bgimages",BGImages,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myBGImagesResult);	
@@ -390,9 +397,9 @@ function setBGImageSetUp() {
 
 function setBGImage(){
 	if(selectedBGImageInList!=0){ 
-		clearTopInfo();
 		currentMapBackGround = BGImagesSortAss[selectedBGImageInList];
 		map.setBackgroundImage(currentMapBackGround);
+		clearTopInfo();
 		writeDownInfo("Background image set");
 	}
 }
@@ -404,6 +411,8 @@ function loadMapsSetUp() {
 	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
+	resetFlags();
 	loadMaps();
 	showMapInfo();
 	showHistory();
@@ -414,6 +423,8 @@ function loadNodesSetUp() {
 	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
+	resetFlags();
 	loadNodes();
 	showMapInfo();
 	showHistory();
@@ -422,6 +433,10 @@ function loadNodesSetUp() {
 // Refresh Map
 function refreshNodesSetUp() {	
 	closeAllMenu();
+	if(currentMapId==MAP_NOT_OPENED){
+		alert('No maps opened');
+		return;
+	}		
 	clearTopInfo();
 	clearDownInfo();
 	resetFlags();
@@ -442,6 +457,7 @@ function addMapElementList()
 	}
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
 
 	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
@@ -478,6 +494,7 @@ function addCategoryList()
 	}
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
 	selCategories = new selectionList("categories","categories",categories,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mycategoriesResult);
 	selCategories.sortList("asc");
@@ -506,6 +523,7 @@ function addNodeLabelBox(){
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
+		hidePickColor();
 		resetFlags();
 
 		textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[^]",undefined);
@@ -535,6 +553,7 @@ function addRangeBox(){
 	if(currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
+		hidePickColor();
 		resetFlags();
 
 		textbox1 = new textbox("textbox1","textboxwithcommand","*.*.*.*",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[^a-zA-Z ]",undefined);
@@ -571,9 +590,10 @@ function addMapElementNeigh()
 		return;
 	}	
 
-	addingMapElemNeighbors=true;
 	clearTopInfo();
+	hidePickColor();
 	resetFlags();
+	addingMapElemNeighbors=true;
 	writeDownInfo("click element to add neighb");
 }
 
@@ -596,6 +616,7 @@ function addMapElementNeighList()
 	
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
 	
 	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
@@ -623,6 +644,7 @@ function addMapAsNodeList(){
 
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
 
 	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
@@ -662,6 +684,7 @@ function addIconList()
 	}
 	clearTopInfo();
 	clearDownInfo();
+	hidePickColor();
 	resetFlags();
     settingMapElemIcon=true;
 
@@ -704,7 +727,7 @@ MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal
         iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal] );
         iconPreviewGroup.appendChild(iconPreviewRect);
         iconPreviewGroup.appendChild(iconPreview);
-        selMEIcons.selectionBoxGroup.appendChild(iconPreviewGroup);
+        selMEIcons.parentGroup.appendChild(iconPreviewGroup);
 
         writeDownInfo2("Click on an element to set","icon.");
 	} else {
@@ -727,10 +750,11 @@ function deleteMapElementList()
 		return;
 	}	
 
-	deletingMapElem=true;
 
 	clearTopInfo();
+	hidePickColor();
 	resetFlags();
+	deletingMapElem=true;
 	writeDownInfo("Select the element to delete");
 }
 
@@ -1009,7 +1033,7 @@ function showMapInfo(){
 		mapInfo.setAttributeNS(null,'display', 'inline');
 }
 
-function viewMapInfo(){
+function writeMapInfo(){
 	clearMapInfo();
 	var mapInfo= document.getElementById("MapInfo");
 	
@@ -1344,4 +1368,13 @@ function addLegend() {
 	legendGroup.appendChild(lgtext);
 	legendSVG.appendChild(legendGroup);
 	
+}
+
+function hidePickColor() {
+	document.getElementById("pickColor").setAttributeNS(null,'display', 'none');
+}
+
+function showPickColor() {
+	add_pick_color("pickColor");
+	document.getElementById("pickColor").setAttributeNS(null,'display', 'inline');
 }
