@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
+        xmlns:this="http://xmlns.opennms.org/xsd/config/ackd-configuration"
+        elementFormDefault="qualified">
+        
+  <element name="ackd-configuration" >
+    <annotation>
+      <documentation>
+        Behavior configuration for the Acknowledgment Daemon
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="alarm-sync" type="boolean" use="optional" default="true" />
+      <attribute name="ack-expression" type="string" use="optional" default="~^ack$" />
+      <attribute name="unack-expression" type="string" use="optional" default="~^ack$" />
+      <attribute name="escalate-expression" type="string" use="optional" default="~^ack$" />
+      <attribute name="clear-expression" type="string" use="optional" default="~^(resolve|clear)$" />
+      <attribute name="notifyid-match-expression" type="string" use="optional" default="~.*noticeid:([0-9]+).*" />
+    </complexType>
+  </element>
+</schema>

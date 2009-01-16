@@ -10,6 +10,10 @@ public class Acknowledgment {
     private Event m_event;
     private Date m_ackTime;
     private String m_ackUser;
+    
+    public Acknowledgment() {
+        
+    }
 
     public Acknowledgment(Event e) {
         m_event = e;
