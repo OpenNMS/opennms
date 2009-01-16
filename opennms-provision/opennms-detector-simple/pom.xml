@@ -56,11 +56,6 @@
   	</dependency>
   	<dependency>
   		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-lineoriented-detectors</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
   		<artifactId>opennms-mock-simpleserver</artifactId>
   		<version>${project.version}</version>
   		<scope>test</scope>
@@ -73,6 +68,11 @@
   		<groupId>org.opennms</groupId>
   		<artifactId>opennms-spring-test</artifactId>
   		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-detector-lineoriented</artifactId>
+  		<version>${project.version}</version>
   	</dependency>
   </dependencies>
   
