@@ -35,9 +35,10 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.util.Assert;
 
@@ -55,8 +56,8 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         return m_foreignSources.get(foreignSourceName);
     }
 
-    public Collection<OnmsForeignSource> getAll() {
-        return m_foreignSources.values();
+    public Set<OnmsForeignSource> getAll() {
+        return new TreeSet<OnmsForeignSource>(m_foreignSources.values());
     }
     
     public OnmsRequisition getRequisition(String foreignSourceName) {

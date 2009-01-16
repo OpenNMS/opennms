@@ -35,7 +35,8 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.util.Collections;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -45,13 +46,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
 @XmlRootElement(name="foreign-source")
-public class OnmsForeignSource {
+public class OnmsForeignSource implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     @XmlAttribute(name="name")
     private String m_name;
     
@@ -61,11 +68,11 @@ public class OnmsForeignSource {
 
     @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")
-    private List<PluginConfig> m_detectors = Collections.emptyList();
+    private List<PluginConfig> m_detectors = new ArrayList<PluginConfig>();
     
     @XmlElementWrapper(name="policies")
     @XmlElement(name="policy")
-    private List<PluginConfig> m_policies = Collections.emptyList();
+    private List<PluginConfig> m_policies = new ArrayList<PluginConfig>();
 
     public OnmsForeignSource() {
     }
@@ -123,11 +130,45 @@ public class OnmsForeignSource {
         m_policies = policies;
     }
     
-    public String toString() {
-        if (m_name != null) {
-            return m_name;
-        } else {
-            return super.toString();
-        }
+    public void addDetector(PluginConfig detector) {
+        m_detectors.add(detector);
     }
+
+    public void addPolicy(PluginConfig policy) {
+        m_policies.add(policy);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("name", getName())
+            .append("scan-interval", getScanInterval())
+            .append("detectors", getDetectors())
+            .append("policies", getPolicies())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OnmsForeignSource) {
+            OnmsForeignSource other = (OnmsForeignSource) obj;
+            return new EqualsBuilder()
+                .append(getName(), other.getName())
+                .append(getScanInterval(), other.getScanInterval())
+                .append(getDetectors(), other.getDetectors())
+                .append(getPolicies(), other.getPolicies())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+            .append(getName())
+            .append(getScanInterval())
+            .append(getDetectors())
+            .append(getPolicies())
+            .toHashCode();
+      }
 }
