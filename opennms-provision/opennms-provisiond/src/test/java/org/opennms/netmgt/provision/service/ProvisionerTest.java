@@ -49,6 +49,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.EventConstants;
@@ -82,6 +83,7 @@ import org.opennms.netmgt.provision.persist.ImportVisitor;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.opennms.netmgt.provision.service.Provisioner.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,9 +154,12 @@ public class ProvisionerTest {
     @Autowired
     private ProvisionService m_provisionService;
     
+    @Autowired
+    private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
+    
     private EventAnticipator m_eventAnticipator;
 
-   private ForeignSourceRepository m_foreignSourceRepository;
+    private ForeignSourceRepository m_foreignSourceRepository;
     
     private OnmsForeignSource m_foreignSource;
     
@@ -288,6 +293,65 @@ public class ProvisionerTest {
         assertEquals(2, getSnmpInterfaceDao().countAll());
         
     }
+
+    @Test
+    @Transactional
+    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
+    public void testPopulateWithSnmpAndNodeScan() throws Exception {
+        
+        m_pausibleExecutor.pause();
+        
+        importFromResource("classpath:/tec_dump.xml");
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(4, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(2, getSnmpInterfaceDao().countAll());
+        
+        
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        NodeScan scan = m_provisioner.createNodeScan(node.getId());
+        
+        scan.run();
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(4, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(2, getSnmpInterfaceDao().countAll());
+
+        
+    }
+
+    
+    
     
     @Test
     @Transactional
@@ -310,6 +374,9 @@ public class ProvisionerTest {
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
     }
+    
+    
+    
     
     private DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
