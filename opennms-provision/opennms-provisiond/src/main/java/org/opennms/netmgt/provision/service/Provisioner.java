@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -125,27 +126,80 @@ public class Provisioner implements SpringServiceDaemon {
         }
         
     }
+    
+    public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
+    }
+    
+    public static class NodeScan implements Runnable {
+        private int m_nodeId;
+        private LifeCycleRepository m_lifeCycleRepository;
+        private List<Object> m_providers;
+
+        public NodeScan(int nodeId, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+            m_nodeId = nodeId;
+            m_lifeCycleRepository = lifeCycleRepository;
+            m_providers = providers;
+        }
+        
+        private void doNodeScan() throws InterruptedException, ExecutionException {
+            LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_providers.toArray());
+            doNodeScan.setAttribute("nodeId", Integer.valueOf(m_nodeId));
+            
+            doNodeScan.trigger();
+            
+            doNodeScan.waitFor();
+        }
+        
+        public void run() {
+            try {
+                doNodeScan();
+                System.err.println("Finished Scanning Node "+m_nodeId);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        
+    }
+    
+    public NodeScan createNodeScan(int nodeId) {
+        return new NodeScan(nodeId, m_lifeCycleRepository, m_providers);
+    }
 
     protected Runnable nodeScanner(final NodeScanSchedule schedule) {
-        return new Runnable() {
-            public void run() {
-                System.out.println(String.format("Gotta write the node scan code for node %s", schedule.getNodeId()));
-            }
-        };
+        return createNodeScan(schedule.getNodeId());
     }
     
+
     //Helper functions for the schedule
     protected void addToScheduleQueue(NodeScanSchedule schedule) {
-        m_scheduledNodes.put(schedule.getNodeId(), m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS));
+        ScheduledFuture<?> future = scheduleNodeScan(schedule);
+        m_scheduledNodes.put(schedule.getNodeId(), future);
     }
     
+
     protected void updateNodeScheduleInQueue(NodeScanSchedule schedule) {
-        ScheduledFuture<?> scheduledFuture = m_scheduledNodes.get(schedule.getNodeId());
+        ScheduledFuture<?> scheduledFuture = getScheduledFutureForNode(schedule.getNodeId());
         
         if(!scheduledFuture.isDone() && !scheduledFuture.isCancelled()) {
             scheduledFuture.cancel(true);
-            scheduledFuture = m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
+            scheduledFuture = scheduleNodeScan(schedule);
         }
+    }
+
+    private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
+        ScheduledFuture<?> future = m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
+        System.err.println(String.format("SCHEDULE: Created schedule for node %d : %s", schedule.getNodeId(), future));
+        return future;
+    }
+
+    public ScheduledFuture<?> getScheduledFutureForNode(int nodeId) {
+        ScheduledFuture<?> scheduledFuture = m_scheduledNodes.get(nodeId);
+        return scheduledFuture;
     }
     
     protected void removeNodeFromScheduleQueue(Integer nodeId) {
@@ -204,8 +258,6 @@ public class Provisioner implements SpringServiceDaemon {
 
     private void doImport(Resource resource, final ProvisionMonitor monitor,
             ImportManager importManager, final String foreignSource) throws Exception {
-        
-        importManager.getClass();
         
         LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_providers.toArray());
         doImport.setAttribute("resource", resource);

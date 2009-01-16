@@ -724,7 +724,7 @@ public class DefaultProvisionService implements ProvisionService {
         
         OnmsForeignSource fs = m_foreignSourceRepository.get(node.getForeignSource());
 
-        long scanInterval = fs == null ? 1000 : fs.getScanInterval();
+        long scanInterval = fs == null ? 86400000 : fs.getScanInterval();
         
         long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
         long nextPoll = lastPoll + scanInterval;
