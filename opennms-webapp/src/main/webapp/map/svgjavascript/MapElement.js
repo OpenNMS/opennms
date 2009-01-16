@@ -106,6 +106,14 @@ MapElement.prototype.getType = function(){
 	
 }
 
+MapElement.prototype.getX = function(){
+	return parseInt(this.x,10);
+}
+
+MapElement.prototype.getY = function(){
+	return parseInt(this.y,10);
+}
+
 MapElement.prototype.setSemaphoreColor = function(semaphoreColor){
 	this.semaphore.svgNode.setAttributeNS(null,"fill", semaphoreColor);
 }
