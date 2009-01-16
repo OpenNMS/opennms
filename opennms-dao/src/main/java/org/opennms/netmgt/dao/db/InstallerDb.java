@@ -47,11 +47,11 @@
 package org.opennms.netmgt.dao.db;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -98,9 +98,9 @@ public class InstallerDb {
     	
     }; 
     
-    private IndexDao m_indexDao = new IndexDao();
+    private final IndexDao m_indexDao = new IndexDao();
 
-    private TriggerDao m_triggerDao = new TriggerDao();
+    private final TriggerDao m_triggerDao = new TriggerDao();
 
     private DataSource m_dataSource = null;
     
@@ -120,7 +120,7 @@ public class InstallerDb {
     
     private String m_pg_iplike = null;
     
-    private Map<String, ColumnChangeReplacement> m_columnReplacements =
+    private final Map<String, ColumnChangeReplacement> m_columnReplacements =
         new HashMap<String, ColumnChangeReplacement>();
 
     private String m_sql;
@@ -134,11 +134,11 @@ public class InstallerDb {
     // private LinkedList m_functions = new LinkedList(); // Unused, not in create.sql
     // private LinkedList m_languages = new LinkedList(); // Unused, not in create.sql
 
-    private HashMap<String, List<Insert>> m_inserts = new HashMap<String, List<Insert>>();
+    private final HashMap<String, List<Insert>> m_inserts = new HashMap<String, List<Insert>>();
 
-    private HashSet<String> m_drops = new HashSet<String>();
+    private final HashSet<String> m_drops = new HashSet<String>();
 
-    private HashSet<String> m_changed = new HashSet<String>();
+    private final HashSet<String> m_changed = new HashSet<String>();
     
     private Map<String, Integer> m_dbtypes = null;
     
@@ -563,14 +563,14 @@ public class InstallerDb {
 
         File[] list = new File(m_storedProcedureDirectory).listFiles(sqlFilter);
 
-        for (int i = 0; i < list.length; i++) {
+        for (File element : list) {
             LinkedList<String> drop = new LinkedList<String>();
             StringBuffer create = new StringBuffer();
             String line;
 
-            m_out.print("\n  - " + list[i].getName() + "... ");
+            m_out.print("\n  - " + element.getName() + "... ");
 
-            BufferedReader r = new BufferedReader(new FileReader(list[i]));
+            BufferedReader r = new BufferedReader(new FileReader(element));
             while ((line = r.readLine()) != null) {
                 line = line.trim();
 
@@ -606,7 +606,7 @@ public class InstallerDb {
 
             if (!m.find()) {
                 throw new Exception("For stored procedure in file '"
-                                    + list[i].getName()
+                                    + element.getName()
                                     + "' couldn't match \""
                                     + m.pattern().pattern()
                                     + "\" in string \"" + create + "\"");
@@ -669,8 +669,8 @@ public class InstallerDb {
         ResultSet rs;
 
         StringBuffer ct = new StringBuffer();
-        for (int j = 0; j < columnTypes.length; j++) {
-            ct.append(" " + columnTypes[j]);
+        for (int columnType : columnTypes) {
+            ct.append(" " + columnType);
         }
 
         String query = "SELECT oid FROM pg_proc WHERE proname='"
@@ -1232,8 +1232,8 @@ public class InstallerDb {
             oldColumnNames[i] = oldColumn.getName();
 
             if (columnChanges.containsKey(oldColumn.getName())) {
-                ColumnChange columnChange = (ColumnChange) columnChanges.get(oldColumn.getName());
-                Column newColumn = (Column) columnChange.getColumn();
+                ColumnChange columnChange = columnChanges.get(oldColumn.getName());
+                Column newColumn = columnChange.getColumn();
                 if (newColumn.getType().indexOf("timestamp") != -1) {
                     columnChange.setUpgradeTimestamp(true);
                 }
@@ -2357,88 +2357,65 @@ public class InstallerDb {
     
     public void addColumnReplacements() throws SQLException {
         /*
-         * The DEFAULT value for these columns will take care of these
-         * primary keys
+         * The DEFAULT value for these columns will take care of these primary keys
          */
-        addColumnReplacement("snmpinterface.id",
-                                           new DoNotAddColumn());
-        addColumnReplacement("ipinterface.id",
-                                           new DoNotAddColumn());
-        addColumnReplacement("ifservices.id",
-                                           new DoNotAddColumn());
+        addColumnReplacement("snmpinterface.id", new DoNotAddColumn());
+        addColumnReplacement("ipinterface.id", new DoNotAddColumn());
+        addColumnReplacement("ifservices.id", new DoNotAddColumn());
         addColumnReplacement("assets.id", new DoNotAddColumn());
 
         addColumnReplacement("atinterface.id", new DoNotAddColumn());
 
         // Triggers will take care of these surrogate foreign keys
-        addColumnReplacement("ipinterface.snmpinterfaceid",
-                                           new DoNotAddColumn());
-        addColumnReplacement("ifservices.ipinterfaceid",
-                                           new DoNotAddColumn());
-        addColumnReplacement("outages.ifserviceid",
-                                           new DoNotAddColumn());
+        addColumnReplacement("ipinterface.snmpinterfaceid", new DoNotAddColumn());
+        addColumnReplacement("ifservices.ipinterfaceid", new DoNotAddColumn());
+        addColumnReplacement("outages.ifserviceid", new DoNotAddColumn());
         
-        addColumnReplacement("events.eventsource",
-                                           new EventSourceReplacement());
+        addColumnReplacement("events.eventsource", new EventSourceReplacement());
         
-        addColumnReplacement("outages.outageid",
-                                           new AutoInteger(1));
+        addColumnReplacement("outages.outageid", new AutoInteger(1));
         
-        addColumnReplacement("snmpinterface.nodeid",
-                                           new RowHasBogusData("snmpInterface",
-                                                               "nodeId"));
+        addColumnReplacement("snmpinterface.nodeid", new RowHasBogusData("snmpInterface", "nodeId"));
         
-        addColumnReplacement("snmpinterface.snmpifindex",
-                                           new RowHasBogusData("snmpInterface",
-                                                               "snmpIfIndex"));
+        addColumnReplacement("snmpinterface.snmpifindex", new RowHasBogusData("snmpInterface", "snmpIfIndex"));
 
-        addColumnReplacement("ipinterface.nodeid",
-                                 new RowHasBogusData("ipInterface", "nodeId"));
+        addColumnReplacement("ipinterface.nodeid", new RowHasBogusData("ipInterface", "nodeId"));
 
-        addColumnReplacement("ipinterface.ipaddr",
-                                 new RowHasBogusData("ipInterface", "ipAddr"));
+        addColumnReplacement("ipinterface.ipaddr", new RowHasBogusData("ipInterface", "ipAddr"));
 
-        addColumnReplacement("ifservices.nodeid",
-                                 new RowHasBogusData("ifservices", "nodeId"));
+        addColumnReplacement("ifservices.nodeid", new RowHasBogusData("ifservices", "nodeId"));
 
-        addColumnReplacement("ifservices.ipaddr",
-                                 new RowHasBogusData("ifservices", "ipaddr"));
+        addColumnReplacement("ifservices.ipaddr", new RowHasBogusData("ifservices", "ipaddr"));
 
-        addColumnReplacement("ifservices.serviceid",
-                                 new RowHasBogusData("ifservices",
-                                                     "serviceId"));
+        addColumnReplacement("ifservices.serviceid", new RowHasBogusData("ifservices", "serviceId"));
 
-        addColumnReplacement("outages.nodeid",
-                                 new RowHasBogusData("outages", "nodeId"));
+        addColumnReplacement("outages.nodeid", new RowHasBogusData("outages", "nodeId"));
         
-        addColumnReplacement("outages.serviceid",
-                                 new RowHasBogusData("outages", "serviceId"));
+        addColumnReplacement("outages.serviceid", new RowHasBogusData("outages", "serviceId"));
         
-        /*
-         * This is totally bogus.  outages.svcregainedeventid is a foreign
-         * key that points at events.eventid, and a fixed replacement of zero
-         * will break, because there should never be an event with an ID of
-         * zero.  I don't think it ever got executed before due to the
-         * null replacement only being performed if a column was marked as
-         * NOT NULL.
-         */
-        /*
-        m_columnReplacements.put("outages.svcregainedeventid",
-                                 new FixedIntegerReplacement(0));
-                                 */
-        
-        // Disabled for the same reason as above
-        /*
-        m_columnReplacements.put("notifications.eventid",
-                                 new FixedIntegerReplacement(0));
-                                 */
-        
-        addColumnReplacement("usersnotified.id",
-                                 new NextValReplacement("userNotifNxtId",
-                                                        getDataSource()));
+        addColumnReplacement("usersnotified.id", new NextValReplacement("userNotifNxtId", getDataSource()));
         
         addColumnReplacement("alarms.x733probablecause", new FixedIntegerReplacement(0));
-        
+
+        /*
+         *   - checking table "alarms"... SCHEMA DOES NOT MATCH
+         *   - differences:
+         * new constraint: alarms: constraint fk_eventidak2 foreign key (lasteventid) references events (eventid) on delete cascade
+         * new constraint: alarms: constraint pk_alarmid primary key (alarmid)
+         *      - column "alarmid" is different
+         * Exception in thread "main" java.lang.Exception: Error changing table 'alarms'.  Nested exception: Column alarmid in new table has NOT NULL constraint, however this column did not have the NOT NULL constraint before and there is no change replacement for this column
+         *         at org.opennms.netmgt.dao.db.InstallerDb.createTables(InstallerDb.java:785)
+         *         at org.opennms.install.Installer.install(Installer.java:251)
+         *         at org.opennms.install.Installer.main(Installer.java:778)
+         * Caused by: java.lang.Exception: Column alarmid in new table has NOT NULL constraint, however this column did not have the NOT NULL constraint before and there is no change replacement for this column
+         *         at org.opennms.netmgt.dao.db.InstallerDb.changeTable(InstallerDb.java:1224)
+         *         at org.opennms.netmgt.dao.db.InstallerDb.createTables(InstallerDb.java:783)
+         *         
+         * Not sure if this is the proper fix, but it seems like in some cases folks have alarms
+         * without an alarmid properly set.  Should it have a default?
+         */
+        addColumnReplacement("alarms.alarmid", new NextValReplacement("alarmsNxtId", getDataSource()));
+
     }
     
     public void closeColumnReplacements() throws SQLException {
@@ -2473,8 +2450,8 @@ public class InstallerDb {
     
     public class AutoIntegerIdMapStore implements ColumnChangeReplacement {
         private int m_value;
-        private String[] m_indexColumns;
-        private Map<MultiColumnKey, Integer> m_idMap =
+        private final String[] m_indexColumns;
+        private final Map<MultiColumnKey, Integer> m_idMap =
             new HashMap<MultiColumnKey, Integer>();
         
         public AutoIntegerIdMapStore(int initialValue, String[] indexColumns) {
@@ -2520,7 +2497,7 @@ public class InstallerDb {
         }
         
         public class MultiColumnKey {
-            private Object[] m_keys;
+            private final Object[] m_keys;
             
             public MultiColumnKey(Object[] keys) {
                 m_keys = keys;
@@ -2575,9 +2552,9 @@ public class InstallerDb {
     }
     
     public class MapStoreIdGetter implements ColumnChangeReplacement {
-        private AutoIntegerIdMapStore m_storeFoo;
-        private String[] m_indexColumns;
-        private boolean m_noMatchOkay;
+        private final AutoIntegerIdMapStore m_storeFoo;
+        private final String[] m_indexColumns;
+        private final boolean m_noMatchOkay;
         
         public MapStoreIdGetter(AutoIntegerIdMapStore storeFoo,
                 String[] columns, boolean noMatchOkay) {
@@ -2618,7 +2595,7 @@ public class InstallerDb {
     }
     
     public class FixedIntegerReplacement implements ColumnChangeReplacement {
-        private Integer m_replacement;
+        private final Integer m_replacement;
         
         public FixedIntegerReplacement(int value) {
             m_replacement = value;
@@ -2637,8 +2614,8 @@ public class InstallerDb {
     }
     
     public class RowHasBogusData implements ColumnChangeReplacement {
-        private String m_table;
-        private String m_column;
+        private final String m_table;
+        private final String m_column;
         
         public RowHasBogusData(String table, String column) {
             m_table = table;
@@ -2699,10 +2676,10 @@ public class InstallerDb {
     }
     
     public class NextValReplacement implements ColumnChangeReplacement {
-        private String m_sequence;
+        private final String m_sequence;
         
-        private Connection m_connection;
-        private PreparedStatement m_statement;
+        private final Connection m_connection;
+        private final PreparedStatement m_statement;
         
         public NextValReplacement(String sequence, DataSource dataSource) throws SQLException {
             m_sequence = sequence;
@@ -2787,9 +2764,9 @@ public class InstallerDb {
     
     public class Insert {
 
-        private String m_table;
-        private String m_insertStatement;
-        private String m_criteria;
+        private final String m_table;
+        private final String m_insertStatement;
+        private final String m_criteria;
 
         public Insert(String table, String line, String criteria) {
             m_table = table;
