@@ -276,7 +276,7 @@ MenuElement.prototype.testParent = function() {
     	}
     }  else if (typeof(this.parentNode) == "string") { 
     	//first test if menu group exists
-    	if (document.	(this.parentNode)) {
+    	if (document.getElementById(this.parentNode)) {
     		this.parentNode = document.getElementById(this.parentNode);
         	nodeValid = true;
    		}
