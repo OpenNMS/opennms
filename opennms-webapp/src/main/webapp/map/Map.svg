@@ -17,12 +17,12 @@
 	<script type="text/ecmascript" xlink:href="ECMAScript/Point2D.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/PickColor.js"/>	
 
+	<script type="text/ecmascript" xlink:href="svgjavascript/Menu.js"/>	
 	<script type="text/ecmascript" xlink:href="svgjavascript/MoveableSVGElement.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationConstants.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationVariables.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationHelpers.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationEventProcessor.js"/>
-	<script type="text/ecmascript" xlink:href="svgjavascript/Menu.js"/>	
 	<script type="text/ecmascript" xlink:href="svgjavascript/Map.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Node.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Label.js"/>
@@ -253,7 +253,7 @@ function load(evt){
 	<svg id="MapPanel"/>
 
 	<!-- ******** WINDOWS P A N E L S ********* -->	
-	<g id="Windows" />
+	<!--g id="Windows" /-->
 	<!-- ******** WORK P A N E L ********* -->	
 	<svg id="WorkPanel" y="0">
 

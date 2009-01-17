@@ -70,5 +70,4 @@ emitSVG('src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xm
     <jsp:include page="/includes/footer.jsp" flush="false" >
       <jsp:param name="location" value="map" />
     </jsp:include>
-</script>
     
