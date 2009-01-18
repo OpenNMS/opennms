@@ -35,33 +35,45 @@
  */
 package org.opennms.netmgt.ackd;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.dao.AcknowledgementDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Log;
 
 public class DefaultAckService implements AckService {
     
     private AcknowledgementDao m_ackDao;
+    private EventBuilder m_eventBuilder;  //Spring this
 
-    public void proccessAck(List<Acknowledgment> acks) {
+    public void proccessAck(Collection<Acknowledgment> acks) {
         for (Acknowledgment ack : acks) {
             processAck(ack);
         }
     }
 
     public void processAck(Acknowledgment ack) {
+        Log events = new Log();
+        
         boolean hasAcknowledged = false;
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgable(ack);
         for (Acknowledgeable ackable : ackables) {
             ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
             m_ackDao.updateAckable(ackable);
             hasAcknowledged = true;
+            EventBuilder builder = new EventBuilder("ue.opennms.org/internal/acd/acknowledment", "Ackd");
+            builder.addParam("user", ack.getAckUser());
+            builder.addParam("time", ack.getAckTime().toString());
+            //TODO: need more stuffs
+
         }
         
         if (hasAcknowledged) {
             m_ackDao.save(ack);
+            
         }
     }
 
@@ -71,6 +83,14 @@ public class DefaultAckService implements AckService {
 
     public AcknowledgementDao getAckDao() {
         return m_ackDao;
+    }
+
+    public void setEventBuilder(EventBuilder eventBuilder) {
+        m_eventBuilder = eventBuilder;
+    }
+
+    public EventBuilder getEventBuilder() {
+        return m_eventBuilder;
     }
 
 }

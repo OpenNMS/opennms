@@ -35,7 +35,9 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,15 +49,16 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Store;
+import javax.mail.internet.InternetAddress;
 
+import org.opennms.core.utils.JavaMailer;
+import org.opennms.core.utils.JavaMailerException;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.ackd.AckService;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.model.Acknowledgment;
-import org.opennms.core.utils.JavaMailer;
-import org.opennms.core.utils.JavaMailerException;
-import org.opennms.core.utils.TimeoutTracker;
 
 public class JavaMailAckReader implements AckReader {
 
@@ -103,7 +106,7 @@ public class JavaMailAckReader implements AckReader {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                findAcks();  //should be something else, place holder for now
+                findAndProcessAcks();  //should be something else, place holder for now
             }
 
         };
@@ -111,10 +114,9 @@ public class JavaMailAckReader implements AckReader {
 
     }
     
-    private void findAcks() {
+    private void findAndProcessAcks() {
         
-        List<Acknowledgment> acks;
-        
+        Collection<Acknowledgment> acks;
 
         try {
             List<Message> msgs = readMessages();
@@ -125,29 +127,58 @@ public class JavaMailAckReader implements AckReader {
             e.printStackTrace();
         }
         
+        
+        
     }
     
-    private List<Acknowledgment> detectAcks(List<Message> msgs) {
-        return null;
+    private Collection<Acknowledgment> detectAcks(List<Message> msgs) {
+        Collection<Acknowledgment> acks = null;
+        
+        if (msgs != null) {
+            acks = new ArrayList<Acknowledgment>();
+            for (Message msg : msgs) {
+                try {
+                    if (hasNotifId(msg.getSubject())) {
+                        acks.add(createAcknowledgment(msg));
+                    }
+                } catch (MessagingException e) {
+                    //FIXME: do something audit like here
+                }
+            }
+            
+        }
+        return acks;
     }
 
+
+    private Acknowledgment createAcknowledgment(Message msg) throws MessagingException {
+        Acknowledgment ack = new Acknowledgment();
+        ack.setAckTime(msg.getReceivedDate());
+        ack.setAckUser(((InternetAddress)msg.getFrom()[0]).getAddress());
+        return ack;
+    }
+
+    private boolean hasNotifId(String subject) {
+        
+        return false;
+    }
 
     private List<Message> readMessages() throws JavaMailerException {
         List<Message> messages = null;
         
         //TODO: Need a factory for this
-        ReadmailConfig config = new ReadmailConfig();
+        ReadmailConfig m_config = new ReadmailConfig();
         
-        String protocol = config.getReadmailHost().getReadmailProtocol().getTransport();
-        Properties jmProps = createProperties(config.getJavamailPropertyCollection());
-        jmProps.put("mail." + protocol + ".host", config.getReadmailHost().getHost());
-        jmProps.put("mail." + protocol + ".user", config.getUserAuth().getUserName());
-        jmProps.put("mail." + protocol + ".port", config.getReadmailHost().getPort());
-        jmProps.put("mail." + protocol + ".starttls.enable", config.getReadmailHost().getReadmailProtocol().isStartTls());
+        String protocol = m_config.getReadmailHost().getReadmailProtocol().getTransport();
+        Properties jmProps = createProperties(m_config.getJavamailPropertyCollection());
+        jmProps.put("mail." + protocol + ".host", m_config.getReadmailHost().getHost());
+        jmProps.put("mail." + protocol + ".user", m_config.getUserAuth().getUserName());
+        jmProps.put("mail." + protocol + ".port", m_config.getReadmailHost().getPort());
+        jmProps.put("mail." + protocol + ".starttls.enable", m_config.getReadmailHost().getReadmailProtocol().isStartTls());
         jmProps.put("mail.smtp.auth", "true");
 
-        if (config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
-            jmProps.put("mail." + protocol + ".socketFactory.port", config.getReadmailHost().getPort());
+        if (m_config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
+            jmProps.put("mail." + protocol + ".socketFactory.port", m_config.getReadmailHost().getPort());
             jmProps.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             jmProps.put("mail." + protocol + ".socketFactory.fallback", "false");
         }
@@ -165,14 +196,13 @@ public class JavaMailAckReader implements AckReader {
             JavaMailer readMailer = new JavaMailer(jmProps);
             TimeoutTrackerMap map = new TimeoutTrackerMap(Integer.valueOf(3), Integer.valueOf(3000), Boolean.TRUE);
             TimeoutTracker tracker = new TimeoutTracker(map.getParameterMap(), 1, 3000);
-            
 
             for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
                 tracker.startAttempt();
                 
                 try {
                     mailStore = readMailer.getSession().getStore();
-                    mailFolder = retrieveMailFolder(config, mailStore);
+                    mailFolder = retrieveMailFolder(m_config, mailStore);
                     mailFolder.open(Folder.READ_WRITE);  //TODO: Make sure configuration supports flag for deleting acknowledgments
                     
                     if (mailFolder.isOpen()) {

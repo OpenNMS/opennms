@@ -35,7 +35,7 @@
  */
 package org.opennms.netmgt.ackd;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.opennms.netmgt.model.Acknowledgment;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +52,6 @@ public interface AckService {
         
     void processAck(Acknowledgment ack);
     
-    void proccessAck(List<Acknowledgment> acks);
+    void proccessAck(Collection<Acknowledgment> acks);
 
 }
