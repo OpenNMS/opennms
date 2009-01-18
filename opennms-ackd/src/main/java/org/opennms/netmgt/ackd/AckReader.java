@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.ackd;
 
+import org.opennms.netmgt.config.ackd.AckdConfiguration;
+
 /**
  * Acknowledgment reader API
  * 
@@ -44,7 +46,7 @@ package org.opennms.netmgt.ackd;
  */
 public interface AckReader {
     
-    void start();
+    void start(AckdConfiguration m_config);
     void pause();
     void resume();
     void stop();
