@@ -37,6 +37,7 @@ package org.opennms.netmgt.ackd;
 
 import java.util.List;
 
+import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.Acknowledgment;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -60,6 +61,8 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     //TODO: add a queue for processing acknowledgements from the reads, ReST, Events
     
 	public static final String NAME = "Ackd";
+	
+	public AckdConfiguration m_config;
 
 	private volatile EventSubscriptionService m_eventSubscriptionService;
 	private volatile EventForwarder m_eventForwarder;
@@ -95,7 +98,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 
     public void start() throws Exception {
         for (AckReader reader : m_ackReaders) {
-            reader.start();
+            reader.start(m_config);
         }
     }
     
