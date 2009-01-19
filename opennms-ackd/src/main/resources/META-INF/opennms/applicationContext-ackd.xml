@@ -7,7 +7,7 @@
 
   <tx:annotation-driven />
 
-  <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
+  <bean id="daemon" class="org.opennms.netmgt.alarmd.Ackd" >
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="eventForwarder"/>
   </bean>

@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.ackd;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
@@ -87,6 +88,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 	}
 
 	public void afterPropertiesSet() throws Exception {
+	    m_ackService.setEventForwarder(m_eventForwarder);
 	}
 
 	public void destroy() throws Exception {
@@ -110,10 +112,16 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         return m_ackReaders;
     }
     
-    @EventHandler(uei="uei.opennms.org/internal/ackd/Acknowledgment")
+    @EventHandler(uei="uei.opennms.org/internal/ackd/Acknowledge")
     public void handleAckEvent(Event e) {
-        Acknowledgment ack = new Acknowledgment(e);
-        m_ackService.processAck(ack);
+        Acknowledgment ack;
+        try {
+            ack = new Acknowledgment(e);
+            m_ackService.processAck(ack);
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }
 
 }

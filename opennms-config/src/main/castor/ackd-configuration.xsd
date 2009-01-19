@@ -17,6 +17,7 @@
       <attribute name="escalate-expression" type="string" use="optional" default="~^ack$" />
       <attribute name="clear-expression" type="string" use="optional" default="~^(resolve|clear)$" />
       <attribute name="notifyid-match-expression" type="string" use="optional" default="~.*noticeid:([0-9]+).*" />
+      <attribute name="alarmid-match-expression" type="string" use="optional" default="~.*alarmid:([0-9]+).*" />
     </complexType>
   </element>
 </schema>
