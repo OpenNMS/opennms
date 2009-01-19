@@ -37,7 +37,7 @@ package org.opennms.netmgt.collectd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class Collectd extends AbstractSpringContextJmxServiceDaemon implements
+public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.collectd.Collectd> implements
         CollectdMBean {
 
     @Override

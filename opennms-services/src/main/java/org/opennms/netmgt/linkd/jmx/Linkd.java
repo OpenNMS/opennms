@@ -134,7 +134,7 @@ public class Linkd implements LinkdMBean {
 */
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class Linkd extends AbstractSpringContextJmxServiceDaemon implements LinkdMBean {
+public class Linkd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.linkd.Linkd> implements LinkdMBean {
 
     @Override
     protected String getLoggingPrefix() {
