@@ -38,12 +38,15 @@ package org.opennms.netmgt.ackd.readers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -65,17 +68,20 @@ import org.opennms.netmgt.model.Acknowledgment;
 /**
  * Acknowledgment Reader implementation using Java Mail
  * 
- * TODO: Set AckdConfiguration in each AckReader impl from Daemon
- * TODO: Identify acknowledgments for sent notifications
- * TODO: Identify acknowledgments for alarm IDs (how the send knows the ID, good question)
+ * DONE: Identify acknowledgments for sent notifications
+ * DONE: Identify acknowledgments for alarm IDs (how the send knows the ID, good question)
  * TODO: Identify escalation reply
  * TODO: Identify clear reply
- * TODO: Identify unacknowledge reply
+ * TODO: Identify unacknowledged reply
+ * TODO: Formalize Acknowledgment parameters (ack-type, id)
+ * TODO: JavaMail configuration factory
+ * TODO: Finish scheduling component of JavaAckReader
  * TODO: Configurable Schedule
  * TODO: Identify Java Mail configuration element to use for reading replies
  * TODO: Migrate JavaMailNotificationStrategy to new JavaMail Configuration
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration
  * TODO: Move reading email messages from MTM and this class to JavaMailer class
+ * TODO: Do some proper logging
  * 
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
@@ -94,49 +100,6 @@ public class JavaMailAckReaderImpl implements AckReader {
     
     private AckdConfiguration m_config;
 
-    public void start(final AckdConfiguration config) {
-        m_config = config;
-        scheduleReads();
-    }
-    
-    public void pause() {
-        unScheduleReads();
-    }
-
-    public void resume() {
-        scheduleReads();
-    }
-
-    public void stop() {
-        unScheduleReads();
-    }
-
-    private void unScheduleReads() {
-        if (m_timer != null) {
-            m_status = FINISHING;
-            m_timer.cancel();
-            m_timer = null;
-        } else {
-            //TODO: log something
-        }
-    }
-    
-    private void scheduleReads() {
-        if (m_timer != null) {
-            m_status = FINISHING;
-            m_timer.cancel();
-        }
-        m_timer = new Timer("Ackd.JavaMailReader", true);
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                findAndProcessAcks();  //should be something else, place holder for now
-            }
-
-        };
-        m_timer.scheduleAtFixedRate(task, 3000, 3000);
-
-    }
     
     private void findAndProcessAcks() {
         
@@ -145,13 +108,11 @@ public class JavaMailAckReaderImpl implements AckReader {
         try {
             List<Message> msgs = readMessages();
             acks = detectAcks(msgs);
-            m_ackService.proccessAck(acks);
+            m_ackService.processAcks(acks);
         } catch (JavaMailerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
-        
         
     }
     
@@ -162,35 +123,53 @@ public class JavaMailAckReaderImpl implements AckReader {
             acks = new ArrayList<Acknowledgment>();
             for (Message msg : msgs) {
                 try {
-                    if (hasNotifId(msg.getSubject())) {
+                    Integer notifyId = detectId(msg.getSubject(), m_config.getNotifyidMatchExpression());
+                    
+                    if (notifyId.intValue() > 0) {
                         acks.add(createAcknowledgment(msg));
                     }
+                    
+                    Integer alarmId = detectId(msg.getSubject(), m_config.getAlarmidMatchExpression());
+                    
+                    if (alarmId.intValue() > 0) {
+                        acks.add(createAcknowledgment(msg));
+                    }
+                    
                 } catch (MessagingException e) {
                     //FIXME: do something audit like here
+                    continue;
                 }
             }
-            
         }
         return acks;
     }
 
 
-    private Acknowledgment createAcknowledgment(Message msg) throws MessagingException {
-        Acknowledgment ack = new Acknowledgment();
-        ack.setAckTime(msg.getReceivedDate());
-        ack.setAckUser(((InternetAddress)msg.getFrom()[0]).getAddress());
-        return ack;
+    private Integer detectId(String subject, String expression) {
+        Integer id = new Integer(0);
+        if (m_config.getAckExpression().startsWith("~")) {
+            String ackExpression = m_config.getAckExpression().substring(1);
+            Pattern pattern = Pattern.compile(ackExpression);
+            Matcher matcher = pattern.matcher(subject);
+            
+            if (matcher.matches() && matcher.groupCount() > 0) {
+                id = Integer.valueOf(matcher.group(1));
+            }
+            
+        }
+        return id;
     }
 
-    private boolean hasNotifId(String subject) {
-        
-        return false;
+    private Acknowledgment createAcknowledgment(Message msg) throws MessagingException {
+        String ackUser = ((InternetAddress)msg.getFrom()[0]).getAddress();
+        Date ackTime = msg.getReceivedDate();
+        Acknowledgment ack = new Acknowledgment(ackTime, ackUser);
+        return ack;
     }
 
     private List<Message> readMessages() throws JavaMailerException {
         List<Message> messages = null;
         
-        //TODO: Need a factory for this
         ReadmailConfig m_config = new ReadmailConfig();
         
         String protocol = m_config.getReadmailHost().getReadmailProtocol().getTransport();
@@ -300,6 +279,50 @@ public class JavaMailAckReaderImpl implements AckReader {
         return props;
     }
 
+    public void start(final AckdConfiguration config) {
+        m_config = config;
+        scheduleReads();
+    }
+    
+    public void pause() {
+        unScheduleReads();
+    }
+
+    public void resume() {
+        scheduleReads();
+    }
+
+    public void stop() {
+        unScheduleReads();
+    }
+
+    private void unScheduleReads() {
+        if (m_timer != null) {
+            m_status = FINISHING;
+            m_timer.cancel();
+            m_timer = null;
+        } else {
+            //TODO: log something
+        }
+    }
+    
+    private void scheduleReads() {
+        if (m_timer != null) {
+            m_status = FINISHING;
+            m_timer.cancel();
+        }
+        m_timer = new Timer("Ackd.JavaMailReader", true);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                findAndProcessAcks();  //should be something else, place holder for now
+            }
+
+        };
+        m_timer.scheduleAtFixedRate(task, 3000, 3000);
+
+    }
+    
     public void setAckService(AckService ackService) {
         m_ackService = ackService;
     }

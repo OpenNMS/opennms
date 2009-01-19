@@ -42,38 +42,35 @@ import org.opennms.netmgt.dao.AcknowledgementDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.Acknowledgment;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.model.events.EventForwarder;
 
+/**
+ * TODO: Needs IOC work
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 public class DefaultAckService implements AckService {
     
     private AcknowledgementDao m_ackDao;
-    private EventBuilder m_eventBuilder;  //Spring this
+    private EventForwarder m_eventForwarder;
 
-    public void proccessAck(Collection<Acknowledgment> acks) {
+    public void processAcks(Collection<Acknowledgment> acks) {
         for (Acknowledgment ack : acks) {
             processAck(ack);
         }
     }
 
     public void processAck(Acknowledgment ack) {
-        Log events = new Log();
         
-        boolean hasAcknowledged = false;
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgable(ack);
+        EventBuilder ebuilder;
         for (Acknowledgeable ackable : ackables) {
             ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
             m_ackDao.updateAckable(ackable);
-            hasAcknowledged = true;
-            EventBuilder builder = new EventBuilder("ue.opennms.org/internal/acd/acknowledment", "Ackd");
-            builder.addParam("user", ack.getAckUser());
-            builder.addParam("time", ack.getAckTime().toString());
-            //TODO: need more stuffs
-
-        }
-        
-        if (hasAcknowledged) {
             m_ackDao.save(ack);
-            
+            ebuilder = new EventBuilder("uei.opennms.org/internal/ackd/acknowledgment", "Ackd");
+            m_eventForwarder.sendNow(ebuilder.getEvent());
         }
     }
 
@@ -85,12 +82,8 @@ public class DefaultAckService implements AckService {
         return m_ackDao;
     }
 
-    public void setEventBuilder(EventBuilder eventBuilder) {
-        m_eventBuilder = eventBuilder;
-    }
-
-    public EventBuilder getEventBuilder() {
-        return m_eventBuilder;
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
 
 }
