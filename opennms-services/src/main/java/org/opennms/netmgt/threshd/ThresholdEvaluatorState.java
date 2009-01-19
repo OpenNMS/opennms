@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Jan 19: Fix a comment. - dj@opennms.org
  * 2007 Jan 29: Extract evaluation and state related interface out of ThresholdEntity and other copies of the same code. - dj@opennms.org
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -41,7 +42,7 @@ import java.util.Date;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Provides a method to evaluate a threshold and do base population of
+ * Provides a method to evaluate a threshold and do basic population of
  * events.  There is an instance of ThresholdEvaluatorState for each
  * configured thresholding type on each configured data source on each
  * configured node/interface/etc..  The object that implements this
