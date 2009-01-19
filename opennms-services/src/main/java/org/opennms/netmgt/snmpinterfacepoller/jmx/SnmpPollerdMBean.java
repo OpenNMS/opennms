@@ -9,7 +9,6 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- * 2008 Jan 26: AbstractSpringContextJmxServiceDaemon is our friend. - dj@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -32,18 +31,18 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.tl1d.jmx;
+package org.opennms.netmgt.snmpinterfacepoller.jmx;
 
-import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+public interface SnmpPollerdMBean {
+    public void init();
 
-public class Tl1d extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.tl1d.Tl1d> implements Tl1dMBean {
-    @Override
-    protected String getLoggingPrefix() {
-        return "OpenNMS.Tl1d";
-    }
+    public void start();
 
-    @Override
-    protected String getSpringContext() {
-        return "tl1DaemonContext";       
-    }
+    public void stop();
+
+    public int getStatus();
+
+    public String status();
+
+    public String getStatusText();
 }

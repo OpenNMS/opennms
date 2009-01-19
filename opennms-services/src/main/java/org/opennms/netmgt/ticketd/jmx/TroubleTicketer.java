@@ -35,7 +35,7 @@ package org.opennms.netmgt.ticketd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class TroubleTicketer extends AbstractSpringContextJmxServiceDaemon implements TroubleTicketerMBean {
+public class TroubleTicketer extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.ticketd.TroubleTicketer> implements TroubleTicketerMBean {
 
     @Override
     protected String getLoggingPrefix() {
