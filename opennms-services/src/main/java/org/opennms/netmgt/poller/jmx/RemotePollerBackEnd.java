@@ -42,7 +42,7 @@ import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class RemotePollerBackEnd extends AbstractSpringContextJmxServiceDaemon implements RemotePollerBackEndMBean {
+public class RemotePollerBackEnd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd> implements RemotePollerBackEndMBean {
 
     @Override
     protected String getLoggingPrefix() {
