@@ -34,7 +34,7 @@ package org.opennms.netmgt.poller.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class Pollerd extends AbstractSpringContextJmxServiceDaemon implements PollerdMBean {
+public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.poller.Poller> implements PollerdMBean {
 
     @Override
     protected String getLoggingPrefix() {

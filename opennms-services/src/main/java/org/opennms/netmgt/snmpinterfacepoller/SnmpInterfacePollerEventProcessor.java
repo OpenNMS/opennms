@@ -1,44 +1,36 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2004 Jan 06: Added support for SUSPEND_POLLING_SERVICE_EVENT_UEI and
-// 		RESUME_POLLING_SERVICE_EVENT_UEI
-// 2003 Nov 11: Merged changes from Rackspace project
-// 2003 Jan 31: Cleaned up some unused imports.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-// Tab Size = 8
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.snmpinterfacepoller;
 
 import java.io.IOException;
@@ -52,7 +44,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
-import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -66,55 +57,33 @@ import org.opennms.netmgt.xml.event.Parms;
  */
 final class SnmpInterfacePollerEventProcessor implements EventListener {
 
-    private final Poller m_poller;
-	private volatile DemandPollDao m_demandPollDao;
-	
+    private final SnmpPoller m_poller;
 	
 
     /**
      * Create message selector to set to the subscription
      */
     private void createMessageSelectorAndSubscribe() {
-        // Create the selector for the ueis this service is interested in
-        //
-        List ueiList = new ArrayList();
+        
+        List<String> ueiList = new ArrayList<String>();
         ueiList.add(EventConstants.NODE_DOWN_EVENT_UEI);
         ueiList.add(EventConstants.NODE_UP_EVENT_UEI);
-
         ueiList.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
         ueiList.add(EventConstants.INTERFACE_UP_EVENT_UEI);
-
         ueiList.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
-
         ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
-
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-
         ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
-        
-//        ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
         ueiList.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
         ueiList.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-//        ueiList.add(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI);
-//        ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI); 
         ueiList.add(EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI);
         
-        
-        
-        
-
         getEventManager().addEventListener(this, ueiList);
     }
 
      
-    /**
-     * Constructor
-     * 
-     * @param pollableServices
-     *            List of all the PollableService objects scheduled for polling
-     */
-    SnmpInterfacePollerEventProcessor(Poller poller) {
+    SnmpInterfacePollerEventProcessor(SnmpPoller poller) {
 
         m_poller = poller;
 
@@ -304,7 +273,7 @@ final class SnmpInterfacePollerEventProcessor implements EventListener {
     /**
      * @return
      */
-    private Poller getPoller() {
+    private SnmpPoller getPoller() {
         return m_poller;
     }
 

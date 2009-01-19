@@ -43,7 +43,7 @@ package org.opennms.netmgt.eventd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
-public class Eventd extends AbstractSpringContextJmxServiceDaemon implements EventdMBean {
+public class Eventd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.eventd.Eventd> implements EventdMBean {
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Eventd";

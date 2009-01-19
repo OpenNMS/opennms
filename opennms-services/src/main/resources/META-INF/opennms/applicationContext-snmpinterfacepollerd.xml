@@ -28,7 +28,7 @@
     </bean>
     
         
-    <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.Poller">
+    <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller">
       <property name="eventManager" ref="eventIpcManager" />
       <property name="queryManager" ref="snmpinterfacepollerQueryManager" />
       <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
