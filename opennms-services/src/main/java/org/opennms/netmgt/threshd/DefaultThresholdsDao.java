@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Jan 19: Organize imports. - dj@opennms.org
 // 2007 Jan 29: Indent, convert to use Java 5 generics, use dependency injection for ThresholdingConfigFactory - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -39,7 +40,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Category;
