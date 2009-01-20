@@ -62,6 +62,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
+import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
@@ -199,6 +200,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testActiondConfiguration() throws Exception {
         unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
+    }
+    @Test
+    public void testAmiConfig() throws Exception {
+        unmarshal("ami-config.xml", AmiConfig.class);
     }
     @Test
     public void testCapsdConfiguration() throws Exception {
