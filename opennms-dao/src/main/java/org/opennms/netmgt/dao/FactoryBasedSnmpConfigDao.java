@@ -61,7 +61,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
         SnmpPeerFactory.init();
     }
 
-    public SnmpAgentConfig get(InetAddress agentAddress) {
+    public SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
         return getSnmpPeerFactory().getAgentConfig(agentAddress);
     }
     
@@ -189,7 +189,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     
     public void saveOrUpdate(SnmpAgentConfig newConfig) {
         
-        SnmpAgentConfig oldConfig = get(newConfig.getAddress());
+        SnmpAgentConfig oldConfig = getAgentConfig(newConfig.getAddress());
         
         SnmpEventInfo eventInfo = new SnmpEventInfo();
         eventInfo.setFirstIPAddress(newConfig.getAddress());
