@@ -40,23 +40,7 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.syslogd.HideMatch;
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
-import org.opennms.netmgt.config.syslogd.UeiMatch;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
-
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -68,6 +52,22 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.syslogd.HideMatch;
+import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
@@ -537,8 +537,7 @@ final class ConvertToEvent {
      */
     Log unmarshal() throws ValidationException, MarshalException {
         if (m_log == null) {
-            StringReader rdr = new StringReader(this.m_eventXML);
-            m_log = (Log) Unmarshaller.unmarshal(Log.class, rdr);
+            m_log = CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(this.m_eventXML.getBytes()));
         }
         return m_log;
     }

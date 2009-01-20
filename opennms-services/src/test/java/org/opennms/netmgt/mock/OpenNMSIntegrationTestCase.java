@@ -53,14 +53,15 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
@@ -221,14 +222,8 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
     }
 
 
-    private SnmpConfig readSnmpConfig(File snmpConfig) throws FileNotFoundException, MarshalException, ValidationException {
-        Reader cfgIn = null;
-        try {
-            cfgIn = new FileReader(snmpConfig);
-             return (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, cfgIn);
-        } finally {
-            IOUtils.closeQuietly(cfgIn);
-        }
+    private SnmpConfig readSnmpConfig(File snmpConfig) throws IOException, FileNotFoundException, MarshalException, ValidationException {
+        return CastorUtils.unmarshal(SnmpConfig.class, new FileSystemResource(snmpConfig));
     }
     
     protected String getLocalHostAddress() {

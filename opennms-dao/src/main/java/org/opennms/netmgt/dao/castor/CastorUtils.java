@@ -126,7 +126,24 @@ public class CastorUtils {
         }
     }
 
-  /**
+
+    /**
+     * Create an Unmarshaller for a specific class and configure it with our
+     * default configuration details.  In particular, the Unmarshaller is set
+     * to not ignore extra attributes and elements.
+     * 
+     * @param <T>
+     * @param clazz
+     * @return
+     */
+    private static <T> Unmarshaller createUnmarshaller(Class<T> clazz) {
+        Unmarshaller u = new Unmarshaller(clazz);
+        u.setIgnoreExtraAttributes(false);
+        u.setIgnoreExtraElements(false);
+        return u;
+    }
+
+    /**
      * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
      * return type. 
      * 
@@ -145,10 +162,9 @@ public class CastorUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T unmarshal(Class<T> clazz, Reader reader) throws MarshalException, ValidationException {
-        Unmarshaller u = new Unmarshaller(clazz);
-        return (T) u.unmarshal(reader);
+        return (T) createUnmarshaller(clazz).unmarshal(reader);
     }
-    
+
     /**
      * Unmarshal a Castor XML configuration file.  Uses Java 5 generics for
      * return type. 
@@ -170,8 +186,7 @@ public class CastorUtils {
 
     @SuppressWarnings("unchecked")
     private static <T> T unmarshal(Class<T> clazz, InputSource source) throws MarshalException, ValidationException {
-        Unmarshaller u = new Unmarshaller(clazz);
-        return (T) u.unmarshal(source);
+        return (T) createUnmarshaller(clazz).unmarshal(source);
     }
     
     /**
@@ -284,6 +299,11 @@ public class CastorUtils {
      *      the resource from its {@link Resource#toString() toString()} method.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource) {
+        // TODO It might be useful to add code to test for readability on real files; the code below is from DefaultManualProvisioningDao - dj@opennms.org 
+//        if (!importFile.canRead()) {
+//            throw new PermissionDeniedDataAccessException("Unable to read file "+importFile, null);
+//        }
+
         InputStream in;
         try {
             in = resource.getInputStream();

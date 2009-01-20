@@ -49,12 +49,12 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * 
@@ -93,7 +93,7 @@ public class MonitoringLocationsFactory {
 
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
         log().debug("initialize: initializing monitoring locations factory.");
-        m_config = (MonitoringLocationsConfiguration) Unmarshaller.unmarshal(MonitoringLocationsConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr);
 
         m_defsMap = new HashMap<String, LocationDef>();
         Collection defList = m_config.getLocations().getLocationDefCollection();

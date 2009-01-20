@@ -38,7 +38,6 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -48,9 +47,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.web.Util;
 
 public class RTCPostServlet extends HttpServlet {
@@ -101,7 +100,7 @@ public class RTCPostServlet extends HttpServlet {
             // note the unmarshaller closes the input stream, so don't try to
             // close
             // it again or the servlet container will complain
-            org.opennms.netmgt.xml.rtc.EuiLevel level = (org.opennms.netmgt.xml.rtc.EuiLevel) Unmarshaller.unmarshal(org.opennms.netmgt.xml.rtc.EuiLevel.class, new InputStreamReader(inStream));
+            org.opennms.netmgt.xml.rtc.EuiLevel level = CastorUtils.unmarshal(org.opennms.netmgt.xml.rtc.EuiLevel.class, inStream);
 
             // for now we only deal with the first category, they're only sent
             // one

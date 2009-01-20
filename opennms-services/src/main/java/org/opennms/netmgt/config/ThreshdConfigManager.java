@@ -46,7 +46,6 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.IpListFromUrl;
@@ -56,6 +55,7 @@ import org.opennms.netmgt.config.threshd.IncludeRange;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
@@ -89,7 +89,7 @@ public abstract class ThreshdConfigManager {
     protected String m_localServer;
     
     public ThreshdConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
-        m_config = (ThreshdConfiguration) Unmarshaller.unmarshal(ThreshdConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(ThreshdConfiguration.class, rdr);
 
         createUrlIpMap();
 

@@ -53,13 +53,13 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This class is the main respository for thresholding configuration information
@@ -126,7 +126,7 @@ public final class ThresholdingConfigFactory {
     }
 
     private void parseXML(Reader cfgIn) throws MarshalException, ValidationException {
-        m_config = (ThresholdingConfig) Unmarshaller.unmarshal(ThresholdingConfig.class, cfgIn);
+        m_config = CastorUtils.unmarshal(ThresholdingConfig.class, cfgIn);
         initGroupMap();
     }
     

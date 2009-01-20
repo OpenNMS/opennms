@@ -54,7 +54,6 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
@@ -66,6 +65,7 @@ import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.translator.Mapping;
 import org.opennms.netmgt.config.translator.Translation;
 import org.opennms.netmgt.config.translator.Value;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
@@ -132,7 +132,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
     
     private synchronized void marshallReader(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        m_config = (EventTranslatorConfiguration) Unmarshaller.unmarshal(EventTranslatorConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, rdr);
         m_dbConnFactory = dbConnFactory;
     }
 

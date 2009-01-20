@@ -7,24 +7,24 @@
   <views >
     <view name="default" refresh-seconds="300" >
       <rows>
-        <row-def row="1" label="Routers" >
+        <row-def label="Routers" >
           <category name="Routers"/>
         </row-def>
-        <row-def row="2" label="Switches" >
+        <row-def label="Switches" >
           <category name="Switches" />
         </row-def>
-        <row-def row="3" label="Servers" >
+        <row-def label="Servers" >
           <category name="Servers" />
         </row-def>
       </rows>
       <columns>
-        <column-def col="1" label="PROD" >
+        <column-def label="PROD" >
           <category name="Production" />
         </column-def>
-        <column-def col="2" label="TEST" >
+        <column-def label="TEST" >
           <category name="Test" />
         </column-def>
-        <column-def col="3" label="DEV" >
+        <column-def label="DEV" >
           <category name="Development" />
         </column-def>
       </columns>

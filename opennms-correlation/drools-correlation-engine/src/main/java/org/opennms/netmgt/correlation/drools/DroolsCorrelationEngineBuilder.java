@@ -36,8 +36,6 @@
 package org.opennms.netmgt.correlation.drools;
 
 import java.beans.PropertyEditor;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,14 +43,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
 import org.opennms.netmgt.correlation.drools.config.Global;
 import org.opennms.netmgt.correlation.drools.config.RuleSet;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.InitializingBean;
@@ -120,24 +117,14 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
     
     private void readConfiguration() throws Exception {
-        
-        Reader rdr = null;
-        try {
-            rdr = new InputStreamReader( m_configResource.getInputStream() );
+        EngineConfiguration configuration = CastorUtils.unmarshal(EngineConfiguration.class, m_configResource);
 
-            EngineConfiguration configuration = (EngineConfiguration) Unmarshaller.unmarshal( EngineConfiguration.class, rdr );
-            
-            List<RuleSetConfiguration> ruleSets = new LinkedList<RuleSetConfiguration>();
-            for (RuleSet ruleSet : configuration.getRuleSet()) {
-                ruleSets.add(new RuleSetConfiguration(ruleSet));
-            }
-            
-            m_ruleSets = ruleSets;
-            
-        } finally {
-            IOUtils.closeQuietly(rdr);
+        List<RuleSetConfiguration> ruleSets = new LinkedList<RuleSetConfiguration>();
+        for (RuleSet ruleSet : configuration.getRuleSet()) {
+            ruleSets.add(new RuleSetConfiguration(ruleSet));
         }
-        
+
+        m_ruleSets = ruleSets;
     }
     
     private static class ConfigFileApplicationContext extends AbstractXmlApplicationContext {

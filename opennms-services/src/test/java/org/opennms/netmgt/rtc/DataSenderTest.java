@@ -51,6 +51,7 @@ import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.Resource;
 import org.xml.sax.SAXException;
 
 public class DataSenderTest extends OpenNMSTestCase {
@@ -62,9 +63,8 @@ public class DataSenderTest extends OpenNMSTestCase {
         RTCConfigFactory.setInstance(new RTCConfigFactory(reader));
         reader.close();
         
-        reader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/categories.xml");
-        CategoryFactory.setInstance(new CategoryFactory(reader));
-        reader.close();
+        Resource categoryResource = ConfigurationTestUtils.getSpringResourceForResource(this, "/org/opennms/netmgt/config/categories.xml");
+        CategoryFactory.setInstance(new CategoryFactory(categoryResource));
         
         reader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(reader));

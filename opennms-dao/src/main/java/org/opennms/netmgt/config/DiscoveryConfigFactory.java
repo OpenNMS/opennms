@@ -36,7 +36,6 @@ package org.opennms.netmgt.config;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,7 +55,6 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.IPSorter;
@@ -68,8 +66,10 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -113,11 +113,7 @@ public final class DiscoveryConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DiscoveryConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (DiscoveryConfiguration) Unmarshaller.unmarshal(DiscoveryConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

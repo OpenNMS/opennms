@@ -41,19 +41,19 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -95,20 +95,13 @@ public final class CategoryFactory implements CatFactory{
      * 
      */
     private CategoryFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        Reader reader = new FileReader(configFile);
-        marshal(reader);
-        reader.close();
+        this(new FileSystemResource(configFile));
     }
     
-    public CategoryFactory(Reader reader) throws IOException, MarshalException, ValidationException {
-        marshal(reader);
+    public CategoryFactory(Resource resource) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(Catinfo.class, resource);
     }
-
     
-    private void marshal(Reader reader) throws MarshalException, ValidationException {
-        m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, reader);
-    }
-
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.

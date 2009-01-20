@@ -210,6 +210,7 @@ public class KscReportEditor implements Serializable {
         loadNewWorkingReport();
     }
 
+    // FIXME This is a funky way to duplicate an object; if we want to keep it this way, at least move it to CastorUtils - dj@opennms.org
     @SuppressWarnings("unchecked")
     private <T> T duplicateCastorObject(T object, Class<T> clazz) throws MarshalException, ValidationException {
         StringWriter stringWriter = new StringWriter();

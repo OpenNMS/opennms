@@ -44,9 +44,9 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class PollOutagesConfigManagerTest extends TestCase {
@@ -102,7 +102,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
             
         };
         
-        m_manager.setConfig((Outages) Unmarshaller.unmarshal(Outages.class, rdr));
+        m_manager.setConfig(CastorUtils.unmarshal(Outages.class, rdr));
 
             
         

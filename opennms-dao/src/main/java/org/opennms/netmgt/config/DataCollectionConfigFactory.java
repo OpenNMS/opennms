@@ -57,7 +57,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -69,6 +68,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -135,7 +135,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     }
 
     private void marshal(Reader rdr) throws MarshalException, ValidationException {
-        m_config = (DatacollectionConfig) Unmarshaller.unmarshal(DatacollectionConfig.class, rdr);        
+        m_config = CastorUtils.unmarshal(DatacollectionConfig.class, rdr);        
         buildCollectionMap();
         processConfiguredResourceTypes();
         validateResourceTypes();

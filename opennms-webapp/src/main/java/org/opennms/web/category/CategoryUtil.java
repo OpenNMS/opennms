@@ -37,17 +37,15 @@
 package org.opennms.web.category;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.webuiColors.CategoryColors;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * Provides look and feel utilities for the JSPs presenting category (real time
@@ -139,10 +137,7 @@ public class CategoryUtil extends Object {
         CategoryColors m_colorsconfig = new CategoryColors();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.WEBUI_COLORS_FILE_NAME);
-        InputStream cfgIn = new FileInputStream(cfgFile);
-
-        m_colorsconfig = (CategoryColors) Unmarshaller.unmarshal(CategoryColors.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+        m_colorsconfig = CastorUtils.unmarshal(CategoryColors.class, new FileSystemResource(cfgFile));
 
         m_green = m_colorsconfig.getGreen();
         m_yellow = m_colorsconfig.getYellow();

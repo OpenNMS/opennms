@@ -32,11 +32,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -49,17 +46,18 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.wmi.Definition;
 import org.opennms.netmgt.config.wmi.WmiConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.wmi.WmiAgentConfig;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This class is the main respository for WMI configuration information used by
@@ -109,14 +107,11 @@ public class WmiPeerFactory extends PeerFactory {
      * @param configFile the path to the config file to load in.
      */
     private WmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (WmiConfig) Unmarshaller.unmarshal(WmiConfig.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile));
     }
 
     public WmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = (WmiConfig) Unmarshaller.unmarshal(WmiConfig.class, rdr);
+        m_config = CastorUtils.unmarshal(WmiConfig.class, rdr);
     }
     
     /**

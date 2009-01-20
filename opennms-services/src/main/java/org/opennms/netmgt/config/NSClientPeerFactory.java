@@ -14,11 +14,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -30,7 +27,6 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
@@ -39,8 +35,10 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.nsclient.Definition;
 import org.opennms.netmgt.config.nsclient.NsclientConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This class is the main repository for NSCLient configuration information used by
@@ -87,15 +85,11 @@ public final class NSClientPeerFactory extends PeerFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private NSClientPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (NsclientConfig) Unmarshaller.unmarshal(NsclientConfig.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile));
     }
     
     public NSClientPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = (NsclientConfig) Unmarshaller.unmarshal(NsclientConfig.class, rdr);
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr);
     }
     
     /**

@@ -41,13 +41,13 @@ import java.util.Collection;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -74,7 +74,7 @@ public abstract class NotifdConfigManager {
      * @throws IOException
      */
     public synchronized void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
-        configuration = (NotifdConfiguration) Unmarshaller.unmarshal(NotifdConfiguration.class, reader);
+        configuration = CastorUtils.unmarshal(NotifdConfiguration.class, reader);
     }
 
     /**

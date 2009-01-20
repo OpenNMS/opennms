@@ -57,7 +57,6 @@ import javax.sql.DataSource;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -65,6 +64,7 @@ import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
@@ -124,7 +124,7 @@ public abstract class NotificationManager {
     }
 
     public synchronized void parseXML(final Reader reader) throws MarshalException, ValidationException {
-        m_notifications = (Notifications) Unmarshaller.unmarshal(Notifications.class, reader);
+        m_notifications = CastorUtils.unmarshal(Notifications.class, reader);
         oldHeader = m_notifications.getHeader();
     }
 
