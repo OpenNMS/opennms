@@ -89,7 +89,13 @@ public class Acknowledgment {
     }
     
     public Acknowledgment(final OnmsAlarm a) {
-        this(a.getAlarmAckTime(), a.getAlarmAckUser());
+        
+        if (a == null) {
+            throw new IllegalArgumentException("OnmsAlarm is null.");
+        }
+        
+        m_ackTime = a.getAlarmAckTime();
+        m_ackUser = a.getAlarmAckUser();
         m_ackType = AckType.Alarm;
         m_refId = a.getId();
     }
