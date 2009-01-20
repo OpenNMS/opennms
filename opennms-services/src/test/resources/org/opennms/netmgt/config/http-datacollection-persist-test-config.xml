@@ -4,7 +4,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                 xsi:schemaLocation="http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
                 rrdRepository="%rrdRepository%" > 
-                <http-collection name="default" retries="0" timeout="1000">
+                <http-collection name="default">
                    <rrd step="1"> 
                      <rra>RRA:AVERAGE:0.5:1:8928</rra> 
                    </rrd> 

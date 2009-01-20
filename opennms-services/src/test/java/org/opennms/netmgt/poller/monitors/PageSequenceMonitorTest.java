@@ -39,6 +39,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,8 +53,6 @@ import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.test.mock.MockLogAppender;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -149,7 +149,7 @@ public class PageSequenceMonitorTest {
 	public void testLogin() throws Exception {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
-				"<page-sequence name=\"opennms-login-seq\">\n" + 
+				"<page-sequence>\n" + 
 				"  <page path=\"/opennms\" port=\"80\" successMatch=\"Password\" />\n" + 
 				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
 				"    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
