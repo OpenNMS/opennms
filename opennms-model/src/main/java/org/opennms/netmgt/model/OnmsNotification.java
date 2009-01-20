@@ -308,7 +308,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     
     @Transient
     public AckType getType() {
-        return Acknowledgeable.AckType.Notification;
+        return AckType.Notification;
     }
 
 }

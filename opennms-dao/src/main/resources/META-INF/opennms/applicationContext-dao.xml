@@ -50,6 +50,7 @@
         <value>org.opennms.netmgt.model.ResourceReference</value>
         <value>org.opennms.netmgt.model.StatisticsReportData</value>
         <value>org.opennms.netmgt.model.StatisticsReport</value>
+        <value>org.opennms.netmgt.model.Acknowledgment</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
@@ -162,6 +163,10 @@
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResourceLocation" />
+  </bean>
+  
+  <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate" >
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">

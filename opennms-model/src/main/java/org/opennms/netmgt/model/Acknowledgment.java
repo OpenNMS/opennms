@@ -57,9 +57,9 @@ import org.opennms.netmgt.xml.event.Event;
 public class Acknowledgment {
 
     private Integer m_id; 
-    private final Date m_ackTime;
-    private final String m_ackUser;
-    private Acknowledgeable.AckType m_ackType;
+    private Date m_ackTime;
+    private String m_ackUser;
+    private AckType m_ackType;
     private Integer m_refId;
     
     //main constructor
@@ -88,11 +88,21 @@ public class Acknowledgment {
         this(DateFormat.getDateInstance().parse(e.getTime()), user);
     }
     
+    public Acknowledgment(final OnmsAlarm a) {
+        this(a.getAlarmAckTime(), a.getAlarmAckUser());
+        m_ackType = AckType.Alarm;
+        m_refId = a.getId();
+    }
+    
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
+    }
+    
+    public void setId(Integer id) {
+        m_id = id;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -100,19 +110,27 @@ public class Acknowledgment {
     public Date getAckTime() {
         return m_ackTime;
     }
+    
+    public void setAckTime(Date time) {
+        m_ackTime = time;
+    }
 
     //TODO: make this right when Users are persisted to the DB
-    @Column(name="user", length=64, nullable=false)
+    @Column(name="ackUser", length=64, nullable=false)
     public String getAckUser() {
         return m_ackUser;
     }
+    
+    public void setAckUser(String user) {
+        m_ackUser = user;
+    }
 
-    @Column(name="ackType", length=32, nullable=false)
-    public Acknowledgeable.AckType getAckType() {
+    @Column(name="ackType", nullable=false)
+    public AckType getAckType() {
         return m_ackType;
     }
 
-    public void setAckType(Acknowledgeable.AckType ackType) {
+    public void setAckType(AckType ackType) {
         m_ackType = ackType;
     }
 
