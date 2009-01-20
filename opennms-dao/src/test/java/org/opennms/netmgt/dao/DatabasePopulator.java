@@ -41,7 +41,9 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
+import org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
+import org.opennms.netmgt.model.Acknowledgment;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -96,6 +98,7 @@ public class DatabasePopulator {
     private UserNotificationDao m_userNotificationDao;
     private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private AcknowledgmentDao m_acknowledgmentDao;
     
     private OnmsNode m_node1;
 
@@ -243,6 +246,12 @@ public class DatabasePopulator {
         alarm.setLastEvent(event);
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
+        
+        
+        Acknowledgment ack = new Acknowledgment(alarm);
+        getAcknowledgmentDao().save(ack);
+        getAcknowledgmentDao().flush();
+        
     }
 
     private OnmsCategory getCategory(String categoryName) {
@@ -430,6 +439,14 @@ public class DatabasePopulator {
 
     public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
+    }
+
+    public AcknowledgmentDao getAcknowledgmentDao() {
+        return m_acknowledgmentDao;
+    }
+
+    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
+        m_acknowledgmentDao = acknowledgmentDao;
     }
 
 }

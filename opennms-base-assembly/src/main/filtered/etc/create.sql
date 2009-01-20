@@ -2030,7 +2030,7 @@ CREATE TABLE acks (
     id       integer default nextval('opennmsnxtid') not null,
     ackTime  timestamp with time zone not null,
     ackUser  varchar(64) not null,
-    ackType  varchar(32) not null,
+    ackType  integer not null,
     refId    integer,
     
     constraint pk_acks_id primary key (id)
