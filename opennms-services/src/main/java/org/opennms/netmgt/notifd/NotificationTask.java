@@ -319,7 +319,9 @@ public class NotificationTask extends Thread {
             if (NotificationManager.PARAM_DESTINATION.equals(aSwitch)) {
                 value = m_user.getUserId();
             } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
-		value = getEmail();
+                value = getEmail();
+            } else if (NotificationManager.PARAM_TUI_PIN.equals(aSwitch)) {
+                value = getTuiPin();
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = getUserManager().getPagerEmail(m_user.getUserId());
             } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
@@ -328,6 +330,12 @@ public class NotificationTask extends Thread {
                 value = getUserManager().getTextPin(m_user.getUserId());
             } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
                 value = getUserManager().getNumericPin(m_user.getUserId());
+            } else if (NotificationManager.PARAM_WORK_PHONE.equals(aSwitch)) {
+                value = getUserManager().getWorkPhone(m_user.getUserId());
+            } else if (NotificationManager.PARAM_MOBILE_PHONE.equals(aSwitch)) {
+                value = getUserManager().getMobilePhone(m_user.getUserId());
+            } else if (NotificationManager.PARAM_HOME_PHONE.equals(aSwitch)) {
+                value = getUserManager().getHomePhone(m_user.getUserId());
             } else if (m_params.containsKey(aSwitch)) {
                 value = m_params.get(aSwitch);
             }
@@ -340,6 +348,10 @@ public class NotificationTask extends Thread {
 
     public String getEmail() throws IOException, MarshalException, ValidationException {
         return getContactInfo("email");
+    }
+    
+    public String getTuiPin() throws MarshalException, ValidationException, IOException {
+        return getContactInfo("tuiPin");
     }
 
     public synchronized void start() {

@@ -191,6 +191,7 @@
               </td>
             </tr>
 	    <%
+	    String tuiPin = null;
 	    String email = null;
         String pagerEmail = null;
         String xmppAddress = null;
@@ -198,6 +199,9 @@
         String numericPin = null;
         String textPage = null;
         String textPin = null;
+        String workPhone = null;
+        String mobilePhone = null;
+        String homePhone = null;
         String fullName = null;
         String comments = null;
         Boolean isReadOnly = false;
@@ -211,6 +215,9 @@
                     numericPin = userFactory.getNumericPin(userid);
                     textPage = userFactory.getTextPage(userid);
                     textPin = userFactory.getTextPin(userid);
+                    workPhone = userFactory.getWorkPhone(userid);
+                    mobilePhone = userFactory.getMobilePhone(userid);
+                    homePhone = userFactory.getHomePhone(userid);
             } else {
                     Contact[] contact = user.getContact();
                     for (int i = 0; i < contact.length; i++) {
@@ -225,11 +232,18 @@
                                     numericPage = contact[i].getInfo();
                             } else if (contact[i].getType().equals("textPage")) {
                                     textPage = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("workPhone")) {
+                                    workPhone = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("mobilePhone")) {
+                                    mobilePhone = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("homePhone")) {
+                                    homePhone = contact[i].getInfo();
                             }
                     }
             }
             fullName = user.getFullName();
             comments = user.getUserComments();
+            tuiPin = user.getTuiPin();
             isReadOnly = user.isReadOnly();
         } catch (org.exolab.castor.xml.MarshalException e) {
             throw new ServletException("An Error occurred reading the users file", e);
@@ -260,6 +274,14 @@
               </td>
               <td align="left" valign="top">
                 <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null ? "" : comments)%></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="tuiPinLabel" for="tuiPin">Telephone PIN:</label>
+              </td>
+              <td align="left" valign="top">
+                <input id="tuiPin" type="text" size="8" name="tuiPin" value="<%=(tuiPin == null ? "" : tuiPin)%>" />
               </td>
             </tr>
             <tr>
@@ -328,6 +350,30 @@
                 <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
               </td>
             </tr>
+            <tr>
+              <td valign="top">
+                <label id="workPhoneLabel" for="workPhone">Work Phone:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="16" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>'/>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="mobilePhoneLabel" for="mobilePhone">Mobile Phone:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="16" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>'/>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="homePhoneLabel" for="homePhone">Home Phone:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="16" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
+              </td>
+            </tr>
           </table>
 </div>
 
@@ -343,8 +389,10 @@
     address, <em>pager email</em> (in the case that the pager can be reached
     as an email destination), <em>XMPP address</em> (for instant messages
     using the Jabber XMPP protocol), <em>numeric service</em> (for pagers
-    that cannot display text messages), and <em>text service</em> (for
-    alphanumeric pagers).
+    that cannot display text messages), <em>text service</em> (for
+    alphanumeric pagers), and <em>work phone</em>, <em>mobile phone</em>, and
+    <em>home phone</em> for notifications by telephone. The <em>Telephone
+    PIN</em> is an optional numeric field used to authenticate called users.
   </p>
 
   <p>

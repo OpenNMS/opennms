@@ -89,4 +89,91 @@
             <switch>-tm</switch>
         </argument>
     </command>
+    <command binary="false">
+        <name>callWorkPhone</name>
+        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <comment>class for calling via Asterisk for notifications</comment>
+        <argument streamed="false">
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nodeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-interface</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-service</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-wphone</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tuipin</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>callMobilePhone</name>
+        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <comment>class for calling via Asterisk for notifications</comment>
+        <argument streamed="false">
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nodeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-interface</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-service</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-mphone</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tuipin</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>callHomePhone</name>
+        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <comment>class for calling via Asterisk for notifications</comment>
+        <argument streamed="false">
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nodeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-interface</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-service</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-mphone</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tuipin</switch>
+        </argument>
+    </command>
 </notification-commands>

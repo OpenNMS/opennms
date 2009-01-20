@@ -226,6 +226,35 @@ public abstract class UserManager {
     
         return m_users.get(name);
     }
+    
+    /**
+     * Get a user's telephone PIN by name
+     * 
+     * @param name
+     *            the name of the user to return
+     * @return the telephone PIN of the user specified by name
+     */
+    public String getTuiPin(String name) throws IOException, MarshalException, ValidationException {
+    
+        update();
+    
+        return m_users.get(name).getTuiPin();
+    }
+    
+    /**
+     * Get a user's telephone PIN by User object
+     * 
+     * @param name
+     *            the User object whose telephone PIN should be returned
+     * @return the telephone PIN of the user specified by user
+     */
+    public String getTuiPin(User user) throws IOException, MarshalException, ValidationException {
+    
+        update();
+    
+        return m_users.get(user.getUserId()).getTuiPin();
+    }
+
 
     /**
      * Get the contact info given a command string
@@ -465,6 +494,92 @@ public abstract class UserManager {
      */
     public String getTextPage(User user) throws IOException, MarshalException, ValidationException {
         return getContactServiceProvider(user, "textPage");
+    }
+    
+    /**
+     * Get a work phone number
+     * 
+     * @param userID
+     *             the user ID of the user to return
+     * @return String the work phone number
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public String getWorkPhone(String userID) throws MarshalException, ValidationException, IOException {
+        return getContactInfo(userID, "workPhone");
+    }
+    
+    /**
+     * Get a work phone number
+     * 
+     * @param userID
+     *             the user ID of the user to return
+     * @return String the work phone number
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public String getWorkPhone(User user) throws MarshalException, ValidationException, IOException {
+        return getContactInfo(user, "workPhone");
+    }
+
+    /**
+     * Get a mobile phone number
+     * 
+     * @param userID
+     *             the user ID of the user to return
+     * @return String the mobile phone number
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+
+    public String getMobilePhone(String userID) throws MarshalException, ValidationException, IOException {
+        return getContactInfo(userID, "mobilePhone");
+    }
+    
+    /**
+     * Get a mobile phone number
+     * 
+     * @param userID
+     *             the user ID of the user to return
+     * @return String the mobile phone number
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public String getMobilePhone(User user) throws MarshalException, ValidationException, IOException {
+        return getContactInfo(user, "mobilePhone");
+    }
+
+    /**
+     * Get a home phone number
+     * 
+     * @param userID
+     *             the user ID of the user to return
+     * @return String the home phone number
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+
+    public String getHomePhone(String userID) throws MarshalException, ValidationException, IOException {
+        return getContactInfo(userID, "homePhone");
+    }
+    
+    /**
+     * Get a home phone number
+     * 
+     * @param userID
+     *             the user ID of the user to return
+     * @return String the home phone number
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public String getHomePhone(User user) throws MarshalException, ValidationException, IOException {
+        return getContactInfo(user, "homePhone");
     }
 
     /**
