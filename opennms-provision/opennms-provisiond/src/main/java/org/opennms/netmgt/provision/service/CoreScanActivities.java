@@ -31,8 +31,17 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
+
+import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
+import org.opennms.netmgt.provision.service.snmp.SystemGroup;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * CoreImportActivities
@@ -42,11 +51,12 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvid
 @ActivityProvider
 public class CoreScanActivities {
     
+    @Autowired
     ProvisionService m_provisionService;
     
-    public CoreScanActivities(ProvisionService provisionService) {
-        m_provisionService = provisionService;
-    }
+    @Autowired
+    SnmpAgentConfigFactory m_agentConfigFactory;
+    
 
     /*
      *
@@ -96,13 +106,24 @@ public class CoreScanActivities {
 
 
     @Activity( lifecycle = "nodeScan", phase = "collectNodeInfo" )
-    public void collectNodeInfo() {
-        System.err.println("collectNodeInfo");
+    public void collectNodeInfo(OnmsNode node) throws InterruptedException {
+        InetAddress agentAddress = node.getPrimaryInterface().getInetAddress();
+        SystemGroup systemGroup = new SystemGroup(agentAddress);
+        
+        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentAddress);
+        
+        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
+        walker.start();
+        
+        walker.waitFor();
+        
+        systemGroup.updateSnmpDataForNode(node);
+        
     }
 
     @Activity( lifecycle = "nodeScan", phase = "persistNodeInfo", schedulingHint="write")
-    public void persistNodeInfo() {
-        System.err.println("persistNodeInfo");
+    public void persistNodeInfo(OnmsNode node) {
+        m_provisionService.updateNode(node, false, false);
     }
 
     @Activity( lifecycle = "nodeScan", phase = "detectPhysicalInterfaces" )
