@@ -49,7 +49,7 @@ public class JAXBTest {
         fs = fsr.get("cheese");
 //        fs.setScanInterval(scanInterval)
 
-        List<PluginConfig> detectors = new ArrayList<PluginConfig>();
+        ArrayList<PluginConfig> detectors = new ArrayList<PluginConfig>();
         final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
@@ -57,7 +57,7 @@ public class JAXBTest {
         detectors.add(detector);
         fs.setDetectors(detectors);
 
-        List<PluginConfig> policies = new ArrayList<PluginConfig>();
+        ArrayList<PluginConfig> policies = new ArrayList<PluginConfig>();
         PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
