@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -47,6 +48,12 @@ import java.util.Date;
  */
 public interface Acknowledgeable {
     
+    enum AckType implements Serializable{
+        Alarm,
+        Notification
+    }
     void acknowledge(Date ackDate, String ackUser);
-
+    
+    AckType getType();
+    
 }

@@ -621,6 +621,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         }
     }
 
-
-
+    @Transient
+    public AckType getType() {
+        return Acknowledgeable.AckType.Alarm;
+    }
+    
 }

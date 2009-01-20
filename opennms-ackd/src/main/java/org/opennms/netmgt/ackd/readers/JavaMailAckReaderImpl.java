@@ -70,6 +70,7 @@ import org.opennms.netmgt.model.Acknowledgment;
  * 
  * DONE: Identify acknowledgments for sent notifications
  * DONE: Identify acknowledgments for alarm IDs (how the send knows the ID, good question)
+ * TODO: Persist acknowledgments
  * TODO: Identify escalation reply
  * TODO: Identify clear reply
  * TODO: Identify unacknowledged reply

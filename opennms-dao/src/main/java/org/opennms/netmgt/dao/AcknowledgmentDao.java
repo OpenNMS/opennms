@@ -10,7 +10,7 @@
  *
  * Modifications:
  * 
- * Created: January 7, 2009
+ * Created: January 19, 2009
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -33,57 +33,24 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ackd;
+package org.opennms.netmgt.dao;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.Acknowledgment;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 
 /**
- * TODO: Needs IOC work
+ * Contract for persisting Acknowledgments
  * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class DefaultAckService implements AckService {
+public interface AcknowledgmentDao extends OnmsDao<Acknowledgment, Integer> {
+
+    List<Acknowledgeable> findAcknowledgables(Acknowledgment ack);
+
+    void updateAckable(Acknowledgeable ackable);
     
-    private AcknowledgmentDao m_ackDao;
-    private EventForwarder m_eventForwarder;
-
-    public void processAcks(Collection<Acknowledgment> acks) {
-        for (Acknowledgment ack : acks) {
-            processAck(ack);
-        }
-    }
-
-    public void processAck(Acknowledgment ack) {
-        
-        List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
-        EventBuilder ebuilder;
-        for (Acknowledgeable ackable : ackables) {
-            ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
-            m_ackDao.updateAckable(ackable);
-            m_ackDao.save(ack);
-            ebuilder = new EventBuilder("uei.opennms.org/internal/ackd/acknowledgment", "Ackd");
-            m_eventForwarder.sendNow(ebuilder.getEvent());
-        }
-    }
-
-    public void setAckDao(AcknowledgmentDao ackDao) {
-        m_ackDao = ackDao;
-    }
-
-    public AcknowledgmentDao getAckDao() {
-        return m_ackDao;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
-    }
 
 }
