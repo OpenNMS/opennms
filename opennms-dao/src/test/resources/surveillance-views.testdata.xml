@@ -2,28 +2,29 @@
 <surveillance-view-configuration 
   xmlns:this="http://www.opennms.org/xsd/config/surveillance-views" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views.xsd ">
-  <views default-view="default" >
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views.xsd "
+  default-view="default">
+  <views>
     <view name="default" >
       <rows>
-        <row-def row="1" label="High Priority" >
+        <row-def label="High Priority" >
           <category name="high"/>
         </row-def>
-        <row-def row="2" label="Mid Priority" >
+        <row-def label="Mid Priority" >
           <category name="mid" />
         </row-def>
-        <row-def row="3" label="Low Priority" >
+        <row-def label="Low Priority" >
           <category name="low" />
         </row-def>
       </rows>
       <columns>
-        <column-def col="1" label="Routers" >
+        <column-def label="Routers" >
           <category name="Routers" />
         </column-def>
-        <column-def col="2" label="Swtiches" >
+        <column-def label="Swtiches" >
           <category name="Switches" />
         </column-def>
-        <column-def col="3" label="Servers" >
+        <column-def label="Servers" >
           <category name="Servers" />
         </column-def>
       </columns>
