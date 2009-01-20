@@ -43,6 +43,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
+import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.Acknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -64,7 +65,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgm
         
         List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
         
-        if (ack.getAckType().equals(Acknowledgeable.AckType.Alarm)) {
+        if (ack.getAckType().equals(AckType.Alarm)) {
             final OnmsAlarm alarm = findAlarm(ack);
             
             if (alarm != null) {
@@ -80,7 +81,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgm
             
         }
         
-        if (ack.getAckType().equals(Acknowledgeable.AckType.Notification)) {
+        if (ack.getAckType().equals(AckType.Notification)) {
             final String hql = "from OnmsNotification as notifications where notifications.id = :notifyId";
             Object result = findAck(ack, hql);
             OnmsNotification notification = OnmsNotification.class.cast(result);

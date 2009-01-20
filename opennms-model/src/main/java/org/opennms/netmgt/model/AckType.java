@@ -35,20 +35,9 @@
  */
 package org.opennms.netmgt.model;
 
-import java.util.Date;
 
-/**
- * Entities that have the capability of being acknowledge should implement this interface for
- * Ackd acknowledgment behavior.
- * 
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
- */
-public interface Acknowledgeable {
-    
-    void acknowledge(Date ackDate, String ackUser);
-    
-    AckType getType();
-    
+public enum AckType {
+    Unspecified,
+    Alarm,
+    Notification,
 }
