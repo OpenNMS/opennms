@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -56,7 +57,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  */
 @XmlRootElement(name="foreign-source")
-public class OnmsForeignSource implements Serializable {
+public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSource> {
     private static final long serialVersionUID = 1L;
     
     @XmlAttribute(name="name")
@@ -73,6 +74,8 @@ public class OnmsForeignSource implements Serializable {
     @XmlElementWrapper(name="policies")
     @XmlElement(name="policy")
     private List<PluginConfig> m_policies = new ArrayList<PluginConfig>();
+
+    private boolean m_default;
 
     public OnmsForeignSource() {
     }
@@ -138,16 +141,35 @@ public class OnmsForeignSource implements Serializable {
         m_policies.add(policy);
     }
 
+    public boolean isDefault() {
+        return m_default;
+    }
+
+    @XmlTransient
+    public void setDefault(boolean isDefault) {
+        m_default = isDefault;
+    }
+    
     @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("name", getName())
             .append("scan-interval", getScanInterval())
-            .append("detectors", getDetectors())
-            .append("policies", getPolicies())
+            .append("detectors", getDetectors().toArray(new PluginConfig[0]))
+            .append("policies", getPolicies().toArray(new PluginConfig[0]))
             .toString();
     }
 
+    public int compareTo(OnmsForeignSource obj) {
+        return new CompareToBuilder()
+            .append(getName(), obj.getName())
+            .append(getScanInterval(), obj.getScanInterval())
+            .append(getDetectors().toArray(new PluginConfig[0]), obj.getDetectors().toArray(new PluginConfig[0]))
+            .append(getPolicies().toArray(new PluginConfig[0]), obj.getPolicies().toArray(new PluginConfig[0]))
+            .append(isDefault(), obj.isDefault())
+            .toComparison();
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof OnmsForeignSource) {
@@ -155,8 +177,9 @@ public class OnmsForeignSource implements Serializable {
             return new EqualsBuilder()
                 .append(getName(), other.getName())
                 .append(getScanInterval(), other.getScanInterval())
-                .append(getDetectors(), other.getDetectors())
-                .append(getPolicies(), other.getPolicies())
+                .append(getDetectors().toArray(new PluginConfig[0]), other.getDetectors().toArray(new PluginConfig[0]))
+                .append(getPolicies().toArray(new PluginConfig[0]), other.getPolicies().toArray(new PluginConfig[0]))
+                .append(isDefault(), other.isDefault())
                 .isEquals();
         }
         return false;
@@ -167,8 +190,9 @@ public class OnmsForeignSource implements Serializable {
         return new HashCodeBuilder()
             .append(getName())
             .append(getScanInterval())
-            .append(getDetectors())
-            .append(getPolicies())
+            .append(getDetectors().toArray(new PluginConfig[0]))
+            .append(getPolicies().toArray(new PluginConfig[0]))
+            .append(isDefault())
             .toHashCode();
       }
 }

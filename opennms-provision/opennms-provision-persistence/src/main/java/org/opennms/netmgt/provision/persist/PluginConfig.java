@@ -35,6 +35,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -61,14 +63,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="plugin")
-public class PluginConfig {
+public class PluginConfig implements Serializable, Comparable<PluginConfig> {
+    private static final long serialVersionUID = 1L;
+
     @XmlAttribute(name="name")
     private String m_name;
 
     @XmlAttribute(name="class")
     private String m_pluginClass;
 
-    // @XmlJavaTypeAdapter(ParameterMapAdaptor.class)
     @XmlTransient
     private Map<String,String> m_parameters = new LinkedHashMap<String,String>();
 
@@ -174,13 +177,29 @@ public class PluginConfig {
     public void addParameter(String key, String value) {
         m_parameters.put(key, value);
     }
+
+    private String getParametersAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String,String> entry : m_parameters.entrySet()) {
+            sb.append(entry.getKey()).append('=').append(entry.getValue()).append('/');
+        }
+        return sb.toString();
+    }
+
+    public int compareTo(PluginConfig obj) {
+        return new CompareToBuilder()
+            .append(getName(), obj.getName())
+            .append(getPluginClass(), obj.getPluginClass())
+            .append(getParametersAsString(), obj.getParametersAsString())
+            .toComparison();
+    }
     
     @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("name", getName())
             .append("plugin-class", getPluginClass())
-            .append("parameters", getParameters())
+            .append("parameters", getParametersAsString())
             .toString();
     }
 
@@ -191,7 +210,7 @@ public class PluginConfig {
             return new EqualsBuilder()
                 .append(getName(), other.getName())
                 .append(getPluginClass(), other.getPluginClass())
-                .append(getParameters(), other.getParameters())
+                .append(getParametersAsString(), other.getParametersAsString())
                 .isEquals();
         }
         return false;
@@ -202,7 +221,7 @@ public class PluginConfig {
         return new HashCodeBuilder()
             .append(getName())
             .append(getPluginClass())
-            .append(getParameters())
+            .append(getParametersAsString())
             .toHashCode();
       }
 
