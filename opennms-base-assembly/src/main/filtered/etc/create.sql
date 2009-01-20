@@ -66,6 +66,7 @@ drop table vlan cascade;
 drop table statisticsReportData cascade;
 drop table resourceReference cascade;
 drop table statisticsReport cascade;
+drop table acks cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -178,7 +179,6 @@ create sequence pollResultNxtId minvalue 1;
 --#          sequence,   column, table
 --# install: mapNxtId mapid map
 create sequence mapNxtId minvalue 1;
-
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -2010,6 +2010,34 @@ create table statisticsReportData (
 );
 
 create unique index statsData_unique on statisticsReportData(reportId, resourceId);
+
+
+--# Begin Acknowledgment persistence table structure
+
+--########################################################################
+--#
+--# acks table -- This table contains each acknowledgment
+--# 
+--#  id                 : Unique ID
+--#  ackTime            : Time of the Acknowledgment
+--#  ackUser            : User ID of the Acknowledgment
+--#  ackType            : Enum of Acknowlegable Types in the system (i.e
+--#                     : notifications/alarms
+--#  refId              : Acknowledgable's ID
+--########################################################################
+
+CREATE TABLE acks (
+    id    integer default nextVal('opennmsNxtId') not null,
+    ackTime  timestamp with time zone not null,
+    ackUser  varchar(64) not null,
+    ackType  varchar(32) not null,
+    refId    integer,
+    
+    constraint pk_acks_id primary key (id)
+);
+
+create index ack_time_idx on acks(ackTime);
+create index ack_user_idx on acks(ackUser);
 
 
 --# Begin Quartz persistence tables
