@@ -45,10 +45,10 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -169,7 +169,7 @@ public final class RTCConfigFactory {
     }
 
     private void marshal(Reader reader) throws MarshalException, ValidationException {
-        m_config = (RTCConfiguration) Unmarshaller.unmarshal(RTCConfiguration.class, reader);
+        m_config = CastorUtils.unmarshal(RTCConfiguration.class, reader);
     }
     
     public static void setInstance(RTCConfigFactory instance) {

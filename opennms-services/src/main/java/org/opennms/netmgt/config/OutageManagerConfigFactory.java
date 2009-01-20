@@ -35,16 +35,14 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.outage.OutageConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -85,11 +83,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
      *                Thrown if the contents do not match the required schema.
      */
     private OutageManagerConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (OutageConfiguration) Unmarshaller.unmarshal(OutageConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(OutageConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

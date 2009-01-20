@@ -40,12 +40,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
-import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is a wrapper class for handling JavaMail configurations.
@@ -93,7 +93,7 @@ public class MailTransportParameters {
 
     MailTransportTest parseMailTransportTest(String test) {
         try {
-            return (MailTransportTest) Unmarshaller.unmarshal(MailTransportTest.class, new StringReader(test));
+            return CastorUtils.unmarshal(MailTransportTest.class, new StringReader(test));
         } catch (MarshalException e) {
             throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
         } catch (ValidationException e) {

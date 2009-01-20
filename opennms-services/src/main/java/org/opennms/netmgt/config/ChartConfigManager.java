@@ -39,9 +39,9 @@ import java.io.StringWriter;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * @author david
@@ -58,7 +58,7 @@ public abstract class ChartConfigManager {
      * @throws IOException
      */
     public synchronized static void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_configuration = (ChartConfiguration) Unmarshaller.unmarshal(ChartConfiguration.class, reader);
+        m_configuration = CastorUtils.unmarshal(ChartConfiguration.class, reader);
     }
     
     /**

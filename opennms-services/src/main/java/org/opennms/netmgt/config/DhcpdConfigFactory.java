@@ -35,15 +35,14 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -83,10 +82,7 @@ public final class DhcpdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DhcpdConfigFactory(File configFile) throws IOException, MarshalException, ValidationException {
-        Reader cfgIn = new FileReader(configFile);
-        m_config = (DhcpdConfiguration) Unmarshaller.unmarshal(DhcpdConfiguration.class, cfgIn);
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(DhcpdConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

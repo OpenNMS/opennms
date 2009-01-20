@@ -33,8 +33,6 @@ package org.opennms.web.svclayer.support;
 
 import static org.easymock.EasyMock.expect;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,14 +41,14 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.web.BeanUtils;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
-import org.springframework.core.io.ClassPathResource;
 
 public class DefaultManualProvisioningServiceTest extends TestCase {
     
@@ -65,15 +63,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
     
     @Override
     protected void setUp() throws Exception {
-        ClassPathResource res = new ClassPathResource("tec_dump.xml");
-        
-        Reader in = null;
-        try {
-            in = new InputStreamReader(res.getInputStream());
-            m_testData = (ModelImport)Unmarshaller.unmarshal(ModelImport.class, in);
-        } finally {
-            if (in != null) in.close();
-        }
+        m_testData = CastorUtils.unmarshal(ModelImport.class, ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
         
         m_provisioningDao = createMock(ManualProvisioningDao.class);
         

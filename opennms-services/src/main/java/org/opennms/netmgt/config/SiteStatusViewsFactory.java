@@ -51,12 +51,12 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.View;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 public class SiteStatusViewsFactory {
     /** The singleton instance. */
@@ -93,7 +93,7 @@ public class SiteStatusViewsFactory {
 
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
         log().debug("initialize: initializing site status views factory.");
-        m_config = (SiteStatusViewConfiguration) Unmarshaller.unmarshal(SiteStatusViewConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(SiteStatusViewConfiguration.class, rdr);
 
         m_viewsMap = new HashMap<String, View>();
         Collection viewList = m_config.getViews().getViewCollection();

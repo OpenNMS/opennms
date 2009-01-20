@@ -39,11 +39,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -59,15 +56,16 @@ import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.netmgt.config.vulnscand.Excludes;
 import org.opennms.netmgt.config.vulnscand.Range;
 import org.opennms.netmgt.config.vulnscand.ScanLevel;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.protocols.ip.IPv4Address;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -156,10 +154,7 @@ public final class VulnscandConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private VulnscandConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (VulnscandConfiguration) Unmarshaller.unmarshal(VulnscandConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+        m_config = CastorUtils.unmarshal(VulnscandConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

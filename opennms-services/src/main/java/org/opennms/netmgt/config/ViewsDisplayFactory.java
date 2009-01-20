@@ -50,11 +50,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 public class ViewsDisplayFactory {
     /** The singleton instance. */
@@ -127,7 +127,7 @@ public class ViewsDisplayFactory {
     }
     
     private void unmarshal(Reader reader) throws MarshalException, ValidationException {
-        m_viewInfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, reader);
+        m_viewInfo = CastorUtils.unmarshal(Viewinfo.class, reader);
         Map<String, View> viewsMap = new HashMap<String,View>();
 
         Collection viewList = m_viewInfo.getViewCollection();

@@ -31,23 +31,23 @@
 //
 package org.opennms.netmgt.config;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
-import org.opennms.netmgt.config.wmi.WmiCollection;
-import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.core.utils.ThreadCategory;
-import org.apache.log4j.Category;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.FileInputStream;
 import java.io.Reader;
-import java.io.FileNotFoundException;
-import java.io.File;
 import java.util.List;
+
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.wmi.WmiCollection;
+import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.model.RrdRepository;
 
 /**
  * <P>
@@ -89,7 +89,7 @@ public class WmiDataCollectionConfigFactory {
 
      private void initialize(Reader rdr) throws MarshalException, ValidationException {
          log().debug("initialize: initializing WMI collection config factory.");
-         m_config = (WmiDatacollectionConfig) Unmarshaller.unmarshal(WmiDatacollectionConfig.class, rdr);
+         m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, rdr);
      }
 
      /** Be sure to call this method before calling getInstance(). */

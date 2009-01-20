@@ -53,13 +53,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.filter.Column;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
 import org.opennms.netmgt.config.filter.Table;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -125,7 +125,7 @@ public final class DatabaseSchemaConfigFactory {
 
     private void parseXML(Reader rdr) throws IOException, MarshalException, ValidationException {
 
-        m_config = (DatabaseSchema) Unmarshaller.unmarshal(DatabaseSchema.class, rdr);
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, rdr);
 
         finishConstruction();
     }

@@ -39,11 +39,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +55,6 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -69,6 +65,8 @@ import org.opennms.netmgt.config.views.Membership;
 import org.opennms.netmgt.config.views.View;
 import org.opennms.netmgt.config.views.Viewinfo;
 import org.opennms.netmgt.config.views.Views;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 public class ViewFactory {
     /**
@@ -80,11 +78,6 @@ public class ViewFactory {
      * File path of views.xml
      */
     protected static File usersFile;
-
-    /**
-     * An input stream for the views configuration file
-     */
-    protected static InputStream configIn;
 
     /**
      * A mapping of views ids to the View objects
@@ -131,8 +124,7 @@ public class ViewFactory {
      * Parses the views.xml via the Castor classes
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_CONF_FILE_NAME));
-        Viewinfo viewinfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, new InputStreamReader(configIn));
+        Viewinfo viewinfo = CastorUtils.unmarshal(Viewinfo.class, new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_CONF_FILE_NAME)));
         Views views = viewinfo.getViews();
         oldHeader = viewinfo.getHeader();
         Collection<View> viewsList = views.getViewCollection();

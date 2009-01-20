@@ -36,13 +36,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.scriptd.Engine;
@@ -51,6 +47,8 @@ import org.opennms.netmgt.config.scriptd.ReloadScript;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -90,11 +88,7 @@ public final class ScriptdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ScriptdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (ScriptdConfiguration) Unmarshaller.unmarshal(ScriptdConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(ScriptdConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

@@ -36,14 +36,12 @@
 
 package org.openoss.opennms.spring.qosd;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * loads the Qosd configuration from QoSD-configuration.xml
@@ -54,6 +52,7 @@ public class QoSDConfigFactory {
     
     public static boolean is_loaded = false;
     
+    // XXX Don't use opennms.home directly and don't use "/"
     public static void reload() throws IOException,MarshalException,ValidationException{
     	
     	String configFile = System.getProperty("opennms.home");
@@ -62,17 +61,15 @@ public class QoSDConfigFactory {
     	}
     	configFile += "/etc/QoSD-configuration.xml";
 
-    	InputStream cfgIn = new FileInputStream(configFile);
-
-		config = (QoSDConfiguration) Unmarshaller.unmarshal(QoSDConfiguration.class, new InputStreamReader(cfgIn));
+		config = CastorUtils.unmarshal(QoSDConfiguration.class, new FileSystemResource(configFile));
 		
 		is_loaded = true;
-		
-		cfgIn.close();  	
     }
     
     public static QoSDConfiguration getConfig() throws IOException,MarshalException,ValidationException{
-        if(!is_loaded) reload();
+        if (!is_loaded) {
+            reload();
+        }
         return config;
     }
 }
