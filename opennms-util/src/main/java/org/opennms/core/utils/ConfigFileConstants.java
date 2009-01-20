@@ -455,6 +455,21 @@ public final class ConfigFileConstants {
      * The WMI collection configuration file
      */
     public static final int WMI_COLLECTION_CONFIG_FILE_NAME;
+    
+    /**
+     * The L2 interface poller configuration file
+     */
+    public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
+
+    /**
+     * The Asterisk global configuration file (for notification, etc).
+     */
+    public static final int ASTERISK_CONFIG_FILE_NAME;
+    
+    /**
+     * The AMI agent configuration file
+     */
+    public static final int AMI_CONFIG_FILE_NAME;
 
     //
     // Initialize the class data. This section is used to initialize the
@@ -573,9 +588,15 @@ public final class ConfigFileConstants {
         
         XMP_CONFIG_FILE_NAME = 72;
         
+        SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
+        
+        ASTERISK_CONFIG_FILE_NAME = 74;
+        
+        AMI_CONFIG_FILE_NAME = 75;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[73];
+        FILE_ID_TO_NAME = new String[76];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -665,6 +686,9 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME] = "rancid_provisioning-adpt-config.xml";
         FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
         FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
+        FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
+        FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
+        FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
     }
 
     /**

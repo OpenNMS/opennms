@@ -178,6 +178,34 @@
                         <%=userFactory.getTextPin(userID)%>
                       </td>
                     </tr>
+                    
+                    <tr>
+                      <td width="10%" valign="top">
+                        <b>Work Phone:</b>
+                      </td>
+                      <td width="90%" valign="top">
+                        <%=userFactory.getWorkPhone(userID)%>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td width="10%" valign="top">
+                        <b>Mobile Phone:</b>
+                      </td>
+                      <td width="90%" valign="top">
+                        <%=userFactory.getMobilePhone(userID)%>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td width="10%" valign="top">
+                        <b>Home Phone:</b>
+                      </td>
+                      <td width="90%" valign="top">
+                        <%=userFactory.getHomePhone(userID)%>
+                      </td>
+                    </tr>
+
                   </table>
                 </td>
               </tr>

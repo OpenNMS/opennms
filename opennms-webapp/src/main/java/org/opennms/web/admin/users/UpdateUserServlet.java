@@ -88,6 +88,11 @@ public class UpdateUserServlet extends HttpServlet {
             if (password != null && !password.trim().equals("")) {
                 newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
             }
+            
+            String tuiPin = request.getParameter("tuiPin");
+            if (tuiPin != null && !tuiPin.trim().equals("")) {
+                newUser.setTuiPin(tuiPin);
+            }
 
             String email = request.getParameter("email");
             String pagerEmail = request.getParameter("pemail");
@@ -96,6 +101,9 @@ public class UpdateUserServlet extends HttpServlet {
             String numericPin = request.getParameter("numericalPin");
             String textPage = request.getParameter("textService");
             String textPin = request.getParameter("textPin");
+            String workPhone = request.getParameter("workPhone");
+            String mobilePhone = request.getParameter("mobilePhone");
+            String homePhone = request.getParameter("homePhone");
 
             newUser.removeAllContact();
 
@@ -124,6 +132,21 @@ public class UpdateUserServlet extends HttpServlet {
             tmpContact.setInfo(textPin);
             tmpContact.setServiceProvider(textPage);
             tmpContact.setType("textPage");
+            newUser.addContact(tmpContact);
+            
+            tmpContact = new Contact();
+            tmpContact.setInfo(workPhone);
+            tmpContact.setType("workPhone");
+            newUser.addContact(tmpContact);
+            
+            tmpContact = new Contact();
+            tmpContact.setInfo(mobilePhone);
+            tmpContact.setType("mobilePhone");
+            newUser.addContact(tmpContact);
+
+            tmpContact = new Contact();
+            tmpContact.setInfo(homePhone);
+            tmpContact.setType("homePhone");
             newUser.addContact(tmpContact);
 
             // build the duty schedule data structure
