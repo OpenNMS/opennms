@@ -2027,7 +2027,7 @@ create unique index statsData_unique on statisticsReportData(reportId, resourceI
 --########################################################################
 
 CREATE TABLE acks (
-    id    integer default nextVal('opennmsNxtId') not null,
+    id       integer default nextval('opennmsnxtid') not null,
     ackTime  timestamp with time zone not null,
     ackUser  varchar(64) not null,
     ackType  varchar(32) not null,
