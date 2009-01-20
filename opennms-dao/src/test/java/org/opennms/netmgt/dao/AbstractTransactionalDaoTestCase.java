@@ -58,6 +58,7 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private UserNotificationDao m_userNotificationDao;
     private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private AcknowledgmentDao m_acknowledgmentDao;
     
     private DatabasePopulator m_populator;
     
@@ -241,6 +242,14 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
+    }
+
+    public AcknowledgmentDao getAcknowledgmentDao() {
+        return m_acknowledgmentDao;
+    }
+
+    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
+        m_acknowledgmentDao = acknowledgmentDao;
     }
 
     public boolean isPopulate() {

@@ -41,8 +41,8 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
-import org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
+import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgment;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -248,7 +248,10 @@ public class DatabasePopulator {
         getAlarmDao().flush();
         
         
-        Acknowledgment ack = new Acknowledgment(alarm);
+        Acknowledgment ack = new Acknowledgment();
+        ack.setAckTime(new Date());
+        ack.setAckType(AckType.Unspecified);
+        ack.setAckUser("admin");
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
