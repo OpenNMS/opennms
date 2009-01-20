@@ -308,8 +308,8 @@ openNMS-Generic-Trap		TRAP-TYPE
 		}
 	DESCRIPTION 
 	"This is the definition of the generic OpenNMS trap sent from the
-        scriptd process. Key variables are uei (which tells what type
-        of OpenNMS event this was), interface (the IP address of the interface
+	scriptd process. Key variables are uei (which tells what type
+	of OpenNMS event this was), interface (the IP address of the interface
 	that caused the event) and severity."
 	::= 1
 
