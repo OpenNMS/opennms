@@ -56,7 +56,6 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.IpListFromUrl;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
@@ -157,7 +157,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (PollerConfiguration) Unmarshaller.unmarshal(PollerConfiguration.class, reader);
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
         createServiceMonitors();

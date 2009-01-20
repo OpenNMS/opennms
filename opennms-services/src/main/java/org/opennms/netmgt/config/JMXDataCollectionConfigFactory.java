@@ -50,7 +50,6 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -60,6 +59,7 @@ import org.opennms.netmgt.config.collectd.JmxCollection;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.Mbean;
 import org.opennms.netmgt.config.collectd.Mbeans;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -126,7 +126,7 @@ public final class JMXDataCollectionConfigFactory {
     }
     
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        m_config = (JmxDatacollectionConfig) Unmarshaller.unmarshal(JmxDatacollectionConfig.class, rdr);
+        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, rdr);
 
         // Build collection map which is a hash map of Collection
         // objects indexed by collection name...also build

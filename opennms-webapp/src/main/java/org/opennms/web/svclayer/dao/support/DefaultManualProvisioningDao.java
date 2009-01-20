@@ -35,12 +35,9 @@
 package org.opennms.web.svclayer.dao.support;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
@@ -53,12 +50,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
-import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.util.Assert;
@@ -80,27 +77,15 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         
         File importFile = getImportFile(name);
         
-        if (!importFile.exists())
+        if (!importFile.exists()) {
             return null;
-        
-        if (!importFile.canRead())
-            throw new PermissionDeniedDataAccessException("Unable to read file "+importFile, null);
-        
-        Reader r = null;
-        try {
-            r = new FileReader(importFile);
-            return (ModelImport)Unmarshaller.unmarshal(ModelImport.class, r);
-        } catch (FileNotFoundException e) {
-            throw new CastorDataAccessFailureException("Unable to locate File "+importFile, e);
-        } catch (MarshalException e) {
-            throw new CastorObjectRetrievalFailureException("Exception occurrred reading data from "+importFile, e);
-        } catch (ValidationException e) {
-            throw new CastorObjectRetrievalFailureException("Validation error reading data from "+importFile, e);
-        } finally {
-            if (r != null) IOUtils.closeQuietly(r);
         }
         
+        if (!importFile.canRead()) {
+            throw new PermissionDeniedDataAccessException("Unable to read file "+importFile, null);
+        }
         
+        return CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, new FileSystemResource(importFile));
     }
 
     private void checkGroupName(String name) {

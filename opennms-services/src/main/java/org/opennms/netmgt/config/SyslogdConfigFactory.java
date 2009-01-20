@@ -42,20 +42,18 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.syslogd.UeiList;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -95,21 +93,12 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      */
     private SyslogdConfigFactory(String configFile) throws IOException,
             MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (SyslogdConfiguration) Unmarshaller.unmarshal(
-                SyslogdConfiguration.class,
-                new InputStreamReader(
-                        cfgIn));
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
     }
 
     public SyslogdConfigFactory(Reader rdr) throws MarshalException,
             ValidationException {
-        m_config = (SyslogdConfiguration) Unmarshaller.unmarshal(
-                SyslogdConfiguration.class,
-                rdr);
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr);
     }
 
     /**

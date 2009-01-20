@@ -37,18 +37,18 @@ package org.opennms.netmgt.mock;
  * 
  */
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 public class MockCategoryFactory implements CatFactory {
 	
@@ -91,13 +91,11 @@ public class MockCategoryFactory implements CatFactory {
 		"</catinfo>";
 	
 	public MockCategoryFactory() throws MarshalException, ValidationException, IOException {
-		m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, new StringReader(CATEGORY_CONFIG));
-       
+        this(CATEGORY_CONFIG);
     }
 	
 	public MockCategoryFactory(String config) throws MarshalException, ValidationException, IOException {
-		m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, new StringReader(config));
-       
+        m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()));
     }
 
 	 /**

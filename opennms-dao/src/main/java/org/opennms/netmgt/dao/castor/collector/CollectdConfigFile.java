@@ -33,17 +33,17 @@ package org.opennms.netmgt.dao.castor.collector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 public class CollectdConfigFile {
 	
@@ -70,18 +70,16 @@ public class CollectdConfigFile {
     }
 
     private CollectdConfiguration getCollectdConfiguration() {
-		FileReader in = null;
 		try {
-			in = new FileReader(m_file);
-			return (CollectdConfiguration) Unmarshaller.unmarshal(CollectdConfiguration.class, in);
+			return CastorUtils.unmarshal(CollectdConfiguration.class, new FileSystemResource(m_file));
 		} catch (MarshalException e) {
 			throw runtimeException("Syntax error in "+m_file, e);
 		} catch (ValidationException e) {
 			throw runtimeException("invalid attribute in "+m_file, e);
-		} catch (FileNotFoundException e) {
-			throw runtimeException("Unable to find file "+m_file, e);
-		} finally {
-			closeQuietly(in);
+        } catch (FileNotFoundException e) {
+            throw runtimeException("Unable to find file "+m_file, e);
+        } catch (IOException e) {
+            throw runtimeException("Unable to find access "+m_file, e);
 		}
 	}
 
@@ -93,12 +91,4 @@ public class CollectdConfigFile {
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
-
-	private void closeQuietly(FileReader in) {
-		try {
-			if (in != null) in.close();
-		} catch (IOException e) {
-		}		
-	}
-
 }

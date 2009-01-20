@@ -45,12 +45,12 @@ import java.io.Reader;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>
@@ -116,7 +116,7 @@ public final class ServiceConfigFactory {
     }
 
     private void parseXml(Reader cfgIn) throws MarshalException, ValidationException {
-        m_config = (ServiceConfiguration) Unmarshaller.unmarshal(ServiceConfiguration.class, cfgIn);
+        m_config = CastorUtils.unmarshal(ServiceConfiguration.class, cfgIn);
     }
 
     /**

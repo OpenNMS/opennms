@@ -50,12 +50,12 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -93,7 +93,7 @@ public class HttpCollectionConfigFactory {
 
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
         log().debug("initialize: initializing http collection config factory.");
-        m_config = (HttpDatacollectionConfig) Unmarshaller.unmarshal(HttpDatacollectionConfig.class, rdr);
+        m_config = CastorUtils.unmarshal(HttpDatacollectionConfig.class, rdr);
     }
 
     /** Be sure to call this method before calling getInstance(). */

@@ -53,6 +53,10 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
         m_serviceClass = serviceClass;
     }
 
+    /*
+     * FIXME The use of CastorObjectRetrievalFailureException doesn't seem
+     * appropriate below, as I don't see Castor being used at all. - dj@opennms.org
+     */
     public ServiceMonitor getServiceMonitor() {
         try {
             ServiceMonitor mon = m_serviceClass.newInstance();

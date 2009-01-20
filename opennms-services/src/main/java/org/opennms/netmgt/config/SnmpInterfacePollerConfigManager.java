@@ -48,7 +48,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.IpListFromUrl;
@@ -58,6 +57,7 @@ import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.IncludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.Package;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
@@ -132,7 +132,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
 
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (SnmpInterfacePollerConfiguration) Unmarshaller.unmarshal(SnmpInterfacePollerConfiguration.class, reader);
+        m_config = CastorUtils.unmarshal(SnmpInterfacePollerConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
     }

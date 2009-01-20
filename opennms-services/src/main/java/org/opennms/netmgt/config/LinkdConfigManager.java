@@ -35,33 +35,34 @@
  */
 package org.opennms.netmgt.config;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.config.linkd.*;
+import org.opennms.netmgt.config.linkd.ExcludeRange;
+import org.opennms.netmgt.config.linkd.IncludeRange;
+import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.linkd.Package;
+import org.opennms.netmgt.config.linkd.Vendor;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.linkd.DiscoveryLink;
 import org.opennms.netmgt.linkd.SnmpCollection;
-
 import org.opennms.protocols.snmp.SnmpObjectId;
 
 /**
@@ -603,7 +604,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
     
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (LinkdConfiguration) Unmarshaller.unmarshal(LinkdConfiguration.class, reader);
+        m_config = CastorUtils.unmarshal(LinkdConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
         getClassNames();

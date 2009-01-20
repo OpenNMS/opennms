@@ -40,19 +40,16 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the poller
@@ -87,15 +84,11 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      *                Thrown if the contents do not match the required schema.
      */
     PollOutagesConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        setConfig((Outages) Unmarshaller.unmarshal(Outages.class, new InputStreamReader(cfgIn)));
-        cfgIn.close();
-
+        setConfig(CastorUtils.unmarshal(Outages.class, new FileSystemResource(configFile)));
     }
     
     public PollOutagesConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        setConfig((Outages) Unmarshaller.unmarshal(Outages.class, rdr));
+        setConfig(CastorUtils.unmarshal(Outages.class, rdr));
     }
 
     /**
@@ -171,8 +164,6 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     public void update() throws IOException, MarshalException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
 
-        Reader r = new FileReader(cfgFile);
-        setConfig((Outages) Unmarshaller.unmarshal(Outages.class, r));
-        r.close();
+        setConfig(CastorUtils.unmarshal(Outages.class, new FileSystemResource(cfgFile)));
     }
 }

@@ -39,17 +39,15 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -90,15 +88,11 @@ public final class TrapdConfigFactory implements TrapdConfig {
      *                Thrown if the contents do not match the required schema.
      */
     private TrapdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (TrapdConfiguration) Unmarshaller.unmarshal(TrapdConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
+        m_config = CastorUtils.unmarshal(TrapdConfiguration.class, new FileSystemResource(configFile));
     }
     
     public TrapdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        m_config = (TrapdConfiguration) Unmarshaller.unmarshal(TrapdConfiguration.class, rdr);
+        m_config = CastorUtils.unmarshal(TrapdConfiguration.class, rdr);
     }
 
     /**

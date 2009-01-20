@@ -53,7 +53,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -65,6 +64,7 @@ import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Roles;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 
 /**
@@ -93,7 +93,7 @@ public abstract class GroupManager {
      * @throws ValidationException
      */
     protected synchronized void parseXml(Reader reader) throws MarshalException, ValidationException {
-        Groupinfo groupinfo = (Groupinfo) Unmarshaller.unmarshal(Groupinfo.class, reader);
+        Groupinfo groupinfo = CastorUtils.unmarshal(Groupinfo.class, reader);
         Groups groups = groupinfo.getGroups();
         m_groups = new LinkedHashMap<String, Group>();
         m_oldHeader = groupinfo.getHeader();
