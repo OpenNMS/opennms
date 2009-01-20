@@ -1514,16 +1514,6 @@
       <id>java-net-maven2-repo</id>
       <url>http://download.java.net/maven/2</url>
     </repository>
-    <repository>
-     <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>reucon-com-public-snapshot-repo</id>
-      <url>http://maven.reucon.com/public-snapshot</url>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
