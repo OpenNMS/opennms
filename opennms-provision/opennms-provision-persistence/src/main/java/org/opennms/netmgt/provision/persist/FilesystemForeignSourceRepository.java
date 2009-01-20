@@ -30,7 +30,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
         }
     }
-    
+
     private OnmsForeignSource get(File file) throws ForeignSourceRepositoryException {
         try {
             return (OnmsForeignSource) m_unMarshaller.unmarshal(file);
@@ -38,10 +38,16 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("unable to unmarshal " + file.getPath(), e);
         }
     }
-    
+
     public OnmsForeignSource get(String foreignSourceName) throws ForeignSourceRepositoryException {
-        File inputFile = new File(m_foreignSourcePath, foreignSourceName + ".xml");
-        return get(inputFile);
+        File inputFile = encodeFileName(m_foreignSourcePath, foreignSourceName);
+        if (inputFile != null && inputFile.exists()) {
+            return get(inputFile);
+        } else {
+            OnmsForeignSource fs = getDefaultForeignSource();
+            fs.setName(foreignSourceName);
+            return fs;
+        }
     }
 
     public Set<OnmsForeignSource> getAll() throws ForeignSourceRepositoryException {
@@ -54,7 +60,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 return false;
             }
         };
-        Set<OnmsForeignSource> foreignSources = new TreeSet<OnmsForeignSource>();
+        TreeSet<OnmsForeignSource> foreignSources = new TreeSet<OnmsForeignSource>();
         for (File file : directory.listFiles(filter)) {
             foreignSources.add(get(file));
         }
@@ -62,7 +68,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     public OnmsRequisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException {
-        File inputFile = new File(m_requisitionPath, foreignSourceName + ".xml");
+        File inputFile = encodeFileName(m_requisitionPath, foreignSourceName);
         try {
             OnmsRequisition req = new OnmsRequisition();
             req.loadResource(new FileSystemResource(inputFile));
@@ -109,17 +115,26 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
+    private File encodeFileName(String path, String foreignSourceName) throws ForeignSourceRepositoryException {
+//        try {
+//            return new File(path, java.net.URLEncoder.encode(foreignSourceName, "UTF-8") + ".xml");
+          return new File(path, foreignSourceName + ".xml");
+//        } catch (UnsupportedEncodingException e) {
+//            throw new ForeignSourceRepositoryException("unable to encode file name for " + foreignSourceName, e);
+//        }
+    }
+
     private File getOutputFileForForeignSource(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File fsPath = new File(m_foreignSourcePath);
         createPath(fsPath);
-        File outputFile = new File(fsPath, foreignSource.getName() + ".xml");
+        File outputFile = encodeFileName(m_foreignSourcePath, foreignSource.getName());
         return outputFile;
     }
 
     private File getOutputFileForRequisition(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
         File reqPath = new File(m_requisitionPath);
         createPath(reqPath);
-        File outputFile = new File(reqPath, requisition.getForeignSource() + ".xml");
+        File outputFile = encodeFileName(m_requisitionPath, requisition.getForeignSource());
         return outputFile;
     }
 
