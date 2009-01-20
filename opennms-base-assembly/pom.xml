@@ -153,6 +153,11 @@
       <artifactId>opennms-wmi</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-asterisk</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
 
     <!-- this is a runtime depdency we need at install time -->

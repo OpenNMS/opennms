@@ -104,6 +104,10 @@ public abstract class NotificationManager {
     public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
+    public static final String PARAM_WORK_PHONE = "-wphone";
+    public static final String PARAM_HOME_PHONE = "-hphone";
+    public static final String PARAM_MOBILE_PHONE = "-mphone";
+    public static final String PARAM_TUI_PIN = "-tuipin";
     
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;
@@ -533,7 +537,7 @@ public abstract class NotificationManager {
         if (noticeId < 0) return;
         int userNotifId = getUserNotifId();
         if (log.isDebugEnabled()) {
-            log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
+            log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", contactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         }
         Connection connection = null;
         try {

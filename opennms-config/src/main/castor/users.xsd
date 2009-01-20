@@ -55,6 +55,14 @@
         <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule"
                  type="string"/>
 
+        <element maxOccurs="1" minOccurs="0" name="tui-pin">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="[0-9]+"/>
+            </restriction>
+          </simpleType>
+        </element>
+
       </sequence>
       <attribute name="read-only" type="boolean" use="optional" default="false" />
     </complexType>
@@ -65,7 +73,7 @@
       <attribute name="type" use="required">
         <simpleType>
           <restriction base="string">
-            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap)"/>
+            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap|workPhone|homePhone|mobilePhone)"/>
           </restriction>
         </simpleType>
       </attribute>
