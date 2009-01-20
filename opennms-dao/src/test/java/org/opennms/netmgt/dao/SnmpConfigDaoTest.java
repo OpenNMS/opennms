@@ -45,7 +45,7 @@ public class SnmpConfigDaoTest extends TestCase {
     private void assertConfig(String addr, int maxVarsPerPdu, int version, String community) throws UnknownHostException {
         assertNotNull(m_snmpConfigDao);
 
-        SnmpAgentConfig config = m_snmpConfigDao.get(InetAddress.getByName(addr));
+        SnmpAgentConfig config = m_snmpConfigDao.getAgentConfig(InetAddress.getByName(addr));
         assertNotNull(config);
         
         assertEquals(addr, config.getAddress().getHostAddress());
@@ -83,7 +83,7 @@ public class SnmpConfigDaoTest extends TestCase {
         assertConfig("192.168.1.7", 27, 1, "myPublic");
 
         // update range config
-        SnmpAgentConfig agentConfig = m_snmpConfigDao.get(InetAddress.getByName("192.168.1.3"));
+        SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(InetAddress.getByName("192.168.1.3"));
         agentConfig.setVersion(2);
         agentConfig.setReadCommunity("newcommunity");
         

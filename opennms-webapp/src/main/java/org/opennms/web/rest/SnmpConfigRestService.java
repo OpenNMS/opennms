@@ -54,7 +54,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Path("{ipAddr}")
     public SnmpAgentConfig getAgentConfig(@PathParam("ipAddr") String ipAddr) {
         try {
-            return m_snmpConfigDao.get(InetAddress.getByName(ipAddr));
+            return m_snmpConfigDao.getAgentConfig(InetAddress.getByName(ipAddr));
         } catch (UnknownHostException e) {
             return throwException(Status.BAD_REQUEST, e.getMessage());
         }

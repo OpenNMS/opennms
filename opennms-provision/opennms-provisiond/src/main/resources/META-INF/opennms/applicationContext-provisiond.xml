@@ -125,9 +125,7 @@
     <constructor-arg ref="provisionService" />
   </bean>
   
-  <bean id="coreScanActivities" class="org.opennms.netmgt.provision.service.CoreScanActivities">
-    <constructor-arg ref="provisionService" />
-  </bean>
+  <bean id="coreScanActivities" class="org.opennms.netmgt.provision.service.CoreScanActivities" />
   
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
     <property name="provisionService" ref="provisionService" />

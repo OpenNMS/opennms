@@ -41,9 +41,9 @@ import org.opennms.netmgt.snmp.SnmpConfiguration;
  *
  * @author brozow
  */
-public interface SnmpConfigDao {
+public interface SnmpConfigDao extends SnmpAgentConfigFactory {
     
-    SnmpAgentConfig get(InetAddress ipAddress);
+    SnmpAgentConfig getAgentConfig(InetAddress ipAddress);
     
     void saveOrUpdate(SnmpAgentConfig config);
     
