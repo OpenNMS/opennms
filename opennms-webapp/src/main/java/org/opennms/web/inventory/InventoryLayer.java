@@ -1,7 +1,16 @@
 package org.opennms.web.inventory;
 
-import org.opennms.rancid.*;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.opennms.rancid.InventoryElement;
+import org.opennms.rancid.InventoryNode;
+import org.opennms.rancid.RWSClientApi;
+import org.opennms.rancid.RancidApiException;
+import org.opennms.rancid.RancidNode;
 
 public class InventoryLayer {
     
@@ -82,8 +91,8 @@ public class InventoryLayer {
             
             //configuration
             in.setConfigurationUrl("http://rancid.net/configuration");
-            in.setRootConfigurationUrl("http://rancid.net/rootconfiguration");
-                        
+//            in.setRootConfigurationUrl("http://rancid.net/rootconfiguration");
+
             Map<String, Object> nodeModel = new TreeMap<String, Object>();
             
     //      Integer ii = Integer(ie.getElementId(4));
@@ -95,7 +104,7 @@ public class InventoryLayer {
             nodeModel.put("softversion", in.getSoftwareVersion());
             nodeModel.put("softimage", in.getSoftwareImageUrl());
             nodeModel.put("softconfigurl", in.getConfigurationUrl());
-            nodeModel.put("rootconfigurl", in.getRootConfigurationUrl());
+//            nodeModel.put("rootconfigurl", in.getRootConfigurationUrl());
   
             
             return nodeModel;
@@ -113,7 +122,7 @@ public class InventoryLayer {
     
             InventoryNode in = new InventoryNode(rn);
             
-            List<InventoryElement> lista = new LinkedList();
+            List<InventoryElement> lista = new LinkedList<InventoryElement>();
             InventoryElement i1 = new InventoryElement(in);
             i1.setElementName("Bridge1");
             lista.add(i1);
