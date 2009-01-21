@@ -32,7 +32,7 @@ public class MockForeignSourceRepositoryTest {
     }
     
     private OnmsRequisition createRequisition() throws Exception {
-        OnmsRequisition r = m_repository.createRequisition(new ClassPathResource("/requisition-test.xml"));
+        OnmsRequisition r = m_repository.loadRequisition(new ClassPathResource("/requisition-test.xml"));
         m_repository.save(r);
         return r;
     }
@@ -59,10 +59,10 @@ public class MockForeignSourceRepositoryTest {
     public void testForeignSource() throws Exception {
         createRequisition();
         OnmsForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        List<OnmsForeignSource> foreignSources = new ArrayList<OnmsForeignSource>(m_repository.getAll());
+        List<OnmsForeignSource> foreignSources = new ArrayList<OnmsForeignSource>(m_repository.getForeignSources());
         assertEquals("number of foreign sources", 1, foreignSources.size());
         assertEquals("getAll() foreign source name matches", m_defaultForeignSourceName, foreignSources.get(0).getName());
-        assertEquals("get() returns the foreign source", foreignSource, m_repository.get(m_defaultForeignSourceName));
+        assertEquals("get() returns the foreign source", foreignSource, m_repository.getForeignSource(m_defaultForeignSourceName));
     }
 
     @Test

@@ -51,15 +51,29 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     private final Map<String,OnmsRequisition> m_requisitions = new HashMap<String,OnmsRequisition>();
     private final Map<String,OnmsForeignSource> m_foreignSources = new HashMap<String,OnmsForeignSource>();
     
-    public OnmsForeignSource get(String foreignSourceName) {
+    public Set<OnmsForeignSource> getForeignSources() {
+        return new TreeSet<OnmsForeignSource>(m_foreignSources.values());
+    }
+    
+    public OnmsForeignSource getForeignSource(String foreignSourceName) {
         Assert.notNull(foreignSourceName);
         return m_foreignSources.get(foreignSourceName);
     }
 
-    public Set<OnmsForeignSource> getAll() {
-        return new TreeSet<OnmsForeignSource>(m_foreignSources.values());
+    public void save(OnmsForeignSource foreignSource) {
+        Assert.notNull(foreignSource);
+        Assert.notNull(foreignSource.getName());
+        m_foreignSources.put(foreignSource.getName(), foreignSource);
     }
-    
+
+    public void delete(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        m_foreignSources.remove(foreignSource);
+    }
+
+    public Set<OnmsRequisition> getRequisitions() throws ForeignSourceRepositoryException {
+        return new TreeSet<OnmsRequisition>(m_requisitions.values());
+    }
+
     public OnmsRequisition getRequisition(String foreignSourceName) {
         Assert.notNull(foreignSourceName);
         return m_requisitions.get(foreignSourceName);
@@ -71,16 +85,14 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         return getRequisition(foreignSource.getName());
     }
 
-    public void save(OnmsForeignSource foreignSource) {
-        Assert.notNull(foreignSource);
-        Assert.notNull(foreignSource.getName());
-        m_foreignSources.put(foreignSource.getName(), foreignSource);
-    }
-
     public void save(OnmsRequisition requisition) {
         Assert.notNull(requisition);
         Assert.notNull(requisition.getForeignSource());
         m_requisitions.put(requisition.getForeignSource(), requisition);
+    }
+
+    public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
+        m_requisitions.remove(requisition);
     }
 
 }
