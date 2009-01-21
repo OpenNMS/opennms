@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
@@ -21,8 +20,10 @@ import javax.xml.transform.stream.StreamResult;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
@@ -32,17 +33,24 @@ public class PersistenceSerializationTest {
 //    private Unmarshaller u;
     private JAXBContext c;
     private OnmsForeignSource fs;
-    
-    File schemaFile = new File("/tmp/foreign-sources.xsd");
-    
+    private FileAnticipator fa;
+
     private class TestOutputResolver extends SchemaOutputResolver {
+        private final File m_schemaFile;
+        
+        public TestOutputResolver(File schemaFile) {
+            m_schemaFile = schemaFile;
+        }
+        
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-            return new StreamResult(schemaFile);
+            return new StreamResult(m_schemaFile);
         }
     }
 
     @Before
-    public void setUp() throws JAXBException {
+    public void setUp() throws Exception {
+        fa = new FileAnticipator();
+
         fsr = new MockForeignSourceRepository();
         fsr.save(new OnmsForeignSource("cheese"));
 
@@ -83,10 +91,18 @@ public class PersistenceSerializationTest {
         XMLUnit.setNormalize(true);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        fa.tearDown();
+    }
+
     @Test
     public void generateSchema() throws Exception {
-        c.generateSchema(new TestOutputResolver());
-        assertTrue("schema file exists", schemaFile.exists());
+        File schemaFile = fa.expecting("foreign-sources.xsd");
+        c.generateSchema(new TestOutputResolver(schemaFile));
+        if (fa.isInitialized()) {
+            fa.deleteExpected();
+        }
     }
     
     @Test
