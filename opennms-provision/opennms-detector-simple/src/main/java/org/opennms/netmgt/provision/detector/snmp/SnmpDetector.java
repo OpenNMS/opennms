@@ -173,11 +173,11 @@ public class SnmpDetector extends AbstractDetector {
     public String getVbvalue() {
         return m_vbvalue;
     }
-
+    
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
     }
-
+    
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;
     }
