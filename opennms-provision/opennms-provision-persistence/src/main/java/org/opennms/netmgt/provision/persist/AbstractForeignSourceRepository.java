@@ -11,7 +11,7 @@ import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
 
-    public OnmsRequisition createRequisition(Resource resource) throws ForeignSourceRepositoryException {
+    public OnmsRequisition loadRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         OnmsRequisition r = new OnmsRequisition();
         r.loadResource(resource);
