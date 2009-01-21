@@ -42,6 +42,8 @@ public interface RequisitionDao {
 	
     public abstract List<OnmsRequisition> findAll();
     
+    public abstract int countAll();
+
     public abstract OnmsRequisition get(String foreignSource);
     
     public abstract OnmsRequisition get(OnmsForeignSource foreignSource);

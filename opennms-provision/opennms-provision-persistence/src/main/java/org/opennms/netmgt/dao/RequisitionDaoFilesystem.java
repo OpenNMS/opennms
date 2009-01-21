@@ -17,6 +17,10 @@ public class RequisitionDaoFilesystem implements RequisitionDao {
         m_foreignSourceRepository = new FilesystemForeignSourceRepository();
     }
     
+    public int countAll() {
+        return findAll().size();
+    }
+
     public List<OnmsRequisition> findAll() {
         try {
             return new ArrayList<OnmsRequisition>(m_foreignSourceRepository.getRequisitions());
