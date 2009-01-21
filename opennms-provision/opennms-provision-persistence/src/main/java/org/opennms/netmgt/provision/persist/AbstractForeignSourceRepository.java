@@ -1,6 +1,5 @@
 package org.opennms.netmgt.provision.persist;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
@@ -20,16 +19,9 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
     
     public OnmsForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
-        System.err.println("classpath = " + System.getProperty("java.class.path"));
         Resource defaultForeignSource = new ClassPathResource("/default-foreign-source.xml");
         if (!defaultForeignSource.exists()) {
             defaultForeignSource = new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml");
-        }
-        try {
-            System.err.println("url = " + defaultForeignSource.getURL());
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
         }
         try {
             InputStream fsStream = defaultForeignSource.getInputStream();
