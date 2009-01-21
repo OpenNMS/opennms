@@ -54,7 +54,7 @@ public class PersistenceSerializationTest {
         fsr = new MockForeignSourceRepository();
         fsr.save(new OnmsForeignSource("cheese"));
 
-        fs = fsr.get("cheese");
+        fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
 
         ArrayList<PluginConfig> detectors = new ArrayList<PluginConfig>();
@@ -80,7 +80,7 @@ public class PersistenceSerializationTest {
         policies.add(policy);
         fs.setPolicies(policies);
 
-        fsw = new ForeignSourceWrapper(fsr.getAll());
+        fsw = new ForeignSourceWrapper(fsr.getForeignSources());
         c = JAXBContext.newInstance(ForeignSourceWrapper.class, OnmsForeignSource.class);
 
         m = c.createMarshaller();

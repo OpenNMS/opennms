@@ -45,7 +45,7 @@ public class FilesystemForeignSourceRepositoryTest {
     }
 
     private OnmsRequisition createRequisition() throws Exception {
-        OnmsRequisition r = m_foreignSourceRepository.createRequisition(new ClassPathResource("/requisition-test.xml"));
+        OnmsRequisition r = m_foreignSourceRepository.loadRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         return r;
     }
@@ -72,10 +72,10 @@ public class FilesystemForeignSourceRepositoryTest {
     public void testForeignSource() throws Exception {
         createRequisition();
         OnmsForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        Set<OnmsForeignSource> foreignSources = m_foreignSourceRepository.getAll();
+        Set<OnmsForeignSource> foreignSources = m_foreignSourceRepository.getForeignSources();
         assertEquals("number of foreign sources must be 1", 1, foreignSources.size());
         assertEquals("getAll() foreign source name must match", m_defaultForeignSourceName, foreignSources.iterator().next().getName());
-        assertEquals("get() must return the foreign source", foreignSource, m_foreignSourceRepository.get(m_defaultForeignSourceName));
+        assertEquals("get() must return the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource(m_defaultForeignSourceName));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class FilesystemForeignSourceRepositoryTest {
         List<String> detectorList = Arrays.asList(new String[]{ "Citrix", "DHCP", "DNS", "DominoIIOP", "FTP", "HTTP", "HTTPS", "ICMP",
                 "IMAP", "LDAP", "NRPE", "POP3", "Radius", "SMB", "SMTP", "SNMP", "SSH" });
         String uuid = UUID.randomUUID().toString();
-        OnmsForeignSource defaultForeignSource = m_foreignSourceRepository.get(uuid);
+        OnmsForeignSource defaultForeignSource = m_foreignSourceRepository.getForeignSource(uuid);
         assertEquals("name must match requested foreign source repository name", uuid, defaultForeignSource.getName());
         assertEquals("scan-interval must be 1 day", 86400000, defaultForeignSource.getScanInterval());
         assertEquals("foreign source must have no default policies", 0, defaultForeignSource.getPolicies().size());
