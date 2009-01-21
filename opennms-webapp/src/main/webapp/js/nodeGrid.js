@@ -14,51 +14,51 @@ Ext.onReady(function(){
         colModel:colModel,
         width:'auto',
         height:600,
-        
+        loadMask:new Ext.LoadMask(Ext.getBody(), {msg:'Please wait...'}),
         bbar: pagingBar,
-        
+        deferRowRender:false,
         renderTo:'node-grid'
     });
     
     grid.getSelectionModel().on('rowselect', function(sm, rowIdx, r){
+    	alert(r.data.nodeId + ": node id and nodeLabel: " + r.data.nodeLabel);
     	if(r.data.nodeId > 0){
     		window.location = "element/node.jsp?node=" + r.data.nodeId;	
     	};
     })
     
 	dataStore.on("load", checkFilters, this);
-    dataStore.load();
-    
+	dataStore.on("add", checkAdded, this);
+    getNodes(20);
 })
 
 var record = new Ext.data.Record.create([
 	{name:"nodeLabel", mapping:"label"},
 	{name:"nodeId", mapping:"nodeId"},
-	{name:"labelSource", mapping:"labelSource"},
+	{name:"type", mapping:"type"},
+	{name:"label_Source", mapping:"labelSource"},
 	{name:"created", mapping:"createTime"},
-	{name:"lastCapsdPoll", mapping:"lastCapsdPoll"},
-	{name:"type", mapping:"type"}
+	{name:"last-CapsdPoll", mapping:"lastCapsdPoll"}
 ]);
 	
 var dataStore = new Ext.data.Store({
-	totalCount:10,
-	url:"rest/nodes",
-	params:{},
+	add:function(){
+		
+	},
 	reader:new Ext.data.XmlReader({
 		record:"node"
 	}, record)
 })
 
 var pagingBar = new Ext.PagingToolbar({
-        pageSize: 100,
         store: dataStore,
-        displayInfo: true,
         emptyMsg: "No topics to display"
 });
 
 var colModel = new Ext.grid.ColumnModel([{
 		header :'Node Label',
 		name :'nodeLabel',
+		width:150,
 		sortable :true,
 		align :'center'
 	},{
@@ -70,45 +70,58 @@ var colModel = new Ext.grid.ColumnModel([{
 	},{
 		header :'Type',
 		name :'type',
-		width :75,
+		width :50,
 		sortable :true,
 		align :'center'
 	},{
 		header :'Label Source',
-		name :'labelSource',
+		name :'label_Source',
 		width :100,
 		sortable :true,
 		align :'center'
 	},{
 		header :'Created',
 		name :'created',
-		width :100,
+		width :200,
 		sortable :true,
 		align :'center'
 	},{
 		header :'Last Capsd Poll',
-		name :'lastCapsdPoll',
-		width :100,
+		name :'last-CapsdPoll',
+		width :200,
 		sortable :true,
 		align :'center'
 	}
 ]) 
 
 function checkFilters(){
+	
 	if(urlParams.nodename != undefined){
 		dataStore.filter("nodeLabel", urlParams.nodename, true, false);
 	}
 	
 };
 
-function getNodes(){
-	var xmlHttp;
-	xmlHttp = new XMLHttpRequest();
-	xmlHttp.onreadystatechange=function(){
-		if(xmlHttp.readyState == 4){
-			alert("test: " + xmlHttp.responseText);
-		}
-	};
-	xmlHttp.open("GET", "rest/nodes", true);
-	xmlHttp.send(null);
-};
+function getNodes(total){
+	Ext.Ajax.request({
+		method:'GET',
+		url:'rest/nodes',
+		params:{limit:total}
+	});
+	
+	Ext.Ajax.on('requestComplete', this.loadData, this);	
+}
+
+
+function loadData(conn, response, options){
+	Ext.Ajax.un('requestComplete', this.loadData, this);
+	dataStore.loadData(response.responseXML);
+}
+
+function checkAdded(store, records, index){
+
+	if(records[index].data.nodeId > 0){
+		store.remove(records[index]);
+	
+	}
+}
