@@ -211,6 +211,12 @@
   <jsp:param name="breadcrumb" value="Node" />
 </jsp:include>
 
+<%--<link rel="stylesheet" type="text/css" href="extJS/resources/css/ext-all.css"/>
+<link rel="stylesheet" type="text/css" href="extJS/resources/css/opennmsGridTheme.css" />
+<script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="extJS/ext-all.js"></script>
+<script type="text/javascript" src="js/nodePageGrid.js"></script>--%>
+
 <h2>Node: ${model.label}</h2>
 <div id="linkbar">
   <ul>
@@ -288,7 +294,7 @@
     </c:if>
   </ul>
 </div>
-
+<%-- <div id="grid-panel"></div> --%>
 <div class="TwoColLeft">
   <!-- general info box -->
   <h3>General (Status: ${model.status})</h3>
