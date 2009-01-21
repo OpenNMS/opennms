@@ -20,6 +20,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
+	import="java.io.File"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -52,6 +53,19 @@
   </c:otherwise>
 </c:choose>
 
+<%
+  File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
+  if (extraIncludes.exists()) {
+	  for (File file : extraIncludes.listFiles()) {
+		  if (file.isFile()) {
+			  pageContext.setAttribute("file", "custom-footer/" + file.getName());
+%>
+<jsp:include page="${file}" />
+<%
+		  }
+	  }
+  }
+%>
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the
      Eclipse HTML validator doesn't complain.  See bug #1728. --%>
