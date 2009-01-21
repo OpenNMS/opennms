@@ -7,6 +7,7 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-dao.xml</value>
+         <value>classpath*:/META-INF/opennms/component-dao.xml</value>
        </list>
      </constructor-arg>
    </bean>

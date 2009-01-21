@@ -41,6 +41,8 @@ public interface ForeignSourceDao {
 	
     public abstract List<OnmsForeignSource> findAll();
     
+    public abstract int countAll();
+
     public abstract OnmsForeignSource get(String foreignSource);
     
     public abstract void save(OnmsForeignSource foreignSource);
