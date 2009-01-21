@@ -7,9 +7,25 @@
 
   <tx:annotation-driven />
 
+  <bean id="ackService" class="org.opennms.netmgt.ackd.DefaultAckService" >
+    <property name="ackDao" ref="acknowledgmentDao" />
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+  
+  <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReaderImpl" >
+    <property name="ackService" ref="ackService" />
+    <!-- need to set the ackd config  -->
+  </bean>
+
   <bean id="daemon" class="org.opennms.netmgt.ackd.Ackd" >
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="eventForwarder"/>
+    <property name="ackService" ref="ackService" />
+    <property name="ackReaders" >
+      <list>
+        <ref local="javaMailReader" />
+      </list>
+    </property>
   </bean>
 
 </beans>

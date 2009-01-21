@@ -112,6 +112,14 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         return m_ackReaders;
     }
     
+    public AckService getAckService() {
+        return m_ackService;
+    }
+
+    public void setAckService(AckService ackService) {
+        m_ackService = ackService;
+    }
+
     @EventHandler(uei="uei.opennms.org/internal/ackd/Acknowledge")
     public void handleAckEvent(Event e) {
         Acknowledgment ack;
