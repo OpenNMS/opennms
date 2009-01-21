@@ -733,7 +733,7 @@ public class DefaultProvisionService implements ProvisionService {
 
         OnmsForeignSource fs = null;
         try {
-            fs = m_foreignSourceRepository.get(node.getForeignSource());
+            fs = m_foreignSourceRepository.getForeignSource(node.getForeignSource());
         } catch (ForeignSourceRepositoryException e) {
             log().warn("unable to get foreign source repository", e);
         }

@@ -15,6 +15,10 @@ public class ForeignSourceDaoFilesystem implements ForeignSourceDao {
     public ForeignSourceDaoFilesystem() throws ForeignSourceRepositoryException {
         m_foreignSourceRepository = new FilesystemForeignSourceRepository();
     }
+
+    public int countAll() {
+        return findAll().size();
+    }
     
     public List<OnmsForeignSource> findAll() {
         try {

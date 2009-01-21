@@ -10,12 +10,17 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 
 
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
+    @Autowired
     private String m_requisitionPath;
+
+    @Autowired
     private String m_foreignSourcePath;
+    
     private final JAXBContext m_jaxbContext;
     private Marshaller m_marshaller;
     private Unmarshaller m_unMarshaller;
