@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-public class JAXBTest {
+public class PersistenceSerializationTest {
     private ForeignSourceWrapper fsw;
     private MockForeignSourceRepository fsr;
     private Marshaller m;
