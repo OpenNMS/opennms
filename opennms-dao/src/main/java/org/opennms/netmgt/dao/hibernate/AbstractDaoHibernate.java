@@ -87,7 +87,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     
     @SuppressWarnings("unchecked")
     public <S> List<S> findObjects(Class<S> clazz, String query, Object... values) {
-    	return getHibernateTemplate().find(query, values);
+    	final List notifs = getHibernateTemplate().find(query, values);
+        return notifs;
     }
 
     protected int queryInt(final String query) {
@@ -121,20 +122,16 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return ((Number) result).intValue();
     }
 
+    //TODO: This method duplicates below impl, delete this
     protected T findUnique(final String query) {
-        HibernateCallback callback = new HibernateCallback() {
-
-            public Object doInHibernate(Session session)
-                    throws HibernateException, SQLException {
-                return session.createQuery(query).uniqueResult();
-            }
-
-        };
-        Object result = getHibernateTemplate().execute(callback);
-        return m_entityClass.cast(result);
+        return findUnique(m_entityClass, query);
     }
 
     protected T findUnique(final String queryString, final Object... args) {
+        return findUnique(m_entityClass, queryString, args);
+    }
+    
+    protected <S> S findUnique(final Class <? extends S> type, final String queryString, final Object... args) {
         HibernateCallback callback = new HibernateCallback() {
 
             public Object doInHibernate(Session session)
@@ -148,8 +145,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 
         };
         Object result = getHibernateTemplate().execute(callback);
-        return m_entityClass.cast(result);
+        return type.cast(result);
     }
+
 
     public int countAll() {
         return queryInt("select count(*) from " + m_entityClass.getName());

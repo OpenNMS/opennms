@@ -35,20 +35,15 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.Acknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * Hibernate implementation of Acknowledgment DAO
@@ -62,7 +57,6 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgm
     }
 
     public List<Acknowledgeable> findAcknowledgables(final Acknowledgment ack) {
-        
         List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
         
         if (ack.getAckType().equals(AckType.Alarm)) {
@@ -70,74 +64,61 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgm
             
             if (alarm != null) {
                 ackables.add(alarm);
-                
                 List<OnmsNotification> notifs = findRelatedNotifications(alarm);
                 
                 if (notifs != null) {
                     ackables.addAll(notifs);
                 }
             }
-            
-            
         }
-        
-        if (ack.getAckType().equals(AckType.Notification)) {
-            final String hql = "from OnmsNotification as notifications where notifications.id = :notifyId";
-            Object result = findAck(ack, hql);
-            OnmsNotification notification = OnmsNotification.class.cast(result);
-            ackables.add(notification);
+
+        else if (ack.getAckType().equals(AckType.Notification)) {
+            final OnmsNotification notif = findNotification(ack);
+            
+            if (notif != null) {
+                ackables.add(notif);
+                List<OnmsAlarm> alarms = findRelatedAlarms(notif);
+                
+                if (alarms != null) {
+                    ackables.addAll(alarms);
+                }
+            }
+            
         }
         
         return ackables;
-
     }
+    
 
-    private List<OnmsNotification> findRelatedNotifications(
-            final OnmsAlarm alarm) {
+    private List<OnmsAlarm> findRelatedAlarms(final OnmsNotification notif) {
         final String hql = "from OnmsNotification as notifications " +
-        		     "inner join notifications.event as events " +
-        		     "where events.alarm.id = :alarmId";
+        "inner join notifications.event as events " +
+        "where events.alarm.id = ?";
+        return findObjects(OnmsAlarm.class, hql, notif.getNotifyId());
+    }
+    
+    private List<OnmsNotification> findRelatedNotifications(final OnmsAlarm alarm) {
+        //final String hql = "from OnmsNotification as notifications " +
+        //"inner join notifications.event as events " +
+        //"where events.alarm.id = ?";
         
-        HibernateCallback callback = new HibernateCallback() {
-
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery(hql);
-                query.setParameter(1, alarm.getId());
-                List<OnmsNotification> results = query.list();
-                return results;
-            }
-        };
+        final String hql = "from OnmsNotification as n where n.event.alarm = ?";
         
-        Object object = getHibernateTemplate().execute(callback);
-        List<OnmsNotification> notifs = (List<OnmsNotification>)object;
-        return notifs;
+        return findObjects(OnmsNotification.class, hql, alarm);
     }
 
     private OnmsAlarm findAlarm(final Acknowledgment ack) {
-        String hql = "from OnmsAlarm as alarms where alarms.id = :alarmId";
-        Object result = findAck(ack, hql);
-        OnmsAlarm alarm = OnmsAlarm.class.cast(result);
-        return alarm;
+//      hql = "from OnmsAlarm as alarms where alarms.id = ?";        
+//      return findUnique(OnmsAlarm.class, hql, ack.getRefId());
+        return (OnmsAlarm) getHibernateTemplate().load(OnmsAlarm.class, ack.getRefId());
     }
 
-    private Object findAck(final Acknowledgment ack, final String hql) {
-        Object result = getHibernateTemplate().execute(createUniqueAckResultCallBack(ack, hql));
-        return result;
+    private OnmsNotification findNotification(final Acknowledgment ack) {
+//      hql = "from OnmsAlarm as alarms where alarms.id = ?";        
+//      return findUnique(OnmsAlarm.class, hql, ack.getRefId());
+        return (OnmsNotification) getHibernateTemplate().load(OnmsNotification.class, ack.getRefId());
     }
-
-    private HibernateCallback createUniqueAckResultCallBack(final Acknowledgment ack, final String hql) {
-        HibernateCallback callback = new HibernateCallback() {
-
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery(hql);
-                query.setParameter(1, ack.getRefId());
-                return query.uniqueResult();
-            }
-            
-        };
-        return callback;
-    }
-
+    
     public void updateAckable(Acknowledgeable ackable) {
         // TODO Auto-generated method stub
         
