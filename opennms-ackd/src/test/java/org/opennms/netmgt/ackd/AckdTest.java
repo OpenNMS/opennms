@@ -182,11 +182,11 @@ public class AckdTest {
         m_ackDao.save(ack);
         m_ackDao.flush();
         
-//        m_ackService.processAck(ack);
-//        
-//        alarm = m_alarmDao.get(ack.getRefId());
-//        Assert.assertNotNull(alarm.getAlarmAckUser());
-//        Assert.assertEquals("admin", alarm.getAlarmAckUser());
+        m_ackService.processAck(ack);
+        
+        alarm = m_alarmDao.get(ack.getRefId());
+        Assert.assertNotNull(alarm.getAlarmAckUser());
+        Assert.assertEquals("admin", alarm.getAlarmAckUser());
         
     }
     
