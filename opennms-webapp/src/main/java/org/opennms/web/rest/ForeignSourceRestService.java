@@ -48,11 +48,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.Duration;
-import org.opennms.netmgt.dao.ForeignSourceDao;
 import org.opennms.netmgt.model.OnmsForeignSourceCollection;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.springframework.beans.BeanWrapper;
@@ -69,8 +68,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("foreignSources")
 public class ForeignSourceRestService extends OnmsRestService {
+    
     @Autowired
-    private ForeignSourceDao m_foreignSourceDao;
+    private ForeignSourceRepository m_foreignSourceRepository;
     
     @Context
     UriInfo m_uriInfo;
@@ -86,7 +86,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{name}")
     @Transactional
     public OnmsForeignSource getForeignSource(@PathParam("name") String foreignSource) {
-        return m_foreignSourceDao.get(foreignSource);
+        return m_foreignSourceRepository.getForeignSource(foreignSource);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        return Integer.toString(m_foreignSourceDao.countAll());
+        return Integer.toString(m_foreignSourceRepository.getForeignSourceCount());
     }
 
     /**
@@ -111,14 +111,14 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
     public OnmsForeignSourceCollection getForeignSources() throws ParseException {
-        return new OnmsForeignSourceCollection(m_foreignSourceDao.findAll());
+        return new OnmsForeignSourceCollection(m_foreignSourceRepository.getForeignSources());
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addForeignSource(OnmsForeignSource foreignSource) {
         log().debug("addForeignSource: Adding foreignSource " + foreignSource.getName());
-        m_foreignSourceDao.save(foreignSource);
+        m_foreignSourceRepository.save(foreignSource);
         return Response.ok(foreignSource).build();
     }
     
@@ -126,10 +126,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{name}")
     public Response updateForeignSource(@PathParam("name") String foreignSource, MultivaluedMapImpl params) {
-        OnmsForeignSource fs = m_foreignSourceDao.get(foreignSource);
-        if (fs == null) {
-            throwException(Status.BAD_REQUEST, "updateForeignSource: Can't find foreign source with name " + foreignSource);
-        }
+        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         log().debug("updateForeignSource: updating foreign source " + foreignSource);
         BeanWrapper wrapper = new BeanWrapperImpl(fs);
         wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
@@ -142,19 +139,16 @@ public class ForeignSourceRestService extends OnmsRestService {
             }
         }
         log().debug("updateForeignSource: foreign source " + foreignSource + " updated");
-        m_foreignSourceDao.save(fs);
+        m_foreignSourceRepository.save(fs);
         return Response.ok(fs).build();
     }
     
     @DELETE
     @Path("{name}")
     public Response deleteForeignSource(@PathParam("name") String foreignSource) {
-        OnmsForeignSource fs = m_foreignSourceDao.get(foreignSource);
-        if (fs == null) {
-            throwException(Status.BAD_REQUEST, "deleteForeignSource: Can't find foreign source with name " + foreignSource);
-        }
+        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         log().debug("deleteForeignSource: deleting foreign source " + foreignSource);
-        m_foreignSourceDao.delete(fs);
+        m_foreignSourceRepository.delete(fs);
         return Response.ok().build();
     }
 

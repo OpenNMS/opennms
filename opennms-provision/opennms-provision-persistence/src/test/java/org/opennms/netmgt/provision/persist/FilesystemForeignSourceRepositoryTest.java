@@ -45,7 +45,7 @@ public class FilesystemForeignSourceRepositoryTest {
     }
 
     private OnmsRequisition createRequisition() throws Exception {
-        OnmsRequisition r = m_foreignSourceRepository.loadRequisition(new ClassPathResource("/requisition-test.xml"));
+        OnmsRequisition r = m_foreignSourceRepository.importRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         return r;
     }
@@ -63,9 +63,9 @@ public class FilesystemForeignSourceRepositoryTest {
         createRequisition();
         OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         TestVisitor v = new TestVisitor();
-        r.visitImport(v);
-        assertEquals("number of nodes visited", 1, v.getNodes().size());
-        assertEquals("node name matches", "apknd", v.getNodes().get(0).getNodeLabel());
+        r.visit(v);
+        assertEquals("number of nodes visited", 1, v.getNodeReqs().size());
+        assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
     }
 
     @Test

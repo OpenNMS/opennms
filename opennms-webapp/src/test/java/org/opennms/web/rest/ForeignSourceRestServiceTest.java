@@ -28,8 +28,9 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
     }
 
-    /*
+/*    
     @Test
+    @Ignore
     public void testIpInterface() throws Exception {
         createIpInterface();
         String url = "/nodes/1/ipinterfaces";
@@ -44,6 +45,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
     }
 
     @Test
+    @Ignore
     public void testSnmpInterface() throws Exception {
         createSnmpInterface();
         String url = "/nodes/1/snmpinterfaces";
@@ -58,6 +60,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
     }
 
     @Test
+    @Ignore
     public void testMonitoredService() throws Exception {
         createService();
         String url = "/nodes/1/ipinterfaces/10.10.10.10/services";
@@ -72,6 +75,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
     }
     
     @Test
+    @Ignore
     public void testCategory() throws Exception {
         createCategory();
         String url = "/nodes/1/categories";
@@ -156,4 +160,5 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         sendPost("/nodes/1/categories", service);
     }
     */
+
 }

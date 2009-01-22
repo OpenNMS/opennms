@@ -55,12 +55,6 @@ import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -80,9 +74,14 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ImportVisitor;
+import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
+import org.opennms.netmgt.provision.persist.OnmsCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
+import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.provision.service.Provisioner.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
@@ -117,6 +116,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
@@ -202,7 +202,7 @@ public class ProvisionerTest {
         OnmsRequisition requisition = new OnmsRequisition();
         requisition.loadResource(new ClassPathResource("/NewFile2.xml"));
         CountingVisitor visitor = new CountingVisitor();
-        requisition.visitImport(visitor);
+        requisition.visit(visitor);
         verifyCounts(visitor);
     }
 
@@ -326,7 +326,7 @@ public class ProvisionerTest {
         List<OnmsNode> nodes = getNodeDao().findAll();
         OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId());
+        NodeScan scan = m_provisioner.createNodeScan(node.getForeignSource(), node.getForeignId());
         
         scan.run();
         
@@ -626,7 +626,7 @@ public class ProvisionerTest {
         assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
     }
 
-    static class CountingVisitor implements ImportVisitor {
+    static class CountingVisitor implements RequisitionVisitor {
         private int m_modelImportCount;
         private int m_modelImportCompleted;
         private int m_nodeCount;
@@ -688,29 +688,29 @@ public class ProvisionerTest {
             return m_assetCompleted;
         }
         
-        public void visitModelImport(ModelImport mi) {
+        public void visitModelImport(OnmsRequisition req) {
             m_modelImportCount++;
         }
 
-        public void visitNode(Node node) {
+        public void visitNode(OnmsNodeRequisition nodeReq) {
             m_nodeCount++;
-            assertEquals("apknd", node.getNodeLabel());
-            assertEquals("4243", node.getForeignId());
+            assertEquals("apknd", nodeReq.getNodeLabel());
+            assertEquals("4243", nodeReq.getForeignId());
         }
 
-        public void visitInterface(Interface iface) {
+        public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
             m_ifaceCount++;
         }
 
-        public void visitMonitoredService(MonitoredService svc) {
+        public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
             m_svcCount++;
         }
 
-        public void visitCategory(Category category) {
+        public void visitCategory(OnmsCategoryRequisition catReq) {
             m_categoryCount++;
         }
         
-        public void visitAsset(Asset asset) {
+        public void visitAsset(OnmsAssetRequisition assetReq) {
             m_assetCount++;
         }
         
@@ -731,27 +731,27 @@ public class ProvisionerTest {
                 .toString());
         }
 
-        public void completeModelImport(ModelImport modelImport) {
+        public void completeModelImport(OnmsRequisition req) {
             m_modelImportCompleted++;
         }
 
-        public void completeNode(Node node) {
+        public void completeNode(OnmsNodeRequisition nodeReq) {
             m_nodeCompleted++;
         }
 
-        public void completeInterface(Interface iface) {
+        public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
             m_ifaceCompleted++;
         }
 
-        public void completeMonitoredService(MonitoredService svc) {
+        public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
             m_svcCompleted++;
         }
 
-        public void completeCategory(Category category) {
+        public void completeCategory(OnmsCategoryRequisition catReq) {
             m_categoryCompleted++;
         }
         
-        public void completeAsset(Asset asset) {
+        public void completeAsset(OnmsAssetRequisition assetReq) {
             m_assetCompleted++;
         }
         

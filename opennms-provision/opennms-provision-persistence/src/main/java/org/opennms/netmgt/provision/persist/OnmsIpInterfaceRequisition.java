@@ -31,54 +31,70 @@
  */
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
 
 /**
- * AbstactImportVisitor
+ * OnmsIpInterfaceRequisition
  *
  * @author brozow
  */
-public class AbstractImportVisitor implements ImportVisitor {
+public class OnmsIpInterfaceRequisition {
+    
+    private Interface m_iface;
+    
+    private List<OnmsMonitoredServiceRequisition> m_svcReqs;
 
-    public void completeAsset(Asset asset) {
+    public OnmsIpInterfaceRequisition(Interface iface) {
+        m_iface = iface;
+        m_svcReqs = constructSvcReqs();
+    }
+    
+    Interface getInterface() {
+        return m_iface;
+    }
+    
+    private List<OnmsMonitoredServiceRequisition> constructSvcReqs() {
+        List<OnmsMonitoredServiceRequisition> reqs = new ArrayList<OnmsMonitoredServiceRequisition>(m_iface.getMonitoredServiceCount());
+        for (MonitoredService svc : m_iface.getMonitoredServiceCollection()) {
+            reqs.add(new OnmsMonitoredServiceRequisition(svc));
+        }
+        return reqs;
+
     }
 
-    public void completeCategory(Category category) {
+    void visit(RequisitionVisitor visitor) {
+        visitor.visitInterface(this);
+        for(OnmsMonitoredServiceRequisition svcReq : m_svcReqs) {
+            svcReq.visit(visitor);
+        }
+        visitor.completeInterface(this);
     }
 
-    public void completeInterface(Interface iface) {
+    public Object getDescr() {
+        return m_iface.getDescr();
     }
 
-    public void completeModelImport(ModelImport modelImport) {
+    public String getIpAddr() {
+        return m_iface.getIpAddr();
     }
 
-    public void completeMonitoredService(MonitoredService svc) {
+    public boolean getManaged() {
+        return m_iface.getManaged();
     }
 
-    public void completeNode(Node node) {
+    public String getSnmpPrimary() {
+        return m_iface.getSnmpPrimary();
     }
 
-    public void visitAsset(Asset asset) {
+    public int getStatus() {
+        return m_iface.getStatus();
     }
-
-    public void visitCategory(Category category) {
-    }
-
-    public void visitInterface(Interface iface) {
-    }
-
-    public void visitModelImport(ModelImport mi) {
-    }
-
-    public void visitMonitoredService(MonitoredService svc) {
-    }
-
-    public void visitNode(Node node) {
-    }
+    
+    
+    
 
 }

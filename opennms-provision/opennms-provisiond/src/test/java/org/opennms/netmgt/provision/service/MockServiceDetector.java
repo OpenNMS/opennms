@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -31,43 +31,23 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
 
-public class WorkEffort {
-	
-	private String m_name;
-	private long m_totalTime;
-	private long m_sectionCount;
-	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<WorkDuration>();
-	
-	public WorkEffort(String name) {
-		m_name = name;
-	}
+import org.opennms.netmgt.provision.DetectorMonitor;
+import org.opennms.netmgt.provision.ServiceDetector;
 
-	public void begin() {
-		WorkDuration pending = new WorkDuration();
-		pending.start();
-		m_pendingSection.set(pending);
-	}
+/**
+ * MockServiceDetector
+ *
+ * @author brozow
+ */
+public class MockServiceDetector implements ServiceDetector {
 
-	public void end() {
-		WorkDuration pending = m_pendingSection.get();
-		m_sectionCount++;
-		m_totalTime += pending.getLength();
-	}
-	
-	public long getTotalTime() {
-		return m_totalTime;
-	}
-	
-	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		buf.append("Total ").append(m_name).append(": ");
-		buf.append((double)m_totalTime/(double)1000L).append(" thread-seconds ");
-		if (m_sectionCount > 0) {
-			buf.append("Avg ").append(m_name).append(": ");
-			buf.append((double)m_totalTime/(double)m_sectionCount).append(" ms per node");
-		}
-		return buf.toString();
-	}
+    public void init() {
+    }
+
+    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
+        return true;
+    }
 
 }

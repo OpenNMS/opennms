@@ -36,14 +36,13 @@
 //
 package org.opennms.netmgt.provision.persist;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.Resource;
@@ -51,82 +50,29 @@ import org.springframework.core.io.Resource;
 public class OnmsRequisition {
 
     private ModelImport m_mi;
+    
+    private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
 
     public void loadResource(Resource resource) {
         m_mi = CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, resource);
+        
+        for(Node node : m_mi.getNodeCollection()) {
+            m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(node));
+        }
     }
 
     public void saveResource(Resource resource) {
         CastorUtils.marshalWithTranslatedExceptionsViaString(m_mi, resource);
     }
 
-    public void visitImport(ImportVisitor visitor) {
-        doVisitImport(visitor);
-    }
-
-    private void doVisitImport(ImportVisitor visitor) {
-        visitor.visitModelImport(m_mi);
-        for (Node node : m_mi.getNodeCollection()) {
-            visitNode(visitor, node);
+    public void visit(RequisitionVisitor visitor) {
+        visitor.visitModelImport(this);
+        
+        for(OnmsNodeRequisition nodeReq : m_nodeReqs.values()) {
+            nodeReq.visit(visitor);
         }
-        visitor.completeModelImport(m_mi);
-    }
-
-    private void visitNode(final ImportVisitor visitor, final Node node) {
-        doVisitNode(visitor, node);
-    }
-
-    private void doVisitNode(ImportVisitor visitor, Node node) {
-        visitor.visitNode(node);
-        for (Category category : node.getCategoryCollection()) {
-            visitCategory(visitor, category);
-        }
-        for (Interface iface : node.getInterfaceCollection()) {
-            visitInterface(visitor, iface);
-        }
-        for (Asset asset : node.getAssetCollection()) {
-            visitAsset(visitor, asset);
-        }
-        visitor.completeNode(node);
-    }
-
-    private void visitAsset(ImportVisitor visitor, Asset asset) {
-        doVisitAsset(visitor, asset);
-    }
-
-    private void doVisitAsset(ImportVisitor visitor, Asset asset) {
-        visitor.visitAsset(asset);
-        visitor.completeAsset(asset);
-    }
-
-    private void visitCategory(ImportVisitor visitor, Category category) {
-        doVisitCategory(visitor, category);
-    }
-
-    private void doVisitCategory(ImportVisitor visitor, Category category) {
-        visitor.visitCategory(category);
-        visitor.completeCategory(category);
-    }
-
-    private void visitInterface(ImportVisitor visitor, Interface iface) {
-        doVisitInterface(visitor, iface);
-    }
-
-    private void doVisitInterface(ImportVisitor visitor, Interface iface) {
-        visitor.visitInterface(iface);
-        for (MonitoredService svc : iface.getMonitoredServiceCollection()) {
-            visitMonitoredService(visitor, svc);
-        }
-        visitor.completeInterface(iface);
-    }
-
-    private void visitMonitoredService(ImportVisitor visitor, MonitoredService svc) {
-        doVisitMonitoredService(visitor, svc);
-    }
-
-    private void doVisitMonitoredService(ImportVisitor visitor, MonitoredService svc) {
-        visitor.visitMonitoredService(svc);
-        visitor.completeMonitoredService(svc);
+        
+        visitor.completeModelImport(this);
     }
 
     public String getForeignSource() {
@@ -137,6 +83,10 @@ public class OnmsRequisition {
         m_mi.setForeignSource(foreignSource);
     }
 
+    public OnmsNodeRequisition getNodeRequistion(String foreignId) {
+        return m_nodeReqs.get(foreignId);
+    }
+    
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -162,5 +112,7 @@ public class OnmsRequisition {
             .append(m_mi)
             .toHashCode();
       }
+
+
 
 }

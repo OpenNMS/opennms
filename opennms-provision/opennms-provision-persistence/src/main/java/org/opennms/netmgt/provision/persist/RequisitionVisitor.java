@@ -31,26 +31,20 @@
 //
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
 
-public interface ImportVisitor {
+public interface RequisitionVisitor {
     
-    public void visitModelImport(ModelImport mi);
-    public void completeModelImport(ModelImport modelImport);
-    public void visitNode(Node node);
-    public void completeNode(Node node);
-    public void visitInterface(Interface iface);
-    public void completeInterface(Interface iface);
-    public void visitMonitoredService(MonitoredService svc);
-    public void completeMonitoredService(MonitoredService svc);
-    public void visitCategory(Category category);
-    public void completeCategory(Category category);
-    public void visitAsset(Asset asset);
-    public void completeAsset(Asset asset);
+    public void visitModelImport(OnmsRequisition req);
+    public void completeModelImport(OnmsRequisition req);
+    public void visitNode(OnmsNodeRequisition nodeReq);
+    public void completeNode(OnmsNodeRequisition nodeReq);
+    public void visitInterface(OnmsIpInterfaceRequisition ifaceReq);
+    public void completeInterface(OnmsIpInterfaceRequisition ifaceReq);
+    public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq);
+    public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq);
+    public void visitCategory(OnmsCategoryRequisition catReq);
+    public void completeCategory(OnmsCategoryRequisition catReq);
+    public void visitAsset(OnmsAssetRequisition assetReq);
+    public void completeAsset(OnmsAssetRequisition assetReq);
 
 }
