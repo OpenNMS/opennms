@@ -66,6 +66,7 @@ public class Acknowledgment {
     public Acknowledgment(Date time, String user) {
         m_ackTime = (time == null) ? new Date() : time;
         m_ackUser = (user == null) ? "admin" : user;
+        m_ackType = AckType.Unspecified;
     }
     
     public Acknowledgment() {
@@ -87,18 +88,25 @@ public class Acknowledgment {
     public Acknowledgment(final Event e, final String user) throws ParseException {
         this(DateFormat.getDateInstance().parse(e.getTime()), user);
     }
+
+    public Acknowledgment(final Acknowledgeable a) {
+        this(a, "admin", new Date());
+    }
     
-    public Acknowledgment(final OnmsAlarm a) {
-        
+    public Acknowledgment(final Acknowledgeable a, String user) {
+        this(a, user, new Date());
+    }
+    
+    public Acknowledgment(final Acknowledgeable a, String user, Date ackTime) {
+        this();
         if (a == null) {
             throw new IllegalArgumentException("OnmsAlarm is null.");
         }
         
-        m_ackTime = a.getAlarmAckTime();
-        m_ackUser = a.getAlarmAckUser();
-        m_ackType = AckType.Alarm;
-        m_refId = a.getId();
+        m_ackType = a.getType();
+        m_refId = a.getAckId();
     }
+    
     
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")

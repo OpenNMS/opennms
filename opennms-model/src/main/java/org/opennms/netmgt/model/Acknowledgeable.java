@@ -50,5 +50,7 @@ public interface Acknowledgeable {
     void acknowledge(Date ackDate, String ackUser);
     
     AckType getType();
+
+    Integer getAckId();
     
 }
