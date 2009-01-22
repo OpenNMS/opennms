@@ -120,7 +120,7 @@
     <property name="serviceTypeDao" ref="serviceTypeDao" />
     <property name="categoryDao" ref="categoryDao" />
   </bean>
-
+  
   <bean id="coreImportActivities" class="org.opennms.netmgt.provision.service.CoreImportActivities">
     <constructor-arg ref="provisionService" />
   </bean>

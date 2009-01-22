@@ -82,7 +82,7 @@ public class Provisioner implements SpringServiceDaemon {
     private volatile TimeTrackingMonitor m_stats;
     
 	
-	public void setProvisionService(ProvisionService provisionService) {
+    public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
 	}
 	
@@ -131,19 +131,22 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     public static class NodeScan implements Runnable {
-        private int m_nodeId;
+        private String m_foreignSource;
+        private String m_foreignId;
         private LifeCycleRepository m_lifeCycleRepository;
         private List<Object> m_providers;
 
-        public NodeScan(int nodeId, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
-            m_nodeId = nodeId;
+        public NodeScan(String foreignSource, String foreignId, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+            m_foreignSource = foreignSource;
+            m_foreignId = foreignId;
             m_lifeCycleRepository = lifeCycleRepository;
             m_providers = providers;
         }
         
         private void doNodeScan() throws InterruptedException, ExecutionException {
             LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_providers.toArray());
-            doNodeScan.setAttribute("nodeId", Integer.valueOf(m_nodeId));
+            doNodeScan.setAttribute("foreignSource", m_foreignSource);
+            doNodeScan.setAttribute("foreignId", m_foreignId);
             
             doNodeScan.trigger();
             
@@ -153,7 +156,7 @@ public class Provisioner implements SpringServiceDaemon {
         public void run() {
             try {
                 doNodeScan();
-                System.err.println("Finished Scanning Node "+m_nodeId);
+                System.err.println(String.format("Finished Scanning Node %s / %s", m_foreignSource, m_foreignId));
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -166,12 +169,12 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
-    public NodeScan createNodeScan(int nodeId) {
-        return new NodeScan(nodeId, m_lifeCycleRepository, m_providers);
+    public NodeScan createNodeScan(String foreignSource, String foreignId) {
+        return new NodeScan(foreignSource, foreignId, m_lifeCycleRepository, m_providers);
     }
 
     protected Runnable nodeScanner(final NodeScanSchedule schedule) {
-        return createNodeScan(schedule.getNodeId());
+        return createNodeScan(schedule.getForeignSource(), schedule.getForeignId());
     }
     
 
@@ -193,7 +196,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
-        ScheduledFuture<?> future = m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay(), schedule.getScanInterval(), TimeUnit.MILLISECONDS);
+        ScheduledFuture<?> future = m_scheduledExecutor.scheduleWithFixedDelay(nodeScanner(schedule), schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
         System.err.println(String.format("SCHEDULE: Created schedule for node %d : %s", schedule.getNodeId(), future));
         return future;
     }

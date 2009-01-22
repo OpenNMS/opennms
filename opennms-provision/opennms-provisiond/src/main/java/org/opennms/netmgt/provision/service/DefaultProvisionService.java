@@ -42,6 +42,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -60,6 +62,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
+import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
 import org.springframework.transaction.annotation.Transactional;
@@ -517,6 +520,13 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
     
+    public OnmsNode getImportedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
+        OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
+        OnmsNode node = new OnmsNode();
+        //nodeReq.populateNode(node);
+        return node;
+    }
+    
     @Transactional
     public void deleteNode(Integer nodeId) {
         
@@ -729,7 +739,6 @@ public class DefaultProvisionService implements ProvisionService {
     
     private NodeScanSchedule createScheduleForNode(OnmsNode node) {
         Assert.notNull(node, "Node may not be null");
-        long now = System.currentTimeMillis();
 
         OnmsForeignSource fs = null;
         try {
@@ -738,17 +747,17 @@ public class DefaultProvisionService implements ProvisionService {
             log().warn("unable to get foreign source repository", e);
         }
 
-        long scanInterval = fs == null ? 86400000 : fs.getScanInterval().getMillis();
+        Duration scanInterval = fs.getScanInterval();
+        Duration initialDelay = Duration.ZERO;
+        if (node.getLastCapsdPoll() != null) {
+            DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
+            DateTime now = new DateTime();
+            if (nextPoll.isAfter(now)) {
+                initialDelay = new Duration(now, nextPoll);
+            }
+        }
         
-        long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
-        long nextPoll = lastPoll + scanInterval;
-        long initialDelay = Math.max(0, nextPoll - now);
-        
-        NodeScanSchedule nSchedule = new NodeScanSchedule();
-        nSchedule.setForeignSource(node.getForeignSource());
-        nSchedule.setInitialDelay(initialDelay);
-        nSchedule.setNodeId(node.getId()); 
-        nSchedule.setScanInterval(scanInterval);
+        NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), node.getForeignSource(), node.getForeignId(), initialDelay, scanInterval);
         
         return nSchedule;
     }

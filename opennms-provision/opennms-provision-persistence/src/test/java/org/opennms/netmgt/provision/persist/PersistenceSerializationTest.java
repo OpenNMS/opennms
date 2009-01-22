@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
     private ForeignSourceWrapper fsw;
-    private MockForeignSourceRepository fsr;
+    private AbstractForeignSourceRepository fsr;
     private Marshaller m;
 //    private Unmarshaller u;
     private JAXBContext c;

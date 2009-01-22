@@ -41,12 +41,12 @@ import org.springframework.core.io.Resource;
 
 public class TimeTrackingMonitor implements ProvisionMonitor {
 
-	private Duration m_importDuration = new Duration("Importing");
-	private Duration m_auditDuration = new Duration("Auditing");
-	private Duration m_loadingDuration = new Duration("Loading");
-	private Duration m_processingDuration = new Duration("Processing");
-	private Duration m_preprocessingDuration = new Duration("Scanning");
-	private Duration m_relateDuration = new Duration("Relating");
+	private WorkDuration m_importDuration = new WorkDuration("Importing");
+	private WorkDuration m_auditDuration = new WorkDuration("Auditing");
+	private WorkDuration m_loadingDuration = new WorkDuration("Loading");
+	private WorkDuration m_processingDuration = new WorkDuration("Processing");
+	private WorkDuration m_preprocessingDuration = new WorkDuration("Scanning");
+	private WorkDuration m_relateDuration = new WorkDuration("Relating");
 	private WorkEffort m_preprocessingEffort = new WorkEffort("Scan Effort");
 	private WorkEffort m_processingEffort = new WorkEffort("Write Effort");
 	private WorkEffort m_eventEffort = new WorkEffort("Event Sending Effort");

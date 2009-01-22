@@ -35,9 +35,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.provision.persist.AbstractImportVisitor;
-import org.opennms.netmgt.provision.persist.ImportVisitor;
+import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
+import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
@@ -164,33 +164,34 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
-    public void relateNodes(final Phase currentPhase, final OnmsRequisition specFile) {
+    public void relateNodes(final Phase currentPhase, final OnmsRequisition requisition) {
         
         System.out.println("Running relate phase");
         
-        ImportVisitor visitor = new AbstractImportVisitor() {
-            public void visitNode(Node node) {
-                System.out.println("Scheduling relate of node "+node);
-                currentPhase.add(parentSetter(node, specFile.getForeignSource()));
+        RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
+            @Override
+            public void visitNode(OnmsNodeRequisition nodeReq) {
+                System.out.println("Scheduling relate of node "+nodeReq);
+                currentPhase.add(parentSetter(nodeReq, requisition.getForeignSource()));
             }
         };
         
-        specFile.visitImport(visitor);
+        requisition.visit(visitor);
         
         System.out.println("Finished Running relate phase");
 
     }
     
-    private Runnable parentSetter(final Node node, final String foreignSource) {
+    private Runnable parentSetter(final OnmsNodeRequisition nodeReq, final String foreignSource) {
         return new Runnable() {
            public void run() {
-               m_provisionService.setNodeParentAndDependencies(foreignSource, node.getForeignId(), node.getParentForeignId(),
-                                                               node.getParentNodeLabel());
+               m_provisionService.setNodeParentAndDependencies(foreignSource, nodeReq.getForeignId(), nodeReq.getParentForeignId(),
+                                                               nodeReq.getParentNodeLabel());
 
                m_provisionService.clearCache();
            }
            public String toString() {
-               return "set parent for node "+node.getNodeLabel();
+               return "set parent for node "+nodeReq.getNodeLabel();
            }
         }; 
     }

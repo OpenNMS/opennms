@@ -47,15 +47,18 @@ import org.springframework.core.io.Resource;
 
 public interface ForeignSourceRepository {
 
+    public int getForeignSourceCount() throws ForeignSourceRepositoryException;
     public Set<OnmsForeignSource> getForeignSources() throws ForeignSourceRepositoryException;
     public OnmsForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException;
     public void save(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException;
     public void delete(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException;
 
-    public OnmsRequisition loadRequisition(Resource resource) throws ForeignSourceRepositoryException;
+    public OnmsRequisition importRequisition(Resource resource) throws ForeignSourceRepositoryException;
     public Set<OnmsRequisition> getRequisitions() throws ForeignSourceRepositoryException;
     public OnmsRequisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException;
     public OnmsRequisition getRequisition(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException;
     public void save(OnmsRequisition requisition) throws ForeignSourceRepositoryException;
     public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException;
+    
+    public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException;
 }

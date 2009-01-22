@@ -11,10 +11,11 @@ import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
 
-    public OnmsRequisition loadRequisition(Resource resource) throws ForeignSourceRepositoryException {
+    public OnmsRequisition importRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         OnmsRequisition r = new OnmsRequisition();
         r.loadResource(resource);
+        save(r);
         return r;
     }
     
@@ -33,5 +34,10 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);
         }
+    }
+
+    public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
+        OnmsRequisition req = getRequisition(foreignSource);
+        return (req == null ? null : req.getNodeRequistion(foreignId));
     }
 }

@@ -93,6 +93,9 @@ public interface ProvisionService {
     public abstract void updateNode(OnmsNode node,
             boolean snmpDataForNodeUpToDate,
             boolean snmpDataForInterfacesUpToDate);
+    
+    @Transactional
+    public abstract OnmsNode getImportedNode(String foreignSource, String foreignId);
 
     /**
      * Delete the indicated node form the database.

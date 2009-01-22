@@ -51,6 +51,10 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     private final Map<String,OnmsRequisition> m_requisitions = new HashMap<String,OnmsRequisition>();
     private final Map<String,OnmsForeignSource> m_foreignSources = new HashMap<String,OnmsForeignSource>();
     
+    public int getForeignSourceCount() {
+        return m_foreignSources.size();
+    }
+    
     public Set<OnmsForeignSource> getForeignSources() {
         return new TreeSet<OnmsForeignSource>(m_foreignSources.values());
     }
@@ -94,5 +98,6 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
         m_requisitions.remove(requisition);
     }
+
 
 }

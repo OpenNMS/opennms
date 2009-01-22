@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -29,45 +29,38 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.provision.persist;
 
+import org.opennms.netmgt.config.modelimport.MonitoredService;
 
-public class WorkEffort {
-	
-	private String m_name;
-	private long m_totalTime;
-	private long m_sectionCount;
-	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<WorkDuration>();
-	
-	public WorkEffort(String name) {
-		m_name = name;
-	}
+/**
+ * OnmsMonitoredServiceRequisition
+ *
+ * @author brozow
+ */
+public class OnmsMonitoredServiceRequisition {
 
-	public void begin() {
-		WorkDuration pending = new WorkDuration();
-		pending.start();
-		m_pendingSection.set(pending);
-	}
+    private MonitoredService m_svc;
 
-	public void end() {
-		WorkDuration pending = m_pendingSection.get();
-		m_sectionCount++;
-		m_totalTime += pending.getLength();
-	}
-	
-	public long getTotalTime() {
-		return m_totalTime;
-	}
-	
-	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		buf.append("Total ").append(m_name).append(": ");
-		buf.append((double)m_totalTime/(double)1000L).append(" thread-seconds ");
-		if (m_sectionCount > 0) {
-			buf.append("Avg ").append(m_name).append(": ");
-			buf.append((double)m_totalTime/(double)m_sectionCount).append(" ms per node");
-		}
-		return buf.toString();
-	}
+    public OnmsMonitoredServiceRequisition(MonitoredService svc) {
+        m_svc = svc;
+    }
+    
+    /**
+     * @return the svc
+     */
+    MonitoredService getSvc() {
+        return m_svc;
+    }
 
+    void visit(RequisitionVisitor visitor) {
+        visitor.visitMonitoredService(this);
+        visitor.completeMonitoredService(this);
+    }
+
+    public String getServiceName() {
+        return m_svc.getServiceName();
+    }
+
+    
 }

@@ -98,6 +98,11 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         return getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfAlias();
     }
 
+    public void updateSnmpInterfaceData(OnmsNode node) {
+        for(IfXTableEntry entry : getEntries()) {
+            updateSnmpInterfaceData(node, entry.getIfIndex());
+        }
+    }
     /**
      * @param node
      * @param ifIndex

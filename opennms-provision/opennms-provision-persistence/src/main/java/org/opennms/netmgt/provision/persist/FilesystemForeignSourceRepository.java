@@ -29,7 +29,11 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
         }
     }
-
+    
+    public int getForeignSourceCount() throws ForeignSourceRepositoryException {
+        return getForeignSources().size();
+    }
+ 
     public Set<OnmsForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         File directory = new File(m_foreignSourcePath);
         TreeSet<OnmsForeignSource> foreignSources = new TreeSet<OnmsForeignSource>();

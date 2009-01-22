@@ -31,58 +31,57 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import org.joda.time.Duration;
+
 public class NodeScanSchedule {
     private int m_nodeId;
     private String m_foreignSource;
-    private long m_initialDelay;
-    private long m_scanInterval;
+    private String m_foreignId;
+    private Duration m_initialDelay;
+    private Duration m_scanInterval;
+    
+    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, Duration initialDelay, Duration scanInterval) {
+        m_nodeId = nodeId;
+        m_foreignSource = foreignSource;
+        m_foreignId = foreignId;
+        m_initialDelay = initialDelay;
+        m_scanInterval = scanInterval;
+    }
+
+    /**
+     * @return the foreignId
+     */
+    public String getForeignId() {
+        return m_foreignId;
+    }
+
     /**
      * @return the nodeId
      */
     public int getNodeId() {
         return m_nodeId;
     }
-    /**
-     * @param nodeId the nodeId to set
-     */
-    public void setNodeId(int nodeId) {
-        this.m_nodeId = nodeId;
-    }
+
     /**
      * @return the foreignSource
      */
     public String getForeignSource() {
         return m_foreignSource;
     }
-    /**
-     * @param foreignSource the foreignSource to set
-     */
-    public void setForeignSource(String foreignSource) {
-        this.m_foreignSource = foreignSource;
-    }
+
     /**
      * @return the initialDelay
      */
-    public long getInitialDelay() {
+    public Duration getInitialDelay() {
         return m_initialDelay;
     }
-    /**
-     * @param initialDelay the initialDelay to set
-     */
-    public void setInitialDelay(long initialDelay) {
-        this.m_initialDelay = initialDelay;
-    }
+
     /**
      * @return the scanInterval
      */
-    public long getScanInterval() {
+    public Duration getScanInterval() {
         return m_scanInterval;
     }
-    /**
-     * @param scanInterval the scanInterval to set
-     */
-    public void setScanInterval(long scanInterval) {
-        this.m_scanInterval = scanInterval;
-    }
+
     
 }
