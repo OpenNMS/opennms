@@ -738,7 +738,7 @@ public class DefaultProvisionService implements ProvisionService {
             log().warn("unable to get foreign source repository", e);
         }
 
-        long scanInterval = fs == null ? 86400000 : fs.getScanInterval();
+        long scanInterval = fs == null ? 86400000 : fs.getScanInterval().getMillis();
         
         long lastPoll = (node.getLastCapsdPoll() == null ? 0 : node.getLastCapsdPoll().getTime());
         long nextPoll = lastPoll + scanInterval;
