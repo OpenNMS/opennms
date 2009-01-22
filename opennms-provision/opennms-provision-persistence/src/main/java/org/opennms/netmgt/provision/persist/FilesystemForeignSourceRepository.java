@@ -1,7 +1,6 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -10,36 +9,22 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 
 
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
-    @Autowired
     private String m_requisitionPath;
-
-    @Autowired
     private String m_foreignSourcePath;
-    
     private final JAXBContext m_jaxbContext;
     private Marshaller m_marshaller;
     private Unmarshaller m_unMarshaller;
-    private FilenameFilter m_filter;
-    
+
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         try {
             m_jaxbContext = JAXBContext.newInstance(OnmsForeignSource.class, OnmsRequisition.class);
             m_marshaller = m_jaxbContext.createMarshaller();
             m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m_unMarshaller = m_jaxbContext.createUnmarshaller();
-            m_filter = new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    if (name.endsWith(".xml")) {
-                        return true;
-                    }
-                    return false;
-                }
-            };
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
         }
@@ -48,8 +33,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public Set<OnmsForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         File directory = new File(m_foreignSourcePath);
         TreeSet<OnmsForeignSource> foreignSources = new TreeSet<OnmsForeignSource>();
-        for (File file : directory.listFiles(m_filter)) {
-            foreignSources.add(get(file));
+        if (directory.exists()) {
+            for (File file : directory.listFiles()) {
+                if (file.getName().endsWith(".xml")) {
+                    foreignSources.add(get(file));
+                }
+            }
         }
         return foreignSources;
     }
@@ -76,14 +65,20 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     public void delete(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForForeignSource(foreignSource);
-        deleteFile.delete();
+        if (deleteFile.exists()) {
+            deleteFile.delete();
+        }
     }
     
     public Set<OnmsRequisition> getRequisitions() throws ForeignSourceRepositoryException {
         File directory = new File(m_requisitionPath);
         TreeSet<OnmsRequisition> requisitions = new TreeSet<OnmsRequisition>();
-        for (File file : directory.listFiles(m_filter)) {
-            requisitions.add(getRequisition(file));
+        if (directory.exists()) {
+            for (File file : directory.listFiles()) {
+                if (file.getName().endsWith(".xml")) {
+                    requisitions.add(getRequisition(file));
+                }
+            }
         }
         return requisitions;
     }
@@ -108,7 +103,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForRequisition(requisition);
-        deleteFile.delete();
+        if (deleteFile.exists()) {
+            deleteFile.delete();
+        }
     }
     
     public void setRequisitionPath(String path) {

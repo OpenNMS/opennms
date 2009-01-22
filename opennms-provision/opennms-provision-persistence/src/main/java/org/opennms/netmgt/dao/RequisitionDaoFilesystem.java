@@ -3,18 +3,18 @@ package org.opennms.netmgt.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.provision.persist.RuntimePersistenceException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class RequisitionDaoFilesystem implements RequisitionDao {
-    private final ForeignSourceRepository m_foreignSourceRepository;
+    @Autowired
+    private ForeignSourceRepository m_foreignSourceRepository = null;
 
-    public RequisitionDaoFilesystem() throws ForeignSourceRepositoryException {
-        m_foreignSourceRepository = new FilesystemForeignSourceRepository();
+    public RequisitionDaoFilesystem() {
     }
     
     public int countAll() {
@@ -55,6 +55,10 @@ public class RequisitionDaoFilesystem implements RequisitionDao {
         } catch (ForeignSourceRepositoryException e) {
             throw new RuntimePersistenceException("unable to delete requisition for foreign source '" + requisition.getForeignSource() + "'", e);
         }
+    }
+    
+    public void setForeignSourceRepository(ForeignSourceRepository fsr) {
+        m_foreignSourceRepository = fsr;
     }
 
 }
