@@ -52,5 +52,9 @@ public interface Acknowledgeable {
     AckType getType();
 
     Integer getAckId();
+
+    String getAckUser();
+
+    Date getAckTime();
     
 }

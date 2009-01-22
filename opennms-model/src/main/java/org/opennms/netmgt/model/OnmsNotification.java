@@ -315,5 +315,15 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     public Integer getAckId() {
         return m_notifyId;
     }
+    
+    @Transient
+    public String getAckUser() {
+        return m_answeredBy;
+    }
+    
+    @Transient
+    public Date getAckTime() {
+        return m_respondTime;
+    }
 
 }

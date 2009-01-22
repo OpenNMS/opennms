@@ -177,7 +177,6 @@ public class AckdTest {
         OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
 
         Acknowledgment ack = new Acknowledgment(m_alarmDao.get(vo.m_alarmId));
-        
 
         m_ackDao.save(ack);
         m_ackDao.flush();
@@ -188,7 +187,43 @@ public class AckdTest {
         Assert.assertNotNull(alarm.getAlarmAckUser());
         Assert.assertEquals("admin", alarm.getAlarmAckUser());
         
+        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
+        Assert.assertNotNull(notif);
+        Assert.assertEquals("admin", notif.getAnsweredBy());
+        
+        Assert.assertEquals(alarm.getAlarmAckTime(), notif.getRespondTime());
+        
     }
+    
+    @Transactional
+    @Test
+    public void testAcknowledgeNotification() {
+        
+        VerificationObject vo = createAckStructure();
+        Assert.assertTrue(vo.m_nodeId > 0);
+        Assert.assertTrue(vo.m_alarmId > 0);
+        Assert.assertTrue(vo.m_eventID > 0);
+        Assert.assertTrue(vo.m_userNotifId > 0);
+        
+        Acknowledgment ack = new Acknowledgment(m_notificationDao.get(vo.m_notifId));
+
+        m_ackDao.save(ack);
+        m_ackDao.flush();
+        
+        m_ackService.processAck(ack);
+        
+        OnmsNotification notif = m_notificationDao.get(ack.getRefId());
+        Assert.assertNotNull(notif.getAnsweredBy());
+        Assert.assertEquals("admin", notif.getAnsweredBy());
+        
+        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
+        Assert.assertNotNull(alarm);
+        Assert.assertEquals("admin", alarm.getAlarmAckUser());
+        
+        Assert.assertEquals(alarm.getAlarmAckTime(), notif.getRespondTime());
+        
+    }
+    
     
     class VerificationObject {
         int m_eventID;

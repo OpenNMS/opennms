@@ -91,6 +91,16 @@ public class Acknowledgment {
 
     public Acknowledgment(final Acknowledgeable a) {
         this(a, "admin", new Date());
+        
+        //not sure this is a valid use case but doing it for now
+        if (a.getType() == AckType.Alarm) {
+            if (a.getAckUser() != null) {
+                m_ackUser = a.getAckUser();
+                m_ackTime = a.getAckTime();
+            }
+        }
+        
+        
     }
     
     public Acknowledgment(final Acknowledgeable a, String user) {
