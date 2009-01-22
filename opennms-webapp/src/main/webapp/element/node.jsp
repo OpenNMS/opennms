@@ -294,7 +294,7 @@
     </c:if>
   </ul>
 </div>
-<%-- <div id="grid-panel"></div> --%>
+<div id="grid-panel"></div>
 <div class="TwoColLeft">
   <!-- general info box -->
   <h3>General (Status: ${model.status})</h3>

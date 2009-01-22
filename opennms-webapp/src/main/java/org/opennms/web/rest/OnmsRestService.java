@@ -54,6 +54,11 @@ public class OnmsRestService {
 			criteria.setFirstResult(Integer.parseInt(params.getFirst("offset")));
 			params.remove("offset");
 		}
+		
+		if(params.containsKey("start")){
+		    criteria.setFirstResult(Integer.parseInt(params.getFirst("start")));
+		    params.remove("start");
+		}
 	}
 
 	/**

@@ -27,9 +27,57 @@ Ext.onReady(function(){
     	};
     })
     
+    
+     var gridHead = grid.getView().getHeaderPanel();
+    gridHead.show();
+    
+    var tb = grid.getTopToolbar();
+    
+    var filterMenuItems = [
+	    new Ext.menu.CheckItem({ 
+            text: 'Company', 
+            checked: true, 
+            group: 'filter',
+            id: 'company',
+            checkHandler: onFilterItemCheck 
+        }),
+	    new Ext.menu.CheckItem({ 
+            text: 'Price', 
+            checked: false, 
+            group: 'filter',
+            id: 'price',
+            checkHandler: onFilterItemCheck    
+        }),
+        new Ext.menu.CheckItem({ 
+            text: 'Change', 
+            checked: false, 
+            group: 'filter',
+            id: 'change',
+            checkHandler: onFilterItemCheck    
+        }),
+        new Ext.menu.CheckItem({ 
+            text: '% Change', 
+            checked: false, 
+            group: 'filter',
+            id: 'pctchange',
+            checkHandler: onFilterItemCheck    
+        })
+    ];
+    var filterMenu = new Ext.menu.Menu({
+	    id: 'filterMenu',
+	    items: filterMenuItems
+    });
+    
+    tb.add({
+	    text: 'filter by ',
+	    tooltip: 'set column for search.',
+	    icon: 'find.png',
+	    cls: 'x-btn-text-icon btn-search-icon',
+	    menu: filterMenu
+    });
+    
 	dataStore.on("load", checkFilters, this);
-	dataStore.on("add", checkAdded, this);
-    getNodes(20);
+	dataStore.load();
 })
 
 var record = new Ext.data.Record.create([
@@ -38,21 +86,44 @@ var record = new Ext.data.Record.create([
 	{name:"type", mapping:"type"},
 	{name:"label_Source", mapping:"labelSource"},
 	{name:"created", mapping:"createTime"},
-	{name:"last-CapsdPoll", mapping:"lastCapsdPoll"}
+	{name:"last-CapsdPoll", mapping:"lastCapsdPoll"},
+	{name:"blank", mapping:"assetRecord.node"}
 ]);
 	
 var dataStore = new Ext.data.Store({
-	add:function(){
-		
-	},
+	baseParams:{limit:20},
+	proxy:new Ext.data.HttpProxy({
+		url:"rest/nodes",
+		method:"GET",
+		extraParams:{
+			limit:20
+		}
+	}),
 	reader:new Ext.data.XmlReader({
 		record:"node"
 	}, record)
 })
 
 var pagingBar = new Ext.PagingToolbar({
+        pageSize: 20,
         store: dataStore,
-        emptyMsg: "No topics to display"
+        displayInfo: true,
+        displayMsg: 'Displaying topics {0} - {1} of {2}',
+        emptyMsg: "No topics to display",
+        
+        items:[
+            '-', {
+            pressed: true,
+            enableToggle:true,
+            text: 'Show Preview',
+            cls: 'x-btn-text-icon details',
+            toggleHandler: function(btn, pressed){
+                var view = grid.getView();
+                view.showPreview = pressed;
+                view.refresh();
+            }
+        }]
+
 });
 
 var colModel = new Ext.grid.ColumnModel([{
@@ -95,22 +166,11 @@ var colModel = new Ext.grid.ColumnModel([{
 ]) 
 
 function checkFilters(){
-	
-	if(urlParams.nodename != undefined){
+	if(urlParams != undefined && urlParams.nodename != undefined){
 		dataStore.filter("nodeLabel", urlParams.nodename, true, false);
 	}
 	
 };
-
-function getNodes(total){
-	Ext.Ajax.request({
-		method:'GET',
-		url:'rest/nodes',
-		params:{limit:total}
-	});
-	
-	Ext.Ajax.on('requestComplete', this.loadData, this);	
-}
 
 
 function loadData(conn, response, options){

@@ -13,6 +13,8 @@ table {
 }
 /*Overriting style*/
 
+/*Cutom style*/
+
 
 .x-grid3-header{
 	height:24px;	
@@ -25,7 +27,7 @@ table {
 .x-panel-header {
     color:#333;
 	border:1px solid #d0d0d0;
-    background-image:url(../images/onmsTheme/panel/green-top-bottom.gif);
+    background-image:url(../images/onmsTheme/panel/Picture-4.gif);
 }
 .x-panel-header-text{
 	color:#ffffff;	
