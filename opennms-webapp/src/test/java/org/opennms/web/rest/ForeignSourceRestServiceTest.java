@@ -1,36 +1,31 @@
 package org.opennms.web.rest;
 
-import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCase {
+    
 
-/*
- * TODO
- * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
- */
-public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    
-    
+    /*
     @Test
-    public void testNode() throws Exception {
+    public void testForeignSource() throws Exception {
         // Testing POST
-        createNode();
-        String url = "/nodes";
+        createForeignSource();
+        String url = "/foreignSources";
         // Testing GET Collection
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
-        url += "/1";
+        assertTrue(xml.contains("DHCP"));
+        url += "/test";
         // Testing PUT
-        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard");
+        sendPut(url, "scan-interval=1h");
         // Testing GET Single Object
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<sysContact>OpenNMS</sysContact>"));        
-        assertTrue(xml.contains("<operatingSystem>MacOSX Leopard</operatingSystem>"));        
+        assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));        
         // Testing DELETE
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
     }
+    */
 
+    /*
     @Test
     public void testIpInterface() throws Exception {
         createIpInterface();
@@ -86,23 +81,25 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
     }
+    */
 
-    private void createNode() throws Exception {
-        String node = "<node>" +            
-        "<label>TestMachine</label>" +
-        "<labelSource>H</labelSource>" +
-        "<sysContact>The Owner</sysContact>" +
-        "<sysDescription>" +
-        "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-        "</sysDescription>" +
-        "<sysLocation>DevJam</sysLocation>" +
-        "<sysName>TestMachine</sysName>" +
-        "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-        "<type>A</type>" +
-        "</node>";
-        sendPost("/nodes", node);
+    private void createForeignSource() throws Exception {
+        String fs =
+            "<foreign-source name=\"test\">" +
+                "<scan-interval>1d</scan-interval>" +
+                "<detectors>" + 
+                    "<detector class=\"org.opennms.netmgt.provision.detector.dhcp.DhcpDetector\" name=\"DHCP\"/>" +
+                    "<detector class=\"org.opennms.netmgt.provision.detector.datagram.DnsDetector\" name=\"DNS\"/>" +
+                    "<detector class=\"org.opennms.netmgt.provision.detector.simple.HttpDetector\" name=\"HTTP\"/>" +
+                    "<detector class=\"org.opennms.netmgt.provision.detector.simple.HttpsDetector\" name=\"HTTPS\"/>" +
+                    "<detector class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\" name=\"ICMP\"/>" +
+                "</detectors>" +
+                "<policies/>" +
+            "</foreign-source>";
+        sendPost("/foreign-sources", fs);
     }
     
+    /*
     private void createIpInterface() throws Exception {
         createNode();
         String ipInterface = "<ipInterface>" +
@@ -155,5 +152,5 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "</category>";
         sendPost("/nodes/1/categories", service);
     }
-
+    */
 }
