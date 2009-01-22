@@ -50,10 +50,11 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.joda.time.Duration;
 import org.opennms.netmgt.dao.ForeignSourceDao;
 import org.opennms.netmgt.model.OnmsForeignSourceCollection;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
-import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
+import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,16 +132,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         }
         log().debug("updateForeignSource: updating foreign source " + foreignSource);
         BeanWrapper wrapper = new BeanWrapperImpl(fs);
+        wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 Object value = null;
                 String stringValue = params.getFirst(key);
-                if (key.equals("scanInterval")) {
-                    StringIntervalAdapter sia = new StringIntervalAdapter();
-                    value = sia.unmarshal(stringValue);
-                } else {
-                    value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                }
+                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }

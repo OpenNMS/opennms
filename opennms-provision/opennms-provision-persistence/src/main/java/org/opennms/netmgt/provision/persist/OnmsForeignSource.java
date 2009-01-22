@@ -50,6 +50,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.joda.time.Duration;
 
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
@@ -65,7 +66,7 @@ public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSo
     
     @XmlElement(name="scan-interval")
     @XmlJavaTypeAdapter(StringIntervalAdapter.class)
-    private Long m_scanInterval = Long.valueOf(60 * 60 * 24 * 1000); // 1 day
+    private Duration m_scanInterval = Duration.standardDays(1);
 
     @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")
@@ -101,13 +102,13 @@ public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSo
      * @return the scanInterval
      */
     @XmlTransient
-    public long getScanInterval() {
+    public Duration getScanInterval() {
         return m_scanInterval;
     }
     /**
      * @param scanInterval the scanInterval to set
      */
-    public void setScanInterval(long scanInterval) {
+    public void setScanInterval(Duration scanInterval) {
         m_scanInterval = scanInterval;
     }
     /**

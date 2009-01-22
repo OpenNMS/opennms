@@ -1,10 +1,12 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 
 public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
-
-    /*
     @Test
     public void testForeignSource() throws Exception {
         // Testing POST
@@ -15,15 +17,16 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         assertTrue(xml.contains("DHCP"));
         url += "/test";
         // Testing PUT
-        sendPut(url, "scan-interval=1h");
+        // /opennms/rest/foreignSources/test/?scan-interval=1h
+        sendPut(url, "scanInterval=1h");
         // Testing GET Single Object
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));        
         // Testing DELETE
         sendRequest(DELETE, url, 200);
-        sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
     }
-    */
 
     /*
     @Test
@@ -96,7 +99,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
                 "</detectors>" +
                 "<policies/>" +
             "</foreign-source>";
-        sendPost("/foreign-sources", fs);
+        sendPost("/foreignSources", fs);
     }
     
     /*

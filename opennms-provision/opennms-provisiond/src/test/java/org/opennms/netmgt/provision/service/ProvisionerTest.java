@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -185,7 +186,7 @@ public class ProvisionerTest {
         
         m_foreignSource = new OnmsForeignSource();
         m_foreignSource.setName("imported:");
-        m_foreignSource.setScanInterval(8600000);
+        m_foreignSource.setScanInterval(Duration.standardDays(1));
         
         m_foreignSourceRepository = new MockForeignSourceRepository();
         m_foreignSourceRepository.save(m_foreignSource);
