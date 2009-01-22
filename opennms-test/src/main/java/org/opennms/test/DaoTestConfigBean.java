@@ -54,7 +54,7 @@ public class DaoTestConfigBean implements InitializingBean {
     private final String m_absoluteHomeDirectory = null; 
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
-    private final String m_relativeImporterCacheDirectory = "target/test/opennms-home/share/importer-cache";
+    private final String m_relativeImporterCacheDirectory = "target/test/opennms-home/share/importer-store";
 
     public DaoTestConfigBean() {
     }

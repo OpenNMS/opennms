@@ -22,13 +22,13 @@ public class StringIntervalAdapter extends XmlAdapter<String, Long> {
     }
     
     @Override
-    public String marshal(Long v) throws Exception {
+    public String marshal(Long v) {
         Period p = new Period(v.longValue()).normalizedStandard();
         return m_format.print(p);
     }
 
     @Override
-    public Long unmarshal(String v) throws Exception {
+    public Long unmarshal(String v) {
         return m_format.parsePeriod(v).normalizedStandard().toStandardDuration().getMillis();
     }
 
