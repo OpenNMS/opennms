@@ -129,6 +129,11 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getPhysAddr());
     }
 
+    public void updateSnmpInterfaceData(OnmsNode node) {
+        for(IfTableEntry entry : getEntries()) {
+            updateSnmpInterfaceData(node, entry.getIfIndex());
+        }
+    }
     /**
      * @param node
      * @param ifIndex

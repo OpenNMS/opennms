@@ -31,17 +31,17 @@
  */
 package org.opennms.netmgt.provision.service;
 
-public class Duration {
+public class WorkDuration {
 
 	private String m_name = null;
 	private long m_start = -1L;
 	private long m_end = -1L;
 	
-	public Duration() {
+	public WorkDuration() {
 		this(null);
 	}
 
-	public Duration(String name) {
+	public WorkDuration(String name) {
 		m_name = name;
 	}
 	

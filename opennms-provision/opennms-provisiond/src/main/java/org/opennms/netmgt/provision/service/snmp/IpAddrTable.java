@@ -150,7 +150,13 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 
-    /**
+    public void updateIpInterfaceData(OnmsNode node) {
+        for(IpAddrTableEntry entry : getEntries()) {
+            updateIpInterfaceData(node, entry.getIpAdEntAddr().getHostAddress());
+        }
+    }
+
+        /**
      * @param node
      * @param ipAddr
      */

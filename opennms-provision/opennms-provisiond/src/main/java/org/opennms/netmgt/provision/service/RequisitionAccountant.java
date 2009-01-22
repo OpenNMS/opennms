@@ -33,44 +33,51 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.opennms.netmgt.config.modelimport.Asset;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.provision.persist.AbstractImportVisitor;
+import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
+import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
+import org.opennms.netmgt.provision.persist.OnmsCategoryRequisition;
+import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 
-public class ImportAccountant extends AbstractImportVisitor {
+public class RequisitionAccountant extends AbstractRequisitionVisitor {
 	private final ImportOperationsManager m_opsMgr;
     private SaveOrUpdateOperation m_currentOp;
         
-    public ImportAccountant(ImportOperationsManager opsMgr) {
+    public RequisitionAccountant(ImportOperationsManager opsMgr) {
         m_opsMgr = opsMgr;
     }
     
-    public void visitNode(Node node) {
-        m_currentOp = m_opsMgr.foundNode(node.getForeignId(), node.getNodeLabel(), node.getBuilding(), node.getCity());        
+    @Override
+    public void visitNode(OnmsNodeRequisition nodeReq) {
+        m_currentOp = m_opsMgr.foundNode(nodeReq.getForeignId(), nodeReq.getNodeLabel(), nodeReq.getBuilding(), nodeReq.getCity());        
     }
-    public void completeNode(Node node) {
+    
+    @Override
+    public void completeNode(OnmsNodeRequisition nodeReq) {
         m_currentOp = null;
     }
 
-    public void visitInterface(Interface iface) {
-        m_currentOp.foundInterface(iface.getIpAddr().trim(), iface.getDescr(), iface.getSnmpPrimary(), iface.getManaged(), iface.getStatus());
+    @Override
+    public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
+        m_currentOp.foundInterface(ifaceReq.getIpAddr().trim(), ifaceReq.getDescr(), ifaceReq.getSnmpPrimary(), ifaceReq.getManaged(), ifaceReq.getStatus());
         
     }
     
-    public void visitMonitoredService(MonitoredService svc) {
-        m_currentOp.foundMonitoredService(svc.getServiceName());
+    @Override
+    public void visitMonitoredService(OnmsMonitoredServiceRequisition svcReq) {
+        m_currentOp.foundMonitoredService(svcReq.getServiceName());
     }
 
-    public void visitCategory(Category category) {
-        m_currentOp.foundCategory(category.getName());
+    @Override
+    public void visitCategory(OnmsCategoryRequisition catReq) {
+        m_currentOp.foundCategory(catReq.getName());
     }
 
-    public void visitAsset(Asset asset) {
-        m_currentOp.foundAsset(asset.getName(), asset.getValue());
+    @Override
+    public void visitAsset(OnmsAssetRequisition assetReq) {
+        m_currentOp.foundAsset(assetReq.getName(), assetReq.getValue());
     }
 }
