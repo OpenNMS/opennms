@@ -94,7 +94,7 @@ public class FilesystemForeignSourceRepositoryTest {
         String uuid = UUID.randomUUID().toString();
         OnmsForeignSource defaultForeignSource = m_foreignSourceRepository.getForeignSource(uuid);
         assertEquals("name must match requested foreign source repository name", uuid, defaultForeignSource.getName());
-        assertEquals("scan-interval must be 1 day", 86400000, defaultForeignSource.getScanInterval());
+        assertEquals("scan-interval must be 1 day", 86400000, defaultForeignSource.getScanInterval().getMillis());
         assertEquals("foreign source must have no default policies", 0, defaultForeignSource.getPolicies().size());
         List<String> fsNames = new ArrayList<String>();
         for (PluginConfig config : defaultForeignSource.getDetectors()) {
