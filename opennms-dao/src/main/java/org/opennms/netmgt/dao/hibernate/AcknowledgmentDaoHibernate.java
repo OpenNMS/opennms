@@ -77,33 +77,18 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgm
             
             if (notif != null) {
                 ackables.add(notif);
-                List<OnmsAlarm> alarms = findRelatedAlarms(notif);
-                
-                if (alarms != null) {
-                    ackables.addAll(alarms);
+                final OnmsAlarm alarm = notif.getEvent().getAlarm();
+                if (alarm != null) {
+                    ackables.add(alarm);
                 }
             }
-            
         }
         
         return ackables;
     }
     
-
-    private List<OnmsAlarm> findRelatedAlarms(final OnmsNotification notif) {
-        final String hql = "from OnmsNotification as notifications " +
-        "inner join notifications.event as events " +
-        "where events.alarm.id = ?";
-        return findObjects(OnmsAlarm.class, hql, notif.getNotifyId());
-    }
-    
     private List<OnmsNotification> findRelatedNotifications(final OnmsAlarm alarm) {
-        //final String hql = "from OnmsNotification as notifications " +
-        //"inner join notifications.event as events " +
-        //"where events.alarm.id = ?";
-        
         final String hql = "from OnmsNotification as n where n.event.alarm = ?";
-        
         return findObjects(OnmsNotification.class, hql, alarm);
     }
 

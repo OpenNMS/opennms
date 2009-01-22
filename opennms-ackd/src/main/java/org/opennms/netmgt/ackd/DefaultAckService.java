@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
 
 /**
  * TODO: Needs IOC work
+ * TODO: Create eventconf acknowledgment verb entries (acknowledge and acknowledged)
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
