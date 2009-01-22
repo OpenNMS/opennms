@@ -1,6 +1,11 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -8,6 +13,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.junit.After;
 import org.junit.Before;
@@ -96,7 +105,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
         System.err.println("------------------------------------------------------------------------------");
         beforeServletDestroy();
         contextListener.contextDestroyed(new ServletContextEvent(servletContext));
-        dispatcher.destroy();
+        if (dispatcher != null) {
+            dispatcher.destroy();
+        }
         afterServletDestroy();
     }
 
@@ -125,4 +136,70 @@ public abstract class AbstractSpringJerseyRestTestCase {
         request.setContextPath(contextPath);
         return request;
     }
+
+    protected void sendPost(String url, String xml) throws Exception {
+        sendData(POST, MediaType.APPLICATION_XML, url, xml);
+    }
+
+    protected void sendPut(String url, String formData) throws Exception {
+        sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData);
+    }
+    
+    protected void sendData(String requestType, String contentType, String url, String data) throws Exception {
+        MockHttpServletRequest request = createRequest(requestType, url);
+        request.setContentType(contentType);
+        request.setContent(data.getBytes());
+        MockHttpServletResponse response = createResponse();        
+        dispatch(request, response);
+        assertEquals(200, response.getStatus());
+    }
+
+    protected String sendRequest(String requestType, String url, int spectedStatus) throws Exception {
+        MockHttpServletRequest request = createRequest(requestType, url);
+        MockHttpServletResponse response = createResponse();
+        dispatch(request, response);
+        assertEquals(spectedStatus, response.getStatus());
+        String xml = response.getContentAsString();
+        if (xml != null) {
+            System.err.println(xml);
+        }
+        return xml;
+    }
+    
+    protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
+        MockHttpServletRequest request = createRequest(GET, url);
+        MockHttpServletResponse response = createResponse();
+        dispatch(request, response);
+        assertEquals(expectedStatus, response.getStatus());
+        
+        System.err.printf("xml: %s\n", response.getContentAsString());
+        
+        InputStream in = new ByteArrayInputStream(response.getContentAsByteArray());
+        
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        
+        T result = expectedClass.cast(unmarshaller.unmarshal(in));
+        
+        return result;
+
+    }
+    
+    protected void putXmlObject(JAXBContext context, String url, int expectedStatus, Object object) throws Exception {
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.marshal(object, out);
+        byte[] content = out.toByteArray();
+        
+
+        MockHttpServletRequest request = createRequest(PUT, url);
+        request.setContentType(MediaType.APPLICATION_XML);
+        request.setContent(content);
+        MockHttpServletResponse response = createResponse();        
+        dispatch(request, response);
+        assertEquals(expectedStatus, response.getStatus());
+        
+    }
+
+
 }
