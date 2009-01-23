@@ -39,7 +39,7 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
@@ -53,7 +53,7 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
 
     @Test
     public void testSaveUnspecified() {
-        Acknowledgment ack = new Acknowledgment();
+        OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
         ack.setAckType(AckType.Unspecified);
         ack.setAckUser("not-admin");
@@ -62,7 +62,7 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
         Integer id = new Integer(ack.getId());
         ack = null;
         
-        Acknowledgment ack2 = getAcknowledgmentDao().get(id);
+        OnmsAcknowledgment ack2 = getAcknowledgmentDao().get(id);
         assertNotNull(ack2);
         assertEquals(id, ack2.getId());
         assertFalse("admin".equals(ack2.getAckUser()));
@@ -100,12 +100,12 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
         
-        Acknowledgment ack = new Acknowledgment(alarm);
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm);
         getAcknowledgmentDao().save(ack);
         Integer ackId = new Integer(ack.getId());
         ack = null;
         
-        Acknowledgment ack2 = getAcknowledgmentDao().get(ackId);
+        OnmsAcknowledgment ack2 = getAcknowledgmentDao().get(ackId);
         OnmsAlarm alarm2 = getAlarmDao().get(ack2.getRefId());
         
         assertEquals(ack2.getAckUser(), alarm2.getAlarmAckUser());

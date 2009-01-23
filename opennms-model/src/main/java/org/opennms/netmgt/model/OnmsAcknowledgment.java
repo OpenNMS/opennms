@@ -37,6 +37,7 @@ package org.opennms.netmgt.model;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -50,11 +51,12 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 
 @XmlRootElement(name="ack")  //hmmm
 @Entity
 @Table(name = "acks")
-public class Acknowledgment {
+public class OnmsAcknowledgment {
 
     private Integer m_id; 
     private Date m_ackTime;
@@ -63,33 +65,57 @@ public class Acknowledgment {
     private Integer m_refId;
     
     //main constructor
-    public Acknowledgment(Date time, String user) {
+    public OnmsAcknowledgment(Date time, String user) {
         m_ackTime = (time == null) ? new Date() : time;
         m_ackUser = (user == null) ? "admin" : user;
         m_ackType = AckType.Unspecified;
     }
     
-    public Acknowledgment() {
+    public OnmsAcknowledgment() {
         this(new Date(), "admin");
     }
     
-    public Acknowledgment(String user) {
+    public OnmsAcknowledgment(String user) {
         this(new Date(), user);
     }
     
-    public Acknowledgment(final Date time) {
+    public OnmsAcknowledgment(final Date time) {
         this(time, "admin");
     }
 
-    public Acknowledgment(final Event e) throws ParseException {
-        this(e, "admin");
+    public OnmsAcknowledgment(final Event e) throws ParseException {
+        this(DateFormat.getDateInstance(DateFormat.FULL).parse(e.getTime()), "admin");
+        Collection<Parm> parms = e.getParms().getParmCollection();
+        
+        if (parms.size() <= 2) {
+            throw new IllegalArgumentException("Event:"+e.getUei()+" has invalid paramenter list, requires ackType and refId.");
+        }
+        
+        for (Parm parm : parms) {
+            final String parmValue = parm.getValue().getContent();
+            
+            if (!"ackType".equals(parm.getParmName()) && !"refId".equals(parm.getParmName()) && !"user".equals(parm.getParmName()) ) {
+                throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", is an invalid paramter");
+            } else {
+            
+                if ("ackType".equals(parm.getParmName())) {
+
+                    if ("Alarm".equals(parmValue) || "Notification".equals(parmValue)) {
+                        m_ackType = ("Alarm".equals(parmValue) ? AckType.Alarm : AckType.Notification);
+                    } else {
+                        throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
+                    }
+                    
+                } else if ("refId".equals(parm.getParmName())){
+                    m_refId = Integer.valueOf(parm.getValue().getContent());
+                } else {
+                    m_ackUser = parm.getValue().getContent();
+                }
+            }                
+        }
     }
 
-    public Acknowledgment(final Event e, final String user) throws ParseException {
-        this(DateFormat.getDateInstance().parse(e.getTime()), user);
-    }
-
-    public Acknowledgment(final Acknowledgeable a) {
+    public OnmsAcknowledgment(final Acknowledgeable a) {
         this(a, "admin", new Date());
         
         //not sure this is a valid use case but doing it for now
@@ -103,11 +129,11 @@ public class Acknowledgment {
         
     }
     
-    public Acknowledgment(final Acknowledgeable a, String user) {
+    public OnmsAcknowledgment(final Acknowledgeable a, String user) {
         this(a, user, new Date());
     }
     
-    public Acknowledgment(final Acknowledgeable a, String user, Date ackTime) {
+    public OnmsAcknowledgment(final Acknowledgeable a, String user, Date ackTime) {
         this();
         if (a == null) {
             throw new IllegalArgumentException("OnmsAlarm is null.");

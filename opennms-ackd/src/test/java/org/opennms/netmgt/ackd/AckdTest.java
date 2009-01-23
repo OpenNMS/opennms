@@ -58,13 +58,15 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -92,7 +94,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 
 /**
- * Acknowledgement tests
+ * Acknowledgment Daemon tests
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
@@ -158,12 +160,19 @@ public class AckdTest {
     }
     
 
+    /**
+     * Make sure the DB is not empty
+     */
     @Transactional
     @Test
-    public void testState() {
+    public void testDbState() {
         Assert.assertFalse(m_nodeDao.findAll().isEmpty());
     }
 
+    
+    /**
+     * This tests the acknowledgment of an alarm and any related notifications.
+     */
     @Transactional
     @Test
     public void testAcknowledgeAlarm() {
@@ -176,7 +185,7 @@ public class AckdTest {
         
         OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
 
-        Acknowledgment ack = new Acknowledgment(m_alarmDao.get(vo.m_alarmId));
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(m_alarmDao.get(vo.m_alarmId));
 
         m_ackDao.save(ack);
         m_ackDao.flush();
@@ -195,6 +204,11 @@ public class AckdTest {
         
     }
     
+    
+    /**
+     * This tests acknowledging a notification and a related alarm.  If events are being deduplicated
+     * they should all have the same alarm ID.
+     */
     @Transactional
     @Test
     public void testAcknowledgeNotification() {
@@ -205,7 +219,7 @@ public class AckdTest {
         Assert.assertTrue(vo.m_eventID > 0);
         Assert.assertTrue(vo.m_userNotifId > 0);
         
-        Acknowledgment ack = new Acknowledgment(m_notificationDao.get(vo.m_notifId));
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(m_notificationDao.get(vo.m_notifId));
 
         m_ackDao.save(ack);
         m_ackDao.flush();
@@ -222,6 +236,28 @@ public class AckdTest {
         
         Assert.assertEquals(alarm.getAlarmAckTime(), notif.getRespondTime());
         
+    }
+    
+    @Transactional
+    @Test
+    public void testHandelEvent() throws InterruptedException {
+        
+        VerificationObject vo = createAckStructure();
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/ackd/Acknowledge", "AckdTest");
+        bldr.addParam("ackType", String.valueOf(AckType.Alarm));
+        bldr.addParam("refId", vo.m_alarmId);
+        final String user = "ackd-test-user";
+        bldr.addParam("user", user);
+
+        m_daemon.handleAckEvent(bldr.getEvent());
+        
+        OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
+        Assert.assertEquals(notif.getAckUser(), user);
+//        Assert.assertEquals(notif.getAckTime(), bldr.getEvent().getTime());
+        
+        OnmsAlarm alarm = m_alarmDao.get(vo.m_alarmId);
+        Assert.assertEquals(alarm.getAckUser(), user);
+//        Assert.assertEquals(alarm.getAckTime(), bldr.getEvent().getTime());
     }
     
     
