@@ -70,12 +70,14 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
  * 
  * DONE: Identify acknowledgments for sent notifications
  * DONE: Identify acknowledgments for alarm IDs (how the send knows the ID, good question)
- * TODO: Persist acknowledgments
+ * DONE: Persist acknowledgments
  * TODO: Identify escalation reply
  * TODO: Identify clear reply
  * TODO: Identify unacknowledged reply
- * TODO: Formalize Acknowledgment parameters (ack-type, id)
+ * DONE: Formalize Acknowledgment parameters (ack-type, id)
  * TODO: JavaMail configuration factory
+ * TODO: Ackd configuration factory
+ * TODO: Associate email replies with openNMS user
  * TODO: Finish scheduling component of JavaAckReader
  * TODO: Configurable Schedule
  * TODO: Identify Java Mail configuration element to use for reading replies
@@ -99,7 +101,7 @@ public class JavaMailAckReaderImpl implements AckReader {
     
     private AckService m_ackService;
     
-    private AckdConfiguration m_config;
+    private AckdConfiguration m_daemonConfig;
 
     
     private void findAndProcessAcks() {
@@ -124,13 +126,13 @@ public class JavaMailAckReaderImpl implements AckReader {
             acks = new ArrayList<OnmsAcknowledgment>();
             for (Message msg : msgs) {
                 try {
-                    Integer notifyId = detectId(msg.getSubject(), m_config.getNotifyidMatchExpression());
+                    Integer notifyId = detectId(msg.getSubject(), m_daemonConfig.getNotifyidMatchExpression());
                     
                     if (notifyId.intValue() > 0) {
                         acks.add(createAcknowledgment(msg));
                     }
                     
-                    Integer alarmId = detectId(msg.getSubject(), m_config.getAlarmidMatchExpression());
+                    Integer alarmId = detectId(msg.getSubject(), m_daemonConfig.getAlarmidMatchExpression());
                     
                     if (alarmId.intValue() > 0) {
                         acks.add(createAcknowledgment(msg));
@@ -148,8 +150,8 @@ public class JavaMailAckReaderImpl implements AckReader {
 
     private Integer detectId(String subject, String expression) {
         Integer id = new Integer(0);
-        if (m_config.getAckExpression().startsWith("~")) {
-            String ackExpression = m_config.getAckExpression().substring(1);
+        if (m_daemonConfig.getAckExpression().startsWith("~")) {
+            String ackExpression = m_daemonConfig.getAckExpression().substring(1);
             Pattern pattern = Pattern.compile(ackExpression);
             Matcher matcher = pattern.matcher(subject);
             
@@ -281,7 +283,7 @@ public class JavaMailAckReaderImpl implements AckReader {
     }
 
     public void start(final AckdConfiguration config) {
-        m_config = config;
+        m_daemonConfig = config;
         scheduleReads();
     }
     
@@ -333,7 +335,7 @@ public class JavaMailAckReaderImpl implements AckReader {
     }
 
     public void setAckdConfig(AckdConfiguration config) {
-        m_config = config;
+        m_daemonConfig = config;
     }
 
 }
