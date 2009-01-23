@@ -41,7 +41,7 @@ import java.util.List;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
 
@@ -50,13 +50,13 @@ import org.opennms.netmgt.model.OnmsNotification;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgment, Integer> implements AcknowledgmentDao {
+public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowledgment, Integer> implements AcknowledgmentDao {
 
     public AcknowledgmentDaoHibernate() {
-        super(Acknowledgment.class);
+        super(OnmsAcknowledgment.class);
     }
 
-    public List<Acknowledgeable> findAcknowledgables(final Acknowledgment ack) {
+    public List<Acknowledgeable> findAcknowledgables(final OnmsAcknowledgment ack) {
         List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
         
         if (ack.getAckType().equals(AckType.Alarm)) {
@@ -92,21 +92,20 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<Acknowledgm
         return findObjects(OnmsNotification.class, hql, alarm);
     }
 
-    private OnmsAlarm findAlarm(final Acknowledgment ack) {
+    private OnmsAlarm findAlarm(final OnmsAcknowledgment ack) {
 //      hql = "from OnmsAlarm as alarms where alarms.id = ?";        
 //      return findUnique(OnmsAlarm.class, hql, ack.getRefId());
         return (OnmsAlarm) getHibernateTemplate().load(OnmsAlarm.class, ack.getRefId());
     }
 
-    private OnmsNotification findNotification(final Acknowledgment ack) {
+    private OnmsNotification findNotification(final OnmsAcknowledgment ack) {
 //      hql = "from OnmsAlarm as alarms where alarms.id = ?";        
 //      return findUnique(OnmsAlarm.class, hql, ack.getRefId());
         return (OnmsNotification) getHibernateTemplate().load(OnmsNotification.class, ack.getRefId());
     }
     
     public void updateAckable(Acknowledgeable ackable) {
-        // TODO Auto-generated method stub
-        
+        getHibernateTemplate().update(ackable);
     }
 
 }

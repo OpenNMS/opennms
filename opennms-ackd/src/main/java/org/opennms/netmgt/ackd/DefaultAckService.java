@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 
@@ -56,13 +56,13 @@ public class DefaultAckService implements AckService {
     private AcknowledgmentDao m_ackDao;
     private EventForwarder m_eventForwarder;
 
-    public void processAcks(Collection<Acknowledgment> acks) {
-        for (Acknowledgment ack : acks) {
+    public void processAcks(Collection<OnmsAcknowledgment> acks) {
+        for (OnmsAcknowledgment ack : acks) {
             processAck(ack);
         }
     }
 
-    public void processAck(Acknowledgment ack) {
+    public void processAck(OnmsAcknowledgment ack) {
         
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         EventBuilder ebuilder;
@@ -70,6 +70,7 @@ public class DefaultAckService implements AckService {
             ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
             m_ackDao.updateAckable(ackable);
             m_ackDao.save(ack);
+            m_ackDao.flush();
             ebuilder = new EventBuilder("uei.opennms.org/internal/ackd/acknowledgment", "Ackd");
             m_eventForwarder.sendNow(ebuilder.getEvent());
         }
