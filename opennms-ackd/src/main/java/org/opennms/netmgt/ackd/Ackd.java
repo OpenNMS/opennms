@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -120,15 +120,17 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         m_ackService = ackService;
     }
 
+    //TODO: make event conf def for this uei
     @EventHandler(uei="uei.opennms.org/internal/ackd/Acknowledge")
-    public void handleAckEvent(Event e) {
-        Acknowledgment ack;
+    public void handleAckEvent(Event event) {
+        OnmsAcknowledgment ack;
+        
         try {
-            ack = new Acknowledgment(e);
+            ack = new OnmsAcknowledgment(event);
             m_ackService.processAck(ack);
-        } catch (ParseException e1) {
+        } catch (ParseException e) {
             // TODO Auto-generated catch block
-            e1.printStackTrace();
+            e.printStackTrace();
         }
     }
 

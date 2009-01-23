@@ -37,7 +37,7 @@ package org.opennms.netmgt.ackd;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,9 +51,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=false)
 public interface AckService {
         
-    void processAck(Acknowledgment ack);
+    void processAck(OnmsAcknowledgment ack);
     
-    void processAcks(Collection<Acknowledgment> acks);
+    void processAcks(Collection<OnmsAcknowledgment> acks);
 
     void setEventForwarder(EventForwarder eventForwarder);
 

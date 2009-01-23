@@ -55,7 +55,7 @@
         <value>org.opennms.netmgt.model.ResourceReference</value>
         <value>org.opennms.netmgt.model.StatisticsReportData</value>
         <value>org.opennms.netmgt.model.StatisticsReport</value>
-        <value>org.opennms.netmgt.model.Acknowledgment</value>
+        <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">

@@ -62,7 +62,7 @@ import org.opennms.netmgt.ackd.AckService;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
-import org.opennms.netmgt.model.Acknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 
 
 /**
@@ -104,7 +104,7 @@ public class JavaMailAckReaderImpl implements AckReader {
     
     private void findAndProcessAcks() {
         
-        Collection<Acknowledgment> acks;
+        Collection<OnmsAcknowledgment> acks;
 
         try {
             List<Message> msgs = readMessages();
@@ -117,11 +117,11 @@ public class JavaMailAckReaderImpl implements AckReader {
         
     }
     
-    private Collection<Acknowledgment> detectAcks(List<Message> msgs) {
-        Collection<Acknowledgment> acks = null;
+    private Collection<OnmsAcknowledgment> detectAcks(List<Message> msgs) {
+        Collection<OnmsAcknowledgment> acks = null;
         
         if (msgs != null) {
-            acks = new ArrayList<Acknowledgment>();
+            acks = new ArrayList<OnmsAcknowledgment>();
             for (Message msg : msgs) {
                 try {
                     Integer notifyId = detectId(msg.getSubject(), m_config.getNotifyidMatchExpression());
@@ -161,10 +161,10 @@ public class JavaMailAckReaderImpl implements AckReader {
         return id;
     }
 
-    private Acknowledgment createAcknowledgment(Message msg) throws MessagingException {
+    private OnmsAcknowledgment createAcknowledgment(Message msg) throws MessagingException {
         String ackUser = ((InternetAddress)msg.getFrom()[0]).getAddress();
         Date ackTime = msg.getReceivedDate();
-        Acknowledgment ack = new Acknowledgment(ackTime, ackUser);
+        OnmsAcknowledgment ack = new OnmsAcknowledgment(ackTime, ackUser);
         return ack;
     }
 
