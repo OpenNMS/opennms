@@ -76,15 +76,13 @@
 	String url = "http://www.rionero.com/rws-current";
 	try {	
 
-		nodeModel = InventoryLayer.getInventoryElement(url,groupID, elementID);
+		nodeModel = InventoryLayer.getInventoryElement(elementID);
 
 
 	} catch (Exception e) {
 		//throw new ServletException("Could node get Rancid Node ", e);
 	}
     nodeModel.put("id", elementID);
-    nodeModel.put("group", groupID);
-    nodeModel.put("url", url);
     pageContext.setAttribute("model", nodeModel);
 %>
 
@@ -155,30 +153,7 @@
 		<th>Nw Ram Size</th>
 		<th>${model.nwramsize}</th>
 	</tr>
-	<tr>
-		<th>Inventory Node</th>
-		<th>
-			<c:url var="viewInvNode" value="inventory/invnode.jsp">
-			<c:param name="rancidnode" value="${model.id}"/>
-			<c:param name="group" value="${model.group}"/>
-			</c:url>
-			<li>
-			<a href="${viewInvNode}">Inventory Node</a>
-			</li>
-		</th>
-	</tr>
-	<tr>
-	<th>Rancid Node</th>
-	<th>
-		<c:url var="viewRancidNode" value="inventory/rancid.jsp">
-		<c:param name="rancidnode" value="${model.id}"/>
-		<c:param name="group" value="${model.group}"/>
-		</c:url>
-		<li>
-		<a href="${viewRancidNode}">Rancid Node</a>
-		</li>
-	</th>
-	</tr>
+	
 </table>
 </div>
 

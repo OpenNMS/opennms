@@ -45,18 +45,19 @@
         org.opennms.web.asset.AssetModel,
         org.opennms.web.inventory.InventoryLayer,
         org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
+        org.springframework.web.context.support.WebApplicationContextUtils,
+        org.opennms.web.element.ElementUtil"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
 <%!
-    private int m_telnetServiceId;
-    private int m_httpServiceId;
-    private int m_dellServiceId;
-    private int m_snmpServiceId;
+//    private int m_telnetServiceId;
+//    private int m_httpServiceId;
+//    private int m_dellServiceId;
+//    private int m_snmpServiceId;
     private ResourceService m_resourceService;
-	private AssetModel m_model = new AssetModel();
+//	private AssetModel m_model = new AssetModel();
 
     public void init() throws ServletException {
 
@@ -69,32 +70,43 @@
 
 <%
 
-    String elementID = request.getParameter("rancidnode");
+	Node node_db = ElementUtil.getNodeByParams(request);
+	int nodeId = node_db.getNodeId();
+	
+	
+	//nodeModel.put("id", Integer.toString(nodeId));
+	//nodeModel.put("label", node_db.getLabel());
+	String elementID = node_db.getLabel();
+	
     String groupID = request.getParameter("group");
+    String versionId = request.getParameter("version");
+    
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
 	Map<String, Object> nodeModel2 = new TreeMap<String, Object>();
-	String url = "http://www.rionero.com/rws-current";
 	try {	
 
-		nodeModel = InventoryLayer.getInventoryNode(url,groupID, elementID);
-		nodeModel2 = InventoryLayer.getInventoryNodeList(url,groupID, elementID);
+		nodeModel = InventoryLayer.getInventoryNode(elementID, groupID, versionId);
+		//nodeModel2 = InventoryLayer.getInventoryNodeList(elementID);
 
 	} catch (Exception e) {
 		//throw new ServletException("Could node get Rancid Node ", e);
 	}
     nodeModel.put("id", elementID);
-    nodeModel.put("group", groupID);
-    nodeModel.put("url", url);
     pageContext.setAttribute("model", nodeModel);
     pageContext.setAttribute("model2", nodeModel2);
 %>
-
+<%
+String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
+String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Rancid</a>";
+%>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Inventory" />
-  <jsp:param name="headTitle" value="${model.id}" />
-  <jsp:param name="headTitle" value="Inventory" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="Inventory" />
+<jsp:param name="title" value="Inventory" />
+<jsp:param name="headTitle" value="${model.id}" />
+<jsp:param name="headTitle" value="Rancid" />
+<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+<jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
+<jsp:param name="breadcrumb" value="<%= nodeBreadCrumb2 %>" />
+<jsp:param name="breadcrumb" value="Inventory" />
 </jsp:include>
 
 <h2>Node: ${model.id}</h2>
@@ -103,17 +115,22 @@
 <div class="TwoColLeft">
   <!-- general info box -->
   <h3>General (Status: ${model.status})</h3>
-
+	<table>
+  	<tr>
+  		<th>Node</th>
+  		<td><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></td>
+  </tr>
+  </table>
   <h3>Element info</h3>
 
   <table>
 	<tr>
-		<th>RWS Url</th>
-		<th>${model.url}</th>
-		</tr>
-	<tr>
 		<th>Group Name</th>
-		<th>${model.group}</th>
+		<th><%=groupID%></th>
+	</tr>
+	<tr>
+		<th>Version</th>
+		<th><%=versionId%></th>
 	</tr>
 	<tr>
 		<th>Rancid Name</th>
@@ -135,7 +152,7 @@
 	<table>
 	  <tr>
 	    <th>Software Image</th>
-	    <th>${model.softimage}</th>
+	    <th><a href = "${model.softimage}" > ${model.softimage} </a></th>
      </tr>
      <tr>
      	<th>Software Version</th>
@@ -147,49 +164,25 @@
 
 	 <table>
 	    <tr>
-		<th>Software Configuration Url</th>
-		<th>${model.softconfigurl}</th>
+		<th>Software Configuration Url capperi</th>
+		<th><a href = "${model.softconfigurl}" > ${model.softconfigurl} </a></th>
 		</tr>
     <tr>
 	<th>Root Configuration Url</th>
-	<th>${model.rootconfigurl}</th>
+	<th><a href = "${model.rootconfigurl}" > ${model.rootconfigurl} </a></th>
 	</tr>
 	</table>
 	
-	<h3>Linked Nodes</h3>
-	<table>
-	<tr>
-		<th>Inventory Element</th>
-		<th>
-			<c:url var="viewInvNode" value="inventory/invelement.jsp">
-			<c:param name="rancidnode" value="${model.id}"/>
-			<c:param name="group" value="${model.group}"/>
-			</c:url>
-			<li>
-				<a href="${viewInvNode}">Inventory Element</a>
-			</li>
-			</th>
-	</tr>
-	<tr>
-	<th>Rancid Node</th>
-		<th>
-			<c:url var="viewRancidNode" value="inventory/rancid.jsp">
-			<c:param name="rancidnode" value="${model.id}"/>
-			<c:param name="group" value="${model.group}"/>
-			</c:url>
-			<li>
-				<a href="${viewRancidNode}">Rancid Node</a>
-			</li>
-		</th>
-	</tr>
-</table>
 </div>
 <div class="TwoColRight">
 <!-- general info box -->
 <h3>Associated Elements</h3>
 
-<h3>List</h3>
 <table>
+<tr><th><a href="inventory/invelement.jsp?rancidnode=7206PED.wind.lab?group=laboratorio">Slot 0 (Nome) </a></th>
+<th>Inventory Type</th>
+<th>Vendor</th>
+</tr>
 <c:forEach items="${model2.inventory}" var="invel">
 <tr>
 <th>Element </th>

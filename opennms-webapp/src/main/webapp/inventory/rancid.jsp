@@ -45,18 +45,19 @@
         org.opennms.web.asset.AssetModel,
         org.opennms.web.inventory.InventoryLayer,
         org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
+        org.springframework.web.context.support.WebApplicationContextUtils,
+        org.opennms.web.element.ElementUtil"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
 <%!
-    private int m_telnetServiceId;
-    private int m_httpServiceId;
-    private int m_dellServiceId;
-    private int m_snmpServiceId;
+//    private int m_telnetServiceId;
+//    private int m_httpServiceId;
+//    private int m_dellServiceId;
+//    private int m_snmpServiceId;
     private ResourceService m_resourceService;
-	private AssetModel m_model = new AssetModel();
+//	private AssetModel m_model = new AssetModel();
 
     public void init() throws ServletException {
 
@@ -70,22 +71,27 @@
 
 <%
 
-    String elementID = request.getParameter("rancidnode");
-    String groupID = request.getParameter("group");
+	Node node_db = ElementUtil.getNodeByParams(request);
+	int nodeId = node_db.getNodeId();
+
+	String elementID = node_db.getLabel();
+
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
-	String url = "http://www.rionero.com/rws-current";
 	try {	
 
-		nodeModel = InventoryLayer.getRancidNode(url,groupID, elementID);
-
+		//Get the list of groups
+	    //Get rancid Info in first group
+	    nodeModel = InventoryLayer.getRancidNode(elementID,request.getRemoteUser());
 
 	} catch (Exception e) {
 		//throw new ServletException("Could node get Rancid Node ", e);
 	}
     nodeModel.put("id", elementID);
-    nodeModel.put("group", groupID);
-    nodeModel.put("url", url);
     pageContext.setAttribute("model", nodeModel);
+%>
+
+<%
+String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -93,34 +99,59 @@
   <jsp:param name="headTitle" value="${model.id}" />
   <jsp:param name="headTitle" value="Rancid" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+  <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
   <jsp:param name="breadcrumb" value="Rancid" />
 </jsp:include>
 
-<h2>Element: ${model.id}</h2>
+<script language="JavaScript">
+function validateFormInput() 
+{
+	
+  
+  if (document.newUserForm.userID.value == "") {
+	  alert("The user field cannot be empty");
+	  return;
+  }
+  if (document.newUserForm.pass.value == "") {
+	  alert("The password field cannot be empty");
+	  return;
+  }
+  if (document.newUserForm.loginM.value == "") {
+	  alert("The login method field cannot be empty");
+	  return;
+  }
+  
+  document.newUserForm.action="inventory/invClogin";
+  document.newUserForm.submit();
+}    
+function cancelUser()
+{
+    document.newUserForm.action="inventory/rancid.jsp?node=<%=nodeId%>";
+    document.newUserForm.submit();
+}
+
+</script>
+
+<h2>Node: ${model.id} </h2>
 
 
 <div class="TwoColLeft">
   <!-- general info box -->
   <h3>General (Status: ${model.status})</h3>
-
+  	<table>
+  	<tr>
+  		<th>Node</th>
+  		<td><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></td>
+  </tr>
+  </table>
+  
   <h3>Rancid info</h3>
 
   <table>
-	<tr>
-		<th>RWS Url</th>
-		<th>${model.url}</th>
-		</tr>
-	<tr>
-		<th>Group Name</th>
-		<th>${model.group}</th>
-	</tr>
-	<tr>
-		<th>Rancid Name</th>
-		<th>${model.id}</th>
-    </tr>
+
 	<tr>
 		<th>Device Name</th>
-		<th>${model.devicename}</th>
+		<th>${model.id}</th>
 	</tr>	
 	<tr>
 		<th>Device Type</th>
@@ -130,31 +161,70 @@
 		<th>Comment</th>
 		<th>${model.comment}</th>
 	</tr>
-	<tr>
-	<th>Inventory Node</th>
-		<th>
-			<c:url var="viewInvNode" value="inventory/invnode.jsp">
-			<c:param name="rancidnode" value="${model.id}"/>
-			<c:param name="group" value="${model.group}"/>
-			</c:url>
-			<li>
-			<a href="${viewInvNode}">Inventory Node</a>
-			</li>
-		</th>
-		</tr>
-	<tr>
-	<th>Inventory Element</th>
-		<th>
-			<c:url var="viewInvNode" value="inventory/invelement.jsp">
-			<c:param name="rancidnode" value="${model.id}"/>
-			<c:param name="group" value="${model.group}"/>
-			</c:url>
-			<li>
-			<a href="${viewInvNode}">Inventory Element</a>
-			</li>
-		</th>
-		<tr
+	
 </table>
+
+
+<h3>Clogin info</h3>
+<form id="newUserForm" method="post" name="newUserForm">
+<table>
+  <tr>
+    <td width="10%"><label id="userIDLabel" for="userID">User:</label></td>
+    <td width="100%"><input id="userID" type="text" name="userID" value="${model.cloginuser}"></td>
+  </tr>
+
+  <tr>
+    <td width="10%"><label id="pass1Label" for="password">Password:</label></td>
+    <td width="100%"><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></td>
+  </tr>
+ 
+ <tr>
+  <td width="10%"><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></td>
+  <td>
+	  <select name="loginM" size="1">
+	  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
+	  <option value="ssh">ssh</option>
+	  <option value="telnet">telnet</option>
+	  </select>
+	  </td>
+ </tr>
+
+  <tr>
+    <td><input id="doCancel" type="button" value="Cancel" onClick="cancelUser()"></td>
+    <td><input id="doOK" type="submit" value="OK" onClick="validateFormInput()"></td>
+  </tr>
+</table>
+	<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.group}"> 
+	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+</form>
 </div>
 
+<div class="TwoColRight">
+<!-- general info box -->
+<h3>Associated Elements</h3>
+
+<table>
+<tr>
+	<th>Group</th>
+	<th>UrlViewVC</th>
+	<th>Date</th>
+	<th>Total revisions</th>
+	<th>Head version</th>
+</tr>
+<c:forEach items="${model.grouptable}" var="groupelm" begin ="0" end="9">
+	<tr>
+		<th>${groupelm.group}</th>
+		<th><a href="${groupelm.rootConfigurationUrl}">${groupelm.rootConfigurationUrl}</th>
+		<th>${groupelm.expirationDate}</th>
+		<th><a href="inventory/invnode.jsp?node=<%=nodeId%>&version=${groupelm.totalRevisions}">${groupelm.totalRevisions}</a></th>
+		<th>${groupelm.headRevision}</th>
+	</tr>
+</c:forEach>
+	<th></th>
+	<th><a href="inventory/invnodelist.jsp?node=<%=nodeId%>">more...</a></th>
+	<th></th>
+	<th></th>
+	<th></th>
+</table>
+</div>
 <jsp:include page="/includes/footer.jsp" flush="false" />
