@@ -30,9 +30,7 @@
 package org.opennms.netmgt.provision.scan.snmp;
 
 import org.opennms.netmgt.provision.ScanContext;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 
 public class SnmpNodeScanner extends AbstractSnmpScanner {
@@ -52,40 +50,40 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
 
     public Storer sysObjectId() {
         return new Storer() {
-            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                scanContext.updateSysObjectId(val.toDisplayString());
+            public void storeResult(ScanContext scanContext, SnmpResult res) {
+                scanContext.updateSysObjectId(res.getValue().toDisplayString());
             }
         };
     }
 
     public Storer sysName() {
         return new Storer() {
-            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                scanContext.updateSysName(val.toDisplayString());
+            public void storeResult(ScanContext scanContext, SnmpResult res) {
+                scanContext.updateSysName(res.getValue().toDisplayString());
             }
         };
     }
 
     public Storer sysDescription() {
         return new Storer() {
-            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                scanContext.updateSysDescription(val.toDisplayString());
+            public void storeResult(ScanContext scanContext, SnmpResult res) {
+                scanContext.updateSysDescription(res.getValue().toDisplayString());
             }
         };
     }
 
     public Storer sysLocation() {
         return new Storer() {
-            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                scanContext.updateSysLocation(val.toDisplayString());
+            public void storeResult(ScanContext scanContext, SnmpResult res) {
+                scanContext.updateSysLocation(res.getValue().toDisplayString());
             }
         };
     }
 
     public Storer sysContact() {
         return new Storer() {
-            public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                scanContext.updateSysContact(val.toDisplayString());
+            public void storeResult(ScanContext scanContext, SnmpResult res) {
+                scanContext.updateSysContact(res.getValue().toDisplayString());
             }
         };
     }

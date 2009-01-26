@@ -44,9 +44,7 @@ import java.util.Collection;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
  * The SnmpNodeCollector class is responsible for performing the actual SNMP
@@ -121,8 +119,8 @@ public class SnmpNodeCollector extends AggregateTracker {
         log().info("noSuchName collecting data for node "+m_primaryIf+": "+msg);
     }
 
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        m_collectorEntry.storeResult(base, inst, val);
+    protected void storeResult(SnmpResult res) {
+        m_collectorEntry.storeResult(res);
     }
 
 

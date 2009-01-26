@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
  * <P>
@@ -76,7 +76,9 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     private SnmpCollectionSet m_collectionSet;
 
     public SNMPCollectorEntry(Collection<SnmpAttributeType> attrList, SnmpCollectionSet collectionSet) {
-        if (attrList == null) throw new NullPointerException("attrList is null!");
+        if (attrList == null) {
+            throw new NullPointerException("attrList is null!");
+        }
         m_attrList = attrList;
         m_collectionSet = collectionSet;
     }
@@ -97,20 +99,20 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     }
 
 
-    public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        String key = base.append(inst).toString();
-        putValue(key, val);
-        List<SnmpAttributeType> attrTypes = findAttributeTypeForOid(base, inst);
+    public void storeResult(SnmpResult res) {
+        String key = res.getAbsoluteInstance().toString();
+        putValue(key, res.getValue());
+        List<SnmpAttributeType> attrTypes = findAttributeTypeForOid(res.getBase(), res.getInstance());
         if (attrTypes.isEmpty()) {
-        	throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        	throw new IllegalArgumentException("Received result for unexpected oid ["+res.getBase()+"].["+res.getInstance()+"]");
         }
         
         for (SnmpAttributeType attrType : attrTypes) {
             if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX)) {
-                putIfIndex(inst.toInt());
+                putIfIndex(res.getInstance().toInt());
             }
-            attrType.storeResult(m_collectionSet, this, base, inst, val);
-            log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
+            attrType.storeResult(m_collectionSet, this, res);
+            log().debug("storeResult: added value for "+attrType.getAlias()+": " + res.toString());
         }
     }
 

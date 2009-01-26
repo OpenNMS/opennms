@@ -36,10 +36,9 @@ package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
-import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  *<P>The QbridgeDot1dTpFdbTableEntry class is designed to hold all the MIB-II
@@ -163,35 +162,44 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 	}
 
 	@Override
-	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-		super.storeResult(base, inst, val);
-		if (!SnmpObjId.get(FDB_ADDRESS_OID).isPrefixOf(base) && !hasFdbAddressFromBase) {
-			int[] identifiers = inst.getIds();
+	public void storeResult(SnmpResult res) {
+		super.storeResult(res);
+		if (!SnmpObjId.get(FDB_ADDRESS_OID).isPrefixOf(res.getBase()) && !hasFdbAddressFromBase) {
+			int[] identifiers = res.getInstance().getIds();
 			String mac = "";
-			for (int i = identifiers.length-6; i<identifiers.length; i++) if (identifiers[i] >= 16 )
-				mac+= Integer.toHexString(identifiers[i]);
-			else
-				mac+= "0"+Integer.toHexString(identifiers[i]);
-			super.storeResult(SnmpObjId.get(FDB_ADDRESS_OID), inst, 
-						SnmpUtils.getValueFactory().getOctetString(mac.getBytes()));
+			for (int i = identifiers.length-6; i<identifiers.length; i++) {
+                if (identifiers[i] >= 16 ) {
+                    mac+= Integer.toHexString(identifiers[i]);
+                } else {
+                    mac+= "0"+Integer.toHexString(identifiers[i]);
+                }
+            }
+			super.storeResult(new SnmpResult(SnmpObjId.get(FDB_ADDRESS_OID), res.getInstance(), 
+						SnmpUtils.getValueFactory().getOctetString(mac.getBytes())));
 			hasFdbAddressFromBase = true;
 		}
 	}
 	
 	public String getQBridgeDot1dTpFdbAddress() {
-		if (hasFdbAddressFromBase) return getDisplayString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
+		if (hasFdbAddressFromBase) {
+            return getDisplayString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
+        }
 		return getHexString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
 	}
 
 	public int getQBridgeDot1dTpFdbPort() {
 		Integer val = getInt32(QBridgeDot1dTpFdbTableEntry.FDB_PORT);
-		if (val == null) return -1;
+		if (val == null) {
+            return -1;
+        }
 		return val;
 	}
 
 	public int getQBridgeDot1dTpFdbStatus() {
 		Integer val = getInt32(QBridgeDot1dTpFdbTableEntry.FDB_STATUS);
-		if (val == null) return -1;
+		if (val == null) {
+            return -1;
+        }
 		return val;
 	}
 }

@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2008 May 10: In processErrors, when we throw exceptions or notify of errors,
+//              state that the OID shown is the *previous* OID. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -31,38 +36,32 @@
 //
 package org.opennms.netmgt.snmp;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-public class SingleInstanceTracker extends CollectionTracker {
-
+public class TableTracker extends CollectionTracker {
+    
+    private RowCallback m_rowCallback;
     private SnmpObjId m_base;
-    private SnmpInstId m_inst;
-    private SnmpObjId m_oid;
+    private SnmpObjId m_last;
     private boolean m_finished = false;
-    
-    public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst) {
-        this(base, inst, null);
-    }
-    
-    public SingleInstanceTracker(String baseOid, String instId) {
-        this(SnmpObjId.get(baseOid), new SnmpInstId(instId));
-    }
+    private int m_maxRepetitions;
 
-    public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst, CollectionTracker parent) {
-        super(parent);
+    public TableTracker(RowCallback rc, SnmpObjId base) {
+        this(rc, base, 2);
+    }
+    
+    public TableTracker(RowCallback rc, SnmpObjId base, int maxRepititions) {
+        m_rowCallback = rc;
         m_base = base;
-        m_inst = inst;
-        m_oid = SnmpObjId.get(m_base, m_inst);
+        m_last = base;
+        m_maxRepetitions = maxRepititions; 
     }
     
     @Override
     public void setMaxRepititions(int maxRepititions) {
-        // do nothing since we are not a repeater
+        m_maxRepetitions = maxRepititions;
     }
 
     public boolean isFinished() {
-        return m_finished;
+        return m_finished || !m_base.isPrefixOf(m_last);
     }
 
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
@@ -70,24 +69,23 @@ public class SingleInstanceTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
         
-        SnmpObjId requestOid = m_oid.decrement();
-        log().debug("Requesting oid following: "+requestOid);
-        pduBuilder.addOid(requestOid);
-        pduBuilder.setNonRepeaters(1);
-        pduBuilder.setMaxRepetitions(1);
+        pduBuilder.addOid(m_last);
+        pduBuilder.setNonRepeaters(0);
+        pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
         ResponseProcessor rp = new ResponseProcessor() {
 
             public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
-                log().debug("Processing varBind: "+responseObjId+" = "+val);
-                
                 if (val.isEndOfMib()) {
                     receivedEndOfMib();
                 }
 
-                m_finished = true;
-                if (m_oid.equals(responseObjId)) {
-                    storeResult(new SnmpResult(m_base, m_inst, val));
+                m_last = responseObjId;
+                if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
+                    SnmpInstId inst = responseObjId.getInstance(m_base);
+                    if (inst != null) {
+                        storeResult(new SnmpResult(m_base, inst, val));
+                    }
                 }
             }
 
@@ -95,36 +93,38 @@ public class SingleInstanceTracker extends CollectionTracker {
                 if (errorStatus == NO_ERR) {
                     return false;
                 } else if (errorStatus == TOO_BIG_ERR) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError for oid request "+m_oid.decrement());
+                    throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_last);
                 } else if (errorStatus == GEN_ERR) {
-                    reportGenErr("Received genErr reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
+                    reportGenErr("Received genErr reqeusting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                    reportNoSuchNameErr("Received noSuchName reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
+                    reportNoSuchNameErr("Received noSuchName reqeusting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else {
-                    throw new IllegalArgumentException("Unexpected error processing oid "+m_oid.decrement()+". Aborting!");
+                    throw new IllegalArgumentException("Unexpected error processing next oid after "+m_last+". Aborting!");
                 }
             }
         };
         
         return rp;
-
     }
 
-    protected Category log() {
-        return ThreadCategory.getInstance(getClass());
+    public int getMaxRepetitions() {
+        return m_maxRepetitions;
     }
-
-    protected void errorOccurred() {
-        m_finished = true;
+    
+    public void setMaxRepetitions(int maxRepetitions) {
+        m_maxRepetitions = maxRepetitions;
     }
 
     protected void receivedEndOfMib() {
         m_finished = true;
     }
 
+    protected void errorOccurred() {
+        m_finished = true;
+    }
 
 }

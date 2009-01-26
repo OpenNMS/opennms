@@ -114,8 +114,8 @@ public class SnmpUtils {
         SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
    
             @Override
-            protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                results.add(val);
+            protected void storeResult(SnmpResult res) {
+                results.add(res.getValue());
             }
            
         });
@@ -132,8 +132,8 @@ public class SnmpUtils {
         SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
    
             @Override
-            protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                results.put(inst, val);
+            protected void storeResult(SnmpResult res) {
+                results.put(res.getInstance(), res.getValue());
             }
            
         });
