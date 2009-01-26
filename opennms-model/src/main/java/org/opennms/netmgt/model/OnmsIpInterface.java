@@ -34,8 +34,12 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -55,9 +59,12 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.netmgt.model.events.AddEventVisitor;
+import org.opennms.netmgt.model.events.DeleteEventVisitor;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "ipInterface")
@@ -173,9 +180,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private Integer m_ipStatus;
 
-    private Date m_ipLastCapsdPoll;
-
     private CollectionType m_isSnmpPrimary = CollectionType.NO_COLLECT;
+
+    private Date m_ipLastCapsdPoll;
 
     private OnmsNode m_node;
 
@@ -388,6 +395,91 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             }
         }
         return null;
+    }
+
+    public void mergeInterfaceAttributes(OnmsIpInterface scannedIface) {
+        
+        if (hasNewValue(scannedIface.getIsManaged(), getIsManaged())) {
+            setIsManaged(scannedIface.getIsManaged());
+        }
+    
+        if (hasNewValue(scannedIface.getIsSnmpPrimary(), getIsSnmpPrimary())) {
+            setIsSnmpPrimary(scannedIface.getIsSnmpPrimary());
+        }
+    
+        if (hasNewValue(scannedIface.getIpStatus(), getIpStatus())) {
+            setIpStatus(scannedIface.getIpStatus());
+        }
+    
+        if (hasNewValue(scannedIface.getIpHostName(), getIpHostName())) {
+            setIpHostName(scannedIface.getIpHostName());
+        }
+    }
+
+    public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder) {
+    
+        // create map of services to serviceType
+        Map<OnmsServiceType, OnmsMonitoredService> serviceTypeMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
+        for (OnmsMonitoredService svc : scannedIface.getMonitoredServices()) {
+            serviceTypeMap.put(svc.getServiceType(), svc);
+        }
+    
+        // for each service in the database
+        for (Iterator<OnmsMonitoredService> it = getMonitoredServices().iterator(); it.hasNext();) {
+            OnmsMonitoredService svc = it.next();
+            
+            // find the corresponding scanned service
+            OnmsMonitoredService imported = serviceTypeMap.get(svc.getServiceType());
+            if (imported == null) {
+                // there is no scanned service... delete it from the database 
+                it.remove();
+                svc.visit(new DeleteEventVisitor(eventForwarder));
+            }
+            else {
+                // othersice update the service attributes
+                svc.mergeServiceAttributes(imported);
+            }
+            
+            // mark the service is updated
+            serviceTypeMap.remove(svc.getServiceType());
+        }
+        
+        // for any services not found in the database, add them
+        Collection<OnmsMonitoredService> newServices = serviceTypeMap.values();
+        for (OnmsMonitoredService svc : newServices) {
+            svc.setIpInterface(this);
+            getMonitoredServices().add(svc);
+            svc.visit(new AddEventVisitor(eventForwarder));
+        }
+    }
+
+    public void updateSnmpInterface(OnmsIpInterface scannedIface) {
+        
+        if (!hasNewValue(scannedIface.getIfIndex(), getIfIndex())) {
+            /* no ifIndex in currently scanned interface so don't bother
+             * we must have failed to collect data
+             */ 
+            return;
+        }
+        
+        if (scannedIface.getSnmpInterface() == null) {
+            // there is no longer an snmpInterface associated with the ipInterface
+            setSnmpInterface(null);
+        } else {
+            // locate the snmpInterface on this node that has the new ifIndex and set it
+            // into the interface
+            OnmsSnmpInterface snmpIface = getNode().getSnmpInterfaceWithIfIndex(scannedIface.getIfIndex());
+            setSnmpInterface(snmpIface);
+        }
+        
+        
+        
+    }
+
+    public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder) {
+        mergeInterfaceAttributes(scannedIface);
+        updateSnmpInterface(scannedIface);
+        mergeMonitoredServices(scannedIface, eventForwarder);
     }
 
 }

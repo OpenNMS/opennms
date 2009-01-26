@@ -36,15 +36,13 @@
 /**
  * 
  */
-package org.opennms.netmgt.provision.service.operations;
+package org.opennms.netmgt.model.events;
 
 
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventUtils;
 
 public final class DeleteEventVisitor extends AbstractEntityVisitor {
     private final EventForwarder m_eventForwarder;

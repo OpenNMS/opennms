@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
@@ -155,7 +156,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         return collector;
     }
 
-    private OnmsSnmpInterface createSnmpInterface(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
+    private OnmsEntity createSnmpInterface(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
         OnmsSnmpInterface m_snmpIface = new OnmsSnmpInterface();
     	m_snmpIface.setIfIndex(new Integer(ifIndex));
     	m_snmpIface.setIfType(new Integer(ifType));

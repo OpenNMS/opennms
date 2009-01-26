@@ -376,4 +376,49 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ipInterfaces.add(iface);
     }
 
+    public void mergeSnmpInterfaceAttributes(OnmsSnmpInterface scannedSnmpIface) {
+        
+        if (hasNewValue(scannedSnmpIface.getIfAdminStatus(), getIfAdminStatus())) {
+            setIfAdminStatus(scannedSnmpIface.getIfAdminStatus());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getIfAlias(), getIfAlias())) {
+            setIfAlias(scannedSnmpIface.getIfAlias());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getIfDescr(), getIfDescr())) {
+            setIfDescr(scannedSnmpIface.getIfDescr());
+        }
+            
+        if (hasNewValue(scannedSnmpIface.getIfName(), getIfName())) {
+            setIfName(scannedSnmpIface.getIfName());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getIfOperStatus(), getIfOperStatus())) {
+            setIfOperStatus(scannedSnmpIface.getIfOperStatus());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getIfSpeed(), getIfSpeed())) {
+            setIfSpeed(scannedSnmpIface.getIfSpeed());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getIfType(), getIfType())) {
+            setIfType(scannedSnmpIface.getIfType());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getIpAddress(), getIpAddress())) {
+            setIpAddress(scannedSnmpIface.getIpAddress());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getNetMask(), getNetMask())) {
+            setNetMask(scannedSnmpIface.getNetMask());
+        }
+        
+        if (hasNewValue(scannedSnmpIface.getPhysAddr(), getPhysAddr())) {
+            setPhysAddr(scannedSnmpIface.getPhysAddr());
+        }
+        
+    }
+
+
 }

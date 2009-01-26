@@ -311,4 +311,24 @@ Comparable<OnmsMonitoredService> {
 
         return getServiceName().compareToIgnoreCase(o.getServiceName());
     }
+
+    public void mergeServiceAttributes(OnmsMonitoredService scanned) {
+
+        if (hasNewValue(scanned.getQualifier(), getQualifier())) {
+            setQualifier(scanned.getQualifier());
+        }
+
+        if (hasNewValue(scanned.getStatus(), getStatus())) {
+            setStatus(scanned.getStatus());
+        }
+        
+        if (hasNewValue(scanned.getSource(), getSource())) {
+            setSource(scanned.getSource());
+        }
+
+        if (hasNewValue(scanned.getNotify(), getNotify())) {
+            setNotify(scanned.getNotify());
+        }
+
+    }
 }
