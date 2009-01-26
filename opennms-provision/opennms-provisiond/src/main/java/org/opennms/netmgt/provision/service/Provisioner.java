@@ -252,20 +252,19 @@ public class Provisioner implements SpringServiceDaemon {
     //^ Helper functions for the schedule
     
     protected void importModelFromResource(Resource resource) throws Exception {
-    	importModelFromResource(null, resource, new NoOpProvisionMonitor());
+    	importModelFromResource(resource, new NoOpProvisionMonitor());
     }
 
-    protected void importModelFromResource(String foreignSource, Resource resource, ProvisionMonitor monitor)
+    protected void importModelFromResource(Resource resource, ProvisionMonitor monitor)
             throws Exception {
-        doImport(resource, monitor, new ImportManager(), foreignSource);
+        doImport(resource, monitor, new ImportManager());
     }
 
     private void doImport(Resource resource, final ProvisionMonitor monitor,
-            ImportManager importManager, final String foreignSource) throws Exception {
+            ImportManager importManager) throws Exception {
         
         LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_providers.toArray());
         doImport.setAttribute("resource", resource);
-        doImport.setAttribute("foreignSource", foreignSource);
         
         doImport.trigger();
         
@@ -318,12 +317,10 @@ public class Provisioner implements SpringServiceDaemon {
             m_stats = new TimeTrackingMonitor();
             
             resource = ((event != null && getEventUrl(event) != null) ? new UrlResource(getEventUrl(event)) : getImportResource()); 
-            String foreignSource = event == null ? null : getEventForeignSource(event); 
     
             send(importStartedEvent(resource));
-            
     
-    		importModelFromResource(foreignSource, resource, m_stats);
+    		importModelFromResource(resource, m_stats);
     
     		log().info("Finished Importing: "+m_stats);
     

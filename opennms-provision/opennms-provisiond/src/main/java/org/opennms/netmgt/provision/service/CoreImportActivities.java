@@ -85,16 +85,12 @@ public class CoreImportActivities {
      */
 
     @Activity( lifecycle = "import", phase = "validate" )
-    public OnmsRequisition loadSpecFile(@Attribute("foreignSource") String foreignSource, Resource resource) throws ModelImportException, IOException {
+    public OnmsRequisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
 
         System.out.println("Loading Spec File!");
         
-        OnmsRequisition specFile = new OnmsRequisition();
-        specFile.loadResource(resource);
         
-        if (foreignSource != null) {
-            specFile.setForeignSource(foreignSource);
-        }
+        OnmsRequisition specFile = m_provisionService.loadRequisition(resource);
         
         System.out.println("Finished Loading Spec File!");
 

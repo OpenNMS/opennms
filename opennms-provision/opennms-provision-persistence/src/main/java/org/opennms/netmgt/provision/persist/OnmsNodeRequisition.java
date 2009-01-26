@@ -34,10 +34,16 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
+import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
 
 /**
  * OnmsNodeRequistion
@@ -46,16 +52,22 @@ import org.opennms.netmgt.config.modelimport.Node;
  */
 public class OnmsNodeRequisition {
     
+    private String m_foreignSource;
     private Node m_node;
     private List<OnmsAssetRequisition> m_assetReqs;
     private List<OnmsIpInterfaceRequisition> m_ifaceReqs;
     private List<OnmsCategoryRequisition> m_categoryReqs;
 
-    public OnmsNodeRequisition(Node node) {
+    public OnmsNodeRequisition(String foreignSource, Node node) {
+        m_foreignSource = foreignSource;
         m_node = node;
         m_assetReqs = constructAssetRequistions();
         m_ifaceReqs = constructIpInterfaceRequistions();
         m_categoryReqs = constructCategoryRequistions();
+    }
+    
+    public String getForeignSource() {
+        return m_foreignSource;
     }
     
     private List<OnmsAssetRequisition> constructAssetRequistions() {
@@ -94,6 +106,75 @@ public class OnmsNodeRequisition {
             assetReq.visit(visitor);
         }
         visitor.completeNode(this);
+    }
+    
+    private class OnmsNodeBuilder extends AbstractRequisitionVisitor {
+        private NetworkBuilder bldr = new NetworkBuilder();
+        
+        public OnmsNode getNode() {
+            return bldr.getCurrentNode();
+        }
+
+        @Override
+        public void visitAsset(OnmsAssetRequisition assetReq) {
+            bldr.setAssetAttribute(assetReq.getName(), assetReq.getValue());
+        }
+
+        @Override
+        public void visitCategory(OnmsCategoryRequisition catReq) {
+            bldr.addCategory(catReq.getName());
+        }
+
+        @Override
+        public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
+            
+            String ipAddr = ifaceReq.getIpAddr();
+            if (ipAddr == null || "".equals(ipAddr)) {
+                bldr.clearInterface();
+                String msg = String.format("Found interface on node %s with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
+                log().error(msg);
+                return;
+            }
+
+            InterfaceBuilder ifBldr = bldr.addInterface(ipAddr);
+            ifBldr.setIsManaged(ifaceReq.getStatus() == 3 ? "U" : "M");
+            ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary());
+            ifBldr.setIpStatus(ifaceReq.getStatus() == 3 ? 3 : 1);
+            
+        }
+
+        @Override
+        public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
+            bldr.addService(monSvcReq.getServiceName());
+        }
+
+        @Override
+        public void visitNode(OnmsNodeRequisition nodeReq) {
+            
+            NodeBuilder nodeBldr = bldr.addNode(nodeReq.getNodeLabel());
+            nodeBldr.setLabelSource("U");
+            nodeBldr.setType("A");
+            nodeBldr.setForeignSource(nodeReq.getForeignSource());
+            nodeBldr.setForeignId(nodeReq.getForeignId());
+            nodeBldr.getAssetRecord().setBuilding(nodeReq.getBuilding());
+            nodeBldr.getAssetRecord().setCity(nodeReq.getCity());
+                
+        }
+        
+        
+    }
+    
+    public OnmsNode constructOnmsNodeFromRequisition() {
+        OnmsNodeBuilder visitor = new OnmsNodeBuilder();
+        visit(visitor);
+        return visitor.getNode();
+    }
+
+    /**
+     * @return
+     */
+    public Logger log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     public String getNodeLabel() {

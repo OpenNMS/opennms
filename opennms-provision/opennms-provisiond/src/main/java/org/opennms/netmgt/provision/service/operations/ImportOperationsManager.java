@@ -230,8 +230,8 @@ public class ImportOperationsManager {
         return m_foreignSource;
     }
 
-    public void auditNodes(OnmsRequisition specFile) {
-        specFile.visit(new RequisitionAccountant(this));
+    public void auditNodes(OnmsRequisition requisition) {
+        requisition.visit(new RequisitionAccountant(this));
     }
 
     @SuppressWarnings("unused")
