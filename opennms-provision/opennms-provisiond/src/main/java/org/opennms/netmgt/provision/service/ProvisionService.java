@@ -37,6 +37,8 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
 /*
@@ -93,6 +95,9 @@ public interface ProvisionService {
     public abstract void updateNode(OnmsNode node,
             boolean snmpDataForNodeUpToDate,
             boolean snmpDataForInterfacesUpToDate);
+    
+    @Transactional
+    public abstract void updateNodeInfo(OnmsNode node);
     
     @Transactional
     public abstract OnmsNode getImportedNode(String foreignSource, String foreignId);
@@ -173,5 +178,12 @@ public interface ProvisionService {
     public abstract NodeScanSchedule getScheduleForNode(int nodeId);
     
     public abstract void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
+
+    /**
+     * @param foreignSource
+     * @param resource
+     * @return
+     */
+    public abstract OnmsRequisition loadRequisition(Resource resource);
 
 }

@@ -122,7 +122,7 @@ public class CoreScanActivities {
 
     @Activity( lifecycle = "nodeScan", phase = "persistNodeInfo", schedulingHint="write")
     public void persistNodeInfo(OnmsNode node) {
-        m_provisionService.updateNode(node, true, false);
+        m_provisionService.updateNodeInfo(node);
     }
 
     @Activity( lifecycle = "nodeScan", phase = "detectPhysicalInterfaces" )

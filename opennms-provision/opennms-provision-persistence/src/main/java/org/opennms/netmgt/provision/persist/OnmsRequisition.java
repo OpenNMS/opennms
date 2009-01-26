@@ -57,7 +57,7 @@ public class OnmsRequisition {
         m_mi = CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, resource);
         
         for(Node node : m_mi.getNodeCollection()) {
-            m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(node));
+            m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(getForeignSource(), node));
         }
     }
 
