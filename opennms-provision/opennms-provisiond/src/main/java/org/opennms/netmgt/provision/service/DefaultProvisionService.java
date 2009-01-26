@@ -31,15 +31,12 @@
  */
 package org.opennms.netmgt.provision.service;
 
-import static org.springframework.util.ObjectUtils.nullSafeEquals;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.joda.time.DateTime;
@@ -53,19 +50,17 @@ import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
+import org.opennms.netmgt.model.events.AddEventVisitor;
+import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
-import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
-import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -77,311 +72,6 @@ import org.springframework.util.Assert;
  */
 public class DefaultProvisionService implements ProvisionService {
 
-    public static class SnmpInterfaceUpdater {
-        
-        OnmsNode m_dbNode;
-        Map<Integer, OnmsSnmpInterface> m_ifIndexToSnmpInterface;
-    
-        public SnmpInterfaceUpdater(OnmsNode db, OnmsNode imported) {
-            m_dbNode = db;
-            m_ifIndexToSnmpInterface = mapIfIndexToSnmpInterface(imported.getSnmpInterfaces());
-        }
-    
-        private Map<Integer, OnmsSnmpInterface> mapIfIndexToSnmpInterface(Set<OnmsSnmpInterface> snmpInterfaces) {
-            Map<Integer, OnmsSnmpInterface> map = new HashMap<Integer, OnmsSnmpInterface>();
-            for (OnmsSnmpInterface snmpIface : snmpInterfaces) {
-                if (snmpIface.getIfIndex() != null) {
-                    map.put(snmpIface.getIfIndex(), snmpIface);
-                }
-            }
-            return map;
-        }
-    
-        public void execute() {
-            for (Iterator<OnmsSnmpInterface> it = getExistingInterfaces().iterator(); it.hasNext();) {
-                OnmsSnmpInterface iface = it.next();
-                OnmsSnmpInterface imported = getImportedVersion(iface);
-    
-                if (imported == null) {
-                    it.remove();
-                    markAsProcessed(iface);
-                } else {
-                    update(imported, iface);
-                    markAsProcessed(iface);
-                }
-    
-            }
-            addNewInterfaces();
-        }
-        
-        private void update(OnmsSnmpInterface importedSnmpIface, OnmsSnmpInterface snmpIface) {
-            
-            if (!nullSafeEquals(snmpIface.getIfAdminStatus(), importedSnmpIface.getIfAdminStatus())) {
-                snmpIface.setIfAdminStatus(importedSnmpIface.getIfAdminStatus());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getIfAlias(), importedSnmpIface.getIfAlias())) {
-                snmpIface.setIfAlias(importedSnmpIface.getIfAlias());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getIfDescr(), importedSnmpIface.getIfDescr())) {
-                snmpIface.setIfDescr(importedSnmpIface.getIfDescr());
-            }
-                
-            if (!nullSafeEquals(snmpIface.getIfName(), importedSnmpIface.getIfName())) {
-                snmpIface.setIfName(importedSnmpIface.getIfName());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getIfOperStatus(), importedSnmpIface.getIfOperStatus())) {
-                snmpIface.setIfOperStatus(importedSnmpIface.getIfOperStatus());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getIfSpeed(), importedSnmpIface.getIfSpeed())) {
-                snmpIface.setIfSpeed(importedSnmpIface.getIfSpeed());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getIfType(), importedSnmpIface.getIfType())) {
-                snmpIface.setIfType(importedSnmpIface.getIfType());
-            }
-    
-            if (!nullSafeEquals(snmpIface.getIpAddress(), importedSnmpIface.getIpAddress())) {
-                snmpIface.setIpAddress(importedSnmpIface.getIpAddress());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getNetMask(), importedSnmpIface.getNetMask())) {
-                snmpIface.setNetMask(importedSnmpIface.getNetMask());
-            }
-            
-            if (!nullSafeEquals(snmpIface.getPhysAddr(), importedSnmpIface.getPhysAddr())) {
-                snmpIface.setPhysAddr(importedSnmpIface.getPhysAddr());
-            }
-            
-        }
-    
-        private void markAsProcessed(OnmsSnmpInterface iface) {
-            m_ifIndexToSnmpInterface.remove(iface.getIfIndex());
-        }
-    
-        private OnmsSnmpInterface getImportedVersion(OnmsSnmpInterface iface) {
-            return m_ifIndexToSnmpInterface.get(iface.getIfIndex());
-        }
-    
-        private Set<OnmsSnmpInterface> getExistingInterfaces() {
-            return m_dbNode.getSnmpInterfaces();
-       }
-        
-        private void addNewInterfaces() {
-            for (OnmsSnmpInterface snmpIface : getNewInterfaces()) {
-                m_dbNode.addSnmpInterface(snmpIface);
-            }
-        }
-    
-        private Collection<OnmsSnmpInterface> getNewInterfaces() {
-            return m_ifIndexToSnmpInterface.values();
-        }
-    
-    
-    }
-    public static class InterfaceUpdater {
-        
-        private final DefaultProvisionService m_provisionService;
-        private final OnmsNode m_node;
-        private final Map<String, OnmsIpInterface> m_ipAddrToImportIfs;
-        private final boolean m_snmpDataUpdated;
-    
-        public InterfaceUpdater(DefaultProvisionService provisionService, OnmsNode node, OnmsNode imported, boolean snmpDataUpdated) {
-            m_provisionService = provisionService;
-            m_node = node;
-            m_snmpDataUpdated = snmpDataUpdated;
-            m_ipAddrToImportIfs = getIpAddrToInterfaceMap(imported);
-    
-        }
-        
-        private Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
-            Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
-            for (OnmsIpInterface iface : imported.getIpInterfaces()) {
-                ipAddrToIface.put(iface.getIpAddress(), iface);
-            }
-            return ipAddrToIface;
-        }
-    
-        public DefaultProvisionService getProvisionService() {
-            return m_provisionService;
-        }
-    
-        public void execute() {
-            for (Iterator<OnmsIpInterface> it = getExistingInterfaces().iterator(); it.hasNext();) {
-                OnmsIpInterface iface = it.next();
-                OnmsIpInterface imported = getImportedVersion(iface);
-                
-                if (imported == null) {
-                    it.remove();
-                    iface.visit(new DeleteEventVisitor(getProvisionService().getEventForwarder()));
-                    markAsProcessed(iface);
-                } else {
-                    update(imported, iface);
-                    markAsProcessed(iface);
-                }
-                
-            }
-            addNewInterfaces();
-        }
-    
-        private void addNewInterfaces() {
-            for (OnmsIpInterface iface : getNewInterfaces()) {
-                m_node.addIpInterface(iface);
-                if (iface.getIfIndex() != null) {
-                    iface.setSnmpInterface(m_node.getSnmpInterfaceWithIfIndex(iface.getIfIndex()));
-                }
-                iface.visit(new AddEventVisitor(getProvisionService().getEventForwarder()));
-            }
-        }
-    
-        private OnmsIpInterface getImportedVersion(OnmsIpInterface iface) {
-            return m_ipAddrToImportIfs.get(iface.getIpAddress());
-        }
-    
-        private Collection<OnmsIpInterface> getNewInterfaces() {
-            return m_ipAddrToImportIfs.values();
-        }
-    
-        private void markAsProcessed(OnmsIpInterface iface) {
-            m_ipAddrToImportIfs.remove(iface.getIpAddress());
-        }
-    
-        private void update(OnmsIpInterface imported, OnmsIpInterface iface) {
-            if (!nullSafeEquals(iface.getIsManaged(), imported.getIsManaged())) {
-                iface.setIsManaged(imported.getIsManaged());
-            }
-            
-            if (!nullSafeEquals(iface.getIsSnmpPrimary(), imported.getIsSnmpPrimary())) {
-                iface.setIsSnmpPrimary(imported.getIsSnmpPrimary());
-                // TODO: send snmpPrimary event
-            }
-            
-            if (m_snmpDataUpdated) {
-            	updateSnmpInterface(imported, iface);
-            }
-            
-           if (!nullSafeEquals(iface.getIpStatus(), imported.getIpStatus())) {
-            iface.setIpStatus(imported.getIpStatus());
-        }
-           
-           if (!nullSafeEquals(iface.getIpHostName(), imported.getIpHostName())) {
-            iface.setIpHostName(imported.getIpHostName());
-        }
-           
-           updateServices(iface, imported);
-        }
-    
-    	private void updateSnmpInterface(OnmsIpInterface imported, OnmsIpInterface iface) {
-    
-    		if (nullSafeEquals(iface.getIfIndex(), imported.getIfIndex())) {
-                // no need to change anything
-                return;
-            }
-            
-            if (imported.getSnmpInterface() == null) {
-                // there is no longer an snmpInterface associated with the ipInterface
-                iface.setSnmpInterface(null);
-            } else {
-                // locate the snmpInterface on this node that has the new ifIndex and set it
-                // into the interface
-                OnmsSnmpInterface snmpIface = m_node.getSnmpInterfaceWithIfIndex(imported.getIfIndex());
-                iface.setSnmpInterface(snmpIface);
-            }
-            
-            
-            
-    	}
-        
-        private void updateServices(OnmsIpInterface iface, OnmsIpInterface imported) {
-            new DefaultProvisionService.ServiceUpdater(getProvisionService(), iface, imported).execute();
-        }
-    
-        private Set<OnmsIpInterface> getExistingInterfaces() {
-            return m_node.getIpInterfaces();
-        }
-    
-    }
-    public static class ServiceUpdater {
-        private final DefaultProvisionService m_provisionService;
-        private final OnmsIpInterface m_iface;
-        private Map<OnmsServiceType, OnmsMonitoredService> m_svcTypToSvcMap;
-    
-        public ServiceUpdater(DefaultProvisionService provisionService, OnmsIpInterface iface, OnmsIpInterface imported) {
-            m_provisionService = provisionService;
-            m_iface = iface;
-            
-            createSvcTypeToSvcMap(imported);
-        }
-        
-        public DefaultProvisionService getProvisionService() {
-            return m_provisionService;
-        }
-        
-        private void debugf(String format, Object... args) {
-            Category log = ThreadCategory.getInstance(getClass());
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(format, args));
-            }
-        }
-    
-        private void createSvcTypeToSvcMap(OnmsIpInterface imported) {
-            m_svcTypToSvcMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
-            for (OnmsMonitoredService svc : imported.getMonitoredServices()) {
-                m_svcTypToSvcMap.put(svc.getServiceType(), svc);
-            }
-        }
-    
-        public void execute() {
-            for (Iterator<OnmsMonitoredService> it = getExisting().iterator(); it.hasNext();) {
-                OnmsMonitoredService svc = it.next();
-                OnmsMonitoredService imported = getImportedVersion(svc);
-                if (imported == null) {
-                    it.remove();
-                    svc.visit(new DeleteEventVisitor(getProvisionService().getEventForwarder()));
-                }
-                else {
-                    update(svc);
-                }
-                markAsProcessed(svc);
-            }
-            addNewServices();
-        }
-    
-        private void addNewServices() {
-            Collection<OnmsMonitoredService> newServices = getNewServices();
-            debugf("%s has %d new services.", m_iface.getNode().getLabel(), newServices.size());
-            for (OnmsMonitoredService svc : newServices) {
-                svc.setIpInterface(m_iface);
-                m_iface.getMonitoredServices().add(svc);
-                svc.visit(new AddEventVisitor(getProvisionService().getEventForwarder()));
-            }
-        }
-    
-        private Collection<OnmsMonitoredService> getNewServices() {
-            return m_svcTypToSvcMap.values();
-        }
-    
-        private void markAsProcessed(OnmsMonitoredService svc) {
-            m_svcTypToSvcMap.remove(svc.getServiceType());
-        }
-    
-        private void update(OnmsMonitoredService svc) {
-            // nothing to do here
-        }
-    
-        private OnmsMonitoredService getImportedVersion(OnmsMonitoredService svc) {
-            return m_svcTypToSvcMap.get(svc.getServiceType());
-        }
-    
-        Set<OnmsMonitoredService> getExisting() {
-            return m_iface.getMonitoredServices();
-        }
-    
-    }
-    
     private DistPollerDao m_distPollerDao;
     
     private NodeDao m_nodeDao;
@@ -463,75 +153,28 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     @Transactional
-    public void updateNode(OnmsNode node, boolean snmpDataForNodeUpToDate, boolean snmpDataForInterfacesUpToDate) {
+    public void updateNode(OnmsNode scannedNode, boolean snmpDataForNodeUpToDate, boolean snmpDataForInterfacesUpToDate) {
         
-        OnmsNode db = getNodeDao().getHierarchy(node.getId());
+        OnmsNode dbNode = getNodeDao().getHierarchy(scannedNode.getId());
     
-    	updateNodeData(node, db, snmpDataForNodeUpToDate);
+    	dbNode.mergeNodeAttributes(scannedNode);
     
         if (snmpDataForInterfacesUpToDate) {
-            new SnmpInterfaceUpdater(db, node).execute();
+            dbNode.mergeSnmpInterfaces(scannedNode);
         }
-    
-    
-        new InterfaceUpdater(this, db, node, snmpDataForInterfacesUpToDate).execute();
         
-    	if (!db.getCategories().equals(node.getCategories())) {
-            db.setCategories(node.getCategories());
+        dbNode.mergeIpInterfaces(scannedNode, getEventForwarder());
+        
+    	if (!dbNode.getCategories().equals(scannedNode.getCategories())) {
+            dbNode.setCategories(scannedNode.getCategories());
         }
     
-        getNodeDao().update(db);
+        getNodeDao().update(dbNode);
         
         //TODO: update the node in the scheduledList of Nodes
         
     }
 
-    /**
-     * @param scannedNode
-     * @param dbNode
-     * @param snmpDataForNodeUpToDate
-     */
-    private void updateNodeData(OnmsNode scannedNode, OnmsNode dbNode,
-            boolean snmpDataForNodeUpToDate) {
-        // verify that the node label is still the same
-    	if (!dbNode.getLabel().equals(scannedNode.getLabel())) {
-    		dbNode.setLabel(scannedNode.getLabel());
-    		// TODO: nodeLabelChanged event
-    	}
-    
-        if (!nullSafeEquals(dbNode.getForeignSource(), scannedNode.getForeignSource())) {
-            dbNode.setForeignSource(scannedNode.getForeignSource());
-        }
-    
-        if (!nullSafeEquals(dbNode.getForeignId(), scannedNode.getForeignId())) {
-            dbNode.setForeignId(scannedNode.getForeignId());
-        }
-    
-        if (snmpDataForNodeUpToDate) {
-    
-    		if (!nullSafeEquals(dbNode.getSysContact(), scannedNode.getSysContact())) {
-    			dbNode.setSysContact(scannedNode.getSysContact());
-    		}
-    
-    		if (!nullSafeEquals(dbNode.getSysDescription(), scannedNode.getSysDescription())) {
-    			dbNode.setSysDescription(scannedNode.getSysDescription());
-    		}
-    
-    		if (!nullSafeEquals(dbNode.getSysLocation(), scannedNode.getSysLocation())) {
-    			dbNode.setSysLocation(scannedNode.getSysLocation());
-    		}
-    
-    		if (!nullSafeEquals(dbNode.getSysName(), scannedNode.getSysName())) {
-    			dbNode.setSysName(scannedNode.getSysName());
-    		}
-    
-    		if (!nullSafeEquals(dbNode.getSysObjectId(), scannedNode.getSysObjectId())) {
-    			dbNode.setSysObjectId(scannedNode.getSysObjectId());
-    		}
-    		
-    	}
-    }
-    
     public OnmsNode getImportedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
         Assert.notNull(nodeReq, "nodeReq cannot be null!");
@@ -796,7 +439,7 @@ public class DefaultProvisionService implements ProvisionService {
             dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
         }
         
-        updateNodeData(node, dbNode, true);
+        dbNode.mergeNodeAttributes(node);
     }
     
     

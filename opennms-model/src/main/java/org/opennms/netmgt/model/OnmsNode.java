@@ -37,8 +37,10 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.AttributeOverride;
@@ -67,6 +69,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.events.AddEventVisitor;
+import org.opennms.netmgt.model.events.DeleteEventVisitor;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -153,7 +158,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
 
 	private PathElement m_pathElement;
-
+	
     public OnmsNode() {
         this(null);
     }
@@ -618,6 +623,138 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     	
     	return getInterfaceWithService("ICMP");
     	
+    }
+
+    public void mergeAgentAttributes(OnmsNode scannedNode) {
+        if (!hasNewValue(getSysContact(), scannedNode.getSysContact())) {
+        	setSysContact(scannedNode.getSysContact());
+        }
+       
+        if (!hasNewValue(getSysDescription(), scannedNode.getSysDescription())) {
+        	setSysDescription(scannedNode.getSysDescription());
+        }
+       
+        if (!hasNewValue(getSysLocation(), scannedNode.getSysLocation())) {
+        	setSysLocation(scannedNode.getSysLocation());
+        }
+       
+        if (!hasNewValue(getSysName(), scannedNode.getSysName())) {
+        	setSysName(scannedNode.getSysName());
+        }
+       
+        if (!hasNewValue(getSysObjectId(), scannedNode.getSysObjectId())) {
+        	setSysObjectId(scannedNode.getSysObjectId());
+        }
+    }
+
+    public void mergeNodeAttributes(OnmsNode scannedNode) {
+        if (hasNewValue(getLabel(), scannedNode.getLabel())) {
+            setLabel(scannedNode.getLabel());
+        }
+    
+        if (hasNewValue(getForeignSource(), scannedNode.getForeignSource())) {
+            setForeignSource(scannedNode.getForeignSource());
+        }
+    
+        if (hasNewValue(getForeignId(), scannedNode.getForeignId())) {
+            setForeignId(scannedNode.getForeignId());
+        }
+        
+        if (hasNewValue(scannedNode.getLabelSource(), getLabelSource())) {
+            setLabelSource(scannedNode.getLabelSource());
+        }
+        
+        if (hasNewValue(scannedNode.getNetBiosName(), getNetBiosDomain())) {
+            setNetBiosName(scannedNode.getNetBiosDomain());
+        }
+        
+        if (hasNewValue(scannedNode.getNetBiosDomain(), getNetBiosDomain())) {
+            setNetBiosDomain(scannedNode.getNetBiosDomain());
+        }
+        
+        if (hasNewValue(scannedNode.getOperatingSystem(), getOperatingSystem())) {
+            setOperatingSystem(scannedNode.getOperatingSystem());
+        }
+        
+        mergeAgentAttributes(scannedNode);
+    }
+
+    public void mergeSnmpInterfaces(OnmsNode scannedNode) {
+        
+        // we need to skip this step if there is an indication that snmp data collection failed
+        if (scannedNode.getSnmpInterfaces().size() == 0) {
+            // we assume here that snmp collection failed and we don't update the snmp data
+            return;
+        }
+        
+        
+        // Build map of ifIndices to scanned SnmpInterfaces
+        Map<Integer, OnmsSnmpInterface> scannedInterfaceMap = new HashMap<Integer, OnmsSnmpInterface>();
+        for (OnmsSnmpInterface snmpIface : scannedNode.getSnmpInterfaces()) {
+            if (snmpIface.getIfIndex() != null) {
+                scannedInterfaceMap.put(snmpIface.getIfIndex(), snmpIface);
+            }
+        }
+        
+        // for each interface on existing node...
+        for (Iterator<OnmsSnmpInterface> it = getSnmpInterfaces().iterator(); it.hasNext();) {
+    
+            OnmsSnmpInterface iface = it.next();
+            OnmsSnmpInterface imported = scannedInterfaceMap.get(iface.getIfIndex());
+    
+            // remove it since there is no corresponding scanned interface
+            if (imported == null) {
+                it.remove();
+                scannedInterfaceMap.remove(iface.getIfIndex());
+            } else {
+                // merge the data from the corresponding scanned interface
+                iface.mergeSnmpInterfaceAttributes(imported);
+                scannedInterfaceMap.remove(iface.getIfIndex());
+            }
+        
+        }
+        
+        // for any scanned interface that was not found on the node add it the database
+        for (OnmsSnmpInterface snmpIface : scannedInterfaceMap.values()) {
+            addSnmpInterface(snmpIface);
+        }
+    }
+
+    public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder) {
+        // build a map of ipAddrs to ipInterfaces for the scanned node
+        Map<String, OnmsIpInterface> ipInterfaceMap = new HashMap<String, OnmsIpInterface>();
+        for (OnmsIpInterface iface : scannedNode.getIpInterfaces()) {
+            ipInterfaceMap.put(iface.getIpAddress(), iface);
+        }
+    
+        // for each ipInterface from the database
+        for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
+            OnmsIpInterface dbIface = it.next();
+            // find the corresponding scanned Interface
+            OnmsIpInterface scannedIface = ipInterfaceMap.get(dbIface.getIpAddress());
+            
+            // if we can't find a scanned interface remove from the database
+            if (scannedIface == null) {
+                it.remove();
+                dbIface.visit(new DeleteEventVisitor(eventForwarder));
+            } else {
+                // else update the database with scanned info
+                dbIface.mergeInterface(scannedIface, eventForwarder);
+            }
+            
+            // now remove the interface form the map to indicate it was processed
+            ipInterfaceMap.remove(dbIface.getIpAddress());
+        }
+        
+        
+        // for any remaining scanned interfaces, add them to the database
+        for (OnmsIpInterface iface : ipInterfaceMap.values()) {
+            addIpInterface(iface);
+            if (iface.getIfIndex() != null) {
+                iface.setSnmpInterface(getSnmpInterfaceWithIfIndex(iface.getIfIndex()));
+            }
+            iface.visit(new AddEventVisitor(eventForwarder));
+        }
     }
 
 }
