@@ -317,6 +317,7 @@ public class CastorUtils {
                 source.setSystemId(resource.getURL().toString());
             } catch (Throwable t) {
                 // ignore
+                //TODO: do something with this exception
             }
             return unmarshal(clazz, source);
         } catch (MarshalException e) {
