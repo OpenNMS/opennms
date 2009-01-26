@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
 
 /**
  * TODO: Needs IOC work
+ * TODO: Needs to support Ack/Unack/Clear/Escalate
  * TODO: Create eventconf acknowledgment verb entries (acknowledge and acknowledged)
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -66,8 +67,26 @@ public class DefaultAckService implements AckService {
         
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         EventBuilder ebuilder;
+        
+        if (ackables == null) {
+            throw new IllegalStateException("No acknowlegables in the datbase for ack: "+ack);
+        }
+        
         for (Acknowledgeable ackable : ackables) {
-            ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
+            
+            switch (ack.getAckAction()) {
+            case ACKNOWLEDGE:
+                ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
+                break;
+            case CLEAR:
+                ackable.clear();
+                break;
+            case ESCALATE:
+                ackable.escalate();
+            default:
+                break;
+            }
+            
             m_ackDao.updateAckable(ackable);
             m_ackDao.save(ack);
             m_ackDao.flush();

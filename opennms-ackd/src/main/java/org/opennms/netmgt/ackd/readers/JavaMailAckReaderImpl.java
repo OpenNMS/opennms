@@ -62,6 +62,7 @@ import org.opennms.netmgt.ackd.AckService;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
+import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 
 
@@ -75,7 +76,7 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
  * TODO: Identify clear reply
  * TODO: Identify unacknowledged reply
  * DONE: Formalize Acknowledgment parameters (ack-type, id)
- * TODO: JavaMail configuration factory
+ * DONE: JavaMail configuration factory
  * TODO: Ackd configuration factory
  * TODO: Associate email replies with openNMS user
  * TODO: Finish scheduling component of JavaAckReader
@@ -109,14 +110,13 @@ public class JavaMailAckReaderImpl implements AckReader {
         Collection<OnmsAcknowledgment> acks;
 
         try {
-            List<Message> msgs = readMessages();
+            List<Message> msgs = readMessages();  //TODO: need a read *new* messages feature
             acks = detectAcks(msgs);
             m_ackService.processAcks(acks);
         } catch (JavaMailerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
     }
     
     private Collection<OnmsAcknowledgment> detectAcks(List<Message> msgs) {
@@ -150,6 +150,8 @@ public class JavaMailAckReaderImpl implements AckReader {
 
     private Integer detectId(String subject, String expression) {
         Integer id = new Integer(0);
+        
+        //TODO: force ~ functionality because this is the only way for this to work
         if (m_daemonConfig.getAckExpression().startsWith("~")) {
             String ackExpression = m_daemonConfig.getAckExpression().substring(1);
             Pattern pattern = Pattern.compile(ackExpression);
@@ -167,6 +169,7 @@ public class JavaMailAckReaderImpl implements AckReader {
         String ackUser = ((InternetAddress)msg.getFrom()[0]).getAddress();
         Date ackTime = msg.getReceivedDate();
         OnmsAcknowledgment ack = new OnmsAcknowledgment(ackTime, ackUser);
+        ack.setAckType(AckType.NOTIFICATION);
         return ack;
     }
 
@@ -229,10 +232,6 @@ public class JavaMailAckReaderImpl implements AckReader {
         return messages;
     }
 
-    
-    private Boolean searchForReplies(List<Message> messages, ReadmailConfig config) {
-        return null;
-    }
 
     /**
      * Establish connection with mail store and return the configured mail folder.

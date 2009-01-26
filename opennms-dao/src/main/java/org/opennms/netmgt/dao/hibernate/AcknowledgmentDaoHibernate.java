@@ -59,7 +59,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     public List<Acknowledgeable> findAcknowledgables(final OnmsAcknowledgment ack) {
         List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
         
-        if (ack.getAckType().equals(AckType.Alarm)) {
+        if (ack.getAckType().equals(AckType.ALARM)) {
             final OnmsAlarm alarm = findAlarm(ack);
             
             if (alarm != null) {
@@ -72,7 +72,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             }
         }
 
-        else if (ack.getAckType().equals(AckType.Notification)) {
+        else if (ack.getAckType().equals(AckType.NOTIFICATION)) {
             final OnmsNotification notif = findNotification(ack);
             
             if (notif != null) {

@@ -108,4 +108,12 @@ public enum OnmsSeverity implements Serializable {
             throw new IllegalArgumentException("Cannot create OnmsSeverity from unknown ID " + id);
         }
     }
+    
+    public static OnmsSeverity escalate(OnmsSeverity sev) {
+        if (sev.isLessThan(OnmsSeverity.CRITICAL)) {
+            return OnmsSeverity.get(sev.getId()+1);
+        } else {
+            return OnmsSeverity.get(sev.getId());
+        }
+    }
 }

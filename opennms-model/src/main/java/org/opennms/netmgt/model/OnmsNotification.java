@@ -308,7 +308,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     
     @Transient
     public AckType getType() {
-        return AckType.Notification;
+        return AckType.NOTIFICATION;
     }
     
     @Transient
@@ -324,6 +324,20 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     @Transient
     public Date getAckTime() {
         return m_respondTime;
+    }
+
+    public void clear() {
+        //this should be handled by auto resolves in the notificaiton service
+    }
+
+    public void escalate() {
+        //does nothing for there is no severity state in a notification object
+        //escalation of a notification is handled in the notification path
+    }
+
+    public void unacknowledge() {
+        m_respondTime = null;
+        m_answeredBy = null;
     }
 
 }

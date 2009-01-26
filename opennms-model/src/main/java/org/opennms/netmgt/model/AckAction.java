@@ -33,32 +33,58 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ackd;
+package org.opennms.netmgt.model;
 
-import org.easymock.EasyMock;
-import org.junit.Before;
-import org.junit.Test;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.events.EventForwarder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public enum AckAction {
+    UNSPECIFIED(1, "Unspecified"),
+    ACKNOWLEDGE(2, "Acknowledge"),
+    UNACKNOWLEDGE(3, "Unacknowledge"),
+    ESCALATE(4, "Escalate"),
+    CLEAR(5, "Clear");
+    
+    private static final Map<Integer, AckAction> m_idMap; 
+    private static final List<Integer> m_ids;
+
+    
+    private int m_id;
+    private String m_label;
+    
+    static {
+        m_ids = new ArrayList<Integer>(values().length);
+        m_idMap = new HashMap<Integer, AckAction>(values().length);
+        for (AckAction action : values()) {
+            m_ids.add(action.getId());
+            m_idMap.put(action.getId(), action);
+        }
+    }
 
 
-public class DefaultAckServiceTest {
+    private AckAction(int id, String label) {
+        m_id = id;
+        m_label = label;
+    }
 
-    DefaultAckService m_service = new DefaultAckService();
-    AcknowledgmentDao m_dao = EasyMock.createMock(AcknowledgmentDao.class);
-    private EventForwarder m_forwarder = EasyMock.createMock(EventForwarder.class);
+    private Integer getId() {
+        return m_id;
+    }
 
-    @Before public void wireThings() {
-        m_service.setAckDao(m_dao);
-        m_service.setEventForwarder(m_forwarder );
+    @Override
+    public String toString() {
+        return m_label;
     }
     
-    @Test public void proccessAck() {
-        
-        OnmsAcknowledgment ack = new OnmsAcknowledgment();
-        m_service.processAck(ack);
+    public static AckAction get(int id) {
+        if (m_idMap.containsKey(id)) {
+            return m_idMap.get(id);
+        } else {
+            throw new IllegalArgumentException("Cannot create AckAction from unknown ID " + id);
+        }
     }
 
-
+    
 }
