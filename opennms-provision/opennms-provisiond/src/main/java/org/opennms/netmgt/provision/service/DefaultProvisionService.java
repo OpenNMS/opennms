@@ -63,8 +63,10 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.opennms.netmgt.provision.service.operations.AddEventVisitor;
 import org.opennms.netmgt.provision.service.operations.DeleteEventVisitor;
+import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -465,43 +467,7 @@ public class DefaultProvisionService implements ProvisionService {
         
         OnmsNode db = getNodeDao().getHierarchy(node.getId());
     
-    	// verify that the node label is still the same
-    	if (!db.getLabel().equals(node.getLabel())) {
-    		db.setLabel(node.getLabel());
-    		// TODO: nodeLabelChanged event
-    	}
-    
-        if (!nullSafeEquals(db.getForeignSource(), node.getForeignSource())) {
-            db.setForeignSource(node.getForeignSource());
-        }
-    
-        if (!nullSafeEquals(db.getForeignId(), node.getForeignId())) {
-            db.setForeignId(node.getForeignId());
-        }
-    
-        if (snmpDataForNodeUpToDate) {
-    
-    		if (!nullSafeEquals(db.getSysContact(), node.getSysContact())) {
-    			db.setSysContact(node.getSysContact());
-    		}
-    
-    		if (!nullSafeEquals(db.getSysDescription(), node.getSysDescription())) {
-    			db.setSysDescription(node.getSysDescription());
-    		}
-    
-    		if (!nullSafeEquals(db.getSysLocation(), node.getSysLocation())) {
-    			db.setSysLocation(node.getSysLocation());
-    		}
-    
-    		if (!nullSafeEquals(db.getSysName(), node.getSysName())) {
-    			db.setSysName(node.getSysName());
-    		}
-    
-    		if (!nullSafeEquals(db.getSysObjectId(), node.getSysObjectId())) {
-    			db.setSysObjectId(node.getSysObjectId());
-    		}
-    		
-    	}
+    	updateNodeData(node, db, snmpDataForNodeUpToDate);
     
         if (snmpDataForInterfacesUpToDate) {
             new SnmpInterfaceUpdater(db, node).execute();
@@ -519,12 +485,57 @@ public class DefaultProvisionService implements ProvisionService {
         //TODO: update the node in the scheduledList of Nodes
         
     }
+
+    /**
+     * @param scannedNode
+     * @param dbNode
+     * @param snmpDataForNodeUpToDate
+     */
+    private void updateNodeData(OnmsNode scannedNode, OnmsNode dbNode,
+            boolean snmpDataForNodeUpToDate) {
+        // verify that the node label is still the same
+    	if (!dbNode.getLabel().equals(scannedNode.getLabel())) {
+    		dbNode.setLabel(scannedNode.getLabel());
+    		// TODO: nodeLabelChanged event
+    	}
+    
+        if (!nullSafeEquals(dbNode.getForeignSource(), scannedNode.getForeignSource())) {
+            dbNode.setForeignSource(scannedNode.getForeignSource());
+        }
+    
+        if (!nullSafeEquals(dbNode.getForeignId(), scannedNode.getForeignId())) {
+            dbNode.setForeignId(scannedNode.getForeignId());
+        }
+    
+        if (snmpDataForNodeUpToDate) {
+    
+    		if (!nullSafeEquals(dbNode.getSysContact(), scannedNode.getSysContact())) {
+    			dbNode.setSysContact(scannedNode.getSysContact());
+    		}
+    
+    		if (!nullSafeEquals(dbNode.getSysDescription(), scannedNode.getSysDescription())) {
+    			dbNode.setSysDescription(scannedNode.getSysDescription());
+    		}
+    
+    		if (!nullSafeEquals(dbNode.getSysLocation(), scannedNode.getSysLocation())) {
+    			dbNode.setSysLocation(scannedNode.getSysLocation());
+    		}
+    
+    		if (!nullSafeEquals(dbNode.getSysName(), scannedNode.getSysName())) {
+    			dbNode.setSysName(scannedNode.getSysName());
+    		}
+    
+    		if (!nullSafeEquals(dbNode.getSysObjectId(), scannedNode.getSysObjectId())) {
+    			dbNode.setSysObjectId(scannedNode.getSysObjectId());
+    		}
+    		
+    	}
+    }
     
     public OnmsNode getImportedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
-        OnmsNode node = new OnmsNode();
-        //nodeReq.populateNode(node);
-        return node;
+        Assert.notNull(nodeReq, "nodeReq cannot be null!");
+        return nodeReq.constructOnmsNodeFromRequisition();
     }
     
     @Transactional
@@ -560,7 +571,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional
     public OnmsServiceType createServiceTypeIfNecessary(String serviceName) {
-        proloadExistingTypes();
+        preloadExistingTypes();
         OnmsServiceType type = m_typeCache.get().get(serviceName);
         if (type == null) {
             type = loadServiceType(serviceName);
@@ -569,9 +580,6 @@ public class DefaultProvisionService implements ProvisionService {
         return type;
     }
     
-    
-    
-
     @Transactional
     public OnmsCategory createCategoryIfNecessary(String name) {
         preloadExistingCategories();
@@ -605,7 +613,7 @@ public class DefaultProvisionService implements ProvisionService {
         getNodeDao().update(node);
     }
 
-    private void proloadExistingTypes() {
+    private void preloadExistingTypes() {
         if (m_typeCache.get() == null) {
             m_typeCache.set(loadServiceTypeMap());
         }
@@ -619,7 +627,7 @@ public class DefaultProvisionService implements ProvisionService {
         return serviceTypeMap;
     }
     
-    @Transactional(readOnly=true)
+    @Transactional
     private OnmsServiceType loadServiceType(String serviceName) {
         OnmsServiceType type;
         type = m_serviceTypeDao.findByName(serviceName);
@@ -646,7 +654,7 @@ public class DefaultProvisionService implements ProvisionService {
         return categoryMap;
     }
     
-    @Transactional(readOnly=true)
+    @Transactional
     private OnmsCategory loadCategory(String name) {
         OnmsCategory category;
         category = m_categoryDao.findByName(name);
@@ -769,5 +777,28 @@ public class DefaultProvisionService implements ProvisionService {
     public ForeignSourceRepository getForeignSourceRepository() {
         return m_foreignSourceRepository;
     }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.service.ProvisionService#loadRequisition(java.lang.String, org.springframework.core.io.Resource)
+     */
+    public OnmsRequisition loadRequisition(Resource resource) {
+        return m_foreignSourceRepository.importRequisition(resource);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
+     */
+    public void updateNodeInfo(OnmsNode node) {
+        OnmsNode dbNode;
+        if (node.getId() != null) {
+            dbNode = m_nodeDao.get(node.getId());
+        } else {
+            dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
+        }
+        
+        updateNodeData(node, dbNode, true);
+    }
+    
+    
 
 }
