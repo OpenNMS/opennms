@@ -44,7 +44,7 @@ public abstract class AbstractSnmpStore {
 
     private Map<String, SnmpValue> m_responseMap = new TreeMap<String, SnmpValue>();
     public static final String IFINDEX = "ifIndex";
-    public abstract void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val);
+    public abstract void storeResult(SnmpResult res);
 
     public AbstractSnmpStore() {
     }

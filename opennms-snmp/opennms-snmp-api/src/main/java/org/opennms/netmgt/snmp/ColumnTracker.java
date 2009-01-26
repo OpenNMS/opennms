@@ -82,7 +82,7 @@ public class ColumnTracker extends CollectionTracker {
                 if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
                     SnmpInstId inst = responseObjId.getInstance(m_base);
                     if (inst != null) {
-                        storeResult(m_base, inst, val);
+                        storeResult(new SnmpResult(m_base, inst, val));
                     }
                 }
             }

@@ -78,9 +78,10 @@ public abstract class CollectionTracker implements Collectable {
         m_timedOut = timedOut;
     }
     
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        if (m_parent != null)
-            m_parent.storeResult(base, inst, val);
+    protected void storeResult(SnmpResult res) {
+        if (m_parent != null) {
+            m_parent.storeResult(res);
+        }
     }
     
     public abstract boolean isFinished();
@@ -88,18 +89,21 @@ public abstract class CollectionTracker implements Collectable {
     public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
 
     protected void reportTooBigErr(String msg) {
-        if (m_parent != null)
+        if (m_parent != null) {
             m_parent.reportTooBigErr(msg);
+        }
     }
     
     protected void reportGenErr(String msg) {
-        if (m_parent != null)
+        if (m_parent != null) {
             m_parent.reportGenErr(msg);
+        }
     }
     
     protected void reportNoSuchNameErr(String msg) {
-        if (m_parent != null)
+        if (m_parent != null) {
             m_parent.reportNoSuchNameErr(msg);
+        }
     }
     
     public CollectionTracker getCollectionTracker() {

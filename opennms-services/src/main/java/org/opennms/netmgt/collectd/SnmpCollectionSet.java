@@ -48,10 +48,8 @@ import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class SnmpCollectionSet implements Collectable, CollectionSet {
@@ -113,26 +111,30 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     public SnmpIfCollector getIfCollector() {
-        if (m_ifCollector == null)
+        if (m_ifCollector == null) {
             m_ifCollector = createIfCollector();
+        }
         return m_ifCollector;
     }
 
     public IfNumberTracker getIfNumber() {
-        if (m_ifNumber == null)
+        if (m_ifNumber == null) {
             m_ifNumber = createIfNumberTracker();
+        }
         return m_ifNumber;
     }
 
     public SysUpTimeTracker getSysUpTime() {
-        if (m_sysUpTime == null)
+        if (m_sysUpTime == null) {
             m_sysUpTime = createSysUpTimeTracker();
+        }
         return m_sysUpTime;
     }
 
     public SnmpNodeCollector getNodeCollector() {
-        if (m_nodeCollector == null)
+        if (m_nodeCollector == null) {
             m_nodeCollector = createNodeCollector();
+        }
         return m_nodeCollector;
     }
 
@@ -329,7 +331,9 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     void checkForNewInterfaces(SnmpCollectionSet.RescanNeeded rescanNeeded) {
-        if (!hasInterfaceDataToCollect()) return;
+        if (!hasInterfaceDataToCollect()) {
+            return;
+        }
 
         logIfCounts();
 
@@ -344,7 +348,9 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     void checkForSystemRestart(SnmpCollectionSet.RescanNeeded rescanNeeded) {
-        if (!hasInterfaceDataToCollect()) return;
+        if (!hasInterfaceDataToCollect()) {
+            return;
+        }
 
         logSysUpTime();
 
@@ -422,10 +428,10 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return agentConfig;
     }
 
-    public void notifyIfNotFound(AttributeDefinition attrType, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+    public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
         // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
         //triggerRescan();
-        log().info("Unable to locate resource for agent "+getCollectionAgent()+" with instance id "+inst+" while collecting attribute "+attrType);
+        log().info("Unable to locate resource for agent "+getCollectionAgent()+" with instance id "+res.getInstance()+" while collecting attribute "+attrType);
     }
 
     /* Not used anymore - done in CollectableService
@@ -455,7 +461,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     public int getStatus() {
-        return this.m_status;
+        return m_status;
     }
 
     public boolean ignorePersist() {

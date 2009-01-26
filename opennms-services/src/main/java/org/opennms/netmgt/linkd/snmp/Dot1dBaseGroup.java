@@ -45,9 +45,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
  * <P>Dot1dBaseGroup holds the dot1dBridge.dot1dBase group properties
@@ -152,8 +150,8 @@ public final class Dot1dBaseGroup extends AggregateTracker
         m_store = new SnmpStore(ms_elemList); 
 	}
 
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        m_store.storeResult(base, inst, val);
+    protected void storeResult(SnmpResult res) {
+        m_store.storeResult(res);
     }
 
     protected void reportGenErr(String msg) {
@@ -174,13 +172,17 @@ public final class Dot1dBaseGroup extends AggregateTracker
     
     public int getNumberOfPorts() {
     	Integer nop = m_store.getInt32(BASE_NUM_PORTS);
-    	if (nop == null) return -1;
+    	if (nop == null) {
+            return -1;
+        }
     	return nop;
     }
 
     public int getBridgeType() {
     	Integer type = m_store.getInt32(BASE_NUM_TYPE);
-    	if (type == null) return -1;
+    	if (type == null) {
+            return -1;
+        }
     	return type;
     }
 }

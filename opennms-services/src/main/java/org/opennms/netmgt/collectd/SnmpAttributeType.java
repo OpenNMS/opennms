@@ -38,7 +38,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -47,7 +46,7 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
  * Represents an OID to be collected (it might be specific or an indexed object).
@@ -82,8 +81,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     // than MibObject.
     public static List<Collectable> getCollectionTrackers(Collection<SnmpAttributeType> objList) {
         ArrayList<Collectable> trackers = new ArrayList<Collectable>(objList.size());
-        for (Iterator<SnmpAttributeType> iter = objList.iterator(); iter.hasNext();) {
-            SnmpAttributeType attrType = iter.next();
+        for (SnmpAttributeType attrType : objList) {
             trackers.add(attrType.getMibObj().getCollectionTracker());
         }
         
@@ -91,10 +89,12 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     }
 
     public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
-        if (NumericAttributeType.supportsType(mibObj.getType()))
+        if (NumericAttributeType.supportsType(mibObj.getType())) {
             return new NumericAttributeType(resourceType, collectionName, mibObj, groupType);
-        if (StringAttributeType.supportsType(mibObj.getType()))
+        }
+        if (StringAttributeType.supportsType(mibObj.getType())) {
             return new StringAttributeType(resourceType, collectionName, mibObj, groupType);
+        }
         
         throw new IllegalArgumentException("No support exists for AttributeType '" + mibObj.getType() + "' for MIB object: "+ mibObj);
     }
@@ -143,18 +143,18 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
 
     public abstract void storeAttribute(CollectionAttribute attribute, Persister persister);
     
-    public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        log().info("Setting attribute: "+this+".["+inst+"] = '"+val+"'");
+    public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpResult res) {
+        log().info("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
         SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
-            resource = m_resourceType.findAliasedResource(inst, val.toString());
+            resource = m_resourceType.findAliasedResource(res.getInstance(), res.getValue().toString());
         } else {
-            resource = m_resourceType.findResource(inst);
+            resource = m_resourceType.findResource(res.getInstance());
         }
         if (resource == null) {
-            collectionSet.notifyIfNotFound(this, base, inst, val);
+            collectionSet.notifyIfNotFound(this, res);
         } else {
-            resource.setAttributeValue(this, val);
+            resource.setAttributeValue(this, res.getValue());
         }
     }
 

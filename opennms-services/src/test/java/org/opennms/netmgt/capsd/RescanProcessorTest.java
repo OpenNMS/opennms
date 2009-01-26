@@ -38,12 +38,13 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.mock.TestSnmpValue;
-
-import junit.framework.TestCase;
 
 public class RescanProcessorTest extends TestCase {
     /**
@@ -56,7 +57,7 @@ public class RescanProcessorTest extends TestCase {
         RescanProcessor processor = new RescanProcessor(nodeId, false, null, null);
         
         IfTableEntry ifTableEntry = new IfTableEntry();
-        ifTableEntry.storeResult(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.5"), new SnmpInstId("0"), new TestSnmpValue.StringSnmpValue(""));
+        ifTableEntry.storeResult(new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.5"), new SnmpInstId("0"), new TestSnmpValue.StringSnmpValue("")));
         DbSnmpInterfaceEntry dbSnmpInterfaceEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
         processor.updateSpeed(ifIndex, ifTableEntry, dbSnmpInterfaceEntry);
         

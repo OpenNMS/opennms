@@ -36,10 +36,9 @@ package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
-import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  *<P>The Dot1qStaticVlanTableEntry class is designed to hold all the MIB-II
@@ -134,13 +133,13 @@ implements VlanCollectorEntry {
 	}
 
 	@Override
-	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+	public void storeResult(SnmpResult res) {
 		if (!hasVlanIndex) {
-			int vlanid = inst.getLastSubId();
-			super.storeResult(SnmpObjId.get(VLAN_INDEX_OID), inst, 
-						SnmpUtils.getValueFactory().getInt32(vlanid));
+			int vlanid = res.getInstance().getLastSubId();
+			super.storeResult(new SnmpResult(SnmpObjId.get(VLAN_INDEX_OID), res.getInstance(), 
+						SnmpUtils.getValueFactory().getInt32(vlanid)));
 			hasVlanIndex = true;
 		}
-		super.storeResult(base, inst, val);
+		super.storeResult(res);
 	}
 }
