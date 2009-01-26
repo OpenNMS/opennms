@@ -33,6 +33,10 @@ package org.opennms.netmgt.model;
 
 public abstract class OnmsEntity {
 	
-	public abstract void visit(EntityVisitor visitor);
+	protected static boolean hasNewValue(Object newVal, Object existingVal) {
+        return newVal != null && !newVal.equals(existingVal);
+    }
+
+    public abstract void visit(EntityVisitor visitor);
 
 }

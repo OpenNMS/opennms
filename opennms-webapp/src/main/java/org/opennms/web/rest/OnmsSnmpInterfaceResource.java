@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -49,7 +50,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
-    public OnmsSnmpInterface getSnmpInterface(@PathParam("nodeId") int nodeId, @PathParam("ifIndex") int ifIndex) {
+    public OnmsEntity getSnmpInterface(@PathParam("nodeId") int nodeId, @PathParam("ifIndex") int ifIndex) {
         OnmsNode node = m_nodeDao.get(nodeId);
         return node.getSnmpInterfaceWithIfIndex(ifIndex);
     }
@@ -79,7 +80,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null)
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node with id " + nodeId);
-        OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
+        OnmsEntity snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
         if (snmpInterface == null)
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find snmp interface with ifIndex " + ifIndex + " for node with id " + nodeId);
         log().debug("deletSnmpInterface: deleting interface with ifIndex " + ifIndex + " from node " + nodeId);

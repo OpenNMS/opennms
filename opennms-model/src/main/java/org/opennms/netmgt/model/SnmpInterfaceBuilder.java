@@ -59,7 +59,7 @@ public class SnmpInterfaceBuilder {
         return this;
     }
 
-    public OnmsSnmpInterface getSnmpInterface() {
+    public OnmsEntity getSnmpInterface() {
         return m_snmpIf;
     }
 
