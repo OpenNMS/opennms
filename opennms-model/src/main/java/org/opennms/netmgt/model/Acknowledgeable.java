@@ -48,6 +48,9 @@ import java.util.Date;
 public interface Acknowledgeable {
     
     void acknowledge(Date ackDate, String ackUser);
+    void unacknowledge();
+    void clear();
+    void escalate();
     
     AckType getType();
 

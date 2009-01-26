@@ -37,7 +37,7 @@ package org.opennms.netmgt.model;
 
 
 public enum AckType {
-    Unspecified,
-    Alarm,
-    Notification,
+    UNSPECIFIED,
+    ALARM,
+    NOTIFICATION,
 }

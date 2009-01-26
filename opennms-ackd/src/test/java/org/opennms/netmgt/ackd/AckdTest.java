@@ -58,6 +58,7 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -244,7 +245,7 @@ public class AckdTest {
         
         VerificationObject vo = createAckStructure();
         EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/ackd/Acknowledge", "AckdTest");
-        bldr.addParam("ackType", String.valueOf(AckType.Alarm));
+        bldr.addParam("ackType", String.valueOf(AckType.ALARM));
         bldr.addParam("refId", vo.m_alarmId);
         final String user = "ackd-test-user";
         bldr.addParam("user", user);

@@ -62,13 +62,15 @@ public class OnmsAcknowledgment {
     private Date m_ackTime;
     private String m_ackUser;
     private AckType m_ackType;
+    private AckAction m_ackAction;
     private Integer m_refId;
     
     //main constructor
     public OnmsAcknowledgment(Date time, String user) {
         m_ackTime = (time == null) ? new Date() : time;
         m_ackUser = (user == null) ? "admin" : user;
-        m_ackType = AckType.Unspecified;
+        m_ackType = AckType.UNSPECIFIED;
+        m_ackAction = AckAction.ACKNOWLEDGE;  //probably should be the default, set as appropriate after instantiation
     }
     
     public OnmsAcknowledgment() {
@@ -100,8 +102,8 @@ public class OnmsAcknowledgment {
             
                 if ("ackType".equals(parm.getParmName())) {
 
-                    if ("Alarm".equals(parmValue) || "Notification".equals(parmValue)) {
-                        m_ackType = ("Alarm".equals(parmValue) ? AckType.Alarm : AckType.Notification);
+                    if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
+                        m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
                     } else {
                         throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
                     }
@@ -119,7 +121,7 @@ public class OnmsAcknowledgment {
         this(a, "admin", new Date());
         
         //not sure this is a valid use case but doing it for now
-        if (a.getType() == AckType.Alarm) {
+        if (a.getType() == AckType.ALARM) {
             if (a.getAckUser() != null) {
                 m_ackUser = a.getAckUser();
                 m_ackTime = a.getAckTime();
@@ -191,6 +193,32 @@ public class OnmsAcknowledgment {
 
     public void setRefId(Integer refId) {
         m_refId = refId;
+    }
+
+    @Column(name="ackAction", nullable=false)
+    public AckAction getAckAction() {
+        return m_ackAction;
+    }
+
+    public void setAckAction(AckAction ackAction) {
+        m_ackAction = ackAction;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
+        bldr.append(m_id);
+        bldr.append(" User:");
+        bldr.append(m_ackUser);
+        bldr.append(" Time:");
+        bldr.append(m_ackTime);
+        bldr.append(" AckType:");
+        bldr.append(m_ackType);
+        bldr.append(" AckAction:");
+        bldr.append(m_ackAction);
+        bldr.append(" Acknowledable ID:");
+        bldr.append(m_refId);
+        return bldr.toString();
     }
 
 }

@@ -620,10 +620,23 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
             m_alarmAckUser = user;
         }
     }
+    
+    public void unacknowledge() {
+        m_alarmAckTime = null;
+        m_alarmAckUser = null;
+    }
+    
+    public void clear() {
+        m_severity = OnmsSeverity.CLEARED;
+    }
+    
+    public void escalate() {
+        m_severity = OnmsSeverity.escalate(m_severity);
+    }
 
     @Transient
     public AckType getType() {
-        return AckType.Alarm;
+        return AckType.ALARM;
     }
     
     @Transient

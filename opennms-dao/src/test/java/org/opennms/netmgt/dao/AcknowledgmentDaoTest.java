@@ -38,6 +38,7 @@ package org.opennms.netmgt.dao;
 import java.util.Date;
 
 import org.junit.Test;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -55,7 +56,8 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
     public void testSaveUnspecified() {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
-        ack.setAckType(AckType.Unspecified);
+        ack.setAckType(AckType.UNSPECIFIED);
+        ack.setAckAction(AckAction.UNSPECIFIED);
         ack.setAckUser("not-admin");
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
