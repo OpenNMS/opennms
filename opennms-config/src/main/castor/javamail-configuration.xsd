@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
-        targetNamespace="http://xmlns.opennms.org/xsd/javamail-configuration" 
-        xmlns:this="http://xmlns.opennms.org/xsd/javamail-configuration"
+        targetNamespace="http://xmlns.opennms.org/xsd/config/javamail-configuration" 
+        xmlns:this="http://xmlns.opennms.org/xsd/config/javamail-configuration"
         elementFormDefault="qualified">
         
   <element name="javamail-configuration" >
+    <annotation>
+      <documentation>
+        Read and Send configuration groups
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:sendmail-config" minOccurs="1" maxOccurs="unbounded" />
+        <element ref="this:readmail-config" minOccurs="1" maxOccurs="unbounded" />
+        <element ref="this:end2end-mail-config" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="default-send-config-name" type="string" use="required" />
+      <attribute name="default-read-config-name" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <element name="end2end-mail-config" >
     <annotation>
       <documentation>
         Read and Send configuration list
       </documentation>
     </annotation>
     <complexType>
-      <sequence>
-        <element ref="this:readmail-config" minOccurs="1" maxOccurs="unbounded" />
-        <element ref="this:sendmail-config" minOccurs="1" maxOccurs="unbounded" />
-      </sequence>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="sendmail-config-name" type="string" use="required" />
+      <attribute name="readmail-config-name" type="string" use="required" />
     </complexType>
   </element>
 
@@ -50,7 +66,7 @@
     <annotation>
       <documentation>
       
-        Define the to, from, subject, and body of a message.  If not defined, one will be defined
+        Define the To, From, Subject, and body of a message.  If not defined, one will be defined
         for your benefit (or confusion ;-)
         
       </documentation>
@@ -87,19 +103,25 @@
     <annotation>
       <documentation>
       
-        Define the host and port of the sendmail server.  If you don't, defaults will be used and
-        ${ipaddr} is replaced with the IP address of the service.
+        Configuration for a sendmail host
         
       </documentation>
     </annotation>
     <complexType>
-      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="host" type="string" use="optional" default="127.0.0.1" />
       <attribute name="port" type="integer" use="optional" default="25" />
     </complexType>
   </element>
   
   
   <element name="readmail-config" >
+    <annotation>
+      <documentation>
+      
+        Configuration container for configuration all settings for reading email
+        
+      </documentation>
+    </annotation>
     <complexType>
       <sequence>
         <element ref="this:javamail-property" minOccurs="0" maxOccurs="unbounded" />
@@ -108,7 +130,6 @@
       </sequence>
       <attribute name="debug" type="boolean" use="optional" default="true" />
       <attribute name="mail-folder" type="string" use="optional" default="INBOX" />
-      <attribute name="subject-match" type="string" use="optional" />
       <attribute name="attempt-interval" type="integer" use="optional" default="1000" />
       <attribute name="delete-all-mail" type="boolean" use="optional" default="false" />
       <attribute name="name" type="string" use="required" />
@@ -119,8 +140,7 @@
     <annotation>
       <documentation>
       
-        Define the host and port of the sendmail server.  If you don't, defaults will be used and
-        ${ipaddr} is replaced with the IP address of the service.
+        Define the host and port of a service for reading email.
         
       </documentation>
     </annotation>
@@ -128,7 +148,7 @@
       <sequence>
         <element ref="this:readmail-protocol" minOccurs="1" maxOccurs="1" />
       </sequence>
-      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="host" type="string" use="optional" default="127.0.0.1" />
       <attribute name="port" type="integer" use="optional" default="110" />
     </complexType>
   </element>
@@ -137,7 +157,7 @@
     <annotation>
       <documentation>
       
-        Basically attributes that help setup the javamailer's confusion set of properties.
+        Basically any attributes that help setup the javamailer's confusing set of properties.
         
       </documentation>
     </annotation>
@@ -185,7 +205,7 @@
     <annotation>
       <documentation>
       
-        Use these name value pairs to configure freeform properties from the JavaMail class.
+        Use these name value pairs to configure free-form properties from the JavaMail class.
         
       </documentation>
     </annotation>

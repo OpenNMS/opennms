@@ -114,6 +114,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
         getContainer().reload();
     }
     
+    @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**
          * It sucks to duplicate this first test from AbstractCastorConfigDao,
@@ -125,6 +126,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
         super.afterPropertiesSet();
     }
     
+    @Override
     public EventConfiguration translateConfig(Events events) throws DataAccessException {
         EventConfiguration eventConfiguration = new EventConfiguration();
 

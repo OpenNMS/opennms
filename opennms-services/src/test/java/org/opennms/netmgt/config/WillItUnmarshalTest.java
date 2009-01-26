@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.common.JavamailConfiguration;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
@@ -524,6 +525,9 @@ public class WillItUnmarshalTest {
     @Test
     public void testWmiDatacollectionConfiguration() throws Exception {
         unmarshal("wmi-datacollection-config.xml", WmiDatacollectionConfig.class);
+    }
+    @Test public void testJavaMailConfiguration() throws Exception {
+        unmarshal("javamail-configuration.xml", JavamailConfiguration.class);
     }
 
     @Test
