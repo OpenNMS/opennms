@@ -47,10 +47,8 @@ import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
@@ -96,7 +94,9 @@ public class AbstractSnmpScanner implements Scanner {
      */
     public void scan(ScanContext context) throws InterruptedException {
         InetAddress agentAddress = context.getAgentAddress("SNMP");
-        if (agentAddress == null) return;
+        if (agentAddress == null) {
+            return;
+        }
         
         SnmpAgentConfig agentConfig = m_snmpAgentConfigFactory.getAgentConfig(agentAddress);
         
@@ -122,7 +122,7 @@ public class AbstractSnmpScanner implements Scanner {
      }
     
     public static interface Storer {
-        public void storeResult(ScanContext scanContext, SnmpObjId base, SnmpInstId inst, SnmpValue val);
+        public void storeResult(ScanContext scanContext, SnmpResult res);
     }
     
     public interface SnmpExchange {
@@ -136,8 +136,8 @@ public class AbstractSnmpScanner implements Scanner {
             public CollectionTracker createTracker(final ScanContext scanContext) {
                 return new SingleInstanceTracker(base, inst) {
                     @Override
-                    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-                        m_storer.storeResult(scanContext, base, inst, val);
+                    protected void storeResult(SnmpResult res) {
+                        m_storer.storeResult(scanContext, res);
                     }
                     
                 };

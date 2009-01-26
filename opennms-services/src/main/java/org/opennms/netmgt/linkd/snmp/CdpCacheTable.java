@@ -73,7 +73,7 @@ public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
 	 * @see CdpCacheTableEntry
 	 */
 
-	public CdpCacheTable(InetAddress address)
+    public CdpCacheTable(InetAddress address)
 	{
         super(address, "cdpCacheTable", CdpCacheTableEntry.cdpCache_elemList);
 	}

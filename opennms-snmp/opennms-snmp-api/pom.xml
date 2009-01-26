@@ -13,5 +13,10 @@
       <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>

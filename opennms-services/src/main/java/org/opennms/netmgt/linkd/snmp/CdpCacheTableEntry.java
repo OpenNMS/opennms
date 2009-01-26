@@ -38,10 +38,9 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
-import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  *<P>The CdpCacheTableEntry class is designed to hold all the MIB-II
@@ -392,31 +391,37 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 
 
 	@Override
-	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+	public void storeResult(SnmpResult res) {
 		if (!hasIfIndex) {
-			int ifindex = inst.getSubIdAt(inst.length()-2);
-			super.storeResult(SnmpObjId.get(CDP_IFINDEX_OID), inst, 
-						SnmpUtils.getValueFactory().getInt32(ifindex));
+			int ifindex = res.getInstance().getSubIdAt(res.getInstance().length()-2);
+			super.storeResult(new SnmpResult(SnmpObjId.get(CDP_IFINDEX_OID), res.getInstance(), 
+						SnmpUtils.getValueFactory().getInt32(ifindex)));
 			hasIfIndex = true;
 		}
-		super.storeResult(base, inst, val);
+		super.storeResult(res);
 	}
 	
 	public int getCdpCacheIfIndex() {
 		Integer val = getInt32(CdpCacheTableEntry.CDP_IFINDEX);
-		if (val == null) return -1;
+		if (val == null) {
+            return -1;
+        }
 		return val;
 	}
 	
 	public int getCdpCacheDeviceIndex() {
 		Integer val = getInt32(CdpCacheTableEntry.CDP_DEVICEINDEX);
-		if (val == null) return -1;
+		if (val == null) {
+            return -1;
+        }
 		return val;
 	}
 
 	public int getCdpCacheAddressType() {
 		Integer val = getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
-		if (val == null) return -1;
+		if (val == null) {
+            return -1;
+        }
 		return val;
 	}
 	

@@ -42,8 +42,7 @@ package org.opennms.netmgt.provision.service.snmp;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueType;
 
@@ -81,19 +80,18 @@ public class SnmpStore extends AbstractSnmpStore {
         return ThreadCategory.getInstance(getClass());
     }
 
-    public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        putValue(base.toString(), val);
-        for(int i = 0; i < ms_elemList.length; i++) {
-            NamedSnmpVar var = ms_elemList[i];
-            if (base.equals(var.getSnmpObjId())) {
-                if (val.isError()) {
-                    log().error("storeResult: got an error for alias "+var.getAlias()+" ["+base+"].["+inst+"], but we should only be getting non-errors: " + val);
-                } else if (val.isEndOfMib()) {
-                    log().debug("storeResult: got endOfMib for alias "+var.getAlias()+" ["+base+"].["+inst+"], not storing");
+    public void storeResult(SnmpResult res) {
+        putValue(res.getBase().toString(), res.getValue());
+        for (NamedSnmpVar var : ms_elemList) {
+            if (res.getBase().equals(var.getSnmpObjId())) {
+                if (res.getValue().isError()) {
+                    log().error("storeResult: got an error for alias "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"], but we should only be getting non-errors: " + res.getValue());
+                } else if (res.getValue().isEndOfMib()) {
+                    log().debug("storeResult: got endOfMib for alias "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"], not storing");
                 } else {
-                    SnmpValueType type = SnmpValueType.valueOf(val.getType());
-                    log().debug("Storing Result: alias: "+var.getAlias()+" ["+base+"].["+inst+"] = " + (type == null ? "Unknown" : type.getDisplayString()) + ": "+toLogString(val));
-                    putValue(var.getAlias(), val);
+                    SnmpValueType type = SnmpValueType.valueOf(res.getValue().getType());
+                    log().debug("Storing Result: alias: "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"] = " + (type == null ? "Unknown" : type.getDisplayString()) + ": "+toLogString(res.getValue()));
+                    putValue(var.getAlias(), res.getValue());
                 }
             }
         }

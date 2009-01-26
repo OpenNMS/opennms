@@ -3,6 +3,7 @@ package org.opennms.netmgt.collectd;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class ObjIdMonitor extends SingleInstanceTracker {
@@ -26,8 +27,8 @@ public class ObjIdMonitor extends SingleInstanceTracker {
     }
 
     @Override
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        value = val;
+    protected void storeResult(SnmpResult res) {
+        value = res.getValue();
     }
     
     public String toString() {

@@ -43,7 +43,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 
 abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
@@ -61,13 +61,13 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
         m_tableName = tableName;
     }
     
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        T entry = m_results.get(inst);
+    protected void storeResult(SnmpResult res) {
+        T entry = m_results.get(res.getInstance());
         if (entry == null) {
-            entry = createTableEntry(base, inst, val);
-            m_results.put(inst, entry);
+            entry = createTableEntry(res.getBase(), res.getInstance(), res.getValue());
+            m_results.put(res.getInstance(), entry);
         }
-        entry.storeResult(base, inst, val);
+        entry.storeResult(res);
     }
 
     protected abstract T createTableEntry(SnmpObjId base, SnmpInstId inst, Object val);

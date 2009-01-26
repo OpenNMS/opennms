@@ -36,10 +36,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  *<P>The ExtremeNetworkVlanTableEntry class is designed to hold all the MIB-II
@@ -148,9 +144,4 @@ implements VlanCollectorEntry {
 		super(enVlan_elemList);
 	}
 	
-	@Override
-	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-		super.storeResult(base, inst, val);
-	}
-
 }

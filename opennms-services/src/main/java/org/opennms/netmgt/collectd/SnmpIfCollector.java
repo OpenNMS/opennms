@@ -51,8 +51,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
  * The SnmpIfCollector class is responsible for performing the actual SNMP data
@@ -153,18 +152,18 @@ public class SnmpIfCollector extends AggregateTracker {
         log().info(m_primaryIf+": request tooBig. "+msg);
     }
 
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        if(base.toString().equals(SnmpCollector.IFALIAS_OID) && (val.isNull() || val.toDisplayString() == null || val.toDisplayString().equals(""))) {
+    protected void storeResult(SnmpResult res) {
+        if(res.getBase().toString().equals(SnmpCollector.IFALIAS_OID) && (res.getValue().isNull() || res.getValue().toDisplayString() == null || res.getValue().toDisplayString().equals(""))) {
             log().debug("Skipping storeResult. Null or zero length ifAlias");
             return;
         }
-        SNMPCollectorEntry entry = (SNMPCollectorEntry)m_results.get(inst);
+        SNMPCollectorEntry entry = m_results.get(res.getInstance());
         if (entry == null) {
             log().debug("Creating new SNMPCollectorEntry entry");
             entry = new SNMPCollectorEntry(m_objList, m_collectionSet);
-            m_results.put(inst, entry);
+            m_results.put(res.getInstance(), entry);
         }
-        entry.storeResult(base, inst, val);
+        entry.storeResult(res);
 
     }
     

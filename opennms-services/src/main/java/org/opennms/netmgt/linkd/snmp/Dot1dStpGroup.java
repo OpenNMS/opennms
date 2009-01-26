@@ -45,8 +45,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -307,8 +306,8 @@ public final class Dot1dStpGroup extends AggregateTracker {
         m_store = new SnmpStore(ms_elemList); 
     }
     
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        m_store.storeResult(base, inst, val);
+    protected void storeResult(SnmpResult res) {
+        m_store.storeResult(res);
     }
 
     protected void reportGenErr(String msg) {
@@ -325,13 +324,17 @@ public final class Dot1dStpGroup extends AggregateTracker {
 
     public int getStpProtocolSpecification(){
     	Integer stpProtocolSpecification = m_store.getInt32(STP_PROTOCOL_SPEC);
-    	if (stpProtocolSpecification == null) return -1;
+    	if (stpProtocolSpecification == null) {
+            return -1;
+        }
     	return stpProtocolSpecification;
     }
 	
     public int getStpPriority(){
     	Integer stpPriority = m_store.getInt32(STP_PRIORITY);
-    	if (stpPriority == null ) return -1;
+    	if (stpPriority == null ) {
+            return -1;
+        }
     	return stpPriority;
     }
 
@@ -349,56 +352,74 @@ public final class Dot1dStpGroup extends AggregateTracker {
     
     public int getStpRootCost(){
     	Integer stpRootCost = m_store.getInt32(STP_ROOT_COST); 
-    	if (stpRootCost == null) return -1;
+    	if (stpRootCost == null) {
+            return -1;
+        }
     	return stpRootCost;
     }
 
     public int getStpRootPort(){
     	Integer stpRootPort = m_store.getInt32(STP_ROOT_PORT);
-    	if (stpRootPort == null) return -1;
+    	if (stpRootPort == null) {
+            return -1;
+        }
     	return stpRootPort;
     }
 
     public int getStpMaxAge(){
     	Integer stpMaxAge = m_store.getInt32(STP_MAX_AGE);
-    	if (stpMaxAge == null )return -1;
+    	if (stpMaxAge == null ) {
+            return -1;
+        }
     	return stpMaxAge;
     }
 
     public int getStpHelloTime(){
     	Integer stpHelloTime = m_store.getInt32(STP_HELLO_TIME); 
-    	if (stpHelloTime == null) return -1;
+    	if (stpHelloTime == null) {
+            return -1;
+        }
     	return stpHelloTime;
     }
 
     public int getStpHoldTime(){
     	Integer stpHoldTime = m_store.getInt32(STP_HOLD_TIME); 
-    	if (stpHoldTime == null) return -1;
+    	if (stpHoldTime == null) {
+            return -1;
+        }
     	return stpHoldTime;
     }
 
     public int getStpForwardDelay(){
  
     	Integer stpForwardDelay = m_store.getInt32(STP_FORW_DELAY);
-    	if (stpForwardDelay == null) return -1;
+    	if (stpForwardDelay == null) {
+            return -1;
+        }
     	return stpForwardDelay;
     }
 
     public int getStpBridgeMaxAge(){
     	Integer stpBridgeMaxAge = m_store.getInt32(STP_BRDG_MAX_AGE);
-    	if (stpBridgeMaxAge == null )return -1;
+    	if (stpBridgeMaxAge == null ) {
+            return -1;
+        }
     	return stpBridgeMaxAge;
     }
 
     public int getStpBridgeHelloTime(){
     	Integer stpBridgeHelloTime = m_store.getInt32(STP_BRDG_HELLO_TIME);
-    	if (stpBridgeHelloTime == null )return -1;
+    	if (stpBridgeHelloTime == null ) {
+            return -1;
+        }
     	return stpBridgeHelloTime;
     }
 
     public int getStpBridgeForwardDelay(){
     	Integer stpBridgeForwardDelay = m_store.getInt32(STP_BRDG_FORW_DELAY);
-    	if (stpBridgeForwardDelay == null )return -1;
+    	if (stpBridgeForwardDelay == null ) {
+            return -1;
+        }
     	return stpBridgeForwardDelay;
     }
 

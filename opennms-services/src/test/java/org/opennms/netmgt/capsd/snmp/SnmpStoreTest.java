@@ -39,6 +39,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.mock.TestSnmpValue;
 
 /**
@@ -61,8 +62,8 @@ public class SnmpStoreTest extends TestCase {
         SnmpObjId base = SnmpObjId.get(baseOid);
         SnmpInstId inst = new SnmpInstId("1");
         
-        store.storeResult(base, inst, new TestSnmpValue.StringSnmpValue(ifAliasValue));
-        store.storeResult(base, inst, TestSnmpValue.END_OF_MIB);
+        store.storeResult(new SnmpResult(base, inst, new TestSnmpValue.StringSnmpValue(ifAliasValue)));
+        store.storeResult(new SnmpResult(base, inst, TestSnmpValue.END_OF_MIB));
         
         assertEquals("ifAlias value", ifAliasValue, store.getDisplayString(ifAliasName));
     }

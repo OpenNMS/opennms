@@ -46,9 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ScanResource;
 import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
  * <P>
@@ -243,8 +241,8 @@ public final class SystemGroup extends AggregateTracker {
     }
 
     @Override
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        m_store.storeResult(base, inst, val);
+    protected void storeResult(SnmpResult res) {
+        m_store.storeResult(res);
     }
 
     @Override
