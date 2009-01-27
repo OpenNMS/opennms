@@ -36,6 +36,8 @@
 //
 package org.opennms.netmgt.snmp;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class ColumnTracker extends CollectionTracker {
     
     private SnmpObjId m_base;
@@ -52,16 +54,28 @@ public class ColumnTracker extends CollectionTracker {
         m_last = base;
         m_maxRepetitions = maxRepititions; 
     }
-    
+
+    public SnmpObjId getBase() {
+        return m_base;
+    }
+
     public boolean isFinished() {
         return m_finished || !m_base.isPrefixOf(m_last);
     }
 
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("base", m_base)
+            .append("last oid", m_last)
+            .append("max repetitions", m_maxRepetitions)
+            .append("finished?", m_finished)
+            .toString();
+    }
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
-        
+
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
