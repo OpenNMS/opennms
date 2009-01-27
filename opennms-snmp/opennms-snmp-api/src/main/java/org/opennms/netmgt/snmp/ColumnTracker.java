@@ -53,11 +53,6 @@ public class ColumnTracker extends CollectionTracker {
         m_maxRepetitions = maxRepititions; 
     }
     
-    @Override
-    public void setMaxRepititions(int maxRepititions) {
-        m_maxRepetitions = maxRepititions;
-    }
-
     public boolean isFinished() {
         return m_finished || !m_base.isPrefixOf(m_last);
     }
@@ -112,7 +107,8 @@ public class ColumnTracker extends CollectionTracker {
     public int getMaxRepetitions() {
         return m_maxRepetitions;
     }
-    
+
+    @Override
     public void setMaxRepetitions(int maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
     }
