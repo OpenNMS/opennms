@@ -11,6 +11,7 @@
  *
  * Modifications:
  *
+ * 2009 Jan 26: Modified findResults and createGraphResultSet - part of ksc performance improvement. - ayres@opennms.org
  * 2008 Oct 22: Use new ResourceDao methods. - dj@opennms.org
  * 2007 Apr 05: Add the graph offets to the model object. - dj@opennms.org
  * 
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -109,8 +111,28 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setRelativeTimePeriods(m_periods);
         graphResults.setReports(reports);
 
+        HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
+        
         for (String resourceId : resourceIds) {
-            graphResults.addGraphResultSet(createGraphResultSet(resourceId, reports, graphResults));
+            String parent = resourceId.substring(0, resourceId.indexOf("]") + 1);
+            String child = resourceId.substring(resourceId.indexOf("]") + 2);
+            String childType = child.substring(0, child.indexOf("["));
+            String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
+            OnmsResource resource = null;
+            if (!resourcesMap.containsKey(parent)) {
+                List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
+                resourcesMap.put(parent, resourceList);
+                log().debug("findResults: add resourceList to map for " + parent);
+            }
+            for (OnmsResource r : resourcesMap.get(parent)) {
+                if (childType.equals(r.getResourceType().getName())
+                        && childName.equals(r.getName())) {
+                    resource = r;
+                    log().debug("findResults: found resource in map" + r.toString());
+                    break;
+                }
+            }
+            graphResults.addGraphResultSet(createGraphResultSet(resourceId, resource, reports, graphResults));
         }
         
         graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
@@ -120,9 +142,11 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         return graphResults;
     }
     
-    public GraphResultSet createGraphResultSet(String resourceId, String[] reports, GraphResults graphResults) {
-        OnmsResource resource = m_resourceDao.loadResourceById(resourceId);
-        GraphResultSet rs = graphResults.new GraphResultSet();
+    public GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) {
+        if (resource == null) {
+            resource = m_resourceDao.loadResourceById(resourceId);
+        }
+         GraphResultSet rs = graphResults.new GraphResultSet();
         rs.setResource(resource);
         
         if (reports.length == 1 && "all".equals(reports[0])) {

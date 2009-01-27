@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Jan 26: added getResourceListById and getChildResourceList - part of ksc performance improvement. - ayres@opennms.org
 // 2008 Oct 22: Update to use new getResourceById/loadResourceById methods. - dj@opennms.org
 // 2007 Sep 09: Catch DataAccessException in getResourceById and throw as a ObjectRetrievalFailureException with the resource ID. - dj@opennms.org
 // 2007 May 12: Clean up imports. - dj@opennms.org
@@ -55,7 +56,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.IntSet;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.StorageStrategy;
@@ -291,6 +294,41 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         
         return resource;
     }
+
+    public List<OnmsResource> getResourceListById(String id) {
+        OnmsResource topLevelResource = null;
+
+        Pattern p = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
+        Matcher m = p.matcher(id);
+        StringBuffer sb = new StringBuffer();
+        
+        while (m.find()) {
+            String resourceTypeName = DefaultResourceDao.decode(m.group(1));
+            String resourceName = DefaultResourceDao.decode(m.group(2));
+
+            try {
+                if (topLevelResource == null) {
+                    topLevelResource = getTopLevelResource(resourceTypeName, resourceName);
+                } else {
+                    return getChildResourceList(topLevelResource);
+                }
+            } catch (DataAccessException e) {
+                throw new ObjectRetrievalFailureException(OnmsResource.class, id, "Could not get resource for resource ID '" + id + "'", e);
+            }
+            
+            m.appendReplacement(sb, "");
+        }
+        
+        m.appendTail(sb);
+        
+        if (sb.length() > 0) {
+            throw new IllegalArgumentException("resource ID '" + id
+                                               + "' does not match pattern '"
+                                               + p.toString() + "' at '"
+                                               + sb + "'");
+        }
+        return null;
+    }
     
     protected OnmsResource getTopLevelResource(String resourceType, String resource) {
         if ("node".equals(resourceType)) {
@@ -310,7 +348,15 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             }
         }
         
-        throw new ObjectRetrievalFailureException(OnmsResource.class, resourceType + "/" + resource, "Could not find child resource '" + resource + "' with resource type '" + resourceType + "' on resource '" + resource + "'", null);
+        throw new ObjectRetrievalFailureException(OnmsResource.class, resourceType + "/" + resource, "Could not find child resource '"
+                                      + resource + "' with resource type '" + resourceType + "' on resource '" + resource + "'", null);
+    }
+    
+    protected List<OnmsResource> getChildResourceList(OnmsResource parentResource) {
+        if (log().isDebugEnabled()) {
+            log().debug("DefaultResourceDao: getChildResourceList for " + parentResource.toString());
+        }
+        return parentResource.getChildResources();
     }
     
     /**
@@ -552,5 +598,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resources.addAll(findNodeResources());
         resources.addAll(findDomainResources());
         return resources;
+    }
+    private Category log() {
+        return ThreadCategory.getInstance();
     }
 }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Jan 26: Modified handleRequestInternal - part of ksc performance improvement. - ayres@opennms.org
 // 2008 Oct 22: Lots of cleanup.  - dj@opennms.org
 // 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2008 Feb 03: Use Asserts in afterPropertiesSet() and setDefaultGraphsPerLine().
@@ -42,7 +43,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -129,10 +132,15 @@ public class CustomViewController extends AbstractController implements Initiali
         }
       
         // Get the list of available prefabricated graph options 
+        HashMap<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
-        if (!report.getGraphCollection().isEmpty()) {
-            for (Graph graph : report.getGraphCollection()) {
-                OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+        List<Graph> graphCollection = report.getGraphCollection();
+        if (!graphCollection.isEmpty()) {
+            List<OnmsResource> resources = getKscReportService().getResourcesFromGraphs(graphCollection);
+            for (int i = 0; i < graphCollection.size(); i++) {
+                Graph graph = graphCollection.get(i);
+                OnmsResource resource = resources.get(i);
+                resourceMap.put(graph.toString(), resource);
                 if (resource == null) {
                     log().debug("Could not get resource for graph " + graph + " in report " + report.getTitle());
                 } else {
@@ -154,8 +162,8 @@ public class CustomViewController extends AbstractController implements Initiali
         }
         
         List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
-        for (Graph graph : report.getGraphCollection()) {
-            OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
+        for (Graph graph : graphCollection) {
+            OnmsResource resource = resourceMap.get(graph.toString());
             if (resource != null) {
                 promoteResourceAttributesIfNecessary(resource);
             }

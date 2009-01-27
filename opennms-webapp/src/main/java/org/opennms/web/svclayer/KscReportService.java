@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Jan 26: added getResourcesFromGraphs - part of ksc performance improvement. - ayres@opennms.org
  * Created: January 2, 2007
  *
  *
@@ -34,6 +35,7 @@
  */
 package org.opennms.web.svclayer;
 
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -50,6 +52,7 @@ public interface KscReportService {
     public Report buildNodeReport(int nodeId);
     public Report buildDomainReport(String domain);
     public OnmsResource getResourceFromGraph(Graph graph);
+    public List<OnmsResource>getResourcesFromGraphs(List<Graph> graphs);
     public Map<String, String> getTimeSpans(boolean includeNone);
     public Map<Integer, String> getReportList();
 }
