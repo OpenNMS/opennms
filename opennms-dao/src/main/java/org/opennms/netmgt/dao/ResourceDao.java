@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Jan 26: Add getResourceListById - part of ksc performance improvement. - ayres@opennms.org
 // 2008 Oct 19: Cleanup getResourceById methods, changing to getResourceById
 //              and loadResourceById, for returning null when the resource
 //              isn't found, and throwing an exception, respectively. - dj@opennms.org
@@ -58,6 +59,8 @@ public interface ResourceDao {
     public OnmsResource getResourceById(String id);
 
     public OnmsResource loadResourceById(String id);
+    
+    public List<OnmsResource> getResourceListById(String id);
     
     public List<OnmsResource> findNodeResources();
 
