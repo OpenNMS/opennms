@@ -50,15 +50,21 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-public class CategoryDaoHibernate extends AbstractDaoHibernate<OnmsCategory, Integer> implements
-CategoryDao {
+public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCategory, Integer, String> implements CategoryDao {
 
     public CategoryDaoHibernate() {
-        super(OnmsCategory.class);
+        super(OnmsCategory.class, false);
     }
 
     public OnmsCategory findByName(String name) {
-        return findUnique("from OnmsCategory as category where category.name = ?", name);
+        return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
+    }
+    
+    
+
+    @Override
+    protected String getKey(OnmsCategory category) {
+        return category.getName();
     }
 
     public List<Criterion> getCriterionForCategorySetsUnion(String[]... categories) {
