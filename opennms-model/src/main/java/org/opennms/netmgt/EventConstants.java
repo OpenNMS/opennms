@@ -894,49 +894,66 @@ public class EventConstants {
 
     /**
      * Enumerated values for severity being indeterminate
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_INDETERMINATE = 1;
 
     /**
      * Enumerated values for severity being unimplemented at this time
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_CLEARED = 2;
 
     /**
      * Enumerated values for severity indicates a warning
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_NORMAL = 3;
 
     /**
      * Enumerated values for severity indicates a warning
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_WARNING = 4;
 
     /**
      * Enumerated values for severity is minor
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_MINOR = 5;
 
     /**
      * Enumerated values for severity is major
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_MAJOR = 6;
 
     /**
      * Enumerated values for severity is critical
+     * @deprecated see OnmsSeverity.class
      */
     public static final int SEV_CRITICAL = 7;
 
     /**
      * Enumerated value for the state(tticket and forward) when entry is active
      */
-    static final int STATE_ON = 1;
+    public static final int STATE_ON = 1;
 
     /**
      * Enumerated value for the state(tticket and forward) when entry is not
      * active
      */
     static final int STATE_OFF = 0;
+
+    /**
+     * UEI used for requesting an acknowledgment of an OnmsAcknowledgeable
+     */
+    public static final String ACKNOWLEDGE_EVENT_UEI = "uei.opennms.org/ackd/acknowledge";
+
+    /**
+     * UEI used for indicating an OnmsAcknowledgeable has been acknowledged
+     */
+    public static final String EVENT_ACKNOWLEDGED_UEI = "uei.opennms.org/ackd/acknowledgment";
 
 
 

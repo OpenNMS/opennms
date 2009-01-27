@@ -11,6 +11,7 @@
       </documentation>
     </annotation>
     <complexType>
+      <attribute name="readmail-config" type="string" use="required" />
       <attribute name="alarm-sync" type="boolean" use="optional" default="true" />
       <attribute name="ack-expression" type="string" use="optional" default="~^ack$" />
       <attribute name="unack-expression" type="string" use="optional" default="~^ack$" />

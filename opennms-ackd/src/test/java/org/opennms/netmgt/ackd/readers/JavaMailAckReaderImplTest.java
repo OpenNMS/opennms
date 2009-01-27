@@ -10,7 +10,7 @@
  *
  * Modifications:
  * 
- * Created: January 7, 2009
+ * Created: January 27, 2009
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -33,55 +33,72 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.ackd.readers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 
-public enum AckType {
-    UNSPECIFIED(1, "Unspecified"),
-    ALARM(2, "Alarm"),
-    NOTIFICATION(3, "Notification");
-    
-    private static final Map<Integer, AckType> m_idMap; 
-    private static final List<Integer> m_ids;
+public class JavaMailAckReaderImplTest {
 
-
-    private int m_id;
-    private String m_label;
-    
-    static {
-        m_ids = new ArrayList<Integer>(values().length);
-        m_idMap = new HashMap<Integer, AckType>(values().length);
-        for (AckType action : values()) {
-            m_ids.add(action.getId());
-            m_idMap.put(action.getId(), action);
-        }
+    @Test
+    public void testFindAndProcessAcks() {
+        fail("Not yet implemented");
     }
 
-
-    private AckType(int id, String label) {
-        m_id = id;
-        m_label = label;
-    }
-    
-    private Integer getId() {
-        return m_id;
-    }
-    
-    @Override
-    public String toString() {
-        return m_label;
+    @Test
+    public void testDetectAcks() {
+        fail("Not yet implemented");
     }
 
-    public static AckType get(int id) {
-        if (m_idMap.containsKey(id)) {
-            return m_idMap.get(id);
-        } else {
-            throw new IllegalArgumentException("Cannot create AckType from unknown ID: " + id);
-        }
+    @Test
+    public void testDetectId() {
+        fail("Not yet implemented");
     }
+
+    @Test
+    public void testCreateAcknowledgment() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testDetermineAckAction() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testStart() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testPause() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testResume() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testStop() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testSetAckService() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testGetAckService() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void testSetAckdConfig() {
+        fail("Not yet implemented");
+    }
+
 }

@@ -60,4 +60,13 @@ public interface Acknowledgeable {
 
     Date getAckTime();
     
+    /**
+     * Might be null but probably supported already by most implementations, but still, here for convenience.  Also
+     * guarantees that this is available in this API if the model changes where the node is not directly related and de-facto
+     * support is removed.
+     * 
+     * @return the related OnmsNode, null if non available or doesn't make sense
+     */
+    OnmsNode getNode();
+    
 }

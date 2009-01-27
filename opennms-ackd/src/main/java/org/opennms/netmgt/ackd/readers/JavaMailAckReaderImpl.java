@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,9 +60,10 @@ import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.ackd.AckService;
-import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
+import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 
@@ -100,12 +102,13 @@ public class JavaMailAckReaderImpl implements AckReader {
     
     private Timer m_timer;
     
+    //I think this is a object reference leak... need a factory or something
     private AckService m_ackService;
-    
-    private AckdConfiguration m_daemonConfig;
 
-    
-    private void findAndProcessAcks() {
+    //this definitely needs a factory
+    private AckdConfigurationDao m_daemonConfigDao;
+
+    protected void findAndProcessAcks() {
         
         Collection<OnmsAcknowledgment> acks;
 
@@ -119,27 +122,36 @@ public class JavaMailAckReaderImpl implements AckReader {
         }
     }
     
-    private Collection<OnmsAcknowledgment> detectAcks(List<Message> msgs) {
+    protected Collection<OnmsAcknowledgment> detectAcks(List<Message> msgs) {
         Collection<OnmsAcknowledgment> acks = null;
         
         if (msgs != null) {
             acks = new ArrayList<OnmsAcknowledgment>();
             for (Message msg : msgs) {
                 try {
-                    Integer notifyId = detectId(msg.getSubject(), m_daemonConfig.getNotifyidMatchExpression());
+                    Integer id = detectId(msg.getSubject(), m_daemonConfigDao.getConfig().getNotifyidMatchExpression());
                     
-                    if (notifyId.intValue() > 0) {
-                        acks.add(createAcknowledgment(msg));
+                    if (id.intValue() > 0) {
+                        final OnmsAcknowledgment ack = createAcknowledgment(msg, id);
+                        ack.setAckType(AckType.NOTIFICATION);
+                        acks.add(ack);
+                        continue;
                     }
                     
-                    Integer alarmId = detectId(msg.getSubject(), m_daemonConfig.getAlarmidMatchExpression());
+                    id = detectId(msg.getSubject(), m_daemonConfigDao.getConfig().getAlarmidMatchExpression());
                     
-                    if (alarmId.intValue() > 0) {
-                        acks.add(createAcknowledgment(msg));
+                    if (id.intValue() > 0) {
+                        final OnmsAcknowledgment ack = createAcknowledgment(msg, id);
+                        ack.setAckType(AckType.ALARM);
+                        acks.add(ack);
+                        continue;
                     }
                     
                 } catch (MessagingException e) {
                     //FIXME: do something audit like here
+                    continue;
+                } catch (IOException e) {
+                    // FIXME: ditto
                     continue;
                 }
             }
@@ -148,12 +160,12 @@ public class JavaMailAckReaderImpl implements AckReader {
     }
 
 
-    private Integer detectId(String subject, String expression) {
-        Integer id = new Integer(0);
+    protected Integer detectId(final String subject, final String expression) {
+        Integer id = Integer.valueOf(0);
         
-        //TODO: force ~ functionality because this is the only way for this to work
-        if (m_daemonConfig.getAckExpression().startsWith("~")) {
-            String ackExpression = m_daemonConfig.getAckExpression().substring(1);
+        //TODO: force opennms config '~' style regex attribute identity because this is the only way for this to work
+        if (expression.startsWith("~")) {
+            String ackExpression = expression.substring(1);
             Pattern pattern = Pattern.compile(ackExpression);
             Matcher matcher = pattern.matcher(subject);
             
@@ -165,12 +177,28 @@ public class JavaMailAckReaderImpl implements AckReader {
         return id;
     }
 
-    private OnmsAcknowledgment createAcknowledgment(Message msg) throws MessagingException {
+    protected OnmsAcknowledgment createAcknowledgment(Message msg, Integer refId) throws MessagingException, IOException {
         String ackUser = ((InternetAddress)msg.getFrom()[0]).getAddress();
         Date ackTime = msg.getReceivedDate();
         OnmsAcknowledgment ack = new OnmsAcknowledgment(ackTime, ackUser);
         ack.setAckType(AckType.NOTIFICATION);
+        ack.setAckAction(determineAckAction(msg));
+        ack.setRefId(refId);
         return ack;
+    }
+
+    protected AckAction determineAckAction(Message msg) throws IOException, MessagingException {
+        if (msg.getContent().toString().matches(m_daemonConfigDao.getConfig().getAckExpression())) {
+            return AckAction.ACKNOWLEDGE;
+        } else if (msg.getContent().toString().matches(m_daemonConfigDao.getConfig().getClearExpression())) {
+            return AckAction.CLEAR;
+        } else if (msg.getContent().toString().matches(m_daemonConfigDao.getConfig().getEscalateExpression())) {
+            return AckAction.ESCALATE;
+        } else if (msg.getContent().toString().matches(m_daemonConfigDao.getConfig().getUnackExpression())) {
+            return AckAction.UNACKNOWLEDGE;
+        } else {
+            return AckAction.UNSPECIFIED;
+        }
     }
 
     private List<Message> readMessages() throws JavaMailerException {
@@ -281,8 +309,8 @@ public class JavaMailAckReaderImpl implements AckReader {
         return props;
     }
 
-    public void start(final AckdConfiguration config) {
-        m_daemonConfig = config;
+    public void start(final AckdConfigurationDao config) {
+        m_daemonConfigDao = config;
         scheduleReads();
     }
     
@@ -333,8 +361,8 @@ public class JavaMailAckReaderImpl implements AckReader {
         return m_ackService;
     }
 
-    public void setAckdConfig(AckdConfiguration config) {
-        m_daemonConfig = config;
+    public void setAckdConfig(AckdConfigurationDao configDao) {
+        m_daemonConfigDao = configDao;
     }
 
 }

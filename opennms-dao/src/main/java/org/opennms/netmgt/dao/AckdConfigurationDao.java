@@ -10,7 +10,7 @@
  *
  * Modifications:
  * 
- * Created: January 7, 2009
+ * Created: January 27, 2009
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -33,55 +33,12 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.dao;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.opennms.netmgt.config.ackd.AckdConfiguration;
 
-
-public enum AckType {
-    UNSPECIFIED(1, "Unspecified"),
-    ALARM(2, "Alarm"),
-    NOTIFICATION(3, "Notification");
+public interface AckdConfigurationDao {
     
-    private static final Map<Integer, AckType> m_idMap; 
-    private static final List<Integer> m_ids;
+    AckdConfiguration getConfig();
 
-
-    private int m_id;
-    private String m_label;
-    
-    static {
-        m_ids = new ArrayList<Integer>(values().length);
-        m_idMap = new HashMap<Integer, AckType>(values().length);
-        for (AckType action : values()) {
-            m_ids.add(action.getId());
-            m_idMap.put(action.getId(), action);
-        }
-    }
-
-
-    private AckType(int id, String label) {
-        m_id = id;
-        m_label = label;
-    }
-    
-    private Integer getId() {
-        return m_id;
-    }
-    
-    @Override
-    public String toString() {
-        return m_label;
-    }
-
-    public static AckType get(int id) {
-        if (m_idMap.containsKey(id)) {
-            return m_idMap.get(id);
-        } else {
-            throw new IllegalArgumentException("Cannot create AckType from unknown ID: " + id);
-        }
-    }
 }
