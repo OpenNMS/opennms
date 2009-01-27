@@ -63,6 +63,7 @@ import org.opennms.netmgt.ackd.AckService;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -74,16 +75,16 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
  * DONE: Identify acknowledgments for sent notifications
  * DONE: Identify acknowledgments for alarm IDs (how the send knows the ID, good question)
  * DONE: Persist acknowledgments
- * TODO: Identify escalation reply
- * TODO: Identify clear reply
- * TODO: Identify unacknowledged reply
+ * DONE: Identify escalation reply
+ * DONE: Identify clear reply
+ * DOND: Identify unacknowledged reply
  * DONE: Formalize Acknowledgment parameters (ack-type, id)
  * DONE: JavaMail configuration factory
- * TODO: Ackd configuration factory
+ * DONE: Ackd configuration factory
  * TODO: Associate email replies with openNMS user
  * TODO: Finish scheduling component of JavaAckReader
  * TODO: Configurable Schedule
- * TODO: Identify Java Mail configuration element to use for reading replies
+ * DONE: Identify Java Mail configuration element to use for reading replies
  * TODO: Migrate JavaMailNotificationStrategy to new JavaMail Configuration
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration
  * TODO: Move reading email messages from MTM and this class to JavaMailer class
@@ -105,8 +106,9 @@ public class JavaMailAckReaderImpl implements AckReader {
     //I think this is a object reference leak... need a factory or something
     private AckService m_ackService;
 
-    //this definitely needs a factory
+    //Should look at using autowired annotation
     private AckdConfigurationDao m_daemonConfigDao;
+    private JavaMailConfigurationDao m_jmConfigDao;
 
     protected void findAndProcessAcks() {
         
@@ -204,18 +206,17 @@ public class JavaMailAckReaderImpl implements AckReader {
     private List<Message> readMessages() throws JavaMailerException {
         List<Message> messages = null;
         
-        ReadmailConfig m_config = new ReadmailConfig();
-        
-        String protocol = m_config.getReadmailHost().getReadmailProtocol().getTransport();
-        Properties jmProps = createProperties(m_config.getJavamailPropertyCollection());
-        jmProps.put("mail." + protocol + ".host", m_config.getReadmailHost().getHost());
-        jmProps.put("mail." + protocol + ".user", m_config.getUserAuth().getUserName());
-        jmProps.put("mail." + protocol + ".port", m_config.getReadmailHost().getPort());
-        jmProps.put("mail." + protocol + ".starttls.enable", m_config.getReadmailHost().getReadmailProtocol().isStartTls());
+        ReadmailConfig config = m_jmConfigDao.getReadMailConfig(m_daemonConfigDao.getConfig().getReadmailConfig());
+        String protocol = config.getReadmailHost().getReadmailProtocol().getTransport();
+        Properties jmProps = createProperties(config.getJavamailPropertyCollection());
+        jmProps.put("mail." + protocol + ".host", config.getReadmailHost().getHost());
+        jmProps.put("mail." + protocol + ".user", config.getUserAuth().getUserName());
+        jmProps.put("mail." + protocol + ".port", config.getReadmailHost().getPort());
+        jmProps.put("mail." + protocol + ".starttls.enable", config.getReadmailHost().getReadmailProtocol().isStartTls());
         jmProps.put("mail.smtp.auth", "true");
 
-        if (m_config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
-            jmProps.put("mail." + protocol + ".socketFactory.port", m_config.getReadmailHost().getPort());
+        if (config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
+            jmProps.put("mail." + protocol + ".socketFactory.port", config.getReadmailHost().getPort());
             jmProps.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             jmProps.put("mail." + protocol + ".socketFactory.fallback", "false");
         }
@@ -239,7 +240,7 @@ public class JavaMailAckReaderImpl implements AckReader {
                 
                 try {
                     mailStore = readMailer.getSession().getStore();
-                    mailFolder = retrieveMailFolder(m_config, mailStore);
+                    mailFolder = retrieveMailFolder(config, mailStore);
                     mailFolder.open(Folder.READ_WRITE);  //TODO: Make sure configuration supports flag for deleting acknowledgments
                     
                     if (mailFolder.isOpen()) {
@@ -363,6 +364,14 @@ public class JavaMailAckReaderImpl implements AckReader {
 
     public void setAckdConfig(AckdConfigurationDao configDao) {
         m_daemonConfigDao = configDao;
+    }
+
+    public void setJmConfigDao(JavaMailConfigurationDao jmConfigDao) {
+        m_jmConfigDao = jmConfigDao;
+    }
+
+    public JavaMailConfigurationDao getJmConfigDao() {
+        return m_jmConfigDao;
     }
 
 }

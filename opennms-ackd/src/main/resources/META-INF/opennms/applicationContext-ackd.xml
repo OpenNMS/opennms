@@ -16,7 +16,7 @@
   
   <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReaderImpl" >
     <property name="ackService" ref="ackService" />
-    <!-- need to set the ackd config  -->
+    <property name="jmConfigDao" ref="javamailConfigDao" />
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.ackd.Ackd" >
