@@ -100,7 +100,7 @@ public class TableTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        pduBuilder.addOid(m_ids[m_nextColumnIndex]);
+        pduBuilder.addOid(m_lastOid[m_nextColumnIndex]);
         pduBuilder.setNonRepeaters(0);
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
