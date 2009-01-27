@@ -69,7 +69,7 @@ public abstract class SnmpWalker {
         m_name = name;
 
         m_tracker = tracker;
-        m_tracker.setMaxRepititions(maxRepititions);
+        m_tracker.setMaxRepetitions(maxRepititions);
         
         m_maxVarsPerPdu = maxVarsPerPdu;
 

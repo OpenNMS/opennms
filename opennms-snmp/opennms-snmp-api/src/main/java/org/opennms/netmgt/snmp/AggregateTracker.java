@@ -157,10 +157,10 @@ public class AggregateTracker extends CollectionTracker {
         private int m_currResponseIndex = 0;
         
         public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List<ChildTrackerPduBuilder> builders, int nonRepeaters, int repeaters) {
-            this.m_repeaters = repeaters;
-            this.m_pduBuilder = pduBuilder;
-            this.m_nonRepeaters = nonRepeaters;
-            this.m_childPduBuilders = builders;
+            m_repeaters = repeaters;
+            m_pduBuilder = pduBuilder;
+            m_nonRepeaters = nonRepeaters;
+            m_childPduBuilders = builders;
         }
     
         public void processResponse(SnmpObjId snmpObjId, SnmpValue val) {
@@ -214,7 +214,7 @@ public class AggregateTracker extends CollectionTracker {
             } else if (errorStatus != NO_ERR){
                 throw new IllegalArgumentException("Unrecognized errorStatus "+errorStatus);
             } else {
-                // contine on.. no need to retry
+                // Continue on.. no need to retry
                 return false;
             }
         }
@@ -259,9 +259,9 @@ public class AggregateTracker extends CollectionTracker {
     }
     
     @Override
-    public void setMaxRepititions(int maxRepititions) {
+    public void setMaxRepetitions(int maxRepititions) {
         for (CollectionTracker child : m_children) {
-            child.setMaxRepititions(maxRepititions);
+            child.setMaxRepetitions(maxRepititions);
         }
     }
 
@@ -309,7 +309,7 @@ public class AggregateTracker extends CollectionTracker {
             repeaters += childBuilder.getRepeaters();
         }
         
-        // set the non repeaters and max repititions
+        // set the non repeaters and max repetitions
         parentBuilder.setNonRepeaters(nonRepeaters);
         parentBuilder.setMaxRepetitions(maxRepititions == Integer.MAX_VALUE ? 1 : maxRepititions);
         
