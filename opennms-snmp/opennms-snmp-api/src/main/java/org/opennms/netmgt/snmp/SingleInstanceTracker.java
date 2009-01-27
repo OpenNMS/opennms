@@ -57,7 +57,7 @@ public class SingleInstanceTracker extends CollectionTracker {
     }
     
     @Override
-    public void setMaxRepititions(int maxRepititions) {
+    public void setMaxRepetitions(int maxRepititions) {
         // do nothing since we are not a repeater
     }
 
