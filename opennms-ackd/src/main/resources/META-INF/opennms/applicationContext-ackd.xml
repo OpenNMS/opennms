@@ -5,8 +5,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <tx:annotation-driven />
-
+  <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao">
+    <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
+  </bean>
+  
   <bean id="ackService" class="org.opennms.netmgt.ackd.DefaultAckService" >
     <property name="ackDao" ref="acknowledgmentDao" />
     <property name="eventForwarder" ref="eventForwarder" />
@@ -18,6 +20,7 @@
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.ackd.Ackd" >
+    <property name="configDao" ref="ackdConfigurationDao" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="eventForwarder"/>
     <property name="ackService" ref="ackService" />

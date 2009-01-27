@@ -38,6 +38,7 @@ package org.opennms.netmgt.ackd;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -56,6 +57,10 @@ public class DefaultAckService implements AckService {
     
     private AcknowledgmentDao m_ackDao;
     private EventForwarder m_eventForwarder;
+    
+    public DefaultAckService() {
+        
+    }
 
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
         for (OnmsAcknowledgment ack : acks) {
@@ -90,7 +95,13 @@ public class DefaultAckService implements AckService {
             m_ackDao.updateAckable(ackable);
             m_ackDao.save(ack);
             m_ackDao.flush();
-            ebuilder = new EventBuilder("uei.opennms.org/internal/ackd/acknowledgment", "Ackd");
+            ebuilder = new EventBuilder(EventConstants.EVENT_ACKNOWLEDGED_UEI, "Ackd");
+            ebuilder.setNode(ackable.getNode());
+            //ebuilder.setTime(ack.getAckTime());
+            ebuilder.addParam("ackId", ack.getId().intValue());
+            ebuilder.addParam("refId", ack.getRefId().intValue());
+            ebuilder.addParam("ackType", String.valueOf(ack.getAckType())); //FIXME: needs string qualification like AckAction
+            ebuilder.addParam("ackAction", String.valueOf(ack.getAckAction()));
             m_eventForwarder.sendNow(ebuilder.getEvent());
         }
     }
