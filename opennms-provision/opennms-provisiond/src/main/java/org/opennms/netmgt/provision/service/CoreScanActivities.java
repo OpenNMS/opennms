@@ -98,7 +98,7 @@ public class CoreScanActivities {
 
     @Activity( lifecycle = "nodeScan", phase = "collectNodeInfo" )
     public OnmsNode collectNodeInfo(@Attribute("foreignSource") String foreignSource, @Attribute("foreignId") String foreignId) throws InterruptedException {
-        OnmsNode node = m_provisionService.getImportedNode(foreignSource, foreignId);
+        OnmsNode node = m_provisionService.getRequisitionedNode(foreignSource, foreignId);
         Assert.notNull(node, "node is null");
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         Assert.notNull(primaryInterface, "primaryInterface is null");
@@ -122,7 +122,7 @@ public class CoreScanActivities {
 
     @Activity( lifecycle = "nodeScan", phase = "persistNodeInfo", schedulingHint="write")
     public void persistNodeInfo(OnmsNode node) {
-        m_provisionService.updateNodeInfo(node);
+        m_provisionService.updateNodeAttributes(node);
     }
 
     @Activity( lifecycle = "nodeScan", phase = "detectPhysicalInterfaces" )

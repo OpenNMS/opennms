@@ -42,5 +42,13 @@ public class SnmpInterfaceDaoHibernate extends
 		super(OnmsSnmpInterface.class);
 	}
 
+    public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
+        return findUnique("from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and snmpIf.ifIndex = ?", 
+                          foreignSource, 
+                          foreignId, 
+                          ifIndex);
+    }
+
+	
 
 }

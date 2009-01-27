@@ -42,5 +42,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
  *
  */
 public interface SnmpInterfaceDao extends OnmsDao<OnmsSnmpInterface, Integer> {
+
+    OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex);
     
 }

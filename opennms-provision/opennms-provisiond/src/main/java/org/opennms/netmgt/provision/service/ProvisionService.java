@@ -34,8 +34,10 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.springframework.core.io.Resource;
@@ -97,10 +99,20 @@ public interface ProvisionService {
             boolean snmpDataForInterfacesUpToDate);
     
     @Transactional
-    public abstract void updateNodeInfo(OnmsNode node);
+    public abstract void updateNodeAttributes(OnmsNode node);
     
     @Transactional
-    public abstract OnmsNode getImportedNode(String foreignSource, String foreignId);
+    public abstract void updateIpInterfaceAttributes(String foreignSource, String foreignId, OnmsIpInterface ipInterface);
+    
+    @Transactional
+    public abstract void updateSnmpInterfaceAttributes(String foreignSource, String foreignId, OnmsSnmpInterface snmpInterface);
+    
+    @Transactional
+    public abstract void addMonitoredService(String foreignSource, String foreignId, String ipAddr, String svcName);
+    
+    
+    @Transactional
+    public abstract OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
 
     /**
      * Delete the indicated node form the database.

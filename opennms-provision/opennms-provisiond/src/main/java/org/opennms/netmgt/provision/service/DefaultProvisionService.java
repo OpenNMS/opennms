@@ -44,14 +44,19 @@ import org.joda.time.Duration;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
@@ -61,7 +66,9 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -70,72 +77,139 @@ import org.springframework.util.Assert;
  *
  * @author brozow
  */
+@Service
 public class DefaultProvisionService implements ProvisionService {
 
+    @Autowired
     private DistPollerDao m_distPollerDao;
     
+    @Autowired
     private NodeDao m_nodeDao;
     
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+    
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+    
+    @Autowired
+    private MonitoredServiceDao m_monitoredServiceDao;
+    
+    @Autowired
     private ServiceTypeDao m_serviceTypeDao;
     
+    @Autowired
     private CategoryDao m_categoryDao;
     
+    @Autowired
     private EventForwarder m_eventForwarder;
     
+    @Autowired
     private ForeignSourceRepository m_foreignSourceRepository;
     
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
 
-    /**
-     * @param distPollerDao the distPollerDao to set
-     */
-    public void setDistPollerDao(DistPollerDao distPollerDao) {
-        m_distPollerDao = distPollerDao;
+    @Transactional
+    public void insertNode(OnmsNode node) {
+        
+        OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
+
+        node.setDistPoller(distPoller);
+        m_nodeDao.save(node);
+
+        EntityVisitor eventAccumlator = new AddEventVisitor(m_eventForwarder);
+
+        node.visit(eventAccumlator);
+        
+        //TODO: Update node in schedule
     }
     
-    /**
-     * @return the nodeDao
-     */
-    private NodeDao getNodeDao() {
-        return m_nodeDao;
+    @Transactional
+    public void updateNode(OnmsNode scannedNode, boolean x, boolean xx) {
+        
+        OnmsNode dbNode = m_nodeDao.getHierarchy(scannedNode.getId());
+
+        dbNode.mergeNode(scannedNode, m_eventForwarder);
+    
+        m_nodeDao.update(dbNode);
+        
+        //TODO: update the node in the scheduledList of Nodes
+        
+    }
+
+    @Transactional
+    public void deleteNode(Integer nodeId) {
+        
+        OnmsNode node = m_nodeDao.get(nodeId);
+        if (node != null) {
+    
+            m_nodeDao.delete(node);
+    
+            node.visit(new DeleteEventVisitor(m_eventForwarder));
+        }
+        
+        //TODO: Should remove the node from the scheduled list of nodes
+    
     }
     
-    /**
-     * @param nodeDao the nodeDao to set
-     */
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    /**
-     * @param serviceTypeDao the serviceTypeDao to set
-     */
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
-    }
-
-    /**
-     * @param categoryDao the categoryDao to set
-     */
-    public void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
-    /**
-     * @return the eventForwarder
-     */
-    private EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-
-    /**
-     * @param eventForwarder the eventForwarder to set
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
+    private void assertNotNull(Object o, String format, Object... args) {
+        if (o == null) {
+            throw new IllegalArgumentException(String.format(format, args));
+        }
     }
     
+    public void updateIpInterfaceAttributes(String foreignSource, String foreignId, OnmsIpInterface scannedIface) {
+        
+        OnmsIpInterface dbIface = m_ipInterfaceDao.findByForeignKeyAndIpAddress(foreignSource, foreignId, scannedIface.getIpAddress());
+        
+        if (dbIface != null) {
+            // update the interface that was found
+            dbIface.mergeInterfaceAttributes(scannedIface);
+            m_ipInterfaceDao.update(dbIface);
+        } else {
+            // add the interface to the node, if it wasn't found
+            OnmsNode dbNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
+            assertNotNull(dbNode, "no node found with foreignKey %s : %s", foreignSource, foreignId);
+            dbNode.addIpInterface(scannedIface);
+            m_nodeDao.update(dbNode);
+        }
+        
+
+    }
+
+    public void updateSnmpInterfaceAttributes(String foreignSource, String foreignId, OnmsSnmpInterface snmpInterface) {
+        OnmsSnmpInterface dbSnmpIface = m_snmpInterfaceDao.findByForeignKeyAndIfIndex(foreignSource, foreignId, snmpInterface.getIfIndex());
+        if (dbSnmpIface != null) {
+            // update the interface that was found
+            dbSnmpIface.mergeSnmpInterfaceAttributes(snmpInterface);
+            m_snmpInterfaceDao.update(dbSnmpIface);
+        } else {
+            // add the interface to the node, if it wasn't found
+            OnmsNode dbNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
+            assertNotNull(dbNode, "no node found with foreignKey %s : %s", foreignSource, foreignId);
+            dbNode.addSnmpInterface(snmpInterface);
+            m_nodeDao.update(dbNode);
+        }
+    }
+
+    public void addMonitoredService(String foreignSource, String foreignId, String ipAddress, String svcName) {
+        OnmsIpInterface iface = m_ipInterfaceDao.findByForeignKeyAndIpAddress(foreignSource, foreignId, ipAddress);
+        assertNotNull(iface, "could not find interface %s on node with foreignKey %s:%s", ipAddress, foreignSource, foreignId);
+        OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
+        if (svcType == null) {
+            svcType = new OnmsServiceType(svcName);
+            m_serviceTypeDao.save(svcType);
+        }
+        
+        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+        
+        m_ipInterfaceDao.save(iface);
+    }
+
+    public void clearCache() {
+        m_nodeDao.clear();
+    }
     
     @Transactional
     public OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr) {
@@ -148,68 +222,12 @@ public class DefaultProvisionService implements ProvisionService {
         return distPoller;
     }
     
-    public void clearCache() {
-        getNodeDao().clear();
-    }
-    
-    @Transactional
-    public void updateNode(OnmsNode scannedNode, boolean snmpDataForNodeUpToDate, boolean snmpDataForInterfacesUpToDate) {
-        
-        OnmsNode dbNode = getNodeDao().getHierarchy(scannedNode.getId());
-    
-    	dbNode.mergeNodeAttributes(scannedNode);
-    
-        if (snmpDataForInterfacesUpToDate) {
-            dbNode.mergeSnmpInterfaces(scannedNode);
-        }
-        
-        dbNode.mergeIpInterfaces(scannedNode, getEventForwarder());
-        
-    	if (!dbNode.getCategories().equals(scannedNode.getCategories())) {
-            dbNode.setCategories(scannedNode.getCategories());
-        }
-    
-        getNodeDao().update(dbNode);
-        
-        //TODO: update the node in the scheduledList of Nodes
-        
-    }
 
-    public OnmsNode getImportedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
+    @Transactional
+    public OnmsNode getRequisitionedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
         Assert.notNull(nodeReq, "nodeReq cannot be null!");
         return nodeReq.constructOnmsNodeFromRequisition();
-    }
-    
-    @Transactional
-    public void deleteNode(Integer nodeId) {
-        
-        OnmsNode node = getNodeDao().get(nodeId);
-    	if (node != null) {
-    
-    	    getNodeDao().delete(node);
-    
-    	    node.visit(new DeleteEventVisitor(getEventForwarder()));
-    	}
-    	
-    	//TODO: Should remove the node from the scheduled list of nodes
-    
-    }
-    
-    @Transactional
-    public void insertNode(OnmsNode node) {
-        
-
-        OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
-
-        node.setDistPoller(distPoller);
-        getNodeDao().save(node);
-
-        EntityVisitor eventAccumlator = new AddEventVisitor(getEventForwarder());
-
-        node.visit(eventAccumlator);
-        
-        //TODO: Update node in schedule
     }
     
     @Transactional
@@ -237,7 +255,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional(readOnly=true)
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
+        return m_nodeDao.getForeignIdToNodeIdMap(foreignSource);
     }
     
     @Transactional
@@ -253,7 +271,7 @@ public class DefaultProvisionService implements ProvisionService {
         setParent(node, parent);
         setPathDependency(node, parent);
 
-        getNodeDao().update(node);
+        m_nodeDao.update(node);
     }
 
     private void preloadExistingTypes() {
@@ -313,7 +331,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     private OnmsNode findNodebyNodeLabel(String label) {
-        Collection<OnmsNode> nodes = getNodeDao().findByLabel(label);
+        Collection<OnmsNode> nodes = m_nodeDao.findByLabel(label);
     	if (nodes.size() == 1) {
             return nodes.iterator().next();
         }
@@ -324,7 +342,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Transactional(readOnly=true)
     private OnmsNode findNodebyForeignId(String foreignSource, String foreignId) {
-        return getNodeDao().findByForeignId(foreignSource, foreignId);
+        return m_nodeDao.findByForeignId(foreignSource, foreignId);
     }
     
     @Transactional(readOnly=true)
@@ -365,16 +383,16 @@ public class DefaultProvisionService implements ProvisionService {
         log().info("Setting parent of node: "+node+" to: "+parent);
         node.setParent(parent);
 
-        getNodeDao().update(node);
+        m_nodeDao.update(node);
     }
     
     public NodeScanSchedule getScheduleForNode(int nodeId) {
-        OnmsNode node = getNodeDao().get(nodeId);
+        OnmsNode node = m_nodeDao.get(nodeId);
         return createScheduleForNode(node);
     }
     
     public List<NodeScanSchedule> getScheduleForNodes() {
-        List<OnmsNode> nodes = getNodeDao().findAll();
+        List<OnmsNode> nodes = m_nodeDao.findAll();
         
         List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
         
@@ -431,7 +449,7 @@ public class DefaultProvisionService implements ProvisionService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
      */
-    public void updateNodeInfo(OnmsNode node) {
+    public void updateNodeAttributes(OnmsNode node) {
         OnmsNode dbNode;
         if (node.getId() != null) {
             dbNode = m_nodeDao.get(node.getId());
