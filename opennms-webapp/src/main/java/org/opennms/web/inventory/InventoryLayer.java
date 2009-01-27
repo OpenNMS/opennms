@@ -36,6 +36,8 @@ import java.util.*;
 
 public class InventoryLayer {
     
+    static String _URL = "http://www.rionero.com:9080";
+    
     
     static public void init(){
         
@@ -56,9 +58,9 @@ public class InventoryLayer {
         try {
         
             String group = "laboratorio";
-            String url = "http://www.rionero.com/rws-current";
             
-            RancidNode rn = RWSClientApi.getRWSRancidNode(url, group, rancidName);
+            
+            RancidNode rn = RWSClientApi.getRWSRancidNode(_URL, group, rancidName);
     
             
     
@@ -92,7 +94,7 @@ public class InventoryLayer {
             nodeModel.put("ramsize", ie.getRamSize());        
             nodeModel.put("nwramsize", ie.getNwRamSize());
             nodeModel.put("group", group);;
-            nodeModel.put("url", url);
+            nodeModel.put("url", _URL);
 
     
             
@@ -161,9 +163,9 @@ public class InventoryLayer {
         try {
         
             String group = "laboratorio";
-            String url = "http://www.rionero.com/rws-current";
+      
             
-            RancidNode rn = RWSClientApi.getRWSRancidNode(url, group, rancidName);
+            RancidNode rn = RWSClientApi.getRWSRancidNode(_URL, group, rancidName);
     
     
             InventoryNode in = new InventoryNode(rn);
@@ -354,14 +356,14 @@ public class InventoryLayer {
         
         try {
             
-            String url = "http://www.rionero.com/rws-current";
+         
             
             Map<String, Object> nodeModel = new TreeMap<String, Object>();
             
             List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
             
             // Group list            
-            RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(url);
+            RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(_URL);
             
             List<String> grouplist = groups.getResource();
             Iterator iter1 = grouplist.iterator();
@@ -372,7 +374,7 @@ public class InventoryLayer {
             while (iter1.hasNext()){
                 groupname = (String)iter1.next();
                 try {
-                    RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(url ,groupname, rancidName);
+                    RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL ,groupname, rancidName);
                     String vs = rn.getHeadRevision();
                     InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
 
@@ -392,21 +394,14 @@ public class InventoryLayer {
                     //skip node not found in group...
                 }
             }
-            //FAKE GROUP
-            RancidNode rn1 = RWSClientApi.getRWSRancidNode(url ,"laboratorio", rancidName);
-            rn1.setGroup("fakegroup");
-            Date dc = new Date();
-            RancidNodeWrapper rnw2 = new RancidNodeWrapper(rn1.getDeviceName(), rn1.getGroup(), rn1.getDeviceType(), rn1.getComment(), rn1.getHeadRevision(),
-                                                          rn1.getTotalRevisions(), dc, rn1.getRootConfigurationUrl());
-            ranlist.add(rnw2);
             
             //Groups invariant            
             nodeModel.put("grouptable", ranlist);
-            nodeModel.put("url", url);
+            nodeModel.put("url", _URL);
             
             //CLOGIN
             if (userRole.compareTo("admin") == 0){
-                RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(url,rancidName);
+                RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(_URL,rancidName);
                 //System.out.println("rn5 " + rn5.getUser() + rn5.getPassword()+rn5.getConnectionMethodString());
                 nodeModel.put("cloginuser", rn5.getUser());
                 nodeModel.put("cloginpassword", rn5.getPassword());
@@ -419,6 +414,104 @@ public class InventoryLayer {
             throw e;
         }
     }
+   static public Map<String, Object> getRancidNodeList(String rancidName, String groupname) throws RancidApiException{
+       
+       try {
+           
+           Map<String, Object> nodeModel = new TreeMap<String, Object>();
+           
+           List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
+           
+           RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, groupname, rancidName);
+
+           nodeModel.put("devicename", rn.getDeviceName());
+           
+           //*********
+           // version
+         
+           RWSResourceList versionList;
+           
+           versionList = RWSClientApi.getRWSResourceConfigList(_URL, groupname, rancidName);
+           
+           List<String> versionListStr= versionList.getResource();
+           
+           Iterator iter1 = versionListStr.iterator();
+           
+           String vs;
+           
+           while (iter1.hasNext()) {
+               vs = (String)iter1.next();
+               InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
+               InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getExpirationDate(), groupname, in.getConfigurationUrl());
+               ranlist.add(inwr);
+           }
+           
+           nodeModel.put("grouptable", ranlist);
+           nodeModel.put("url", _URL);
+           
+           
+           return nodeModel;
+       }
+       catch (RancidApiException e) {
+           throw e;
+       }
+   }
+static public Map<String, Object> getRancidNodeList(String rancidName) throws RancidApiException{
+       
+       try {
+           
+           Map<String, Object> nodeModel = new TreeMap<String, Object>();
+           
+           RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(_URL);
+           
+           List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
+           
+           List<String> grouplist = groups.getResource();
+           Iterator iter2 = grouplist.iterator();
+           
+           boolean first = true;
+           String groupname;
+           while (iter2.hasNext()) {
+               groupname = (String)iter2.next();
+           
+               RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, groupname, rancidName);
+    
+               if (first){
+                   nodeModel.put("devicename", rn.getDeviceName());
+                   first = false;
+               }
+               
+               //*********
+               // version
+             
+               RWSResourceList versionList;
+               
+               versionList = RWSClientApi.getRWSResourceConfigList(_URL, groupname, rancidName);
+               
+               List<String> versionListStr= versionList.getResource();
+               
+               Iterator iter1 = versionListStr.iterator();
+               
+               String vs;
+               
+               while (iter1.hasNext()) {
+                   vs = (String)iter1.next();
+                   InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
+                   InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getExpirationDate(), groupname, in.getConfigurationUrl());
+                   ranlist.add(inwr);
+               }
+           }
+           
+           nodeModel.put("grouptable", ranlist);
+           nodeModel.put("url", _URL);
+           
+           
+           return nodeModel;
+       }
+       catch (RancidApiException e) {
+           throw e;
+       }
+   }
    static public int updateCloginInfo(String group, String device, String user, String password, String method) {
        
        try {
@@ -426,7 +519,7 @@ public class InventoryLayer {
            rna.setUser(user);
            rna.setPassword(password);
            rna.setConnectionMethod(method);
-           RWSClientApi.createOrUpdateRWSAuthNode("http://www.rionero.com/rws-current",rna);
+           RWSClientApi.createOrUpdateRWSAuthNode(_URL,rna);
            
            return 0;
        }
@@ -438,24 +531,22 @@ public class InventoryLayer {
    static public Map<String, Object> getInventoryNode(String rancidName, String group, String version) throws RancidApiException{
        
        try {
-       
-           String url = "http://www.rionero.com/rws-current";
-           
-           RancidNode rn = RWSClientApi.getRWSRancidNode(url, group, rancidName);
+    
+           RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, group, rancidName);
        
            InventoryNode in = (InventoryNode)rn.getNodeVersions().get(version);
-           InventoryWrapper tmpw = new InventoryWrapper(version, in.getExpirationDate(), group);
+           
+           //InventoryWrapper tmpw = new InventoryWrapper(version, in.getExpirationDate(), group, in.getConfigurationUrl());
                        
            Map<String, Object> nodeModel = new TreeMap<String, Object>();
    
+           nodeModel.put("devicename", rancidName);
+           nodeModel.put("groupname", group);
+           nodeModel.put("version", version);
            nodeModel.put("status", in.getParent().getState());
-           nodeModel.put("datecrea", in.getCreationDate());
-           nodeModel.put("dateexp", in.getExpirationDate());
-           nodeModel.put("softversion", in.getSoftwareVersion());
-           nodeModel.put("softimage", in.getSoftwareImageUrl());
-           nodeModel.put("softconfigurl", in.getConfigurationUrl());
-           nodeModel.put("group", group);;
-           nodeModel.put("url", url);
+           nodeModel.put("expirationdate", in.getExpirationDate());
+           nodeModel.put("configurationurl", in.getConfigurationUrl());
+           nodeModel.put("url", _URL);
            
            return nodeModel;
        }

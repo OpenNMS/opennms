@@ -36,12 +36,14 @@ public class InventoryWrapper {
     private String version;
     private Date date;
     private String group;
+    private String urlViewVC;
     
     
-    InventoryWrapper(String version, Date date, String group){
+    InventoryWrapper(String version, Date date, String group, String urlViewVC){
         this.version = version;
         this.date = date;
         this.group = group;
+        this.urlViewVC = urlViewVC;
     }
 
     public String getVersion(){
@@ -52,5 +54,8 @@ public class InventoryWrapper {
     }
     public String getGroup(){
         return group;
+    }
+    public String getUrlViewVC(){
+        return urlViewVC;
     }
 }

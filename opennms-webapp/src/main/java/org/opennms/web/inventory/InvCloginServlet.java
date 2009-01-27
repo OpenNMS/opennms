@@ -31,8 +31,16 @@ public class InvCloginServlet extends HttpServlet {
 
             int ret = InventoryLayer.updateCloginInfo(group, device, userId, password, loginM);
                         
-            
+            //redirect(request, response);
         }
+    }
+        
+        private void redirect(HttpServletRequest request,
+                HttpServletResponse response) throws IOException {
+            String redirectURL = request.getHeader("Referer");
+            response.sendRedirect(redirectURL);
+        }
+}
 //        if (userSession != null) {
 //            User newUser = (User) userSession.getAttribute("user.modifyUser.jsp");
 //            try {
@@ -127,6 +135,3 @@ public class InvCloginServlet extends HttpServlet {
 //
 //    private List<String> getDutySchedulesForUser(User newUser) {
 //        return newUser.getDutyScheduleCollection();
-    }
-    
-}
