@@ -216,12 +216,12 @@ function cancelUser()
 		<th>${groupelm.group}</th>
 		<th><a href="${groupelm.rootConfigurationUrl}">${groupelm.rootConfigurationUrl}</th>
 		<th>${groupelm.expirationDate}</th>
-		<th><a href="inventory/invnode.jsp?node=<%=nodeId%>&version=${groupelm.totalRevisions}">${groupelm.totalRevisions}</a></th>
-		<th>${groupelm.headRevision}</th>
+		<th><a href="inventory/rancidList.jsp?node=<%=nodeId%>&groupname=${groupelm.group}">${groupelm.totalRevisions}</a></th>
+		<th><a href="inventory/invnode.jsp?node=<%=nodeId%>&groupname=${groupelm.group}&version=${groupelm.headRevision}">${groupelm.headRevision}</th>
 	</tr>
 </c:forEach>
 	<th></th>
-	<th><a href="inventory/invnodelist.jsp?node=<%=nodeId%>">more...</a></th>
+	<th><a href="inventory/rancidList.jsp?node=<%=nodeId%>&groupname=*">full list...</a></th>
 	<th></th>
 	<th></th>
 	<th></th>
