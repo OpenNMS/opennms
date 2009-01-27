@@ -61,6 +61,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
@@ -526,8 +527,13 @@ public class WillItUnmarshalTest {
     public void testWmiDatacollectionConfiguration() throws Exception {
         unmarshal("wmi-datacollection-config.xml", WmiDatacollectionConfig.class);
     }
-    @Test public void testJavaMailConfiguration() throws Exception {
+    @Test
+    public void testJavaMailConfiguration() throws Exception {
         unmarshal("javamail-configuration.xml", JavamailConfiguration.class);
+    }
+    @Test
+    public void testAckdConfiguration() throws Exception {
+        unmarshal("ackd-configuration.xml", AckdConfiguration.class);
     }
 
     @Test
