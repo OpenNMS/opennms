@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
@@ -66,13 +65,13 @@ public class SnmpTrackerTest {
         }
     }
 
-    private void walk(CollectionTracker c) throws Exception {
+    private void walk(CollectionTracker c, int maxVarsPerPdu, int maxRepetitions) throws Exception {
         SnmpAgentConfig config = new SnmpAgentConfig();
         config.setAddress(InetAddress.getLocalHost());
         config.setPort(9161);
         config.setVersion(SnmpAgentConfig.VERSION2C);
-        config.setMaxVarsPerPdu(1);
-        config.setMaxRepetitions(1);
+        config.setMaxVarsPerPdu(maxVarsPerPdu);
+        config.setMaxRepetitions(maxRepetitions);
         SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
         assertNotNull(walker);
         walker.start();
@@ -83,12 +82,11 @@ public class SnmpTrackerTest {
     public void testColumnTracker() throws Exception {
         CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1"));
 
-        walk(ct);
+        walk(ct, 10, 3);
         assertEquals("number of columns returned must match test data", Long.valueOf(6).longValue(), ct.getCount());
     }
     
     @Test
-    @Ignore
     public void testTableTracker() throws Exception {
         /*
         * .1.3.6.1.2.1.2.2.1.1.1 = INTEGER: 1
@@ -115,7 +113,7 @@ public class SnmpTrackerTest {
         TestRowCallback rc = new TestRowCallback();
         TableTracker tt = new TableTracker(rc, SnmpObjId.get(base, "1"), SnmpObjId.get(base, "2"), SnmpObjId.get(base, "10"));
 
-        walk(tt);
+        walk(tt, 2, 10);
 
         List<List<SnmpResult>> responses = rc.getResponses();
         assertEquals("number of rows must match test data", 6, responses.size());
@@ -123,6 +121,7 @@ public class SnmpTrackerTest {
         assertEquals("row 4, column 0 must be 5", 5, responses.get(4).get(0).getValue().toInt());
         assertEquals("row 1, column 1 must be gif0", "gif0", responses.get(1).get(1).getValue().toString());
         assertEquals("row 3, column 2 must be 6561336", 6561336, responses.get(3).get(2).getValue().toLong());
+        System.err.println(responses);
     }
 
 }

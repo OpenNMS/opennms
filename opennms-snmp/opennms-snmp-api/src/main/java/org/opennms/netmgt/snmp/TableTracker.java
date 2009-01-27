@@ -37,34 +37,32 @@
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TableTracker extends CollectionTracker {
-    private SnmpObjId[] m_ids;
-    private SnmpObjId[] m_lastOid;
-    private int m_nextColumnIndex = 0;
     private RowCallback m_callback;
-    private List<Boolean> m_finishedColumns;
-    private List<Queue<SnmpResult>> m_pendingData;
     private int m_maxRepetitions;
+    private List<ColumnTrackerTracker> m_columnTrackerTrackers;
+    private List<Queue<SnmpResult>> m_pendingData;
+    private int m_columnUses = 0;
 
     public TableTracker(RowCallback rc, SnmpObjId... ids) {
         this(rc, 2, ids);
     }
 
     public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... ids) {
-        System.err.println(String.format("instantiating table tracker: rc=%s, repetitions=%d, object IDs = %s", rc, maxRepetitions, Arrays.toString(ids)));
-        m_ids = ids;
-        m_lastOid = new SnmpObjId[ids.length];
         m_pendingData = new ArrayList<Queue<SnmpResult>>(ids.length);
-        m_finishedColumns = new ArrayList<Boolean>(ids.length);
-        for (int i = 0; i < ids.length; i++) {
-            m_lastOid[i] = ids[i];
+        m_columnTrackerTrackers = new ArrayList<ColumnTrackerTracker>(ids.length);
+        for (SnmpObjId id : ids) {
             m_pendingData.add(new LinkedBlockingQueue<SnmpResult>());
-            m_finishedColumns.add(false);
+            
+            ColumnTracker ct = new ColumnTracker(id);
+            ct.setParent(this);
+            m_columnTrackerTrackers.add(new ColumnTrackerTracker(ct));
         }
 
         setMaxRepetitions(maxRepetitions);
@@ -77,20 +75,17 @@ public class TableTracker extends CollectionTracker {
 
     @Override
     public void setMaxRepetitions(int maxRepetitions) {
-        System.err.println("setting max repetitions to " + maxRepetitions);
         m_maxRepetitions = maxRepetitions;
     }
 
 
     @Override
     public boolean isFinished() {
-        for (Boolean b : m_finishedColumns) {
-            if (!b) {
-                System.err.println("isFinished: false");
+        for (ColumnTrackerTracker ctt : m_columnTrackerTrackers) {
+            if (!ctt.getTracker().isFinished()) {
                 return false;
             }
         }
-        System.err.println("isFinished: true");
         return true;
     }
 
@@ -100,30 +95,37 @@ public class TableTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        for (int i = 0; i < pduBuilder.getMaxVarsPerPdu(); i++) {
-            pduBuilder.addOid(m_lastOid[m_nextColumnIndex + i]);
-        }
-        pduBuilder.setNonRepeaters(0);
-        pduBuilder.setMaxRepetitions(getMaxRepetitions());
-        
-        ResponseProcessor rp = new TableResponseProcessor(m_nextColumnIndex, pduBuilder.getMaxVarsPerPdu());
-        System.err.println("got response processor");
+        Map<SnmpObjId, ResponseProcessor> processors = new HashMap<SnmpObjId,ResponseProcessor>(pduBuilder.getMaxVarsPerPdu());
 
-        m_nextColumnIndex++;
+        for (ColumnTracker ct : getTrackers(pduBuilder.getMaxVarsPerPdu())) {
+            System.err.println("scheduling " + ct);
+            processors.put(ct.getBase(), ct.buildNextPdu(pduBuilder));
+        }
+        
+        ResponseProcessor rp = new CombinedColumnResponseProcessor(processors);
+        System.err.println("got response processor");
         return rp;
     }
 
-    protected void receivedEndOfMib(int columnIndex) {
-        System.err.println("received end of MIB: " + columnIndex);
-        m_finishedColumns.set(columnIndex, true);
+    public void storeResult(SnmpResult res) {
+        System.err.println(String.format("TableTracker store result: %s", res));
+        if (m_callback != null) {
+            for (int i = 0; i < m_columnTrackerTrackers.size(); i++) {
+                if (m_columnTrackerTrackers.get(i).getTracker().getBase() == res.getBase()) {
+                    m_pendingData.get(i).add(res);
+                }
+            }
+            while (hasRow()) {
+                List<SnmpResult> row = getRow();
+                System.err.println(String.format("row completed: %s", row));
+                m_callback.rowCompleted(row);
+            }
+        }
+        
+        super.storeResult(res);
     }
 
-    protected void errorOccurred(int columnIndex) {
-        System.err.println("error occurred: " + columnIndex);
-        m_finishedColumns.set(columnIndex, true);
-    }
-
-    protected boolean hasRow() {
+    private boolean hasRow() {
         if (isFinished()) {
             for (Queue<SnmpResult> q : m_pendingData) {
                 if (!q.isEmpty()) {
@@ -141,8 +143,8 @@ public class TableTracker extends CollectionTracker {
         }
     }
 
-    public List<SnmpResult> getRow() {
-        List<SnmpResult> l = new ArrayList<SnmpResult>(m_ids.length);
+    private List<SnmpResult> getRow() {
+        List<SnmpResult> l = new ArrayList<SnmpResult>(m_columnTrackerTrackers.size());
         for (Queue<SnmpResult> q : m_pendingData) {
             if (q.isEmpty()) {
                 l.add(null);
@@ -153,80 +155,86 @@ public class TableTracker extends CollectionTracker {
         return l;
     }
     
-    public void storeResult(int columnIndex, SnmpResult res) {
-        System.err.println(String.format("store result: column[%s]: storing %s", columnIndex, res));
+    private List<ColumnTracker> getTrackers(int max) {
+        List<ColumnTracker> trackers = new ArrayList<ColumnTracker>(max);
         
-        if (m_callback != null) {
-            System.err.println(String.format("pending data: column[%s]: adding %s", columnIndex, res));
-            m_pendingData.get(columnIndex).add(res);
-
-            while (hasRow()) {
-                List<SnmpResult> row = getRow();
-                System.err.println(String.format("pending data: row completed: %s", row));
-                m_callback.rowCompleted(row);
+        for (int i = 0; i < m_columnTrackerTrackers.size(); i++) {
+            if (trackers.size() >= max) {
+                return trackers;
+            }
+            ColumnTrackerTracker ctt = m_columnTrackerTrackers.get(i);
+            ColumnTracker ct = ctt.getTracker();
+            if (!ct.isFinished() && ctt.getUses() < m_columnUses) {
+                trackers.add(ct);
+                ctt.use();
             }
         }
-        
-        if (m_nextColumnIndex > m_ids.length) {
-            m_nextColumnIndex = 0;
+        if (trackers.size() == 0) {
+            for (int i = 0; i < m_columnTrackerTrackers.size(); i++) {
+                if (trackers.size() >= max) {
+                    return trackers;
+                }
+                ColumnTrackerTracker ctt = m_columnTrackerTrackers.get(i);
+                ColumnTracker ct = ctt.getTracker();
+                if (!ct.isFinished()) {
+                    trackers.add(ct);
+                    ctt.use();
+                }
+            }
         }
 
-        super.storeResult(res);
+        return trackers;
     }
     
-    private final class TableResponseProcessor implements ResponseProcessor {
-        private final int m_firstColumn;
-        private final int m_lastColumn;
-        
-        public TableResponseProcessor(int columnIndex, int maxVarsPerPdu) {
-            m_firstColumn = columnIndex;
-            m_lastColumn = columnIndex + maxVarsPerPdu - 1;
-            System.err.println(String.format("instantiating table response processor for column(s) %d through %d", m_firstColumn, m_lastColumn));
-        }
+    private class CombinedColumnResponseProcessor implements ResponseProcessor {
+        private final Map<SnmpObjId, ResponseProcessor> m_processors;
 
+        public CombinedColumnResponseProcessor(Map<SnmpObjId, ResponseProcessor> processors) {
+            m_processors = processors;
+        }
+        
         public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
             System.err.println(String.format("processResponse: %s/%s", responseObjId, val));
 
-            for (int index = m_firstColumn; index <= m_lastColumn; index++) {
-                SnmpObjId base = m_ids[index];
-                if (base.isPrefixOf(responseObjId) && !base.equals(responseObjId)) {
-                    if (val.isEndOfMib()) {
-                        receivedEndOfMib(index);
-                    }
-
-                    m_lastOid[index] = responseObjId;
-                    SnmpInstId inst = responseObjId.getInstance(base);
-                    if (inst != null) {
-                        storeResult(index, new SnmpResult(base, inst, val));
-                    }
+            for (SnmpObjId id : m_processors.keySet()) {
+                if (id.isPrefixOf(responseObjId) && !id.equals(responseObjId)) {
+                    System.err.println(String.format("matched base %s with response object %s", id, responseObjId));
+                    ResponseProcessor rp = m_processors.get(id);
+                    rp.processResponse(responseObjId, val);
+                    return;
                 }
             }
-
+            
+            System.err.println("no match");
+            throw new RuntimeException("holy crap, no match!");
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
-            System.err.println(String.format("processing error: errorStatus=%d, errorIndex=%d", errorStatus, errorIndex));
-            if (errorStatus == NO_ERR) {
-                return false;
-/*                
-            } else if (errorStatus == TOO_BIG_ERR) {
-                throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_lastOid[m_columnIndex]);
-            } else if (errorStatus == GEN_ERR) {
-                reportGenErr("Received genErr reqeusting next oid after "+m_lastOid[m_columnIndex]+". Marking column is finished.");
-                errorOccurred(m_columnIndex);
-                return true;
-            } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                reportNoSuchNameErr("Received noSuchName reqeusting next oid after "+m_lastOid[m_columnIndex]+". Marking column is finished.");
-                errorOccurred(m_columnIndex);
-                return true;
-            } else {
-                throw new IllegalArgumentException("Unexpected error processing next oid after "+m_lastOid[m_columnIndex]+". Aborting!");
-            }
-            */
-            } else {
-                throw new IllegalArgumentException("An error occurred processing oids for " + m_lastOid[m_firstColumn] + " through " + m_lastOid[m_lastColumn]);
-            }
+            return false;
         }
+
     }
 
+    private class ColumnTrackerTracker {
+        ColumnTracker m_columnTracker;
+        private int m_uses = 0;
+        
+        public ColumnTrackerTracker(ColumnTracker tracker) {
+            m_columnTracker = tracker;
+        }
+
+        public void use() {
+            m_uses++;
+            m_columnUses = Math.max(m_uses, m_columnUses);
+        }
+        
+        public int getUses() {
+            return m_uses;
+        }
+        
+        public ColumnTracker getTracker() {
+            return m_columnTracker;
+        }
+    }
+    
 }
