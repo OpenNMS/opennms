@@ -37,65 +37,78 @@ package org.opennms.netmgt.ackd.readers;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JavaMailAckReaderImplTest {
 
+    @Ignore
     @Test
     public void testFindAndProcessAcks() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testDetectAcks() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testDetectId() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testCreateAcknowledgment() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testDetermineAckAction() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testStart() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testPause() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testResume() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testStop() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testSetAckService() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testGetAckService() {
         fail("Not yet implemented");
     }
 
+    @Ignore
     @Test
     public void testSetAckdConfig() {
         fail("Not yet implemented");
