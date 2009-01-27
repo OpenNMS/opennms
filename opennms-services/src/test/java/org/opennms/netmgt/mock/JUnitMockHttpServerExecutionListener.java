@@ -29,6 +29,7 @@ public class JUnitMockHttpServerExecutionListener extends AbstractTestExecutionL
         m_server.setHandler(handlers);
         
         m_server.start();
+        Thread.sleep(100);
     }
     
     @Override
