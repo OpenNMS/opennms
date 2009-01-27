@@ -100,11 +100,13 @@ public class TableTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        pduBuilder.addOid(m_lastOid[m_nextColumnIndex]);
+        for (int i = 0; i < pduBuilder.getMaxVarsPerPdu(); i++) {
+            pduBuilder.addOid(m_lastOid[m_nextColumnIndex + i]);
+        }
         pduBuilder.setNonRepeaters(0);
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
-        ResponseProcessor rp = new TableResponseProcessor(m_nextColumnIndex);
+        ResponseProcessor rp = new TableResponseProcessor(m_nextColumnIndex, pduBuilder.getMaxVarsPerPdu());
         System.err.println("got response processor");
 
         m_nextColumnIndex++;
@@ -173,26 +175,30 @@ public class TableTracker extends CollectionTracker {
     }
     
     private final class TableResponseProcessor implements ResponseProcessor {
-        private final int m_columnIndex;
+        private final int m_firstColumn;
+        private final int m_lastColumn;
         
-        public TableResponseProcessor(int columnIndex) {
-            System.err.println(String.format("instantiating table response processor for index %d", columnIndex));
-            m_columnIndex = columnIndex;
+        public TableResponseProcessor(int columnIndex, int maxVarsPerPdu) {
+            m_firstColumn = columnIndex;
+            m_lastColumn = columnIndex + maxVarsPerPdu - 1;
+            System.err.println(String.format("instantiating table response processor for column(s) %d through %d", m_firstColumn, m_lastColumn));
         }
 
         public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
             System.err.println(String.format("processResponse: %s/%s", responseObjId, val));
-            
-            if (val.isEndOfMib()) {
-                receivedEndOfMib(m_columnIndex);
-            }
 
-            m_lastOid[m_columnIndex] = responseObjId;
-            SnmpObjId base = m_ids[m_columnIndex];
-            if (base.isPrefixOf(responseObjId) && !base.equals(responseObjId)) {
-                SnmpInstId inst = responseObjId.getInstance(base);
-                if (inst != null) {
-                    storeResult(m_columnIndex, new SnmpResult(base, inst, val));
+            for (int index = m_firstColumn; index <= m_lastColumn; index++) {
+                SnmpObjId base = m_ids[index];
+                if (base.isPrefixOf(responseObjId) && !base.equals(responseObjId)) {
+                    if (val.isEndOfMib()) {
+                        receivedEndOfMib(index);
+                    }
+
+                    m_lastOid[index] = responseObjId;
+                    SnmpInstId inst = responseObjId.getInstance(base);
+                    if (inst != null) {
+                        storeResult(index, new SnmpResult(base, inst, val));
+                    }
                 }
             }
 
@@ -202,6 +208,7 @@ public class TableTracker extends CollectionTracker {
             System.err.println(String.format("processing error: errorStatus=%d, errorIndex=%d", errorStatus, errorIndex));
             if (errorStatus == NO_ERR) {
                 return false;
+/*                
             } else if (errorStatus == TOO_BIG_ERR) {
                 throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_lastOid[m_columnIndex]);
             } else if (errorStatus == GEN_ERR) {
@@ -214,6 +221,10 @@ public class TableTracker extends CollectionTracker {
                 return true;
             } else {
                 throw new IllegalArgumentException("Unexpected error processing next oid after "+m_lastOid[m_columnIndex]+". Aborting!");
+            }
+            */
+            } else {
+                throw new IllegalArgumentException("An error occurred processing oids for " + m_lastOid[m_firstColumn] + " through " + m_lastOid[m_lastColumn]);
             }
         }
     }
