@@ -42,14 +42,15 @@ public class InstanceTrackerTest extends TestCase {
         private boolean m_expectsStorageCall;
         private boolean m_storageCalled;
 
-        protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        protected void storeResult(SnmpResult res) {
             m_storageCalled = true;
             assertTrue(m_expectsStorageCall);
         }
         
         protected void assertStoreResultsCalled() {
-            if (m_expectsStorageCall)
+            if (m_expectsStorageCall) {
                 assertTrue(m_storageCalled);
+            }
         }
         
         void setExpectsStorageCall(boolean expectsStorageCall) {
@@ -110,14 +111,15 @@ public class InstanceTrackerTest extends TestCase {
 
         // ensure it needs to receive something - object id for the instance
         assertFalse(tracker.isFinished());
-        // ensure that is asks for the oid preceeding
+        // ensure that is asks for the OID preceding
         OidCheckedPduBuilder builder = new OidCheckedPduBuilder();
         ResponseProcessor rp = tracker.buildNextPdu(builder);
         assertNotNull(rp);
         assertEquals(expectedOids.length, builder.getCount());
         rp.processErrors(0, 0);
-        for(int i = 0; i < receivedOids.length; i++)
-            rp.processResponse(receivedOids[i], SnmpUtils.getValueFactory().getOctetString("Value".getBytes()));
+        for (SnmpObjId receivedOid : receivedOids) {
+            rp.processResponse(receivedOid, SnmpUtils.getValueFactory().getOctetString("Value".getBytes()));
+        }
         
         
     }
