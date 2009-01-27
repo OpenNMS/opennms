@@ -113,18 +113,14 @@
   	</property>
   </bean> 
 
-  <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService">
-    <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
-    <property name="distPollerDao" ref="distPollerDao" />
-    <property name="nodeDao" ref="nodeDao" />
-    <property name="serviceTypeDao" ref="serviceTypeDao" />
-    <property name="categoryDao" ref="categoryDao" />
-  </bean>
+  <!--  autowired -->
+  <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService" />
   
   <bean id="coreImportActivities" class="org.opennms.netmgt.provision.service.CoreImportActivities">
     <constructor-arg ref="provisionService" />
   </bean>
   
+  <!--  autowired -->
   <bean id="coreScanActivities" class="org.opennms.netmgt.provision.service.CoreScanActivities" />
   
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
