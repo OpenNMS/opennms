@@ -757,4 +757,21 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
     }
 
+    public void mergeCategories(OnmsNode scannedNode) {
+        if (!getCategories().equals(scannedNode.getCategories())) {
+            setCategories(scannedNode.getCategories());
+        }
+    }
+
+    public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder) {
+        
+        mergeNodeAttributes(scannedNode);
+    
+    	mergeSnmpInterfaces(scannedNode);
+        
+        mergeIpInterfaces(scannedNode, eventForwarder);
+        
+    	mergeCategories(scannedNode);
+    }
+
 }
