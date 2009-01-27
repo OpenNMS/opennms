@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Jan 26: added getResourceListById - part of ksc performance improvement. - ayres@opennms.org
  * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
  * 2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
  *              (merged to trunk by ayersw on 2007 Aug 17)
@@ -156,6 +157,10 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     public OnmsResource loadResourceById(String id) {
         return m_resourceDao.loadResourceById(id);
+    }
+    
+    public List<OnmsResource> getResourceListById(String resourceId) {
+        return m_resourceDao.getResourceListById(resourceId);
     }
     
     public PrefabGraph[] findPrefabGraphsForResource(OnmsResource resource) {

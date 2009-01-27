@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Jan 26: added getResourceListById - part of ksc performance improvement. - ayres@opennms.org
  * 2008 Oct 22: Use new nmes for getResourceById/loadResourceById. - dj@opennms.org
  * 2007 Aug 02: Add findTopLevelResources(). - dj@opennms.org
  * 2007 Aug 18: (merged to trunk by ayersw)
@@ -68,4 +69,5 @@ public interface ResourceService {
     public PrefabGraph[] findPrefabGraphsForChildResources(OnmsResource resource, String... resourceTypeMatches);
     public void promoteGraphAttributesForResource(OnmsResource resource);
     public void promoteGraphAttributesForResource(String resourceId);
+    public List<OnmsResource> getResourceListById(String resourceId);
 }

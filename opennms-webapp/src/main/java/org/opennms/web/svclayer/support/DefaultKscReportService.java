@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Jan 26: added getResourcesFromGraphs - part of ksc performance improvement. - ayres@opennms.org
  * 2008 Oct 22: Use new ResourceDao method names. - dj@opennms.org
  * 2008 Oct 19: Bug #2823: Fix for NullPointerException if a graph doesn't have
  *              a resourceId, nodeId, or domain. - dj@opennms.org
@@ -37,10 +38,14 @@
  */
 package org.opennms.web.svclayer.support;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -137,7 +142,68 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         return getResourceService().loadResourceById(resourceId);
     }
     
+    public List<OnmsResource> getResourcesFromGraphs(List<Graph> graphs) {
+        Assert.notNull(graphs, "graph argument cannot be null");
+        List<OnmsResource> resources = new LinkedList<OnmsResource>();
+        HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
+        for(Graph graph : graphs) {
+            String resourceId;
+            if (graph.getResourceId() != null) {
+                resourceId = graph.getResourceId();
+            } else {
+                String parentResourceTypeName;
+                String parentResourceName;
+                String resourceTypeName;
+                String resourceName;
+            
+                if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
+                    parentResourceTypeName = "node";
+                    parentResourceName = graph.getNodeId();
+                } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
+                    parentResourceTypeName = "domain";
+                    parentResourceName = graph.getDomain();
+                } else {
+                    throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
+                }
+            
+                String intf = graph.getInterfaceId();
+                if (intf == null || "".equals(intf)) {
+                    resourceTypeName = "nodeSnmp";
+                    resourceName = "";
+                } else {
+                    resourceTypeName = "interfaceSnmp";
+                    resourceName = intf;
+                }
+                resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
+            }
+            
+            String parent = resourceId.substring(0, resourceId.indexOf("]") + 1);
+            String child = resourceId.substring(resourceId.indexOf("]") + 2);
+            String childType = child.substring(0, child.indexOf("["));
+            String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
+            OnmsResource resource = null;
+            if (resourceId != null) {
+                if (!resourcesMap.containsKey(parent)) {
+                    List<OnmsResource> resourceList = getResourceService().getResourceListById(resourceId);
+                    resourcesMap.put(parent, resourceList);
+                    log().debug("getResourcesFromGraphs: add resourceList to map for " + parent);
+                }
+            
+                for (OnmsResource r : resourcesMap.get(parent)) {
+                    if (childType.equals(r.getResourceType().getName())
+                            && childName.equals(r.getName())) {
+                        resource = r;
+                        log().debug("getResourcesFromGraphs: found resource in map" + r.toString());
+                        break;
+                    }
+                }
+            }
+            resources.add(resource);
+        }
+        return resources;
+    }
 
+    
     private void initTimeSpans() {
         for (String timeSpan : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
             s_timeSpans.put(timeSpan, timeSpan);
@@ -180,6 +246,9 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         Assert.state(m_kscReportFactory != null, "kscReportFactory property has not been set");
         
         initTimeSpans();
+    }
+    private Category log() {
+        return ThreadCategory.getInstance();
     }
 
 }
