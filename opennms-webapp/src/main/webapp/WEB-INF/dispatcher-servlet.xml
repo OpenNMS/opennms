@@ -358,18 +358,22 @@
   
   <!-- Availability Reports -->
   
-  <bean name="/availability/report.htm"
+  <bean name="/report/availability/report.htm"
   		class="org.opennms.web.controller.AvailabilityReportController">
   	<property name="availabilityReportService" ref="availabilityReportService"/>
   	<property name="categoryConfigService" ref="categoryConfigService"/>
+  	<property name="logo">
+  		<value>"${opennms.report.logo}"</value>
+  	</property>
   </bean>
   
-  <bean name="/availability/list.htm"
+  <bean name="/report/availability/list.htm"
   		class="org.opennms.web.controller.ReportListController">
   	<property name="reportListService" ref="reportListService"/>
+  	<property name="pageSize" value="1"/>
   </bean>
   
-  <bean name="/availability/viewreport.htm"
+  <bean name="/report/availability/viewreport.htm"
   		class="org.opennms.web.controller.SimpleXMLReportController">
    		<property name="viewerService" ref="availabilityReportViewerService"/>
   </bean>

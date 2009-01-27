@@ -62,6 +62,8 @@ public class AvailabilityReportController extends SimpleFormController {
     private AvailabilityReportService m_reportService;
 
     private CategoryConfigService m_categoryConfigService;
+    
+    private String m_logo;
 
     public AvailabilityReportController() {
         setCommandName("availabilityReportCriteria");
@@ -110,7 +112,7 @@ public class AvailabilityReportController extends SimpleFormController {
         criteria.setEmail(userFactory.getEmail(request.getRemoteUser()));
         criteria.setPersist(true);
         // TODO: Set this up properly
-        criteria.setLogo("/opt/OpenNMS/webapps/opennms/images/logo.gif");
+        criteria.setLogo(m_logo);
 
         return criteria;
 
@@ -132,6 +134,10 @@ public class AvailabilityReportController extends SimpleFormController {
 
     public void setCategoryConfigService(CategoryConfigService configService) {
         m_categoryConfigService = configService;
+    }
+
+    public void setLogo(String logo) {
+        m_logo = logo;
     }
 
 }

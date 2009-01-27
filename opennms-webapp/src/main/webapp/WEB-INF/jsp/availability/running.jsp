@@ -6,7 +6,11 @@
   <jsp:param name="title" value="Availability" />
   <jsp:param name="headTitle" value="Availability" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="Availability" />
+  <jsp:param name="breadcrumb" 
+		value="<a href='report/availability/index.jsp'>Availability</a>" />
+  <jsp:param name="breadcrumb" 
+  		value="<a href='report/availability/report.htm'>Run</a>"/>
+  <jsp:param name="breadcrumb" value="Report Running"/>
 </jsp:include>
 
 <h3>Network Availability Report Running</h3>
@@ -32,6 +36,10 @@
 	   <tr>
 	  	<td>email:</td>
 	  	<td>${availabilityReportCriteria.email}</td>
+	  </tr>
+	   <tr>
+	  	<td>logo:</td>
+	  	<td>${availabilityReportCriteria.logo}</td>
 	  </tr>
 	  </table>
 	  <br>

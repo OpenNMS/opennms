@@ -34,24 +34,36 @@
 //
 package org.opennms.web.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.ReportListService;
 
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 public class ReportListController extends AbstractController {
 
     private ReportListService m_reportListService;
-
+    private int m_pageSize;
+    
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("/availability/list");
-        mav.addObject("reports", m_reportListService.getAllReports());
-        return mav;
+        ModelAndView modelAndView = new ModelAndView("availability/list");
+        List results = m_reportListService.getAllReports(); 
+        PagedListHolder pagedListHolder = new PagedListHolder(results);
+        pagedListHolder.setPageSize(m_pageSize);
+        int page = ServletRequestUtils.getIntParameter(request, "p", 0);
+        pagedListHolder.setPage(page); 
+        modelAndView.addObject("pagedListHolder", pagedListHolder);  
+
+        return modelAndView;
+        
     }
 
     public ReportListService getReportListService() {
@@ -60,6 +72,14 @@ public class ReportListController extends AbstractController {
 
     public void setReportListService(ReportListService listService) {
         m_reportListService = listService;
+    }
+
+    public int getPageSize() {
+        return m_pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        m_pageSize = pageSize;
     }
 
 }
