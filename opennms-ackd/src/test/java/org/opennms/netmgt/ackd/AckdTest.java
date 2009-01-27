@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
@@ -130,6 +131,9 @@ public class AckdTest {
     
     @Autowired
     private UserNotificationDao m_userNotificationDao;
+    
+    @Autowired
+    private JavaMailConfigurationDao m_jmConfigDao;
 
 
     @Transactional
@@ -155,6 +159,7 @@ public class AckdTest {
         Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_daemon);
         Assert.assertNotNull(m_populator);
+        Assert.assertNotNull(m_jmConfigDao);
         
         Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
     }
