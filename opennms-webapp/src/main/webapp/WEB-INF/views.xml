@@ -5,7 +5,7 @@
 
 	<!-- HTML reports -->
 
-	<bean name="/reports/htmlreportviewer" class="org.opennms.web.view.AvailabilityReportView">
+	<bean name="/report/availability/htmlreportviewer" class="org.opennms.web.view.AvailabilityReportView">
  		<property name="stylesheetLocation">
   			<value>file:${opennms.home}/etc/AvailabilityReports.xsl</value>
   		</property>
@@ -16,7 +16,7 @@
   	
   	<!-- PDF Reports -->
   	
-  	<bean name="/reports/pdfreportviewer" class="org.opennms.web.view.FoAvailabilityReportView">
+  	<bean name="/report/availability/pdfreportviewer" class="org.opennms.web.view.FoAvailabilityReportView">
  		<property name="stylesheetLocation">
   			<value>file:${opennms.home}/etc/PDFAvailReport.xsl</value>
   		</property>
@@ -27,7 +27,7 @@
   	
   	<!-- PDF Reports with embedded SVG calendar views -->
   	
-  	<bean name="/reports/svgreportviewer" class="org.opennms.web.view.FoAvailabilityReportView">
+  	<bean name="/report/availability/svgreportviewer" class="org.opennms.web.view.FoAvailabilityReportView">
  		<property name="stylesheetLocation">
   			<value>file:${opennms.home}/etc/SVGAvailReport.xsl</value>
   		</property>
