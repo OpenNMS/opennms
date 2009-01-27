@@ -34,13 +34,23 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-public class ServiceTypeDaoHibernate extends AbstractDaoHibernate<OnmsServiceType, Integer> implements ServiceTypeDao {
+public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsServiceType, Integer, String> implements ServiceTypeDao {
 
     public ServiceTypeDaoHibernate() {
-		super(OnmsServiceType.class);
+		super(OnmsServiceType.class, false);
 	}
+    
+
+    @Override
+    protected String getKey(OnmsServiceType serviceType) {
+        return serviceType.getName();
+    }
+
+
 
     public OnmsServiceType findByName(final String name) {
-    	return findUnique("from OnmsServiceType as svcType where svcType.name = ?", name);
+        return findByCacheKey("from OnmsServiceType as svcType where svcType.name = ?", name);
     }
+    
+    
 }
