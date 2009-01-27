@@ -722,3 +722,48 @@ tr.CellStatus td.nobright
 {
 	background-image: none;
 }
+
+/* Pagination
+---------------------------------------- */
+.pagination {
+        height: 1%; /* IE tweak (holly hack) */
+        width: auto;
+        text-align: right;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-size: 70%;        float: right;
+}
+
+.pagination span.page-sep {
+        display: none;
+}
+
+li.pagination {
+        margin-top: 0;
+}
+
+.pagination strong, .pagination b {
+	font-weight: normal;
+}
+
+.pagination span strong {
+        font-weight: normal;
+        color: #FFF;
+        background-color: #366903;
+}
+
+.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
+        font-weight: normal;
+        text-decoration: none;
+        color: #366903;
+        line-height: 1.5em;
+}
+
+.pagination span a:hover {
+        background-color: #366903;
+        color: #FFF;
+        text-decoration: none;
+}
+
+.pagination img {
+        vertical-align: middle;

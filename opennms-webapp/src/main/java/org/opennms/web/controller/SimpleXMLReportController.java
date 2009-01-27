@@ -67,11 +67,11 @@ public class SimpleXMLReportController extends AbstractController {
         ModelAndView mav = new ModelAndView();
         String format = WebSecurityUtils.sanitizeString(request.getParameter("format"));
         if (format.equalsIgnoreCase("pdf")) {
-            mav.setViewName("/reports/pdfreportviewer");
+            mav.setViewName("/report/availability/pdfreportviewer");
         } else if (format.equalsIgnoreCase("svg")) {
-            mav.setViewName("/reports/svgreportviewer");
+            mav.setViewName("/report/availability/svgreportviewer");
         } else {
-            mav.setViewName("/reports/htmlreportviewer");
+            mav.setViewName("/report/availability/htmlreportviewer");
         }
         m_viewerService.setReportId(m_reportId);
         mav.addObject("source", m_viewerService.createSource());
