@@ -31,11 +31,7 @@ package org.opennms.netmgt.snmp;
 
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
-public class SnmpObjId implements Comparable<SnmpObjId> {
+public class SnmpObjId implements Comparable {
     
     /* FIXME: Change the implementation of this to cache oids and share common prefixes
      * This should enhance the amount of garbage we generate a great deal at least for
@@ -121,9 +117,8 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
             try {
                 String tok = tokenizer.nextToken();
                 ids[index] = Integer.parseInt(tok);
-                if (ids[index] < 0) {
+                if (ids[index] < 0)
                     throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId. It has a negative for subId "+index);
-                }
                 index++;
             } catch(NumberFormatException e) {
                 throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId at subId "+index);
@@ -132,8 +127,51 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         return ids;
     }
     
+    
+
+    public boolean equals(Object obj) {
+        if (obj instanceof SnmpObjId)
+            return compareTo(obj) == 0;
+        else
+            return false;
+    }
+
+    public int hashCode() {
+        return 0;
+    }
+
+    public String toString() {
+        StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
+        for(int i = 0; i < length(); i++) {
+            if (i != 0 || addPrefixDotInToString()) {
+                buf.append('.');  
+            }
+            buf.append(m_ids[i]);
+        }
+        return buf.toString();
+    }
+
     protected boolean addPrefixDotInToString() {
         return true;
+    }
+
+    public int compareTo(Object o) {
+        if (o == null) throw new NullPointerException("o is null");
+        SnmpObjId other = (SnmpObjId)o;
+
+        // compare each element in order for as much length as they have in common
+        // which is the entire length of one or both oids
+        int minLen = Math.min(length(), other.length());
+        for(int i = 0; i < minLen; i++) {
+            int diff = m_ids[i] - other.m_ids[i];
+            // the first one that is not equal indicates which is bigger
+            if (diff != 0)
+                return diff;
+        }
+        
+        // if they get to hear then both are identifical for their common length
+        // so which ever is longer is then greater
+        return length() - other.length();
     }
 
     public SnmpObjId append(String inst) {
@@ -181,23 +219,19 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
     }
 
     public boolean isPrefixOf(SnmpObjId other) {
-        if (length() > other.length()) {
+        if (length() > other.length())
             return false;
-        }
         
         for(int i = 0; i < m_ids.length; i++) {
-            if (m_ids[i] != other.m_ids[i]) {
+            if (m_ids[i] != other.m_ids[i])
                 return false;
-            }
         }
         
         return true;
     }
 
     public SnmpInstId getInstance(SnmpObjId base) {
-        if (!base.isPrefixOf(this)) {
-            return null;
-        }
+        if (!base.isPrefixOf(this)) return null;
         
         int[] instanceIds = new int[length() - base.length()];
         System.arraycopy(m_ids, base.length(), instanceIds, 0, instanceIds.length);
@@ -225,48 +259,6 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
             newIds[newIds.length-1] -= 1;
             return new SnmpObjId(newIds, false);
         }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) { return false; }
-        if (obj == this) { return true; }
-        if (obj.getClass() != getClass()) {
-          return false;
-        }
-        
-        return new EqualsBuilder()
-            .appendSuper(super.equals(obj))
-            .append(getIds(), ((SnmpObjId)obj).getIds())
-            .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-            .append(getIds())
-            .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
-        for(int i = 0; i < length(); i++) {
-            if (i != 0 || addPrefixDotInToString()) {
-                buf.append('.');  
-            }
-            buf.append(m_ids[i]);
-        }
-        return buf.toString();
-    }
-
-    public int compareTo(SnmpObjId o) {
-        if (o == null) {
-            throw new NullPointerException("o is null");
-        }
-        return new CompareToBuilder()
-            .append(getIds(), o.getIds())
-            .toComparison();
     }
 
 
