@@ -108,6 +108,7 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Ra
 <jsp:param name="breadcrumb" value="Inventory" />
 </jsp:include>
 
+
 <h2>Node: ${model.id}</h2>
 
 

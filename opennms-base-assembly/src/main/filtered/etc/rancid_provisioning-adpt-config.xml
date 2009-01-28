@@ -1,0 +1,5 @@
+<rws-configuration>
+    <base-url server_url="http://www.rionero.com:9080"/>
+    <base-url server_url="proxyback"/>
+      <mapping sysoid="1.3.2.1.4.9." rancidtype="cisco"/>
+</rws-configuration>
