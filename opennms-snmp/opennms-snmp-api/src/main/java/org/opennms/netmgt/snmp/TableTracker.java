@@ -94,10 +94,10 @@ public class TableTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        List<ResponseProcessorTracker> processors = new ArrayList<ResponseProcessorTracker>(pduBuilder.getMaxVarsPerPdu());
+        List<ResponseProcessor> processors = new ArrayList<ResponseProcessor>(pduBuilder.getMaxVarsPerPdu());
 
         for (ColumnTracker ct : getTrackers(pduBuilder.getMaxVarsPerPdu())) {
-            processors.add(new ResponseProcessorTracker(ct, ct.buildNextPdu(pduBuilder)));
+            processors.add(ct.buildNextPdu(pduBuilder));
         }
 
         ResponseProcessor rp = new CombinedColumnResponseProcessor(processors);
@@ -185,34 +185,16 @@ public class TableTracker extends CollectionTracker {
         return trackers;
     }
     
-    private class ResponseProcessorTracker {
-        private final ColumnTracker m_tracker;
-        private final ResponseProcessor m_processor;
-        
-        public ResponseProcessorTracker(ColumnTracker ct, ResponseProcessor rp) {
-            m_tracker = ct;
-            m_processor = rp;
-        }
-        
-        public ColumnTracker getColumnTracker() {
-            return m_tracker;
-        }
-        
-        public ResponseProcessor getResponseProcessor() {
-            return m_processor;
-        }
-    }
-
     private class CombinedColumnResponseProcessor implements ResponseProcessor {
-        private final List<ResponseProcessorTracker> m_processors;
+        private final List<ResponseProcessor> m_processors;
         private int m_currentIndex = 0;
 
-        public CombinedColumnResponseProcessor(List<ResponseProcessorTracker> processors) {
+        public CombinedColumnResponseProcessor(List<ResponseProcessor> processors) {
             m_processors = processors;
         }
 
         public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
-            ResponseProcessor rp = m_processors.get(m_currentIndex).getResponseProcessor();
+            ResponseProcessor rp = m_processors.get(m_currentIndex);
             
             if (++m_currentIndex == m_processors.size()) {
                 m_currentIndex = 0;
@@ -223,7 +205,7 @@ public class TableTracker extends CollectionTracker {
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
-            ResponseProcessor rp = m_processors.get(m_currentIndex).getResponseProcessor();
+            ResponseProcessor rp = m_processors.get(m_currentIndex);
 
             if (++m_currentIndex == m_processors.size()) {
                 m_currentIndex = 0;
