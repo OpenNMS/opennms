@@ -141,10 +141,4 @@ public class ColumnTracker extends CollectionTracker {
     protected void errorOccurred() {
         m_finished = true;
     }
-
-    @Override
-    public void done() {
-        m_finished = true;
-    }
-
 }
