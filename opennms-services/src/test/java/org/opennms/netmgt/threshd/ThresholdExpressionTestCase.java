@@ -180,5 +180,32 @@ public class ThresholdExpressionTestCase extends TestCase {
         assertTrue("Required data sources contains name",dataSources.contains("hrStorageUsed"));
         assertTrue("Required data sources contains name",dataSources.contains("hrStorageAllocationUnits"));
     }
-   
+
+    public void testEvaluateConditionalFalse() throws Exception {
+        expression.setExpression("if(a < b, trueval, falseval)");
+        ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        
+        Map<String, Double> values=new HashMap<String,Double>();
+        values.put("a",20.0);
+        values.put("b",5.0);
+        values.put("trueval",3.0);
+        values.put("falseval",7.0);
+        
+        double result=wrapper.evaluate(values);
+        assertEquals("Conditional Expression result", new Double(result), new Double(7.0));
+    }
+    
+    public void testEvaluateConditionalTrue() throws Exception {
+        expression.setExpression("if(a < b, trueval, falseval)");
+        ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        
+        Map<String, Double> values=new HashMap<String,Double>();
+        values.put("a",2.0);
+        values.put("b",5.0);
+        values.put("trueval",3.0);
+        values.put("falseval",7.0);
+        
+        double result=wrapper.evaluate(values);
+        assertEquals("Conditional Expression result", new Double(result), new Double(3.0));
+    }
 }
