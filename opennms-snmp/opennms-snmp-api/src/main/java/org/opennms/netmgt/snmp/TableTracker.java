@@ -118,26 +118,24 @@ public class TableTracker extends CollectionTracker {
 
     @Override
     public void done() {
-        handleCompleteRows();
+        handleCompleteRows(true);
     }
 
-    private void handleCompleteRows() {
+    private void handleCompleteRows(boolean force) {
         if (m_callback != null) {
             if (hasRow()) {
-                boolean complete = isFinished();
+                boolean complete = isFinished() || force;
                 List<SnmpInstId> keys = new ArrayList<SnmpInstId>(m_pendingData.keySet());
-                List<SnmpRowResult> callbackRows = new ArrayList<SnmpRowResult>();
-                for (int i = (keys.size() - 1); i >= 0; i--) {
+                for (int i = 0; i < keys.size(); i++) {
                     SnmpInstId key = keys.get(i);
                     SnmpRowResult row = m_pendingData.get(key);
-                    if (complete || (row != null && row.isComplete())) {
-                        complete = true;
-                        m_pendingData.remove(key);
-                        callbackRows.add(0, row);
+                    if (row != null) {
+                        if (complete || row.isComplete()) {
+                            complete = true;
+                            m_pendingData.remove(key);
+                            m_callback.rowCompleted(row);
+                        }
                     }
-                }
-                for (SnmpRowResult row : callbackRows) {
-                    m_callback.rowCompleted(row);
                 }
             }
         }
@@ -184,7 +182,7 @@ public class TableTracker extends CollectionTracker {
 
         return trackers;
     }
-    
+
     private class CombinedColumnResponseProcessor implements ResponseProcessor {
         private final List<ResponseProcessor> m_processors;
         private int m_currentIndex = 0;
@@ -201,7 +199,7 @@ public class TableTracker extends CollectionTracker {
             }
 
             rp.processResponse(responseObjId, val);
-            handleCompleteRows();
+            handleCompleteRows(false);
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
@@ -212,7 +210,7 @@ public class TableTracker extends CollectionTracker {
             }
 
             boolean retval = rp.processErrors(errorStatus, errorIndex);
-            handleCompleteRows();
+            handleCompleteRows(false);
             return retval;
         }
 
