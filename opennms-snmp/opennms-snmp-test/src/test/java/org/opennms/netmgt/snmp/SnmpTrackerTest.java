@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
@@ -106,6 +107,7 @@ public class SnmpTrackerTest {
     }
 
     @Test
+    @Ignore
     @JUnitSnmpAgent(port=9161, resource="classpath:snmpTestDataIncompleteTable.properties")
     public void testIncompleteTableData() throws Exception {
         SnmpObjId base = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
