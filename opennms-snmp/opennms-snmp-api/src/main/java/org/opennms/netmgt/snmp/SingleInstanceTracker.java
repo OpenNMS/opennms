@@ -126,9 +126,4 @@ public class SingleInstanceTracker extends CollectionTracker {
         m_finished = true;
     }
 
-    @Override
-    public void done() {
-    }
-
-
 }

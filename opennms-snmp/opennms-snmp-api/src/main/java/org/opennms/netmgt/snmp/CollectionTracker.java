@@ -110,6 +110,7 @@ public abstract class CollectionTracker implements Collectable {
         return this;
     }
 
-    public abstract void done();
+    public void done() {
+    }
 
 }
