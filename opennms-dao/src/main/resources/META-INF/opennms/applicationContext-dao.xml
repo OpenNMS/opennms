@@ -85,6 +85,10 @@
     <property name="transactionManager" ref="transactionManager" />
   </bean>
 
+  <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
   <bean id="alarmDao" class="org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -170,10 +174,6 @@
     <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResourceLocation" />
   </bean>
   
-  <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate" >
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
   </bean>
