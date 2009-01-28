@@ -2,6 +2,7 @@ package org.opennms.netmgt.snmp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -54,13 +55,13 @@ public class SnmpTrackerTest {
     }
 
     private class TestRowCallback implements RowCallback {
-        private List<List<SnmpResult>> m_responses = new ArrayList<List<SnmpResult>>();
+        private List<SnmpRowResult> m_responses = new ArrayList<SnmpRowResult>();
 
-        public void rowCompleted(List<SnmpResult> results) {
-            m_responses.add(results);
+        public void rowCompleted(SnmpRowResult row) {
+            m_responses.add(row);
         }
         
-        public List<List<SnmpResult>> getResponses() {
+        public List<SnmpRowResult> getResponses() {
             return m_responses;
         }
     }
@@ -113,14 +114,15 @@ public class SnmpTrackerTest {
         TestRowCallback rc = new TestRowCallback();
         TableTracker tt = new TableTracker(rc, SnmpObjId.get(base, "1"), SnmpObjId.get(base, "2"), SnmpObjId.get(base, "10"));
 
-        walk(tt, 2, 10);
+        walk(tt, 1, 10);
 
-        List<List<SnmpResult>> responses = rc.getResponses();
+        List<SnmpRowResult> responses = rc.getResponses();
         assertEquals("number of rows must match test data", 6, responses.size());
-        assertEquals("number of columns must match test data", 3, responses.get(0).size());
-        assertEquals("row 4, column 0 must be 5", 5, responses.get(4).get(0).getValue().toInt());
-        assertEquals("row 1, column 1 must be gif0", "gif0", responses.get(1).get(1).getValue().toString());
-        assertEquals("row 3, column 2 must be 6561336", 6561336, responses.get(3).get(2).getValue().toLong());
+        assertEquals("number of columns must match test data", 3, responses.get(0).getColumns());
+        assertEquals("row 4, column 0 must be 5", 5, responses.get(4).get(1).getValue().toInt());
+        assertEquals("row 1, column 1 must be gif0", "gif0", responses.get(1).get(2).getValue().toString());
+        assertEquals("row 3, column 2 must be 6561336", 6561336, responses.get(3).get(10).getValue().toLong());
+        assertTrue("tracker must be finished", tt.isFinished());
         System.err.println(responses);
     }
 
