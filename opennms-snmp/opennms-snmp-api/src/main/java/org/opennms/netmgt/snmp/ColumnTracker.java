@@ -44,6 +44,7 @@ public class ColumnTracker extends CollectionTracker {
     private SnmpObjId m_last;
     private boolean m_finished = false;
     private int m_maxRepetitions;
+    private int m_currentRow = 0;
 
     public ColumnTracker(SnmpObjId base) {
         this(base, 2);
@@ -53,6 +54,10 @@ public class ColumnTracker extends CollectionTracker {
         m_base = base;
         m_last = base;
         m_maxRepetitions = maxRepititions; 
+    }
+
+    public int getCurrentRow() {
+        return m_currentRow;
     }
 
     public SnmpObjId getBase() {
@@ -68,6 +73,7 @@ public class ColumnTracker extends CollectionTracker {
             .append("base", m_base)
             .append("last oid", m_last)
             .append("max repetitions", m_maxRepetitions)
+            .append("row", m_currentRow)
             .append("finished?", m_finished)
             .toString();
     }
@@ -89,6 +95,7 @@ public class ColumnTracker extends CollectionTracker {
 
                 m_last = responseObjId;
                 if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
+                    m_currentRow++;
                     SnmpInstId inst = responseObjId.getInstance(m_base);
                     if (inst != null) {
                         storeResult(new SnmpResult(m_base, inst, val));
