@@ -37,32 +37,31 @@
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.TreeMap;
+
+import org.apache.commons.lang.builder.CompareToBuilder;
 
 public class TableTracker extends CollectionTracker {
     private RowCallback m_callback;
     private int m_maxRepetitions;
-    private List<ColumnTrackerTracker> m_columnTrackerTrackers;
-    private List<Queue<SnmpResult>> m_pendingData;
-    private int m_columnUses = 0;
+    private List<ColumnTracker> m_columnTrackers;
+    private Map<SnmpInstId,SnmpRowResult> m_pendingData;
 
     public TableTracker(RowCallback rc, SnmpObjId... ids) {
         this(rc, 2, ids);
     }
 
     public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... ids) {
-        m_pendingData = new ArrayList<Queue<SnmpResult>>(ids.length);
-        m_columnTrackerTrackers = new ArrayList<ColumnTrackerTracker>(ids.length);
+        m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
+        m_columnTrackers = new ArrayList<ColumnTracker>(ids.length);
         for (SnmpObjId id : ids) {
-            m_pendingData.add(new LinkedBlockingQueue<SnmpResult>());
-            
             ColumnTracker ct = new ColumnTracker(id);
             ct.setParent(this);
-            m_columnTrackerTrackers.add(new ColumnTrackerTracker(ct));
+            m_columnTrackers.add(ct);
         }
 
         setMaxRepetitions(maxRepetitions);
@@ -81,8 +80,8 @@ public class TableTracker extends CollectionTracker {
 
     @Override
     public boolean isFinished() {
-        for (ColumnTrackerTracker ctt : m_columnTrackerTrackers) {
-            if (!ctt.getTracker().isFinished()) {
+        for (ColumnTracker ct : m_columnTrackers) {
+            if (!ct.isFinished()) {
                 return false;
             }
         }
@@ -95,146 +94,141 @@ public class TableTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        Map<SnmpObjId, ResponseProcessor> processors = new HashMap<SnmpObjId,ResponseProcessor>(pduBuilder.getMaxVarsPerPdu());
+        List<ResponseProcessorTracker> processors = new ArrayList<ResponseProcessorTracker>(pduBuilder.getMaxVarsPerPdu());
 
         for (ColumnTracker ct : getTrackers(pduBuilder.getMaxVarsPerPdu())) {
-            System.err.println("scheduling " + ct);
-            processors.put(ct.getBase(), ct.buildNextPdu(pduBuilder));
+            processors.add(new ResponseProcessorTracker(ct, ct.buildNextPdu(pduBuilder)));
         }
-        
+
         ResponseProcessor rp = new CombinedColumnResponseProcessor(processors);
-        System.err.println("got response processor");
         return rp;
     }
 
     public void storeResult(SnmpResult res) {
-        System.err.println(String.format("TableTracker store result: %s", res));
+        super.storeResult(res);
+
+        System.err.println(String.format("storeResult: %s", res));
         if (m_callback != null) {
-            for (int i = 0; i < m_columnTrackerTrackers.size(); i++) {
-                if (m_columnTrackerTrackers.get(i).getTracker().getBase() == res.getBase()) {
-                    m_pendingData.get(i).add(res);
+
+            int columnInstance = res.getBase().getLastSubId();
+            if (!m_pendingData.containsKey(res.getInstance())) {
+                m_pendingData.put(res.getInstance(), new SnmpRowResult(m_columnTrackers.size()));
+            }
+            SnmpRowResult row = m_pendingData.get(res.getInstance());
+            row.setResult(columnInstance, res);
+
+            while (hasRow()) {
+                row = getNextRow();
+                if (row != null) {
+                    System.err.println(String.format("rowCompleted: %s", row));
+                    m_callback.rowCompleted(row);
                 }
             }
-            while (hasRow()) {
-                List<SnmpResult> row = getRow();
-                System.err.println(String.format("row completed: %s", row));
-                m_callback.rowCompleted(row);
-            }
         }
-        
-        super.storeResult(res);
     }
 
     private boolean hasRow() {
         if (isFinished()) {
-            for (Queue<SnmpResult> q : m_pendingData) {
-                if (!q.isEmpty()) {
+            if (!m_pendingData.isEmpty()) {
+                return true;
+            }
+            return false;
+        } else {
+            for (SnmpRowResult rr : m_pendingData.values()) {
+                if (rr.isComplete()) {
                     return true;
                 }
             }
             return false;
-        } else {
-            for (Queue<SnmpResult> q : m_pendingData) {
-                if (q.isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 
-    private List<SnmpResult> getRow() {
-        List<SnmpResult> l = new ArrayList<SnmpResult>(m_columnTrackerTrackers.size());
-        for (Queue<SnmpResult> q : m_pendingData) {
-            if (q.isEmpty()) {
-                l.add(null);
-            } else {
-                l.add(q.poll());
+    private SnmpRowResult getNextRow() {
+        for (SnmpInstId id : m_pendingData.keySet()) {
+            if (m_pendingData.get(id).isComplete() || isFinished()) {
+                return m_pendingData.remove(id);
             }
         }
-        return l;
+        return null;
     }
     
     private List<ColumnTracker> getTrackers(int max) {
         List<ColumnTracker> trackers = new ArrayList<ColumnTracker>(max);
-        
-        for (int i = 0; i < m_columnTrackerTrackers.size(); i++) {
+        List<ColumnTracker> trackerList = new ArrayList<ColumnTracker>(m_columnTrackers);
+
+        Collections.sort(trackerList, new Comparator<ColumnTracker>() {
+            public int compare(ColumnTracker o1, ColumnTracker o2) {
+                return new CompareToBuilder()
+                    .append(o1.getCurrentRow(), o2.getCurrentRow())
+                    .append(o1.getBase(), o2.getBase())
+                    .toComparison();
+            }
+        });
+
+        for (int i = 0; i < trackerList.size(); i++) {
             if (trackers.size() >= max) {
                 return trackers;
             }
-            ColumnTrackerTracker ctt = m_columnTrackerTrackers.get(i);
-            ColumnTracker ct = ctt.getTracker();
-            if (!ct.isFinished() && ctt.getUses() < m_columnUses) {
+            ColumnTracker ct = trackerList.get(i);
+            if (!ct.isFinished()) {
+                System.err.println(String.format("index %d: using tracker %s", i, ct));
                 trackers.add(ct);
-                ctt.use();
-            }
-        }
-        if (trackers.size() == 0) {
-            for (int i = 0; i < m_columnTrackerTrackers.size(); i++) {
-                if (trackers.size() >= max) {
-                    return trackers;
-                }
-                ColumnTrackerTracker ctt = m_columnTrackerTrackers.get(i);
-                ColumnTracker ct = ctt.getTracker();
-                if (!ct.isFinished()) {
-                    trackers.add(ct);
-                    ctt.use();
-                }
             }
         }
 
         return trackers;
     }
     
-    private class CombinedColumnResponseProcessor implements ResponseProcessor {
-        private final Map<SnmpObjId, ResponseProcessor> m_processors;
-
-        public CombinedColumnResponseProcessor(Map<SnmpObjId, ResponseProcessor> processors) {
-            m_processors = processors;
+    private class ResponseProcessorTracker {
+        private final ColumnTracker m_tracker;
+        private final ResponseProcessor m_processor;
+        
+        public ResponseProcessorTracker(ColumnTracker ct, ResponseProcessor rp) {
+            m_tracker = ct;
+            m_processor = rp;
         }
         
-        public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
-            System.err.println(String.format("processResponse: %s/%s", responseObjId, val));
+        public ColumnTracker getColumnTracker() {
+            return m_tracker;
+        }
+        
+        public ResponseProcessor getResponseProcessor() {
+            return m_processor;
+        }
+    }
 
-            for (SnmpObjId id : m_processors.keySet()) {
-                if (id.isPrefixOf(responseObjId) && !id.equals(responseObjId)) {
-                    System.err.println(String.format("matched base %s with response object %s", id, responseObjId));
-                    ResponseProcessor rp = m_processors.get(id);
-                    rp.processResponse(responseObjId, val);
-                    return;
-                }
-            }
+    private class CombinedColumnResponseProcessor implements ResponseProcessor {
+        private final List<ResponseProcessorTracker> m_processors;
+        private int m_currentIndex = 0;
+
+        public CombinedColumnResponseProcessor(List<ResponseProcessorTracker> processors) {
+            m_processors = processors;
+        }
+
+        public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
+            ResponseProcessor rp = m_processors.get(m_currentIndex).getResponseProcessor();
+            ColumnTracker ct = m_processors.get(m_currentIndex).getColumnTracker();
             
-            System.err.println("no match");
-            throw new RuntimeException("holy crap, no match!");
+            if (++m_currentIndex == m_processors.size()) {
+                m_currentIndex = 0;
+            }
+
+            System.err.println(String.format("processResponse: trying: index(%d): tracker=%s, responseObj=%s, value=%s", m_currentIndex, ct, responseObjId, val));
+            rp.processResponse(responseObjId, val);
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
-            return false;
+            ResponseProcessor rp = m_processors.get(m_currentIndex).getResponseProcessor();
+            ColumnTracker ct = m_processors.get(m_currentIndex).getColumnTracker();
+            
+            if (++m_currentIndex == m_processors.size()) {
+                m_currentIndex = 0;
+            }
+
+            System.err.println(String.format("processError: trying: index(%d): tracker=%s, errorStatus=%d, errorIndex=%d", m_currentIndex, ct, errorStatus, errorIndex));
+            return rp.processErrors(errorStatus, errorIndex);
         }
 
     }
 
-    private class ColumnTrackerTracker {
-        ColumnTracker m_columnTracker;
-        private int m_uses = 0;
-        
-        public ColumnTrackerTracker(ColumnTracker tracker) {
-            m_columnTracker = tracker;
-        }
-
-        public void use() {
-            m_uses++;
-            m_columnUses = Math.max(m_uses, m_columnUses);
-        }
-        
-        public int getUses() {
-            return m_uses;
-        }
-        
-        public ColumnTracker getTracker() {
-            return m_columnTracker;
-        }
-    }
-    
 }
