@@ -77,6 +77,7 @@
 	String elementID = node_db.getLabel();
 
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
+	Map<String, Object> nodeModel2 = new TreeMap<String, Object>();
 	try {	
 
 		//Get the list of groups
@@ -120,7 +121,7 @@ function validateFormInput()
 	  alert("The login method field cannot be empty");
 	  return;
   }
-  
+  document.newUserForm.redirect.value="/inventory/rancid.jsp?node="+request.getParameter("node");;
   document.newUserForm.action="inventory/invClogin";
   document.newUserForm.submit();
 }    

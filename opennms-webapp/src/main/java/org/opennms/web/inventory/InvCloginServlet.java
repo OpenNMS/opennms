@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,16 +31,17 @@ public class InvCloginServlet extends HttpServlet {
             String group = request.getParameter("groupName");
 
             int ret = InventoryLayer.updateCloginInfo(group, device, userId, password, loginM);
-                        
-            //redirect(request, response);
+
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
+            dispatcher.forward(request, response);
         }
     }
         
-        private void redirect(HttpServletRequest request,
-                HttpServletResponse response) throws IOException {
-            String redirectURL = request.getHeader("Referer");
-            response.sendRedirect(redirectURL);
-        }
+//        private void redirect(HttpServletRequest request,
+//                HttpServletResponse response) throws IOException {
+//            String redirectURL = request.getHeader("Referer");
+//            response.sendRedirect(redirectURL);
+//        }
 }
 //        if (userSession != null) {
 //            User newUser = (User) userSession.getAttribute("user.modifyUser.jsp");
