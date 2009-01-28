@@ -83,7 +83,7 @@
 			 "one or more categories have never been updated.") %>
 	      </h3>
 <%	} else { %>
-	    <h3>Percentage change over past 24 hours</h3>
+	    <h3>Availability Over the Past 24 Hours</h3>
 <%	} %>
 
 
