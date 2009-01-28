@@ -317,4 +317,8 @@ public class AggregateTracker extends CollectionTracker {
         // for the child trackers
         return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
     }
+
+    @Override
+    public void done() {
+    }
 }

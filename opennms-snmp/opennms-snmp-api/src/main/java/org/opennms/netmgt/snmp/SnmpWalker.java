@@ -91,9 +91,9 @@ public abstract class SnmpWalker {
     }
 
     protected void buildAndSendNextPdu() throws IOException {
-        if (m_tracker.isFinished())
+        if (m_tracker.isFinished()) {
             handleDone();
-        else {
+        } else {
             m_pduBuilder.reset();
             m_responseProcessor = m_tracker.buildNextPdu(m_pduBuilder);
             sendNextPdu(m_pduBuilder);
@@ -151,6 +151,7 @@ public abstract class SnmpWalker {
     }
 
     private void finish() {
+        m_tracker.done();
         signal();
         try {
             close();

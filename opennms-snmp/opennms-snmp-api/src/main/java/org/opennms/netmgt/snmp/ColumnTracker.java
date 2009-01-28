@@ -142,4 +142,9 @@ public class ColumnTracker extends CollectionTracker {
         m_finished = true;
     }
 
+    @Override
+    public void done() {
+        m_finished = true;
+    }
+
 }

@@ -105,22 +105,38 @@ public class TableTracker extends CollectionTracker {
     }
 
     public void storeResult(SnmpResult res) {
+        // System.err.println(String.format("storeResult: %s", res));
         super.storeResult(res);
 
-        System.err.println(String.format("storeResult: %s", res));
+        int columnInstance = res.getBase().getLastSubId();
+        if (!m_pendingData.containsKey(res.getInstance())) {
+            m_pendingData.put(res.getInstance(), new SnmpRowResult(m_columnTrackers.size()));
+        }
+        SnmpRowResult row = m_pendingData.get(res.getInstance());
+        row.setResult(columnInstance, res);
+    }
+
+    @Override
+    public void done() {
+        handleCompleteRows();
+    }
+
+    private void handleCompleteRows() {
         if (m_callback != null) {
-
-            int columnInstance = res.getBase().getLastSubId();
-            if (!m_pendingData.containsKey(res.getInstance())) {
-                m_pendingData.put(res.getInstance(), new SnmpRowResult(m_columnTrackers.size()));
-            }
-            SnmpRowResult row = m_pendingData.get(res.getInstance());
-            row.setResult(columnInstance, res);
-
-            while (hasRow()) {
-                row = getNextRow();
-                if (row != null) {
-                    System.err.println(String.format("rowCompleted: %s", row));
+            if (hasRow()) {
+                boolean complete = isFinished();
+                List<SnmpInstId> keys = new ArrayList<SnmpInstId>(m_pendingData.keySet());
+                List<SnmpRowResult> callbackRows = new ArrayList<SnmpRowResult>();
+                for (int i = (keys.size() - 1); i >= 0; i--) {
+                    SnmpInstId key = keys.get(i);
+                    SnmpRowResult row = m_pendingData.get(key);
+                    if (complete || (row != null && row.isComplete())) {
+                        complete = true;
+                        m_pendingData.remove(key);
+                        callbackRows.add(0, row);
+                    }
+                }
+                for (SnmpRowResult row : callbackRows) {
                     m_callback.rowCompleted(row);
                 }
             }
@@ -143,15 +159,6 @@ public class TableTracker extends CollectionTracker {
         }
     }
 
-    private SnmpRowResult getNextRow() {
-        for (SnmpInstId id : m_pendingData.keySet()) {
-            if (m_pendingData.get(id).isComplete() || isFinished()) {
-                return m_pendingData.remove(id);
-            }
-        }
-        return null;
-    }
-    
     private List<ColumnTracker> getTrackers(int max) {
         List<ColumnTracker> trackers = new ArrayList<ColumnTracker>(max);
         List<ColumnTracker> trackerList = new ArrayList<ColumnTracker>(m_columnTrackers);
@@ -171,7 +178,6 @@ public class TableTracker extends CollectionTracker {
             }
             ColumnTracker ct = trackerList.get(i);
             if (!ct.isFinished()) {
-                System.err.println(String.format("index %d: using tracker %s", i, ct));
                 trackers.add(ct);
             }
         }
@@ -207,26 +213,25 @@ public class TableTracker extends CollectionTracker {
 
         public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
             ResponseProcessor rp = m_processors.get(m_currentIndex).getResponseProcessor();
-            ColumnTracker ct = m_processors.get(m_currentIndex).getColumnTracker();
             
             if (++m_currentIndex == m_processors.size()) {
                 m_currentIndex = 0;
             }
 
-            System.err.println(String.format("processResponse: trying: index(%d): tracker=%s, responseObj=%s, value=%s", m_currentIndex, ct, responseObjId, val));
             rp.processResponse(responseObjId, val);
+            handleCompleteRows();
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
             ResponseProcessor rp = m_processors.get(m_currentIndex).getResponseProcessor();
-            ColumnTracker ct = m_processors.get(m_currentIndex).getColumnTracker();
-            
+
             if (++m_currentIndex == m_processors.size()) {
                 m_currentIndex = 0;
             }
 
-            System.err.println(String.format("processError: trying: index(%d): tracker=%s, errorStatus=%d, errorIndex=%d", m_currentIndex, ct, errorStatus, errorIndex));
-            return rp.processErrors(errorStatus, errorIndex);
+            boolean retval = rp.processErrors(errorStatus, errorIndex);
+            handleCompleteRows();
+            return retval;
         }
 
     }

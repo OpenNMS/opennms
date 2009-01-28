@@ -2,6 +2,7 @@ package org.opennms.netmgt.snmp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
@@ -89,41 +90,47 @@ public class SnmpTrackerTest {
     
     @Test
     public void testTableTracker() throws Exception {
-        /*
-        * .1.3.6.1.2.1.2.2.1.1.1 = INTEGER: 1
-        * .1.3.6.1.2.1.2.2.1.1.2 = INTEGER: 2
-        * .1.3.6.1.2.1.2.2.1.1.3 = INTEGER: 3
-        * .1.3.6.1.2.1.2.2.1.1.4 = INTEGER: 4
-        * .1.3.6.1.2.1.2.2.1.1.5 = INTEGER: 5
-        * .1.3.6.1.2.1.2.2.1.1.6 = INTEGER: 6
-        * .1.3.6.1.2.1.2.2.1.2.1 = STRING: lo0
-        * .1.3.6.1.2.1.2.2.1.2.2 = STRING: gif0
-        * .1.3.6.1.2.1.2.2.1.2.3 = STRING: stf0
-        * .1.3.6.1.2.1.2.2.1.2.4 = STRING: en0
-        * .1.3.6.1.2.1.2.2.1.2.5 = STRING: en1
-        * .1.3.6.1.2.1.2.2.1.2.6 = STRING: fw0
-        * .1.3.6.1.2.1.2.2.1.10.1 = Counter32: 6808986
-        * .1.3.6.1.2.1.2.2.1.10.2 = Counter32: 0
-        * .1.3.6.1.2.1.2.2.1.10.3 = Counter32: 0
-        * .1.3.6.1.2.1.2.2.1.10.4 = Counter32: 6561336
-        * .1.3.6.1.2.1.2.2.1.10.5 = Counter32: 1241157
-        * .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 0
-        */
-        
         SnmpObjId base = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
         TestRowCallback rc = new TestRowCallback();
         TableTracker tt = new TableTracker(rc, SnmpObjId.get(base, "1"), SnmpObjId.get(base, "2"), SnmpObjId.get(base, "10"));
 
-        walk(tt, 1, 10);
+        walk(tt, 3, 10);
 
         List<SnmpRowResult> responses = rc.getResponses();
+        assertTrue("tracker must be finished", tt.isFinished());
         assertEquals("number of rows must match test data", 6, responses.size());
         assertEquals("number of columns must match test data", 3, responses.get(0).getColumns());
         assertEquals("row 4, column 0 must be 5", 5, responses.get(4).get(1).getValue().toInt());
         assertEquals("row 1, column 1 must be gif0", "gif0", responses.get(1).get(2).getValue().toString());
         assertEquals("row 3, column 2 must be 6561336", 6561336, responses.get(3).get(10).getValue().toLong());
-        assertTrue("tracker must be finished", tt.isFinished());
-        System.err.println(responses);
     }
 
+    @Test
+    @JUnitSnmpAgent(port=9161, resource="classpath:snmpTestDataIncompleteTable.properties")
+    public void testIncompleteTableData() throws Exception {
+        SnmpObjId base = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
+        TestRowCallback rc = new TestRowCallback();
+        TableTracker tt = new TableTracker(rc,
+            SnmpObjId.get(base, "1"), SnmpObjId.get(base, "4"), SnmpObjId.get(base, "8"),
+            SnmpObjId.get(base, "9"), SnmpObjId.get(base, "11"), SnmpObjId.get(base, "14"),
+            SnmpObjId.get(base, "17"), SnmpObjId.get(base, "18"), SnmpObjId.get(base, "20")
+        );
+
+        walk(tt, 4, 3);
+
+        List<SnmpRowResult> responses = rc.getResponses();
+        for (int i = 0; i < responses.size(); i++) {
+            System.err.println(String.format("%d: %s", i, responses.get(i)));
+        }
+        assertTrue("tracker must be finished", tt.isFinished());
+        assertEquals("number of rows must match test data", 6, responses.size());
+        assertEquals("number of columns must match test data", 9, responses.get(0).getColumns());
+        assertNull("row 3, column 1 should be null", responses.get(3).get(1));
+        assertEquals("row 2, column 1 should be 3", 3, responses.get(2).get(1).getValue().toInt());
+        /*
+        assertEquals("row 4, column 0 must be 5", 5, responses.get(4).get(1).getValue().toInt());
+        assertEquals("row 1, column 1 must be gif0", "gif0", responses.get(1).get(2).getValue().toString());
+        assertEquals("row 3, column 2 must be 6561336", 6561336, responses.get(3).get(10).getValue().toLong());
+        */
+    }
 }
