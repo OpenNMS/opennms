@@ -30,24 +30,40 @@
 package org.opennms.web.inventory;
 
 import org.opennms.rancid.*;
-
+import org.opennms.netmgt.config.RWSConfig;
+import org.opennms.netmgt.config.RWSConfigFactory;
+import org.opennms.netmgt.config.rancid.BaseUrl;
 import java.util.*;
 
 
 public class InventoryLayer {
     
-    static String _URL = "http://www.rionero.com:9080";
+    //static String _URL = "http://www.rionero.com:9080";
     
+    private  static String _URL = "errore";
+     
+    private static BaseUrl[] burl;
+    
+    private static RWSConfig rwsCfgFactory;
     
     static public void init(){
         
         try {
             RWSClientApi.init();
+
+            RWSConfigFactory.init();
+            
+            rwsCfgFactory = RWSConfigFactory.getInstance();
+            burl = rwsCfgFactory.getUrls();
+            _URL = burl[0].getServer_url();
+            
         }
         catch (Exception e) {
             
         }
     }
+    
+ 
         
     static public boolean hasRancidInfo(String nodeLabe){
         return true;        
@@ -354,7 +370,7 @@ public class InventoryLayer {
    // NEW CODE
    static public Map<String, Object> getRancidNode(String rancidName, String userRole) throws RancidApiException{
         
-        try {
+         try {
             
          
             
@@ -576,4 +592,21 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
 //  InventoryWrapper tmpw = new InventoryWrapper(vs, in.getExpirationDate(), group);
 //  wrinv.add(tmpw);
 //                
+////}
+//public static Map<String, Object> getUrl(){
+//    try {
+//        RWSConfigFactory.init();
+//    }
+//    catch (Exception e){
+//        e.printStackTrace();
+//    }
+//    
+//    rwsCfgFactory = RWSConfigFactory.getInstance();
+//    burl = rwsCfgFactory.getUrls();
+//    _URL = burl[0].getServer_url();
+//    
+//    Map<String, Object> nodeModel = new TreeMap<String, Object>(); 
+//    nodeModel.put("url", _URL);    
+//    return nodeModel;
+//
 //}
