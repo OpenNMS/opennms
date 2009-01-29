@@ -124,10 +124,6 @@ var refreshTimeMinsSortAss;
 var myRefreshTimeMinsResult;		
 
 //********* Finished TopInfo variables ***********
-// array containing the number of links existing between 2 elements
-// the key of the array is like 'idElem1-idElem2' and the value is an integer representing the number of links between elem1 and elem2
-var linksBetweenElements = new Array();
-
 
 // ********Variables set during application init **************
 
@@ -186,5 +182,7 @@ var currentMapId;
 var currentMapBackGround="";
 var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserlast="", currentMapCreatetime="", currentMapLastmodtime="";
 
+//vars for set background color
+var x_picker,pick_begin,pick_color,pick_appui,comp_rouge=128,comp_vert=128,comp_bleu=128,pick_prefixe="pickColor",node,cible;
 	
 

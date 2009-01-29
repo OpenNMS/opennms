@@ -3,11 +3,10 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash)
+function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink)
 {
 	if (arguments.length >= 6) {
 		var idSplitted = id.split("-");
-		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
 		
 		if(mapElement1.id==idSplitted[1]){
 			var tmp = mapElement1;
@@ -21,35 +20,20 @@ function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
 
-		var numOfSimilarLinks=0;
+//		var heightCapacity=this.mapElement1.height/deltaLink;		
+//		var widthCapacity=this.mapElement1.width/deltaLink;		
 
-
-		if(linksBetweenElements[idWithoutTypology]!=undefined){
-			for(type in linksBetweenElements[idWithoutTypology]){
-				if(linksBetweenElements[idWithoutTypology][type]!=undefined){
-					numOfSimilarLinks++;		
-				}
-			}
-		}	
-
-		var heightCapacity=this.mapElement1.height/deltaLink;		
-
-		var startY1=this.mapElement1.getCPoint().y-parseInt((heightCapacity-1)/2)*deltaLink;		
-		var x1=this.mapElement1.getCPoint().x;
-		var y1=this.mapElement1.getCPoint().y;
-		if(numOfSimilarLinks>1)
-			y1=startY1+deltaLink*numOfSimilarLinks;
-		var startY2=this.mapElement2.getCPoint().y-parseInt((heightCapacity-1)/2)*deltaLink;		
-		var x2=this.mapElement2.getCPoint().x;
-		var y2=this.mapElement2.getCPoint().y;
-		if(numOfSimilarLinks>1)
-			y2=startY2+deltaLink*numOfSimilarLinks;
-
+		var x1 = this.mapElement1.getX()+this.mapElement1.width/2;
+		var y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
+//		var startY2=this.mapElement2.getY()-parseInt((heightCapacity-1)/2)*deltaLink;		
+		var x2=this.mapElement2.getX()+this.mapElement2.width/2;
+		var y2=this.mapElement2.getY()+this.mapElement2.height/2+deltaLink*totalLinks;
 		
-		this.deltaX1FromElem1Center=x1-this.mapElement1.getCPoint().x;
-		this.deltaY1FromElem1Center=y1-this.mapElement1.getCPoint().y;
-		this.deltaX2FromElem2Center=x2-this.mapElement2.getCPoint().x;
-		this.deltaY2FromElem2Center=y2-this.mapElement2.getCPoint().y;						
+		this.deltaX1FromElem1Center=x1-this.mapElement1.getX();
+		this.deltaY1FromElem1Center=y1-this.mapElement1.getY();
+		this.deltaX2FromElem2Center=x2-this.mapElement2.getX();
+		this.deltaY2FromElem2Center=y2-this.mapElement2.getY();
+
 		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash);
 	}
 	else
@@ -139,11 +123,11 @@ Link.prototype.getSecondElementId = function()
 // update link
 Link.prototype.update = function()
 {
-	var x1=this.mapElement1.getCPoint().x+this.deltaX1FromElem1Center;
-	var y1=this.mapElement1.getCPoint().y+this.deltaY1FromElem1Center;	
+	var x1=this.mapElement1.getX()+this.deltaX1FromElem1Center;
+	var y1=this.mapElement1.getY()+this.deltaY1FromElem1Center;	
 	
-	var x2=this.mapElement2.getCPoint().x+this.deltaX2FromElem2Center;	
-	var y2=this.mapElement2.getCPoint().y+this.deltaY2FromElem2Center;	
+	var x2=this.mapElement2.getX()+this.deltaX2FromElem2Center;	
+	var y2=this.mapElement2.getY()+this.deltaY2FromElem2Center;	
 
 	this.svgNode.setAttributeNS(null,"x1", x1);	
 	this.svgNode.setAttributeNS(null,"x2", x2);	

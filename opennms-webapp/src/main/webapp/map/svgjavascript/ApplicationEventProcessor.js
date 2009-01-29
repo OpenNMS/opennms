@@ -28,13 +28,7 @@ function onClickMapElement(evt)
 
 		if(mapElement.isNode())
 		{
-			//create new window instance and add it to the Windows array with the windowId as a key
-			//var transx = mapElement.getX() + mapElemDimension;
-			//var transy = mapElement.getY() ;
-			//myMapApp.Windows[mapElement.getNodeId()] = 
-			//new Window(mapElement.getNodeId(),"Windows",winwidth,winheight,transx,transy,true,winconstrXmin,winconstrYmin,winconstrXmax,winconstrYmax,true,winPlaceholderStyles,windowStyles,3,true,true,mapElement.getLabel(),"Select Link",true,true,true,wintitlebarStyles,wintitlebarHeight,winstatusbarStyles,winstatusbarHeight,wintitletextStyles,winstatustextStyles,winbuttonStyles,testsomethink);
- 			//var nodelink = createSVGLinkText(mapElement.getNodeId());
-			//myMapApp.Windows[mapElement.getNodeId()].appendContent(nodelink,false);
+			//openContextMenu(mapElement)	;
 			openLink('element/node.jsp?node='+mapElement.getNodeId(),'','left=0,top=0, width='+screen.width+',height='+screen.height+',toolbar=no,menubar=no,location=no,scrollbars=1,resize=1,minimize=1');
 			
 		}
@@ -46,30 +40,29 @@ function onClickMapElement(evt)
 			
 	}
 }
-/*
-function testsomethink(id, evtType) {
-	if (evtType == "open" )
-  alert("window with id " + id + "and event" + evtType);
-}
 
-function createSVGLinkText(id) {
+function openContextMenu(mapElement) {
+	//create new window instance and add it to the Windows array with the windowId as a key
+	var transx = mapElement.getX() + mapElemDimension;
+	var transy = mapElement.getY() ;
 	var textEl = document.createElementNS(svgNS,"text");
-	textEl.setAttributeNS(null, "x","10");
-	textEl.setAttributeNS(null, "y","50");
+	textEl.setAttributeNS(null, "x", transx);
+	textEl.setAttributeNS(null, "y",transy);
 	textEl.setAttributeNS(null, "id",id+"elementlink");
-//	text.setAttributeNS(null, "font-size",titleFontSize);
-//	text.setAttributeNS(null,"font-family",textFamily);
+	textEl.setAttributeNS(null, "font-size",titleFontSize);
+	textEl.setAttributeNS(null,"font-family",textFamily);
 	textEl.setAttributeNS(null, "cursor","pointer");
-//	text.appendChild(document.createTextNode());
-	text.addEventListener("click", "openLink('element/node.jsp?node='"+id+",'','left=0,top=0, width='"+screen.width+"',height='"+screen.height+"',toolbar=no,menubar=no,location=no,scrollbars=1,resize=1,minimize=1');", false);
+    //textEl.appendChild(document.createTextNode());
+	//textEl.addEventListener("click", "openLink('element/node.jsp?node='"+mapElement.getNodeId()+",'','left=0,top=0, width='"+screen.width+"',height='"+screen.height+"',toolbar=no,menubar=no,location=no,scrollbars=1,resize=1,minimize=1');", false);
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "dy","12");
-	var tspanContent = document.createTextNode("Node Page");
+	var tspanContent = document.createTextNode(mapElement.getLabel()+": Node Page");
 	tspan.appendChild(tspanContent);
 	textEl.appendChild(tspan);
-	return textEl
+	
+	return document.getElementById("Windows").appendChils(textEl);
 }
-*/
+
 function onMouseDownOnMapElement(evt)
 {	
 	if ((typeof map) == "object")

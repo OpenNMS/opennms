@@ -361,6 +361,19 @@ function addBgColorBox(){
     }
 }
 
+
+function close_pick_color(setColor)
+{
+	if(setColor==true){
+		currentMapBackGround=pick_color.split("#")[1];
+		map.setBackgroundColor(pick_color);
+		map.setBGvalue(pick_color);
+	}
+	if(pick_prefixe!=null){
+		remove_pick_color(pick_prefixe);
+	}
+}
+
 // Map Background Image List
 function addBGImagesList()
 {
@@ -384,7 +397,7 @@ function BGImagesResult() { }
 
 BGImagesResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
     if(mapNr!=0){
-            map.tryBackgroundImage(BGImagesSortAss[arrayVal]);
+            map.setBackgroundImage(BGImagesSortAss[arrayVal]);
     }
     selectedBGImageInList=arrayVal;
 }
@@ -398,7 +411,7 @@ function setBGImageSetUp() {
 function setBGImage(){
 	if(selectedBGImageInList!=0){ 
 		currentMapBackGround = BGImagesSortAss[selectedBGImageInList];
-		map.setBackgroundImage(currentMapBackGround);
+		map.setBGValue(currentMapBackGround);
 		clearTopInfo();
 		writeDownInfo("Background image set");
 	}
@@ -584,7 +597,7 @@ function addMapElementNeigh()
 		alert('No maps opened');
 		return;
 	}
-	if( map.mapElements==null || map.mapElementSize==0)
+	if( map.getMapElementsSize()==0)
 	{
 		alert('Map contains no nodes');
 		return;
@@ -677,7 +690,7 @@ function addIconList()
 		alert('No maps opened');
 		return;
 	}
-	if( map.mapElements==null || map.mapElementSize==0)
+	if( map.getMapElementsSize()==0)
 	{
 		alert('Map contains no nodes');
 		return;
@@ -744,7 +757,7 @@ function deleteMapElementList()
 		return;
 	}
 
-	if( map.mapElements==null || map.mapElementSize==0)
+	if( map.getMapElementsSize()==0)
 	{
 		alert('Map contains no nodes');
 		return;

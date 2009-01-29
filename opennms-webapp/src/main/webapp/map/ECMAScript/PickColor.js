@@ -1,5 +1,3 @@
-var x_picker,pick_begin,pick_color,pick_appui,comp_rouge=128,comp_vert=128,comp_bleu=128,pick_prefixe="pickColor",node,cible;
-
 function add_pick_color(noeud)
 {
 resetPick();
@@ -77,13 +75,3 @@ if (key==13) {close_pick_color(true)};
 if (key==27) {close_pick_color(false)};
 }
 
-function close_pick_color(setColor)
-{
-	if(setColor==true){
-		map.setBackgroundImage('');
-		map.setBackgroundColor(pick_color);
-	}
-	if(pick_prefixe!=null){
-		remove_pick_color(pick_prefixe);
-	}
-}
