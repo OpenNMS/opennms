@@ -42,6 +42,7 @@ public class OnmsRestService {
 	 */
 	protected void setLimitOffset(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, int defaultLimit) {
 		int limit=defaultLimit;
+		boolean hasOffset = false;
 		if(params.containsKey("limit")) {
 			limit=Integer.parseInt(params.getFirst("limit"));
 			params.remove("limit");
@@ -53,9 +54,11 @@ public class OnmsRestService {
 		if(params.containsKey("offset")) {
 			criteria.setFirstResult(Integer.parseInt(params.getFirst("offset")));
 			params.remove("offset");
+			hasOffset = true;
 		}
 		
-		if(params.containsKey("start")){
+		//added for the ExtJS will remove once it gets working with the offset
+		if(params.containsKey("start") && !hasOffset){
 		    criteria.setFirstResult(Integer.parseInt(params.getFirst("start")));
 		    params.remove("start");
 		}
@@ -83,6 +86,16 @@ public class OnmsRestService {
 			String query=params.getFirst("query");
 			criteria.add(Restrictions.sqlRestriction(query));
 			params.remove("query");
+		}
+		
+		if(params.containsKey("node.id")) {
+		    String nodeId = params.getFirst("node.id");
+		    Integer id = new Integer(nodeId);
+		    criteria.createCriteria("node").add(Restrictions.eq("id", id));
+		    //criteria.add(Restrictions.eq("id", 13255));
+		    params.remove("node.id");
+		    //criteria.add(Restrictions.like("id", "13508")); //.createCriteria("node").add(Restrictions.eq("id",147));
+	        
 		}
 		
 		params.remove("_dc");
@@ -114,7 +127,9 @@ public class OnmsRestService {
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
 		for(String key: params.keySet()) {
-			String stringValue=params.getFirst(key);
+		    
+		    String stringValue=params.getFirst(key);
+		   
 			if("null".equals(stringValue)) {
 				criteria.add(Restrictions.isNull(key));
 			} else if ("notnull".equals(stringValue)) {
@@ -177,6 +192,7 @@ public class OnmsRestService {
 	}
 	
 	    protected <T> T throwException(Status status, String msg) {
+	        System.out.println("error: " + msg);
 	        log().error(msg);
 	        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
 	    }
