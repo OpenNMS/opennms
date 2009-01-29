@@ -288,7 +288,7 @@ function handleAddElementResponse(data) {
 		var width = params[2];
 		var da = params[3];
 		var flash = params[4];
-		map.addLink(id1,id2,typo,color,width,da,flash);
+		map.addLink(id1,id2,typo,color,width,da,flash,deltaLink);
 	}	
 	
 	map.render();
@@ -471,6 +471,7 @@ function handleLoadingCloseMap(data) {
 
 	currentMapId=MAP_NOT_OPENED;
 	currentMapBackGround=DEFAULT_BG_COLOR;
+	map.setBGvalue(DEFAULT_BG_COLOR);
 	currentMapAccess="";
 	currentMapName=""; 
 	currentMapOwner=""; 
@@ -483,7 +484,6 @@ function handleLoadingCloseMap(data) {
 	mapHistoryName=new Array();
 	mapHistoryIndex = 0;
 
-	map.render();
 	reloadGrid();
 	
 	loading--;
@@ -583,15 +583,16 @@ function handleLoadingMap(data) {
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status]);
+			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink);
 		}
 	}
 	
 	savedMapString=getMapString();
 	saveMapInHistory();
 	
-	map.render();
 	reloadGrid();
+	map.setBGvalue(currentMapBackGround);
+	map.render();
 
 	
 	loading--;
@@ -614,7 +615,7 @@ function saveMap() {
 	//construct the query to post to the servlet. 
 	//the map is formatted as follows: id,x,y,image,type
 	var splitInPackets = false;
-	var totalPackets = parseInt(map.mapElementSize/70)+1;
+	var totalPackets = parseInt(map.getMapElementsSize()/70)+1;
 	//alert(totalPackets);
 	if(totalPackets>1){
 		splitInPackets = true;
@@ -786,7 +787,7 @@ function handleDeleteResponse(data) {
 
 function clearMap(){
 	
-	if (map.mapElements==null || map.mapElementSize==0){
+	if (map.getMapElementsSize()==0){
 	  	 alert('Map contains no nodes');
 		return;
 	}
@@ -971,7 +972,7 @@ function handleRefreshNodesResponse(data) {
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status]);
+			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink);
 		}
 		
 	}
