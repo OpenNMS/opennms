@@ -39,6 +39,7 @@ package org.opennms.netmgt.snmp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,46 +47,55 @@ import java.util.TreeMap;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 public class TableTracker extends CollectionTracker {
-    private RowCallback m_callback;
-    private int m_maxRepetitions;
-    private List<ColumnTracker> m_columnTrackers;
-    private Map<SnmpInstId,SnmpRowResult> m_pendingData;
+
+    private final SnmpTableResult m_tableResult;
+
+    private final List<ColumnTracker> m_columnTrackers;
 
     public TableTracker(RowCallback rc, SnmpObjId... ids) {
         this(rc, 2, ids);
     }
 
-    public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... ids) {
-        m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
-        m_columnTrackers = new ArrayList<ColumnTracker>(ids.length);
-        for (SnmpObjId id : ids) {
-            ColumnTracker ct = new ColumnTracker(id);
-            ct.setParent(this);
-            m_columnTrackers.add(ct);
+    public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... columns) {
+        m_tableResult = (rc == null ? null : new SnmpTableResult(rc, columns));
+
+        m_columnTrackers = new ArrayList<ColumnTracker>(columns.length);
+        for (SnmpObjId id : columns) {
+            m_columnTrackers.add(new ColumnTracker(this, id, maxRepetitions));
         }
-
-        setMaxRepetitions(maxRepetitions);
-        m_callback = rc;
-    }
-
-    public int getMaxRepetitions() {
-        return m_maxRepetitions;
     }
 
     @Override
     public void setMaxRepetitions(int maxRepetitions) {
-        m_maxRepetitions = maxRepetitions;
+        for(ColumnTracker child : m_columnTrackers) {
+            child.setMaxRepetitions(maxRepetitions);
+        }
     }
 
 
-    @Override
-    public boolean isFinished() {
+    public boolean childrenFinished() {
         for (ColumnTracker ct : m_columnTrackers) {
             if (!ct.isFinished()) {
                 return false;
             }
         }
         return true;
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.snmp.CollectionTracker#childFinished(org.opennms.netmgt.snmp.CollectionTracker)
+     */
+    @Override
+    public void childFinished(CollectionTracker child) {
+        if (childrenFinished()) {
+            m_tableResult.tableFinished();
+            setFinished(true);
+        } else {
+            m_tableResult.columnFinished(((ColumnTracker)child).getBase());
+        }
+        
     }
 
     @Override
@@ -96,88 +106,42 @@ public class TableTracker extends CollectionTracker {
 
         List<ResponseProcessor> processors = new ArrayList<ResponseProcessor>(pduBuilder.getMaxVarsPerPdu());
 
-        for (ColumnTracker ct : getTrackers(pduBuilder.getMaxVarsPerPdu())) {
+        for (ColumnTracker ct : getNextColumnTrackers(pduBuilder.getMaxVarsPerPdu())) {
             processors.add(ct.buildNextPdu(pduBuilder));
         }
 
-        ResponseProcessor rp = new CombinedColumnResponseProcessor(processors);
-        return rp;
+        return new CombinedColumnResponseProcessor(processors);
     }
 
     public void storeResult(SnmpResult res) {
-        // System.err.println(String.format("storeResult: %s", res));
-        super.storeResult(res);
-
-        int columnInstance = res.getBase().getLastSubId();
-        if (!m_pendingData.containsKey(res.getInstance())) {
-            m_pendingData.put(res.getInstance(), new SnmpRowResult(m_columnTrackers.size()));
-        }
-        SnmpRowResult row = m_pendingData.get(res.getInstance());
-        row.setResult(columnInstance, res);
-    }
-
-    @Override
-    public void done() {
-        handleCompleteRows(true);
-    }
-
-    private void handleCompleteRows(boolean force) {
-        if (m_callback != null) {
-            if (hasRow()) {
-                boolean complete = isFinished() || force;
-                List<SnmpInstId> keys = new ArrayList<SnmpInstId>(m_pendingData.keySet());
-                for (int i = 0; i < keys.size(); i++) {
-                    SnmpInstId key = keys.get(i);
-                    SnmpRowResult row = m_pendingData.get(key);
-                    if (row != null) {
-                        if (complete || row.isComplete()) {
-                            complete = true;
-                            m_pendingData.remove(key);
-                            m_callback.rowCompleted(row);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean hasRow() {
-        if (isFinished()) {
-            if (!m_pendingData.isEmpty()) {
-                return true;
-            }
-            return false;
+        System.err.println(String.format("storeResult: %s", res));
+        if (m_tableResult == null) {
+            super.storeResult(res);
         } else {
-            for (SnmpRowResult rr : m_pendingData.values()) {
-                if (rr.isComplete()) {
-                    return true;
-                }
-            }
-            return false;
+            m_tableResult.storeResult(res);
         }
     }
 
-    private List<ColumnTracker> getTrackers(int max) {
-        List<ColumnTracker> trackers = new ArrayList<ColumnTracker>(max);
-        List<ColumnTracker> trackerList = new ArrayList<ColumnTracker>(m_columnTrackers);
+    private List<ColumnTracker> getNextColumnTrackers(int maxVarsPerPdu) {
+        List<ColumnTracker> trackers = new ArrayList<ColumnTracker>(maxVarsPerPdu);
+        List<ColumnTracker> sortedTrackerList = new ArrayList<ColumnTracker>(m_columnTrackers);
 
-        Collections.sort(trackerList, new Comparator<ColumnTracker>() {
+        Collections.sort(sortedTrackerList, new Comparator<ColumnTracker>() {
             public int compare(ColumnTracker o1, ColumnTracker o2) {
                 return new CompareToBuilder()
-                    .append(o1.getCurrentRow(), o2.getCurrentRow())
-                    .append(o1.getBase(), o2.getBase())
+                    .append(o1.getLastInstance(), o2.getLastInstance())
                     .toComparison();
             }
         });
+        
+        for(Iterator<ColumnTracker> it = sortedTrackerList.iterator(); it.hasNext() && trackers.size() < maxVarsPerPdu; ) {
+        
+            ColumnTracker tracker = it.next();
+            
+            if (!tracker.isFinished()) {
+                trackers.add(tracker);
+            }
 
-        for (int i = 0; i < trackerList.size(); i++) {
-            if (trackers.size() >= max) {
-                return trackers;
-            }
-            ColumnTracker ct = trackerList.get(i);
-            if (!ct.isFinished()) {
-                trackers.add(ct);
-            }
         }
 
         return trackers;
@@ -199,19 +163,22 @@ public class TableTracker extends CollectionTracker {
             }
 
             rp.processResponse(responseObjId, val);
-            handleCompleteRows(false);
+
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
-            ResponseProcessor rp = m_processors.get(m_currentIndex);
+            
+            /*
+             * errorIndex is varBind index (1 based array of vars)
+             * 
+             * 
+             */
+            
+            int columnIndex = (errorIndex - 1) % m_processors.size();
+            
+            ResponseProcessor rp = m_processors.get(columnIndex);
 
-            if (++m_currentIndex == m_processors.size()) {
-                m_currentIndex = 0;
-            }
-
-            boolean retval = rp.processErrors(errorStatus, errorIndex);
-            handleCompleteRows(false);
-            return retval;
+            return rp.processErrors(errorStatus, 1);
         }
 
     }
