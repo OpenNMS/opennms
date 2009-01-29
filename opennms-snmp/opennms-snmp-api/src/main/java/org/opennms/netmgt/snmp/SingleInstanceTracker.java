@@ -39,7 +39,6 @@ public class SingleInstanceTracker extends CollectionTracker {
     private SnmpObjId m_base;
     private SnmpInstId m_inst;
     private SnmpObjId m_oid;
-    private boolean m_finished = false;
     
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst) {
         this(base, inst, null);
@@ -59,10 +58,6 @@ public class SingleInstanceTracker extends CollectionTracker {
     @Override
     public void setMaxRepetitions(int maxRepititions) {
         // do nothing since we are not a repeater
-    }
-
-    public boolean isFinished() {
-        return m_finished;
     }
 
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
@@ -85,10 +80,11 @@ public class SingleInstanceTracker extends CollectionTracker {
                     receivedEndOfMib();
                 }
 
-                m_finished = true;
                 if (m_oid.equals(responseObjId)) {
                     storeResult(new SnmpResult(m_base, m_inst, val));
                 }
+                
+                setFinished(true);
             }
 
             public boolean processErrors(int errorStatus, int errorIndex) {
@@ -119,11 +115,11 @@ public class SingleInstanceTracker extends CollectionTracker {
     }
 
     protected void errorOccurred() {
-        m_finished = true;
+        setFinished(true);
     }
 
     protected void receivedEndOfMib() {
-        m_finished = true;
+        setFinished(true);
     }
 
 }

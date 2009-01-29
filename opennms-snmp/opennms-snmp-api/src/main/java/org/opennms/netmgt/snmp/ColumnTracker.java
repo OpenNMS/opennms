@@ -42,30 +42,29 @@ public class ColumnTracker extends CollectionTracker {
     
     private SnmpObjId m_base;
     private SnmpObjId m_last;
-    private boolean m_finished = false;
     private int m_maxRepetitions;
-    private int m_currentRow = 0;
 
     public ColumnTracker(SnmpObjId base) {
-        this(base, 2);
-    }
-    
-    public ColumnTracker(SnmpObjId base, int maxRepititions) {
-        m_base = base;
-        m_last = base;
-        m_maxRepetitions = maxRepititions; 
+        this(null, base);
     }
 
-    public int getCurrentRow() {
-        return m_currentRow;
+    public ColumnTracker(SnmpObjId base, int maxRepititions) {
+        this(null, base, maxRepititions);
+    }
+    
+    public ColumnTracker(CollectionTracker parent, SnmpObjId base) {
+        this(parent, base, 2);
+    }
+
+    public ColumnTracker(CollectionTracker parent, SnmpObjId base, int maxRepititions) {
+        super(parent);
+        m_base = base;
+        m_last = base;
+        m_maxRepetitions = maxRepititions;
     }
 
     public SnmpObjId getBase() {
         return m_base;
-    }
-
-    public boolean isFinished() {
-        return m_finished || !m_base.isPrefixOf(m_last);
     }
 
     public String toString() {
@@ -73,8 +72,7 @@ public class ColumnTracker extends CollectionTracker {
             .append("base", m_base)
             .append("last oid", m_last)
             .append("max repetitions", m_maxRepetitions)
-            .append("row", m_currentRow)
-            .append("finished?", m_finished)
+            .append("finished?", isFinished())
             .toString();
     }
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
@@ -95,12 +93,16 @@ public class ColumnTracker extends CollectionTracker {
 
                 m_last = responseObjId;
                 if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
-                    m_currentRow++;
                     SnmpInstId inst = responseObjId.getInstance(m_base);
                     if (inst != null) {
                         storeResult(new SnmpResult(m_base, inst, val));
                     }
                 }
+                
+                if (!m_base.isPrefixOf(m_last)) {
+                    setFinished(true);
+                }
+                
             }
 
             public boolean processErrors(int errorStatus, int errorIndex) {
@@ -135,10 +137,18 @@ public class ColumnTracker extends CollectionTracker {
     }
 
     protected void receivedEndOfMib() {
-        m_finished = true;
+        setFinished(true);
     }
 
     protected void errorOccurred() {
-        m_finished = true;
+        setFinished(true);
+    }
+
+    public SnmpInstId getLastInstance() {
+        if (m_base.isPrefixOf(m_last) && !m_base.equals(m_last)) {
+            return m_last.getInstance(m_base);
+        } else {
+            return null;
+        }
     }
 }

@@ -151,7 +151,6 @@ public abstract class SnmpWalker {
     }
 
     private void finish() {
-        m_tracker.done();
         signal();
         try {
             close();

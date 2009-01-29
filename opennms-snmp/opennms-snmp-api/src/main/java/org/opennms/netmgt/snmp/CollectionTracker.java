@@ -46,6 +46,7 @@ public abstract class CollectionTracker implements Collectable {
     private CollectionTracker m_parent;
     private boolean m_failed = false;
     private boolean m_timedOut = false;
+    private boolean m_finished = false;
     
     
     public CollectionTracker() {
@@ -84,7 +85,19 @@ public abstract class CollectionTracker implements Collectable {
         }
     }
     
-    public abstract boolean isFinished();
+    public final boolean isFinished() {
+        return m_finished;
+    }
+    
+    public final void setFinished(boolean finished) {
+        m_finished = finished;
+        if (m_finished && m_parent != null) {
+            m_parent.childFinished(this);
+        }
+    }
+    
+    public void childFinished(CollectionTracker child) {
+    }
 
     public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
 
@@ -110,7 +123,5 @@ public abstract class CollectionTracker implements Collectable {
         return this;
     }
 
-    public void done() {
-    }
 
 }
