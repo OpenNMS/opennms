@@ -63,7 +63,7 @@
 <link rel="stylesheet" type="text/css" href="extJS/resources/css/opennmsGridTheme.css" />
 <script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="extJS/ext-all.js"></script>
-<script type="text/javascript" src="js/nodeGrid.js"></script>
+<script type="text/javascript" src="js/nodeListGrid.js"></script>
 
 <div id="node-grid"></div>
 <c:choose>
