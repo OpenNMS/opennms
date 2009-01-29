@@ -32,6 +32,7 @@
   </bean>
   
   <bean id="transactionAwareEventForwarder" class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
+    <qualifier value="transactionAware" />
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
   
