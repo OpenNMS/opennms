@@ -1,12 +1,11 @@
 var grid;
-var urlParams;
 
 Ext.onReady(function(){
-	initNodePageGrid();
+	nodePageGridInit();
 	initEventView();
 })
 
-function initNodePageGrid(){
+function nodePageGridInit(){
 	
 	var getParams = document.URL.split("?");
 	if(getParams.length > 1){
@@ -20,6 +19,7 @@ function initNodePageGrid(){
         height:300,
         renderTo:'grid-panel',
 		tbar:tb,
+		bbar: ipInterfacePagingBar,
 		loadMask:true
 	})
 	
@@ -94,6 +94,7 @@ function initNodePageGrid(){
 		                    xtype:'textfield',
 		                    fieldLabel: 'TCP/IP Address Like',
 		                    name: 'ipLikeCriteria',
+							emptyText:'this is empty',
 		                    anchor:'95%'
 		                }, {
 		                    xtype:'textfield',
@@ -186,9 +187,29 @@ var colModel = new Ext.grid.ColumnModel([
 	}
 ]);
 
-var tb = new Ext.Toolbar({
-	
+var ipInterfacePagingBar = new Ext.PagingToolbar({
+        pageSize: 20,
+        store: dataStore,
+        displayInfo: true,
+        displayMsg: 'Displaying topics {0} - {1} of {2}',
+        emptyMsg: "No topics to display",
+        
+        items:[
+            '-', {
+            pressed: true,
+            enableToggle:true,
+            text: 'Show Preview',
+            cls: 'x-btn-text-icon details',
+            toggleHandler: function(btn, pressed){
+                var view = grid.getView();
+                view.showPreview = pressed;
+                view.refresh();
+            }
+        }]
+
 });
+
+var tb = new Ext.Toolbar({});
 
 var filterMenuItems = [
     new Ext.menu.CheckItem({ 
@@ -225,8 +246,8 @@ function onFilterItemCheck(item, checked){
 }
 
 function loadNodeInterfaces(nodeId){
-	dataStore.proxy.conn.url = "rest/nodes/" + nodeId + "/ipinterfaces"; //"xml/node-147-ipinterfaces.xml"
-	dataStore.load();
+	dataStore.proxy.conn.url ="rest/nodes/" + nodeId + "/ipinterfaces"; //"xml/node-147-ipinterfaces.xml"; 
+	dataStore.load({params:{start:0, limit:20}});
 };
 
 function updateFilter(field, newValue, oldValue){
