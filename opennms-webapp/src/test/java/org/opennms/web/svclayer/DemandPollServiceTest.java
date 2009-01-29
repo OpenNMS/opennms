@@ -148,6 +148,10 @@ public class DemandPollServiceTest extends TestCase {
         public List<DemandPoll> findMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
+
+        public int countMatching(OnmsCriteria onmsCrit) {
+            throw new UnsupportedOperationException("OnmsDao<DemandPoll,Integer>.countMatching is not yet implemented");
+        }
 		
 		
 	}
