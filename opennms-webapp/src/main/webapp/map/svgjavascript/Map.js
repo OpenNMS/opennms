@@ -1,5 +1,5 @@
 // you must create an instance of a map object in onLoad event of svg node root
-// Map map = new Map("#bbbbbb", "", "Background", 600, 400, 0, 0);
+// Map map = new Map("#bbbbbb", "Background", 600, 400, 0, 0);
 
 Map.prototype = new SVGElement;
 Map.superclass = SVGElement.prototype;
@@ -13,32 +13,40 @@ Map.superclass = SVGElement.prototype;
 // y      == y coord of map's "centre" 
 // mapElements  == array of MapElement Objects
 // mapLinks   == array of Link Object
+// linksBetweenElements == array containing the number of links existing between 2 element the key of the array 
+//                         is like 'idElem1-idElem2' and the value is an integer representing the number of 
+//                         links between elem1 and elem2
 
-function Map(color, image, id, width, height, x, y)
+function Map(defaultcolor, id, width, height, x, y)
 {
- 	if ( arguments.length == 7 )
-		this.init(color, image, id, width, height, x, y);
+ 	if ( arguments.length == 6 )
+		this.init(defaultcolor, id, width, height, x, y);
 	else
 		alert("Map constructor call error");
 }
 
-Map.prototype.init = function(color, image, id, width, height, x, y)
+Map.prototype.init = function(color, id, width, height, x, y)
 {
 	//following attributes are the starting and the ending SVGPoints of the rectangle 
 	//for the selection of the nodes on the map.
+	this.backgroundiscolor = true;
+	this.defaultbackgroundcolor = color;
+	this.bg = color;
+	this.id = id;
+	this.width = width;
+	this.height = height;
+	this.x = x;
+	this.y = y;
+	
 	this.startSelectionRectangle = null;
 	this.endSelectionRectangle = null;
-	
-	
-	this.mapElements = new Array();
-	this.mapElementSize = 0;
-
-	this.mapLinks = new Array();
-	this.mapLinkSize = 0;
-	
 	this.draggableObject = null;
 	this.selectedObjects = null;
-	this.offset = document.documentElement.createSVGPoint();
+    this.offset = document.documentElement.createSVGPoint();	
+	this.linksBetweenElements = new Array();
+	this.mapElements = new Array();
+	this.mapLinks = new Array();
+	
 	this.svgNode = document.createElementNS(svgNS,"g");
 	
 	this.rect = document.createElementNS(svgNS,"rect"); 
@@ -52,9 +60,7 @@ Map.prototype.init = function(color, image, id, width, height, x, y)
 	this.image.setAttributeNS(null,"height", height);
 	this.image.setAttributeNS(null,"x", x);
 	this.image.setAttributeNS(null,"y", y);
-	
-	//this.image.setAttribute("preserveAspectRatio","xMidYMid");
-	this.image.setAttributeNS(xlinkNS, 'xlink:href', image);
+	this.image.setAttributeNS(null,'display', 'none');	
 
 	this.background = document.createElementNS(svgNS,"g");
 	this.background.setAttributeNS(null,"id", id);
@@ -69,29 +75,65 @@ Map.prototype.init = function(color, image, id, width, height, x, y)
 
 }
 
+Map.prototype.setBGvalue = function(bg) {
+	var imagetype= bg.split(".")[1];
+	if(imagetype != null) {
+		this.bg = bg;
+	} else {
+		if (bg.length == 6) {
+			this.bg = "#"+bg;
+		} else if (bg.length == 7 && bg.substring(0,1) == '#') {
+			this.bg = bg;
+		} else {
+			alert('SetBGValue: background color wrong:'+bg);
+		}						
+	}
+}
+
+Map.prototype.setBG = function() {
+	var imagetype= this.bg.split(".")[1];
+	if(imagetype != null) {
+		this.setBackgroundImage(this.bg)
+	} else {
+		this.setBackgroundColor(this.bg);
+	}
+}
+
+Map.prototype.resetBackground = function() {
+	this.rect.setAttributeNS(null,"fill", this.defaultbackgroundcolor);
+	if (!this.backgroundiscolor) {
+		this.image.setAttributeNS(null,"display", "none");	
+		this.rect.setAttributeNS(null,"display", "inline");
+		this.backgroundiscolor = true;
+	}
+}
+
 Map.prototype.setBackgroundColor = function(color){
-	currentMapBackGround=color.split("#")[1];
 	this.rect.setAttributeNS(null,"fill", color);
+	if (!this.backgroundiscolor) {
+		this.image.setAttributeNS(null,"display", "none");	
+		this.rect.setAttributeNS(null,"display", "inline");
+		this.backgroundiscolor = true;
+	}
 }
 
 Map.prototype.setBackgroundImage = function(image){
-	currentMapBackGround=image;
 	this.image.setAttributeNS(xlinkNS, 'xlink:href', image);
-}
-
-//only show the map with the background image in input
-Map.prototype.tryBackgroundImage = function(image){
-	this.image.setAttributeNS(xlinkNS, 'xlink:href', image);
+	if (this.backgroundiscolor) {
+		this.image.setAttributeNS(null,"display", "inline");	
+		this.rect.setAttributeNS(null,"display", "none");
+		this.backgroundiscolor = false;
+	}
 }
 
 //get the width of the map
 Map.prototype.getWidth = function(){
-	return this.rect.getAttributeNS(null,"width");
+	return this.width;
 }
 
 //get the height of the map
 Map.prototype.getHeight= function(){
-	return this.rect.getAttributeNS(null,"height");
+	return this.height;
 }
 
 // clean map and set the array of map element and render
@@ -102,70 +144,22 @@ Map.prototype.setMapElements = function(nodes){
 	this.clean();
 
 	this.mapElements = nodes;
-	this.mapElementSize = nodes.length;
-	var elemToRender = null;
-	for (elemToRender in this.mapElements) //render mapElement
-		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
 }
-
-Map.prototype.setMapElement = function(mapElement) {
-
-	var elementAdded=false;
-
-	var labelText = mapElement.label.text;		
-
-	if (mapElement == null || mapElement.id == undefined) return null;
-	// An array of Link object that where previus linked to this new element if already exists
-
-	var mapElementLinked = new Array();
-	// if exist first save link then remove element (of course with links)
-	if (this.mapElements[mapElement.id] != undefined) { 
-		mapElementLinked = this.getLinksOnElement(mapElement.id);
-		this.deleteMapElement(mapElement.id);
-	}
-	
-	// now add map element
-	this.mapElements[mapElement.id] = mapElement;
-	this.mapElementSize++;
-	this.svgNode.appendChild(this.mapElements[mapElement.id].getSvgNode());
-	
-	elementAdded=true;
-	// add links previusly saved 
-	if ( mapElementLinked != null && mapElementLinked.length != 0) {
-		var elemToRender = null;
-		for (elemToRender in mapElementLinked) {
-			this.setLink(mapElement.id, elemToRender, mapElementLinked[elemToRender].getTypology(),mapElementLinked[elemToRender].getStroke(), mapElementLinked[elemToRender].getStrokeWidth());
-		}
-	}
-	return elementAdded;
-}
-
 
 Map.prototype.addMapElement = function(mapElement) {
-	var elementAdded=false;
 
-	var labelText = mapElement.label.text;		
-	if (mapElement == null || mapElement.id == undefined) return null;
-	// An array of Link object that where previus linked to this new element if already exists
-	var mapElementLinked = new Array();
+	if (mapElement == null || mapElement.id == undefined) {
+		alert("Error adding mapElement to map: mapElement is null");
+		return false;
+	}
 	// if exist first save link then remove element (of course with links)
 	if (this.mapElements[mapElement.id] != undefined) { 
-		mapElementLinked = this.getLinksOnElement(mapElement.id);
-		this.deleteMapElement(mapElement.id);
+		alert("Error adding mapElement to map: mapElement exists");
+		return false;
 	}
 	// now add map element
 	this.mapElements[mapElement.id] = mapElement;
-	this.mapElementSize++;
-	elementAdded=true;
-	// add links previusly saved 
-	
-	if ( mapElementLinked != null && mapElementLinked.length != 0) {
-		var elemToRender = null;
-		for (elemToRender in mapElementLinked) {
-			this.addLink(mapElement.id, elemToRender, mapElementLinked[elemToRender].getTypology(), mapElementLinked[elemToRender].getStroke(), mapElementLinked[elemToRender].getStrokeWidth());
-		}
-	}
-	return elementAdded;
+	return true;
 }
 
 // delete the node (and all its links) with the id in input
@@ -199,7 +193,6 @@ Map.prototype.deleteMapElement = function(elemId)
 			}
 		}
 		this.mapElements=tempNodes;
-		this.mapElementSize = i;
 	}
 	return elementDeleted;
 }
@@ -254,14 +247,12 @@ Map.prototype.deleteLinksOnElement = function(id)
 				linksDeleted = true;
 			} 
 		}
-//		this.mapLinks = elements;
-//		this.mapLinkSize = i;
 	}
 	return linksDeleted;
 }
 
 // add a new link to map
-Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_array, flash)
+Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_array, flash, deltaLink)
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]==null){
@@ -295,15 +286,14 @@ Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_
 		//calculate and mantains the number of links between the elements
 		var idSplitted = id.split("-");
 		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
-		if(linksBetweenElements[idWithoutTypology]==undefined){
-			linksBetweenElements[idWithoutTypology]=new Array();
-			linksBetweenElements[idWithoutTypology][typology]=1;
+		if(this.linksBetweenElements[idWithoutTypology]==undefined){
+			this.linksBetweenElements[idWithoutTypology]=1;
 		}else{
-			linksBetweenElements[idWithoutTypology][typology]++;
+			this.linksBetweenElements[idWithoutTypology]++;
 		}
 
 
-		var link = new Link(id, typology, first, second, stroke, stroke_width, dash_array, flash);
+		var link = new Link(id, typology, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink);
 
 
 		this.mapLinks[id] = link;
@@ -311,52 +301,6 @@ Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_
 		linkAdded = true;
 		//alert('link with id '+id+' added');
 	}
-	return linkAdded;
-}
-
-Map.prototype.setLink = function(id1, id2, typology, stroke, stroke_width, dash_array, flash)
-{
-	// check parameter
-	var linkAdded = false;
-	
-	//gets elements
-	var first = null;
-	var second = null;
-
-	//remove the element from the svg view	
-	if(this.mapElements !=null && id1 != null && id2 != null )
-	{
-		first = this.mapElements[id1];
-		second = this.mapElements[id2];
-	} else {
-		return linkAdded;
-	}
-
-	if (first == undefined || second == undefined) {
-		return linkAdded;
-	}
-
-	var id = this.getLinkId(id1,id2,typology);
-	if( (this.mapLinks[id] != undefined) ){
-		this.deleteLink(id1,id2,typology);
-	}
-	
-	//calculate and mantains the number of links between the elements
-	var idSplitted = id.split("-");
-	var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
-	if(linksBetweenElements[idWithoutTypology]==undefined){
-		linksBetweenElements[idWithoutTypology]=new Array();
-		linksBetweenElements[idWithoutTypology][typology]=1;
-	}else{
-		linksBetweenElements[idWithoutTypology][typology]++;
-	}
-	
-	var link = new Link(id, typology, first, second, stroke, stroke_width, dash_array, flash);
-			
-	this.mapLinks[id] = link;
-	this.mapLinkSize++;
-	this.svgNode.appendChild(link.getSvgNode());
-	linkAdded = true;
 	return linkAdded;
 }
 
@@ -406,12 +350,8 @@ Map.prototype.deleteLink = function(id1,id2,typology)
 	
 	//calculate and mantains the number of links between the elements
 	var idWithoutTypology = id1+"-"+id2;
-	if(linksBetweenElements[idWithoutTypology]==undefined){
-		linksBetweenElements[idWithoutTypology]=new Array();
-		linksBetweenElements[idWithoutTypology][typology]=0;
-	}else{
-		linksBetweenElements[idWithoutTypology][typology]--;
-	}
+	this.linksBetweenElements[idWithoutTypology]--;
+
 	return linkDeleted;
 }
 
@@ -419,71 +359,58 @@ Map.prototype.deleteLink = function(id1,id2,typology)
 Map.prototype.render = function()
 {
 	this.clean();
-	//try to set the background (first the color and then the image)
-	this.setBackgroundColor("#"+currentMapBackGround);
-	this.setBackgroundImage(currentMapBackGround)
 	
-	//this.rect.setAttribute("fill", "#"+currentMapBackGround);	
-	var elemToRender = null;
-	for (elemToRender in this.mapLinks) //render links
-		this.svgNode.appendChild(this.mapLinks[elemToRender].getSvgNode());
-	for (elemToRender in this.mapElements) //render mapElement
+	this.setBG();
+    
+	for ( var elemToRender in this.mapElements) //render mapElement
 		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
+	for (var linkToRender in this.mapLinks) //render links
+		this.svgNode.appendChild(this.mapLinks[linkToRender].getSvgNode());
 }
 
 // delete all nodes and links from map view
 Map.prototype.clean = function()
 {
-	var elemToRender = null;
-	if(this.mapLinks!=null && this.mapLinkSize>0) {
-	
-		for (elemToRender in this.mapLinks){
-			if(this.mapLinks[elemToRender]!=undefined){
-				var elem = this.mapLinks[elemToRender].getSvgNode();
-				if(elem.parentNode==this.svgNode){
-					this.svgNode.removeChild(elem);
-				}
-			}
-		}
-	}
-	if(this.mapElements!=null && this.mapElementSize>0) {
-		for (elemToRender in this.mapElements){
-			if(elemToRender!=null){
-				var elem = this.mapElements[elemToRender].getSvgNode();
-				if(elem.parentNode==this.svgNode){
-					this.svgNode.removeChild(elem);
-				}
-			}
-		}
-	}
+	this.resetBackground();
+	this.cleanLinks();		
+	this.cleanElements();
 }
 
 // delete all nodes and  from map 
 Map.prototype.clear = function()
 {
 	this.clean();
-
 	this.mapLinks=new Array();
-	this.mapLinkSize=0;
-
 	this.mapElements=new Array();
-	this.mapElementSize=0;
+	this.linksBetweenElements=new Array();
 	
 	//reset the array mantaining the number of links between the elements
-	linksBetweenElements=new Array();
 }
 
-//delete all  from map view
-Map.prototype.cleanLinks = function(){
-	//alert("this.mapLinks:"+this.mapLinks+"    this.mapLinkSize:"+this.mapLinkSize);
-	if(this.mapLinks!=null && this.mapLinkSize>0)
-	for (currLink in this.mapLinks){
-		if(this.mapLinks[currLink]!=undefined){
-			var elem = this.mapLinks[currLink].getSvgNode();
-			//elem.parentNode.removeChild(elem);
-			//alert(currLink);
+Map.prototype.cleanElements = function() {
+	for (var elemToRender in this.mapElements){
+		if(elemToRender!=null){
+			var elem = this.mapElements[elemToRender].getSvgNode();
 			if(elem.parentNode==this.svgNode){
 				this.svgNode.removeChild(elem);
+			}
+		}
+	}
+}
+
+Map.prototype.clearElements = function() {
+	this.cleanElements();
+	this.mapElements=new Array();
+}
+
+//delete all  links from map view
+Map.prototype.cleanLinks = function() {
+
+	for(var currLink in this.mapLinks) {
+		if(this.mapLinks[currLink]!=undefined) {
+			var link = this.mapLinks[currLink].getSvgNode();
+			if(link.parentNode==this.svgNode) {
+				this.svgNode.removeChild(link);
 			}
 		}
 	}
@@ -494,10 +421,8 @@ Map.prototype.clearLinks = function(){
 	this.cleanLinks();
 
 	this.mapLinks=new Array();
-	this.mapLinkSize=0;
-
-		//reset the array mantaining the number of links between the elements
-	linksBetweenElements=new Array();
+	//reset the array mantaining the number of links between the elements
+	this.linksBetweenElements=new Array();
 	//alert('links cleaned');
 }
 
@@ -520,9 +445,20 @@ Map.prototype.redrawLinkOnElement = function(id)
 
 Map.prototype.getMapElement = function(id)
 {
-return this.mapElements[id];
+	return this.mapElements[id];
 
 }
+
+Map.prototype.getMapElementsSize = function() {
+	if (this.mapElements) return this.mapElements.lenght;
+	return 0; 
+}
+
+Map.prototype.getMapLinksSize = function() {
+	if (this.mapLinks) return this.mapLinks.lenght;
+	return 0; 
+}
+
 Map.prototype.onMouseDownOnMap = onMouseDownOnMap;
 Map.prototype.onMouseMove = onMouseMove;
 Map.prototype.onMouseUp = onMouseUp;

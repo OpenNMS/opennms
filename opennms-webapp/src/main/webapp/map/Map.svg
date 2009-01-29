@@ -38,7 +38,7 @@
 		// ************** LOAD THE MAP APPLICATION ********************
 function startUp() {
 	// Instantiate the default map
-	map = new Map("#"+DEFAULT_BG_COLOR, "", "Background", mapWidth, mapHeight, 0, 0);
+	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0);
 	mapSvgElement.appendChild(map.getSvgNode());
 
 	// Instantiate the menus
@@ -253,7 +253,7 @@ function load(evt){
 	<svg id="MapPanel"/>
 
 	<!-- ******** WINDOWS P A N E L S ********* -->	
-	<!--g id="Windows" /-->
+	<g id="Windows"/>
 	<!-- ******** WORK P A N E L ********* -->	
 	<svg id="WorkPanel" y="0">
 
