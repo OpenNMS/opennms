@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -61,6 +63,12 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         assertEquals(2, count);
         assertEquals(2, iface.getMonitoredServices().size());
         assertEquals("192.168.1.1", iface.getInetAddress().getHostAddress());
+    }
+    
+    public void testCountMatchingInerfaces() {
+        OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
+        crit.add(Restrictions.like("ipAddress", "192.168.1.%"));
+        assertEquals(3, getIpInterfaceDao().countMatching(crit));
     }
 
     public void testGetInterfacesForNodes() {
