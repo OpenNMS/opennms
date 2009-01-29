@@ -211,12 +211,12 @@
   <jsp:param name="breadcrumb" value="Node" />
 </jsp:include>
 
-<link rel="stylesheet" type="text/css" href="extJS/resources/css/ext-all.css"/>
+<%-- <link rel="stylesheet" type="text/css" href="extJS/resources/css/ext-all.css"/>
 <link rel="stylesheet" type="text/css" href="extJS/resources/css/opennmsGridTheme.css" />
 <script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="extJS/ext-all.js"></script>
 <script type="text/javascript" src="js/nodePageIpInterfaceGrid.js"></script>
-<script type="text/javascript" src="js/nodePageEventView.js"></script>
+<script type="text/javascript" src="js/nodePageEventView.js"></script>--%>
 
 <h2>Node: ${model.label}</h2>
 <div id="linkbar">
