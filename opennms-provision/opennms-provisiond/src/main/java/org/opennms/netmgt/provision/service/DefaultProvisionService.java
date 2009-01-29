@@ -67,6 +67,7 @@ import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsRequisition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,6 +103,7 @@ public class DefaultProvisionService implements ProvisionService {
     private CategoryDao m_categoryDao;
     
     @Autowired
+    @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
     
     @Autowired
@@ -202,7 +204,7 @@ public class DefaultProvisionService implements ProvisionService {
             m_serviceTypeDao.save(svcType);
         }
         
-        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+        OnmsMonitoredService svc =new OnmsMonitoredService(iface, svcType);
         
         m_ipInterfaceDao.save(iface);
     }
