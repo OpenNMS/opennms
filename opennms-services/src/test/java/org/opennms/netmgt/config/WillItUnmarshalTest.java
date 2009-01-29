@@ -120,6 +120,7 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.StringUtils;
+import org.opennms.netmgt.config.rancid.RancidConfiguration;
 
 /**
  * The name of this class is a tribute to
@@ -534,6 +535,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testAckdConfiguration() throws Exception {
         unmarshal("ackd-configuration.xml", AckdConfiguration.class);
+    }
+    @Test
+    public void testRancidConfiguration() throws Exception {
+        unmarshal("rancid-configuration.xml", RancidConfiguration.class);
     }
 
     @Test

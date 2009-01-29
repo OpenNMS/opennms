@@ -83,7 +83,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
 import org.opennms.netmgt.config.rancid.BaseUrl;
-import org.opennms.netmgt.config.rancid.RancidConfiguration;
+
 /**
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
