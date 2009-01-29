@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2009 Jan 28: Add display-string groping and dynamic-length substrings.
+//              Enhancement bug #2997 - jeffg@opennms.org
 // 2008 May 09: Make the sub index functionality look like a function. - dj@opennms.org
 // 2008 May 09: Add support for sub-indexes in the reosurce label as well as
 //              conversion from dotted integer strings to hex.  Enhancement bug
@@ -64,8 +66,9 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class GenericIndexResourceType implements OnmsResourceType {
     private static final Pattern SUB_INDEX_PATTERN = Pattern.compile("^subIndex\\((.*)\\)$");
-    private static final Pattern SUB_INDEX_ARGUMENTS_PATTERN = Pattern.compile("^(-?\\d+)(?:,\\s*(\\d+))?$");
+    private static final Pattern SUB_INDEX_ARGUMENTS_PATTERN = Pattern.compile("^(-?\\d+|n)(?:,\\s*(\\d+|n))?$");
     private static final Pattern HEX_PATTERN = Pattern.compile("^hex\\((.*)\\)$");
+    private static final Pattern STRING_PATTERN = Pattern.compile("^string\\((.*)\\)$");
 
     private String m_name;
     private String m_label;
@@ -151,6 +154,9 @@ public class GenericIndexResourceType implements OnmsResourceType {
             label = index;
         } else {
             SymbolTable symbolTable = new SymbolTable() {
+                private int lastN;
+                private boolean lastNSet = false;
+                
                 public String getSymbolValue(String symbol) {
                     if (symbol.equals("index")) {
                         return index;
@@ -167,18 +173,34 @@ public class GenericIndexResourceType implements OnmsResourceType {
                         List<String> indexElements = tokenizeIndex(index);
                         
                         int start;
-                        int offset = Integer.parseInt(subIndexArgumentsMatcher.group(1));
-                        if (offset < 0) {
-                            start = indexElements.size() + offset;
+                        int offset;
+                        if ("n".equals(subIndexArgumentsMatcher.group(1)) && lastNSet) {
+                            start = lastN;
+                            lastNSet = false;
+                        } else if ("n".equals(subIndexArgumentsMatcher.group(1))) {
+                            // Invalid use of "n" when lastN is not set
+                            return null;
                         } else {
-                            start = offset;
+                            offset = Integer.parseInt(subIndexArgumentsMatcher.group(1));
+                            if (offset < 0) {
+                                start = indexElements.size() + offset;
+                            } else {
+                                start = offset;
+                            }
                         }
-                        
+
                         int end;
-                        if (subIndexArgumentsMatcher.group(2) == null) {
-                            end = indexElements.size();
-                        } else {                            
-                            end = start + Integer.parseInt(subIndexArgumentsMatcher.group(2));
+                        if ("n".equals(subIndexArgumentsMatcher.group(2))) {
+                            end = start + Integer.parseInt(indexElements.get(start)) + 1;
+                            start++;
+                            lastN = end;
+                            lastNSet = true;
+                        } else {
+                            if (subIndexArgumentsMatcher.group(2) == null) {
+                                end = indexElements.size();
+                            } else {                            
+                                end = start + Integer.parseInt(subIndexArgumentsMatcher.group(2));
+                            }
                         }
                         
                         if (start < 0 || start >= indexElements.size()) {
@@ -221,6 +243,19 @@ public class GenericIndexResourceType implements OnmsResourceType {
                         }
                         
                         return hexString.toString();
+                    }
+                    
+                    Matcher stringMatcher = STRING_PATTERN.matcher(symbol);
+                    if (stringMatcher.matches()) {
+                        String subSymbol = getSymbolValue(stringMatcher.group(1));
+                        List<String> indexElements = tokenizeIndex(subSymbol);
+                        
+                        StringBuffer stringString = new StringBuffer();
+                        for (String indexElement : indexElements) {
+                            stringString.append(String.format("%c", Integer.parseInt(indexElement)));
+                        }
+                        
+                        return stringString.toString();
                     }
                     
                     for (OnmsAttribute attr : set) {
