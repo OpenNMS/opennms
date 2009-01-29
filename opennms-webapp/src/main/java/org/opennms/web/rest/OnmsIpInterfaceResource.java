@@ -10,12 +10,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
@@ -49,15 +53,27 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
 
     @Context
     ResourceContext m_context;
+    
+    @Context 
+    UriInfo m_uriInfo;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeId") int nodeId) {
         log().debug("getIpInterfaces: reading interfaces for node " + nodeId);
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "getIpInterfaces: can't find node " + nodeId);
-        return new OnmsIpInterfaceList(node.getIpInterfaces());
+        
+        //OnmsNode node = m_nodeDao.get(nodeId);        
+        //if (node == null)
+            //throwException(Status.BAD_REQUEST, "getIpInterfaces: can't find node " + nodeId);
+        
+        MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+        OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        
+        setLimitOffset(params, criteria, 20);
+        
+        criteria.createCriteria("node").add(Restrictions.eq("id", nodeId));
+        
+        return new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(criteria)); //node.getIpInterfaces()
     }
 
     @GET

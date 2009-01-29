@@ -13,8 +13,51 @@ table {
 }
 /*Overriting style*/
 
-/*Cutom style*/
+/*Cutom Style begin*/
 
+/*These are the styles for the event Severity levels on the eventGrid*/
+.event-severity-border{
+	border:solid;
+	border-width:thin;
+	border-style:dotted;
+}
+
+.event-severity-clear{
+	background-color:#c4c4c4;
+	border-color:#999999;
+}
+
+.event-severity-normal{
+	background-color:#94ac6b;
+	border-color:#467000;
+}
+
+.event-severity-indeterminate{
+	background-color:#d2cb6b;
+	border-color:#b1a500;
+}
+
+.event-severity-warning{
+	background-color:#fdd96b;
+	border-color:#fcbe00;
+}
+
+.event-severity-minor{
+	background-color:#f5bb6b;
+	border-color:#ee8900;
+}
+
+.event-severity-major{
+	background-color:#ed996b;
+	border-color:#e05000;
+}
+
+.event-severity-critical{
+	background-color:#e26c6b;
+	border-color:#cd0200;
+}
+
+/*Custom Style end*/
 
 .x-grid3-header{
 	height:24px;	

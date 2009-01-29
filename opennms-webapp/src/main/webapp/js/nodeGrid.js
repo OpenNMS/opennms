@@ -1,5 +1,6 @@
 var grid;
 var urlParams;
+var panel;
 Ext.onReady(function(){
 	
 	var getParams = document.URL.split("?");
@@ -26,55 +27,41 @@ Ext.onReady(function(){
     		window.location = "element/node.jsp?node=" + r.data.nodeId;	
     	};
     })
-    
-    
-     var gridHead = grid.getView().getHeaderPanel();
-    gridHead.show();
-    
-    var tb = grid.getTopToolbar();
-    
-    var filterMenuItems = [
+	
+    /*var filterMenuItems = [
 	    new Ext.menu.CheckItem({ 
             text: 'Company', 
             checked: true, 
             group: 'filter',
             id: 'company',
-            checkHandler: onFilterItemCheck 
+            //checkHandler: onFilterItemCheck 
         }),
 	    new Ext.menu.CheckItem({ 
             text: 'Price', 
             checked: false, 
             group: 'filter',
             id: 'price',
-            checkHandler: onFilterItemCheck    
+            //checkHandler: onFilterItemCheck    
         }),
         new Ext.menu.CheckItem({ 
             text: 'Change', 
             checked: false, 
             group: 'filter',
             id: 'change',
-            checkHandler: onFilterItemCheck    
+            //checkHandler: onFilterItemCheck    
         }),
         new Ext.menu.CheckItem({ 
             text: '% Change', 
             checked: false, 
             group: 'filter',
             id: 'pctchange',
-            checkHandler: onFilterItemCheck    
+            //checkHandler: onFilterItemCheck    
         })
     ];
     var filterMenu = new Ext.menu.Menu({
 	    id: 'filterMenu',
 	    items: filterMenuItems
-    });
-    
-    tb.add({
-	    text: 'filter by ',
-	    tooltip: 'set column for search.',
-	    icon: 'find.png',
-	    cls: 'x-btn-text-icon btn-search-icon',
-	    menu: filterMenu
-    });
+    });*/
     
 	dataStore.on("load", checkFilters, this);
 	dataStore.load();
@@ -93,7 +80,7 @@ var record = new Ext.data.Record.create([
 var dataStore = new Ext.data.Store({
 	baseParams:{limit:20},
 	proxy:new Ext.data.HttpProxy({
-		url:"rest/nodes",
+		url:"rest/nodes",//'xml/node-147.xml',//"rest/nodes",
 		method:"GET",
 		extraParams:{
 			limit:20
