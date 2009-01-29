@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -29,6 +30,11 @@ public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
     public void setInterfaces(List<OnmsIpInterface> interfaces) {
         clear();
         addAll(interfaces);
+    }
+    
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        return this.size();
     }
 
 }
