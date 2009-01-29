@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2009 Jan 28: Test display-string groping and dynamic-length substrings.
+//              Enhancement bug #2997 - jeffg@opennms.org
 // 2008 May 09: Make the sub index functionality look like a function. - dj@opennms.org
 // 2008 May 09: Created this file. - dj@opennms.org
 //
@@ -289,5 +291,81 @@ public class GenericIndexResourceTypeTest extends TestCase {
         assertEquals("resource label", "MAC Address 00:15:6D:50:09:42 on interface 4", resource.getLabel());
     }
     
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubStringOfDynamicLength() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "Easy as ${subIndex(0, n)}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "5.1.2.3.4.5");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "Easy as 1.2.3.4.5", resource.getLabel());
+    }
     
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithThreeSubStringsOfDynamicLength() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "Easy as ${subIndex(0, n)} and ${subIndex(n, n)} and ${subIndex(n, n)}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "1.1.2.1.2.3.1.2.3");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "Easy as 1 and 1.2 and 1.2.3", resource.getLabel());
+    }
+    
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubStringAndDynSubStringAndDynSubStringAndSubStringToEnd() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "Easy as ${subIndex(0, 1)} and ${subIndex(1, n)} and ${subIndex(n, n)} and ${subIndex(n)}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "3.3.1.2.3.3.4.5.6.0");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "Easy as 3 and 1.2.3 and 4.5.6 and 0", resource.getLabel());
+    }
+    
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithDisplaySubStringOfDynamicLength() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "Easy as ${string(subIndex(0, n))}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "3.112.105.101");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "Easy as pie", resource.getLabel());
+    }
+    
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithSubStringAndTwoDisplaySubStringsOfDynamicLengthAndSubStringToEnd() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "Easy as ${subIndex(0, 1)} piece of ${string(subIndex(1, n))} or just under ${string(subIndex(n, n))} pieces of ${subIndex(n)}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "1.3.112.105.101.2.80.105.3.1.4.1.5.9");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "Easy as 1 piece of pie or just under Pi pieces of 3.1.4.1.5.9", resource.getLabel());
+    }
+    
+    public void testGetResourceByNodeAndIndexGetLabelIndexWithBogusUseOfNforStartOfFirstSubIndex() {
+        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceDao, "foo", "Foo Resource", "Easy as ${subIndex(n, 3)}", m_storageStrategy);
+        
+        expect(m_resourceDao.getRrdDirectory()).andReturn(new File("/a/bogus/directory"));
+        
+        m_mocks.replayAll();
+        OnmsResource resource = rt.getResourceByNodeAndIndex(1, "3.1.2.3");
+        m_mocks.verifyAll();
+        
+        assertNotNull("resource", resource);
+        assertEquals("resource label", "Easy as ${subIndex(n, 3)}", resource.getLabel());
+    }
 }
