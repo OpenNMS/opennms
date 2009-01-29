@@ -52,6 +52,8 @@ public interface OnmsDao<T, K extends Serializable> {
     
     public abstract List<T> findMatching(OnmsCriteria criteria);
 
+    public abstract int countMatching(final OnmsCriteria onmsCrit);
+    
     public abstract T get(K id);
 
     public abstract T load(K id);
