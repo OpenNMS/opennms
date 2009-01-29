@@ -265,13 +265,22 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
-    public boolean isFinished() {
+    public boolean childrenFinished() {
         for (CollectionTracker child : m_children) {
             if (!child.isFinished()) {
                 return false;
             }
         }
         return true;
+    }
+    
+    
+
+    @Override
+    public void childFinished(CollectionTracker child) {
+        if (childrenFinished()) {
+            setFinished(true);
+        }
     }
 
     public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
