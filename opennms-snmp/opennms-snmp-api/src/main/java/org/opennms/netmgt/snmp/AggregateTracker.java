@@ -300,6 +300,10 @@ public class AggregateTracker extends CollectionTracker {
             }
         }
         
+        if (count == 0) {
+            setFinished(true);
+        }
+        
         // set the nonRepeaters in the passed in pduBuilder and store indices in the childTrackers
         int nonRepeaters = 0;
         for (ChildTrackerPduBuilder childBuilder : builders) {
