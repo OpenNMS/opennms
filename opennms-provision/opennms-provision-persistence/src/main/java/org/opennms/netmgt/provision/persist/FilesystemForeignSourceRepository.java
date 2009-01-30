@@ -10,7 +10,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
@@ -22,7 +23,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         try {
-            m_jaxbContext = JAXBContext.newInstance(OnmsForeignSource.class, OnmsRequisition.class);
+            m_jaxbContext = JAXBContext.newInstance(ForeignSource.class, Requisition.class);
             m_marshaller = m_jaxbContext.createMarshaller();
             m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m_unMarshaller = m_jaxbContext.createUnmarshaller();
@@ -35,9 +36,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return getForeignSources().size();
     }
  
-    public Set<OnmsForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
+    public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         File directory = new File(m_foreignSourcePath);
-        TreeSet<OnmsForeignSource> foreignSources = new TreeSet<OnmsForeignSource>();
+        TreeSet<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
         if (directory.exists()) {
             for (File file : directory.listFiles()) {
                 if (file.getName().endsWith(".xml")) {
@@ -48,18 +49,18 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return foreignSources;
     }
 
-    public OnmsForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException {
+    public ForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException {
         File inputFile = encodeFileName(m_foreignSourcePath, foreignSourceName);
         if (inputFile != null && inputFile.exists()) {
             return get(inputFile);
         } else {
-            OnmsForeignSource fs = getDefaultForeignSource();
+            ForeignSource fs = getDefaultForeignSource();
             fs.setName(foreignSourceName);
             return fs;
         }
     }
 
-    public void save(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File outputFile = getOutputFileForForeignSource(foreignSource);
         try {
             m_marshaller.marshal(foreignSource, outputFile);
@@ -68,16 +69,16 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    public void delete(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public void delete(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForForeignSource(foreignSource);
         if (deleteFile.exists()) {
             deleteFile.delete();
         }
     }
     
-    public Set<OnmsRequisition> getRequisitions() throws ForeignSourceRepositoryException {
+    public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         File directory = new File(m_requisitionPath);
-        TreeSet<OnmsRequisition> requisitions = new TreeSet<OnmsRequisition>();
+        TreeSet<Requisition> requisitions = new TreeSet<Requisition>();
         if (directory.exists()) {
             for (File file : directory.listFiles()) {
                 if (file.getName().endsWith(".xml")) {
@@ -88,16 +89,19 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return requisitions;
     }
     
-    public OnmsRequisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException {
+    public Requisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException {
         File inputFile = encodeFileName(m_requisitionPath, foreignSourceName);
-        return getRequisition(inputFile);
+        if (inputFile != null && inputFile.exists()) {
+            return getRequisition(inputFile);
+        }
+        return null;
     }
 
-    public OnmsRequisition getRequisition(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         return getRequisition(foreignSource.getName());
     }
 
-    public void save(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
+    public void save(Requisition requisition) throws ForeignSourceRepositoryException {
         File outputFile = getOutputFileForRequisition(requisition);
         try {
             m_marshaller.marshal(requisition, outputFile);
@@ -106,7 +110,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
+    public void delete(Requisition requisition) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForRequisition(requisition);
         if (deleteFile.exists()) {
             deleteFile.delete();
@@ -120,17 +124,17 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_foreignSourcePath = path;
     }
     
-    private OnmsForeignSource get(File file) throws ForeignSourceRepositoryException {
+    private ForeignSource get(File file) throws ForeignSourceRepositoryException {
         try {
-            return m_unMarshaller.unmarshal(new StreamSource(file), OnmsForeignSource.class).getValue();
+            return m_unMarshaller.unmarshal(new StreamSource(file), ForeignSource.class).getValue();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + file.getPath(), e);
         }
     }
 
-    private OnmsRequisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
+    private Requisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
         try {
-            return m_unMarshaller.unmarshal(new StreamSource(inputFile), OnmsRequisition.class).getValue();
+            return m_unMarshaller.unmarshal(new StreamSource(inputFile), Requisition.class).getValue();
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
@@ -149,14 +153,14 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
           return new File(path, foreignSourceName + ".xml");
     }
 
-    private File getOutputFileForForeignSource(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    private File getOutputFileForForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File fsPath = new File(m_foreignSourcePath);
         createPath(fsPath);
         File outputFile = encodeFileName(m_foreignSourcePath, foreignSource.getName());
         return outputFile;
     }
 
-    private File getOutputFileForRequisition(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
+    private File getOutputFileForRequisition(Requisition requisition) throws ForeignSourceRepositoryException {
         File reqPath = new File(m_requisitionPath);
         createPath(reqPath);
         File outputFile = encodeFileName(m_requisitionPath, requisition.getForeignSource());

@@ -50,7 +50,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     @Before
     public void setUp() throws Exception {
-        
         beforeServletStart();
         
         String userDir = System.getProperty("user.dir");

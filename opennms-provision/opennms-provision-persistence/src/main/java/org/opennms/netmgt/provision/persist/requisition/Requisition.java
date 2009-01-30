@@ -9,6 +9,7 @@
 package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +32,12 @@ import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="model-import")
-public class OnmsRequisition implements Comparable<OnmsRequisition> {
+public class Requisition implements Comparable<Requisition> {
     @XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
-    protected List<Node> m_nodes;
+    protected List<RequisitionNode> m_nodes;
     
     @XmlAttribute(name="date-stamp")
     protected XMLGregorianCalendar m_dateStamp;
@@ -47,16 +48,50 @@ public class OnmsRequisition implements Comparable<OnmsRequisition> {
     @XmlAttribute(name="last-import")
     protected XMLGregorianCalendar m_lastImport;
 
-    public List<Node> getNodes() {
+    public RequisitionNode getNode(String foreignId) {
+        if (m_nodes != null) {
+            for (RequisitionNode n : m_nodes) {
+                if (n.getForeignId().equals(foreignId)) {
+                    System.err.println("returning node '" + n + "' for foreign id '" + foreignId + "'");
+                    return n;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void deleteNode(String foreignId) {
+        if (m_nodes != null) {
+            Iterator<RequisitionNode> i = m_nodes.iterator();
+            while (i.hasNext()) {
+                RequisitionNode n = i.next();
+                if (n.getForeignId().equals(foreignId)) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    public List<RequisitionNode> getNodes() {
         if (m_nodes == null) {
-            m_nodes = new ArrayList<Node>();
+            m_nodes = new ArrayList<RequisitionNode>();
         }
         return m_nodes;
     }
 
-    public void setNodes(List<Node> nodes) {
+    public void setNodes(List<RequisitionNode> nodes) {
         m_nodes = nodes;
         updateNodeCache();
+    }
+
+    public void putNode(RequisitionNode node) {
+        if (m_nodeReqs.containsKey(node.getForeignId())) {
+            RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+            m_nodes.remove(n);
+        }
+        m_nodes.add(node);
+        m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(getForeignSource(), node));
     }
 
     public XMLGregorianCalendar getDateStamp() {
@@ -89,14 +124,14 @@ public class OnmsRequisition implements Comparable<OnmsRequisition> {
 
     /* Start non-JAXB methods */
 
-    public OnmsRequisition() {
+    public Requisition() {
         updateNodeCache();
     }
 
     private void updateNodeCache() {
         m_nodeReqs.clear();
         if (m_nodes != null) {
-            for (Node n : m_nodes) {
+            for (RequisitionNode n : m_nodes) {
                 m_nodeReqs.put(n.getForeignId(), new OnmsNodeRequisition(getForeignSource(), n));
             }
         }
@@ -133,7 +168,7 @@ public class OnmsRequisition implements Comparable<OnmsRequisition> {
             .toString();
     }
 
-    public int compareTo(OnmsRequisition obj) {
+    public int compareTo(Requisition obj) {
         return new CompareToBuilder()
             .append(getForeignSource(), obj.getForeignSource())
             .append(getDateStamp(), obj.getDateStamp())
@@ -144,8 +179,8 @@ public class OnmsRequisition implements Comparable<OnmsRequisition> {
     
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof OnmsRequisition) {
-            OnmsRequisition other = (OnmsRequisition) obj;
+        if (obj instanceof Requisition) {
+            Requisition other = (Requisition) obj;
             return new EqualsBuilder()
                 .append(getForeignSource(), other.getForeignSource())
                 /*
