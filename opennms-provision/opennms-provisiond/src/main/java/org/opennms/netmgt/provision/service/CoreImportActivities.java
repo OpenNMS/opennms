@@ -38,7 +38,7 @@ import java.util.Map;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
@@ -85,12 +85,12 @@ public class CoreImportActivities {
      */
 
     @Activity( lifecycle = "import", phase = "validate" )
-    public OnmsRequisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
+    public Requisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
 
         System.out.println("Loading Spec File!");
         
         
-        OnmsRequisition specFile = m_provisionService.loadRequisition(resource);
+        Requisition specFile = m_provisionService.loadRequisition(resource);
         
         System.out.println("Finished Loading Spec File!");
 
@@ -100,7 +100,7 @@ public class CoreImportActivities {
     
     
     @Activity( lifecycle = "import", phase = "audit" )
-    public ImportOperationsManager auditNodes(OnmsRequisition specFile) {
+    public ImportOperationsManager auditNodes(Requisition specFile) {
         
         System.out.println("Auditing Nodes");
         
@@ -160,7 +160,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
-    public void relateNodes(final Phase currentPhase, final OnmsRequisition requisition) {
+    public void relateNodes(final Phase currentPhase, final Requisition requisition) {
         
         System.out.println("Running relate phase");
         

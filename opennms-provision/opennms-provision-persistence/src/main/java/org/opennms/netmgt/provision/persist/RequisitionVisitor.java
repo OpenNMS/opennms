@@ -31,21 +31,23 @@
 //
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 
 public interface RequisitionVisitor {
     
-    public void visitModelImport(OnmsRequisition req);
-    public void completeModelImport(OnmsRequisition req);
+    public void visitModelImport(Requisition req);
+    public void completeModelImport(Requisition req);
     public void visitNode(OnmsNodeRequisition nodeReq);
     public void completeNode(OnmsNodeRequisition nodeReq);
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq);
     public void completeInterface(OnmsIpInterfaceRequisition ifaceReq);
     public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq);
     public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq);
-    public void visitCategory(OnmsCategoryRequisition catReq);
-    public void completeCategory(OnmsCategoryRequisition catReq);
+    public void visitNodeCategory(OnmsNodeCategoryRequisition catReq);
+    public void completeNodeCategory(OnmsNodeCategoryRequisition catReq);
+    public void visitServiceCategory(OnmsServiceCategoryRequisition catReq);
+    public void completeServiceCategory(OnmsServiceCategoryRequisition catReq);
     public void visitAsset(OnmsAssetRequisition assetReq);
     public void completeAsset(OnmsAssetRequisition assetReq);
 

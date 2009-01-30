@@ -35,8 +35,10 @@ package org.opennms.web.rest;
 import java.text.ParseException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,10 +48,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.opennms.netmgt.model.OnmsRequisitionCollection;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategoryCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServiceCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -78,44 +94,464 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("{foreignSource}")
     @Transactional
-    public OnmsRequisition getRequisition(@PathParam("foreignSource") String foreignSource) {
+    public Requisition getRequisition(@PathParam("foreignSource") String foreignSource) {
         return m_foreignSourceRepository.getRequisition(foreignSource);
     }
 
     /**
-     * returns a plaintext string being the number of requisitions
+     * get a plain text numeric string of the number of requisitions
      * @return
      */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
-    @Transactional
     public String getCount() {
         return Integer.toString(m_foreignSourceRepository.getRequisitions().size());
     }
 
     /**
-     * Returns all the requisitions
-     * 
-     * @return Collection of OnmsRequisitions (ready to be XML-ified)
-     * @throws ParseException
+     * Get all the requisitions
      */
     @GET
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    @Transactional
-    public OnmsRequisitionCollection getRequisitions() throws ParseException {
-        return new OnmsRequisitionCollection(m_foreignSourceRepository.getRequisitions());
+    public RequisitionCollection getRequisitions() throws ParseException {
+        return new RequisitionCollection(m_foreignSourceRepository.getRequisitions());
     }
 
     /**
-     * Updates the requisition with foreign source "foreignSource" 
+     * Returns all nodes for a given requisition
+     */
+    @GET
+    @Path("{foreignSource}/nodes")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionNodeCollection getNodes(@PathParam("foreignSource") String foreignSource) throws ParseException {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req == null) {
+            return null;
+        }
+        return new RequisitionNodeCollection(req.getNodes());
+    }
+
+    /**
+     * Returns the node with the foreign ID specified for the given foreign source
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionNode getNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req == null) {
+            return null;
+        }
+        return req.getNode(foreignId);
+    }
+
+    /**
+     * Returns a collection of interfaces for a given node in the specified foreign source
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+        RequisitionNode node = getNode(foreignSource, foreignId);
+        if (node != null) {
+            return new RequisitionInterfaceCollection(node.getInterfaces());
+        }
+        return null;
+    }
+
+    /**
+     * Returns the interface with the given foreign source/foreignid/ipaddress combination.
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) throws ParseException {
+        RequisitionNode node = getNode(foreignSource, foreignId);
+        if (node != null) {
+            return node.getInterface(ipAddress);
+        }
+        return null;
+    }
+    
+    /**
+     * Returns a collection of services for a given foreignSource/foreignId/interface combination.
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) throws ParseException {
+        RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
+        if (iface != null) {
+            return new RequisitionMonitoredServiceCollection(iface.getMonitoredServices());
+        }
+        return null;
+    }
+
+    /**
+     * Returns a service for a given foreignSource/foreignId/interface/service-name combination.
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) throws ParseException {
+        RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
+        if (iface != null) {
+            return iface.getMonitoredService(service);
+        }
+        return null;
+    }
+
+    /**
+     * Returns a collection of categories for a given node in the specified foreign source
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/categories")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                return new RequisitionCategoryCollection(node.getCategories());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the requested category for a given node in the specified foreign source
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionCategory getCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("category") String category) throws ParseException {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                return node.getCategory(category);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Returns a collection of categories for a given node in the specified foreign source
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/asset")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                return new RequisitionAssetCollection(node.getAssets());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the requested category for a given node in the specified foreign source
+     */
+    @GET
+    @Path("{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionAsset getAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) throws ParseException {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                return node.getAsset(parameter);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Updates or adds a complete requisition with foreign source "foreignSource" 
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addRequisition(OnmsRequisition requisition) {
-        log().debug("addRequisition: Adding requisition " + requisition.getForeignSource());
+    public Response addOrReplaceRequisition(Requisition requisition) {
+        debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
         m_foreignSourceRepository.save(requisition);
         return Response.ok(requisition).build();
     }
 
+    /**
+     * Updates or adds a node to a requisition 
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/nodes")
+    public Response addOrReplaceNode(@PathParam("foreignSource") String foreignSource, RequisitionNode node) {
+        debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            req.putNode(node);
+            m_foreignSourceRepository.save(req);
+            return Response.ok(req).build();
+        }
+        return Response.notModified().build();
+    }
+
+    /**
+     * Updates or adds an interface to a node
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces")
+    public Response addOrReplaceInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
+        debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                node.putInterface(iface);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(req).build();
+            }
+        }
+        return Response.notModified().build();
+    }
+
+    /**
+     * Updates or adds a service to an interface
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
+    public Response addOrReplaceService(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
+        debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                RequisitionInterface iface = node.getInterface(ipAddress);
+                if (iface != null) {
+                    iface.putService(service);
+                    m_foreignSourceRepository.save(req);
+                    return Response.ok(req).build();
+                }
+            }
+        }
+        return Response.notModified().build();
+    }
+
+    /**
+     * Updates or adds a category to a node
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/nodes/{foreignId}/categories")
+    public Response addOrReplaceNodeCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
+        debug("addOrReplaceNodeCategory: Adding category %s to node %s/%s", category.getName(), foreignSource, foreignId);
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                node.putCategory(category);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(req).build();
+            }
+        }
+        return Response.notModified().build();
+    }
+
+    /**
+     * Updates or adds an asset parameter to a node
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/nodes/{foreignId}/asset")
+    public Response addOrReplaceNodeAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
+        debug("addOrReplaceNodeCategory: Adding asset %s to node %s/%s", asset.getName(), foreignSource, foreignId);
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                node.putAsset(asset);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(req).build();
+            }
+        }
+        return Response.notModified().build();
+    }
+
+    /**
+     * Updates the requisition with foreign source "foreignSource"
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{foreignSource}")
+    public Response updateRequisition(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            debug("updateRequisition: updating requisition with foreign source %s", foreignSource);
+            setProperties(params, req);
+            debug("updateRequisition: requisition with foreign source %s updated", foreignSource);
+            m_foreignSourceRepository.save(req);
+            return Response.ok(req).build();
+        }
+        return Response.notModified(foreignSource).build();
+    }
+
+    /**
+     * Updates the node with foreign id "foreignId" in foreign source "foreignSource"
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{foreignSource}/nodes/{foreignId}")
+    public Response updateNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, MultivaluedMapImpl params) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                debug("updateNode: updating node with foreign source %s and foreign id %s", foreignSource, foreignId);
+                setProperties(params, node);
+                debug("updateNode: node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(node).build();
+            }
+        }
+        return Response.notModified(foreignSource + "/" + foreignId).build();
+    }
+
+    /**
+     * Updates a specific interface
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    public Response updateInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, MultivaluedMapImpl params) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                RequisitionInterface iface = node.getInterface(ipAddress);
+                if (iface != null) {
+                    debug("updateInterface: updating interface %s on node %s/%s", ipAddress, foreignSource, foreignId);
+                    setProperties(params, iface);
+                    debug("updateInterface: interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
+                    m_foreignSourceRepository.save(req);
+                    return Response.ok(node).build();
+                }
+            }
+        }
+        return Response.notModified(foreignSource + "/" + foreignId).build();
+    }
+
+    /**
+     * Deletes the requisition with foreign source "foreignSource"
+     * @param foreignSource
+     * @return
+     */
+    @DELETE
+    @Path("{foreignSource}")
+    public Response deleteRequisition(@PathParam("foreignSource") String foreignSource) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        debug("deleteRequisition: deleting requisition with foreign source %s", foreignSource);
+        m_foreignSourceRepository.delete(req);
+        return Response.ok(req).build();
+    }
+    
+    /**
+     * Delete the node with the given foreign ID for the specified foreign source
+     */
+    @DELETE
+    @Path("{foreignSource}/nodes/{foreignId}")
+    public Response deleteNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            req.deleteNode(foreignId);
+            m_foreignSourceRepository.save(req);
+            return Response.ok(req).build();
+        }
+        return null;
+    }
+    
+    @DELETE
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    public Response deleteInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                node.deleteInterface(ipAddress);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(req).build();
+            }
+        }
+        return null;
+    }
+
+    @DELETE
+    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
+    public Response deleteInterfaceService(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                RequisitionInterface iface = node.getInterface(ipAddress);
+                if (iface != null) {
+                    iface.deleteMonitoredService(service);
+                    m_foreignSourceRepository.save(req);
+                    return Response.ok(req).build();
+                }
+            }
+        }
+        return null;
+    }
+
+    @DELETE
+    @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
+    public Response deleteCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("category") String category) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                node.deleteCategory(category);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(req).build();
+            }
+        }
+        return null;
+    }
+
+    @DELETE
+    @Path("{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    public Response deleteAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) {
+        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        if (req != null) {
+            RequisitionNode node = req.getNode(foreignId);
+            if (node != null) {
+                node.deleteAsset(parameter);
+                m_foreignSourceRepository.save(req);
+                return Response.ok(req).build();
+            }
+        }
+        return null;
+    }
+
+    private void setProperties(MultivaluedMapImpl params, Object req) {
+        BeanWrapper wrapper = new BeanWrapperImpl(req);
+        wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
+        for(String key : params.keySet()) {
+            if (wrapper.isWritableProperty(key)) {
+                Object value = null;
+                String stringValue = params.getFirst(key);
+                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                wrapper.setPropertyValue(key, value);
+            }
+        }
+    }
+
+    private void debug(String format, Object... values) {
+        System.err.println(String.format(format, values));
+//        log().debug(String.format(format, values));
+    }
+    
 }

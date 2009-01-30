@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="")
 @XmlRootElement(name="category")
-public class Category {
+public class RequisitionCategory {
 
     @XmlAttribute(name="name", required=true)
     protected String m_name;

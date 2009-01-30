@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
 
@@ -230,7 +230,7 @@ public class ImportOperationsManager {
         return m_foreignSource;
     }
 
-    public void auditNodes(OnmsRequisition requisition) {
+    public void auditNodes(Requisition requisition) {
         requisition.visit(new RequisitionAccountant(this));
     }
 

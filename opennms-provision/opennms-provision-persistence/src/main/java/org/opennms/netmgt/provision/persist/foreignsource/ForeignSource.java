@@ -33,7 +33,7 @@
  *
  */
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,6 +51,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
+import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 
 /**
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
@@ -58,7 +59,7 @@ import org.joda.time.Duration;
  *
  */
 @XmlRootElement(name="foreign-source")
-public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSource> {
+public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     private static final long serialVersionUID = 1L;
     
     @XmlAttribute(name="name")
@@ -78,10 +79,10 @@ public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSo
 
     private boolean m_default;
 
-    public OnmsForeignSource() {
+    public ForeignSource() {
     }
     
-    public OnmsForeignSource(String name) {
+    public ForeignSource(String name) {
         setName(name);
     }
     
@@ -179,7 +180,7 @@ public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSo
             .toString();
     }
 
-    public int compareTo(OnmsForeignSource obj) {
+    public int compareTo(ForeignSource obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())
             .append(getScanInterval(), obj.getScanInterval())
@@ -191,8 +192,8 @@ public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSo
     
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof OnmsForeignSource) {
-            OnmsForeignSource other = (OnmsForeignSource) obj;
+        if (obj instanceof ForeignSource) {
+            ForeignSource other = (ForeignSource) obj;
             return new EqualsBuilder()
                 .append(getName(), other.getName())
                 .append(getScanInterval(), other.getScanInterval())

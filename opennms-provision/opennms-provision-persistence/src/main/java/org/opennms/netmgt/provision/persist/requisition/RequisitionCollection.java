@@ -1,4 +1,4 @@
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -8,27 +8,26 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 
 @XmlRootElement(name="requisitions")
-public class OnmsRequisitionCollection extends LinkedList<OnmsRequisition> {
+public class RequisitionCollection extends LinkedList<Requisition> {
 
 	private static final long serialVersionUID = 1L;
 
-	public OnmsRequisitionCollection() {
+	public RequisitionCollection() {
         super();
     }
 
-    public OnmsRequisitionCollection(Collection<? extends OnmsRequisition> c) {
+    public RequisitionCollection(Collection<? extends Requisition> c) {
         super(c);
     }
 
     @XmlElement(name="onmsRequisition")
-    public List<OnmsRequisition> getRequisitions() {
+    public List<Requisition> getRequisitions() {
         return this;
     }
 
-    public void setRequisitions(List<OnmsRequisition> requisitions) {
+    public void setRequisitions(List<Requisition> requisitions) {
         clear();
         addAll(requisitions);
     }
