@@ -76,13 +76,14 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
-import org.opennms.netmgt.provision.persist.OnmsCategoryRequisition;
-import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.service.Provisioner.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
@@ -162,7 +163,7 @@ public class ProvisionerTest {
 
     private ForeignSourceRepository m_foreignSourceRepository;
     
-    private OnmsForeignSource m_foreignSource;
+    private ForeignSource m_foreignSource;
     
     @BeforeClass
     public static void setUpSnmpConfig() {
@@ -184,7 +185,7 @@ public class ProvisionerTest {
         
         m_provisioner.start();
         
-        m_foreignSource = new OnmsForeignSource();
+        m_foreignSource = new ForeignSource();
         m_foreignSource.setName("imported:");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
         
@@ -199,7 +200,7 @@ public class ProvisionerTest {
     @Transactional
     public void testVisit() throws Exception {
 
-        OnmsRequisition requisition = m_foreignSourceRepository.importRequisition(new ClassPathResource("/NewFile2.xml"));
+        Requisition requisition = m_foreignSourceRepository.importRequisition(new ClassPathResource("/NewFile2.xml"));
         CountingVisitor visitor = new CountingVisitor();
         requisition.visit(visitor);
         verifyCounts(visitor);
@@ -615,14 +616,16 @@ public class ProvisionerTest {
     private void verifyCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
-        assertEquals(3, visitor.getCategoryCount());
+        assertEquals(3, visitor.getNodeCategoryCount());
         assertEquals(4, visitor.getInterfaceCount());
         assertEquals(6, visitor.getMonitoredServiceCount());
+        assertEquals(0, visitor.getServiceCategoryCount());
         assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
         assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
-        assertEquals(visitor.getCategoryCount(), visitor.getCategoryCompletedCount());
+        assertEquals(visitor.getNodeCategoryCount(), visitor.getNodeCategoryCompletedCount());
         assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
         assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
+        assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
     }
 
     static class CountingVisitor implements RequisitionVisitor {
@@ -630,12 +633,14 @@ public class ProvisionerTest {
         private int m_modelImportCompleted;
         private int m_nodeCount;
         private int m_nodeCompleted;
+        private int m_nodeCategoryCount;
+        private int m_nodeCategoryCompleted;
         private int m_ifaceCount;
         private int m_ifaceCompleted;
         private int m_svcCount;
         private int m_svcCompleted;
-        private int m_categoryCount;
-        private int m_categoryCompleted;
+        private int m_svcCategoryCount;
+        private int m_svcCategoryCompleted;
         private int m_assetCount;
         private int m_assetCompleted;
         
@@ -671,12 +676,20 @@ public class ProvisionerTest {
             return m_svcCompleted;
         }
         
-        public int getCategoryCount() {
-            return m_categoryCount;
+        public int getNodeCategoryCount() {
+            return m_nodeCategoryCount;
         }
 
-        public int getCategoryCompletedCount() {
-            return m_categoryCompleted;
+        public int getNodeCategoryCompletedCount() {
+            return m_nodeCategoryCompleted;
+        }
+
+        public int getServiceCategoryCount() {
+            return m_svcCategoryCount;
+        }
+
+        public int getServiceCategoryCompletedCount() {
+            return m_svcCategoryCompleted;
         }
 
         public int getAssetCount() {
@@ -687,7 +700,7 @@ public class ProvisionerTest {
             return m_assetCompleted;
         }
         
-        public void visitModelImport(OnmsRequisition req) {
+        public void visitModelImport(Requisition req) {
             m_modelImportCount++;
         }
 
@@ -705,8 +718,12 @@ public class ProvisionerTest {
             m_svcCount++;
         }
 
-        public void visitCategory(OnmsCategoryRequisition catReq) {
-            m_categoryCount++;
+        public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
+            m_nodeCategoryCount++;
+        }
+        
+        public void visitServiceCategory(OnmsServiceCategoryRequisition catReq) {
+            m_svcCategoryCount++;
         }
         
         public void visitAsset(OnmsAssetRequisition assetReq) {
@@ -719,18 +736,20 @@ public class ProvisionerTest {
                 .append("modelImportCompletedCount", getModelImportCompletedCount())
                 .append("nodeCount", getNodeCount())
                 .append("nodeCompletedCount", getNodeCompletedCount())
+                .append("nodeCategoryCount", getNodeCategoryCount())
+                .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
                 .append("interfaceCount", getInterfaceCount())
                 .append("interfaceCompletedCount", getInterfaceCompletedCount())
                 .append("monitoredServiceCount", getMonitoredServiceCount())
                 .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
-                .append("categoryCount", getCategoryCount())
-                .append("categoryCompletedCount", getCategoryCompletedCount())
+                .append("serviceCategoryCount", getServiceCategoryCount())
+                .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
                 .append("assetCount", getAssetCount())
                 .append("assetCompletedCount", getAssetCompletedCount())
                 .toString());
         }
 
-        public void completeModelImport(OnmsRequisition req) {
+        public void completeModelImport(Requisition req) {
             m_modelImportCompleted++;
         }
 
@@ -746,8 +765,12 @@ public class ProvisionerTest {
             m_svcCompleted++;
         }
 
-        public void completeCategory(OnmsCategoryRequisition catReq) {
-            m_categoryCompleted++;
+        public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
+            m_nodeCategoryCompleted++;
+        }
+        
+        public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
+            m_nodeCategoryCompleted++;
         }
         
         public void completeAsset(OnmsAssetRequisition assetReq) {

@@ -33,7 +33,7 @@
  *
  */
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
 import java.util.ArrayList;

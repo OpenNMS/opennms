@@ -1,8 +1,7 @@
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.provision.persist.foreignsource;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.provision.persist.PluginConfig;
 
 @XmlRootElement(name="detector")
 public class DetectorWrapper extends PluginConfig {

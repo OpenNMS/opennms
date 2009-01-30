@@ -40,10 +40,10 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
-import org.opennms.netmgt.provision.persist.requisition.Asset;
-import org.opennms.netmgt.provision.persist.requisition.Category;
-import org.opennms.netmgt.provision.persist.requisition.Interface;
-import org.opennms.netmgt.provision.persist.requisition.Node;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 /**
  * OnmsNodeRequistion
@@ -53,12 +53,12 @@ import org.opennms.netmgt.provision.persist.requisition.Node;
 public class OnmsNodeRequisition {
     
     private String m_foreignSource;
-    private Node m_node;
+    private RequisitionNode m_node;
     private List<OnmsAssetRequisition> m_assetReqs;
     private List<OnmsIpInterfaceRequisition> m_ifaceReqs;
-    private List<OnmsCategoryRequisition> m_categoryReqs;
+    private List<OnmsNodeCategoryRequisition> m_categoryReqs;
 
-    public OnmsNodeRequisition(String foreignSource, Node node) {
+    public OnmsNodeRequisition(String foreignSource, RequisitionNode node) {
         m_foreignSource = foreignSource;
         m_node = node;
         m_assetReqs = constructAssetRequistions();
@@ -72,7 +72,7 @@ public class OnmsNodeRequisition {
     
     private List<OnmsAssetRequisition> constructAssetRequistions() {
         List<OnmsAssetRequisition> reqs = new ArrayList<OnmsAssetRequisition>(m_node.getAssets().size());
-        for(Asset asset : m_node.getAssets()) {
+        for(RequisitionAsset asset : m_node.getAssets()) {
             reqs.add(new OnmsAssetRequisition(asset));
         }
         return reqs;
@@ -80,23 +80,23 @@ public class OnmsNodeRequisition {
 
     private List<OnmsIpInterfaceRequisition> constructIpInterfaceRequistions() {
         List<OnmsIpInterfaceRequisition> reqs = new ArrayList<OnmsIpInterfaceRequisition>(m_node.getInterfaces().size());
-        for(Interface iface : m_node.getInterfaces()) {
+        for(RequisitionInterface iface : m_node.getInterfaces()) {
             reqs.add(new OnmsIpInterfaceRequisition(iface));
         }
         return reqs;
     }
 
-    private List<OnmsCategoryRequisition> constructCategoryRequistions() {
-        List<OnmsCategoryRequisition> reqs = new ArrayList<OnmsCategoryRequisition>(m_node.getCategories().size());
-        for(Category category : m_node.getCategories()) {
-            reqs.add(new OnmsCategoryRequisition(category));
+    private List<OnmsNodeCategoryRequisition> constructCategoryRequistions() {
+        List<OnmsNodeCategoryRequisition> reqs = new ArrayList<OnmsNodeCategoryRequisition>(m_node.getCategories().size());
+        for(RequisitionCategory category : m_node.getCategories()) {
+            reqs.add(new OnmsNodeCategoryRequisition(category));
         }
         return reqs;
     }
 
     public void visit(RequisitionVisitor visitor) {
         visitor.visitNode(this);
-        for (OnmsCategoryRequisition catReq : m_categoryReqs) {
+        for (OnmsNodeCategoryRequisition catReq : m_categoryReqs) {
             catReq.visit(visitor);
         }
         for(OnmsIpInterfaceRequisition ipReq : m_ifaceReqs) {
@@ -121,7 +121,7 @@ public class OnmsNodeRequisition {
         }
 
         @Override
-        public void visitCategory(OnmsCategoryRequisition catReq) {
+        public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
             bldr.addCategory(catReq.getName());
         }
 
@@ -200,9 +200,9 @@ public class OnmsNodeRequisition {
     public String getParentNodeLabel() {
         return m_node.getParentNodeLabel();
     }
-    
-    
-    
-    
 
+    public RequisitionNode getNode() {
+        return m_node;
+    }
+    
 }

@@ -31,55 +31,37 @@
  */
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 
 /**
- * AbstactImportVisitor
+ * OnmsCategoryRequisition
  *
  * @author brozow
  */
-public class AbstractRequisitionVisitor implements RequisitionVisitor {
+public class OnmsServiceCategoryRequisition {
 
-    public void completeAsset(OnmsAssetRequisition assetReq) {
+    private RequisitionCategory m_category;
+
+    public OnmsServiceCategoryRequisition(RequisitionCategory category) {
+        m_category = category;
     }
 
-    public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
+    /**
+     * @return the category
+     */
+    RequisitionCategory getCategory() {
+        return m_category;
     }
 
-    public void completeModelImport(Requisition req) {
+    public void visit(RequisitionVisitor visitor) {
+        visitor.visitServiceCategory(this);
+        visitor.completeServiceCategory(this);
     }
 
-    public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
+    public String getName() {
+        return m_category.getName();
     }
+    
+    
 
-    public void completeNode(OnmsNodeRequisition nodeReq) {
-    }
-
-    public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
-    }
-
-    public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
-    }
-
-    public void visitAsset(OnmsAssetRequisition assetReq) {
-    }
-
-    public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
-    }
-
-    public void visitModelImport(Requisition req) {
-    }
-
-    public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
-    }
-
-    public void visitNode(OnmsNodeRequisition nodeReq) {
-    }
-
-    public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
-    }
-
-    public void visitServiceCategory(OnmsServiceCategoryRequisition catReq) {
-    }
 }

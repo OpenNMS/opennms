@@ -31,7 +31,11 @@
  */
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.provision.persist.requisition.MonitoredService;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
 /**
  * OnmsMonitoredServiceRequisition
@@ -40,21 +44,34 @@ import org.opennms.netmgt.provision.persist.requisition.MonitoredService;
  */
 public class OnmsMonitoredServiceRequisition {
 
-    private MonitoredService m_svc;
+    private RequisitionMonitoredService m_svc;
+    private final List<OnmsServiceCategoryRequisition> m_categoryReqs;
 
-    public OnmsMonitoredServiceRequisition(MonitoredService svc) {
+    public OnmsMonitoredServiceRequisition(RequisitionMonitoredService svc) {
         m_svc = svc;
+        m_categoryReqs = constructCategoryReqs();
     }
     
+    private List<OnmsServiceCategoryRequisition> constructCategoryReqs() {
+        List<OnmsServiceCategoryRequisition> reqs = new ArrayList<OnmsServiceCategoryRequisition>(m_svc.getCategories().size());
+        for (RequisitionCategory cat : m_svc.getCategories()) {
+            reqs.add(new OnmsServiceCategoryRequisition(cat));
+        }
+        return reqs;
+
+    }
     /**
      * @return the svc
      */
-    MonitoredService getSvc() {
+    RequisitionMonitoredService getSvc() {
         return m_svc;
     }
 
     public void visit(RequisitionVisitor visitor) {
         visitor.visitMonitoredService(this);
+        for (OnmsServiceCategoryRequisition cat : m_categoryReqs) {
+            cat.visit(visitor);
+        }
         visitor.completeMonitoredService(this);
     }
 

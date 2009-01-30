@@ -63,9 +63,9 @@ import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
-import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -411,7 +411,7 @@ public class DefaultProvisionService implements ProvisionService {
     private NodeScanSchedule createScheduleForNode(OnmsNode node) {
         Assert.notNull(node, "Node may not be null");
 
-        OnmsForeignSource fs = null;
+        ForeignSource fs = null;
         try {
             fs = m_foreignSourceRepository.getForeignSource(node.getForeignSource());
         } catch (ForeignSourceRepositoryException e) {
@@ -444,7 +444,7 @@ public class DefaultProvisionService implements ProvisionService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.service.ProvisionService#loadRequisition(java.lang.String, org.springframework.core.io.Resource)
      */
-    public OnmsRequisition loadRequisition(Resource resource) {
+    public Requisition loadRequisition(Resource resource) {
         return m_foreignSourceRepository.importRequisition(resource);
     }
 

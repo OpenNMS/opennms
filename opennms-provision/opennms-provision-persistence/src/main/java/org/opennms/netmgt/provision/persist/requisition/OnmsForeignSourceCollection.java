@@ -1,4 +1,4 @@
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -7,10 +7,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.provision.persist.OnmsForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 
 @XmlRootElement(name="foreign-sources")
-public class OnmsForeignSourceCollection extends LinkedList<OnmsForeignSource> {
+public class OnmsForeignSourceCollection extends LinkedList<ForeignSource> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -18,16 +18,16 @@ public class OnmsForeignSourceCollection extends LinkedList<OnmsForeignSource> {
         super();
     }
 
-    public OnmsForeignSourceCollection(Collection<? extends OnmsForeignSource> c) {
+    public OnmsForeignSourceCollection(Collection<? extends ForeignSource> c) {
         super(c);
     }
 
     @XmlElement(name="foreign-source")
-    public List<OnmsForeignSource> getForeignSources() {
+    public List<ForeignSource> getForeignSources() {
         return this;
     }
 
-    public void setForeignSources(List<OnmsForeignSource> foreignSources) {
+    public void setForeignSources(List<ForeignSource> foreignSources) {
         clear();
         addAll(foreignSources);
     }

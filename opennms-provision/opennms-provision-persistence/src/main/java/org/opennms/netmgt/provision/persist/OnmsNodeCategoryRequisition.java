@@ -31,31 +31,31 @@
  */
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.provision.persist.requisition.Category;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 
 /**
  * OnmsCategoryRequisition
  *
  * @author brozow
  */
-public class OnmsCategoryRequisition {
+public class OnmsNodeCategoryRequisition {
 
-    private Category m_category;
+    private RequisitionCategory m_category;
 
-    public OnmsCategoryRequisition(Category category) {
+    public OnmsNodeCategoryRequisition(RequisitionCategory category) {
         m_category = category;
     }
 
     /**
      * @return the category
      */
-    Category getCategory() {
+    RequisitionCategory getCategory() {
         return m_category;
     }
 
     public void visit(RequisitionVisitor visitor) {
-        visitor.visitCategory(this);
-        visitor.completeCategory(this);
+        visitor.visitNodeCategory(this);
+        visitor.completeNodeCategory(this);
     }
 
     public String getName() {

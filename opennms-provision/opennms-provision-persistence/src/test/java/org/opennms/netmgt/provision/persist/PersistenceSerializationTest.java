@@ -23,6 +23,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
@@ -32,7 +34,7 @@ public class PersistenceSerializationTest {
     private Marshaller m;
 //    private Unmarshaller u;
     private JAXBContext c;
-    private OnmsForeignSource fs;
+    private ForeignSource fs;
     private FileAnticipator fa;
 
     private class TestOutputResolver extends SchemaOutputResolver {
@@ -52,7 +54,7 @@ public class PersistenceSerializationTest {
         fa = new FileAnticipator();
 
         fsr = new MockForeignSourceRepository();
-        fsr.save(new OnmsForeignSource("cheese"));
+        fsr.save(new ForeignSource("cheese"));
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
@@ -81,7 +83,7 @@ public class PersistenceSerializationTest {
         fs.setPolicies(policies);
 
         fsw = new ForeignSourceWrapper(fsr.getForeignSources());
-        c = JAXBContext.newInstance(ForeignSourceWrapper.class, OnmsForeignSource.class);
+        c = JAXBContext.newInstance(ForeignSourceWrapper.class, ForeignSource.class);
 
         m = c.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

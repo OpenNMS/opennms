@@ -34,8 +34,8 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.provision.persist.requisition.Interface;
-import org.opennms.netmgt.provision.persist.requisition.MonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
 /**
  * OnmsIpInterfaceRequisition
@@ -44,26 +44,24 @@ import org.opennms.netmgt.provision.persist.requisition.MonitoredService;
  */
 public class OnmsIpInterfaceRequisition {
     
-    private Interface m_iface;
-    
-    private List<OnmsMonitoredServiceRequisition> m_svcReqs;
+    private RequisitionInterface m_iface;
+    private final List<OnmsMonitoredServiceRequisition> m_svcReqs;
 
-    public OnmsIpInterfaceRequisition(Interface iface) {
+    public OnmsIpInterfaceRequisition(RequisitionInterface iface) {
         m_iface = iface;
         m_svcReqs = constructSvcReqs();
     }
     
-    Interface getInterface() {
+    RequisitionInterface getInterface() {
         return m_iface;
     }
     
     private List<OnmsMonitoredServiceRequisition> constructSvcReqs() {
         List<OnmsMonitoredServiceRequisition> reqs = new ArrayList<OnmsMonitoredServiceRequisition>(m_iface.getMonitoredServices().size());
-        for (MonitoredService svc : m_iface.getMonitoredServices()) {
+        for (RequisitionMonitoredService svc : m_iface.getMonitoredServices()) {
             reqs.add(new OnmsMonitoredServiceRequisition(svc));
         }
         return reqs;
-
     }
 
     public void visit(RequisitionVisitor visitor) {

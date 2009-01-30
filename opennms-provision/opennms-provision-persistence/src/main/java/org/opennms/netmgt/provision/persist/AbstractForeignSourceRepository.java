@@ -5,21 +5,22 @@ import java.io.InputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
 
-    public OnmsRequisition importRequisition(Resource resource) throws ForeignSourceRepositoryException {
+    public Requisition importRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         try {
             InputStream resourceStream = resource.getInputStream();
-            JAXBContext context = JAXBContext.newInstance(OnmsRequisition.class);
+            JAXBContext context = JAXBContext.newInstance(Requisition.class);
             Unmarshaller um = context.createUnmarshaller();
             um.setSchema(null);
-            OnmsRequisition req = (OnmsRequisition) um.unmarshal(resourceStream);
+            Requisition req = (Requisition) um.unmarshal(resourceStream);
             save(req);
             return req;
         } catch (Exception e) {
@@ -27,17 +28,17 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         }
     }
     
-    public OnmsForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
+    public ForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
         Resource defaultForeignSource = new ClassPathResource("/default-foreign-source.xml");
         if (!defaultForeignSource.exists()) {
             defaultForeignSource = new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml");
         }
         try {
             InputStream fsStream = defaultForeignSource.getInputStream();
-            JAXBContext context = JAXBContext.newInstance(OnmsForeignSource.class);
+            JAXBContext context = JAXBContext.newInstance(ForeignSource.class);
             Unmarshaller um = context.createUnmarshaller();
             um.setSchema(null);
-            OnmsForeignSource fs = (OnmsForeignSource) um.unmarshal(fsStream);
+            ForeignSource fs = (ForeignSource) um.unmarshal(fsStream);
             fs.setDefault(true);
             return fs;
         } catch (Exception e) {
@@ -46,7 +47,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
-        OnmsRequisition req = getRequisition(foreignSource);
+        Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
 }

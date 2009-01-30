@@ -51,15 +51,15 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
-import org.opennms.netmgt.model.DetectorCollection;
-import org.opennms.netmgt.model.DetectorWrapper;
-import org.opennms.netmgt.model.OnmsForeignSourceCollection;
-import org.opennms.netmgt.model.PolicyCollection;
-import org.opennms.netmgt.model.PolicyWrapper;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.OnmsForeignSource;
-import org.opennms.netmgt.provision.persist.PluginConfig;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
+import org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection;
+import org.opennms.netmgt.provision.persist.foreignsource.DetectorWrapper;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection;
+import org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper;
+import org.opennms.netmgt.provision.persist.requisition.OnmsForeignSourceCollection;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +101,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     }
 
     /**
-     * Returns the requested {@link OnmsForeignSource}
+     * Returns the requested {@link ForeignSource}
      * @param foreignSource the foreign source name
      * @return the foreign source
      */
@@ -109,7 +109,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Path("{foreignSource}")
     @Transactional
-    public OnmsForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
+    public ForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
         return m_foreignSourceRepository.getForeignSource(foreignSource);
     }
 
@@ -170,7 +170,7 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addForeignSource(OnmsForeignSource foreignSource) {
+    public Response addForeignSource(ForeignSource foreignSource) {
         log().debug("addForeignSource: Adding foreignSource " + foreignSource.getName());
         m_foreignSourceRepository.save(foreignSource);
         return Response.ok(foreignSource).build();
@@ -182,7 +182,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Transactional
     public Response addDetector(@PathParam("foreignSource") String foreignSource, DetectorWrapper detector) {
         log().debug("addDetector: Adding detector " + detector.getName());
-        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         fs.addDetector(detector);
         m_foreignSourceRepository.save(fs);
         return Response.ok(detector).build();
@@ -194,7 +194,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Transactional
     public Response addPolicy(@PathParam("foreignSource") String foreignSource, PolicyWrapper policy) {
         log().debug("addPolicy: Adding policy " + policy.getName());
-        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         fs.addPolicy(policy);
         m_foreignSourceRepository.save(fs);
         return Response.ok(policy).build();
@@ -204,7 +204,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{foreignSource}")
     public Response updateForeignSource(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
-        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         log().debug("updateForeignSource: updating foreign source " + foreignSource);
         BeanWrapper wrapper = new BeanWrapperImpl(fs);
         wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
@@ -224,7 +224,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}")
     public Response deleteForeignSource(@PathParam("foreignSource") String foreignSource) {
-        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         log().debug("deleteForeignSource: deleting foreign source " + foreignSource);
         m_foreignSourceRepository.delete(fs);
         return Response.ok(fs).build();
@@ -233,7 +233,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/detectors/{detector}")
     public Response deleteDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
-        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         List<PluginConfig> detectors = fs.getDetectors();
         PluginConfig removed = removeEntry(detectors, detector);
         if (removed != null) {
@@ -247,7 +247,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @DELETE
     @Path("{foreignSource}/policies/{policy}")
     public Response deletePolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
-        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         List<PluginConfig> policies = fs.getPolicies();
         PluginConfig removed = removeEntry(policies, policy);
         if (removed != null) {

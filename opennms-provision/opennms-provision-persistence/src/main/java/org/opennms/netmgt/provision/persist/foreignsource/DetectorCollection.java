@@ -1,4 +1,4 @@
-package org.opennms.netmgt.model;
+package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -7,7 +7,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.provision.persist.PluginConfig;
 
 @XmlRootElement(name="detectors")
 public class DetectorCollection extends LinkedList<PluginConfig> {

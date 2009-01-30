@@ -95,7 +95,7 @@ public abstract class CollectionTracker implements Collectable {
             m_parent.childFinished(this);
         }
     }
-    
+
     public void childFinished(CollectionTracker child) {
     }
 

@@ -14,7 +14,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,14 +47,14 @@ public class FilesystemForeignSourceRepositoryTest {
         m_defaultForeignSourceName = m_modelImport.getForeignSource();
     }
 
-    private OnmsRequisition createRequisition() throws Exception {
-        OnmsRequisition r = m_foreignSourceRepository.importRequisition(new ClassPathResource("/requisition-test.xml"));
+    private Requisition createRequisition() throws Exception {
+        Requisition r = m_foreignSourceRepository.importRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         return r;
     }
 
-    private OnmsForeignSource createForeignSource(String foreignSource) throws Exception {
-        OnmsForeignSource fs = new OnmsForeignSource(foreignSource);
+    private ForeignSource createForeignSource(String foreignSource) throws Exception {
+        ForeignSource fs = new ForeignSource(foreignSource);
         fs.addDetector(new PluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
@@ -62,7 +64,7 @@ public class FilesystemForeignSourceRepositoryTest {
     @Test
     public void testRequisition() throws Exception {
         createRequisition();
-        OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        Requisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         TestVisitor v = new TestVisitor();
         r.visit(v);
         assertEquals("number of nodes visited", 1, v.getNodeReqs().size());
@@ -72,8 +74,8 @@ public class FilesystemForeignSourceRepositoryTest {
     @Test
     public void testForeignSource() throws Exception {
         createRequisition();
-        OnmsForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        Set<OnmsForeignSource> foreignSources = m_foreignSourceRepository.getForeignSources();
+        ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
+        Set<ForeignSource> foreignSources = m_foreignSourceRepository.getForeignSources();
         assertEquals("number of foreign sources must be 1", 1, foreignSources.size());
         assertEquals("getAll() foreign source name must match", m_defaultForeignSourceName, foreignSources.iterator().next().getName());
         assertEquals("get() must return the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource(m_defaultForeignSourceName));
@@ -81,8 +83,8 @@ public class FilesystemForeignSourceRepositoryTest {
 
     @Test
     public void testGetRequisition() throws Exception {
-        OnmsRequisition requisition = createRequisition();
-        OnmsForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
+        Requisition requisition = createRequisition();
+        ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
         assertEquals("requisitions must match", m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName), m_foreignSourceRepository.getRequisition(foreignSource));
         assertEquals("foreign source is the expected one", requisition, m_foreignSourceRepository.getRequisition(foreignSource));
     }
@@ -93,7 +95,7 @@ public class FilesystemForeignSourceRepositoryTest {
         List<String> detectorList = Arrays.asList(new String[]{ "Citrix", "DHCP", "DNS", "DominoIIOP", "FTP", "HTTP", "HTTPS", "ICMP",
                 "IMAP", "LDAP", "NRPE", "POP3", "Radius", "SMB", "SMTP", "SNMP", "SSH" });
         String uuid = UUID.randomUUID().toString();
-        OnmsForeignSource defaultForeignSource = m_foreignSourceRepository.getForeignSource(uuid);
+        ForeignSource defaultForeignSource = m_foreignSourceRepository.getForeignSource(uuid);
         assertEquals("name must match requested foreign source repository name", uuid, defaultForeignSource.getName());
         assertEquals("scan-interval must be 1 day", 86400000, defaultForeignSource.getScanInterval().getMillis());
         assertEquals("foreign source must have no default policies", 0, defaultForeignSource.getPolicies().size());

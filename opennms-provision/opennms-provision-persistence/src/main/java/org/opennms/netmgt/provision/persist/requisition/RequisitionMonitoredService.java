@@ -22,22 +22,22 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="", propOrder = { "m_categories" })
 @XmlRootElement(name="monitored-service")
-public class MonitoredService {
+public class RequisitionMonitoredService {
 
     @XmlElement(name="category")
-    protected List<Category> m_categories;
+    protected List<RequisitionCategory> m_categories;
     
     @XmlAttribute(name="service-name", required=true)
     protected String m_serviceName;
 
-    public List<Category> getCategories() {
+    public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
-            m_categories = new ArrayList<Category>();
+            m_categories = new ArrayList<RequisitionCategory>();
         }
         return m_categories;
     }
 
-    public void setCategories(List<Category> categories) {
+    public void setCategories(List<RequisitionCategory> categories) {
         m_categories = categories;
     }
 

@@ -1,15 +1,14 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Test
-    @Ignore
     public void testRequisition() throws Exception {
         createRequisition();
         String url = "/requisitions";
@@ -24,51 +23,167 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         url = "/requisitions/test";
         sendPut(url, "dateStamp=2009-01-01T00:00:00");
         sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("date-stamp=\"2006-03-09T00:03:09\""));
+        xml = sendRequest(GET, url, 204);
     }
 
-    /*
     @Test
-    public void testDetectors() throws Exception {
-        createForeignSource();
+    public void testNodes() throws Exception {
+        createRequisition();
 
-        String url = "/foreignSources/test/detectors";
-        String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<detectors>"));
-        assertTrue(xml.contains("<detector "));
-        assertTrue(xml.contains("name=\"DHCP\""));
+        String url = "/requisitions/test/nodes";
+
+        // create a node
+        sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"1111\" />");
         
-        url = "/foreignSources/test/detectors/HTTP";
+        // get list of nodes
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("<node "));
+        assertTrue(xml.contains("node-label="));
+        assertTrue(xml.contains("count=\"2\""));
+        
+        // get individual node
+        url = "/requisitions/test/nodes/4243";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
+        assertTrue(xml.contains("parent-node-label=\"apknd\""));
+        
+        // set attributes
+        sendPut(url, "nodeLabel=homo+sapien");
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("node-label=\"homo sapien\""));
 
+        // delete node
         xml = sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
     }
 
     @Test
-    public void testPolicies() throws Exception {
-        createForeignSource();
+    public void testNodeInterfaces() throws Exception {
+        createRequisition();
+        
+        String base = "/requisitions/test/nodes/4243/interfaces";
+        String xml;
+        
+        // create an interface
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"172.20.1.254\" descr=\"Monkey\"><monitored-service service-name=\"ICMP\"/></interface>");
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"172.20.1.254\" descr=\"Blah\"><monitored-service service-name=\"ICMP\"/></interface>");
+        
+        // get list of interfaces
+        xml = sendRequest(GET, base, 200);
+        assertTrue(xml.contains("count=\"3\""));
+        assertTrue(xml.contains("<interface "));
+        assertTrue(xml.contains("Blah"));
+        assertFalse(xml.contains("Monkey"));
 
-        String url = "/foreignSources/test/policies";
-        String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<policies>"));
-        assertTrue(xml.contains("<policy "));
-        assertTrue(xml.contains("name=\"lower-case-node\""));
-        
-        url = "/foreignSources/test/policies/all-ipinterfaces";
+        // get individual interface
+        String url = base + "/172.20.1.204";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
-        
+        assertTrue(xml.contains("<interface "));
+        assertTrue(xml.contains("VPN interface"));
+        assertFalse(xml.contains("172.20.1.201"));
+
+        // set attributes
+        sendPut(url, "descr=Total+Crap");
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("descr=\"Total Crap\""));
+
+        // delete interface
         xml = sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
-    }
-    */
 
+        // confirm there is one less interface
+        xml = sendRequest(GET, base, 200);
+        assertTrue(xml.contains("count=\"2\""));
+    }
+
+    @Test
+    public void testNodeInterfaceServices() throws Exception {
+        createRequisition();
+        
+        String base = "/requisitions/test/nodes/4243/interfaces/172.20.1.204/services";
+        
+        // create a service
+        sendPost(base, "<monitored-service xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" service-name=\"MONKEY\" />");
+
+        // get list of services
+        String xml = sendRequest(GET, base, 200);
+        assertTrue(xml.contains("count=\"3\""));
+        assertTrue(xml.contains("ICMP"));
+
+        // get individual service
+        String url = base + "/ICMP";
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("service-name=\"ICMP\""));
+
+        // delete interface
+        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(GET, url, 204);
+
+        // confirm there is one less interface
+        xml = sendRequest(GET, base, 200);
+        assertTrue(xml.contains("count=\"2\""));
+    }
+    
+    @Test
+    public void testNodeCategories() throws Exception {
+        createRequisition();
+
+        String base = "/requisitions/test/nodes/4243/categories";
+
+        // create a category
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"Dead Servers\" />");
+
+        // get list of categories
+        String url = base;
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("count=\"4\""));
+        assertTrue(xml.contains("name=\"low\""));
+        
+        // get individual category
+        url = "/requisitions/test/nodes/4243/categories/low";
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("name=\"low\""));
+        
+        // delete category
+        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(GET, url, 204);
+        
+        // confirm there are less categories
+        xml = sendRequest(GET, "/requisitions/test/nodes/4243/categories", 200);
+        assertTrue(xml.contains("count=\"3\""));
+    }
+    
+    @Test
+    public void testNodeAssets() throws Exception {
+        createRequisition();
+        
+        String base = "/requisitions/test/nodes/4243/asset";
+
+        // create an asset
+        sendPost(base, "<asset xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"manufacturer\" value=\"Dead Servers, Inc.\" />");
+
+        // get list of asset parameters
+        String url = base;
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("count=\"3\""));
+        assertTrue(xml.contains("Windows Pi"));
+        
+        // get individual asset parameter
+        url = "/requisitions/test/nodes/4243/asset/operatingSystem";
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("value=\"Windows Pi\""));
+        
+        // delete asset parameter
+        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(GET, url, 204);
+        
+        // confirm there are less categories
+        xml = sendRequest(GET, "/requisitions/test/nodes/4243/asset", 200);
+        assertTrue(xml.contains("count=\"2\""));
+    }
+    
     private void createRequisition() throws Exception {
         String req =
-            "<model-import date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
+            "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
                 "<node node-label=\"david\" parent-node-label=\"apknd\" foreign-id=\"4243\">" +
                     "<interface ip-addr=\"172.20.1.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +

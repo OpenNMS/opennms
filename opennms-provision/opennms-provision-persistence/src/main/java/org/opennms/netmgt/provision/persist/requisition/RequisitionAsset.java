@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="")
 @XmlRootElement(name="asset")
-public class Asset {
+public class RequisitionAsset {
 
     @XmlAttribute(name="name", required=true)
     protected String m_name;

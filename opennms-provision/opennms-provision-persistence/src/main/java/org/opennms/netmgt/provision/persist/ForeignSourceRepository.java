@@ -37,7 +37,8 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.Set;
 
-import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.Resource;
 
 /**
@@ -49,17 +50,17 @@ import org.springframework.core.io.Resource;
 public interface ForeignSourceRepository {
 
     public int getForeignSourceCount() throws ForeignSourceRepositoryException;
-    public Set<OnmsForeignSource> getForeignSources() throws ForeignSourceRepositoryException;
-    public OnmsForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException;
-    public void save(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException;
-    public void delete(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException;
+    public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException;
+    public ForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException;
+    public void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
+    public void delete(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
 
-    public OnmsRequisition importRequisition(Resource resource) throws ForeignSourceRepositoryException;
-    public Set<OnmsRequisition> getRequisitions() throws ForeignSourceRepositoryException;
-    public OnmsRequisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException;
-    public OnmsRequisition getRequisition(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException;
-    public void save(OnmsRequisition requisition) throws ForeignSourceRepositoryException;
-    public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException;
+    public Requisition importRequisition(Resource resource) throws ForeignSourceRepositoryException;
+    public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException;
+    public Requisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException;
+    public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
+    public void save(Requisition requisition) throws ForeignSourceRepositoryException;
+    public void delete(Requisition requisition) throws ForeignSourceRepositoryException;
     
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException;
 }
