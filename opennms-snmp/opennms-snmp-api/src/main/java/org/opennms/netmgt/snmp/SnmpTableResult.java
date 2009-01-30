@@ -36,6 +36,7 @@
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -48,19 +49,17 @@ public class SnmpTableResult {
 
     private final RowCallback m_callback;
     private final SnmpObjId[] m_columns;
-    
+    private final List<SnmpObjId> m_finishedColumns;
+
     private Map<SnmpInstId,SnmpRowResult> m_pendingData;
     private boolean m_finished = false;
     
     public SnmpTableResult(RowCallback callback, SnmpObjId... columns) {
         m_callback = callback;
         m_columns = columns;
-        
+
+        m_finishedColumns = new ArrayList<SnmpObjId>();
         m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
-    }
-    
-    private RowCallback getCallback() {
-        return m_callback;
     }
     
     private int getColumnCount() {
@@ -68,24 +67,16 @@ public class SnmpTableResult {
     }
 
     /**
-     * @return the pendingData
-     */
-    private Map<SnmpInstId, SnmpRowResult> getPendingData() {
-        return m_pendingData;
-    }
-
-    /**
      * @param res
      */
     void storeResult(SnmpResult res) {
-        int columnInstance = res.getBase().getLastSubId();
-        if (!getPendingData().containsKey(res.getInstance())) {
-            getPendingData().put(res.getInstance(), new SnmpRowResult(getColumnCount(), res.getInstance()));
+        if (!m_pendingData.containsKey(res.getInstance())) {
+            m_pendingData.put(res.getInstance(), new SnmpRowResult(getColumnCount(), res.getInstance()));
         }
-        SnmpRowResult row = getPendingData().get(res.getInstance());
-        row.setResult(columnInstance, res);
-        
-        handleCompleteRows(false);
+        SnmpRowResult row = m_pendingData.get(res.getInstance());
+        row.setResult(res.getBase(), res);
+
+        handleCompleteRows();
     }
 
     public void setFinished(boolean finished) {
@@ -96,37 +87,23 @@ public class SnmpTableResult {
         return m_finished;
     }
 
-    boolean hasRow() {
-        if (isFinished()) {
-            if (!getPendingData().isEmpty()) {
-                return true;
-            }
-            return false;
-        } else {
-            for (SnmpRowResult rr : getPendingData().values()) {
-                if (rr.isComplete()) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+    void handleCompleteRows() {
+        SnmpInstId lastInstance = null;
 
-    void handleCompleteRows(boolean force) {
-        if (this != null) {
-            if (hasRow()) {
-                boolean complete = isFinished() || force;
-                List<SnmpInstId> keys = new ArrayList<SnmpInstId>(getPendingData().keySet());
-                for (int i = 0; i < keys.size(); i++) {
-                    SnmpInstId key = keys.get(i);
-                    SnmpRowResult row = getPendingData().get(key);
-                    if (row != null) {
-                        if (complete || row.isComplete()) {
-                            complete = true;
-                            getPendingData().remove(key);
-                            getCallback().rowCompleted(row);
-                        }
-                    }
+        for (SnmpRowResult row : m_pendingData.values()) {
+            if (row.isComplete(m_finishedColumns.toArray(new SnmpObjId[m_finishedColumns.size()]))) {
+                lastInstance = row.getInstance();
+            }
+        }
+        
+        if (lastInstance != null || isFinished()) {
+            Iterator<SnmpInstId> i = m_pendingData.keySet().iterator();
+            while (i.hasNext()) {
+                SnmpInstId key = i.next();
+                m_callback.rowCompleted(m_pendingData.get(key));
+                i.remove();
+                if (key.equals(lastInstance)) {
+                    break;
                 }
             }
         }
@@ -134,14 +111,15 @@ public class SnmpTableResult {
 
     void tableFinished() {
         setFinished(true);
-        handleCompleteRows(true);
+        handleCompleteRows();
     }
 
     /**
      * @param base
      */
     public void columnFinished(SnmpObjId columnId) {
-                
+        m_finishedColumns.add(columnId);
+        handleCompleteRows();
     }
 
 }

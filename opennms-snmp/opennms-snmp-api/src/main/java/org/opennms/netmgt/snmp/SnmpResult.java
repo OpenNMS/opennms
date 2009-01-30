@@ -1,13 +1,11 @@
 package org.opennms.netmgt.snmp;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class SnmpResult implements Serializable, Comparable<SnmpResult> {
+public class SnmpResult implements Comparable<SnmpResult> {
     private static final long serialVersionUID = 1L;
 
     private final SnmpObjId m_base;

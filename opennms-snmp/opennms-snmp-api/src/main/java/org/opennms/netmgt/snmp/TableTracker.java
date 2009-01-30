@@ -41,8 +41,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 
@@ -72,7 +70,6 @@ public class TableTracker extends CollectionTracker {
         }
     }
 
-
     public boolean childrenFinished() {
         for (ColumnTracker ct : m_columnTrackers) {
             if (!ct.isFinished()) {
@@ -82,11 +79,6 @@ public class TableTracker extends CollectionTracker {
         return true;
     }
     
-    
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.snmp.CollectionTracker#childFinished(org.opennms.netmgt.snmp.CollectionTracker)
-     */
     @Override
     public void childFinished(CollectionTracker child) {
         if (childrenFinished()) {
@@ -147,7 +139,7 @@ public class TableTracker extends CollectionTracker {
         return trackers;
     }
 
-    private class CombinedColumnResponseProcessor implements ResponseProcessor {
+    static private class CombinedColumnResponseProcessor implements ResponseProcessor {
         private final List<ResponseProcessor> m_processors;
         private int m_currentIndex = 0;
 

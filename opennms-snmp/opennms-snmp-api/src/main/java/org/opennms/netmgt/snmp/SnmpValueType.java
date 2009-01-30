@@ -61,7 +61,7 @@ public enum SnmpValueType {
     
     static {
         for (SnmpValueType type : SnmpValueType.values()) {
-            s_intMap.put(new Integer(type.getInt()), type);
+            s_intMap.put(Integer.valueOf(type.getInt()), type);
         }
     }
 
@@ -79,6 +79,6 @@ public enum SnmpValueType {
     }
     
     public static SnmpValueType valueOf(int i) {
-        return s_intMap.get(new Integer(i));
+        return s_intMap.get(Integer.valueOf(i));
     }
 }

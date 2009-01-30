@@ -60,7 +60,7 @@ class Snmp4JValue implements SnmpValue {
     
     Snmp4JValue(Variable value) {
         if (value == null) {
-            new NullPointerException("value attribute cannot be null");
+            throw new NullPointerException("value attribute cannot be null");
         }
         m_value = value;
     }
@@ -121,7 +121,7 @@ class Snmp4JValue implements SnmpValue {
             throw new IllegalArgumentException("invalid syntax "+syntax);
         }
         if (m_value == null) {
-            new IllegalArgumentException("value object created from syntax " + syntax + " is null");
+            throw new IllegalArgumentException("value object created from syntax " + syntax + " is null");
         }
 
     }
@@ -253,9 +253,9 @@ class Snmp4JValue implements SnmpValue {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
             Counter64 cnt = (Counter64)m_value;
-            if (cnt.getValue() > 0)
+            if (cnt.getValue() > 0) {
                 return BigInteger.valueOf(cnt.getValue());
-            else {
+            } else {
                 return new BigInteger(cnt.toString());
             }
         case SMIConstants.SYNTAX_INTEGER:
@@ -279,11 +279,13 @@ class Snmp4JValue implements SnmpValue {
     }
     
     public boolean isDisplayable() {
-        if (isNumeric())
+        if (isNumeric()) {
             return true;
+        }
         
-        if (getType() == SnmpValue.SNMP_OBJECT_IDENTIFIER || getType() == SnmpValue.SNMP_IPADDRESS)
+        if (getType() == SnmpValue.SNMP_OBJECT_IDENTIFIER || getType() == SnmpValue.SNMP_IPADDRESS) {
             return true;
+        }
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
             return allBytesDisplayable(getBytes());
@@ -293,10 +295,10 @@ class Snmp4JValue implements SnmpValue {
     }
 
 	private boolean allBytesDisplayable(byte[] bytes) {
-		for(int i = 0; i < bytes.length; i++) {
-		    byte b = bytes[i];
-		    if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127)
-		        return false;
+		for (byte b : bytes) {
+		    if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127) {
+                return false;
+            }
 		}
 		return true;
 	}
