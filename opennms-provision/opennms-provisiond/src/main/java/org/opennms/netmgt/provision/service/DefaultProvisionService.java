@@ -65,7 +65,7 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;

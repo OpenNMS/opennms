@@ -12,12 +12,4 @@
   	<property name="foreignSourcePath" value="${importer.cacheDir}/foreign-sources" />
   </bean>
 
-  <bean id="foreignSourceDao" class="org.opennms.netmgt.dao.ForeignSourceDaoFilesystem">
-    <property name="foreignSourceRepository" ref="foreignSourceRepository" />
-  </bean>
-  
-  <bean id="requisitionDao" class="org.opennms.netmgt.dao.RequisitionDaoFilesystem">
-    <property name="foreignSourceRepository" ref="foreignSourceRepository" />
-  </bean>
-
 </beans>

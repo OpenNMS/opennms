@@ -31,7 +31,7 @@
  */
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.config.modelimport.MonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.MonitoredService;
 
 /**
  * OnmsMonitoredServiceRequisition
@@ -53,7 +53,7 @@ public class OnmsMonitoredServiceRequisition {
         return m_svc;
     }
 
-    void visit(RequisitionVisitor visitor) {
+    public void visit(RequisitionVisitor visitor) {
         visitor.visitMonitoredService(this);
         visitor.completeMonitoredService(this);
     }

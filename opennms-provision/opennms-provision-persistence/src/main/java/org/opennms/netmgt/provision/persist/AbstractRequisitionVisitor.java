@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.provision.persist;
 
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
+
 
 /**
  * AbstactImportVisitor

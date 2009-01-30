@@ -31,7 +31,7 @@
  */
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.config.modelimport.Category;
+import org.opennms.netmgt.provision.persist.requisition.Category;
 
 /**
  * OnmsCategoryRequisition
@@ -53,7 +53,7 @@ public class OnmsCategoryRequisition {
         return m_category;
     }
 
-    void visit(RequisitionVisitor visitor) {
+    public void visit(RequisitionVisitor visitor) {
         visitor.visitCategory(this);
         visitor.completeCategory(this);
     }
