@@ -115,7 +115,13 @@ public class EventRestService extends OnmsRestService {
 		OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
 		setLimitOffset(params, criteria, 10);
 		addFiltersToCriteria(params, criteria, OnmsEvent.class);
-		return new OnmsEventCollection(m_eventDao.findMatching(criteria));
+		
+		OnmsEventCollection eventCol = new OnmsEventCollection(m_eventDao.findMatching(criteria));
+		OnmsCriteria crit = new OnmsCriteria(OnmsEvent.class);
+		addFiltersToCriteria(params, crit, OnmsEvent.class);
+		
+		eventCol.setTotalCount(m_eventDao.countMatching(crit));
+		return eventCol;
 	}
 
 	/**

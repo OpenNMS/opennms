@@ -70,10 +70,16 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         
         setLimitOffset(params, criteria, 20);
-        
         criteria.createCriteria("node").add(Restrictions.eq("id", nodeId));
         
-        return new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(criteria)); //node.getIpInterfaces()
+        OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(criteria));
+        
+        //kind of a hack to get the total count of items. rework this
+        OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
+        crit.createCriteria("node").add(Restrictions.eq("id", nodeId));
+        interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(crit));
+        
+        return interfaceList;
     }
 
     @GET

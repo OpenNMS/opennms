@@ -160,7 +160,8 @@ var dataStore = new Ext.data.Store({
 		}
 	}),
 	reader:new Ext.data.XmlReader({
-		record:"ipInterface"
+		record:"ipInterface",
+		totalRecords:"@totalCount"
 	}, record)
 })
 
@@ -195,17 +196,7 @@ var ipInterfacePagingBar = new Ext.PagingToolbar({
         emptyMsg: "No topics to display",
         
         items:[
-            '-', {
-            pressed: true,
-            enableToggle:true,
-            text: 'Show Preview',
-            cls: 'x-btn-text-icon details',
-            toggleHandler: function(btn, pressed){
-                var view = grid.getView();
-                view.showPreview = pressed;
-                view.refresh();
-            }
-        }]
+            '-', { }]
 
 });
 
