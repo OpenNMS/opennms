@@ -463,7 +463,7 @@ public class TestAgentTest extends TestCase {
             m_agent.send(pdu);
             fail("Cannot send Bulk Pdus to V1 agent");
         } catch(Exception e) {
-            
+            e.printStackTrace();
         }
     }
 
@@ -579,10 +579,11 @@ public class TestAgentTest extends TestCase {
     }
 
     private SnmpObjId verifyBulkVarBind(SnmpObjId oid, ResponsePdu resp, int index) {
-        if (index < resp.size())
+        if (index < resp.size()) {
             return verifyNextVarBind(oid, resp.getVarBindAt(index));
-        else
+        } else {
             return oid;
+        }
     }
     
     public Object getAgentValueFor(SnmpObjId objId) {

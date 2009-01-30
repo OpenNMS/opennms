@@ -49,7 +49,7 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
     
     private TestTrapListener m_trapListener;
 
-    private final class TestTrapProcessor implements TrapProcessor {
+    static private final class TestTrapProcessor implements TrapProcessor {
         public void setCommunity(String community) {
             // TODO Auto-generated method stub
             
