@@ -46,6 +46,7 @@ import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.JavaMailer;
@@ -222,7 +223,7 @@ public class JavaMailerTest {
     }
 
     // FIXME: took this out a david's suggestion
-    @Test
+    @Ignore
     public final void testJavaMailerUsingMTAExplicitly() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA explicitly");
 
@@ -235,7 +236,7 @@ public class JavaMailerTest {
     }
 
     // FIXME: took this out a david's suggestion
-    @Test
+    @Ignore
     public final void testJavaMailerUsingMTAByTransport() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using MTA by transport");
 
@@ -249,7 +250,7 @@ public class JavaMailerTest {
         jm.mailSend();
     }
 
-    @Test
+    @Ignore
     @IfProfileValue(name="runMailTests", value="true")
     public final void testJavaMailerWithFileAttachment() throws Exception {
         JavaMailer jm = createMailer("Test message with file attachment from testJavaMailer");
