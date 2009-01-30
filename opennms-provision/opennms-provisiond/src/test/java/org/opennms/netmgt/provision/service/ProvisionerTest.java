@@ -74,7 +74,6 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsCategoryRequisition;
@@ -82,7 +81,8 @@ import org.opennms.netmgt.provision.persist.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.opennms.netmgt.provision.service.Provisioner.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
@@ -199,8 +199,7 @@ public class ProvisionerTest {
     @Transactional
     public void testVisit() throws Exception {
 
-        OnmsRequisition requisition = new OnmsRequisition();
-        requisition.loadResource(new ClassPathResource("/NewFile2.xml"));
+        OnmsRequisition requisition = m_foreignSourceRepository.importRequisition(new ClassPathResource("/NewFile2.xml"));
         CountingVisitor visitor = new CountingVisitor();
         requisition.visit(visitor);
         verifyCounts(visitor);

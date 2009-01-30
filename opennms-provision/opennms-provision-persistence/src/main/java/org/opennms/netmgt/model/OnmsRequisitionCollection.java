@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 
 @XmlRootElement(name="requisitions")
 public class OnmsRequisitionCollection extends LinkedList<OnmsRequisition> {

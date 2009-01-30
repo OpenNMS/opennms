@@ -8,8 +8,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
-import org.springframework.core.io.FileSystemResource;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 
 
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
@@ -99,7 +100,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public void save(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
         File outputFile = getOutputFileForRequisition(requisition);
         try {
-            requisition.saveResource(new FileSystemResource(outputFile));
+            m_marshaller.marshal(requisition, outputFile);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         }
@@ -121,7 +122,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     
     private OnmsForeignSource get(File file) throws ForeignSourceRepositoryException {
         try {
-            return (OnmsForeignSource) m_unMarshaller.unmarshal(file);
+            return m_unMarshaller.unmarshal(new StreamSource(file), OnmsForeignSource.class).getValue();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + file.getPath(), e);
         }
@@ -129,9 +130,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     private OnmsRequisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
         try {
-            OnmsRequisition req = new OnmsRequisition();
-            req.loadResource(new FileSystemResource(inputFile));
-            return req;
+            return m_unMarshaller.unmarshal(new StreamSource(inputFile), OnmsRequisition.class).getValue();
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }

@@ -39,7 +39,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
