@@ -2,12 +2,14 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Test
+    @Ignore
     public void testForeignSources() throws Exception {
         createForeignSource();
         String url = "/foreignSources";
