@@ -15,6 +15,7 @@ function initEventView(){
 		colModel:eventColumnModel,
 		sm: eventSelectionModel,
 		loadMask:true,
+		bbar:eventPagingBar,
 		
 		// customize view config
         viewConfig: {
@@ -59,19 +60,6 @@ function initEventView(){
 		border:false,
 		items:[
 			eventGrid
-		],
-		bbar:[
-			new Ext.Button({
-				text:'Acknowledge',
-				handler:acknowledgeEvent
-			}),
-			
-			new Ext.menu.Separator(),
-			
-			new Ext.Button({
-				text:'Reset',
-				handler:resetEventGridSelection
-			})
 		]
 	});
 	
@@ -100,7 +88,7 @@ eventStore = new Ext.data.Store({
 	}),
 	reader:new Ext.data.XmlReader({
 		record:"onmsEvent",
-		totalRecords:"@count"
+		totalRecords:"@totalCount"
 	}, eventRecord)
 })
 
@@ -127,6 +115,14 @@ eventColumnModel = new Ext.grid.ColumnModel([
 		align:'center'
 	}
 ])
+
+var eventPagingBar = new Ext.PagingToolbar({
+	pageSize: 20,
+    store: eventStore,
+    displayInfo: true,
+    displayMsg: 'Displaying topics {0} - {1} of {2}',
+    emptyMsg: "No topics to display",
+})
 
 // pluggable renders
 function renderTopic(value, p, record){
@@ -164,7 +160,7 @@ function onmsEventDateFormatter(value){
 	var dateArray = value.split("T");
 	var date = dateArray[0].split("-");
 	var time = dateArray[1].split('-')[0];
-	return String.format("{0}/{1}/{2} {3}",date[2], date[1], date[0], time);
+	return String.format("{0}/{1}/{2} {3}",date[1], date[2], date[0], time);
 }
 
 function getSeverityStyle(severityLevel){
