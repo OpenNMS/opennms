@@ -40,7 +40,7 @@ critAppIndex changed status to down (exited.)&lt;/p&gt;&lt;table&gt;
 			critAppLastExitStatus=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
 </event>
 <event>
 	<mask>
@@ -77,7 +77,7 @@ critAppIndex changed status to up.&lt;/p&gt;&lt;table&gt;
 			critAppProcID=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppDown:%dpname%:%nodeid%:%parm[#1]%"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>

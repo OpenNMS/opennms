@@ -211,7 +211,7 @@ whether Diagnostics for a particular port failed&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.1916.1.30</mevalue>
+			<mevalue>.1.3.6.1.4.1.1916.1.30.0.0</mevalue>
 		</maskelement>
 		<maskelement>
 			<mename>generic</mename>
@@ -510,7 +510,7 @@ the DOS threshold is cleared for any of the ports.&lt;/p&gt;&lt;table&gt;
 			extremeEsrpDmnActivePortWeight=%parm[#11]% 
 			extremeEsrpDmnTrackedActivePortWeight=%parm[#12]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-ESRP-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-IP-SECURITY-MIB -->
@@ -577,7 +577,601 @@ Security protections&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Minor</severity>
 </event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.34.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeIpSecurityAnomalyIpViolation</uei>
+	<event-label>EXTREME-IP-SECURITY-MIB defined trap event: extremeIpSecurityAnomalyIpViolation</event-label>
+	<descr>
+&lt;p&gt;For ports on which the protocol anomaly protection IP 
+features has been enabled, this trap will be generated when a packet 
+received on that port if the packet's source IP == destination IP&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyIpProto&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		icmp(1)
+		tcp(6)
+		udp(17)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeIpSecurityAnomalyIpViolation trap received 
+			esAnomalyPortIfIndex=%parm[#1]% 
+			esAnomalyVlanIfIndex=%parm[#2]% 
+			esAnomalyVlanDescr=%parm[#3]% 
+			esAnomalySrcMacAddress=%parm[#4]% 
+			esAnomalyDestMacAddress=%parm[#5]% 
+			esAnomalyVlanTag=%parm[#6]% 
+			esAnomalySrcIpAddrType=%parm[#7]% 
+			esAnomalySrcIpAddr=%parm[#8]% 
+			esAnomalyDestIpAddrType=%parm[#9]% 
+			esAnomalyDestIpAddr=%parm[#10]% 
+			esAnomalyIpProto=%parm[#11]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.34.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeIpSecurityAnomalyL4PortViolation</uei>
+	<event-label>EXTREME-IP-SECURITY-MIB defined trap event: extremeIpSecurityAnomalyL4PortViolation</event-label>
+	<descr>
+&lt;p&gt;For ports on which the protocol anomaly protection L4port 
+features has been enabled, this trap will be generated when a packet 
+received on that port if 
+1) the packet is a TCP or UDP packetr.  AND 
+2) its source L4 port == destination port&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyIpProto&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		icmp(1)
+		tcp(6)
+		udp(17)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcL4Port&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestL4Port&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeIpSecurityAnomalyL4PortViolation trap received 
+			esAnomalyPortIfIndex=%parm[#1]% 
+			esAnomalyVlanIfIndex=%parm[#2]% 
+			esAnomalyVlanDescr=%parm[#3]% 
+			esAnomalySrcMacAddress=%parm[#4]% 
+			esAnomalyDestMacAddress=%parm[#5]% 
+			esAnomalyVlanTag=%parm[#6]% 
+			esAnomalySrcIpAddrType=%parm[#7]% 
+			esAnomalySrcIpAddr=%parm[#8]% 
+			esAnomalyDestIpAddrType=%parm[#9]% 
+			esAnomalyDestIpAddr=%parm[#10]% 
+			esAnomalyIpProto=%parm[#11]% 
+			esAnomalySrcL4Port=%parm[#12]% 
+			esAnomalyDestL4Port=%parm[#13]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.34.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeIpSecurityAnomalyTcpFlagViolation</uei>
+	<event-label>EXTREME-IP-SECURITY-MIB defined trap event: extremeIpSecurityAnomalyTcpFlagViolation</event-label>
+	<descr>
+&lt;p&gt;For ports on which the protocol anomaly protection TCP flags 
+features has been enabled, this trap will be generated when a TCP 
+packet received on that port if 
+1) (TCP flag SYN is set) and (its TCP source port &lt; 1024). OR   
+2) (TCP flag == 0) and (TCP seq # == 0). OR   
+3) (TCP flag FIN/URG/PSH bits sre set) and (TCP seq # == 0). OR   
+4) Both TCP iflag SYN and FIN are set&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcL4Port&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestL4Port&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyTcpFlagReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		flagSynAndSrcPort(1)
+		flagAndSeq(2)
+		flagFinAndUrgAandPshandSeq(3)
+		flagSynAndFin(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyTcpFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyTcpSeq&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#15]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeIpSecurityAnomalyTcpFlagViolation trap received 
+			esAnomalyPortIfIndex=%parm[#1]% 
+			esAnomalyVlanIfIndex=%parm[#2]% 
+			esAnomalyVlanDescr=%parm[#3]% 
+			esAnomalySrcMacAddress=%parm[#4]% 
+			esAnomalyDestMacAddress=%parm[#5]% 
+			esAnomalyVlanTag=%parm[#6]% 
+			esAnomalySrcIpAddrType=%parm[#7]% 
+			esAnomalySrcIpAddr=%parm[#8]% 
+			esAnomalyDestIpAddrType=%parm[#9]% 
+			esAnomalyDestIpAddr=%parm[#10]% 
+			esAnomalySrcL4Port=%parm[#11]% 
+			esAnomalyDestL4Port=%parm[#12]% 
+			esAnomalyTcpFlagReason=%parm[#13]% 
+			esAnomalyTcpFlag=%parm[#14]% 
+			esAnomalyTcpSeq=%parm[#15]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.34.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeIpSecurityAnomalyTcpFragmentViolation</uei>
+	<event-label>EXTREME-IP-SECURITY-MIB defined trap event: extremeIpSecurityAnomalyTcpFragmentViolation</event-label>
+	<descr>
+&lt;p&gt;For ports on which the protocol anomaly protection TCP fragment 
+features has been enabled, this trap will be generated when a packet 
+received on that port if 
+1) the packet is a TCP, and its size of the TCP header is less than pre-configured value; or
+2) the packet is a TCP and it is a IP fragmented packet (IP offset != 0)&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyTcpFragmentReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		tcpHdrLessSize(1)
+		tcpFragmented(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyTcpHdrSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeIpSecurityAnomalyTcpFragmentViolation trap received 
+			esAnomalyPortIfIndex=%parm[#1]% 
+			esAnomalyVlanIfIndex=%parm[#2]% 
+			esAnomalyVlanDescr=%parm[#3]% 
+			esAnomalySrcMacAddress=%parm[#4]% 
+			esAnomalyDestMacAddress=%parm[#5]% 
+			esAnomalyVlanTag=%parm[#6]% 
+			esAnomalySrcIpAddrType=%parm[#7]% 
+			esAnomalySrcIpAddr=%parm[#8]% 
+			esAnomalyDestIpAddrType=%parm[#9]% 
+			esAnomalyDestIpAddr=%parm[#10]% 
+			esAnomalyTcpFragmentReason=%parm[#11]% 
+			esAnomalyTcpHdrSize=%parm[#12]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.34.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeIpSecurityAnomalyIcmpViolation</uei>
+	<event-label>EXTREME-IP-SECURITY-MIB defined trap event: extremeIpSecurityAnomalyIcmpViolation</event-label>
+	<descr>
+&lt;p&gt;For ports on which the protocol anomaly protection ICMP 
+features has been enabled, this trap will be generated when an ICMP 
+packet received on that port if 
+1) the size of ICMP (IP payload) is large thant pre-configured value; or   
+2) it is a fragmented IP/ICMP packet (IP offset != 0)&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyVlanTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalySrcIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyDestIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	esAnomalyIcmpReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		icmpOverSize(1)
+		icmpFragmented(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeIpSecurityAnomalyIcmpViolation trap received 
+			esAnomalyPortIfIndex=%parm[#1]% 
+			esAnomalyVlanIfIndex=%parm[#2]% 
+			esAnomalyVlanDescr=%parm[#3]% 
+			esAnomalySrcMacAddress=%parm[#4]% 
+			esAnomalyDestMacAddress=%parm[#5]% 
+			esAnomalyVlanTag=%parm[#6]% 
+			esAnomalySrcIpAddrType=%parm[#7]% 
+			esAnomalySrcIpAddr=%parm[#8]% 
+			esAnomalyDestIpAddrType=%parm[#9]% 
+			esAnomalyDestIpAddr=%parm[#10]% 
+			esAnomalyIcmpReason=%parm[#11]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
 <!-- End of auto generated data from MIB: EXTREME-IP-SECURITY-MIB -->
+<!-- Start of auto generated data from MIB: EXTREME-PORT-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.4.13.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremePortMauChangeTrap</uei>
+	<event-label>EXTREME-PORT-MIB defined trap event: extremePortMauChangeTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever a  MAU is inserted or removed. When the mau is inserted, the value of extremePortMauStatus will be 'insrted' and extremePortMauType indicates the type of the mau inserted. If mau is removed, the value of extremePortMauStatus is empty and the type of the mau will be NONE&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	extremePortMauType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	extremePortMauStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inserted(1)
+		empty(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremePortMauChangeTrap trap received 
+			ifIndex=%parm[#1]% 
+			extremePortMauType=%parm[#2]% 
+			extremePortMauStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: EXTREME-PORT-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-SOFTWARE-MONITOR-MIB -->
 <event>
 	<mask>
@@ -667,6 +1261,47 @@ Security protections&lt;/p&gt;&lt;table&gt;
 			extremeServiceLicenseType=%parm[#2]% 
 			imageDescription=%parm[#3]% 
 			noOfDaysLeft=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.32.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeTrialLicenseExpiration</uei>
+	<event-label>EXTREME-SOFTWARE-MONITOR-MIB defined trap event: extremeTrialLicenseExpiration</event-label>
+	<descr>
+&lt;p&gt;Trial license expiry notification is generated every day.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trialPeriod&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	imageDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	noOfDaysLeft&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeTrialLicenseExpiration trap received 
+			trialPeriod=%parm[#1]% 
+			imageDescription=%parm[#2]% 
+			noOfDaysLeft=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
@@ -1279,14 +1914,12 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 		f96ti(29)
 		wdm4(30)
 		f32fi(31)
-		tenGx3(32)
+		tenGig(32)
 		tenGigLR(33)
 		g16x3(34)
 		g24t3(35)
 		gm16x3(36)
 		gm16t3(37)
-		fm16t3(38)
-		fm32p(39)
 		fm8v(50)
 		wm4t1(51)
 		wm4t3(52)
@@ -1301,6 +1934,36 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 		a3c(107)
 		a12c(108)
 		pxm(200)
+		msm1(203)
+		msm1xl(204)
+		g60t(400)
+		g60x(401)
+		teng6x(402)
+		msm-g8x(414)
+		g8x(415)
+		g48t(416)
+		g48p(417)
+		g24x(418)
+		teng4x(419)
+		teng2x(420)
+		g20x(421)
+		teng2h(422)
+		msm5(425)
+		msm5r(426)
+		gm20t(427)
+		gm20xt(428)
+		gm20xtr(429)
+		xm2x(430)
+		xm2xr(431)
+		msm6r(432)
+		g48te(433)
+		g48ta(434)
+		g48pe(435)
+		g48x(437)
+		msm-48(447)
+		teng4ca(448)
+		teng4xa(449)
+		xm2hr(469)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -1331,14 +1994,12 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 		f96ti(29)
 		wdm4(30)
 		f32fi(31)
-		tenGx3(32)
+		tenGig(32)
 		tenGigLR(33)
 		g16x3(34)
 		g24t3(35)
 		gm16x3(36)
 		gm16t3(37)
-		fm16t3(38)
-		fm32p(39)
 		fm8v(50)
 		wm4t1(51)
 		wm4t3(52)
@@ -1355,6 +2016,36 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 		a12c(108)
 		pxm(200)
 		msm3(202)
+		msm1(203)
+		msm1xl(204)
+		g60t(400)
+		g60x(401)
+		teng6x(402)
+		msm-g8x(414)
+		g8x(415)
+		g48t(416)
+		g48p(417)
+		g24x(418)
+		teng4x(419)
+		teng2x(420)
+		g20x(421)
+		teng2h(422)
+		msm5(425)
+		msm5r(426)
+		gm20t(427)
+		gm20xt(428)
+		gm20xtr(429)
+		xm2x(430)
+		xm2xr(431)
+		msm6r(432)
+		g48te(433)
+		g48ta(434)
+		g48pe(435)
+		g48x(437)
+		msm-48(447)
+		teng4ca(448)
+		teng4xa(449)
+		xm2hr(469)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -1646,50 +2337,122 @@ out by the device.&lt;/p&gt;&lt;table&gt;
 			ifAlias=%parm[#5]% 
 			ifDescr=%parm[#6]%&lt;/p&gt;
 		</logmsg>
-	<severity>Normal</severity>
+	<severity>Warning</severity>
 </event>
 <event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.1916</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>22</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/extreme/traps/extremeCpuHealthCheckFailed</uei>
-        <event-label>EXTREME-TRAP-MIB defined trap event: extremeCpuHealthCheckFailed</event-label>
-        <descr>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/extremeCpuHealthCheckFailed</uei>
+	<event-label>EXTREME-TRAP-MIB defined trap event: extremeCpuHealthCheckFailed</event-label>
+	<descr>
 &lt;p&gt;Cpu HealthCheck has failed.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-        sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-        sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-        extremeSlotNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
-                        extremeCpuHealthCheckFailed trap received
-                        sysUpTime=%parm[#1]%
-                        sysDescr=%parm[#2]%
-                        extremeSlotNumber=%parm[#3]%&lt;/p&gt;
-                </logmsg>
+	extremeSlotNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			extremeCpuHealthCheckFailed trap received 
+			sysUpTime=%parm[#1]% 
+			sysDescr=%parm[#2]% 
+			extremeSlotNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
         <severity>Minor</severity>
     	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="3" auto-clean="true"/>	
 </event>
 <!-- End of auto generated data from MIB: EXTREME-TRAP-MIB -->
+<!-- Start of auto generated data from MIB: EXTREME-UPM-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1916.1.35</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/upmProfileEventExecution</uei>
+	<event-label>EXTREME-UPM-MIB defined trap event: upmProfileEventExecution</event-label>
+	<descr>
+&lt;p&gt;This trap will be generated, when a profile is executed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmProfileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmExecutionId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmEventType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		devicedetect(1)
+		deviceundetect(2)
+		userauthenticated(3)
+		userunauthenticated(4)
+		upmTimer(5)
+		userrequest(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmExecutionStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		success(1)
+		failure(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmProfileExecVars&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	upmTimerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			upmProfileEventExecution trap received 
+			upmProfileName=%parm[#1]% 
+			upmExecutionId=%parm[#2]% 
+			upmEventType=%parm[#3]% 
+			upmExecutionStatus=%parm[#4]% 
+			upmPort=%parm[#5]% 
+			upmProfileExecVars=%parm[#6]% 
+			upmTimerName=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: EXTREME-UPM-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-V2TRAP-MIB -->
 <event>
 	<mask>
@@ -3356,7 +4119,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 			extremeEapsSharedPortRootBlockerId=%parm[#3]% 
 			extremeEapsLastStatusChange=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 <mask>
@@ -3430,7 +4193,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 			extremeLacpGroup=%parm[#1]% 
 			extremeLacpMemberPort=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -3465,7 +4228,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 			extremeLacpGroup=%parm[#1]% 
 			extremeLacpMemberPort=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-V2TRAP-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-WIRELESS-MIB -->
@@ -4295,9 +5058,211 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
                         extremeWirelessPhysInterfacePHYChannel=%parm[#2]%
                         extremeWirelessPhysInterfaceChannelAutoSelectStatus=%parm[#3]%&lt;/p&gt;
                 </logmsg>
-        <severity>Indeterminate</severity>
+        <severity>Warning</severity>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-WIRELESS-MIB -->
+<!-- Start of auto generated data from MIB: LOAD-BAL-SYSTEM-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapMisc</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapMisc</event-label>
+	<descr>
+&lt;p&gt;Uncatagorized trap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapMisc trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapServiceDown</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapServiceDown</event-label>
+	<descr>
+&lt;p&gt;Service Came Down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapServiceDown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapServiceUP</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapServiceUP</event-label>
+	<descr>
+&lt;p&gt;Service Came Up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapServiceUP trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapReset</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapReset</event-label>
+	<descr>
+&lt;p&gt;System Reset.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapReset trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapDenial</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapDenial</event-label>
+	<descr>
+&lt;p&gt;REQUEST DENIAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapDenial trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapLogin</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapLogin</event-label>
+	<descr>
+&lt;p&gt;Root Login.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapLogin trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapRemoveUnit</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapRemoveUnit</event-label>
+	<descr>
+&lt;p&gt;Removing unit. Potential failover of this load balancer.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapRemoveUnit trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3375.1.1.110.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/extreme/traps/loadBalTrapAddUnit</uei>
+	<event-label>LOAD-BAL-SYSTEM-MIB defined trap event: loadBalTrapAddUnit</event-label>
+	<descr>
+&lt;p&gt;Adding unit. This load balancer has taken responsibility for a new unit id.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loadBalTrapAddUnit trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: LOAD-BAL-SYSTEM-MIB -->
 <!-- Start of auto generated data from MIB: WAN-TRAP-MIB -->
 <event>
 	<mask>
