@@ -51,12 +51,12 @@ public abstract class AbstractSnmpStore {
 
     public Integer getInt32(String key) {
         SnmpValue val = getValue(key);
-        return (val == null ? null : new Integer(val.toInt()));
+        return (val == null ? null : Integer.valueOf(val.toInt()));
     }
 
     public Long getUInt32(String key) {
         SnmpValue val = getValue(key);
-        return (val == null ? null : new Long(val.toLong()));
+        return (val == null ? null : Long.valueOf(val.toLong()));
     }
 
     public String getDisplayString(String key) {

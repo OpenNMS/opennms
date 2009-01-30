@@ -73,7 +73,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     }
 
     public void delete(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-        m_foreignSources.remove(foreignSource);
+        m_foreignSources.remove(foreignSource.getName());
     }
 
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
@@ -98,7 +98,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     }
 
     public void delete(Requisition requisition) throws ForeignSourceRepositoryException {
-        m_requisitions.remove(requisition);
+        m_requisitions.remove(requisition.getForeignSource());
     }
 
 }

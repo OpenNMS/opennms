@@ -72,7 +72,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public void delete(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForForeignSource(foreignSource);
         if (deleteFile.exists()) {
-            deleteFile.delete();
+            if (!deleteFile.delete()) {
+                throw new ForeignSourceRepositoryException("unable to delete foreign source file " + deleteFile);
+            }
         }
     }
     
@@ -113,7 +115,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public void delete(Requisition requisition) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForRequisition(requisition);
         if (deleteFile.exists()) {
-            deleteFile.delete();
+            if (!deleteFile.delete()) {
+                throw new ForeignSourceRepositoryException("unable to delete requisition file " + deleteFile);
+            }
         }
     }
     

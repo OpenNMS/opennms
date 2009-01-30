@@ -37,7 +37,7 @@ public class PersistenceSerializationTest {
     private ForeignSource fs;
     private FileAnticipator fa;
 
-    private class TestOutputResolver extends SchemaOutputResolver {
+    static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;
         
         public TestOutputResolver(File schemaFile) {

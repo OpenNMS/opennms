@@ -48,6 +48,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,7 +160,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
     public SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
         if (log().isDebugEnabled()) {
-            log().debug("set: OIDs: " + oids + " values: " + values + " for Agent: " + agentConfig);
+            log().debug("set: OIDs: " + Arrays.toString(oids) + " values: " + Arrays.toString(values) + " for Agent: " + agentConfig);
         }
         
         return buildAndSendPdu(agentConfig, PDU.SET, oids, values);
@@ -197,7 +198,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      */
     public SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         if (log().isDebugEnabled()) {
-            log().debug("get: OID: "+oids+" for Agent:"+agentConfig);
+            log().debug("get: OID: "+Arrays.toString(oids)+" for Agent:"+agentConfig);
         }
         
         return buildAndSendPdu(agentConfig, PDU.GET, oids, null);
@@ -232,7 +233,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      */
     public SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         if (log().isDebugEnabled()) {
-            log().debug("getNext: OID: "+oids+" for Agent:"+agentConfig);
+            log().debug("getNext: OID: "+Arrays.toString(oids)+" for Agent:"+agentConfig);
         }
         
         return buildAndSendPdu(agentConfig, PDU.GETNEXT, oids, null);
@@ -343,7 +344,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             retvalues = convertResponseToValues(responseEvent);
 
             if (log().isDebugEnabled()) {
-                log().debug("send: Snmp operation successful. Value: "+retvalues);
+                log().debug("send: Snmp operation successful. Value: "+Arrays.toString(retvalues));
             }
         }
 

@@ -12,7 +12,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.util.Assert;
 
 public class SnmpRowResult implements Comparable<SnmpRowResult> {
-    private final Map<Integer, SnmpResult> m_results = new TreeMap<Integer,SnmpResult>();
+    private final Map<SnmpObjId, SnmpResult> m_results = new TreeMap<SnmpObjId,SnmpResult>();
     private SnmpInstId m_instance;
     private int m_columnCount;
 
@@ -21,9 +21,21 @@ public class SnmpRowResult implements Comparable<SnmpRowResult> {
         m_columnCount = columnCount;
     }
 
-    public boolean isComplete() {
+    public boolean isComplete(SnmpObjId... ignoreColumns) {
         if (m_results.size() == m_columnCount) {
             return true;
+        } else if (m_results.size() > 0 && ignoreColumns.length > 0) {
+            /* 
+             * short-circuit if the table result is telling us to consider
+             * certain SnmpObjId's as finished
+             */
+            int total = m_results.size();
+            for (SnmpObjId col : ignoreColumns) {
+                if (!m_results.containsKey(col)) {
+                    total++;
+                }
+            }
+            return total == m_columnCount;
         }
         return false;
     }
@@ -32,15 +44,11 @@ public class SnmpRowResult implements Comparable<SnmpRowResult> {
         return m_columnCount;
     }
 
-    public SnmpResult get(int column) {
-        return m_results.get(column);
-    }
-
     public List<SnmpResult> getResults() {
         return new ArrayList<SnmpResult>(m_results.values());
     }
     
-    public void setResult(Integer column, SnmpResult result) {
+    public void setResult(SnmpObjId column, SnmpResult result) {
         Assert.isTrue(m_instance.equals(result.getInstance()), "unexpected result "+result+" passed to row with instance "+m_instance);
         m_results.put(column, result);
     }

@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -37,32 +36,34 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @ContextConfiguration(locations={"classpath:emptyContext.xml"})
 @JUnitSnmpAgent(port=9161, resource="classpath:snmpTestData1.properties")
 public class SnmpTrackerTest {
-    
-    private final SnmpObjId m_ifTable = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
-    private final SnmpObjId m_ifIndex = SnmpObjId.get(m_ifTable, "1");
-    private final SnmpObjId m_ifDescr = SnmpObjId.get(m_ifTable, "2");
-    private final SnmpObjId m_ifType = SnmpObjId.get(m_ifTable, "3");
-    private final SnmpObjId m_ifMtu = SnmpObjId.get(m_ifTable, "4");
-    private final SnmpObjId m_ifSpeed = SnmpObjId.get(m_ifTable, "5");
-    private final SnmpObjId m_ifPhysAddress = SnmpObjId.get(m_ifTable, "6");
-    private final SnmpObjId m_ifAdminStatus = SnmpObjId.get(m_ifTable, "7");
-    private final SnmpObjId m_ifOperStatus = SnmpObjId.get(m_ifTable, "8");
-    private final SnmpObjId m_ifLastChange = SnmpObjId.get(m_ifTable, "9");
-    private final SnmpObjId m_ifInOctets = SnmpObjId.get(m_ifTable, "10");
-    private final SnmpObjId m_ifInUcastPkts = SnmpObjId.get(m_ifTable, "11");
-    private final SnmpObjId m_ifInNUcastPkts = SnmpObjId.get(m_ifTable, "12");
-    private final SnmpObjId m_ifInDiscards = SnmpObjId.get(m_ifTable, "13");
-    private final SnmpObjId m_ifInErrors = SnmpObjId.get(m_ifTable, "14");
-    private final SnmpObjId m_ifUnknownProtos = SnmpObjId.get(m_ifTable, "15");
-    private final SnmpObjId m_ifOutOctets = SnmpObjId.get(m_ifTable, "16");
-    private final SnmpObjId m_ifOutUcastPkts = SnmpObjId.get(m_ifTable, "17");
-    private final SnmpObjId m_ifOutNUcastPkts = SnmpObjId.get(m_ifTable, "18");
-    private final SnmpObjId m_ifOutDiscards = SnmpObjId.get(m_ifTable, "19");
-    private final SnmpObjId m_ifOutErrors = SnmpObjId.get(m_ifTable, "20");
-    private final SnmpObjId m_ifOutQLen = SnmpObjId.get(m_ifTable, "21");
-    private final SnmpObjId m_ifSpecific = SnmpObjId.get(m_ifTable, "22");
 
-    private class CountingColumnTracker extends ColumnTracker {
+    public static class SnmpTableConstants {
+        static final SnmpObjId ifTable = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
+        static final SnmpObjId ifIndex = SnmpObjId.get(ifTable, "1");
+        static final SnmpObjId ifDescr = SnmpObjId.get(ifTable, "2");
+        static final SnmpObjId ifType = SnmpObjId.get(ifTable, "3");
+        static final SnmpObjId ifMtu = SnmpObjId.get(ifTable, "4");
+        static final SnmpObjId ifSpeed = SnmpObjId.get(ifTable, "5");
+        static final SnmpObjId ifPhysAddress = SnmpObjId.get(ifTable, "6");
+        static final SnmpObjId ifAdminStatus = SnmpObjId.get(ifTable, "7");
+        static final SnmpObjId ifOperStatus = SnmpObjId.get(ifTable, "8");
+        static final SnmpObjId ifLastChange = SnmpObjId.get(ifTable, "9");
+        static final SnmpObjId ifInOctets = SnmpObjId.get(ifTable, "10");
+        static final SnmpObjId ifInUcastPkts = SnmpObjId.get(ifTable, "11");
+        static final SnmpObjId ifInNUcastPkts = SnmpObjId.get(ifTable, "12");
+        static final SnmpObjId ifInDiscards = SnmpObjId.get(ifTable, "13");
+        static final SnmpObjId ifInErrors = SnmpObjId.get(ifTable, "14");
+        static final SnmpObjId ifUnknownProtos = SnmpObjId.get(ifTable, "15");
+        static final SnmpObjId ifOutOctets = SnmpObjId.get(ifTable, "16");
+        static final SnmpObjId ifOutUcastPkts = SnmpObjId.get(ifTable, "17");
+        static final SnmpObjId ifOutNUcastPkts = SnmpObjId.get(ifTable, "18");
+        static final SnmpObjId ifOutDiscards = SnmpObjId.get(ifTable, "19");
+        static final SnmpObjId ifOutErrors = SnmpObjId.get(ifTable, "20");
+        static final SnmpObjId ifOutQLen = SnmpObjId.get(ifTable, "21");
+        static final SnmpObjId ifSpecific = SnmpObjId.get(ifTable, "22");
+    }
+
+    static private class CountingColumnTracker extends ColumnTracker {
         private long m_count = 0;
 
         public CountingColumnTracker(SnmpObjId base) {
@@ -85,14 +86,16 @@ public class SnmpTrackerTest {
 
     }
 
-    private class ResultTable {
+    static private class ResultTable {
         
         int m_rowsAdded = 0;
         Map<SnmpInstId, SnmpRowResult> m_results = new HashMap<SnmpInstId, SnmpRowResult>();
         
         SnmpValue getResult(SnmpObjId base, SnmpInstId inst) {
             SnmpRowResult row = m_results.get(inst);
-            if (row == null) return null;
+            if (row == null) {
+                return null;
+            }
             return row.getValue(base);
         }
 
@@ -109,16 +112,10 @@ public class SnmpTrackerTest {
             m_results.put(row.getInstance(), row);
         }
 
-        /**
-         * @return
-         */
         public int getRowCount() {
             return m_results.size();
         }
 
-        /**
-         * @return
-         */
         public int getColumnCount() {
             int maxColumns = Integer.MIN_VALUE;
             for(SnmpRowResult row : m_results.values()) {
@@ -128,7 +125,7 @@ public class SnmpTrackerTest {
         }
 
     }
-    private class TestRowCallback implements RowCallback {
+    static private class TestRowCallback implements RowCallback {
         private List<SnmpRowResult> m_responses = new ArrayList<SnmpRowResult>();
         
         private ResultTable m_results = new ResultTable();
@@ -173,30 +170,10 @@ public class SnmpTrackerTest {
         assertEquals("number of columns returned must match test data", Long.valueOf(6).longValue(), ct.getCount());
     }
  
-    /*
-     * move row tracking to SnmpTableResult
-     * propagate maxRepetitions to children/columns
-     * 
-     * handle full table
-     * handle missing cell
-     * handle missing column
-     * handle timeout
-     * handle errors
-     * 
-     * work inside an aggregate tracker
-     * 
-     * ensure 'processedRows' are 'freed'
-     * 
-     * ensure rows are processed as soon as possible
-     * 
-     * handle rows with 'non-int' instances
-     * 
-     * properly handle maxVarsPerPdu correctly
-     */
     @Test
     public void testTableTrackerWithFullTable() throws Exception {
         TestRowCallback rc = new TestRowCallback();
-        TableTracker tt = new TableTracker(rc, m_ifIndex, m_ifDescr, m_ifSpeed);
+        TableTracker tt = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr, SnmpTableConstants.ifSpeed);
 
         walk(tt, 3, 10);
 
@@ -205,42 +182,59 @@ public class SnmpTrackerTest {
         assertEquals("number of rows added must match test data", 6, results.getRowsAdded());
         assertEquals("number of rows must match test data", 6, results.getRowCount());
         assertEquals("number of columns must match test data", 3, results.getColumnCount());
-        assertEquals("ifIndex.5 must be 5", 5, results.getResult(m_ifIndex, "5").toInt());
-        assertEquals("ifName.2 must be gif0", "gif0", results.getResult(m_ifDescr, "2").toString());
-        assertEquals("ifSpeed.3 must be 0", 0, results.getResult(m_ifSpeed, "3").toLong());
-        assertEquals("ifSpeed.4 must be 10000000", 10000000, results.getResult(m_ifSpeed, "4").toLong());
+        assertEquals("ifIndex.5 must be 5", 5, results.getResult(SnmpTableConstants.ifIndex, "5").toInt());
+        assertEquals("ifName.2 must be gif0", "gif0", results.getResult(SnmpTableConstants.ifDescr, "2").toString());
+        assertEquals("ifSpeed.3 must be 0", 0, results.getResult(SnmpTableConstants.ifSpeed, "3").toLong());
+        assertEquals("ifSpeed.4 must be 10000000", 10000000, results.getResult(SnmpTableConstants.ifSpeed, "4").toLong());
 
     }
 
     @Test
-    @Ignore
     @JUnitSnmpAgent(port=9161, resource="classpath:snmpTestDataIncompleteTable.properties")
     public void testIncompleteTableData() throws Exception {
         TestRowCallback rc = new TestRowCallback();
         TableTracker tt = new TableTracker(rc,
-            m_ifIndex, m_ifDescr, m_ifMtu,
-            m_ifLastChange, m_ifInUcastPkts, m_ifInErrors,
-            m_ifOutUcastPkts, m_ifOutNUcastPkts, m_ifOutErrors
+            SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr, SnmpTableConstants.ifMtu,
+            SnmpTableConstants.ifLastChange, SnmpTableConstants.ifInUcastPkts, SnmpTableConstants.ifInErrors,
+            SnmpTableConstants.ifOutUcastPkts, SnmpTableConstants.ifOutNUcastPkts, SnmpTableConstants.ifOutErrors
         );
 
         walk(tt, 4, 3);
 
-        List<SnmpRowResult> responses = rc.getResponses();
-        for (int i = 0; i < responses.size(); i++) {
-            System.err.println(String.format("%d: %s", i, responses.get(i)));
-        }
+        printResponses(rc);
         ResultTable results = rc.getResults();
         assertTrue("tracker must be finished", tt.isFinished());
         assertEquals("number of rows added must match test data", 6, results.getRowsAdded());
         assertEquals("number of rows must match test data", 6, results.getRowCount());
         assertEquals("number of columns must match test data", 9, results.getColumnCount());
-        assertNull("ifMtu.4 should be null", results.getResult(m_ifMtu, "4"));
-        assertEquals("ifDescr.5 should be en1", "en1", results.getResult(m_ifDescr, "5").toString());
-        assertEquals("ifMtu.6 should be 4078", 4078, results.getResult(m_ifMtu, "6").toInt());
-        /*
-        assertEquals("ifName.2 must be gif0", "gif0", results.getResult(m_ifDescr, "2").toString());
-        assertEquals("ifSpeed.3 must be 0", 0, results.getResult(m_ifSpeed, "3").toLong());
-        assertEquals("ifSpeed.4 must be 10000000", 10000000, results.getResult(m_ifSpeed, "4").toLong());
-        */
+        assertNull("ifMtu.4 should be null", results.getResult(SnmpTableConstants.ifMtu, "4"));
+        assertEquals("ifDescr.5 should be en1", "en1", results.getResult(SnmpTableConstants.ifDescr, "5").toString());
+        assertEquals("ifMtu.6 should be 4078", 4078, results.getResult(SnmpTableConstants.ifMtu, "6").toInt());
     }
+
+    @Test
+    @Ignore("Hmm, what *should* this do?  When using a callback, we don't pass storeResult() up-stream...")
+    public void testAggregateTable() throws Exception {
+        TestRowCallback rc = new TestRowCallback();
+        TableTracker[] tt = new TableTracker[2];
+        tt[0] = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr);
+        tt[1] = new TableTracker(rc, SnmpTableConstants.ifMtu, SnmpTableConstants.ifLastChange);
+        AggregateTracker at = new AggregateTracker(tt);
+        
+        walk(at, 4, 10);
+
+        printResponses(rc);
+    }
+
+    private void printResponses(TestRowCallback rc) {
+        List<SnmpRowResult> responses = rc.getResponses();
+        for (int i = 0; i < responses.size(); i++) {
+            SnmpRowResult row = responses.get(i);
+            System.err.println(String.format("%d: instance=%s", i, row.getInstance()));
+            for (SnmpResult res : row.getResults()) {
+                System.err.println(String.format("    %s=%s", res.getBase(), res.getValue()));
+            }
+        }
+    }
+    
 }
