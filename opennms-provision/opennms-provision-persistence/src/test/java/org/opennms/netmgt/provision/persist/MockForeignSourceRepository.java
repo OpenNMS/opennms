@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.springframework.util.Assert;
 
 /**
@@ -98,6 +99,5 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     public void delete(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
         m_requisitions.remove(requisition);
     }
-
 
 }

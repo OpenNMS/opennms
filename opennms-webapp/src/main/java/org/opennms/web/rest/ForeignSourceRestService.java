@@ -33,6 +33,7 @@
 package org.opennms.web.rest;
 
 import java.text.ParseException;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -116,6 +117,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      * returns a plaintext string being the number of foreign sources
      * @return
      */
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
@@ -173,7 +175,31 @@ public class ForeignSourceRestService extends OnmsRestService {
         m_foreignSourceRepository.save(foreignSource);
         return Response.ok(foreignSource).build();
     }
-    
+
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/detectors")
+    @Transactional
+    public Response addDetector(@PathParam("foreignSource") String foreignSource, DetectorWrapper detector) {
+        log().debug("addDetector: Adding detector " + detector.getName());
+        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        fs.addDetector(detector);
+        m_foreignSourceRepository.save(fs);
+        return Response.ok(detector).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("{foreignSource}/policies")
+    @Transactional
+    public Response addPolicy(@PathParam("foreignSource") String foreignSource, PolicyWrapper policy) {
+        log().debug("addPolicy: Adding policy " + policy.getName());
+        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        fs.addPolicy(policy);
+        m_foreignSourceRepository.save(fs);
+        return Response.ok(policy).build();
+    }
+
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{foreignSource}")
@@ -194,15 +220,56 @@ public class ForeignSourceRestService extends OnmsRestService {
         m_foreignSourceRepository.save(fs);
         return Response.ok(fs).build();
     }
-    
+
     @DELETE
     @Path("{foreignSource}")
     public Response deleteForeignSource(@PathParam("foreignSource") String foreignSource) {
         OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
         log().debug("deleteForeignSource: deleting foreign source " + foreignSource);
         m_foreignSourceRepository.delete(fs);
-        return Response.ok().build();
+        return Response.ok(fs).build();
     }
 
+    @DELETE
+    @Path("{foreignSource}/detectors/{detector}")
+    public Response deleteDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
+        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        List<PluginConfig> detectors = fs.getDetectors();
+        PluginConfig removed = removeEntry(detectors, detector);
+        if (removed != null) {
+            fs.setDetectors(detectors);
+            m_foreignSourceRepository.save(fs);
+            return Response.ok(removed).build();
+        }
+        return Response.notModified().build();
+    }
+
+    @DELETE
+    @Path("{foreignSource}/policies/{policy}")
+    public Response deletePolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
+        OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSource);
+        List<PluginConfig> policies = fs.getPolicies();
+        PluginConfig removed = removeEntry(policies, policy);
+        if (removed != null) {
+            fs.setPolicies(policies);
+            m_foreignSourceRepository.save(fs);
+            return Response.ok(removed).build();
+        }
+        return Response.notModified().build();
+    }
+
+    private PluginConfig removeEntry(List<PluginConfig> plugins, String name) {
+        PluginConfig removed = null;
+        java.util.Iterator<PluginConfig> i = plugins.iterator();
+        while (i.hasNext()) {
+            PluginConfig pc = i.next();
+            if (pc.getName().equals(name)) {
+                removed = pc;
+                i.remove();
+                break;
+            }
+        }
+        return removed;
+    }
 
 }

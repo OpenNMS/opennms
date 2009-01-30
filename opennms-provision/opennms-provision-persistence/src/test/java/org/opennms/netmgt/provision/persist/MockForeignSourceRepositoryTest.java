@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,9 +33,7 @@ public class MockForeignSourceRepositoryTest {
     }
     
     private OnmsRequisition createRequisition() throws Exception {
-        OnmsRequisition r = m_repository.importRequisition(new ClassPathResource("/requisition-test.xml"));
-        m_repository.save(r);
-        return r;
+        return m_repository.importRequisition(new ClassPathResource("/requisition-test.xml"));
     }
 
     private OnmsForeignSource createForeignSource(String foreignSource) throws Exception {

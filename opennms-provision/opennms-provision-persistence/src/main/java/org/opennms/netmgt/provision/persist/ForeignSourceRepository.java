@@ -37,6 +37,7 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.Set;
 
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.springframework.core.io.Resource;
 
 /**

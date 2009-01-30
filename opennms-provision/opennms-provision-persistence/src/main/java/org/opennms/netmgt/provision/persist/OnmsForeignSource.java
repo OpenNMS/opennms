@@ -142,6 +142,24 @@ public class OnmsForeignSource implements Serializable, Comparable<OnmsForeignSo
         m_policies.add(policy);
     }
 
+    public PluginConfig getDetector(String detector) {
+        for (PluginConfig pc : m_detectors) {
+            if (pc.getName().equals(detector)) {
+                return pc;
+            }
+        }
+        return null;
+    }
+
+    public PluginConfig getPolicy(String policy) {
+        for (PluginConfig pc : m_policies) {
+            if (pc.getName().equals(policy)) {
+                return pc;
+            }
+        }
+        return null;
+    }
+
     public boolean isDefault() {
         return m_default;
     }

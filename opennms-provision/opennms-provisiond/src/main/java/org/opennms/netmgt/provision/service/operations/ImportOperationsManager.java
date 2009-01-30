@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.persist.OnmsRequisition;
+import org.opennms.netmgt.provision.persist.requisition.OnmsRequisition;
 import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
 
