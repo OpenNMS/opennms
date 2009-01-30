@@ -23,25 +23,30 @@ public class InvCloginServlet extends HttpServlet {
         
         HttpSession userSession = request.getSession(false);
 
+        System.out.println("InvCloginServlet");
+        
         if (userSession != null) {
             String userId = request.getParameter("userID");
             String password = request.getParameter("pass");
             String loginM = request.getParameter("loginM");
             String device = request.getParameter("deviceName");
             String group = request.getParameter("groupName");
+            String autoenable = request.getParameter("autoE");
+            String enablepass = request.getParameter("enpass");
+            
+            System.out.println("InvCloginServlet setting user and password "+ device +" "+ userId +" "+password + " enablep "+ enablepass);
 
-            int ret = InventoryLayer.updateCloginInfo(group, device, userId, password, loginM);
-
-            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
-            dispatcher.forward(request, response);
+            int ret = InventoryLayer.updateCloginInfo(device, userId, password, loginM, autoenable, enablepass);
+            redirect(request, response);
+            //response.sendRedirect(request.getParameter("returnUrl"));
         }
     }
         
-//        private void redirect(HttpServletRequest request,
-//                HttpServletResponse response) throws IOException {
-//            String redirectURL = request.getHeader("Referer");
-//            response.sendRedirect(redirectURL);
-//        }
+        private void redirect(HttpServletRequest request,
+                HttpServletResponse response) throws IOException {
+            String redirectURL = request.getHeader("Referer");
+            response.sendRedirect(redirectURL);
+        }
 }
 //        if (userSession != null) {
 //            User newUser = (User) userSession.getAttribute("user.modifyUser.jsp");
