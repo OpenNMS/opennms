@@ -180,7 +180,7 @@ function cancelUser()
     <td width="100%"><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></td>
   </tr>
   <tr>
-  <td width="10%"><label id="enpass1Label" for="enpassword">Password:</label></td>
+  <td width="10%"><label id="enpass1Label" for="enpassword">Enable password:</label></td>
   <td width="100%"><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></td>
 </tr
  <tr>
