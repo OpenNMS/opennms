@@ -76,6 +76,7 @@
 
 	String elementID = node_db.getLabel();
 
+
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
 	Map<String, Object> nodeModel2 = new TreeMap<String, Object>();
 	try {	
@@ -121,7 +122,7 @@ function validateFormInput()
 	  alert("The login method field cannot be empty");
 	  return;
   }
-  document.newUserForm.redirect.value="/inventory/rancid.jsp?node="+request.getParameter("node");;
+  //document.newUserForm.redirect.value="/inventory/rancid.jsp?node="+request.getParameter("node");;
   document.newUserForm.action="inventory/invClogin";
   document.newUserForm.submit();
 }    
@@ -178,7 +179,10 @@ function cancelUser()
     <td width="10%"><label id="pass1Label" for="password">Password:</label></td>
     <td width="100%"><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></td>
   </tr>
- 
+  <tr>
+  <td width="10%"><label id="enpass1Label" for="enpassword">Password:</label></td>
+  <td width="100%"><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></td>
+</tr
  <tr>
   <td width="10%"><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></td>
   <td>
@@ -186,6 +190,15 @@ function cancelUser()
 	  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
 	  <option value="ssh">ssh</option>
 	  <option value="telnet">telnet</option>
+	  </select>
+	  </td>
+</tr>
+  <td width="10%"><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></td>
+  <td>
+	  <select name="autoE" size="1">
+	  <option value="${model.cloginautoenable}">${model.cloginautoenable}</option>
+	  <option value="1">1</option>
+	  <option value="0">0</option>
 	  </select>
 	  </td>
  </tr>
@@ -197,7 +210,7 @@ function cancelUser()
 </table>
 	<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.group}"> 
 	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
-</form>
+	</form>
 </div>
 
 <div class="TwoColRight">

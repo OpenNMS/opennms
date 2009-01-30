@@ -49,6 +49,7 @@ public class InventoryLayer {
     static public void init(){
         
         try {
+            System.out.println("Setting Up RWS client");
             RWSClientApi.init();
 
             RWSConfigFactory.init();
@@ -56,6 +57,7 @@ public class InventoryLayer {
             rwsCfgFactory = RWSConfigFactory.getInstance();
             burl = rwsCfgFactory.getUrls();
             _URL = burl[0].getServer_url();
+            System.out.println("RWS Url " + _URL);
             
         }
         catch (Exception e) {
@@ -422,6 +424,12 @@ public class InventoryLayer {
                 nodeModel.put("cloginuser", rn5.getUser());
                 nodeModel.put("cloginpassword", rn5.getPassword());
                 nodeModel.put("cloginconnmethod", rn5.getConnectionMethodString());
+                nodeModel.put("cloginenablepass", rn5.getEnablePass());
+                String autoen = "0";
+                if (rn5.isAutoEnable()){
+                    autoen = "1";
+                }
+                nodeModel.put("cloginautoenable", autoen);
             }
             
             return nodeModel;
@@ -528,13 +536,20 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            throw e;
        }
    }
-   static public int updateCloginInfo(String group, String device, String user, String password, String method) {
+   static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
        
        try {
-           RancidNodeAuthentication rna = new RancidNodeAuthentication();
+           RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(_URL, device);
+           //RancidNodeAuthentication rna = new RancidNodeAuthentication();
            rna.setUser(user);
            rna.setPassword(password);
            rna.setConnectionMethod(method);
+           rna.setEnablePass(enablepass);
+           boolean autoe = false;
+           if (autoenable.compareTo("1")==0) {
+               autoe = true;
+           }
+           rna.setAutoEnable(autoe);
            RWSClientApi.createOrUpdateRWSAuthNode(_URL,rna);
            
            return 0;
