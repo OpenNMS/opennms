@@ -45,18 +45,24 @@ import java.util.TreeMap;
  * @author brozow
  *
  */
-public class SnmpTableResult {
+public class SnmpTableResult implements RowResultFactory {
 
     private final RowCallback m_callback;
     private final SnmpObjId[] m_columns;
-    private final List<SnmpObjId> m_finishedColumns;
+    private final RowResultFactory m_rowResultFactory;
 
-    private Map<SnmpInstId,SnmpRowResult> m_pendingData;
-    private boolean m_finished = false;
+    private final List<SnmpObjId> m_finishedColumns;
+    private final Map<SnmpInstId,SnmpRowResult> m_pendingData;
+    private volatile boolean m_finished = false;
     
     public SnmpTableResult(RowCallback callback, SnmpObjId... columns) {
+        this(callback, null, columns);
+    }
+ 
+    public SnmpTableResult(RowCallback callback, RowResultFactory rowResultFactory, SnmpObjId... columns) {
         m_callback = callback;
         m_columns = columns;
+        m_rowResultFactory = (rowResultFactory == null ? this : rowResultFactory);
 
         m_finishedColumns = new ArrayList<SnmpObjId>();
         m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
@@ -67,14 +73,15 @@ public class SnmpTableResult {
     }
 
     /**
-     * @param res
+     * @param result
      */
-    void storeResult(SnmpResult res) {
-        if (!m_pendingData.containsKey(res.getInstance())) {
-            m_pendingData.put(res.getInstance(), new SnmpRowResult(getColumnCount(), res.getInstance()));
+    void storeResult(SnmpResult result) {
+        SnmpInstId instId = result.getInstance();
+        if ( !m_pendingData.containsKey( instId ) ) {
+            m_pendingData.put( instId, m_rowResultFactory.createRowResult( getColumnCount(), instId ) );
         }
-        SnmpRowResult row = m_pendingData.get(res.getInstance());
-        row.setResult(res.getBase(), res);
+        SnmpRowResult row = m_pendingData.get( instId );
+        row.addResult( result.getBase(), result );
 
         handleCompleteRows();
     }
@@ -120,6 +127,10 @@ public class SnmpTableResult {
     public void columnFinished(SnmpObjId columnId) {
         m_finishedColumns.add(columnId);
         handleCompleteRows();
+    }
+
+    public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
+        return new SnmpRowResult(columnCount, instance);
     }
 
 }

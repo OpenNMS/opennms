@@ -346,7 +346,7 @@ public class ProvisionerTest {
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
-        assertEquals(2, getSnmpInterfaceDao().countAll());
+        assertEquals(6, getSnmpInterfaceDao().countAll());
 
         
     }

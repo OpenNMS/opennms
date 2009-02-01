@@ -101,6 +101,16 @@
                 <constructor-arg value="nodeScan" />
                 <constructor-arg>
                     <list>
+                      <value>loadNode</value>
+                      <value>detectAgents</value>
+                      <value>deleteObsoleteResources</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+            <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+                <constructor-arg value="agentScan" />
+                <constructor-arg>
+                    <list>
                       <value>collectNodeInfo</value>
                       <value>persistNodeInfo</value>
                       <value>detectPhysicalInterfaces</value>
