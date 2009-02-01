@@ -83,8 +83,7 @@ public class CastorUtils {
      */
     public static void marshalWithTranslatedExceptions(Object obj, Writer writer) throws DataAccessException {
         try {
-            Marshaller m = new Marshaller(writer);
-            m.marshal(obj);
+            marshal(obj, writer);
         } catch (IOException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
         } catch (MarshalException e) {
@@ -92,6 +91,12 @@ public class CastorUtils {
         } catch (ValidationException e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("marshalling XML file", e);
         }
+    }
+
+    private static void marshal(Object obj, Writer writer) throws IOException, MarshalException, ValidationException {
+        Marshaller m = new Marshaller(writer);
+        m.setSuppressNamespaces(true);
+        m.marshal(obj);
     }
 
     /**
@@ -108,8 +113,7 @@ public class CastorUtils {
         Writer fileWriter = null;
         try {
             StringWriter writer = new StringWriter();
-            Marshaller m = new Marshaller(writer);
-            m.marshal(obj);
+            marshal(obj, writer);
             
             fileWriter= new FileWriter(resource.getFile());
             fileWriter.write(writer.toString());
@@ -316,8 +320,15 @@ public class CastorUtils {
             try {
                 source.setSystemId(resource.getURL().toString());
             } catch (Throwable t) {
-                // ignore
-                //TODO: do something with this exception
+                /*
+                 * resource.getURL() might throw an IOException
+                 * (or maybe a DataAccessException, since it's a
+                 * RuntimeException), indicating that the resource can't be
+                 * represented as a URL.  We don't really care so much--we'll
+                 * only lose the ability for Castor to include the resource URL
+                 * in error messages and for it to directly resolve relative
+                 * URLs (which we don't currently use), so we just ignore it.
+                 */
             }
             return unmarshal(clazz, source);
         } catch (MarshalException e) {
@@ -339,8 +350,7 @@ public class CastorUtils {
     public static void marshalViaString(Object config, File cfgFile) throws MarshalException, ValidationException, IOException {
         StringWriter stringWriter = new StringWriter();
         
-        Marshaller m = new Marshaller(stringWriter);
-        m.marshal(config);
+        marshal(config, stringWriter);
 
         FileWriter fileWriter = new FileWriter(cfgFile);
         fileWriter.write(stringWriter.toString());
