@@ -44,18 +44,22 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 
-public class TableTracker extends CollectionTracker {
+public class TableTracker extends CollectionTracker implements RowCallback, RowResultFactory {
 
     private final SnmpTableResult m_tableResult;
 
     private final List<ColumnTracker> m_columnTrackers;
 
+    public TableTracker(SnmpObjId... ids) {
+        this(null, ids);
+    }
+    
     public TableTracker(RowCallback rc, SnmpObjId... ids) {
         this(rc, 2, ids);
     }
 
     public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... columns) {
-        m_tableResult = (rc == null ? null : new SnmpTableResult(rc, columns));
+        m_tableResult = new SnmpTableResult(rc == null ? this : rc, this, columns);
 
         m_columnTrackers = new ArrayList<ColumnTracker>(columns.length);
         for (SnmpObjId id : columns) {
@@ -107,11 +111,20 @@ public class TableTracker extends CollectionTracker {
 
     public void storeResult(SnmpResult res) {
         System.err.println(String.format("storeResult: %s", res));
-        if (m_tableResult == null) {
-            super.storeResult(res);
-        } else {
-            m_tableResult.storeResult(res);
+        m_tableResult.storeResult(res);
+    }
+    
+    public void rowCompleted(SnmpRowResult row) {
+        // the default implementation just forwards this to the super class
+        // like the defaults for other CollectionTrackers except this does it
+        // from the rowCompleted method rather than from storeResult
+        for(SnmpResult result : row.getResults()) {
+            super.storeResult(result);
         }
+    }
+
+    public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
+        return m_tableResult.createRowResult(columnCount, instance);
     }
 
     private List<ColumnTracker> getNextColumnTrackers(int maxVarsPerPdu) {
@@ -148,6 +161,7 @@ public class TableTracker extends CollectionTracker {
         }
 
         public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
+            try {
             ResponseProcessor rp = m_processors.get(m_currentIndex);
             
             if (++m_currentIndex == m_processors.size()) {
@@ -155,6 +169,9 @@ public class TableTracker extends CollectionTracker {
             }
 
             rp.processResponse(responseObjId, val);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
 
@@ -174,5 +191,8 @@ public class TableTracker extends CollectionTracker {
         }
 
     }
+
+    
+    
 
 }

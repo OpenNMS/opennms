@@ -33,6 +33,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.util.Assert;
 
 public class SnmpInterfaceDaoHibernate extends
 		AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements
@@ -43,7 +44,10 @@ public class SnmpInterfaceDaoHibernate extends
 	}
 
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
-        return findUnique("from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and snmpIf.ifIndex = ?", 
+        Assert.notNull(foreignSource, "foreignSource may not be null");
+        Assert.notNull(foreignId, "foreignId may not be null");
+        Assert.notNull(ifIndex, "ifIndex may not be null");
+        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and snmpIf.ifIndex = ?", 
                           foreignSource, 
                           foreignId, 
                           ifIndex);
