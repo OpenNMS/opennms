@@ -48,11 +48,12 @@ public class SnmpRowResult implements Comparable<SnmpRowResult> {
         return new ArrayList<SnmpResult>(m_results.values());
     }
     
-    public void setResult(SnmpObjId column, SnmpResult result) {
+    public void addResult(SnmpObjId column, SnmpResult result) {
         Assert.isTrue(m_instance.equals(result.getInstance()), "unexpected result "+result+" passed to row with instance "+m_instance);
         m_results.put(column, result);
     }
     
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)

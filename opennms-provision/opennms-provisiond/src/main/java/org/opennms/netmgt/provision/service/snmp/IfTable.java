@@ -147,6 +147,11 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
             snmpIf = new OnmsSnmpInterface(null, ifIndex, node);
         }
         
+        updateSnmpInterfaceData(ifIndex, snmpIf);
+    }
+
+    private void updateSnmpInterfaceData(Integer ifIndex,
+            OnmsSnmpInterface snmpIf) {
         // IfTable Attributes
         snmpIf.setIfType(getIfType(ifIndex));
         snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));

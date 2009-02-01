@@ -36,13 +36,14 @@ import java.net.InetAddress;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
+import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
-import org.opennms.netmgt.provision.service.snmp.IfTable;
-import org.opennms.netmgt.provision.service.snmp.IfXTable;
-import org.opennms.netmgt.provision.service.snmp.IpAddrTable;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
+import org.opennms.netmgt.provision.service.tasks.Task;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -64,7 +65,7 @@ public class CoreScanActivities {
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
 
-   /*
+    /*
      * load the node from the database (or maybe the requistion)
      * 
      * walk the snmp interface table
@@ -93,21 +94,78 @@ public class CoreScanActivities {
      *  serviceDetect.detectIfService
      *  serviceDetect.persistIfService
      *  
+     *  
+     *
+     *  nodeScan:
+     *  precond: foreignSource, foreignId of req'd node
+     *  postcond: node
+     *  - loadNode
+     *  
+     *  precond: node with primary address
+     *  postcond: agents detected and agentScan lifeCycle for each agent started
+     *            configuration for agents in lifecycle
+     *  - detectAgents
+     *    - agentScan for each agent
+     *    
+     *  precond: agent scans complete
+     *  
+     *  -update lastCapsdPoll
+     *  
+     *  
+     *  agentScan:
+     *  
+     *  collectNodeInfo
+     *  - this needs set the scan stamp
+     *  
+     *  persistNodeInfo
+     *  
+     *  scanForPhysicalInterfaces
+     *  - for each found save the interface and set the scan stamp
+     *    - make sure we update 
+     *  
+     *  scanForIpInterfaces
+     *  - for each found save the interface and set the scan stmp
+     *    - include the association with the physical interface
+     *  - start the ipInterfaceScan for the interface
+     *  
+     *  
+     *  ipInterfaceScan
+     *  - scan for each service configured in the detector
+     *  
+     *  
      */
-
-
-    @Activity( lifecycle = "nodeScan", phase = "collectNodeInfo" )
-    public OnmsNode collectNodeInfo(@Attribute("foreignSource") String foreignSource, @Attribute("foreignId") String foreignId) throws InterruptedException {
-        OnmsNode node = m_provisionService.getRequisitionedNode(foreignSource, foreignId);
-        Assert.notNull(node, "node is null");
-        OnmsIpInterface primaryInterface = node.getPrimaryInterface();
-        Assert.notNull(primaryInterface, "primaryInterface is null");
-        InetAddress agentAddress = primaryInterface.getInetAddress();
+    
+    @Activity( lifecycle = "nodeScan", phase = "loadNode" ) 
+    public OnmsNode loadNode(@Attribute("foreignSource") String foreignSource, @Attribute("foreignId") String foreignId) {
+        return m_provisionService.getRequisitionedNode(foreignSource, foreignId);
+    }
+    
+    @Activity( lifecycle = "nodeScan", phase = "detectAgents" )
+    public void detectAgents(LifeCycleInstance lifeCycle, Phase currentPhase, OnmsNode node) {
+        // someday I'll change this to use agentDetectors
+        OnmsIpInterface primaryIface = node.getPrimaryInterface();
+        if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
+            LifeCycleInstance nested = lifeCycle.createNestedLifeCycle("agentScan");
+            nested.setAttribute("agentType", "SNMP");
+            nested.setAttribute("node", node);
+            nested.setAttribute("primaryAddress", primaryIface.getInetAddress());
+            currentPhase.add((Task)nested);
+        }
         
-        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentAddress);
+    }
+    
+    @Activity( lifecycle = "nodeScan", phase = "deleteObsoleteResources", schedulingHint="write")
+    public void deleteObsoleteResources() {
+        System.err.println("nodeScan.deleteObsoletResources");
+    }
+    
+    @Activity( lifecycle = "agentScan", phase = "collectNodeInfo" )
+    public void collectNodeInfo(OnmsNode node, InetAddress primaryAddress) throws InterruptedException {
+
+        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(primaryAddress);
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
         
-        SystemGroup systemGroup = new SystemGroup(agentAddress);
+        SystemGroup systemGroup = new SystemGroup(primaryAddress);
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
         walker.start();
@@ -116,60 +174,70 @@ public class CoreScanActivities {
         
         systemGroup.updateSnmpDataForNode(node);
         
-        return node;
-        
     }
 
-    @Activity( lifecycle = "nodeScan", phase = "persistNodeInfo", schedulingHint="write")
+    @Activity( lifecycle = "agentScan", phase = "persistNodeInfo", schedulingHint="write")
     public void persistNodeInfo(OnmsNode node) {
         m_provisionService.updateNodeAttributes(node);
     }
-
-    @Activity( lifecycle = "nodeScan", phase = "detectPhysicalInterfaces" )
-    public void detectPhysicalInterfaces(OnmsNode node) throws InterruptedException {
-        InetAddress agentAddress = node.getPrimaryInterface().getInetAddress();
-        
-        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentAddress);
+    
+    @Activity( lifecycle = "agentScan", phase = "detectPhysicalInterfaces" )
+    public void detectPhysicalInterfaces(final OnmsNode node, final InetAddress primaryAddress, final Phase currentPhase) throws InterruptedException {
+        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(primaryAddress);
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
         
-        IfTable ifTable = new IfTable(agentAddress);
-        IfXTable ifXTable = new IfXTable(agentAddress);
+        final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
+            @Override
+            public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
+                System.out.println("Processing row for ifIndex "+row.getIfIndex());
+                final OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
+                Runnable r = new Runnable() {
+                    public void run() {
+                        System.out.println("Saving OnmsSnmpInterface "+snmpIface);
+                        m_provisionService.updateSnmpInterfaceAttributes(
+                                              node.getForeignSource(), 
+                                              node.getForeignId(), 
+                                              snmpIface);
+                    }
+                };
+                currentPhase.add(r);
+            }
+        };
         
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", ifTable, ifXTable);
+        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", physIfTracker);
         walker.start();
-        
         walker.waitFor();
         
-        ifTable.updateSnmpInterfaceData(node);
-        ifXTable.updateSnmpInterfaceData(node);
         System.err.println("detectPhysicalInterfaces");
     }
 
-    @Activity( lifecycle = "nodeScan", phase = "persistPhysicalInterfaces", schedulingHint="write" )
+    @Activity( lifecycle = "agentScan", phase = "persistPhysicalInterfaces", schedulingHint="write" )
     public void persistPhysicalInterfaces(OnmsNode node) {
-        m_provisionService.updateNode(node, false, true);
+        System.err.println("persistIpInterfaces");
+//        m_provisionService.updateNode(node, false, true);
     }
 
-    @Activity( lifecycle = "nodeScan", phase = "detectIpInterfaces" )
+    @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
     public void detectIpInterfaces(OnmsNode node) throws InterruptedException {
-        InetAddress agentAddress = node.getPrimaryInterface().getInetAddress();
-        
-        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentAddress);
-        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
-        
-        IpAddrTable ipAddrTable = new IpAddrTable(agentAddress);
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipAddrTable);
-        walker.start();
-        
-        walker.waitFor();
-        
-        ipAddrTable.updateIpInterfaceData(node);
+//        InetAddress agentAddress = node.getPrimaryInterface().getInetAddress();
+//        
+//        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentAddress);
+//        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
+//        
+//        IpAddrTable ipAddrTable = new IpAddrTable(agentAddress);
+//        
+//        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipAddrTable);
+//        walker.start();
+//        
+//        walker.waitFor();
+//        
+//        ipAddrTable.updateIpInterfaceData(node);
     }
 
-    @Activity( lifecycle = "nodeScan", phase = "persistIpInterfaces", schedulingHint="write" )
+    @Activity( lifecycle = "agentScan", phase = "persistIpInterfaces", schedulingHint="write" )
     public void persistIpInterfaces(OnmsNode node) {
-        m_provisionService.updateNode(node, false, true);
+        System.err.println("persistIpInterfaces");
+        //m_provisionService.updateNode(node, false, true);
     }
 
     
