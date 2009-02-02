@@ -117,8 +117,9 @@ public class DefaultManualProvisioningService implements
     public ModelImport addInterfaceToNode(String groupName, String pathToNode,
             String ipAddr) {
         ModelImport group = m_provisioningDao.get(groupName);
-        
+        Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
         Node node = BeanUtils.getPathValue(group, pathToNode, Node.class);
+        Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
         
         String snmpPrimary = "P";
         if (node.getInterfaceCount() > 0)
