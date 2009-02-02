@@ -34,11 +34,10 @@ public class InvCloginServlet extends HttpServlet {
             String autoenable = request.getParameter("autoE");
             String enablepass = request.getParameter("enpass");
             
-            System.out.println("InvCloginServlet setting user and password "+ device +" "+ userId +" "+password + " enablep "+ enablepass);
+            //System.out.println("InvCloginServlet setting user and password "+ device +" "+ userId +" "+password + " enablep "+ enablepass);
 
             int ret = InventoryLayer.updateCloginInfo(device, userId, password, loginM, autoenable, enablepass);
             redirect(request, response);
-            //response.sendRedirect(request.getParameter("returnUrl"));
         }
     }
         
@@ -48,97 +47,3 @@ public class InvCloginServlet extends HttpServlet {
             response.sendRedirect(redirectURL);
         }
 }
-//        if (userSession != null) {
-//            User newUser = (User) userSession.getAttribute("user.modifyUser.jsp");
-//            try {
-//                UserFactory.init();
-//            } catch (Exception e) {
-//                throw new ServletException("UpdateUserServlet:init Error initialising UserFactory " + e);
-//            }
-//            
-//            // get the rest of the user information from the form
-//            newUser.setFullName(request.getParameter("fullName"));
-//            newUser.setUserComments(request.getParameter("userComments"));
-//            newUser.setReadOnly(false);
-//            if (request.getParameter("readOnly") != null && (request.getParameter("readOnly").equalsIgnoreCase("true") || request.getParameter("readOnly").equalsIgnoreCase("on"))) {
-//                newUser.setReadOnly(true);
-//            }
-//
-//            String password = request.getParameter("password");
-//            if (password != null && !password.trim().equals("")) {
-//                newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
-//            }
-//
-//            String email = request.getParameter("email");
-//            String pagerEmail = request.getParameter("pemail");
-//            String xmppAddress = request.getParameter("xmppAddress");
-//            String numericPage = request.getParameter("numericalService");
-//            String numericPin = request.getParameter("numericalPin");
-//            String textPage = request.getParameter("textService");
-//            String textPin = request.getParameter("textPin");
-//
-//            newUser.removeAllContact();
-//
-//            Contact tmpContact = new Contact();
-//            tmpContact.setInfo(email);
-//            tmpContact.setType("email");
-//            newUser.addContact(tmpContact);
-//
-//            tmpContact = new Contact();
-//            tmpContact.setInfo(pagerEmail);
-//            tmpContact.setType("pagerEmail");
-//            newUser.addContact(tmpContact);
-//
-//            tmpContact = new Contact();
-//            tmpContact.setInfo(xmppAddress);
-//            tmpContact.setType("xmppAddress");
-//            newUser.addContact(tmpContact);
-//            
-//            tmpContact = new Contact();
-//            tmpContact.setInfo(numericPin);
-//            tmpContact.setServiceProvider(numericPage);
-//            tmpContact.setType("numericPage");
-//            newUser.addContact(tmpContact);
-//
-//            tmpContact = new Contact();
-//            tmpContact.setInfo(textPin);
-//            tmpContact.setServiceProvider(textPage);
-//            tmpContact.setType("textPage");
-//            newUser.addContact(tmpContact);
-//
-//            // build the duty schedule data structure
-//            List<Boolean> newSchedule = new ArrayList<Boolean>(7);
-//            ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
-//
-//            Collection<String> dutySchedules = getDutySchedulesForUser(newUser);
-//            dutySchedules.clear();
-//
-//            int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
-//            for (int duties = 0; duties < dutyCount; duties++) {
-//                newSchedule.clear();
-//                String deleteFlag = request.getParameter("deleteDuty" + duties);
-//                // don't save any duties that were marked for deletion
-//                if (deleteFlag == null) {
-//                    for (int i = 0; i < 7; i++) {
-//                        String curDayFlag = request.getParameter("duty" + duties + days.format(i));
-//                        newSchedule.add(new Boolean(curDayFlag != null));
-//                    }
-//
-//                    int startTime = WebSecurityUtils.safeParseInt(request.getParameter("duty" + duties + "Begin"));
-//                    int stopTime = WebSecurityUtils.safeParseInt(request.getParameter("duty" + duties + "End"));
-//
-//                    DutySchedule newDuty = new DutySchedule(newSchedule, startTime, stopTime);
-//                    dutySchedules.add(newDuty.toString());
-//                }
-//            }
-//
-//            userSession.setAttribute("user.modifyUser.jsp", newUser);
-//        }
-//
-//        // forward the request for proper display
-//        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
-//        dispatcher.forward(request, response);
-//    }
-//
-//    private List<String> getDutySchedulesForUser(User newUser) {
-//        return newUser.getDutyScheduleCollection();
