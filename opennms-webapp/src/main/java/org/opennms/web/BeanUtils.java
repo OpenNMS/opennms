@@ -32,6 +32,7 @@
 package org.opennms.web;
 
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.util.Assert;
 
 public class BeanUtils {
 
@@ -41,6 +42,7 @@ public class BeanUtils {
         Class propType = wrapper.getPropertyType(path);
         if (propType == null) {
             // we were unable to find the property
+            Assert.notNull(propType, "propType in BeanUtils is null path: " + path); //for debug purposes
             return null;
         }
         if (!expectedClass.isAssignableFrom(propType))
