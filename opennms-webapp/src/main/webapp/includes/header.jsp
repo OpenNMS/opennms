@@ -129,12 +129,18 @@
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
+<%-- Internet Explorer gets miffed and refuses to display the page content
+     for certain pages if the following div is empty. (ie when the outer if
+     test fails.) Moving the <h2> tags outside the if statement makes it
+     happy again --%>
 <%= "<div id=\"content\">" %>
+<h2>
 <c:if test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">	
-   <h2><a href="index.jsp">Home</a>
+   <a href="index.jsp">Home</a>
    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
      <c:if test="${breadcrumb != ''}">
            / <c:out value="${breadcrumb}" escapeXml="false"/>
      </c:if>
-   </c:forEach></h2>
+   </c:forEach>
 </c:if>
+</h2>
