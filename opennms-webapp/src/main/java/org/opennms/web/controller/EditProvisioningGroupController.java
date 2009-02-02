@@ -83,10 +83,12 @@ public class EditProvisioningGroupController extends SimpleFormController {
             m_currentNode = node;
         }
         public String getDataPath() {
-            return m_formPath.substring("formData.".length());
+            //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well. 
+            return m_formPath.substring("nodeEditForm.formData.".length());
         }
         public void setDataPath(String path) {
-            m_formPath = "formData."+path;
+            //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well.
+            m_formPath = "nodeEditForm.formData."+path;
         }
     }
 

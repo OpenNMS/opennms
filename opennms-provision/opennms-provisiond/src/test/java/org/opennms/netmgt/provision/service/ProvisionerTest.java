@@ -465,7 +465,7 @@ public class ProvisionerTest {
     @Test
     @Transactional
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
-       importFromResource("classpath:/tec_dump.xml.smalltest");
+       //importFromResource("classpath:/tec_dump.xml.smalltest");
        
        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
        
