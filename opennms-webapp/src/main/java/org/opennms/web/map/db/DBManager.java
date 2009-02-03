@@ -1800,4 +1800,61 @@ public class DBManager extends Manager {
 		return nodes;
 	}
 
+    @Override
+    public boolean isElementNotDeleted(int elementId, String type) throws MapsException {
+        log.debug("isElementNotDeleted: elementId=" + elementId + " type= " + type);
+        if (type.equals(Element.MAP_TYPE)) {
+            log.debug("isElementNotDeleted: elementId=" + elementId + " type= " + type);
+            return isMapInRow(elementId);            
+        } else if (type.equals(Element.NODE_TYPE)) {
+            log.debug("isElementNotDeleted: elementId=" + elementId + " type= " + type);
+            return isNodeInRow(elementId);
+        }
+        return false;
+    }
+
+    private boolean isMapInRow(int mapId) throws MapsException {
+        Connection conn = createConnection();
+        boolean isThere = false;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT mapid FROM map WHERE MAPID = ?");
+            stmt.setInt(1, mapId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs == null) {
+                throw new IllegalArgumentException("rs parameter cannot be null");
+            }
+            isThere = !rs.next();
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            throw new MapsException("Exception while getting mapid " + e);
+        } finally {
+            releaseConnection(conn);
+        }
+        log.debug("isMapInRow: elementId=" + mapId + "is There: " + isThere);
+        return isThere;
+    }
+
+    private boolean isNodeInRow(int nodeId) throws MapsException {
+        Connection conn = createConnection();
+        boolean isThere = false;        
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT nodeid FROM NODE WHERE NODEID = ?");
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs == null) {
+                throw new IllegalArgumentException("rs parameter cannot be null");
+            }
+            isThere = !rs.next();
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            throw new MapsException("Exception while getting nodeid " + e);
+        } finally {
+            releaseConnection(conn);
+        }
+        log.debug("isNodeInRow: elementId=" + nodeId + "is There: " + isThere);
+        return isThere;
+    }
+
 }
