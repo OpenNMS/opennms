@@ -52,6 +52,8 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
 
     public abstract OnmsIpInterface get(OnmsNode node, String ipAddress);
     
+    public abstract OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress);
+
     public abstract OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress);
 
     public abstract Collection<OnmsIpInterface> findByIpAddress(String ipAddress);
@@ -64,4 +66,5 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
      * Returns a map of all IP to node ID mappings in the database.
      */
     public abstract Map<String, Integer> getInterfacesForNodes();
+
 }

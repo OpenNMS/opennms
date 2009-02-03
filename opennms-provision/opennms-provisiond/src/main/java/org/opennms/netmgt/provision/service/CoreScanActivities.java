@@ -177,12 +177,13 @@ public class CoreScanActivities {
     }
 
     @Activity( lifecycle = "agentScan", phase = "persistNodeInfo", schedulingHint="write")
-    public void persistNodeInfo(OnmsNode node) {
-        m_provisionService.updateNodeAttributes(node);
+    @Attribute("nodeId")
+    public Integer persistNodeInfo(OnmsNode node) {
+        return m_provisionService.updateNodeAttributes(node).getId();
     }
     
     @Activity( lifecycle = "agentScan", phase = "detectPhysicalInterfaces" )
-    public void detectPhysicalInterfaces(final OnmsNode node, final InetAddress primaryAddress, final Phase currentPhase) throws InterruptedException {
+    public void detectPhysicalInterfaces(final Integer nodeId, final InetAddress primaryAddress, final Phase currentPhase) throws InterruptedException {
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(primaryAddress);
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
         
@@ -195,12 +196,11 @@ public class CoreScanActivities {
                     public void run() {
                         System.out.println("Saving OnmsSnmpInterface "+snmpIface);
                         m_provisionService.updateSnmpInterfaceAttributes(
-                                              node.getForeignSource(), 
-                                              node.getForeignId(), 
+                                              nodeId,
                                               snmpIface);
                     }
                 };
-                currentPhase.add(r);
+                currentPhase.add(r, "write");
             }
         };
         
@@ -214,30 +214,40 @@ public class CoreScanActivities {
     @Activity( lifecycle = "agentScan", phase = "persistPhysicalInterfaces", schedulingHint="write" )
     public void persistPhysicalInterfaces(OnmsNode node) {
         System.err.println("persistIpInterfaces");
-//        m_provisionService.updateNode(node, false, true);
     }
 
     @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
-    public void detectIpInterfaces(OnmsNode node) throws InterruptedException {
-//        InetAddress agentAddress = node.getPrimaryInterface().getInetAddress();
-//        
-//        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentAddress);
-//        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
-//        
-//        IpAddrTable ipAddrTable = new IpAddrTable(agentAddress);
-//        
-//        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipAddrTable);
-//        walker.start();
-//        
-//        walker.waitFor();
-//        
-//        ipAddrTable.updateIpInterfaceData(node);
+    public void detectIpInterfaces(final Integer nodeId, final InetAddress primaryAddress, final Phase currentPhase) throws InterruptedException {
+        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(primaryAddress);
+        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
+        
+        final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
+            @Override
+            public void processIPInterfaceRow(IPInterfaceRow row) {
+                System.out.println("Processing row with ipAddr "+row.getIpAddress());
+                if (!row.getIpAddress().startsWith("127.0.0")) {
+                    final OnmsIpInterface iface = row.createInterfaceFromRow();
+                    Runnable r = new Runnable() {
+                        public void run() {
+                            System.out.println("Saving OnmsIpInterface "+iface);
+                            m_provisionService.updateIpInterfaceAttributes(nodeId, iface);
+                        }
+                    };
+                    currentPhase.add(r, "write");
+                }
+            }
+        };
+        
+        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipIfTracker);
+        walker.start();
+        walker.waitFor();
+        
+        System.err.println("detectIpInterfaces");
     }
 
     @Activity( lifecycle = "agentScan", phase = "persistIpInterfaces", schedulingHint="write" )
     public void persistIpInterfaces(OnmsNode node) {
         System.err.println("persistIpInterfaces");
-        //m_provisionService.updateNode(node, false, true);
     }
 
     

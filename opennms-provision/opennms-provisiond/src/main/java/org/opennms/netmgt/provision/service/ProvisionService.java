@@ -35,6 +35,7 @@ import java.util.Map;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -99,16 +100,16 @@ public interface ProvisionService {
             boolean snmpDataForInterfacesUpToDate);
     
     @Transactional
-    public abstract void updateNodeAttributes(OnmsNode node);
+    public abstract OnmsNode updateNodeAttributes(OnmsNode node);
     
     @Transactional
-    public abstract void updateIpInterfaceAttributes(String foreignSource, String foreignId, OnmsIpInterface ipInterface);
+    public abstract OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface ipInterface);
     
     @Transactional
-    public abstract void updateSnmpInterfaceAttributes(String foreignSource, String foreignId, OnmsSnmpInterface snmpInterface);
-    
+    public OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface);
+
     @Transactional
-    public abstract void addMonitoredService(String foreignSource, String foreignId, String ipAddr, String svcName);
+    public abstract OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName);
     
     
     @Transactional

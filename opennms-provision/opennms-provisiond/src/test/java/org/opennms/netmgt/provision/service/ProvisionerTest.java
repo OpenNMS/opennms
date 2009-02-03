@@ -302,7 +302,7 @@ public class ProvisionerTest {
         
         m_pausibleExecutor.pause();
         
-        importFromResource("classpath:/tec_dump.xml");
+        importFromResource("classpath:/requisition_then_scan.xml");
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -311,16 +311,16 @@ public class ProvisionerTest {
         assertEquals(1, getNodeDao().countAll());
         
         //Verify ipinterface count
-        assertEquals(2, getInterfaceDao().countAll());
+        assertEquals(1, getInterfaceDao().countAll());
         
         //Verify ifservices count
-        assertEquals(4, getMonitoredServiceDao().countAll());
+        assertEquals(1, getMonitoredServiceDao().countAll());
         
         //Verify service count
-        assertEquals(3, getServiceTypeDao().countAll());
+        assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
-        assertEquals(2, getSnmpInterfaceDao().countAll());
+        assertEquals(1, getSnmpInterfaceDao().countAll());
         
         
         List<OnmsNode> nodes = getNodeDao().findAll();
@@ -340,10 +340,10 @@ public class ProvisionerTest {
         assertEquals(2, getInterfaceDao().countAll());
         
         //Verify ifservices count
-        assertEquals(4, getMonitoredServiceDao().countAll());
+        assertEquals(1, getMonitoredServiceDao().countAll());
         
         //Verify service count
-        assertEquals(3, getServiceTypeDao().countAll());
+        assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());

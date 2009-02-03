@@ -161,52 +161,62 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
     
-    public void updateIpInterfaceAttributes(String foreignSource, String foreignId, OnmsIpInterface scannedIface) {
-        
-        OnmsIpInterface dbIface = m_ipInterfaceDao.findByForeignKeyAndIpAddress(foreignSource, foreignId, scannedIface.getIpAddress());
-        
-        if (dbIface != null) {
-            // update the interface that was found
-            dbIface.mergeInterfaceAttributes(scannedIface);
-            m_ipInterfaceDao.update(dbIface);
-        } else {
-            // add the interface to the node, if it wasn't found
-            OnmsNode dbNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
-            assertNotNull(dbNode, "no node found with foreignKey %s : %s", foreignSource, foreignId);
-            dbNode.addIpInterface(scannedIface);
-            m_nodeDao.update(dbNode);
+    
+    
+    public OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface scannedIface) {
+        if (scannedIface.getSnmpInterface() != null) {
+            scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, scannedIface.getSnmpInterface()));
         }
         
+        OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddress());
+        if (dbIface != null) {
+            dbIface.mergeInterfaceAttributes(scannedIface);
+            m_ipInterfaceDao.save(dbIface);
+            return dbIface;
+        } else {
+            OnmsNode dbNode = m_nodeDao.get(nodeId);
+            assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
+            dbNode.addIpInterface(scannedIface);
+            m_nodeDao.update(dbNode);
+            AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+            scannedIface.visit(visitor);
+            return scannedIface;
+        }
 
     }
 
-    public void updateSnmpInterfaceAttributes(String foreignSource, String foreignId, OnmsSnmpInterface snmpInterface) {
-        OnmsSnmpInterface dbSnmpIface = m_snmpInterfaceDao.findByForeignKeyAndIfIndex(foreignSource, foreignId, snmpInterface.getIfIndex());
+    public OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface) {
+        OnmsSnmpInterface dbSnmpIface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, snmpInterface.getIfIndex());
         if (dbSnmpIface != null) {
             // update the interface that was found
             dbSnmpIface.mergeSnmpInterfaceAttributes(snmpInterface);
             m_snmpInterfaceDao.update(dbSnmpIface);
+            return dbSnmpIface;
         } else {
             // add the interface to the node, if it wasn't found
-            OnmsNode dbNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
-            assertNotNull(dbNode, "no node found with foreignKey %s : %s", foreignSource, foreignId);
+            OnmsNode dbNode = m_nodeDao.get(nodeId);
+            assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
             dbNode.addSnmpInterface(snmpInterface);
             m_nodeDao.update(dbNode);
+            return snmpInterface;
         }
     }
 
-    public void addMonitoredService(String foreignSource, String foreignId, String ipAddress, String svcName) {
-        OnmsIpInterface iface = m_ipInterfaceDao.findByForeignKeyAndIpAddress(foreignSource, foreignId, ipAddress);
-        assertNotNull(iface, "could not find interface %s on node with foreignKey %s:%s", ipAddress, foreignSource, foreignId);
+    public OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName) {
+        OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
+        assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
         OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
         if (svcType == null) {
             svcType = new OnmsServiceType(svcName);
             m_serviceTypeDao.save(svcType);
         }
         
-        OnmsMonitoredService svc =new OnmsMonitoredService(iface, svcType);
+        // this adds the service to the interface as a side effect
+        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
         
         m_ipInterfaceDao.save(iface);
+        
+        return svc;
     }
 
     public void clearCache() {
@@ -452,15 +462,39 @@ public class DefaultProvisionService implements ProvisionService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
      */
-    public void updateNodeAttributes(OnmsNode node) {
+    public OnmsNode updateNodeAttributes(OnmsNode node) {
         OnmsNode dbNode;
         if (node.getId() != null) {
             dbNode = m_nodeDao.get(node.getId());
         } else {
             dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
         }
-        
-        dbNode.mergeNodeAttributes(node);
+
+        if (dbNode == null) {
+            OnmsDistPoller scannedPoller = node.getDistPoller();
+            OnmsDistPoller dbPoller;
+            if (scannedPoller == null) {
+                dbPoller = m_distPollerDao.get("locahost");
+            } else {
+                dbPoller = m_distPollerDao.get(scannedPoller.getName());
+                if (dbPoller == null) {
+                    m_distPollerDao.save(scannedPoller);
+                    dbPoller = scannedPoller;
+                }
+            }
+            
+            node.setDistPoller(dbPoller);
+            
+            m_nodeDao.save(node);
+            
+            return node;
+            
+        } else {
+            dbNode.mergeNodeAttributes(node);
+            m_nodeDao.saveOrUpdate(dbNode);
+            
+            return dbNode;
+        }
     }
     
     

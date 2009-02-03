@@ -70,8 +70,15 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         return find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
     }
     
+    public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
+        return findUnique("select iface from OnmsIpInterface as iface where iface.node.id = ? and iface.ipAddress = ?", 
+                          nodeId, 
+                          ipAddress);
+        
+    }
+
     public OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress) {
-        return findUnique("from OnmsIpInterface iface where iface join iface.node as node where node.foreignSource = ? and node.foreignId = ? and iface.ipAddress = ?", 
+        return findUnique("select iface from OnmsIpInterface as iface join iface.node as node where node.foreignSource = ? and node.foreignId = ? and iface.ipAddress = ?", 
                           foreignSource, 
                           foreignId, 
                           ipAddress);
