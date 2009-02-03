@@ -23,7 +23,7 @@ function initEventView(){
             showPreview:true,
             getRowClass : function(record, rowIndex, p, store){
                 if(this.showPreview){
-                    p.body = '<p><br/><b>Event Description:</b> '+record.data.eventDescr+'</p>';
+                    p.body = '<p><br/><b>Event Description:</b> '+record.data.eventDescr+'</br></p>';
                     return getSeverityStyle(record.data.severityLevel);
                 }
                 return 'x-grid3-row-collapsed';
@@ -33,20 +33,9 @@ function initEventView(){
 	});
 	
 	eventGrid.on("rowdblclick", function(grid) {
-		alert("Yo you clicked an event grid");
-		/*var view=new Ext.View(Ext.get('squote'),tpl,{
-               store:eventStore 
-        });
-        var sel = grid.getSelectionModel().getSelected();
-        var selIndex = ds.indexOf(sel);
-        var seldata=sel.data;
-        	
-        seldata.change=change(seldata.change);
-        seldata.pctChange=pctChange(seldata.pctChange);
-        seldata.lastChange=Ext.util.Format.date(seldata.lastChange,'m/d/Y');
-        tpl.overwrite(view.getEl(), seldata);
-            
-        dialog.show(grid.getView().getRow(selIndex));*/  
+		//eventGrid
+		var selId = grid.getSelectionModel().getSelected().data.eventId;
+		window.location = 'event/detail.jsp?id=' + selId;   
     });
 	
 	
