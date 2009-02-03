@@ -45,10 +45,15 @@ public class SyncTask extends Task {
     
     private final Runnable m_action;
 
-
     public SyncTask(DefaultTaskCoordinator coordinator, Runnable action) {
+        this(coordinator, action, DEFAULT_EXECUTOR);
+    }
+
+
+    public SyncTask(DefaultTaskCoordinator coordinator, Runnable action, String preferredExecutor) {
         super(coordinator);
         m_action = action;
+        m_preferredExecutor = preferredExecutor;
     }
 
     @Override
