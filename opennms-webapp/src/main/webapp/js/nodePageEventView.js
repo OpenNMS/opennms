@@ -3,7 +3,7 @@ var eventGrid;
 var eventStore;
 var eventRecord;
 var eventColumnModel;
-var eventSelectionModel = new Ext.grid.CheckboxSelectionModel();
+var eventSelectionModel;
 
 function initEventView(){
 	
@@ -13,7 +13,6 @@ function initEventView(){
         height:300,
         renderTo:'event-view',
 		colModel:eventColumnModel,
-		sm: eventSelectionModel,
 		loadMask:true,
 		bbar:eventPagingBar,
 		
@@ -93,7 +92,6 @@ eventStore = new Ext.data.Store({
 })
 
 eventColumnModel = new Ext.grid.ColumnModel([
-	eventSelectionModel,
 	{
 		id:'eventIDCol',
 		header: "Event ID",
@@ -200,10 +198,6 @@ function acknowledgeEvent(button, eventObj){
 	};
 	
 	alert('selectioned events: ' + selectedIds);
-}
-
-function resetEventGridSelection(button, eventObj){
-	eventSelectionModel.clearSelections();	
 }
 
 function loadNodeEvents(nodeId){
