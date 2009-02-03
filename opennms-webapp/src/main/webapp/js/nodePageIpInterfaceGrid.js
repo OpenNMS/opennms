@@ -23,6 +23,12 @@ function nodePageGridInit(){
 		loadMask:true
 	})
 	
+	grid.on("rowdblclick", function(grid) {
+		//eventGrid
+		var selId = grid.getSelectionModel().getSelected().data.interfaceId;
+		window.location = 'element/interface.jsp?ipinterfaceid=' + selId;   
+    });	
+	
 	tb.add({
 	    text: 'filter by ',
 	    tooltip: 'set column for search.',
@@ -93,12 +99,14 @@ function nodePageGridInit(){
 		                    xtype:'textfield',
 		                    fieldLabel: 'TCP/IP Address Like',
 		                    name: 'ipLikeCriteria',
+		                    id:'ipLike',
 							emptyText:'*.*.*.*',
 		                    anchor:'95%'
 		                }, {
 		                    xtype:'textfield',
 		                    fieldLabel: 'Name Containing',
 		                    name: 'nameContainingCriteria',
+		                    id:'nameContaining',
 		                    anchor:'95%'
 		                }]
 		            },{
@@ -106,15 +114,17 @@ function nodePageGridInit(){
 		                layout: 'form',
 		                items: [{
 		                    xtype:'textfield',
-		                    fieldLabel: 'ifAlias Containing',
-		                    name: 'ifAliasContainingCriteria',
+		                    fieldLabel: 'Mac Address Like',
+		                    name: 'macLike',
+		                    id:'macLike',
 		                    anchor:'95%'
 		                },{
-		                    xtype:'textfield',
-		                    fieldLabel: 'Email',
-		                    name: 'email',
-		                    vtype:'email',
-		                    anchor:'95%'
+		                    xtype:'combo',
+               				fieldLabel: 'Providing Service',
+							store:["one", "two", "three"],
+               				name: 'providedService',
+               				id:'providedService',
+							anchor: '95%'
 		                }]
 		            }]
 		        }],
@@ -122,12 +132,18 @@ function nodePageGridInit(){
 				buttons: [{
 		            text: 'Reset',
 					handler:function(){
-						alert('what is is: ' + Ext.get('ifAliasContainingCriteria'));
+						Ext.get('ipLike').text = "";
+						Ext.get('nameContaining').text = '';
+						Ext.get('macLike').text = '';
 					}
 		        },{
 		            text: 'Search',
 					handler:function(){
-						alert("not yet implemented");
+						var searchParams = new Object();
+						searchParams.label='mrmakay';
+						
+						
+						dataStore.load({params:searchParams});
 					}
 		        }]
 
@@ -143,9 +159,12 @@ function nodePageGridInit(){
 
 var record = new Ext.data.Record.create([
 	{name:"", mapping:""},
-	{name:"ipAddress", mapping:"ipAddress"},
 	{name:"interfaceId", mapping:"interfaceId"},
+	{name:"ipAddress", mapping:"ipAddress"},
+	{name:'hostName', mapping:'ipHostName'},
+	{name:'ifIndex', mapping:'ifIndex'},
 	{name:"isManaged", mapping:"isManaged"},
+	{name:'capsdPoll', mapping:'ipLastCapsdPoll'},
 	{name:"snmpInterface", mapping:"snmpInterface"}
 	
 ]);
@@ -165,25 +184,51 @@ var dataStore = new Ext.data.Store({
 })
 
 var colModel = new Ext.grid.ColumnModel([
-	new Ext.grid.RowNumberer(),
+	new Ext.grid.RowNumberer({
+		width:30
+	}),
 	{
-		header :'ip Address',
-		name :'ipAddress',
-		width :150,
+		header :'Interface Id',
+		name :'interfaceId',
+		width:100,
 		sortable :true,
 		align :'center'
 	},{
-		header :'Interface ID',
-		name :'interfaceId',
-		width:150,
+		header :'ip Address',
+		name :'ipAddress',
+		width :100,
 		sortable :true,
 		align :'center'
+	},{
+		header:'ip Host Name',
+		name:'hostName',
+		width:200,
+		align:'center',
+	},{
+		header:'ifIndex',
+		name:'ifIndex',
+		width:75,
+		align:'center',
+		hidden:true
 	},{
 		header :'isManaged',
 		name :'isManaged',
 		width :75,
 		sortable :true,
-		align :'center'
+		align :'center',
+		hidden:true
+	},{
+		header:'Last Capsd Poll',
+		name:'capsdPoll',
+		width:150,
+		hidden:true,
+		align:'center'
+	},{
+		header:'Node',
+		name:'node',
+		width:20,
+		hidden:true,
+		align:'center'
 	}
 ]);
 
