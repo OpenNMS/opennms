@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 03: Rename showReportList to showEditControls. - jeffg@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -158,7 +159,8 @@
 
 <div class="TwoColLeft">
  
-<c:if test="${showReportList}">
+<c:choose>
+  <c:when test="${showEditControls}">
   <h3>Customized Reports</h3>
 
   <div class="boxWrapper">
@@ -182,7 +184,29 @@
  </p>
       </form>
   </div>
-</c:if>
+  </c:when>
+  <c:otherwise>
+    <h3>Custom Reports</h3>
+
+    <div class="boxWrapper">
+    <p>Choose the custom report title to view from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
+
+        <form method="get" name="choose_report" action="KSC/formProcMain.htm">
+                    <select style="width: 100%;" name="report" size="10">
+                      <c:forEach var="report" items="${reports}">
+                        <option value="${report.key}">${report.value}</option>
+                      </c:forEach>
+                    </select>
+
+   <p>
+
+                    <input type="hidden" name="report_action" value="View"/>
+                    <input type="submit" value="View" onclick="validateReport()" alt="View Custom Report"/>
+   </p>
+        </form>
+    </div>
+  </c:otherwise>
+</c:choose>
 
 <h3>Node SNMP Interface Reports</h3>
 <div class="boxWrapper">

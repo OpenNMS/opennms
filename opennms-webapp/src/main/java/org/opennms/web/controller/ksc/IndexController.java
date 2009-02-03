@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2009 Feb 03: Rename showReportList to showEditControls to reflect how
+//              its value affects the rendering of the view. - jeffg@opennms.org
 // 2008 Feb 03: Use Assert.state in afterPropertiesSet(). - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -55,7 +57,7 @@ public class IndexController extends AbstractController implements InitializingB
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("KSC/index");
 
-        modelAndView.addObject("showReportList", !request.isUserInRole(Authentication.READONLY_ROLE));
+        modelAndView.addObject("showEditControls", !request.isUserInRole(Authentication.READONLY_ROLE));
         modelAndView.addObject("reports", getKscReportService().getReportList());
         modelAndView.addObject("nodeResources", getResourceService().findNodeResources());
         modelAndView.addObject("domainResources", getResourceService().findDomainResources());
