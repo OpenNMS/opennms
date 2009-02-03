@@ -108,6 +108,8 @@ var eventPagingBar = new Ext.PagingToolbar({
     displayInfo: true,
     displayMsg: 'Displaying topics {0} - {1} of {2}',
     emptyMsg: "No topics to display",
+    items:[
+            '-', { }]
 })
 
 // pluggable renders
@@ -189,6 +191,6 @@ function acknowledgeEvent(button, eventObj){
 }
 
 function loadNodeEvents(nodeId){
-	eventStore.load({params:{'node.id':nodeId}});
+	eventStore.load({params:{'node.id':nodeId, start:0}});
 }
 
