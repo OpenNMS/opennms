@@ -364,7 +364,7 @@ public interface Manager {
      * write this method simil way to refreshElement
      * Not Yet Implemented
      */
-    public List refreshLinks(VLink[] mapLinks);
+    public List<VLink> refreshLinks(VLink[] mapLinks) throws MapsException;
     
     public boolean foundLoopOnMaps(VMap parentMap,int mapId) throws MapsException ;
 

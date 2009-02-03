@@ -152,6 +152,8 @@ public abstract class Manager {
 	public abstract VMapInfo[] getVisibleMapsMenu(String user) throws MapsException;
 	
 	public abstract boolean isElementInMap(int elementId, int mapId, String type) throws MapsException ;
+	
+	public abstract boolean isElementNotDeleted(int elementId, String type) throws MapsException;
 	  
 
 	public abstract VElementInfo[] getAllElementInfo() throws MapsException ;
@@ -168,7 +170,7 @@ public abstract class Manager {
 	
 	public abstract Set<Integer> getNodeidsOnElement(Element elem) throws MapsException;
 	
-	public abstract Set getNodeIdsBySource(String query)throws MapsException;
+	public abstract Set<Integer> getNodeIdsBySource(String query)throws MapsException;
 	
     public abstract Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes) throws MapsException;
 }
