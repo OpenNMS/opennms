@@ -114,6 +114,10 @@ public class ContainerTask extends Task {
         add(getCoordinator().createTask(runnable));
     }
 
+    public void add(Runnable runnable, String schedulingHint) {
+        add(getCoordinator().createTask(runnable, schedulingHint));
+    }
+
     protected void addChildDependencies(Task child) {
         child.addPrerequisite(m_triggerTask);
     }

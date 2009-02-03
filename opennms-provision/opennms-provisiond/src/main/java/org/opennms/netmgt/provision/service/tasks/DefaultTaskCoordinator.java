@@ -156,6 +156,10 @@ public class DefaultTaskCoordinator implements InitializingBean {
         return new SyncTask(this, r);
     }
     
+    public Task createTask(Runnable r, String schedulingHint) {
+        return new SyncTask(this, r, schedulingHint);
+    }
+
     public BatchTask createBatch() {
         return new BatchTask(this);
     }
@@ -306,4 +310,5 @@ public class DefaultTaskCoordinator implements InitializingBean {
             addExecutor(e.getKey(), e.getValue());
         }
     }
+
 }

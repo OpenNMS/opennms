@@ -197,7 +197,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     public OnmsIpInterface(String ipAddr, OnmsNode node) {
         m_ipAddress = ipAddr;
         m_node = node;
-        node.getIpInterfaces().add(this);
+        if (node != null) {
+            node.getIpInterfaces().add(this);
+        }
     }
 
     /**

@@ -42,6 +42,19 @@ public class SnmpInterfaceDaoHibernate extends
 	public SnmpInterfaceDaoHibernate() {
 		super(OnmsSnmpInterface.class);
 	}
+	
+
+
+    public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        Assert.notNull(ifIndex, "ifIndex may not be null");
+        return findUnique("select distinct snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?", 
+                          nodeId, 
+                          ifIndex);
+        
+    }
+
+
 
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
