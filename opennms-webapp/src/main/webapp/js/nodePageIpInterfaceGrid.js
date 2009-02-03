@@ -74,7 +74,6 @@ function nodePageGridInit(){
 		tbar: [
             new Ext.FormPanel({
 				labelWidth: 108, // label settings here cascade unless overridden
-		        url:'save-form.php',
 		        frame:true,
 		        bodyStyle:'padding:5px 5px 0',
 				title:"<p style='color:#000000;'>SEARCH CRITERIA</p>",
@@ -94,7 +93,7 @@ function nodePageGridInit(){
 		                    xtype:'textfield',
 		                    fieldLabel: 'TCP/IP Address Like',
 		                    name: 'ipLikeCriteria',
-							emptyText:'this is empty',
+							emptyText:'*.*.*.*',
 		                    anchor:'95%'
 		                }, {
 		                    xtype:'textfield',
