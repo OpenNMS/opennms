@@ -42,7 +42,7 @@ function initEventView(){
 	eventPanel = new Ext.Panel({
 		applyTo:'event-view',
 		width:'auto',
-		title:'EVENTS',
+		title:'RECENT NODE EVENTS',
 		autoHeight:true,
 		bodyBorder:false,
 		border:false,
