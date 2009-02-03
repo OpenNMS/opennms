@@ -67,7 +67,6 @@ function initEventView(){
 }
 
 eventRecord = new Ext.data.Record.create([
-	{name:'empty', mapping:''},
 	{name:"eventId", mapping:"id"},
 	{name:'severityLevel', mapping:'eventSeverity'},
 	{name:"eventTime", mapping:"eventTime"},
