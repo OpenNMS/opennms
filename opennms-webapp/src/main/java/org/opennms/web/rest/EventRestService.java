@@ -49,6 +49,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.hibernate.criterion.Order;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -115,8 +116,11 @@ public class EventRestService extends OnmsRestService {
 		OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
 		setLimitOffset(params, criteria, 10);
 		addFiltersToCriteria(params, criteria, OnmsEvent.class);
-		
+		//added ordering of the events based on id
+		criteria.addOrder(Order.asc("id"));
 		OnmsEventCollection eventCol = new OnmsEventCollection(m_eventDao.findMatching(criteria));
+		
+		//For getting total
 		OnmsCriteria crit = new OnmsCriteria(OnmsEvent.class);
 		addFiltersToCriteria(params, crit, OnmsEvent.class);
 		
