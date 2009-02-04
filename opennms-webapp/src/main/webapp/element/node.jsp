@@ -492,7 +492,7 @@
   </jsp:include>
   
   <!-- events list  box -->
-  <c:url var="eventListUrl" value="event/list">
+  <%--<c:url var="eventListUrl" value="event/list">
     <c:param name="filter" value="node=${model.id}"/>
   </c:url>
   <jsp:include page="/includes/eventlist.jsp" flush="false" >
@@ -500,7 +500,7 @@
     <jsp:param name="throttle" value="5" />
     <jsp:param name="header" value="<a href='${eventListUrl}'>Recent Events</a>" />
     <jsp:param name="moreUrl" value="${eventListUrl}" />
-  </jsp:include>
+  </jsp:include>--%>
   
   <!-- Recent outages box -->
   <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />

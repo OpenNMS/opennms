@@ -131,20 +131,10 @@ function nodePageGridInit(){
 				
 				buttons: [{
 		            text: 'Reset',
-					handler:function(){
-						Ext.get('ipLike').text = "";
-						Ext.get('nameContaining').text = '';
-						Ext.get('macLike').text = '';
-					}
+					handler:interfaceGridResetButtonHandler,
 		        },{
 		            text: 'Search',
-					handler:function(){
-						var searchParams = new Object();
-						searchParams.label='mrmakay';
-						
-						
-						dataStore.load({params:searchParams});
-					}
+					handler:interfaceSearchButtonHandler,
 		        }]
 
 
@@ -274,12 +264,6 @@ var filterMenu = new Ext.menu.Menu({
     items: filterMenuItems
 });
 
-function onFilterItemCheck(item, checked){
-	if(checked) {
-        Ext.get('filterlabel').update('['+item.text+']');    
-    }
-}
-
 function loadNodeInterfaces(nodeId){
 	dataStore.proxy.conn.url ="rest/nodes/" + nodeId + "/ipinterfaces"; //"xml/node-147-ipinterfaces.xml"; 
 	dataStore.load({params:{start:0, limit:20}});
@@ -293,4 +277,27 @@ function updateFilter(field, newValue, oldValue){
 	var total = dataStore.getTotalCount();
 	var count = dataStore.getCount();
 	Ext.get('recordslabel').update('displaying ' + count + " of " + total);
+}
+
+//Event Handlers
+function interfaceGridResetButtonHandler(){
+	Ext.getCmp('ipLike').update("");
+	Ext.getCmp('nameContaining').update("");;
+	Ext.getCmp('macLike').update("");
+}
+
+function interfaceSearchButtonHandler(){
+	var searchParams = new Object();
+	searchParams.start = 0;
+	if(Ext.getCmp('ipLike').getValue() != ""){
+		searchParams.ipAddress = Ext.getCmp('ipLike').getValue();
+	}		
+	searchParams.comparator='ge';				
+	dataStore.load({params:searchParams});
+};
+
+function onFilterItemCheck(item, checked){
+	if(checked) {
+        Ext.get('filterlabel').update('['+item.text+']');    
+    }
 }
