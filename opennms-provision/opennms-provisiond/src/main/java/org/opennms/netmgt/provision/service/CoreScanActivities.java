@@ -145,7 +145,7 @@ public class CoreScanActivities {
         // someday I'll change this to use agentDetectors
         OnmsIpInterface primaryIface = node.getPrimaryInterface();
         if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-            LifeCycleInstance nested = lifeCycle.createNestedLifeCycle("agentScan");
+            LifeCycleInstance nested = lifeCycle.createNestedLifeCycle(currentPhase, "agentScan");
             nested.setAttribute("agentType", "SNMP");
             nested.setAttribute("node", node);
             nested.setAttribute("primaryAddress", primaryIface.getInetAddress());

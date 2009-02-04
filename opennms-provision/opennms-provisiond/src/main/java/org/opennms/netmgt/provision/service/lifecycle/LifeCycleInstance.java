@@ -57,7 +57,7 @@ public interface LifeCycleInstance {
 
     <T> T getAttribute(String key, T defaultValue);
 
-    LifeCycleInstance createNestedLifeCycle(String lifeCycleName);
+    LifeCycleInstance createNestedLifeCycle(Phase currentPhase, String lifeCycleName);
 
     void trigger();
 

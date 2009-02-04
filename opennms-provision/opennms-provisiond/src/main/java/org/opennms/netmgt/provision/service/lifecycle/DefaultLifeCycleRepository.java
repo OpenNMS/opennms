@@ -47,6 +47,14 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
         m_coordinator = coordinator;
     }
 
+
+    public LifeCycleInstance createNestedLifeCycleInstance(Phase containingPhase, String lifeCycleName, Object... providers) {
+        LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
+        
+        return new DefaultLifeCycleInstance(containingPhase, this, m_coordinator, lifeCycle.getLifeCycleName(), lifeCycle.getPhaseNames(), providers);
+    }
+
+
     public LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers) {
         LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
         

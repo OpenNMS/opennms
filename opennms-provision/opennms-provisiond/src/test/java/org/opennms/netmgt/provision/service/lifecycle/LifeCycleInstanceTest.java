@@ -397,7 +397,7 @@ public class LifeCycleInstanceTest {
 
         // this should be called in the middle
         @Activity(phase="phase2", lifecycle = "sample")
-        public LifeCycleInstance doPhaseTwo(LifeCycleInstance lifecycle) throws Exception {
+        public LifeCycleInstance doPhaseTwo(LifeCycleInstance lifecycle, Phase currentPhase) throws Exception {
 
             appendPhase(lifecycle, getPrefix(lifecycle)+"phase2start ");
             
@@ -406,7 +406,7 @@ public class LifeCycleInstanceTest {
             int nestLevel = lifecycle.getAttribute(NEST_LEVEL, 0);
             int maxDepth = lifecycle.getAttribute(MAX_DEPTH, 0);
             if (nestLevel < maxDepth) {
-                nested = lifecycle.createNestedLifeCycle("sample");
+                nested = lifecycle.createNestedLifeCycle(currentPhase, "sample");
 
                 nested.setAttribute(MAX_DEPTH, maxDepth);
                 nested.setAttribute(NEST_LEVEL, nestLevel+1);
