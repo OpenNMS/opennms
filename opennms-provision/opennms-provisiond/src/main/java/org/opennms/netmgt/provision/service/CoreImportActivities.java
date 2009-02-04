@@ -36,14 +36,13 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
-import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
-import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.tasks.Task;
@@ -131,7 +130,7 @@ public class CoreImportActivities {
         
 
         for(final ImportOperation op : operations) {
-            LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle("nodeImport");
+            LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle(currentPhase, "nodeImport");
             
             System.out.printf("Created  LifeCycle %s for op %s\n", nodeScan, op);
             nodeScan.setAttribute("operation", op);
