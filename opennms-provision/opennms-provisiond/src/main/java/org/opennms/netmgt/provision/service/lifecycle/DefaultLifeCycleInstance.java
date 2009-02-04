@@ -57,6 +57,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *  
      */
     
+    final Phase m_containingPhase;
     final LifeCycleRepository m_repository;
     final DefaultTaskCoordinator m_coordinator;
     final String m_name;
@@ -64,8 +65,13 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     final Object[] m_providers;
     final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
-    public DefaultLifeCycleInstance(LifeCycleRepository repository, DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
+    public DefaultLifeCycleInstance(Phase containingPhase,
+            LifeCycleRepository repository,
+            DefaultTaskCoordinator coordinator, String lifeCycleName,
+            String[] phaseNames, Object[] providers) {
+
         super(coordinator);
+        m_containingPhase = containingPhase;
         m_repository = repository;
         m_coordinator = coordinator;
         m_name = lifeCycleName;
@@ -78,6 +84,11 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         }
         
         setAttribute("lifeCycleInstance", this);
+    }
+
+
+    public DefaultLifeCycleInstance(LifeCycleRepository repository, DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
+        this(null, repository, coordinator, lifeCycleName, phaseNames, providers);
     }
 
     public List<String> getPhaseNames() {
@@ -133,8 +144,8 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
     
-    public LifeCycleInstance createNestedLifeCycle(String lifeCycleName) {
-        return m_repository.createLifeCycleInstance(lifeCycleName, m_providers);
+    public LifeCycleInstance createNestedLifeCycle(Phase containingPhase, String lifeCycleName) {
+        return m_repository.createNestedLifeCycleInstance(containingPhase, lifeCycleName, m_providers);
     }
 
     public void trigger() {

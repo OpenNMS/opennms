@@ -38,6 +38,7 @@ package org.opennms.netmgt.provision.service.lifecycle;
  */
 public interface LifeCycleRepository {
     
+    LifeCycleInstance createNestedLifeCycleInstance(Phase containingPhase, String lifeCycleName, Object... providers);
     LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers);
 
 }

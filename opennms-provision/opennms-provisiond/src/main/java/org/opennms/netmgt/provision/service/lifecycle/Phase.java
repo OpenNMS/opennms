@@ -64,6 +64,10 @@ public class Phase extends BatchTask {
         return m_lifecycle;
     }
     
+    public LifeCycleInstance createNestedLifeCycleInstance(String lifeCycleName) {
+        return m_lifecycle.createNestedLifeCycle(this, lifeCycleName);
+    }
+    
     public void addPhaseMethods() {
         for(Object provider : m_providers) {
             addPhaseMethods(provider);
