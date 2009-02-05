@@ -149,7 +149,11 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
     public void trigger() {
-        this.schedule();
+        if (m_containingPhase != null) {
+            m_containingPhase.add(this);
+        } else {
+            this.schedule();
+        }
     }
 
     public String toString() {
