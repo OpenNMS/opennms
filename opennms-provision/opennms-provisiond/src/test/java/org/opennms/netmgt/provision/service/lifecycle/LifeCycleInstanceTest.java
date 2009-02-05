@@ -406,7 +406,7 @@ public class LifeCycleInstanceTest {
             int nestLevel = lifecycle.getAttribute(NEST_LEVEL, 0);
             int maxDepth = lifecycle.getAttribute(MAX_DEPTH, 0);
             if (nestLevel < maxDepth) {
-                nested = lifecycle.createNestedLifeCycle(currentPhase, "sample");
+                nested = currentPhase.createNestedLifeCycle("sample");
 
                 nested.setAttribute(MAX_DEPTH, maxDepth);
                 nested.setAttribute(NEST_LEVEL, nestLevel+1);
