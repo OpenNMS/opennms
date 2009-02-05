@@ -13,14 +13,22 @@ function nodePageGridInit(){
 	}
 	
 	grid = new Ext.grid.GridPanel({
+		title:'IP Interfaces',
+		id:'nodeInterfaceGrid',
         store: dataStore,
         colModel:colModel,
         width:'auto',
+        header:false,
         height:300,
         renderTo:'grid-panel',
 		tbar:tb,
 		bbar: ipInterfacePagingBar,
-		loadMask:true
+		loadMask:true,
+		stripedRows:true,
+		
+		viewConfig:{
+			autoFill:true
+		}
 	})
 	
 	grid.on("rowdblclick", function(grid) {
@@ -67,17 +75,20 @@ function nodePageGridInit(){
        style: 'float:right;'
 	})
 	
-	var panel = new Ext.Panel({
+	var panel = new Ext.TabPanel({
 		applyTo:'grid-panel',
+		activeTab:0,
 		width:554,
-		title:'INTERFACES',
 		autoHeight:true,
-		bodyBorder:false,
-		border:false,
+		bodyBorder:true,
+		border:true,
 		items:[
-			grid
+			grid,{
+				title:'Physical Interface',
+				html:'<p>Not Yet Implemented</p>'
+			}
 		],
-		tbar: [
+		/*tbar: [
             new Ext.FormPanel({
 				labelWidth: 108, // label settings here cascade unless overridden
 		        frame:true,
@@ -139,7 +150,7 @@ function nodePageGridInit(){
 
 
 			})
-        ],
+        ],*/
 
 	})
 	
@@ -230,7 +241,9 @@ var ipInterfacePagingBar = new Ext.PagingToolbar({
         emptyMsg: "No topics to display",
         
         items:[
-            '-', { }]
+            '-', new Ext.Button({
+            	text:'search crit',
+            })]
 
 });
 

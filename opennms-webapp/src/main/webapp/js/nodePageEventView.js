@@ -114,7 +114,7 @@ var eventPagingBar = new Ext.PagingToolbar({
 
 // pluggable renders
 function renderTopic(value, p, record){
-    return String.format('<b><a href="http://localhost:8080/opennms-webapp/event/detail.jsp?id={0}" target="_blank">{0}</a></b>',value);
+    return String.format('<b><a href="http://localhost:8080/opennms-webapp/event/detail.jsp?id={0}" target="_self">{0}</a></b>',value);
 }
 
 function renderEventSeverity(value, p, record){
