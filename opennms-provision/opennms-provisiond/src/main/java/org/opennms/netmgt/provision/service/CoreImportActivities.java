@@ -45,7 +45,6 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
-import org.opennms.netmgt.provision.service.tasks.Task;
 import org.springframework.core.io.Resource;
 
 /**
@@ -121,7 +120,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "scan" )
-    public void scanNodes(LifeCycleInstance lifeCycle, Phase currentPhase, ImportOperationsManager opsMgr) {
+    public void scanNodes(Phase currentPhase, ImportOperationsManager opsMgr) {
 
         
         
@@ -130,11 +129,11 @@ public class CoreImportActivities {
         
 
         for(final ImportOperation op : operations) {
-            LifeCycleInstance nodeScan = lifeCycle.createNestedLifeCycle(currentPhase, "nodeImport");
+            LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
             
             System.out.printf("Created  LifeCycle %s for op %s\n", nodeScan, op);
             nodeScan.setAttribute("operation", op);
-            currentPhase.add((Task)nodeScan);
+            nodeScan.trigger();
         }
 
 

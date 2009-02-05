@@ -43,7 +43,6 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
-import org.opennms.netmgt.provision.service.tasks.Task;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -141,15 +140,15 @@ public class CoreScanActivities {
     }
     
     @Activity( lifecycle = "nodeScan", phase = "detectAgents" )
-    public void detectAgents(LifeCycleInstance lifeCycle, Phase currentPhase, OnmsNode node) {
+    public void detectAgents(Phase currentPhase, OnmsNode node) {
         // someday I'll change this to use agentDetectors
         OnmsIpInterface primaryIface = node.getPrimaryInterface();
         if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-            LifeCycleInstance nested = lifeCycle.createNestedLifeCycle(currentPhase, "agentScan");
+            LifeCycleInstance nested = currentPhase.createNestedLifeCycle("agentScan");
             nested.setAttribute("agentType", "SNMP");
             nested.setAttribute("node", node);
             nested.setAttribute("primaryAddress", primaryIface.getInetAddress());
-            currentPhase.add((Task)nested);
+            nested.trigger();
         }
         
     }
