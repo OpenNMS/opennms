@@ -14,6 +14,18 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.FrameRelayStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="bgpPeerEntry" label="BGP Peer"
+                  resourceLabel="ASN ${bgpPeerRemoteAs}, Peer ${bgpPeerRemoteAddr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="cbgpPeerAddrFamilyPrefixEntry" label="Cisco BGP Peer / Address Family"
+                  resourceLabel="Peer ${subIndex(0,4)}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
                   resourceLabel="${cvmTempStatusDescr} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
@@ -450,6 +462,14 @@
         <mibObj oid=".1.3.6.1.2.1.25.2.2"     instance="0" alias="memorySize"     type="integer" />
       </group>
 
+      <!-- Stats from the IETF BGP4-MIB -->
+      <group name="ietf-bgp4-peer-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.15.3.1.7"  instance="bgpPeerEntry" alias="bgpPeerRemoteAddr" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.15.3.1.9"  instance="bgpPeerEntry" alias="bgpPeerRemoteAs" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.15.3.1.10" instance="bgpPeerEntry" alias="bgpPeerInUpdates" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.15.3.1.11" instance="bgpPeerEntry" alias="bgpPeerOutUpdates" type="counter" />
+      </group>
+
       <!-- Stats from the IETF IPMROUTE-STD-MIB -->
       <group name="ietf-ipmroute-scalars" ifType="ignore">
         <mibObj oid=".1.3.6.1.2.1.83.1.1.7" instance="0" alias="ifMRouteEntryCount" type="gauge" />
@@ -671,6 +691,11 @@
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.13" instance="swFCPortIndex" alias="swFCPortTxFrames" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.14" instance="swFCPortIndex" alias="swFCPortRxFrames" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.36" instance="swFCPortIndex" alias="swFCPortName"     type="string" />
+      </group>
+
+      <group name="cisco-bgp-peer-addr-family-prefix-stats" ifType="all">
+        <!-- NB This gauge is a Counter32 that exhibits gauge semantics -->
+        <mibObj oid=".1.3.6.1.4.1.9.9.187.1.2.4.1.1" instance="cbgpPeerAddrFamilyPrefixEntry" alias="cbgpPeerAcceptedPfx" type="gauge" />
       </group>
 
       <group name="cisco-cike" ifType="ignore">
@@ -2744,6 +2769,8 @@
           <includeGroup>rfc1315-frame-relay</includeGroup>
           <includeGroup>cisco-frame-relay</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+          <includeGroup>cisco-bgp-peer-addr-family-prefix-stats</includeGroup>
         </collect>
       </systemDef>
 
@@ -2862,6 +2889,7 @@
         <collect>
           <includeGroup>juniper-router</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
         </collect>
       </systemDef>
 
