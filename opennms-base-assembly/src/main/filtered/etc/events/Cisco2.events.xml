@@ -35326,7 +35326,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>1</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeOutOfService</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeOutOfService</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35392,7 +35392,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -35413,7 +35413,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>2</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeInService</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeInService</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35479,7 +35479,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
 </event>
 <event>
 	<mask>
@@ -35500,7 +35500,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>3</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeStandby</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeStandby</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35566,7 +35566,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -35587,7 +35587,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>4</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeInOperReal</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeInOperReal</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35653,7 +35653,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -35674,7 +35674,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>5</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeStbInOperReal</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeStbInOperReal</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35740,7 +35740,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -35761,7 +35761,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>6</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeTestReal</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeTestReal</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35827,7 +35827,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -35848,7 +35848,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>7</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChangeOutOfMemory</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChangeOutOfMemory</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35914,7 +35914,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -35931,7 +35931,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<mevalue>7</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbVirtualServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a virtual
@@ -35997,7 +35997,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbVirtualServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36018,7 +36018,7 @@ identified by slbVirtualServerName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>1</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeOutOfService</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeOutOfService</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36104,7 +36104,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36125,7 +36125,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>2</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeInService</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeInService</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36211,7 +36211,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
 </event>
 <event>
 	<mask>
@@ -36232,7 +36232,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>3</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeFailed</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeFailed</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36318,7 +36318,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36339,7 +36339,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>4</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeReadyToTest</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeReadyToTest</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36425,7 +36425,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36446,7 +36446,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>5</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeTesting</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeTesting</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36532,7 +36532,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36553,7 +36553,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>6</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeMaxConnsThrottle</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeMaxConnsThrottle</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36639,7 +36639,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36660,7 +36660,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>7</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeMaxClientsThrottle</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeMaxClientsThrottle</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36746,7 +36746,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36767,7 +36767,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>8</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeDfpThrottle</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeDfpThrottle</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36853,7 +36853,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36874,7 +36874,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>9</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeProbeFailed</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeProbeFailed</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -36960,7 +36960,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -36981,7 +36981,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>10</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeProbeTesting</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeProbeTesting</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37067,7 +37067,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37088,7 +37088,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>11</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeOperWait</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeOperWait</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37174,7 +37174,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37195,7 +37195,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>12</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeTestWait</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeTestWait</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37281,7 +37281,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37302,7 +37302,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>13</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeInbandProbeFailed</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeInbandProbeFailed</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37388,7 +37388,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37409,7 +37409,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>14</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeReturnCodeFailed</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeReturnCodeFailed</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37495,7 +37495,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37516,7 +37516,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>15</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeArpFailed</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeArpFailed</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37602,7 +37602,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37623,7 +37623,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>16</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeStandby</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeStandby</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37709,7 +37709,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37730,7 +37730,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>17</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeInactive</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeInactive</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37816,7 +37816,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37837,7 +37837,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>18</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChangeMaxLoad</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChangeMaxLoad</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -37923,7 +37923,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -37940,7 +37940,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<mevalue>8</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange</uei>
 	<event-label>CISCO-SLB-MIB defined trap event: ciscoSlbRealServerStateChange</event-label>
 	<descr>
 &lt;p&gt;This notification is generated when a real
@@ -38026,7 +38026,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			slbName=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="uei.opennms.org/mib2opennms/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data reduction-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/ciscoSlbRealServerStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: CISCO-SLB-MIB -->
 <!-- Start of auto generated data from MIB: CISCO-SLB-HEALTH-MON-MIB -->
@@ -38045,7 +38045,7 @@ slbRealServerFarmName.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/cshMonSocketOveruse</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/cshMonSocketOveruse</uei>
 	<event-label>CISCO-SLB-HEALTH-MON-MIB defined trap event: cshMonSocketOveruse</event-label>
 	<descr>
 &lt;p&gt;The notification is generated when probes socket usage
@@ -38080,7 +38080,7 @@ in that minute.&lt;/p&gt;&lt;table&gt;
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/cshMonSocketNormalUse</uei>
+	<uei>uei.opennms.org/vendor/cisco/enhancedSlb/traps/cshMonSocketNormalUse</uei>
 	<event-label>CISCO-SLB-HEALTH-MON-MIB defined trap event: cshMonSocketNormalUse</event-label>
 	<descr>
 &lt;p&gt;The notification is generated when the probes socket usage
@@ -38100,7 +38100,7 @@ minute.&lt;/p&gt;&lt;table&gt;
 			cshMonSocketOverusageCount=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/cshMonSocketOveruse:%dpname%:%nodeid%:%interface%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/enhancedSlb/traps/cshMonSocketOveruse:%dpname%:%nodeid%:%interface%" />
 </event>
 <!-- End of auto generated data from MIB: CISCO-SLB-HEALTH-MON-MIB -->
 <!-- Start of auto generated data from MIB: CISCO-STACKWISE-MIB -->
@@ -38560,4 +38560,1223 @@ from the stack.&lt;/p&gt;&lt;table&gt;
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: CISCO-STACKWISE-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-ENHANCED-SLB-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateUp</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRealServerStateUp</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real server
+changes to 'inservice' state by the user intervention.
+
+The cesServerFarmName refers to the server farm
+to which the real server identified by the 
+cesRealServerName is associated.
+
+The cesServerFarmRserverBackupPort refers to the
+real server port.  This object contains the value
+of cesServerFarmRserverPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverBackupPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRealServerStateUp trap received 
+			cesRealServerName=%parm[#1]% 
+			cesServerFarmRserverBackupPort=%parm[#2]% 
+			cesServerFarmName=%parm[#3]% 
+			cesServerFarmRserverAdminStatus=%parm[#4]% 
+			cesServerFarmRserverOperStatus=%parm[#5]% 
+			cesRserverIpAddressType=%parm[#6]% 
+			cesRserverIpAddress=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateDown:dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateDown</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRealServerStateDown</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when a real server
+changes to 'outOfService' state by the user intervention.
+
+The cesServerFarmName refers to the server farm
+to which the real server identified by the 
+cesRealServerName is associated.
+
+The cesServerFarmRserverBackupPort refers to the
+real server port.  This object contains the value
+of cesServerFarmRserverPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverBackupPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverStateDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRealServerStateDown trap received 
+			cesRealServerName=%parm[#1]% 
+			cesServerFarmRserverBackupPort=%parm[#2]% 
+			cesServerFarmName=%parm[#3]% 
+			cesServerFarmRserverAdminStatus=%parm[#4]% 
+			cesServerFarmRserverOperStatus=%parm[#5]% 
+			cesServerFarmRserverStateDescr=%parm[#6]% 
+			cesRserverIpAddressType=%parm[#7]% 
+			cesRserverIpAddress=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateChangeUp</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification generated when a real server
+changes to a new state other than that is initiated
+by the user.  This notification is sent for the 
+reasons that are specified in objects:
+   cesServerFarmRserverOperStatus 
+   cesRserverStatechangeDescr.
+
+The cesServerFarmName refers to the server farm
+to which the real server identified by the 
+cesRealServerName is associated.
+
+The cesServerFarmRserverBackupPort refers to the
+real server port.  This object contains the value
+of cesServerFarmRserverPort.
+
+The cesProbeName object with zero length
+octet string specifies that real server state
+change is not due to probe failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverBackupPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverStateDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesProbeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRealServerStateChange trap received 
+			cesRealServerName=%parm[#1]% 
+			cesServerFarmRserverBackupPort=%parm[#2]% 
+			cesServerFarmName=%parm[#3]% 
+			cesServerFarmRserverAdminStatus=%parm[#4]% 
+			cesServerFarmRserverOperStatus=%parm[#5]% 
+			cesServerFarmRserverStateDescr=%parm[#6]% 
+			cesRserverIpAddressType=%parm[#7]% 
+			cesRserverIpAddress=%parm[#8]% 
+			cesProbeName=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>1</vbvalue>
+			<vbvalue>3</vbvalue>
+			<vbvalue>4</vbvalue>
+			<vbvalue>5</vbvalue>
+			<vbvalue>6</vbvalue>
+			<vbvalue>7</vbvalue>
+			<vbvalue>8</vbvalue>
+			<vbvalue>9</vbvalue>
+			<vbvalue>10</vbvalue>
+			<vbvalue>11</vbvalue>
+			<vbvalue>12</vbvalue>
+			<vbvalue>13</vbvalue>
+			<vbvalue>14</vbvalue>
+			<vbvalue>15</vbvalue>
+			<vbvalue>16</vbvalue>
+			<vbvalue>17</vbvalue>
+			<vbvalue>18</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateChangeDown</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification generated when a real server
+changes to a new state other than that is initiated
+by the user.  This notification is sent for the 
+reasons that are specified in objects:
+   cesServerFarmRserverOperStatus 
+   cesRserverStatechangeDescr.
+
+The cesServerFarmName refers to the server farm
+to which the real server identified by the 
+cesRealServerName is associated.
+
+The cesServerFarmRserverBackupPort refers to the
+real server port.  This object contains the value
+of cesServerFarmRserverPort.
+
+The cesProbeName object with zero length
+octet string specifies that real server state
+change is not due to probe failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverBackupPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverStateDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesProbeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRealServerStateChange trap received 
+			cesRealServerName=%parm[#1]% 
+			cesServerFarmRserverBackupPort=%parm[#2]% 
+			cesServerFarmName=%parm[#3]% 
+			cesServerFarmRserverAdminStatus=%parm[#4]% 
+			cesServerFarmRserverOperStatus=%parm[#5]% 
+			cesServerFarmRserverStateDescr=%parm[#6]% 
+			cesRserverIpAddressType=%parm[#7]% 
+			cesRserverIpAddress=%parm[#8]% 
+			cesProbeName=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateChange</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRealServerStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification generated when a real server
+changes to a new state other than that is initiated
+by the user.  This notification is sent for the 
+reasons that are specified in objects:
+   cesServerFarmRserverOperStatus 
+   cesRserverStatechangeDescr.
+
+The cesServerFarmName refers to the server farm
+to which the real server identified by the 
+cesRealServerName is associated.
+
+The cesServerFarmRserverBackupPort refers to the
+real server port.  This object contains the value
+of cesServerFarmRserverPort.
+
+The cesProbeName object with zero length
+octet string specifies that real server state
+change is not due to probe failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverBackupPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesServerFarmRserverStateDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesProbeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRealServerStateChange trap received 
+			cesRealServerName=%parm[#1]% 
+			cesServerFarmRserverBackupPort=%parm[#2]% 
+			cesServerFarmName=%parm[#3]% 
+			cesServerFarmRserverAdminStatus=%parm[#4]% 
+			cesServerFarmRserverOperStatus=%parm[#5]% 
+			cesServerFarmRserverStateDescr=%parm[#6]% 
+			cesRserverIpAddressType=%parm[#7]% 
+			cesRserverIpAddress=%parm[#8]% 
+			cesProbeName=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRserverStateUp</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRserverStateUp</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the real server
+identified in cesRserverTable changes state to 
+'inservice' by the user intervention.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRserverStateUp trap received 
+			cesRealServerName=%parm[#1]% 
+			cesRserverAdminStatus=%parm[#2]% 
+			cesRserverOperStatus=%parm[#3]% 
+			cesRserverIpAddressType=%parm[#4]% 
+			cesRserverIpAddress=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRealServerStateDown:dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRserverStateDown</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRserverStateDown</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the real server
+identified in cesRserverTable changes to 
+'outOfService' state by the user intervention.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRserverStateDown trap received 
+			cesRealServerName=%parm[#1]% 
+			cesRserverAdminStatus=%parm[#2]% 
+			cesRserverOperStatus=%parm[#3]% 
+			cesRserverIpAddressType=%parm[#4]% 
+			cesRserverIpAddress=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRserverStateChangeUp</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRserverStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification generated when the real server
+identified in cesRserverTable changes to a new 
+state other than that is initiated by the user.  
+This notification is sent for the reasons that 
+are specified in objects:
+   cesRserverOperStatus 
+   cesRserverStatechangeDescr.
+
+The cesProbeName object with zero length
+octet string specifies that real server state
+change is not due to probe failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverStatechangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesProbeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRserverStateChange trap received 
+			cesRealServerName=%parm[#1]% 
+			cesRserverAdminStatus=%parm[#2]% 
+			cesRserverOperStatus=%parm[#3]% 
+			cesRserverStatechangeDescr=%parm[#4]% 
+			cesRserverIpAddressType=%parm[#5]% 
+			cesRserverIpAddress=%parm[#6]% 
+			cesProbeName=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRserverStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+			<vbvalue>2</vbvalue>
+			<vbvalue>3</vbvalue>
+			<vbvalue>4</vbvalue>
+			<vbvalue>5</vbvalue>
+			<vbvalue>6</vbvalue>
+			<vbvalue>7</vbvalue>
+			<vbvalue>8</vbvalue>
+			<vbvalue>9</vbvalue>
+			<vbvalue>10</vbvalue>
+			<vbvalue>11</vbvalue>
+			<vbvalue>12</vbvalue>
+			<vbvalue>13</vbvalue>
+			<vbvalue>14</vbvalue>
+			<vbvalue>15</vbvalue>
+			<vbvalue>16</vbvalue>
+			<vbvalue>17</vbvalue>
+			<vbvalue>18</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRserverStateChangeDown</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRserverStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification generated when the real server
+identified in cesRserverTable changes to a new 
+state other than that is initiated by the user.  
+This notification is sent for the reasons that 
+are specified in objects:
+   cesRserverOperStatus 
+   cesRserverStatechangeDescr.
+
+The cesProbeName object with zero length
+octet string specifies that real server state
+change is not due to probe failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverStatechangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesProbeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRserverStateChange trap received 
+			cesRealServerName=%parm[#1]% 
+			cesRserverAdminStatus=%parm[#2]% 
+			cesRserverOperStatus=%parm[#3]% 
+			cesRserverStatechangeDescr=%parm[#4]% 
+			cesRserverIpAddressType=%parm[#5]% 
+			cesRserverIpAddress=%parm[#6]% 
+			cesProbeName=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.470</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/enhancedSlb/traps/cesRserverStateChange</uei>
+	<event-label>CISCO-ENHANCED-SLB-MIB defined trap event: cesRserverStateChange</event-label>
+	<descr>
+&lt;p&gt;This notification generated when the real server
+identified in cesRserverTable changes to a new 
+state other than that is initiated by the user.  
+This notification is sent for the reasons that 
+are specified in objects:
+   cesRserverOperStatus 
+   cesRserverStatechangeDescr.
+
+The cesProbeName object with zero length
+octet string specifies that real server state
+change is not due to probe failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inService(1)
+		outOfService(2)
+		inServiceStandby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		outOfService(1)
+		inService(2)
+		failed(3)
+		readyToTest(4)
+		testing(5)
+		maxConnsThrottle(6)
+		maxClientsThrottle(7)
+		dfpThrottle(8)
+		probeFailed(9)
+		probeTesting(10)
+		operWait(11)
+		testWait(12)
+		inbandProbeFailed(13)
+		returnCodeFailed(14)
+		arpFailed(15)
+		standby(16)
+		inactive(17)
+		maxLoad(18)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverStatechangeDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesRserverIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cesProbeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cesRserverStateChange trap received 
+			cesRealServerName=%parm[#1]% 
+			cesRserverAdminStatus=%parm[#2]% 
+			cesRserverOperStatus=%parm[#3]% 
+			cesRserverStatechangeDescr=%parm[#4]% 
+			cesRserverIpAddressType=%parm[#5]% 
+			cesRserverIpAddress=%parm[#6]% 
+			cesProbeName=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-ENHANCED-SLB-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-SLB-HEALTH-MON-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.508</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/slbHealthMon/traps/cshMonSocketOveruse</uei>
+	<event-label>CISCO-SLB-HEALTH-MON-MIB defined trap event: cshMonSocketOveruse</event-label>
+	<descr>
+&lt;p&gt;The notification is generated when probes socket usage
+exceeds or equals 90% atleast 100 times in one minute.
+The object cshMonSocketOverusageCount represents the number 
+of times the probes socket usage exceeded 90 percentage 
+in that minute.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cshMonSocketOverusageCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cshMonSocketOveruse trap received 
+			cshMonSocketOverusageCount=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.508</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/slbHealthMon/traps/cshMonSocketNormalUse</uei>
+	<event-label>CISCO-SLB-HEALTH-MON-MIB defined trap event: cshMonSocketNormalUse</event-label>
+	<descr>
+&lt;p&gt;The notification is generated when the probes socket usage
+becomes normal i.e the socket usage does not exceed 90% 100 or
+more times in that minute and after cshMonSocketOveruse 
+notification is generated.
+The object cshMonSocketOverusageCount represents the number of
+times the probes socket usage exceeded 90 percentage in that 
+minute.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cshMonSocketOverusageCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cshMonSocketNormalUse trap received 
+			cshMonSocketOverusageCount=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Cisco/slbHealthMon/traps/cshMonSocketOveruse:%dpname%:%nodeid%:%interface%" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-SLB-HEALTH-MON-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-MODULE-VIRTUALIZATION-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.472</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/moduleVirtualization/traps/cmVirtContextAdded</uei>
+	<event-label>CISCO-MODULE-VIRTUALIZATION-MIB defined trap event: cmVirtContextAdded</event-label>
+	<descr>
+&lt;p&gt;This notifications will be sent
+when a virtual context is added.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cmNotifVirtContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cmVirtContextAdded trap received 
+			cmNotifVirtContextName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.472</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Cisco/moduleVirtualization/traps/cmVirtContextRemoved</uei>
+	<event-label>CISCO-MODULE-VIRTUALIZATION-MIB defined trap event: cmVirtContextRemoved</event-label>
+	<descr>
+&lt;p&gt;This notifications will be sent
+when a virtual context is removed/deleted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cmNotifVirtContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cmVirtContextRemoved trap received 
+			cmNotifVirtContextName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: CISCO-MODULE-VIRTUALIZATION-MIB -->
 </events>
