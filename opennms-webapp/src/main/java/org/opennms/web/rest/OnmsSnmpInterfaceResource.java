@@ -8,12 +8,17 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -40,11 +45,26 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
     
+    @Context 
+    UriInfo m_uriInfo;
+    
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsSnmpInterfaceList getSnmpInterfaces(@PathParam("nodeId") int nodeId) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        return new OnmsSnmpInterfaceList(node.getSnmpInterfaces());
+        //OnmsNode node = m_nodeDao.get(nodeId);
+        
+        MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+        OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        setLimitOffset(params, criteria, 20);
+        addFiltersToCriteria(params, criteria, OnmsSnmpInterface.class);
+        
+        criteria.createCriteria("node").add(Restrictions.eq("id", nodeId));
+        OnmsSnmpInterfaceList snmpList = new OnmsSnmpInterfaceList(m_snmpInterfaceDao.findMatching(criteria));
+        
+        OnmsCriteria crit = new OnmsCriteria(OnmsSnmpInterface.class);
+        crit.createCriteria("node").add(Restrictions.eq("id", nodeId));
+        snmpList.setTotalCount(m_snmpInterfaceDao.countMatching(crit));
+        return snmpList;
     }
 
     @GET

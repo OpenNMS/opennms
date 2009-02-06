@@ -10,7 +10,7 @@ function initEventView(){
 	eventGrid = new Ext.grid.GridPanel({
 		store:eventStore,
         width:'auto',
-        height:300,
+        height:474,
         renderTo:'event-view',
 		colModel:eventColumnModel,
 		loadMask:true,
@@ -18,6 +18,7 @@ function initEventView(){
 		
 		// customize view config
         viewConfig: {
+        	autoFill:true,
             forceFit:true,
             enableRowBody:true,
             showPreview:true,
@@ -91,14 +92,14 @@ eventColumnModel = new Ext.grid.ColumnModel([
 		header:"Severity",
 		name:'severityLevel',
 		renderer:renderEventSeverity,
-		align:'center'
+		align:'left'
 	},{
 		header: "Event Time",
 		name:'eventTime',
 		width: 150,
 		sortable: true,
 		renderer:eventTime,
-		align:'center'
+		align:'left'
 	}
 ])
 

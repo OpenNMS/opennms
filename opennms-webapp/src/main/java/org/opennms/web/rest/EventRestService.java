@@ -117,7 +117,7 @@ public class EventRestService extends OnmsRestService {
 		setLimitOffset(params, criteria, 10);
 		addFiltersToCriteria(params, criteria, OnmsEvent.class);
 		//added ordering of the events based on id
-		criteria.addOrder(Order.asc("id"));
+		criteria.addOrder(Order.desc("eventTime"));
 		OnmsEventCollection eventCol = new OnmsEventCollection(m_eventDao.findMatching(criteria));
 		
 		//For getting total
