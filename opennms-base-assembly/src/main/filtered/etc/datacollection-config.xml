@@ -44,6 +44,18 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="ciscoSlbInstance" label="Cisco SLB Instance"
+                  resourceLabel="Cisco SLB (Slot ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="cesServerFarmRserverEntry" label="Cisco SLB Server Farm / Real Server"
+                  resourceLabel="Cisco SLB Entity ${subIndex(0, 1)}, Server Farm ${string(subIndex(1, n))}, Real Server ${string(subIndex(n, n))}, port ${subIndex(n)}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <resourceType name="applIndex" label="Network Services Application"
                   resourceLabel="${applDescription} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
@@ -961,6 +973,29 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.17" instance="ifIndex" alias="cisV3IsExcluded" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.18" instance="ifIndex" alias="cisV3ToIncluded" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.19" instance="ifIndex" alias="cisV3ToExcluded" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-SLB-MIB-->
+      <group name="cisco-slb-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.7"  instance="ciscoSlbInstance" alias="cSlbCreatedHCConns" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.9"  instance="ciscoSlbInstance" alias="cSlbEstabHCConns" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.11" instance="ciscoSlbInstance" alias="cSlbDestroydHCConns" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.13" instance="ciscoSlbInstance" alias="cSlbReassgdHCConns" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-EHANCED-SLB-MIB-->
+      <group name="cisco-enhanced-slb-farm-rserver-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.2"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsAdminWt" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.3"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsOperWt" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.4"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsMaxConns" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.5"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsMinConns" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.8"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsStateDesc" type="string" />
+        <!-- NB The following connection counters are Counter64 -->
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.11" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsTotalConn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.12" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsFailConn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.13" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsDropConn" type="counter" />
+        <!-- NB The following is a Counter64 following Gauge semantics -->
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.14" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsCurrConn" type="gauge" />
       </group>
 
       <group name="ipunity-as-call-scalars" ifType="ignore" >
@@ -2778,6 +2813,22 @@
         <sysoid>.1.3.6.1.4.1.9.1.583</sysoid>
         <collect>
           <includeGroup>cisco-ccm</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ACE Load Balancer 10K9">
+        <sysoid>.1.3.6.1.4.1.9.1.730</sysoid>
+        <collect>
+          <includeGroup>cisco-slb-stats</includeGroup>
+          <includeGroup>cisco-enhanced-slb-farm-rserver-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ACE Load Balancer 4710K9">
+        <sysoid>.1.3.6.1.4.1.9.1.824</sysoid>
+        <collect>
+          <includeGroup>cisco-slb-stats</includeGroup>
+          <includeGroup>cisco-enhanced-slb-farm-rserver-stats</includeGroup>
         </collect>
       </systemDef>
 
