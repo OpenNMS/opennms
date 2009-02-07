@@ -8,11 +8,11 @@ public class PolicyWrapper extends PluginConfig {
     private static final long serialVersionUID = 1L;
     
     public PolicyWrapper() {
+        super();
     }
     
     public PolicyWrapper(PluginConfig pc) {
-        super(pc.getName(), pc.getPluginClass());
-        this.setParameters(pc.getParameters());
+        super(pc);
     }
 
 }

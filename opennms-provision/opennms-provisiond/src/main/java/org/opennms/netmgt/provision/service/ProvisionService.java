@@ -29,6 +29,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.Resource;
@@ -110,7 +112,9 @@ public interface ProvisionService {
 
     @Transactional
     public abstract OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName);
-    
+
+    @Transactional
+    public abstract OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String serviceName);
     
     @Transactional
     public abstract OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
@@ -198,5 +202,8 @@ public interface ProvisionService {
      * @return
      */
     public abstract Requisition loadRequisition(Resource resource);
+
+    public abstract Collection<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
+
 
 }

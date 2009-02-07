@@ -9,8 +9,10 @@
        >
 
   <tx:annotation-driven />
-  
   <context:annotation-config/>
+  
+  <context:property-placeholder location="file:${opennms.home}/etc/model-importer.properties" />
+
 
   <bean id="importResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg><value>${importer.importURL}</value></constructor-arg>
@@ -54,12 +56,6 @@
     <constructor-arg ref="rescanThreads" />
   </bean>
   
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location">
-      <value>file:${opennms.home}/etc/model-importer.properties</value>
-    </property>
-  </bean>
-
   <bean id="taskCoordinator" class="org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator">
   	<property name="defaultExecutor" value="scan" />
   	<property name="executors">
@@ -119,16 +115,25 @@
                       <value>collectNodeInfo</value>
                       <value>persistNodeInfo</value>
                       <value>detectPhysicalInterfaces</value>
-                      <value>persistPhysicalInterfaces</value>
                       <value>detectIpInterfaces</value>
-                      <value>persistIpInterfaces</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+            <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+                <constructor-arg value="ipInterfaceScan" />
+                <constructor-arg>
+                    <list>
+                      <value>detectServices</value>
                     </list>
                 </constructor-arg>
             </bean>
   		</list>
   	</property>
   </bean> 
-
+  
+  <!--  autowired -->
+  <bean id="pluginRegistry" class="org.opennms.netmgt.provision.service.DefaultPluginRegistry" />
+  
   <!--  autowired -->
   <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService" />
   

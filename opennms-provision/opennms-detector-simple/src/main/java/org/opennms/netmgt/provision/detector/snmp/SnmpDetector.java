@@ -45,6 +45,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -84,6 +85,7 @@ public class SnmpDetector extends AbstractDetector {
     private String m_oid;
     private String m_forceVersion;
     private String m_vbvalue;
+    
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
     @SuppressWarnings("deprecation")
@@ -174,6 +176,7 @@ public class SnmpDetector extends AbstractDetector {
         return m_vbvalue;
     }
     
+    @Autowired
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
     }

@@ -40,7 +40,7 @@ import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
@@ -51,7 +51,7 @@ import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator
  *
  */
 
-public abstract class BasicDetector<Request, Response> extends AbstractDetector implements ServiceDetector {
+public abstract class BasicDetector<Request, Response> extends AbstractDetector implements SyncServiceDetector {
     
     private ClientConversation<Request, Response> m_conversation = new ClientConversation<Request, Response>();
     
