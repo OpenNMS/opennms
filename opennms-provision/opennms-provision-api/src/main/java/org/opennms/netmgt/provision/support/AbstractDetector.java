@@ -3,9 +3,9 @@ package org.opennms.netmgt.provision.support;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SyncServiceDetector;
 
-public abstract class AbstractDetector implements ServiceDetector {
+public abstract class AbstractDetector implements SyncServiceDetector {
     
     private int m_port;
     private int m_retries;

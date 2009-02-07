@@ -11,8 +11,7 @@ public class DetectorWrapper extends PluginConfig {
     }
     
     public DetectorWrapper(PluginConfig pc) {
-        super(pc.getName(), pc.getPluginClass());
-        this.setParameters(pc.getParameters());
+        super(pc);
     }
 
 }

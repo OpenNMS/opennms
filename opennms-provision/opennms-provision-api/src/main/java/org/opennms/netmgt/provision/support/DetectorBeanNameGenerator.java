@@ -29,19 +29,21 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.support;
+
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
 
 /**
- * ServiceDetector
+ * DetectorBeanNameGenerator
  *
  * @author brozow
  */
-public interface ServiceDetector {
-    
-    public void init();
-    
-    public String getServiceName();
-    
-    public void setServiceName(String serviceName);
+public class DetectorBeanNameGenerator implements BeanNameGenerator {
+
+    public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
+        return definition.getBeanClassName();
+    }
 
 }

@@ -34,17 +34,29 @@ package org.opennms.netmgt.provision.service;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
-import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SyncServiceDetector;
 
 /**
  * MockServiceDetector
  *
  * @author brozow
  */
-public class MockServiceDetector implements ServiceDetector {
+public class MockServiceDetector implements SyncServiceDetector {
+    
+    private String m_serviceName;
 
     public void init() {
     }
+    
+    public String getServiceName() {
+        return m_serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        m_serviceName = serviceName;
+    }
+
+
 
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
         return true;

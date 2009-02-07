@@ -63,7 +63,11 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     
     public ForeignSource getForeignSource(String foreignSourceName) {
         Assert.notNull(foreignSourceName);
-        return m_foreignSources.get(foreignSourceName);
+        ForeignSource foreignSource = m_foreignSources.get(foreignSourceName);
+        if (foreignSource == null) {
+            foreignSource = getDefaultForeignSource();
+        }
+        return foreignSource;
     }
 
     public void save(ForeignSource foreignSource) {
