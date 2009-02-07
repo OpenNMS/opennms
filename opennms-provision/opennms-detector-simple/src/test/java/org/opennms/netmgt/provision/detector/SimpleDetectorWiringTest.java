@@ -31,9 +31,11 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.detector.smb.SmbDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
@@ -54,22 +56,25 @@ public class SimpleDetectorWiringTest implements ApplicationContextAware {
     
     private ApplicationContext m_applicationContext;
     
+    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+    }
+    
     @Test
     public void testIcmpDetectorWiring(){
-        IcmpDetector bean = (IcmpDetector) m_applicationContext.getBean(IcmpDetector.class.getName());
-        assertNotNull(bean);
+        testWiredDetector(IcmpDetector.class);
     }
     
     @Test
     public void testSmbDetectorWiring() {
-        SmbDetector bean = (SmbDetector) m_applicationContext.getBean(SmbDetector.class.getName());
-        assertNotNull(bean);
+        testWiredDetector(SmbDetector.class);
     }
     
     @Test
     public void testSnmpDetectorWiring() {
-        SnmpDetector bean = (SnmpDetector) m_applicationContext.getBean(SnmpDetector.class.getName());
-        assertNotNull(bean);
+        testWiredDetector(SnmpDetector.class);
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
