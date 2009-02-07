@@ -294,8 +294,8 @@ public class ProvisionerTest {
         assertEquals(2, getSnmpInterfaceDao().countAll());
         
     }
-
-    @Test
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmpAndNodeScan() throws Exception {

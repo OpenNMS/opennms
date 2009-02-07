@@ -32,21 +32,33 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
+import java.util.Collection;
 
+import org.apache.log4j.Logger;
+import org.apache.mina.core.future.IoFutureListener;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
+import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+import org.opennms.netmgt.provision.service.tasks.Task;
+import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
@@ -58,12 +70,17 @@ import org.springframework.util.Assert;
 public class CoreScanActivities {
     
     @Autowired
+    private ApplicationContext m_applicationContext;
+
+    @Autowired
     private ProvisionService m_provisionService;
     
     @Autowired
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
-
+    @Autowired
+    private DefaultTaskCoordinator m_taskCoordinator;
+    
     /*
      * load the node from the database (or maybe the requistion)
      * 
@@ -147,6 +164,8 @@ public class CoreScanActivities {
             LifeCycleInstance nested = currentPhase.createNestedLifeCycle("agentScan");
             nested.setAttribute("agentType", "SNMP");
             nested.setAttribute("node", node);
+            nested.setAttribute("foreignSource", node.getForeignSource());
+            nested.setAttribute("foreignId", node.getForeignId());
             nested.setAttribute("primaryAddress", primaryIface.getInetAddress());
             nested.trigger();
         }
@@ -210,13 +229,8 @@ public class CoreScanActivities {
         System.err.println("detectPhysicalInterfaces");
     }
 
-    @Activity( lifecycle = "agentScan", phase = "persistPhysicalInterfaces", schedulingHint="write" )
-    public void persistPhysicalInterfaces(OnmsNode node) {
-        System.err.println("persistIpInterfaces");
-    }
-
     @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
-    public void detectIpInterfaces(final Integer nodeId, final InetAddress primaryAddress, final Phase currentPhase) throws InterruptedException {
+    public void detectIpInterfaces(@Attribute("foreignSource") final String foreignSource, final Integer nodeId, final InetAddress primaryAddress, final Phase currentPhase) throws InterruptedException {
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(primaryAddress);
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
         
@@ -230,9 +244,20 @@ public class CoreScanActivities {
                         public void run() {
                             System.out.println("Saving OnmsIpInterface "+iface);
                             m_provisionService.updateIpInterfaceAttributes(nodeId, iface);
+                            
+                            LifeCycleInstance lifeCycle = currentPhase.createNestedLifeCycle("ipInterfaceScan");
+                            lifeCycle.setAttribute("foreignSource", foreignSource);
+                            lifeCycle.setAttribute("nodeId", nodeId);
+                            lifeCycle.setAttribute("ipAddress", iface.getInetAddress());
+                            lifeCycle.trigger();
+
                         }
                     };
                     currentPhase.add(r, "write");
+                    
+                    
+                    
+                    
                 }
             }
         };
@@ -244,9 +269,115 @@ public class CoreScanActivities {
         System.err.println("detectIpInterfaces");
     }
 
-    @Activity( lifecycle = "agentScan", phase = "persistIpInterfaces", schedulingHint="write" )
-    public void persistIpInterfaces(OnmsNode node) {
-        System.err.println("persistIpInterfaces");
+    @Activity( lifecycle = "ipInterfaceScan", phase = "detectServices" )
+    public void detectServices(@Attribute("foreignSource") final String foreignSource, final Integer nodeId, final InetAddress ipAddress, final Phase currentPhase) throws InterruptedException {
+        
+        Collection<ServiceDetector> detectors = m_provisionService.getDetectorsForForeignSource(foreignSource);
+        
+        for(ServiceDetector detector : detectors) {
+            currentPhase.add(createServiceDetectorTask(detector, nodeId, ipAddress));
+        }
+        
+    }
+
+    private Task createServiceDetectorTask(ServiceDetector detector, Integer nodeId, InetAddress ipAddress) {
+        if (detector instanceof SyncServiceDetector) {
+            return createSyncServiceDetectorTask((SyncServiceDetector)detector, nodeId, ipAddress);
+        } else {
+            return createAsyncServiceDetectorTask((AsyncServiceDetector)detector, nodeId, ipAddress);
+        }
+    }
+
+    private Task createSyncServiceDetectorTask(final SyncServiceDetector detector, final Integer nodeId, final InetAddress ipAddress) {
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    info("Attemping to detect service %s on address %s", detector.getServiceName(), ipAddress);
+                    boolean serviceDetected = detector.isServiceDetected(ipAddress, new NullDetectorMonitor());
+                    info("Attempted to detect service %s on address %s: %s", detector.getServiceName(), ipAddress, serviceDetected);
+                    if (serviceDetected) {
+                        m_provisionService.addMonitoredService(nodeId, ipAddress.getHostAddress(), detector.getServiceName());
+                    }
+                } catch(Throwable t) {
+                    error(t, "Unhandle exception/error while detecto service %s on address %s", detector.getServiceName(), ipAddress);
+                }
+            }
+        };
+        
+        return m_taskCoordinator.createTask(r, "scan");
+    }
+    
+    private abstract class AsyncServiceDetectorTask extends Task implements IoFutureListener<DetectFuture> {
+        
+        private final AsyncServiceDetector m_detector;
+        private final InetAddress m_address;
+
+        public AsyncServiceDetectorTask(DefaultTaskCoordinator coordinator, AsyncServiceDetector detector, InetAddress address) {
+            super(coordinator);
+            m_detector = detector;
+            m_address = address;
+        }
+
+        @Override
+        protected void doSubmit() {
+            try {
+                info("Attemping to detect service %s on address %s", m_detector.getServiceName(), m_address);
+                DetectFuture future = m_detector.isServiceDetected(m_address, new NullDetectorMonitor());
+                future.addListener(this);
+            } catch (Exception e) {
+                error(e, "Unexpected exception detecting service %s for interface %s", m_detector.getServiceName(), m_address);
+                markTaskAsCompleted();
+            }
+        }
+
+        public void operationComplete(DetectFuture future) {
+            try {
+                boolean serviceDetected = future.isServiceDetected();
+                info("Attempted to detect service %s on address %s: %s", m_detector.getServiceName(), m_address, serviceDetected);
+                if (serviceDetected) {
+                    serviceDetected();
+                }
+            } finally {
+                markTaskAsCompleted();
+            }
+        }
+
+        protected abstract void serviceDetected();
+        
+    }
+
+    private Task createAsyncServiceDetectorTask(final AsyncServiceDetector detector, final Integer nodeId, final InetAddress ipAddress) {
+        return new AsyncServiceDetectorTask(m_taskCoordinator, detector, ipAddress) {
+
+            @Override
+            protected void serviceDetected() {
+                m_provisionService.addMonitoredService(nodeId, ipAddress.getHostAddress(), detector.getServiceName());
+            }
+            
+        };
+    }
+    
+    
+    private void error(Throwable t, String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        log.error(String.format(format, args), t);
+    }
+
+    private void debug(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(format, args));
+        };
+    }
+    private void info(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
+    }
+    private void error(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        log.error(String.format(format, args));
     }
 
     

@@ -36,11 +36,8 @@ import java.net.InetAddress;
  * @author thedesloge
  *
  */
-public interface AsyncServiceDetector {
-    
-    public void init();
+public interface AsyncServiceDetector extends ServiceDetector {
     
     public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception;
-    
     
 }

@@ -50,7 +50,7 @@ public abstract class Task {
     private static enum State {
         NEW,
         SCHEDULED,
-        SUBMITTED,
+        SUBMITTED, 
         COMPLETED
     }
     
@@ -132,8 +132,9 @@ public abstract class Task {
 
     /**
      * This method submits a task to be executed and is called when all dependencies are completed for that task
-     * This method should place a runnable on an executor or sumbit the task in some other way so that it will
-     * run as soon as possible.  Tasks that have no processing to be done may override completeSubmit
+     * This method should place a runnable on an executor or submit the task in some other way so that it will
+     * run as soon as possible.  Tasks that have no processing to be done may override completeSubmit to notify
+     * the Task coordinator that the task is done.
      */
     protected void doSubmit() {
     }

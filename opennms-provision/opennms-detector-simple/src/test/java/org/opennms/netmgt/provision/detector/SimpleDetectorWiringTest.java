@@ -56,19 +56,19 @@ public class SimpleDetectorWiringTest implements ApplicationContextAware {
     
     @Test
     public void testIcmpDetectorWiring(){
-        IcmpDetector bean = (IcmpDetector) m_applicationContext.getBean("icmpDetector");
+        IcmpDetector bean = (IcmpDetector) m_applicationContext.getBean(IcmpDetector.class.getName());
         assertNotNull(bean);
     }
     
     @Test
     public void testSmbDetectorWiring() {
-        SmbDetector bean = (SmbDetector) m_applicationContext.getBean("smbDetector");
+        SmbDetector bean = (SmbDetector) m_applicationContext.getBean(SmbDetector.class.getName());
         assertNotNull(bean);
     }
     
     @Test
     public void testSnmpDetectorWiring() {
-        SnmpDetector bean = (SnmpDetector) m_applicationContext.getBean("snmpDetector");
+        SnmpDetector bean = (SnmpDetector) m_applicationContext.getBean(SnmpDetector.class.getName());
         assertNotNull(bean);
     }
     

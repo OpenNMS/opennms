@@ -36,9 +36,11 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
@@ -67,70 +69,65 @@ public class DetectorWiringTest implements ApplicationContextAware {
     
     protected ApplicationContext m_applicationContext;
     
+    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+    }
+    
     @Test
     public void testHttpDetectorWiring() {
-       HttpDetector bean = (HttpDetector) m_applicationContext.getBean("httpDetector");
-       assertNotNull(bean);
+        testWiredDetector(HttpDetector.class);
     }
     
     @Test
     public void testPop3DetectorWiring() {
-        Pop3Detector bean = (Pop3Detector) m_applicationContext.getBean("pop3Detector");
-        assertNotNull(bean);
+        testWiredDetector(Pop3Detector.class);
     }
     
     @Test
     public void testCitrixDetectorWiring() {
-        CitrixDetector bean = (CitrixDetector) m_applicationContext.getBean("citrixDetector");
-        assertNotNull(bean);
+        testWiredDetector(CitrixDetector.class);
     }
     
     @Test
     public void testDominoIIOPDetectorWiring() {
-        DominoIIOPDetector bean = (DominoIIOPDetector) m_applicationContext.getBean("dominoIIOPDetector");
-        assertNotNull(bean);
+        testWiredDetector(DominoIIOPDetector.class);
     }
     
     @Test
     public void testFtpDetectorWiring() {
-        FtpDetector bean = (FtpDetector) m_applicationContext.getBean("ftpDetector");
-        assertNotNull(bean);
+        testWiredDetector(FtpDetector.class);
     }
     
     @Test
     public void testHttpsDetectorWiring() {
-        HttpsDetector bean = (HttpsDetector) m_applicationContext.getBean("httpsDetector");
-        assertNotNull(bean);
+        testWiredDetector(HttpsDetector.class);
     }
     
     @Test 
     public void testImapDetectorWiring() {
-        ImapDetector bean = (ImapDetector) m_applicationContext.getBean("imapDetector");
-        assertNotNull(bean);
+        testWiredDetector(ImapDetector.class);
     }
     
     @Test
     public void testLdapDetectorWiring() {
-        LdapDetector bean = (LdapDetector) m_applicationContext.getBean("ldapDetector");
-        assertNotNull(bean);
+        testWiredDetector(LdapDetector.class);
     }
     
     @Test
     public void testNrpeDetectorWiring() {
-        NrpeDetector bean = (NrpeDetector) m_applicationContext.getBean("nrpeDetector");
-        assertNotNull(bean);
+        testWiredDetector(NrpeDetector.class);
     }
     
     @Test 
     public void testSmtpDetectorWiring() {
-        SmtpDetector bean = (SmtpDetector) m_applicationContext.getBean("smtpDetector");
-        assertNotNull(bean);
+        testWiredDetector(SmtpDetector.class);
     }
     
     @Test
     public void testTcpDetectorWiring() {
-        TcpDetector bean = (TcpDetector) m_applicationContext.getBean("tcpDetector");
-        assertNotNull(bean);
+        testWiredDetector(TcpDetector.class);
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

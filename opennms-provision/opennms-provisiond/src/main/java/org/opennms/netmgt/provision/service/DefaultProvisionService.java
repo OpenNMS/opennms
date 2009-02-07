@@ -61,10 +61,12 @@ import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,7 +82,7 @@ import org.springframework.util.Assert;
  */
 @Service
 public class DefaultProvisionService implements ProvisionService {
-
+    
     @Autowired
     private DistPollerDao m_distPollerDao;
     
@@ -108,6 +110,9 @@ public class DefaultProvisionService implements ProvisionService {
     
     @Autowired
     private ForeignSourceRepository m_foreignSourceRepository;
+    
+    @Autowired
+    private PluginRegistry m_pluginRegistry;
     
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
@@ -205,6 +210,23 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName) {
         OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
         assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
+        OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
+        if (svcType == null) {
+            svcType = new OnmsServiceType(svcName);
+            m_serviceTypeDao.save(svcType);
+        }
+        
+        // this adds the service to the interface as a side effect
+        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+        
+        m_ipInterfaceDao.save(iface);
+        
+        return svc;
+    }
+
+    public OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String svcName) {
+        OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
+        assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
         OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
         if (svcType == null) {
             svcType = new OnmsServiceType(svcName);
@@ -496,7 +518,32 @@ public class DefaultProvisionService implements ProvisionService {
             return dbNode;
         }
     }
-    
-    
 
+    public Collection<ServiceDetector> getDetectorsForForeignSource(String foreignSourceName) {
+        ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
+        assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
+        
+        List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
+        if (detectorConfigs == null) {
+            return m_pluginRegistry.getAllPlugins(ServiceDetector.class);
+        }
+        
+        List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
+        for(PluginConfig detectorConfig : detectorConfigs) {
+            ServiceDetector detector = m_pluginRegistry.getPluginInstance(ServiceDetector.class, detectorConfig);
+            if (detector == null) {
+                error("Configured plugin does not exist: %s", detectorConfig);
+            } else {
+                detector.setServiceName(detectorConfig.getName());
+                detector.init();
+                detectors.add(detector);
+            }
+        }
+
+        return detectors;
+    }
+
+    private void error(String format, Object... args) {
+        ThreadCategory.getInstance(getClass()).error(String.format(format, args));
+    }
 }

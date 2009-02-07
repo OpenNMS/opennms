@@ -60,6 +60,8 @@ import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
  */
 @XmlRootElement(name="foreign-source")
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {
+    private static final PluginConfig[] OF_PLUGIN_CONFIGS = new PluginConfig[0];
+
     private static final long serialVersionUID = 1L;
     
     @XmlAttribute(name="name")
@@ -175,8 +177,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return new ToStringBuilder(this)
             .append("name", getName())
             .append("scan-interval", getScanInterval())
-            .append("detectors", getDetectors().toArray(new PluginConfig[0]))
-            .append("policies", getPolicies().toArray(new PluginConfig[0]))
+            .append("detectors", getDetectors().toArray(OF_PLUGIN_CONFIGS))
+            .append("policies", getPolicies().toArray(OF_PLUGIN_CONFIGS))
             .toString();
     }
 
@@ -184,8 +186,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return new CompareToBuilder()
             .append(getName(), obj.getName())
             .append(getScanInterval(), obj.getScanInterval())
-            .append(getDetectors().toArray(new PluginConfig[0]), obj.getDetectors().toArray(new PluginConfig[0]))
-            .append(getPolicies().toArray(new PluginConfig[0]), obj.getPolicies().toArray(new PluginConfig[0]))
+            .append(getDetectors().toArray(OF_PLUGIN_CONFIGS), obj.getDetectors().toArray(OF_PLUGIN_CONFIGS))
+            .append(getPolicies().toArray(OF_PLUGIN_CONFIGS), obj.getPolicies().toArray(OF_PLUGIN_CONFIGS))
             .append(isDefault(), obj.isDefault())
             .toComparison();
     }
@@ -197,8 +199,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
             return new EqualsBuilder()
                 .append(getName(), other.getName())
                 .append(getScanInterval(), other.getScanInterval())
-                .append(getDetectors().toArray(new PluginConfig[0]), other.getDetectors().toArray(new PluginConfig[0]))
-                .append(getPolicies().toArray(new PluginConfig[0]), other.getPolicies().toArray(new PluginConfig[0]))
+                .append(getDetectors().toArray(OF_PLUGIN_CONFIGS), other.getDetectors().toArray(OF_PLUGIN_CONFIGS))
+                .append(getPolicies().toArray(OF_PLUGIN_CONFIGS), other.getPolicies().toArray(OF_PLUGIN_CONFIGS))
                 .append(isDefault(), other.isDefault())
                 .isEquals();
         }
@@ -210,8 +212,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return new HashCodeBuilder()
             .append(getName())
             .append(getScanInterval())
-            .append(getDetectors().toArray(new PluginConfig[0]))
-            .append(getPolicies().toArray(new PluginConfig[0]))
+            .append(getDetectors().toArray(OF_PLUGIN_CONFIGS))
+            .append(getPolicies().toArray(OF_PLUGIN_CONFIGS))
             .append(isDefault())
             .toHashCode();
       }

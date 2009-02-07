@@ -37,6 +37,7 @@ package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,12 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     public PluginConfig(String name, String clazz) {
         setName(name);
         setPluginClass(clazz);
+    }
+    
+    public PluginConfig(PluginConfig pluginConfig) {
+        setName(pluginConfig.getName());
+        setPluginClass(pluginConfig.getPluginClass());
+        setParameters(pluginConfig.getParameters());
     }
 
     /**
@@ -152,7 +159,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @return the parameters
      */
     public Map<String,String> getParameters() {
-        return m_parameters;
+        return Collections.unmodifiableMap(m_parameters);
     }
     
     /**
