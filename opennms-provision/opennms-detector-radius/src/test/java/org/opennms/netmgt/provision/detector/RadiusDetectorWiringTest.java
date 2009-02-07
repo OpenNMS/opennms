@@ -31,9 +31,11 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -53,10 +55,15 @@ public class RadiusDetectorWiringTest implements ApplicationContextAware {
 
     private ApplicationContext m_applicationContext;
     
+    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+    }
+    
     @Test
     public void testRadiusDetectorWiring() {
-        RadiusAuthDetector bean = (RadiusAuthDetector) m_applicationContext.getBean("radiusAuthDetector");
-        assertNotNull(bean);
+        testWiredDetector(RadiusAuthDetector.class);
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

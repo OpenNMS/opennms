@@ -31,6 +31,7 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,10 +53,15 @@ public class DhcpDetectorWiringTest implements ApplicationContextAware {
 
     private ApplicationContext m_applicationContext;
     
+    private void testWiredDetector(Class<?> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+    }
+    
     @Test
     public void testDhcpDetectorWiring() {
-        DhcpDetector bean = (DhcpDetector) m_applicationContext.getBean("dhcpDetector");
-        assertNotNull(bean);
+        testWiredDetector(DhcpDetector.class);
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
