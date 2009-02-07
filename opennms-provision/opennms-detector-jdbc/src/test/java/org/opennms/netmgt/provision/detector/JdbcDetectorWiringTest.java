@@ -31,9 +31,11 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -52,10 +54,15 @@ public class JdbcDetectorWiringTest implements ApplicationContextAware {
     
     private ApplicationContext m_applicationContext;
     
+    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+    }
+    
     @Test
     public void testJdbcDetectorWiring() {
-        JdbcDetector bean = (JdbcDetector) m_applicationContext.getBean("jdbcDetector");
-        assertNotNull(bean);
+        testWiredDetector(JdbcDetector.class);
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -31,9 +31,11 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -52,10 +54,15 @@ public class Jsr160DetectorWiringTest implements ApplicationContextAware {
     
     private ApplicationContext m_applicationContext;
     
+    private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+    }
+    
     @Test
     public void testJsr160DetectorWiring() {
-       Jsr160Detector bean = (Jsr160Detector) m_applicationContext.getBean("jsr160Detector");
-       assertNotNull(bean);
+        testWiredDetector(Jsr160Detector.class);
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
