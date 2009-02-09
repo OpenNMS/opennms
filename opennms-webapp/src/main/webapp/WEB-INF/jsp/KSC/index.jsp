@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 03: Rename showReportList to kscReadOnly. - jeffg@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
