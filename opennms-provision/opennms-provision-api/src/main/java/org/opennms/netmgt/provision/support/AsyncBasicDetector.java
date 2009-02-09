@@ -30,8 +30,12 @@
  */
 package org.opennms.netmgt.provision.support;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -139,16 +143,24 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
 
             public void operationComplete(ConnectFuture future) {
                 Throwable cause = future.getException();
-                
-                if(cause.getMessage().equals("Connection refused")) {
+               
+                if(cause instanceof ConnectException) {
                     if(retryAttempt == 0) {
+                        System.out.println("service detected is false");
                         detectFuture.setServiceDetected(false); 
                     }else {
                         future = connector.connect(address);
                         future.addListener(retryAttemptListener(connector, detectFuture, address, retryAttempt -1));
                     }
-                }
-                
+                }else if(cause instanceof NoRouteToHostException) {
+                    detectFuture.setServiceDetected(false);
+                }else if(cause instanceof InterruptedIOException) {
+                    detectFuture.setServiceDetected(false);
+                }else if(cause instanceof IOException) {
+                    detectFuture.setServiceDetected(false);
+                }else if(cause instanceof Throwable) {
+                    detectFuture.setServiceDetected(false);
+                } 
             }
             
         };

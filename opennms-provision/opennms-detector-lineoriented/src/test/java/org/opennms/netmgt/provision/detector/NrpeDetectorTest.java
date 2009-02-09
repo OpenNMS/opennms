@@ -30,24 +30,37 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
  * @author Donald Desloge
  *
  */
-public class NrpeDetectorTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+public class NrpeDetectorTest implements ApplicationContextAware {
     
     private NrpeDetector m_detector;
+    private ApplicationContext m_applicationContext;
     
     @Before
     public void setUp() {
-        m_detector = new NrpeDetector();
+        m_detector = getDetector(NrpeDetector.class);
         m_detector.setPort(5666);
         m_detector.init();
     }
@@ -68,5 +81,19 @@ public class NrpeDetectorTest {
     public void testDetectorFailNotUsingSSL() throws UnknownHostException {
         //m_detector.setUseSsl(false);
         //assertFalse(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
+    }
+
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_applicationContext = applicationContext;
+    }
+    
+    private NrpeDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+        return (NrpeDetector)bean;
     }
 }

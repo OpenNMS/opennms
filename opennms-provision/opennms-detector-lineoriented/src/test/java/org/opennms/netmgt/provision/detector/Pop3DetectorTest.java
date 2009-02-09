@@ -33,20 +33,30 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-public class Pop3DetectorTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+public class Pop3DetectorTest implements ApplicationContextAware {
     private SimpleServer m_server;
     private Pop3Detector m_detector;
+    private ApplicationContext m_applicationContext;
     
     @Before
     public void setUp() throws Exception {
@@ -105,7 +115,7 @@ public class Pop3DetectorTest {
     }
     
     private Pop3Detector createDetector(int port) {
-        Pop3Detector detector = new Pop3Detector();
+        Pop3Detector detector = getDetector(Pop3Detector.class);
         detector.setServiceName("POP3");
         detector.setTimeout(500);
         detector.setPort(port);
@@ -118,5 +128,19 @@ public class Pop3DetectorTest {
         future.await();
         
         return future.isServiceDetected();
+    }
+
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_applicationContext = applicationContext;
+    }
+    
+    private Pop3Detector getDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+        return (Pop3Detector)bean;
     }
 }
