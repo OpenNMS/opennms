@@ -1,0 +1,16 @@
+<assembly>
+  <id>xsds</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target/classes/META-INF/opennms</directory>
+      <outputDirectory>xsds</outputDirectory>
+      <includes>
+        <include>*.xsd</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>
