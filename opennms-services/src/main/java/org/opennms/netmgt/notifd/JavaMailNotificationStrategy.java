@@ -39,8 +39,8 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
-import org.opennms.core.utils.JavaMailer;
-import org.opennms.core.utils.JavaMailerException;
+import org.opennms.javamail.JavaMailer;
+import org.opennms.javamail.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 

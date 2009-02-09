@@ -2,6 +2,7 @@
 --#
 --# Modifications:
 --#
+--# 2009 Jan 28: Added Acks tables - david@opennms.org
 --# 2007 Apr 10: Added statistics report tables - dj@opennms.org
 --# 2006 Apr 17: Added pathOutage table
 --# 2005 Mar 11: Added alarms table
@@ -2023,15 +2024,17 @@ create unique index statsData_unique on statisticsReportData(reportId, resourceI
 --#  ackUser            : User ID of the Acknowledgment
 --#  ackType            : Enum of Acknowlegable Types in the system (i.e
 --#                     : notifications/alarms
+--#  ackAction          : Enum of Acknowlegable Actions in the system (i.e.
+--#                     : ack,unack,clear,escalate
 --#  refId              : Acknowledgable's ID
 --########################################################################
 
 CREATE TABLE acks (
     id        integer default nextval('opennmsnxtid') not null,
-    ackTime   timestamp with time zone not null,
-    ackUser   varchar(64) not null,
-    ackType   integer not null,
-    ackAction integer not null,
+    ackTime   timestamp with time zone not null default now(),
+    ackUser   varchar(64) not null default 'admin',
+    ackType   integer not null default 1,
+    ackAction integer not null default 1,
     refId     integer,
     
     constraint pk_acks_id primary key (id)

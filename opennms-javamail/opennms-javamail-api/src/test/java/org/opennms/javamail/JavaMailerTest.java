@@ -37,7 +37,7 @@
 /*
  * Created on Jan 24, 2005
  */
-package org.opennms.netmgt.utils;
+package org.opennms.javamail;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,8 +49,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.utils.JavaMailer;
-import org.opennms.core.utils.JavaMailerException;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
