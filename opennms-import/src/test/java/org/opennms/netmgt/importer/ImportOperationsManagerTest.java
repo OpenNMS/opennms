@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
@@ -82,6 +83,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     private ServiceTypeDao m_serviceTypeDao;
     private CategoryDao m_categoryDao;
     private IpInterfaceDao m_ipInterfaceDao;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Override
     protected void setUpConfiguration() {
@@ -378,6 +380,14 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+    
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
     public ServiceTypeDao getServiceTypeDao() {
