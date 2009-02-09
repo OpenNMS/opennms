@@ -43,6 +43,7 @@ import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
@@ -72,6 +74,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     private CategoryDao m_categoryDao;
 
     private ModelImporter m_importer;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Override
     protected void setUpConfiguration() {
@@ -96,14 +99,15 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     }
 
     private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
-        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"161\" retry=\"0\" timeout=\"2000\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "                 version=\"v1\">\n" + 
-                "\n" + 
-                "</snmp-config>");
+        Reader rdr = new StringReader("<?xml version=\"1.0\"?>" +
+        		"<snmp-config port=\"9161\" retry=\"3\" timeout=\"800\" " +
+        			"read-community=\"public\" " +
+        			"version=\"v1\" " +
+        			"max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">" +
+        		"</snmp-config>");
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        
     }
 
 
@@ -282,6 +286,34 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         assertEquals(3, mi.getServiceTypeDao().countAll());
     }
     
+    public void testAddSnmpInterfaces() throws Exception {
+        
+        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
+        
+        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+
+        try {
+            createAndFlushServiceTypes();
+            createAndFlushCategories();
+
+            ModelImporter mi = m_importer;        
+            String specFile = "/tec_dump.xml";
+            mi.importModelFromResource(new ClassPathResource(specFile));
+
+            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+
+            assertEquals(2, mi.getIpInterfaceDao().countAll());
+
+            assertEquals(6, getSnmpInterfaceDao().countAll());
+
+        } finally {
+            agent.shutDownAndWait();
+        }
+
+    }
+
+
+    
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
@@ -397,5 +429,16 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
+    
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao; 
+    }
+    
+    
+    
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+    
 
 }
