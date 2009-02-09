@@ -33,6 +33,12 @@
 	           <artifactItems>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
+	               <artifactId>drools-correlation-engine</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>xsds</classifier>
+	             </artifactItem>
+	             <artifactItem>
+	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-config</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
