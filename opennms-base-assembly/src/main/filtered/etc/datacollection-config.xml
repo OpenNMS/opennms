@@ -2270,7 +2270,7 @@
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess base">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.12394.4.1.</sysoidMask>
         <collect>
           <includeGroup>alvarion-bad-all-frames</includeGroup>
           <includeGroup>alvarion-interfacesRB</includeGroup>
@@ -2278,70 +2278,70 @@
       </systemDef>
       
       <systemDef name="Alvarion BreezeAccess SU">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.2</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.2</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU6-1D">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.11</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.11</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU6-BD">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.12</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.12</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU24-BD">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.13</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.13</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU-BD">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.14</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.14</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU54-BD">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.15</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.15</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU3-1D">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.16</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.16</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess SU3-4D">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.17</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.17</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess RB-B14">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.31</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.31</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Alvarion BreezeAccess RB-B28">
-        <sysoidMask>.1.3.6.1.4.1.12394.4.1.32</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.12394.4.1.32</sysoid>
         <collect>
           <includeGroup>alvarion-snr-lqi</includeGroup>
         </collect>
@@ -2840,7 +2840,7 @@
       </systemDef>
 
       <systemDef name="Concord Net Health">
-        <sysoidMask>.1.3.6.1.4.1.546</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.546.</sysoidMask>
         <collect>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
@@ -2879,7 +2879,7 @@
       </systemDef>
 
       <systemDef name="HP Printers">
-        <sysoidMask>.1.3.6.1.4.1.11.2.3.9.1</sysoidMask>
+        <sysoid>.1.3.6.1.4.1.11.2.3.9.1</sysoid>
         <collect>
           <includeGroup>printer-usage</includeGroup>
           <includeGroup>printer-mib-supplies</includeGroup>
@@ -2887,7 +2887,7 @@
       </systemDef>
 
       <systemDef name="HP ProCurve">
-        <sysoidMask>.1.3.6.1.4.1.11.2.3.7.11</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.11.2.3.7.11.</sysoidMask>
         <collect>
           <includeGroup>hp-procurve</includeGroup>
         </collect>
@@ -2955,7 +2955,7 @@
       </systemDef>
 
       <systemDef name="Kyocera Mita Network Printer">
-        <sysoidMask>.1.3.6.1.4.1.1347.4</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.1347.4.</sysoidMask>
         <collect>
           <includeGroup>printer-usage</includeGroup>
           <includeGroup>printer-mib</includeGroup>
@@ -3091,7 +3091,7 @@
       </systemDef>
 
       <systemDef name="Netscaler">
-        <sysoidMask>.1.3.6.1.4.1.5951.1</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.5951.1.</sysoidMask>
         <collect>
           <includeGroup>NetScaler-General</includeGroup>
         </collect>
@@ -3147,7 +3147,7 @@
       </systemDef>
 
       <systemDef name="Fortinet Fortigate">
-        <sysoidMask>.1.3.6.1.4.1.12356</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
         <collect>
           <includeGroup>fortinet-sys-stat</includeGroup>
         </collect>
