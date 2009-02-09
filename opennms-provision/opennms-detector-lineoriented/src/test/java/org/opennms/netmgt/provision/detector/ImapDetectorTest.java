@@ -36,21 +36,30 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-public class ImapDetectorTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+public class ImapDetectorTest implements ApplicationContextAware {
     private ImapDetector m_detector;
-    private SimpleServer m_server; 
+    private SimpleServer m_server;
+    private ApplicationContext m_applicationContext; 
     
     
     @Before
     public void setUp() throws Exception{
         
-        m_detector = new ImapDetector();
+        m_detector = getDetector(ImapDetector.class);
         m_detector.setServiceName("Imap");
         m_detector.setTimeout(1000);
         m_detector.init();
@@ -130,6 +139,20 @@ public class ImapDetectorTest {
         future.awaitUninterruptibly();
         
         assertFalse(future.isServiceDetected());
+    }
+
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_applicationContext = applicationContext;
+    }
+    
+    private ImapDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+        return (ImapDetector)bean;
     }
     
 }

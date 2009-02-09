@@ -1,6 +1,8 @@
 var grid;
 var physicalInterfaceGrid;
 
+Ext.BLANK_IMAGE_URL = '/extJS/resources/images/default/s.gif';
+
 Ext.onReady(function(){
 	nodePageGridInit();
 	initEventView();
@@ -55,6 +57,7 @@ function nodePageGridInit(){
         
 	        items:[
 	            '-', new Ext.Button({
+	            	width:30,
 	            	iconCls:'search-criteria-icon'
 	            })]
 
@@ -331,6 +334,7 @@ var ipInterfacePagingBar = new Ext.PagingToolbar({
         
         items:[
             '-', new Ext.Button({
+            	width:30,
             	iconCls:'search-criteria-icon'
             })]
 

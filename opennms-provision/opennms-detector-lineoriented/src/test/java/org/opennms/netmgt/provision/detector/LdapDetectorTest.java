@@ -30,16 +30,29 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.UnknownHostException;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.detector.simple.LdapDetector;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
  * @author Donald Desloge
  *
  */
-public class LdapDetectorTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+public class LdapDetectorTest implements ApplicationContextAware{
     
 //    private LdapDetector m_detector;
 //    private static String DEFAULT_LOCAL_SERVER_IP = "192.168.1.103";
@@ -49,10 +62,12 @@ public class LdapDetectorTest {
     
 //    @Before
 //    public void setUp() {
-//        m_detector = new LdapDetector();
+//        m_detector = getDetector(LdapDetector.class);
 //        m_detector.init();
 //    }
     
+    private ApplicationContext m_applicationContext;
+
     @Test
     public void testMyDetector() throws UnknownHostException {
         //assertTrue(m_detector.isServiceDetected(InetAddress.getByName(DEFAULT_LOCAL_SERVER_IP), new NullDetectorMonitor()));
@@ -68,4 +83,18 @@ public class LdapDetectorTest {
 //    public void testDetectorFailNotALdapServer() throws UnknownHostException {
 //        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.101"), new NullDetectorMonitor()));
 //    }
+
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_applicationContext = applicationContext;
+    }
+    
+    private LdapDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+        return (LdapDetector)bean;
+    }
 }

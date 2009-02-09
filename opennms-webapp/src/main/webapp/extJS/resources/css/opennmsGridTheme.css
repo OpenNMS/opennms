@@ -58,13 +58,17 @@ table {
 }
 
 .search-criteria-icon{
-	background-image:"../extJS/resources/images/onmsTheme/magnifier.png";	
+	background-image:url(../../../extJS/resources/images/onmsTheme/magnifier.png);	
 }
 
 .x-grid3-hd-row td{
 	color:#ffffff;
 	border-left:0px;
 	font-weigth:'bold';	
+}
+
+.x-grid3-row-over{
+	background:#EFEFEF;	
 }
 
 /*Custom Style end*/
