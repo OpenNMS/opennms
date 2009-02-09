@@ -39,24 +39,34 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
  * @author Donald Desloge
  *
  */
-public class CitrixDetectorTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+public class CitrixDetectorTest implements ApplicationContextAware {
     
+    private ApplicationContext m_applicationContext;
     private CitrixDetector m_detector;
     private SimpleServer m_server;
     
     @Before
     public void setUp() throws Exception {
-        m_detector = new CitrixDetector();
+        m_detector = getDetector(CitrixDetector.class);
         
         m_server = getServer();
         m_server.init();
@@ -116,5 +126,19 @@ public class CitrixDetectorTest {
                 setBanner("ICAICAICAICA");
             }
         };
+    }
+    
+    private CitrixDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
+        Object bean = m_applicationContext.getBean(detectorClass.getName());
+        assertNotNull(bean);
+        assertTrue(detectorClass.isInstance(bean));
+        return (CitrixDetector)bean;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_applicationContext = applicationContext;
     }
 }
