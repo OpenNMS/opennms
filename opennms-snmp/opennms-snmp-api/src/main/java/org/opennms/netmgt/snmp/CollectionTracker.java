@@ -85,18 +85,12 @@ public abstract class CollectionTracker implements Collectable {
         }
     }
     
-    public final boolean isFinished() {
+    public boolean isFinished() {
         return m_finished;
     }
     
     public final void setFinished(boolean finished) {
         m_finished = finished;
-        if (m_finished && m_parent != null) {
-            m_parent.childFinished(this);
-        }
-    }
-
-    public void childFinished(CollectionTracker child) {
     }
 
     public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);

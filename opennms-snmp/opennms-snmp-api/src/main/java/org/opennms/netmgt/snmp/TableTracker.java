@@ -74,24 +74,19 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         }
     }
 
-    public boolean childrenFinished() {
+    @Override
+    public boolean isFinished() {
+        if (super.isFinished()) {
+            return true;
+        }
         for (ColumnTracker ct : m_columnTrackers) {
             if (!ct.isFinished()) {
                 return false;
             }
         }
+        m_tableResult.tableFinished();
+        setFinished(true);
         return true;
-    }
-    
-    @Override
-    public void childFinished(CollectionTracker child) {
-        if (childrenFinished()) {
-            m_tableResult.tableFinished();
-            setFinished(true);
-        } else {
-            m_tableResult.columnFinished(((ColumnTracker)child).getBase());
-        }
-        
     }
 
     @Override

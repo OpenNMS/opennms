@@ -265,7 +265,8 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
-    public boolean childrenFinished() {
+    @Override
+    public boolean isFinished() {
         for (CollectionTracker child : m_children) {
             if (!child.isFinished()) {
                 return false;
@@ -274,15 +275,6 @@ public class AggregateTracker extends CollectionTracker {
         return true;
     }
     
-    
-
-    @Override
-    public void childFinished(CollectionTracker child) {
-        if (childrenFinished()) {
-            setFinished(true);
-        }
-    }
-
     public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
         
         // first process the child trackers that aren't finished up to maxVars 
@@ -298,10 +290,6 @@ public class AggregateTracker extends CollectionTracker {
                 builders.add(childBuilder);
                 count += childBuilder.size();
             }
-        }
-        
-        if (count == 0) {
-            setFinished(true);
         }
         
         // set the nonRepeaters in the passed in pduBuilder and store indices in the childTrackers
