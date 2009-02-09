@@ -35,11 +35,17 @@
       <outputDirectory>share</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/dependency/xsds</directory>
+      <outputDirectory>share/xsds</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/dependency</directory>
       <outputDirectory>jetty-webapps/opennms</outputDirectory>
       <excludes>
         <exclude>WEB-INF/lib/*</exclude>
         <exclude>WEB-INF/log4j.properties</exclude>
+        <exclude>xsds</exclude>
+        <exclude>xsds/*</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -109,10 +115,10 @@
       <excludes>
          <exclude>org.opennms:opennms-bootstrap</exclude>
          <exclude>org.opennms:opennms-install</exclude>
-        <exclude>org.opennms:opennms-icmp-jni-macosx</exclude>
-        <exclude>org.opennms:opennms-icmp-jni-linux</exclude>
-        <exclude>org.opennms:opennms-icmp-jni-freebsd</exclude>
-        <exclude>org.opennms:opennms-icmp-jni-solaris</exclude>
+         <exclude>org.opennms:opennms-icmp-jni-macosx</exclude>
+         <exclude>org.opennms:opennms-icmp-jni-linux</exclude>
+         <exclude>org.opennms:opennms-icmp-jni-freebsd</exclude>
+         <exclude>org.opennms:opennms-icmp-jni-solaris</exclude>
          <exclude>org.opennms:opennms-rrdtool-jni-macosx</exclude>
          <exclude>org.opennms:opennms-rrdtool-jni-linux</exclude>
          <exclude>org.opennms:opennms-rrdtool-jni-freebsd</exclude>
