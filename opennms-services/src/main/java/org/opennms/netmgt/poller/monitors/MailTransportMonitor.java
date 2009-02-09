@@ -49,14 +49,15 @@ import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.JavaMailer;
-import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+
+import org.opennms.javamail.JavaMailer;
+import org.opennms.javamail.JavaMailerException;
 
 /**
  * This <code>ServiceMonitor</code> is designed to monitor the transport of
