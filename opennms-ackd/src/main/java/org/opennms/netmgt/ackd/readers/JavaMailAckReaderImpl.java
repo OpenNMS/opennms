@@ -55,8 +55,6 @@ import javax.mail.MessagingException;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 
-import org.opennms.core.utils.JavaMailer;
-import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.ackd.AckService;
@@ -67,6 +65,9 @@ import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+
+import org.opennms.javamail.JavaMailerException;
+import org.opennms.javamail.JavaMailer;
 
 
 /**

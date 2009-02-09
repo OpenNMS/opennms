@@ -36,7 +36,7 @@
 //
 // Tab Size = 8
 //
-package org.opennms.core.utils;
+package org.opennms.javamail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +45,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Provides access to the default javamail configuration data.

@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -2397,6 +2398,12 @@ public class InstallerDb {
         
         addColumnReplacement("alarms.x733probablecause", new FixedIntegerReplacement(0));
 
+        addColumnReplacement("acks.id", new NextValReplacement("opennmsnxtid", getDataSource()));
+        addColumnReplacement("acks.acktime", new TimeStampReplacement(new Date()));
+        addColumnReplacement("acks.ackuser", new VarCharReplacement("admin"));
+        addColumnReplacement("acks.acktype", new FixedIntegerReplacement(1));
+        addColumnReplacement("acks.ackaction", new FixedIntegerReplacement(1));
+
         /*
          *   - checking table "alarms"... SCHEMA DOES NOT MATCH
          *   - differences:
@@ -2598,6 +2605,44 @@ public class InstallerDb {
         private final Integer m_replacement;
         
         public FixedIntegerReplacement(int value) {
+            m_replacement = value;
+        }
+
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return m_replacement;
+        }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
+        
+        public void close() {
+        }
+    }
+    
+    public class TimeStampReplacement implements ColumnChangeReplacement {
+        private final Date m_replacement;
+        
+        public TimeStampReplacement(Date value) {
+            m_replacement = value;
+        }
+
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return m_replacement;
+        }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
+        
+        public void close() {
+        }
+    }
+
+    public class VarCharReplacement implements ColumnChangeReplacement {
+        private final String m_replacement;
+        
+        public VarCharReplacement(String value) {
             m_replacement = value;
         }
 

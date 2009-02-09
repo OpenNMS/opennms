@@ -35,82 +35,101 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+import junit.framework.Assert;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.ackd.AckReader;
+import org.opennms.netmgt.ackd.Ackd;
+import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import org.opennms.javamail.JavaMailerException;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-ackd.xml" })
 
 public class JavaMailAckReaderImplTest {
 
-    @Ignore
+    @Autowired
+    private AckReader m_ackReader;
+    
+    @Autowired
+    private Ackd m_daemon;
+    
+    @Autowired
+    private JavaMailConfigurationDao m_jmDao;
+
     @Test
-    public void testFindAndProcessAcks() {
+    public void verifyWiring() {
+        Assert.assertNotNull(m_daemon);
+        Assert.assertNotNull(m_jmDao);
+        Assert.assertNotNull(m_ackReader);
+    }
+    
+    @Ignore
+    public void detectAcks() throws JavaMailerException {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testDetectAcks() {
+    public void findAndProcessAcks() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testDetectId() {
+    public void detectId() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testCreateAcknowledgment() {
+    public void createAcknowledgment() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testDetermineAckAction() {
+    public void determineAckAction() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testStart() {
+    public void start() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testPause() {
+    public void pause() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testResume() {
+    public void resume() {
         fail("Not yet implemented");
     }
 
     @Ignore
-    @Test
-    public void testStop() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testSetAckService() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testGetAckService() {
-        fail("Not yet implemented");
-    }
-
-    @Ignore
-    @Test
-    public void testSetAckdConfig() {
+    public void stop() {
         fail("Not yet implemented");
     }
 
