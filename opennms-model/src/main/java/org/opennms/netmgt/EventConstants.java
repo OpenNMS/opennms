@@ -588,6 +588,9 @@ public class EventConstants {
     
     public final static String TL1_AUTONOMOUS_MESSAGE_UEI = "uei.opennms.org/api/tl1d/message/autonomous";
 
+    public final static String RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/rancid/configuration/DownloadSuccess";
+    public final static String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/rancid/configuration/DownloadFailure";
+
     //
     // end eventUEIs
     //
