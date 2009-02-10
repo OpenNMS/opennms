@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
+import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 
 public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTestCase {
@@ -41,7 +42,13 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
 
     public void testSaveOnmsMapElement() {
         // Create a new map and save it.
-        OnmsMapElement mapElement = new OnmsMapElement(null, 2,
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "admin");
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+
+        // then a map element
+        OnmsMapElement mapElement = new OnmsMapElement(map, 2,
                 OnmsMapElement.NODE_TYPE,
                 "Test Node Two",
                 OnmsMapElement.defaultNodeIcon,
