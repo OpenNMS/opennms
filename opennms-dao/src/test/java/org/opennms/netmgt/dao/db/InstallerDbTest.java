@@ -89,9 +89,8 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
         getInstallerDb().setStoredProcedureDirectory("../opennms-base-assembly/src/main/filtered/etc");
 
-        //getInstallerDb().setDebug(true);
+        getInstallerDb().setDebug(true);
 
-        // Read in the table definitions
         getInstallerDb().readTables();
         
         getInstallerDb().setDataSource(getDataSource());

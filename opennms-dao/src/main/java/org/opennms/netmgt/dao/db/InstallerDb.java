@@ -1004,7 +1004,9 @@ public class InstallerDb {
                 + "    AND "
                 + "        attr.atthasdef = 't' "
                 + "    AND "
-                + "        attr.attrelid = def.adrelid";
+                + "        attr.attrelid = def.adrelid"
+                + "    AND "
+                + "        attr.attnum = def.adnum";
 
 
         if (m_pg_version >= 7.3) {
@@ -2363,9 +2365,11 @@ public class InstallerDb {
         addColumnReplacement("snmpinterface.id", new DoNotAddColumn());
         addColumnReplacement("ipinterface.id", new DoNotAddColumn());
         addColumnReplacement("ifservices.id", new DoNotAddColumn());
+        addColumnReplacement("acks.id", new DoNotAddColumn());
         addColumnReplacement("assets.id", new DoNotAddColumn());
-
         addColumnReplacement("atinterface.id", new DoNotAddColumn());
+        addColumnReplacement("datalinkinterface.id", new DoNotAddColumn());
+        addColumnReplacement("element.id", new DoNotAddColumn());
 
         // Triggers will take care of these surrogate foreign keys
         addColumnReplacement("ipinterface.snmpinterfaceid", new DoNotAddColumn());
@@ -2397,14 +2401,6 @@ public class InstallerDb {
         addColumnReplacement("usersnotified.id", new NextValReplacement("userNotifNxtId", getDataSource()));
         
         addColumnReplacement("alarms.x733probablecause", new FixedIntegerReplacement(0));
-
-        addColumnReplacement("acks.id", new NextValReplacement("opennmsnxtid", getDataSource()));
-        addColumnReplacement("acks.acktime", new TimeStampReplacement(new Date()));
-        addColumnReplacement("acks.ackuser", new VarCharReplacement("admin"));
-        addColumnReplacement("acks.acktype", new FixedIntegerReplacement(1));
-        addColumnReplacement("acks.ackaction", new FixedIntegerReplacement(1));
-
-        addColumnReplacement("element.id", new NextValReplacement("opennmsnxtid", getDataSource()));
 
         /*
          *   - checking table "alarms"... SCHEMA DOES NOT MATCH
