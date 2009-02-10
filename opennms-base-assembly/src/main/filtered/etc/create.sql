@@ -1756,6 +1756,7 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --########################################################################
 
 create table datalinkinterface (
+    id           integer default nextval('opennmsNxtId') not null,
     nodeid	     integer not null,
     ifindex          integer not null,
     nodeparentid     integer not null,
@@ -1768,6 +1769,7 @@ create table datalinkinterface (
 	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid) ON DELETE CASCADE
 );
 
+create index dlint_id_idx on datalinkinterface(id);
 create index dlint_node_idx on datalinkinterface(nodeid);
 create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
 create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
@@ -1835,7 +1837,7 @@ create index inventory_status_idx on inventory(status);
 --########################################################################
 
 create table map (
-    mapId	   		 integer not null,
+    mapId	   		 integer default nextval('opennmsNxtId') not null,
     mapName	   		 varchar(40) not null,
     mapBackGround	 varchar(256),
     mapOwner   		 varchar(64) not null,
