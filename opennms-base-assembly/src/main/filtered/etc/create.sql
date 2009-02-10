@@ -1818,8 +1818,9 @@ create index inventory_status_idx on inventory(status);
 --#  mapName           : Identifier of the map
 --#  mapBackGround     : bakground image assocated with map
 --#  mapOwner          : user who has the ownership of the map (also the user that created the map)
+--#  mapGroup          : group who has the access to the map
 --#  mapCreateTime     : The time the map was created
---#  mapAccess         : a 6 character sequence rwrwrw to access the map owner/group/all permission
+--#  mapAccess         : a 2/4 character sequence rw,ro, rwro to access the map owner/group/all permission
 --#  userLastModifies  : the user who last modified the map
 --#  lastModifiedTime  : The last time the map was modified
 --#  mapScale          : A float scale factor for the map
@@ -1838,6 +1839,7 @@ create table map (
     mapName	   		 varchar(40) not null,
     mapBackGround	 varchar(256),
     mapOwner   		 varchar(64) not null,
+    mapGroup   		 varchar(64),
     mapCreateTime	 timestamp not null,
     mapAccess		 char(6) not null,
     userLastModifies varchar(64) not null,
@@ -1871,6 +1873,7 @@ create table map (
 --########################################################################
 
 create table element (
+    id               integer default nextval('opennmsNxtId') not null,
     mapId	   		 integer not null,
     elementId		 integer not null,
 	elementType      char(1) not null,
