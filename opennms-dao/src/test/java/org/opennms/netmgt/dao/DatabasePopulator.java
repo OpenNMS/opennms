@@ -42,19 +42,10 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
-import org.opennms.netmgt.model.AckAction;
-import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.dao.hibernate.DataLinkInterfaceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.OnmsMapElementDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.OnmsMapDaoHibernate;
+import org.opennms.netmgt.model.*;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -99,6 +90,9 @@ public class DatabasePopulator {
     private UserNotificationDao m_userNotificationDao;
     private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private OnmsMapDao m_onmsMapDao;
+    private OnmsMapElementDao m_onmsMapElementDao;
+    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     
     private OnmsNode m_node1;
@@ -248,6 +242,33 @@ public class DatabasePopulator {
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
         
+        OnmsMap map = new OnmsMap("DB_Pop_Test_Map", "admin");
+        map.setBackground("fake_background.jpg");
+        map.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
+        map.setType(OnmsMap.USER_GENERATED_MAP);
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+
+        OnmsMapElement mapElement = new OnmsMapElement(map, 1,
+                OnmsMapElement.NODE_TYPE,
+                "Test Node",
+                OnmsMapElement.defaultNodeIcon,
+                0,
+                10);
+        getOnmsMapElementDao().save(mapElement);
+        getOnmsMapElementDao().flush();
+
+        DataLinkInterface dli = new DataLinkInterface(1, 1, 1, 1, "A", new Date());
+        getDataLinkInterfaceDao().save(dli);
+        getDataLinkInterfaceDao().flush();
+
+        DataLinkInterface dli2 = new DataLinkInterface(1, 2, 1, 1, "A", new Date());
+        getDataLinkInterfaceDao().save(dli2);
+        getDataLinkInterfaceDao().flush();
+
+        DataLinkInterface dli3 = new DataLinkInterface(2, 1, 1, 1, "A", new Date());
+        getDataLinkInterfaceDao().save(dli3);
+        getDataLinkInterfaceDao().flush();
         
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
@@ -446,6 +467,30 @@ public class DatabasePopulator {
         m_locationMonitorDao = locationMonitorDao;
     }
 
+    public OnmsMapDao getOnmsMapDao() {
+        return m_onmsMapDao;
+    }
+
+    public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
+        this.m_onmsMapDao = onmsMapDao;
+    }
+
+    public OnmsMapElementDao getOnmsMapElementDao() {
+        return m_onmsMapElementDao;
+    }
+
+    public void setOnmsMapElementDao(OnmsMapElementDao onmsMapElementDao) {
+        this.m_onmsMapElementDao = onmsMapElementDao;
+    }
+
+    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
+        return m_dataLinkInterfaceDao;
+    }
+
+    public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
+        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
+    }
+    
     public AcknowledgmentDao getAcknowledgmentDao() {
         return m_acknowledgmentDao;
     }

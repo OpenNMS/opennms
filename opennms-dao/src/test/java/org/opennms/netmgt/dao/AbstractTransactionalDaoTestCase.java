@@ -58,6 +58,9 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private UserNotificationDao m_userNotificationDao;
     private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private OnmsMapDao m_onmsMapDao;
+    private OnmsMapElementDao m_onmsMapElementDao;
+    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     
     private DatabasePopulator m_populator;
@@ -242,6 +245,30 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
+    }
+
+    public OnmsMapDao getOnmsMapDao() {
+        return m_onmsMapDao;
+    }
+
+    public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
+        this.m_onmsMapDao = onmsMapDao;
+    }
+
+    public OnmsMapElementDao getOnmsMapElementDao() {
+        return m_onmsMapElementDao;
+    }
+
+    public void setOnmsElementMapDao(OnmsMapElementDao onmsMapElementDao) {
+        this.m_onmsMapElementDao = onmsMapElementDao;
+    }
+
+    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
+        return m_dataLinkInterfaceDao;
+    }
+
+    public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
+        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
     public AcknowledgmentDao getAcknowledgmentDao() {
