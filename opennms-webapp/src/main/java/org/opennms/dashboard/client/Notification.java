@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * Created: March 2, 2007
  *
  *
@@ -47,12 +48,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class Notification implements IsSerializable {
 	
 	private String m_nodeLabel;
+	private String m_nodeId;
 	private String m_serviceName;
 	private String m_severity;
 	private Date m_sentTime;
 	private String m_responder;
 	private Date m_respondTime;
 	private String m_textMessage;
+	private boolean m_isDashboardRole;
     
     public String getNodeLabel() {
         return m_nodeLabel;
@@ -97,6 +100,19 @@ public class Notification implements IsSerializable {
 		m_textMessage = message;
 	}
     
+	public void setIsDashboardRole(boolean isDashboardRole) {
+        m_isDashboardRole = isDashboardRole;
+    }
+
+    public boolean getIsDashboardRole() {
+        return m_isDashboardRole;
+    }
     
+    public String getNodeId() {
+        return m_nodeId;
+    }
+    public void setNodeId(String nodeId) {
+        m_nodeId = nodeId;
+    }
 
 }
