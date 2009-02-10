@@ -64,7 +64,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
     }
     
     @Override
-    public void delete(Collection<T> entities) throws DataAccessException {
+    public void deleteAll(Collection<T> entities) throws DataAccessException {
         List<CacheKey> ids = Collections.emptyList();
         if (m_cache.get() != null) {
             ids = new ArrayList<CacheKey>(entities.size());
@@ -73,7 +73,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
             }
         }
         
-        super.delete(entities);
+        super.deleteAll(entities);
         
         if (m_cache.get() != null) {
             for(CacheKey id : ids) {
