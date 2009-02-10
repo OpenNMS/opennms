@@ -162,7 +162,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         getHibernateTemplate().delete(entity);
     }
     
-    public void delete(Collection<T> entities) throws DataAccessException {
+    public void deleteAll(Collection<T> entities) throws DataAccessException {
         getHibernateTemplate().deleteAll(entities);
     }
 
