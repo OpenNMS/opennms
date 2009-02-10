@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * Created: March 2, 2007
  *
  *
@@ -60,7 +61,11 @@ class AlarmView extends PageableTableView {
     
     protected void setRow(FlexTable table, int row, int elementIndex) {
     	Alarm alarm = m_alarms[elementIndex];
-        table.setText(row, 0, alarm.getNodeLabel());
+    	if (alarm.getIsDashboardRole()) {
+            table.setText(row, 0, alarm.getNodeLabel());
+    	} else {
+            table.setHTML(row, 0, "<a href=\"element/node.jsp?node=" + alarm.getNodeId() + "\">" + alarm.getNodeLabel() + "</a>");
+    	}
         Label label = new Label(alarm.getLogMsg());
         label.setTitle(alarm.getDescrption());
         table.setWidget(row, 1, label);

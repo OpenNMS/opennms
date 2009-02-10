@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * 2008 Oct 04: Use new OnmsSeverity object from Alarm which lets us get the
  *              severity label instead of figuring it out ourselves. - dj@opennms.org
  * 
@@ -103,7 +104,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
-    private RtcService m_rtcService;;
+    private RtcService m_rtcService;
     private GroupDao m_groupDao;
     private OutageDao m_outageDao;
     
@@ -224,8 +225,9 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Alarm[] alarmArray = new Alarm[alarms.size()];
         
         int index = 0;
+        boolean isDashboardRole = isDashboardRole();
         for (OnmsAlarm alarm : alarms) {
-            alarmArray[index] = new Alarm(alarm.getSeverity().getLabel(), alarm.getNode().getLabel(), alarm.getLogMsg(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
+            alarmArray[index] = new Alarm(alarm.getSeverity().getLabel(), alarm.getNode().getLabel(), alarm.getNode().getId(), isDashboardRole, alarm.getLogMsg(), alarm.getDescription(), alarm.getCounter(), new Date(alarm.getFirstEventTime().getTime()), new Date(alarm.getLastEventTime().getTime()));
             index++;
         }
         
@@ -336,6 +338,15 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         }
     }
 
+    protected boolean isDashboardRole() {
+        boolean isDashboardRole = true;
+        SecurityContext context = SecurityContextHolder.getContext();
+        if((context != null) && !(context.toString().contains(org.opennms.web.acegisecurity.Authentication.DASHBOARD_ROLE))) {
+            isDashboardRole = false;
+        }
+        log().debug("User " + getUsername() + " is in dashboard role? " + isDashboardRole);
+        return isDashboardRole;
+    }
 
     public String[][] getChildResources(String id) {
         OnmsResource parentResource = m_resourceDao.getResourceById(id);
@@ -403,15 +414,18 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     private List<Notification> convertOnmsNotificationsToNotifications(List<OnmsNotification> notifications, String severity) {
         List<Notification> notifs = new ArrayList<Notification>(notifications.size());
+        boolean isDashboardRole = isDashboardRole();
         for (OnmsNotification notification : notifications) {
-            notifs.add(createNotification(notification, severity));
+            notifs.add(createNotification(notification, severity, isDashboardRole));
         }
         return notifs;
     }
 
-    private Notification createNotification(OnmsNotification onmsNotif, String severity) {
+    private Notification createNotification(OnmsNotification onmsNotif, String severity, boolean isDashboardRole) {
         Notification notif = new Notification();
         notif.setNodeLabel(onmsNotif.getNode().getLabel());
+        notif.setNodeId(onmsNotif.getNode().getNodeId());
+        notif.setIsDashboardRole(isDashboardRole);
         notif.setResponder(onmsNotif.getAnsweredBy());
         notif.setRespondTime(onmsNotif.getRespondTime() == null ? null : new Date(onmsNotif.getRespondTime().getTime()));
         notif.setSentTime(onmsNotif.getPageTime() == null ? null : new Date(onmsNotif.getPageTime().getTime()));
@@ -433,11 +447,13 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         NodeRtc[] nodeRtc = new NodeRtc[model.getNodeList().size()];
         
         int index = 0;
+        boolean isDashboardRole = isDashboardRole();
         for (RtcNode node : model.getNodeList()) {
             NodeRtc n = new NodeRtc();
             
             n.setNodeLabel(node.getNode().getLabel());
-            
+            n.setNodeId(node.getNode().getNodeId());
+            n.setIsDashboardRole(isDashboardRole);
             n.setDownServiceCount(node.getDownServiceCount());
             n.setServiceCount(node.getServiceCount());
             if (node.getDownServiceCount() == 0) {

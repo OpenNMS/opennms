@@ -9,7 +9,8 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- * 
+ *
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * Created: February 20, 2007
  *
  *
@@ -57,7 +58,11 @@ class NotificationView extends PageableTableView {
     
 	protected void setRow(FlexTable table, int row, int elementIndex) {
 		Notification notif = m_notifications[elementIndex];
-        table.setText(row, 0, notif.getNodeLabel());
+		if (notif.getIsDashboardRole()) {
+            table.setText(row, 0, notif.getNodeLabel());
+		} else {
+            table.setHTML(row, 0, "<a href=\"element/node.jsp?node=" + notif.getNodeId() + "\">" + notif.getNodeLabel() + "</a>");
+		}
         table.setText(row, 1, notif.getServiceName());
         table.setText(row, 2, notif.getTextMessage());
         table.setText(row, 3, ""+notif.getSentTime());
