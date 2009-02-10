@@ -2404,6 +2404,8 @@ public class InstallerDb {
         addColumnReplacement("acks.acktype", new FixedIntegerReplacement(1));
         addColumnReplacement("acks.ackaction", new FixedIntegerReplacement(1));
 
+        addColumnReplacement("element.id", new NextValReplacement("opennmsnxtid", getDataSource()));
+
         /*
          *   - checking table "alarms"... SCHEMA DOES NOT MATCH
          *   - differences:
