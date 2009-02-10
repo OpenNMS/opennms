@@ -55,6 +55,9 @@
         <value>org.opennms.netmgt.model.ResourceReference</value>
         <value>org.opennms.netmgt.model.StatisticsReportData</value>
         <value>org.opennms.netmgt.model.StatisticsReport</value>
+        <value>org.opennms.netmgt.model.OnmsMap</value>
+        <value>org.opennms.netmgt.model.OnmsMapElement</value>
+        <value>org.opennms.netmgt.model.DataLinkInterface</value>
         <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
       </list>
     </property>
@@ -250,6 +253,18 @@
 
   <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao">
     <property name="configResource" ref="javamailConfigResourceLocation" />
+  </bean>
+
+  <bean id="onmsMapDao" class="org.opennms.netmgt.dao.hibernate.OnmsMapDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="onmsMapElementDao" class="org.opennms.netmgt.dao.hibernate.OnmsMapElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="dataLinkInterfaceDao" class="org.opennms.netmgt.dao.hibernate.DataLinkInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
 </beans>

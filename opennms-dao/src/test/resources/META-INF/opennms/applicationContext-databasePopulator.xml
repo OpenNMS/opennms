@@ -20,6 +20,9 @@
      <property name="locationMonitorDao" ref="locationMonitorDao" />
      <property name="acknowledgmentDao" ref="acknowledgmentDao" />
      <property name="serviceTypeDao" ref="serviceTypeDao" />
+     <property name="onmsMapDao" ref="onmsMapDao" />
+     <property name="onmsMapElementDao" ref="onmsMapElementDao" />
+     <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
    </bean>
 
 </beans>
