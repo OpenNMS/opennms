@@ -8,8 +8,10 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ *
  * Modifications:
  * 
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * Created: March 4, 2007
  *
  *
@@ -52,7 +54,11 @@ class NodeStatusView extends PageableTableView {
     protected void setRow(FlexTable table, int row, int elementIndex) {
         NodeRtc rtc = m_rtcs[elementIndex];
         
-        table.setText(row, 0, rtc.getNodeLabel());
+        if (rtc.getIsDashboardRole()) {
+             table.setText(row, 0, rtc.getNodeLabel());
+        } else {
+            table.setHTML(row, 0, "<a href=\"element/node.jsp?node=" + rtc.getNodeId() + "\">" + rtc.getNodeLabel() + "</a>");
+        }
         
         table.setText(row, 1, rtc.getDownServiceCount() + " of " + rtc.getServiceCount());
         table.getCellFormatter().setStyleName(row, 1, rtc.getServiceStyle());

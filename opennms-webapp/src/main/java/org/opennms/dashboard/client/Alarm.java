@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * Created: February 22, 2007
  *
  *
@@ -56,14 +57,17 @@ public class Alarm implements IsSerializable {
     private String m_svcName;
     private Date m_firstEventTime;
     private Date m_lastEventTime;
+    private boolean m_isDashboardRole;
     
     public Alarm() {
         
     }
     
-    public Alarm(String severity, String nodeLabel, String logMsg, String description, int count, Date firstEventTime, Date lastEventTime) {
+    public Alarm(String severity, String nodeLabel, int nodeId, boolean isDashboardRole, String logMsg, String description, int count, Date firstEventTime, Date lastEventTime) {
         m_severity = severity;
         m_nodeLabel = nodeLabel;
+        m_nodeId = nodeId;
+        m_isDashboardRole = isDashboardRole;
         m_logMsg = logMsg;
         m_descrption = description;
         m_count = count;
@@ -137,6 +141,12 @@ public class Alarm implements IsSerializable {
         m_logMsg = logMsg;
     }
     
-    
+    public void setIsDashboardRole(boolean isDashboardRole) {
+        m_isDashboardRole = isDashboardRole;
+    }
+
+    public boolean getIsDashboardRole() {
+        return m_isDashboardRole;
+    }
 
 }

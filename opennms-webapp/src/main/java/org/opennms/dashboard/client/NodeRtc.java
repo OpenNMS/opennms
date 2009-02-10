@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Feb 09: Add node links for users NOT in dashboard role. ayres@opennms.org
  * Created: March 4, 2007
  *
  *
@@ -44,11 +45,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class NodeRtc implements IsSerializable {
 
     private String m_nodeLabel;
+    private String m_nodeId;
     private String m_availability;
     private int m_downServiceCount;
     private int m_serviceCount;
     private String m_serviceStyle;
     private String m_availabilityStyle;
+    private boolean m_isDashboardRole;
 
     public void setNodeLabel(String label) {
         m_nodeLabel = label;
@@ -97,5 +100,20 @@ public class NodeRtc implements IsSerializable {
     public void setAvailabilityStyle(String availabilityStyle) {
         m_availabilityStyle = availabilityStyle;
     }
+    
+    public void setIsDashboardRole(boolean isDashboardRole) {
+        m_isDashboardRole = isDashboardRole;
+    }
 
+    public boolean getIsDashboardRole() {
+        return m_isDashboardRole;
+    }
+    
+    public void setNodeId(String nodeId) {
+        m_nodeId = nodeId;
+    }
+    
+    public String getNodeId() {
+        return m_nodeId;
+    }
 }
