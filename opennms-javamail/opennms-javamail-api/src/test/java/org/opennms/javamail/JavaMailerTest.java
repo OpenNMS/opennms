@@ -173,7 +173,7 @@ public class JavaMailerTest {
     }
 
     @Test
-    public final void testJavaMailerWithEmptySbuject() throws Exception {
+    public final void testJavaMailerWithEmptySubject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
         jm.setSubject("");
