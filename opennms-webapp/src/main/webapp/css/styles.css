@@ -77,7 +77,7 @@ h2 {
 	font-size: 80%;
 }
 p h2, td h2 {
-	///* 70% * 114% = 80% */
+	/* 70% * 114% = 80% */
 	font-size: 114%;
 }
 
@@ -379,7 +379,7 @@ td.standardnavlinks
 
 td.standardwarning
 {
-        background-color: cyan;
+        background-color: #00FFFF;
 }
 
 .bold {
@@ -389,7 +389,7 @@ td.standardwarning
 
 td.status1 {
 	background-color: #C7DBAF;
-}*/
+}
 
 
 #nodelist table
@@ -434,43 +434,43 @@ td.availcrit
 
 #include-eventlist td.sev_indeterminate
 {
-	background-color: lightblue;
+	background-color: #ADD8E6;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_cleared
 {
-	background-color: white;
+	background-color: #FFFFFF;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_normal
 {
-    background-color: green;
+    background-color: #00FF00;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_warning
 {
-    background-color: cyan;
+    background-color: #00FFFF;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_minor
 {
-    background-color: yellow;
+    background-color: #FFFF00;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_major
 {
-        background-color: orange;
+        background-color: #FFA500;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_critical
 {
-        background-color: red;
+        background-color: #FF0000;
 	padding: 2px;
 }
 
@@ -767,3 +767,4 @@ li.pagination {
 
 .pagination img {
         vertical-align: middle;
+}
