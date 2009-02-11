@@ -1,7 +1,9 @@
 var grid;
 var physicalInterfaceGrid;
+var iconPath = "extJS/resources/images/onmsTheme/magnifier.png";
+var popupWindow;
 
-Ext.BLANK_IMAGE_URL = '/extJS/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = 'extJS/resources/images/default/s.gif';
 
 Ext.onReady(function(){
 	nodePageGridInit();
@@ -9,11 +11,6 @@ Ext.onReady(function(){
 })
 
 function nodePageGridInit(){
-	
-	var getParams = document.URL.split("?");
-	if(getParams.length > 1){
-		urlParams = Ext.urlDecode(getParams[1]);
-	}
 	
 	grid = new Ext.grid.GridPanel({
 		title:'IP Interfaces',
@@ -57,8 +54,27 @@ function nodePageGridInit(){
         
 	        items:[
 	            '-', new Ext.Button({
-	            	width:30,
-	            	iconCls:'search-criteria-icon'
+	            	handler:function(){
+	            		if(!popupWindow){
+	            			popupWindow = new Ext.Window({
+	            				applyTo     : Ext.getBody(),
+                				layout      : 'fit',
+				                width       : 500,
+				                height      : 300,
+				                closeAction :'hide',
+				                plain       : true,
+				                items:[
+				                	new Ext.Button({
+				                		text:"a button"
+				                	})
+				                ]
+	            				
+	            			})
+	            		}
+	            		popup.show(grid); 
+	            	},
+	            	text:"  ",
+	            	icon:iconPath,
 	            })]
 
 		}),
@@ -157,12 +173,18 @@ function nodePageGridInit(){
     	
     });
 	
-	loadNodeInterfaces(urlParams.node);
-	
 	physicalAddrStore.proxy.on("loadexception", function(object, options, response, e){
 		alert("error: " + e);
 		//alert("there was a load exception in the physicalAddressStore");
 	})
+	
+	var getParams = document.URL.split("?");
+	if(getParams.length > 1){
+		urlParams = Ext.urlDecode(getParams[1]);
+		loadNodeInterfaces(urlParams.node);
+	}else{
+		loadNodeInterfaces(-1);
+	}
 };
 
 var record = new Ext.data.Record.create([
@@ -334,8 +356,13 @@ var ipInterfacePagingBar = new Ext.PagingToolbar({
         
         items:[
             '-', new Ext.Button({
-            	width:30,
-            	iconCls:'search-criteria-icon'
+            	handler:function(){
+            		gridWindow.add(new Ext.form.FormPanel({
+            			title:"search Criteria",
+            		}));
+            	},
+            	text:"  ",
+            	icon:iconPath,
             })]
 
 });
@@ -369,12 +396,16 @@ var filterMenu = new Ext.menu.Menu({
 });
 
 function loadNodeInterfaces(nodeId){
-	var baseUrl = "rest/nodes/" + nodeId;
-	dataStore.proxy.conn.url = baseUrl + "/ipinterfaces"; //"xml/node-147-ipinterfaces.xml"; 
-	dataStore.load({params:{start:0, limit:20}});
+	if(nodeId != -1){
+		var baseUrl = "rest/nodes/" + nodeId;
+		dataStore.proxy.conn.url = baseUrl + "/ipinterfaces"; //"xml/node-147-ipinterfaces.xml"; 
+		dataStore.load({params:{start:0, limit:20}});
 	
-	physicalAddrStore.proxy.conn.url = baseUrl + "/snmpinterfaces";
-	physicalAddrStore.load({params:{start:0, limit:20}});
+		physicalAddrStore.proxy.conn.url = baseUrl + "/snmpinterfaces";
+		physicalAddrStore.load({params:{start:0, limit:20}});
+	}else{
+		alert('not yet implemented on getting a node from one particular something');
+	}
 };
 
 function updateFilter(field, newValue, oldValue){
