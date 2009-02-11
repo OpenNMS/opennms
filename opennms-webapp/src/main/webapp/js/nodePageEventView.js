@@ -53,7 +53,11 @@ function initEventView(){
 	});
 	
 	
-	loadNodeEvents(urlParams.node);
+	if(urlParams.node){
+		loadNodeEvents(urlParams.node);
+	}else{
+		loadNodeEvents(-1);
+	}
 }
 
 eventRecord = new Ext.data.Record.create([
@@ -192,6 +196,11 @@ function acknowledgeEvent(button, eventObj){
 }
 
 function loadNodeEvents(nodeId){
-	eventStore.load({params:{'node.id':nodeId, start:0}});
+	if(nodeId != -1){
+		eventStore.load({params:{'node.id':nodeId, start:0}});	
+	}else{
+		alert("event tried to load -1");
+	}
+	
 }
 
