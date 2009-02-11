@@ -109,7 +109,7 @@ public class DefaultProvisionService implements ProvisionService {
     private EventForwarder m_eventForwarder;
     
     @Autowired
-    @Qualifier("active")
+    @Qualifier("deployed")
     private ForeignSourceRepository m_foreignSourceRepository;
     
     @Autowired
