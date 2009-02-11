@@ -1863,7 +1863,7 @@ create table map (
 --# This table provides the following information:
 --#
 --#  mapId             : Identifier of the parent map
---#  elementId         : Identifier of the elemen map
+--#  elementId         : Identifier of the element map
 --#  elemenType        : Flag indicating the type of the element.
 --#                      'M' - Element is a Map 
 --#                      'N' - Element is a Node
