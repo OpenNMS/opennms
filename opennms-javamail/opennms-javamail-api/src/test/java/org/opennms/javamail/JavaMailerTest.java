@@ -86,6 +86,7 @@ public class JavaMailerTest {
 
     @Test
     @IfProfileValue(name="runMailTests", value="true")
+    @Ignore
     public final void testJavaMailerWithDefaults() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer using details");
 
@@ -93,6 +94,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithNullTo() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -109,6 +111,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithEmptyTo() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -125,6 +128,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithNullFrom() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -141,6 +145,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithEmptyFrom() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -157,6 +162,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithNullSubject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -173,6 +179,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithEmptySubject() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -189,6 +196,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithNullMessageText() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
@@ -205,6 +213,7 @@ public class JavaMailerTest {
     }
 
     @Test
+    @Ignore
     public final void testJavaMailerWithEmptyMessageText() throws Exception {
         JavaMailer jm = createMailer("Test message from testJavaMailer without MTA");
 
