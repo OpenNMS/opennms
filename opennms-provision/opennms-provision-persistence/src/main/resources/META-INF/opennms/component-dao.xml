@@ -7,9 +7,16 @@
 
   <bean id="modelImport" class="org.opennms.netmgt.config.modelimport.ModelImport" />
   
-  <bean id="foreignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
-  	<property name="requisitionPath" value="${importer.cacheDir}/requisition" />
-  	<property name="foreignSourcePath" value="${importer.cacheDir}/foreign-sources" />
+  <bean id="pendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
+    <qualifier value="pending" />
+  	<property name="requisitionPath" value="${importer.cacheDir}/pending/requisition" />
+  	<property name="foreignSourcePath" value="${importer.cacheDir}/pending/foreign-sources" />
+  </bean>
+  
+  <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
+    <qualifier value="deployed" />
+  	<property name="requisitionPath" value="${importer.cacheDir}/deployed/requisition" />
+  	<property name="foreignSourcePath" value="${importer.cacheDir}/deployed/foreign-sources" />
   </bean>
 
 </beans>

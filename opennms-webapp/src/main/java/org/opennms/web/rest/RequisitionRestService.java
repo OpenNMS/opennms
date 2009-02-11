@@ -67,6 +67,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollectio
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,8 +79,14 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("requisitions")
 public class RequisitionRestService extends OnmsRestService {
+    
     @Autowired
-    private ForeignSourceRepository m_foreignSourceRepository;
+    @Qualifier("pending")
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
+    
+    @Autowired
+    @Qualifier("deployed")
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
     
     @Context
     UriInfo m_uriInfo;
@@ -91,41 +98,69 @@ public class RequisitionRestService extends OnmsRestService {
     SecurityContext m_securityContext;
 
     @GET
+    @Path("deployed/{foreignSource}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    @Path("{foreignSource}")
-    @Transactional
-    public Requisition getRequisition(@PathParam("foreignSource") String foreignSource) {
-        return m_foreignSourceRepository.getRequisition(foreignSource);
+    public Requisition getDeployedRequisition(@PathParam("foreignSource") String foreignSource) {
+        return m_deployedForeignSourceRepository.getRequisition(foreignSource);
+    }
+
+    @GET
+    @Path("pending/{foreignSource}")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public Requisition getPendingRequisition(@PathParam("foreignSource") String foreignSource) {
+        return m_pendingForeignSourceRepository.getRequisition(foreignSource);
     }
 
     /**
-     * get a plain text numeric string of the number of requisitions
+     * get a plain text numeric string of the number of deployed requisitions
      * @return
      */
     @GET
+    @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("count")
-    public String getCount() {
-        return Integer.toString(m_foreignSourceRepository.getRequisitions().size());
+    public String getDeployedCount() {
+        return Integer.toString(m_deployedForeignSourceRepository.getRequisitions().size());
     }
 
     /**
-     * Get all the requisitions
+     * get a plain text numeric string of the number of pending requisitions
+     * @return
      */
     @GET
+    @Path("pending/count")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getPendingCount() {
+        return Integer.toString(m_pendingForeignSourceRepository.getRequisitions().size());
+    }
+
+    /**
+     * Get all the deployed requisitions
+     */
+    @GET
+    @Path("deployed")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public RequisitionCollection getRequisitions() throws ParseException {
-        return new RequisitionCollection(m_foreignSourceRepository.getRequisitions());
+    public RequisitionCollection getDeployedRequisitions() throws ParseException {
+        return new RequisitionCollection(m_deployedForeignSourceRepository.getRequisitions());
+    }
+
+    /**
+     * Get all the pending requisitions
+     */
+    @GET
+    @Path("pending")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public RequisitionCollection getPendingRequisitions() throws ParseException {
+        return new RequisitionCollection(m_pendingForeignSourceRepository.getRequisitions());
     }
 
     /**
      * Returns all nodes for a given requisition
      */
     @GET
-    @Path("{foreignSource}/nodes")
+    @Path("pending/{foreignSource}/nodes")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionNodeCollection getNodes(@PathParam("foreignSource") String foreignSource) throws ParseException {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req == null) {
             return null;
         }
@@ -136,10 +171,10 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns the node with the foreign ID specified for the given foreign source
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionNode getNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req == null) {
             return null;
         }
@@ -150,7 +185,7 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns a collection of interfaces for a given node in the specified foreign source
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
         RequisitionNode node = getNode(foreignSource, foreignId);
@@ -164,7 +199,7 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns the interface with the given foreign source/foreignid/ipaddress combination.
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) throws ParseException {
         RequisitionNode node = getNode(foreignSource, foreignId);
@@ -178,7 +213,7 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns a collection of services for a given foreignSource/foreignId/interface combination.
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) throws ParseException {
         RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
@@ -192,7 +227,7 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns a service for a given foreignSource/foreignId/interface/service-name combination.
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) throws ParseException {
         RequisitionInterface iface = getInterfaceForNode(foreignSource, foreignId, ipAddress);
@@ -206,10 +241,10 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns a collection of categories for a given node in the specified foreign source
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/categories")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/categories")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
@@ -223,10 +258,10 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns the requested category for a given node in the specified foreign source
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionCategory getCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("category") String category) throws ParseException {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
@@ -240,10 +275,10 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns a collection of categories for a given node in the specified foreign source
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/asset")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/asset")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
@@ -257,10 +292,10 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns the requested category for a given node in the specified foreign source
      */
     @GET
-    @Path("{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/asset/{parameter}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionAsset getAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) throws ParseException {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
@@ -274,10 +309,12 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds a complete requisition with foreign source "foreignSource" 
      */
     @POST
+    @Path("pending")
     @Consumes(MediaType.APPLICATION_XML)
+    @Transactional
     public Response addOrReplaceRequisition(Requisition requisition) {
         debug("addOrReplaceRequisition: Adding requisition %s", requisition.getForeignSource());
-        m_foreignSourceRepository.save(requisition);
+        m_pendingForeignSourceRepository.save(requisition);
         return Response.ok(requisition).build();
     }
 
@@ -285,14 +322,15 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds a node to a requisition 
      */
     @POST
+    @Path("pending/{foreignSource}/nodes")
     @Consumes(MediaType.APPLICATION_XML)
-    @Path("{foreignSource}/nodes")
+    @Transactional
     public Response addOrReplaceNode(@PathParam("foreignSource") String foreignSource, RequisitionNode node) {
         debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             req.putNode(node);
-            m_foreignSourceRepository.save(req);
+            m_pendingForeignSourceRepository.save(req);
             return Response.ok(req).build();
         }
         return Response.notModified().build();
@@ -302,16 +340,17 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds an interface to a node
      */
     @POST
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces")
     @Consumes(MediaType.APPLICATION_XML)
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces")
+    @Transactional
     public Response addOrReplaceInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
         debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 node.putInterface(iface);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(req).build();
             }
         }
@@ -322,18 +361,19 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds a service to an interface
      */
     @POST
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Consumes(MediaType.APPLICATION_XML)
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
+    @Transactional
     public Response addOrReplaceService(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
         debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 RequisitionInterface iface = node.getInterface(ipAddress);
                 if (iface != null) {
                     iface.putService(service);
-                    m_foreignSourceRepository.save(req);
+                    m_pendingForeignSourceRepository.save(req);
                     return Response.ok(req).build();
                 }
             }
@@ -345,16 +385,17 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds a category to a node
      */
     @POST
+    @Path("pending/{foreignSource}/nodes/{foreignId}/categories")
     @Consumes(MediaType.APPLICATION_XML)
-    @Path("{foreignSource}/nodes/{foreignId}/categories")
+    @Transactional
     public Response addOrReplaceNodeCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
         debug("addOrReplaceNodeCategory: Adding category %s to node %s/%s", category.getName(), foreignSource, foreignId);
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 node.putCategory(category);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(req).build();
             }
         }
@@ -365,35 +406,47 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds an asset parameter to a node
      */
     @POST
+    @Path("pending/{foreignSource}/nodes/{foreignId}/asset")
     @Consumes(MediaType.APPLICATION_XML)
-    @Path("{foreignSource}/nodes/{foreignId}/asset")
+    @Transactional
     public Response addOrReplaceNodeAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
         debug("addOrReplaceNodeCategory: Adding asset %s to node %s/%s", asset.getName(), foreignSource, foreignId);
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 node.putAsset(asset);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(req).build();
             }
         }
         return Response.notModified().build();
     }
 
+    @PUT
+    @Path("pending/{foreignSource}/deploy")
+    @Transactional
+    public Response deployRequisition(@PathParam("foreignSource") String foreignSource) {
+        log().debug("deploying requisition for foreign source " + foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
+        m_deployedForeignSourceRepository.save(req);
+        return Response.ok(req).build();
+    }
+    
     /**
      * Updates the requisition with foreign source "foreignSource"
      */
     @PUT
+    @Path("pending/{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{foreignSource}")
+    @Transactional
     public Response updateRequisition(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             debug("updateRequisition: updating requisition with foreign source %s", foreignSource);
             setProperties(params, req);
             debug("updateRequisition: requisition with foreign source %s updated", foreignSource);
-            m_foreignSourceRepository.save(req);
+            m_pendingForeignSourceRepository.save(req);
             return Response.ok(req).build();
         }
         return Response.notModified(foreignSource).build();
@@ -403,17 +456,18 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates the node with foreign id "foreignId" in foreign source "foreignSource"
      */
     @PUT
+    @Path("pending/{foreignSource}/nodes/{foreignId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{foreignSource}/nodes/{foreignId}")
+    @Transactional
     public Response updateNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, MultivaluedMapImpl params) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 debug("updateNode: updating node with foreign source %s and foreign id %s", foreignSource, foreignId);
                 setProperties(params, node);
                 debug("updateNode: node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(node).build();
             }
         }
@@ -424,10 +478,11 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates a specific interface
      */
     @PUT
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    @Transactional
     public Response updateInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, MultivaluedMapImpl params) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
@@ -436,7 +491,7 @@ public class RequisitionRestService extends OnmsRestService {
                     debug("updateInterface: updating interface %s on node %s/%s", ipAddress, foreignSource, foreignId);
                     setProperties(params, iface);
                     debug("updateInterface: interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
-                    m_foreignSourceRepository.save(req);
+                    m_pendingForeignSourceRepository.save(req);
                     return Response.ok(node).build();
                 }
             }
@@ -445,16 +500,32 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     /**
-     * Deletes the requisition with foreign source "foreignSource"
+     * Deletes the deployed requisition with foreign source "foreignSource"
      * @param foreignSource
      * @return
      */
     @DELETE
-    @Path("{foreignSource}")
-    public Response deleteRequisition(@PathParam("foreignSource") String foreignSource) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
-        debug("deleteRequisition: deleting requisition with foreign source %s", foreignSource);
-        m_foreignSourceRepository.delete(req);
+    @Path("deployed/{foreignSource}")
+    @Transactional
+    public Response deleteDeployedRequisition(@PathParam("foreignSource") String foreignSource) {
+        Requisition req = m_deployedForeignSourceRepository.getRequisition(foreignSource);
+        debug("deleteRequisition: deleting deployed requisition with foreign source %s", foreignSource);
+        m_deployedForeignSourceRepository.delete(req);
+        return Response.ok(req).build();
+    }
+    
+    /**
+     * Deletes the pending requisition with foreign source "foreignSource"
+     * @param foreignSource
+     * @return
+     */
+    @DELETE
+    @Path("pending/{foreignSource}")
+    @Transactional
+    public Response deletePendingRequisition(@PathParam("foreignSource") String foreignSource) {
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
+        debug("deleteRequisition: deleting pending requisition with foreign source %s", foreignSource);
+        m_pendingForeignSourceRepository.delete(req);
         return Response.ok(req).build();
     }
     
@@ -462,26 +533,28 @@ public class RequisitionRestService extends OnmsRestService {
      * Delete the node with the given foreign ID for the specified foreign source
      */
     @DELETE
-    @Path("{foreignSource}/nodes/{foreignId}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}")
+    @Transactional
     public Response deleteNode(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             req.deleteNode(foreignId);
-            m_foreignSourceRepository.save(req);
+            m_pendingForeignSourceRepository.save(req);
             return Response.ok(req).build();
         }
         return null;
     }
     
     @DELETE
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
+    @Transactional
     public Response deleteInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 node.deleteInterface(ipAddress);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(req).build();
             }
         }
@@ -489,16 +562,17 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     @DELETE
-    @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
+    @Transactional
     public Response deleteInterfaceService(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 RequisitionInterface iface = node.getInterface(ipAddress);
                 if (iface != null) {
                     iface.deleteMonitoredService(service);
-                    m_foreignSourceRepository.save(req);
+                    m_pendingForeignSourceRepository.save(req);
                     return Response.ok(req).build();
                 }
             }
@@ -507,14 +581,15 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     @DELETE
-    @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/categories/{category}")
+    @Transactional
     public Response deleteCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("category") String category) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 node.deleteCategory(category);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(req).build();
             }
         }
@@ -522,14 +597,15 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     @DELETE
-    @Path("{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    @Transactional
     public Response deleteAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) {
-        Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
+        Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         if (req != null) {
             RequisitionNode node = req.getNode(foreignId);
             if (node != null) {
                 node.deleteAsset(parameter);
-                m_foreignSourceRepository.save(req);
+                m_pendingForeignSourceRepository.save(req);
                 return Response.ok(req).build();
             }
         }

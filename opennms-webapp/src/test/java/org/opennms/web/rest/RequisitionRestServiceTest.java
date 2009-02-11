@@ -4,24 +4,55 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/component-dao.xml"
+})
 
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     @Test
     public void testRequisition() throws Exception {
         createRequisition();
-        String url = "/requisitions";
+        String url = "/requisitions/pending";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Management interface"));
         
-        url = "/requisitions/test";
+        url = "/requisitions/pending/test";
         sendPut(url, "dateStamp=2009-01-01T00:00:00");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("date-stamp=\"2009-01-01T00:00:00\""));
         
-        url = "/requisitions/test";
+        url = "/requisitions/pending/test";
         sendPut(url, "dateStamp=2009-01-01T00:00:00");
+        sendRequest(DELETE, url, 200);
+        xml = sendRequest(GET, url, 204);
+
+        createRequisition();
+
+        sendPut(url, "dateStamp=2009-01-01T00:00:00");
+        sendPut(url + "/deploy", "");
+        
+        url = "/requisitions/deployed/test";
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("date-stamp=\"2009-01-01T00:00:00\""));
+
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
     }
@@ -30,7 +61,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testNodes() throws Exception {
         createRequisition();
 
-        String url = "/requisitions/test/nodes";
+        String url = "/requisitions/pending/test/nodes";
 
         // create a node
         sendPost(url, "<node xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" node-label=\"shoe\" parent-node-label=\"david\" foreign-id=\"1111\" />");
@@ -42,7 +73,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("count=\"2\""));
         
         // get individual node
-        url = "/requisitions/test/nodes/4243";
+        url = "/requisitions/pending/test/nodes/4243";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("parent-node-label=\"apknd\""));
         
@@ -60,7 +91,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testNodeInterfaces() throws Exception {
         createRequisition();
         
-        String base = "/requisitions/test/nodes/4243/interfaces";
+        String base = "/requisitions/pending/test/nodes/4243/interfaces";
         String xml;
         
         // create an interface
@@ -99,7 +130,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testNodeInterfaceServices() throws Exception {
         createRequisition();
         
-        String base = "/requisitions/test/nodes/4243/interfaces/172.20.1.204/services";
+        String base = "/requisitions/pending/test/nodes/4243/interfaces/172.20.1.204/services";
         
         // create a service
         sendPost(base, "<monitored-service xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" service-name=\"MONKEY\" />");
@@ -127,7 +158,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testNodeCategories() throws Exception {
         createRequisition();
 
-        String base = "/requisitions/test/nodes/4243/categories";
+        String base = "/requisitions/pending/test/nodes/4243/categories";
 
         // create a category
         sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"Dead Servers\" />");
@@ -139,7 +170,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("name=\"low\""));
         
         // get individual category
-        url = "/requisitions/test/nodes/4243/categories/low";
+        url = "/requisitions/pending/test/nodes/4243/categories/low";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("name=\"low\""));
         
@@ -148,7 +179,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 204);
         
         // confirm there are less categories
-        xml = sendRequest(GET, "/requisitions/test/nodes/4243/categories", 200);
+        xml = sendRequest(GET, "/requisitions/pending/test/nodes/4243/categories", 200);
         assertTrue(xml.contains("count=\"3\""));
     }
     
@@ -156,7 +187,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testNodeAssets() throws Exception {
         createRequisition();
         
-        String base = "/requisitions/test/nodes/4243/asset";
+        String base = "/requisitions/pending/test/nodes/4243/asset";
 
         // create an asset
         sendPost(base, "<asset xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"manufacturer\" value=\"Dead Servers, Inc.\" />");
@@ -168,7 +199,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("Windows Pi"));
         
         // get individual asset parameter
-        url = "/requisitions/test/nodes/4243/asset/operatingSystem";
+        url = "/requisitions/pending/test/nodes/4243/asset/operatingSystem";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("value=\"Windows Pi\""));
         
@@ -177,7 +208,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 204);
         
         // confirm there are less categories
-        xml = sendRequest(GET, "/requisitions/test/nodes/4243/asset", 200);
+        xml = sendRequest(GET, "/requisitions/pending/test/nodes/4243/asset", 200);
         assertTrue(xml.contains("count=\"2\""));
     }
     
@@ -202,7 +233,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
                 "</node>" +
             "</model-import>";
 
-        sendPost("/requisitions", req);
+        sendPost("/requisitions/pending", req);
     }
     
 }
