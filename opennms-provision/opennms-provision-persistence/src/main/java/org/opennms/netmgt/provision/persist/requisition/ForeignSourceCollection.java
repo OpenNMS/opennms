@@ -4,21 +4,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 
 @XmlRootElement(name="foreign-sources")
-public class OnmsForeignSourceCollection extends LinkedList<ForeignSource> {
+public class ForeignSourceCollection extends LinkedList<ForeignSource> {
 
 	private static final long serialVersionUID = 1L;
 
-	public OnmsForeignSourceCollection() {
+	public ForeignSourceCollection() {
         super();
     }
 
-    public OnmsForeignSourceCollection(Collection<? extends ForeignSource> c) {
+    public ForeignSourceCollection(Collection<? extends ForeignSource> c) {
         super(c);
     }
 
@@ -30,6 +31,11 @@ public class OnmsForeignSourceCollection extends LinkedList<ForeignSource> {
     public void setForeignSources(List<ForeignSource> foreignSources) {
         clear();
         addAll(foreignSources);
+    }
+
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        return this.size();
     }
 }
 
