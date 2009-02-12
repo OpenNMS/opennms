@@ -294,7 +294,17 @@ public class DefaultTaskCoordinator implements InitializingBean {
         submitToExecutor(executorPreference, workToBeDone, taskCompleter(owningTask));
     }
     
-    void submitToExecutor(String executorPreference, Runnable workToBeDone, Runnable completionProcessor) {
+    void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    workToBeDone.run();
+                } catch (Throwable t) {
+                    System.err.println("Unexpected Exception processing: "+workToBeDone);
+                    t.printStackTrace();
+                }
+            }
+        };
         final String preferredExecutor = executorPreference;
         getCompletionService(preferredExecutor).submit(workToBeDone, completionProcessor);
         System.out.printf("SUBMIT: Task %s to executor %s\n", workToBeDone, preferredExecutor);
