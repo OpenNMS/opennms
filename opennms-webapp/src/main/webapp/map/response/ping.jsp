@@ -171,32 +171,30 @@ function doCommand(){
       <td align="left">
         <table >
           <tr>
-            <td>&nbsp;</td>
-	    <td>Ip Address: </td>
-            <td>
-              <%
-	      String ipAddress = null;              
-              if( intf != null ){
-              	    ipAddress = intf;
-              }else{
-              %>
-                    <% 
-                    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
-                    for( int i=0; i < intfs.length; i++ ) { 
-                    	if(intfs[i]!=null){
-                    	      ipAddress = intfs[i].getIpAddress();
-                    	      if(ipAddress.equals("0.0.0.0"))
-                    	      	continue;
-                    	      else
-			      	break;
-			}
-		    }
-		    if(ipAddress==null){
-		    	ipAddress="";
-		    }
-              }%>
-              <input type="text" size="10" id="address" name="address" value="<%=ipAddress%>" />
-            </td>  
+            <td>Ip Address: </td>
+	    <td><select id="address" name="address">
+	<%
+    String ipAddress = null;              
+    if( intf != null ){
+   	    ipAddress = intf;
+    }else{
+        Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
+        for( int i=0; i < intfs.length; i++ ) { 
+          	if(intfs[i]!=null){
+			    ipAddress = intfs[i].getIpAddress();
+				if(ipAddress.equals("0.0.0.0") || !intfs[i].isManaged())
+					continue;
+	      		else
+	%>
+	 	<option value="<%=ipAddress%>"><%=ipAddress%></option>
+    <%
+ 			}                     	
+ 		}
+ 		    
+    }
+    %>
+            </select>
+        </td>  
             <td>&nbsp;</td>
           </tr>
           <tr>
