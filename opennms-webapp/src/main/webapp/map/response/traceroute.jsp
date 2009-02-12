@@ -53,10 +53,6 @@
         throw new MissingParameterException( "node", new String[] {"report", "node", "intf"} );
     }
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-    
-    //required parameter intf
-    String intf = request.getParameter( "intf" );
-
 
 %>
 
@@ -113,9 +109,6 @@ function doCommand(){
           <td align="left">
             <h3>
               Node: <%=NetworkElementFactory.getNodeLabel(nodeId)%><br/>
-              <% if(intf != null ) { %>
-                Interface: <%=intf%>
-              <% } %>
             </h3>
           </td>
           <td>&nbsp;</td>
@@ -128,11 +121,6 @@ function doCommand(){
     <td height="20">&nbsp;</td>
   </tr>
 
-<%if(intf!=null){%>
-    <input type="hidden" id="address" name="address" value="<%=intf%>" />
-
-<%}%>
-
     <input type="hidden" id="command" name="command" value="traceroute" />
 
     <tr>
@@ -144,9 +132,6 @@ function doCommand(){
 	    <td><select id="address" name="address">
 	<%
     String ipAddress = null;              
-    if( intf != null ){
-   	    ipAddress = intf;
-    }else{
         Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
         for( int i=0; i < intfs.length; i++ ) { 
           	if(intfs[i]!=null){
@@ -160,7 +145,6 @@ function doCommand(){
  			}                     	
  		}
  		    
-    }
     %>
             </select>
         </td>  
