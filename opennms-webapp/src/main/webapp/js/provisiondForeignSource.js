@@ -4,15 +4,7 @@ var pendingForeignSourceRecord;
 var pendingForeignSourceStore;
 var fsColumnModel;
 
-Ext.data.StrippingXmlReader = function(meta, recordType){
-    meta = meta || {};
-    Ext.data.StrippingXmlReader.superclass.constructor.call(this, meta, recordType||meta.fields);
-};
-Ext.extend(Ext.data.StrippingXmlReader, Ext.data.DataReader, {
-});
-
 Ext.onReady(function(){
-	Ext.Ajax.defaultHeaders = {'Accept': 'application/json'};
 	initForeignSourceView();
 })
 
@@ -48,8 +40,8 @@ function initForeignSourceView(){
 }
 
 pendingForeignSourceRecord = new Ext.data.Record.create([
-    {name:"name",mapping:'foreign-source'.'@name'},
-    {name:"scanInterval",mapping:'foreign-source'.'scan-interval'}
+    {name:"name",mapping:'@name'},
+    {name:"scanInterval",mapping:'scan-interval'}
 ]);
 
 pendingForeignSourceStore = new Ext.data.Store({
@@ -57,13 +49,9 @@ pendingForeignSourceStore = new Ext.data.Store({
 		url:'rest/foreignSources/pending',
 		method:"GET",
 	}),
-	/*
 	reader:new Ext.data.XmlReader({
 		record:"foreign-source",
 		totalRecords:"@count"
-	}, pendingForeignSourceRecord)
-	*/
-	reader:new Ext.data.JsonReader({
 	}, pendingForeignSourceRecord)
 })
 
