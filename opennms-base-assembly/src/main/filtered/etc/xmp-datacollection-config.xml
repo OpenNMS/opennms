@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<xmp-datacollection-config rrdRepository="@install.share.dir@/rrd/snmp/">
+
+ <xmp-collection name="default" xmpStorageFlag="select">
+
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:8928</rra>
+     <rra>RRA:AVERAGE:0.5:12:8784</rra>
+     <rra>RRA:MIN:0.5:12:8784</rra>
+     <rra>RRA:MAX:0.5:12:8784</rra>
+   </rrd>
+
+  <groups>
+   <group name="systemGroup" resourceType="">
+     <mibObj mib="core" table="" var="sysDescr" instance="" />
+     <mibObj mib="core" table="" var="sysObjectID" instance="" />
+     <mibObj mib="core" table="" var="sysName" instance="" />
+     <mibObj mib="core" table="" var="sysUpTime" instance="" />
+     <mibObj mib="core" table="" var="sysUpTimeStr" instance="" />
+     <mibObj mib="core" table="" var="xmpdVersion" instance="" />
+     <mibObj mib="core" table="" var="sysDescr" instance="" />
+     <mibObj mib="core" table="" var="xmpdUptime" instance="" />
+     <mibObj mib="core" table="" var="xmpdUptimeStr" instance="" />
+   </group>
+
+   <group name="mib2-interfaces" resourceType="">
+     <mibObj mib="mib2" table="ifTable" var="ifDescr" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifType" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifMtu" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifSpeed" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifPhysAddress" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifInOctets" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifInUcastPkts" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifInNucastPkts" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifInDiscards" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifInErrors" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifOutOctets" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifOutUcastPkts" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifOutNUcastPkts" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifOutDiscards" instance="" />
+     <mibObj mib="mib2" table="ifTable" var="ifOutErrors" instance="" />
+   </group>
+
+   <group name="performance" resourceType="">
+     <mibObj mib="cartographer" table="" var="loadAvg1Min" instance="" />
+     <mibObj mib="cartographer" table="" var="loadAvg5Min" instance="" />
+     <mibObj mib="cartographer" table="" var="loadAvg15Min" instance="" />
+     <mibObj mib="cartographer" table="" var="totalSwap" instance="" />
+     <mibObj mib="cartographer" table="" var="usedSwap" instance="" />
+     <mibObj mib="cartographer" table="" var="freeSwap" instance="" />
+     <mibObj mib="cartographer" table="" var="totalMem" instance="" />
+     <mibObj mib="cartographer" table="" var="usedMem" instance="" />
+     <mibObj mib="cartographer" table="" var="freeMem" instance="" />
+     <mibObj mib="cartographer" table="" var="numberCPUs" instance="" />
+     <mibObj mib="cartographer" table="" var="kernelVers" instance="" />
+     <mibObj mib="cartographer" table="" var="numTCPEndpts" instance="" />
+     <mibObj mib="cartographer" table="" var="numUDPEndpts" instance="" />
+     <mibObj mib="cartographer" table="" var="numProcesses" instance="" />
+     <mibObj mib="cartographer" table="" var="numHandles" instance="" />
+     <mibObj mib="cartographer" table="" var="numUsers" instance="" />
+     <mibObj mib="cartographer" table="" var="numDependencies" instance="" />
+     <mibObj mib="cartographer" table="" var="numPeers" instance="" />
+     <mibObj mib="cartographer" table="" var="numThreads" instance="" />
+     <mibObj mib="cartographer" table="" var="diskReads" instance="" />
+     <mibObj mib="cartographer" table="" var="diskWrites" instance="" />
+     <mibObj mib="cartographer" table="" var="diskReadKB" instance="" />
+     <mibObj mib="cartographer" table="" var="diskWriteKB" instance="" />
+   </group>
+
+   <group name="xmpdStats" resourceType="procStats">
+     <mibObj mib="cartographer" table="processTable" var="processSize"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processRSS"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processHandleCount"
+             instance="xmpd" />
+     <mibObj mib="cartographer" table="processTable" var="processThreadCount"
+             instance="xmpd" />
+   </group>
+
+   <group name="filesys" resourceType="xmpFilesys">
+     <mibObj mib="cartographer" table="filesysTable" var="mountpoint"
+             instance="" />
+     <mibObj mib="cartographer" table="filesysTable" var="usedBlocks"
+             instance="" />
+     <mibObj mib="cartographer" table="filesysTable" var="freeBlocks"
+             instance="" />
+     <mibObj mib="cartographer" table="filesysTable" var="availBlocks"
+             instance="" />
+   </group>
+
+  </groups>
+ </xmp-collection>
+</xmp-datacollection-config>
