@@ -199,7 +199,9 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
         for (PluginParameter p : m_parameters) {
             sb.append(p.getKey()).append('=').append(p.getValue()).append('/');
         }
-        sb.deleteCharAt(sb.length());
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length());
+        }
         return sb.toString();
     }
 
