@@ -62,12 +62,13 @@
 			<parameter key="friendly-name" value="jvm"/>
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
-		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 
 		<service name="XMP" interval="300000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
+		
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 	</package>
 	
 	<!-- 

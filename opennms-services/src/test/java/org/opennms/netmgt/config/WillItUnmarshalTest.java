@@ -92,6 +92,7 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.config.rancid.RancidConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.server.LocalServer;
@@ -114,13 +115,14 @@ import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
+import org.opennms.netmgt.config.xmpConfig.XmpConfig;
+import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.StringUtils;
-import org.opennms.netmgt.config.rancid.RancidConfiguration;
 
 /**
  * The name of this class is a tribute to
@@ -540,7 +542,14 @@ public class WillItUnmarshalTest {
     public void testRancidConfiguration() throws Exception {
         unmarshal("rancid-configuration.xml", RancidConfiguration.class);
     }
-
+    @Test
+    public void testXmpConfig() throws Exception {
+        unmarshal("xmp-config.xml", XmpConfig.class);
+    }
+    @Test public void testXmpDatacollectionConfig() throws Exception {
+        unmarshal("xmp-datacollection-config.xml", XmpDatacollectionConfig.class);
+    }
+    
     @Test
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
