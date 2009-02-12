@@ -125,8 +125,9 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         return type.cast(getAttribute(key));
     }
 
-    public void setAttribute(String key, Object value) {
+    public LifeCycleInstance setAttribute(String key, Object value) {
         m_attributes.put(key, value);
+        return this;
     }
     
     public <T> T findAttributeByType(Class<T> clazz) {
