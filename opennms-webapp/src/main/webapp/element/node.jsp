@@ -209,14 +209,13 @@
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
+  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css'></link>" />
+  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='extJS/adapter/ext/ext-base.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/nodePageIpInterfaceGrid.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/nodePageEventView.js'></script>" />
 </jsp:include>
-
-<link rel="stylesheet" type="text/css" href="extJS/resources/css/ext-all.css"/>
-<link rel="stylesheet" type="text/css" href="extJS/resources/css/opennmsGridTheme.css" />
-<script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="extJS/ext-all.js"></script>
-<script type="text/javascript" src="js/nodePageIpInterfaceGrid.js"></script>
-<script type="text/javascript" src="js/nodePageEventView.js"></script>
 
 <h2>Node: ${model.label}</h2>
 <div id="linkbar">
