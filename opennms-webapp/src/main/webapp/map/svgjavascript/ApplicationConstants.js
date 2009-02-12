@@ -109,8 +109,16 @@ var selBoxSmallrectStyles = {"stroke":"dimgray","stroke-width":1,"fill":"lightgr
 var selBoxHighlightStyles = {"fill":"dimgray","fill-opacity":0.3};
 var selBoxTriangleStyles = {"fill":"dimgray"}; 
 var selBoxpreSelect = 0;
+// ContextMenu---Styles
+var cmdelta= 20;
+var cmwidth = 100;
+var cmmenuStyle={"fill":"grey"};
+var cmmenuElementStyle = {"fill":"grey"};
+var cmmenuElementTextStyle={"font-size": titleFontSize,"font-family":textFamily,"fill":"black"};
+var cmmenuElementMouseStyle={"fill":"grey","fill-opacity":0};
 
 // Windows Objects styles
+/*
 var winPlaceholderStyles = {"fill":"none","stroke":"dimgray","stroke-width":1.5};
 var windowStyles = {"fill":"aliceblue","stroke":"dimgray","stroke-width":1};
 var wintitlebarStyles = {"fill":"gainsboro","stroke":"dimgray","stroke-width":1};
@@ -127,3 +135,4 @@ var winconstrXmin = 0;
 var winconstrYmin = 80;
 var winconstrXmax = 1024;
 var winconstrYmax = 700;
+*/

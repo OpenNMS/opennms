@@ -38,6 +38,8 @@ package org.opennms.web.map;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +86,7 @@ public class LoadMapsController implements Controller {
 		String user = request.getRemoteUser();
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		try {
-			List<VMapInfo> maps = manager.getVisibleMapsMenu(user);
+		    List<VMapInfo> maps  = manager.getVisibleMapsMenu(user);                
 			bw.write(ResponseAssembler.getMapsResponse(MapsConstants.LOADMAPS_ACTION,maps));
 		} catch (Exception e) {
 			log.error("Error while loading visible maps for user:"+user,e);
