@@ -29,6 +29,8 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             m_unMarshaller = m_jaxbContext.createUnmarshaller();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
+        } catch (Exception e) {
+            throw new ForeignSourceRepositoryException("unable to get schema", e);
         }
     }
     
