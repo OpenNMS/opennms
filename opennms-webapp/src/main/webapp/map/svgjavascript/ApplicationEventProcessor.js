@@ -169,6 +169,7 @@ function onMouseDownOnMap(evt)
 		map.startSelectionRectangle = getMouse(evt);
 		
 	}
+	windowsClean();
 	
 	disableContextMenu(evt);
 	
