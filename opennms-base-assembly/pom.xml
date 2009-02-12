@@ -206,6 +206,11 @@
       <artifactId>opennms-asterisk</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-xmp</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
 
     <!-- this is a runtime depdency we need at install time -->
