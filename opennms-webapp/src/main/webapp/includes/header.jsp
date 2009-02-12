@@ -65,9 +65,14 @@
   </c:forEach>
   <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
-	
+  <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+<c:forEach var="link" items="${paramValues.link}">
+    <c:out value="${link}" escapeXml="false" />
+  </c:forEach>
   <script type="text/javascript" src="js/global.js"></script>
+<c:forEach var="script" items="${paramValues.script}">
+    <c:out value="${script}" escapeXml="false" />
+  </c:forEach>
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the

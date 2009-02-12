@@ -93,6 +93,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
 
+    @GET
+    @Path("default")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public ForeignSource getDefaultForeignSource() throws ParseException {
+        return m_deployedForeignSourceRepository.getDefaultForeignSource();
+    }
+
     /**
      * Returns all the deployed foreign sources
      * 
