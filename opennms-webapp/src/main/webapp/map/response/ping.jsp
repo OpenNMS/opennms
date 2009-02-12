@@ -132,7 +132,7 @@ function doCommand(){
      }
 	 var solaris = document.getElementById("solaris").value;
      window.close();
-	 if (solaris == true) {
+	 if (solaris = true) {
 	     command=command+" -I "+timeOut+" "+ address +" "+packetSize+" "+numberOfRequest ;
 	     window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+command+'&address=', 'AddSpecific', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
 	 } else {
