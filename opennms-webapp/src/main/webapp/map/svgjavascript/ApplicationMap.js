@@ -422,6 +422,7 @@ function handleLoadingNewMap(data) {
 
 			
 	//save the map in the map history
+	map.setBGvalue(currentMapBackGround);
 	map.render();
 	reloadGrid();
 	

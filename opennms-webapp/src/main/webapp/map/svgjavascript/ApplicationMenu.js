@@ -33,8 +33,12 @@ function instantiateROMenu(){
 	viewMenu.removeChilds();
 	instantiateViewGroup();
 
+	refreshMenu.removeChilds();
+	instantiateRefreshGroupNormalMode();
+
 	mapMenu.activate();
-	mapMenu.activate();
+	viewMenu.activate();
+	refreshMenu.activate();
 }
 	
 function enableMenu(){
@@ -57,6 +61,8 @@ function disableMenu(){
 }
 
 function resetWorkPanel(menuName, menuOpening){
+	windowsClean();
+
 	if (menuOpening) {
 		hideMapInfo();
 		hideHistory();
@@ -233,6 +239,7 @@ function openMapSetUp(mapId) {
 		alert("No maps to open");
 		return;
 	}
+	windowsClean();
 	clearTopInfo();
 	clearDownInfo();
 	openMap(mapToOpen);	
@@ -411,7 +418,7 @@ function setBGImageSetUp() {
 function setBGImage(){
 	if(selectedBGImageInList!=0){ 
 		currentMapBackGround = BGImagesSortAss[selectedBGImageInList];
-		map.setBGValue(currentMapBackGround);
+		map.setBGvalue(currentMapBackGround);
 		clearTopInfo();
 		writeDownInfo("Background image set");
 	}
@@ -848,8 +855,8 @@ function toggleScreenSetUp() {
 }
 // ***************function called by clicking on count down ******************
 function addRefreshTimeList()
-{
-	
+{	
+	windowsClean();
 	closeAllMenu();
 	clearTopInfo();
 	clearDownInfo();

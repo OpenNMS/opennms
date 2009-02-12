@@ -38,6 +38,7 @@
     <aop:scoped-proxy/>
     <property name="mapsPropertiesFactory"><ref bean="mapsPropertiesFactory"/></property>
     <property name="dbManager"><ref bean="dbManager"/></property>
+    <property name="groupDao"><ref bean="groupDao"/></property>
     <!-- Enable these and configure if you want to get status, severity and avail from other sources -->
     <!-- This sources try to get info for node under filter-->
     <!-- property name="dataSource"><ref bean="dataSource"/></property-->

@@ -1227,11 +1227,13 @@ public class DBManager extends Manager {
         Connection conn = createConnection();
 		try {
 			final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
-					+ mapTable + " WHERE upper( mapowner ) = upper( ? )";
+					+ mapTable + " WHERE upper( mapowner ) = upper( ? ) and " +
+					"upper( mapaccess ) = upper( ? )" ;
 
 			PreparedStatement statement = conn
 					.prepareStatement(sqlQuery);
 			statement.setString(1, owner);
+            statement.setString(2, Map.ACCESS_MODE_GROUP);
 			ResultSet rs = statement.executeQuery();
 			Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
 			VMapInfo[] maps = null;
@@ -1241,7 +1243,6 @@ public class DBManager extends Manager {
 			}
 			rs.close();
 			statement.close();
-			// conn.close();
 			return maps;
 		} catch (Exception e) {
 			log
@@ -1252,6 +1253,67 @@ public class DBManager extends Manager {
 			releaseConnection(conn);
 		}
 	}
+
+   public VMapInfo[] getMapsMenuByGroup(String group) throws MapsException {
+        Connection conn = createConnection();
+        try {
+            final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
+                    + mapTable + " WHERE upper( mapgroup ) = upper( ? ) and " +
+                    		"upper( mapaccess ) = upper( ? )";
+
+            PreparedStatement statement = conn
+                    .prepareStatement(sqlQuery);
+            statement.setString(1, group);
+            statement.setString(2, Map.ACCESS_MODE_GROUP);
+            ResultSet rs = statement.executeQuery();
+            Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
+            VMapInfo[] maps = null;
+            if (mapVector != null) {
+                maps = new VMapInfo[mapVector.size()];
+                maps = mapVector.toArray(maps);
+            }
+            rs.close();
+            statement.close();
+            return maps;
+        } catch (Exception e) {
+            log
+                    .error("Exception while getting all map-menu for group "
+                            + group);
+            throw new MapsException(e);
+        } finally {
+            releaseConnection(conn);
+        }
+    }
+
+   public VMapInfo[] getMapsMenuByOther() throws MapsException {
+       Connection conn = createConnection();
+       try {
+           final String sqlQuery = "SELECT mapid,mapname,mapowner FROM "
+                   + mapTable + " WHERE upper( mapaccess ) = upper( ? ) or " +
+                   		"upper( mapaccess ) = upper( ? )";
+
+           PreparedStatement statement = conn
+                   .prepareStatement(sqlQuery);
+           statement.setString(1, Map.ACCESS_MODE_ADMIN);
+           statement.setString(2, Map.ACCESS_MODE_USER);
+           ResultSet rs = statement.executeQuery();
+           Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
+           VMapInfo[] maps = null;
+           if (mapVector != null) {
+               maps = new VMapInfo[mapVector.size()];
+               maps = mapVector.toArray(maps);
+           }
+           rs.close();
+           statement.close();
+           return maps;
+       } catch (Exception e) {
+           log
+                   .error("Exception while getting other map for access ");
+           throw new MapsException(e);
+       } finally {
+           releaseConnection(conn);
+       }
+   }
 
 	public boolean isElementInMap(int elementId, int mapId, String type)
 			throws MapsException {
@@ -1384,7 +1446,7 @@ public class DBManager extends Manager {
 	 * nodes from the given start time until the given end time. If there are no
 	 * managed services on these nodes, then a value of -1 is returned.
 	 */
-	private java.util.Map<Integer, Double> getNodeAvailability(Set nodeIds)
+	private java.util.Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds)
 			throws MapsException {
 
 		Calendar cal = new GregorianCalendar();
@@ -1417,7 +1479,7 @@ public class DBManager extends Manager {
 			try {
 				StringBuffer sb = new StringBuffer(
 						"select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
-				Iterator it = nodeIds.iterator();
+				Iterator<Integer> it = nodeIds.iterator();
 				while (it.hasNext()) {
 					sb.append(it.next());
 					if (it.hasNext()) {
@@ -1598,6 +1660,7 @@ public class DBManager extends Manager {
 			map.setOffsetX(rs.getInt("mapXOffset"));
 			map.setOffsetY(rs.getInt("mapYOffset"));
 			map.setOwner(rs.getString("mapOwner"));
+            map.setGroup(rs.getString("mapGroup"));
 			map.setScale(rs.getFloat("mapScale"));
 			map.setType(rs.getString("mapType"));
 			map.setWidth(rs.getInt("mapwidth"));
@@ -1739,17 +1802,6 @@ public class DBManager extends Manager {
 		}
 		return nodes;
 
-	}
-
-	public VMapInfo[] getVisibleMapsMenu(String user) throws MapsException {
-		VMapInfo[] retMaps = null;
-		/*
-		 * for the moment, returns all maps.
-		 * if(userRole.equals(Authentication.ADMIN_ROLE)){
-		 * retMaps=getAllMapMenus(); }else{ retMaps=getMapsMenuByOwner(user); }
-		 */
-		retMaps = getAllMapMenus();
-		return retMaps;
 	}
 
 	public Set<Integer> getNodeIdsBySource(String query) throws MapsException {
