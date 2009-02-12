@@ -14,6 +14,7 @@
 			<parameter key="port" value="161"/>
 			<parameter key="retry" value="3"/>
 			<parameter key="timeout" value="3000"/>
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
 <!-- 
@@ -21,6 +22,7 @@
           <parameter key="http-collection" value="doc-count" />
           <parameter key="retry" value="1" />
           <parameter key="timeout" value="2000" />
+          <parameter key="thresholding-enabled" value="true"/>
         </service>
 -->
 		<service name="JBoss4" interval="300000" user-defined="false" status="on">
@@ -33,6 +35,7 @@
                              <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
                              The default port is 8080
                         -->
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 		
 		<service name="JBoss32" interval="300000" user-defined="false" status="on">
@@ -46,6 +49,7 @@
                              <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
                              The default port is 8080
                         -->
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
 		<service name="JVM" interval="300000" user-defined="false" status="on">
@@ -56,8 +60,14 @@
 			<parameter key="urlPath" value="/jmxrmi"/>
 			<parameter key="ds-name" value="jmx"/>
 			<parameter key="friendly-name" value="jvm"/>
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+
+		<service name="XMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default"/>
+			<parameter key="thresholding-enabled" value="true"/>
+		</service>
 	</package>
 	
 	<!-- 
@@ -81,6 +91,7 @@
 			<parameter key="port" value="161"/>
 			<parameter key="retry" value="3"/>
 			<parameter key="timeout" value="3000"/>
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
@@ -92,6 +103,7 @@
 	<collector service="JVM"          class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 	<collector service="SNMP"         class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
     <collector service="HttpDocCount" class-name="org.opennms.netmgt.collectd.HttpCollector" />
+    <collector service="XMP"          class-name="org.opennms.netmgt.collectd.XmpCollector"/>
 
 </collectd-configuration>
 

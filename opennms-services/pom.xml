@@ -314,5 +314,9 @@
       <groupId>jep</groupId>
       <artifactId>jep</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.krupczak</groupId>
+      <artifactId>Xmp</artifactId>
+    </dependency>
   </dependencies>
 </project>

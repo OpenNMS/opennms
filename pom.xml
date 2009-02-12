@@ -116,6 +116,7 @@
     <module>opennms-webapp</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
+    <module>opennms-xmp</module>
     <module>opennms-base-assembly</module>
   </modules>
   <build>
@@ -1013,6 +1014,11 @@
         <artifactId>opennms-asterisk</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-xmp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
@@ -1466,6 +1472,11 @@
         <groupId>xmlrpc</groupId>
         <artifactId>xmlrpc</artifactId>
         <version>2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.krupczak</groupId>
+        <artifactId>Xmp</artifactId>
+        <version>0.1-39</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>

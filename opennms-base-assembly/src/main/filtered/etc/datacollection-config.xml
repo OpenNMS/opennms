@@ -201,6 +201,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+     <resourceType name="xmpFilesys" label="Filesystems" resourceLabel="${mountpoint}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+     </resourceType>
+
     <resourceType name="temperatureProbeIndex" label="Temperature Probe" resourceLabel="${temperatureProbeLocationName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
@@ -279,6 +284,12 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
+
+     <!-- Resource Type for XMP processes -->
+     <resourceType name="procStats" label="Process Stats" resourceLabel="${index}" >
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+     </resourceType>
 
     <resourceType name="msdpPeerEntry" label="MSDP Peer"
         resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
