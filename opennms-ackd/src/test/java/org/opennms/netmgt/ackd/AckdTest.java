@@ -100,6 +100,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @JUnitTemporaryDatabase(populate=true)
+@Transactional
 public class AckdTest {
 
     @Autowired
@@ -146,7 +147,6 @@ public class AckdTest {
         m_populator.populateDatabase();
     }
     
-    @Transactional
     @Test
     public void testWiring() {
         Assert.assertNotNull(m_ackDao);
@@ -168,7 +168,6 @@ public class AckdTest {
     /**
      * Make sure the DB is not empty
      */
-    @Transactional
     @Test
     public void testDbState() {
         Assert.assertFalse(m_nodeDao.findAll().isEmpty());
@@ -178,7 +177,6 @@ public class AckdTest {
     /**
      * This tests the acknowledgment of an alarm and any related notifications.
      */
-    @Transactional
     @Test
     public void testAcknowledgeAlarm() {
         
@@ -214,7 +212,6 @@ public class AckdTest {
      * This tests acknowledging a notification and a related alarm.  If events are being deduplicated
      * they should all have the same alarm ID.
      */
-    @Transactional
     @Test
     public void testAcknowledgeNotification() {
         
@@ -243,7 +240,6 @@ public class AckdTest {
         
     }
     
-    @Transactional
     @Test
     public void testHandelEvent() throws InterruptedException {
         
