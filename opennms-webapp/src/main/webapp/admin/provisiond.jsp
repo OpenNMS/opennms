@@ -16,11 +16,14 @@
 	<jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='extJS/adapter/ext/ext-base.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all-debug.js'></script>" />
+	<jsp:param name="script" value="<script type='text/javascript' src='js/XmlTreeLoader.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/provisiondForeignSource.js'></script>" />
 </jsp:include>
 
 <h3>Provisioning Groups</h3>
 
 <div id="pendingForeignSources"></div>
+
+<div id="pendingTree"></div>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
