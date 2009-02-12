@@ -45,7 +45,6 @@ import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
@@ -58,7 +57,6 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
@@ -69,9 +67,6 @@ import org.springframework.util.Assert;
 @ActivityProvider
 public class CoreScanActivities {
     
-    @Autowired
-    private ApplicationContext m_applicationContext;
-
     @Autowired
     private ProvisionService m_provisionService;
     
@@ -161,13 +156,13 @@ public class CoreScanActivities {
         // someday I'll change this to use agentDetectors
         OnmsIpInterface primaryIface = node.getPrimaryInterface();
         if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-            LifeCycleInstance nested = currentPhase.createNestedLifeCycle("agentScan");
-            nested.setAttribute("agentType", "SNMP");
-            nested.setAttribute("node", node);
-            nested.setAttribute("foreignSource", node.getForeignSource());
-            nested.setAttribute("foreignId", node.getForeignId());
-            nested.setAttribute("primaryAddress", primaryIface.getInetAddress());
-            nested.trigger();
+            currentPhase.createNestedLifeCycle("agentScan")
+                .setAttribute("agentType", "SNMP")
+                .setAttribute("node", node)
+                .setAttribute("foreignSource", node.getForeignSource())
+                .setAttribute("foreignId", node.getForeignId())
+                .setAttribute("primaryAddress", primaryIface.getInetAddress())
+                .trigger();
         }
         
     }
@@ -245,11 +240,11 @@ public class CoreScanActivities {
                             System.out.println("Saving OnmsIpInterface "+iface);
                             m_provisionService.updateIpInterfaceAttributes(nodeId, iface);
                             
-                            LifeCycleInstance lifeCycle = currentPhase.createNestedLifeCycle("ipInterfaceScan");
-                            lifeCycle.setAttribute("foreignSource", foreignSource);
-                            lifeCycle.setAttribute("nodeId", nodeId);
-                            lifeCycle.setAttribute("ipAddress", iface.getInetAddress());
-                            lifeCycle.trigger();
+                            currentPhase.createNestedLifeCycle("ipInterfaceScan")
+                                .setAttribute("foreignSource", foreignSource)
+                                .setAttribute("nodeId", nodeId)
+                                .setAttribute("ipAddress", iface.getInetAddress())
+                                .trigger();
 
                         }
                     };
@@ -274,6 +269,7 @@ public class CoreScanActivities {
         
         Collection<ServiceDetector> detectors = m_provisionService.getDetectorsForForeignSource(foreignSource);
         
+        System.err.println(String.format("detectServices for %d : %s: found %d detectors", nodeId, ipAddress, detectors.size()));
         for(ServiceDetector detector : detectors) {
             currentPhase.add(createServiceDetectorTask(detector, nodeId, ipAddress));
         }
