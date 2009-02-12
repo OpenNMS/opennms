@@ -59,8 +59,10 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
+import org.opennms.netmgt.config.groups.Group;
 import org.opennms.web.event.EventUtil;
 
 import org.opennms.web.map.MapsException;
@@ -120,6 +122,8 @@ public class ManagerDefaultImpl implements Manager {
     MapPropertiesFactory mapsPropertiesFactory = null;
     
     DataSourceInterface dataSource = null;
+    
+    private GroupDao m_groupDao;
     
     String filter = null;
     
@@ -621,10 +625,41 @@ public class ManagerDefaultImpl implements Manager {
      * @throws MapsException
      */
     public List<VMapInfo> getVisibleMapsMenu(String user)throws MapsException{
-    	VMapInfo[] maps = dbManager.getVisibleMapsMenu(user);
-    	if(maps==null)
-    		return new ArrayList<VMapInfo>();
-    	return Arrays.asList(maps);
+    	
+        List<VMapInfo> maps = new ArrayList<VMapInfo>();
+        List<Integer>  mapsIds = new ArrayList<Integer>();
+        
+        VMapInfo[] mapsbyother = dbManager.getMapsMenuByOther();
+        if (mapsbyother != null) {
+            for (int i=0;i<mapsbyother.length; i++) {
+                maps.add(mapsbyother[i]);
+                mapsIds.add(mapsbyother[i].getId());
+            }
+        }
+        
+        VMapInfo[] mapsbyowner = dbManager.getMapsMenuByOwner(user);
+        if (mapsbyowner != null) {
+            for (int i=0;i<mapsbyowner.length; i++) {
+                if (!mapsIds.contains(mapsbyowner[i].getId())) {
+                    maps.add(mapsbyowner[i]);
+                    mapsIds.add(mapsbyowner[i].getId());
+                }
+            }
+        }
+
+        Iterator<Group> ite = getGroupDao().findGroupsForUser(user).iterator();
+        while (ite.hasNext()) {
+            VMapInfo[] mapsbygroup = dbManager.getMapsMenuByGroup(ite.next().getName());
+            if (mapsbygroup != null) {
+                for (int i=0;i<mapsbygroup.length; i++) {
+                    if (!mapsIds.contains(mapsbygroup[i].getId())) {
+                        maps.add(mapsbygroup[i]);
+                        mapsIds.add(mapsbygroup[i].getId());
+                    }
+                }
+            }
+        }
+    	return maps;
     }
     
     /**
@@ -1497,6 +1532,14 @@ public class ManagerDefaultImpl implements Manager {
 	
 	private   String unescapeHtmlChars(String input) {
         return (input == null ? null : input.replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
+    }
+
+    public GroupDao getGroupDao() {
+        return m_groupDao;
+    }
+
+    public void setGroupDao(GroupDao groupDao) {
+        m_groupDao = groupDao;
     }
 
 
