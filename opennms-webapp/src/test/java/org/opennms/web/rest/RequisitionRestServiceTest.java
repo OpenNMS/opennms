@@ -211,7 +211,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, "/requisitions/pending/test/nodes/4243/asset", 200);
         assertTrue(xml.contains("count=\"2\""));
     }
-    
+
     private void createRequisition() throws Exception {
         String req =
             "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
@@ -235,5 +235,31 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         sendPost("/requisitions/pending", req);
     }
+
+    /*
+    private void createRequisition() throws Exception {
+        String req =
+            "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
+                "<node node-label=\"david\" parent-node-label=\"apknd\" foreign-id=\"4243\">" +
+                    "<interface ip-addr=\"172.20.1.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
+                        "<monitored-service service-name=\"ICMP\"/>" +
+                        "<monitored-service service-name=\"HTTP\"/>" +
+                    "</interface>" +
+                    "<interface ip-addr=\"172.20.1.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
+                        "<monitored-service service-name=\"ICMP\"/>" +
+                        "<monitored-service service-name=\"SNMP\"/>" +
+                    "</interface>" +
+                    "<category name=\"AC\"/>" +
+                    "<category name=\"UK\"/>" +
+                    "<category name=\"low\"/>" +
+                    "<asset name=\"manufacturer\" value=\"Dell\" />" +
+                    "<asset name=\"operatingSystem\" value=\"Windows Pi\" />" +
+                    "<asset name=\"description\" value=\"Large and/or In Charge\" />" +
+                "</node>" +
+            "</model-import>";
+
+        sendPost("/requisitions/pending", req);
+    }
+    */
     
 }

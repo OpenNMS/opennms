@@ -12,14 +12,15 @@
 	<jsp:param name="headTitle" value="Provisioning Groups" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/provisiond.jsp'>Provisioning Groups</a>" />
+	<jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css'></link>" />
+	<jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
+	<jsp:param name="script" value="<script type='text/javascript' src='extJS/adapter/ext/ext-base.js'></script>" />
+	<jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all-debug.js'></script>" />
+	<jsp:param name="script" value="<script type='text/javascript' src='js/provisiondForeignSource.js'></script>" />
 </jsp:include>
 
-<link rel="stylesheet" type="text/css" href="extJS/resources/css/ext-all.css"/>
-<link rel="stylesheet" type="text/css" href="extJS/resources/css/opennmsGridTheme.css" />
-<script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="extJS/ext-all.js"></script>
-<script type="text/javascript" src="js/provisiondForeignSource.js"></script>
-
 <h3>Provisioning Groups</h3>
+
+<div id="pendingForeignSources"></div>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
