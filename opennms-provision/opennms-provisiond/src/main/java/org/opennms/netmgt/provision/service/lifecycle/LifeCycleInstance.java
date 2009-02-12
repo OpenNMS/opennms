@@ -47,7 +47,7 @@ public interface LifeCycleInstance {
 
     String getName();
     
-    void setAttribute(String key, Object value);
+    LifeCycleInstance setAttribute(String key, Object value);
 
     Object getAttribute(String key);
 
