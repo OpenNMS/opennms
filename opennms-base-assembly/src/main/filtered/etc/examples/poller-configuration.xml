@@ -531,6 +531,21 @@
             <parameter key="port" value="161"/>
             <parameter key="service-name" value="MSExchangeTransport"/>
         </service>
+    	<service name="XMP" interval="300000" user-defined="false" status="off">
+      		<parameter key="retry" value="1" />
+      		<parameter key="timeout" value="3000" />
+    	</service>
+    	<!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
+    	<service name="WMI" interval="300000" user-defined="false" status="on">
+      		<parameter key="retry" value="2" />
+      		<parameter key="timeout" value="3000" />
+      		<parameter key="matchType" value="all"/>
+      		<parameter key="wmiClass" value="Win32_ComputerSystem" />
+      		<parameter key="wmiObject" value="Status" />
+      		<parameter key="compareOp" value="EQ" />
+      		<parameter key="compareValue" value="OK" />
+      		<parameter key="service-name" value="WMI" />
+    	</service>
 
         <downtime interval="15000" begin="0" end="300000"/>     <!-- 15s, 0, 5m -->
         <downtime interval="30000" begin="300000" end="43200000"/>  <!-- 30s, 5m, 12h -->
@@ -587,4 +602,7 @@
 	<monitor service="MSExchangeFDS"  class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
 	<monitor service="MSExchangeServiceHost" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
 	<monitor service="MSExchangeTransport"  class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor" />
+	<monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
+
 </poller-configuration>
