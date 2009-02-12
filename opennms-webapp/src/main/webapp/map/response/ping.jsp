@@ -54,11 +54,13 @@
         throw new MissingParameterException( "node", new String[] {"report", "node", "intf"} );
     }
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-    
-    //required parameter intf
-    String intf = request.getParameter( "intf" );
 
+    String solaris = request.getParameter( "solaris" );
 
+    boolean solarisStyle = false;
+    if(solaris != null && solaris.equals("true")) {
+    	solarisStyle = true;
+    }
 %>
 
 <html>
@@ -128,11 +130,16 @@ function doCommand(){
      if(document.getElementById("numericOutput").checked){
      	command=command+ " -n ";
      }
-     
-     command=command+" -c "+numberOfRequest+ " -i "+timeOut+ " -s "+packetSize;
-     
+	 var solaris = document.getElementById("solaris").value;
      window.close();
-     window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+command+'&address='+address, 'AddSpecific', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
+     alert(solaris);
+	 if (solaris == true) {
+	     command=command+" -I "+timeOut+" "+ address +" "+packetSize+" "+numberOfRequest ;
+	     window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+command+'&address=', 'AddSpecific', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
+	 } else {
+	     command=command+" -c "+numberOfRequest+" -i "+timeOut+" -s "+packetSize;
+     	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+command+'&address='+address, 'AddSpecific', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
+     } 
 }
 </script>
 
@@ -148,9 +155,6 @@ function doCommand(){
           <td align="left">
             <h3>
               Node: <%=NetworkElementFactory.getNodeLabel(nodeId)%><br/>
-              <% if(intf != null ) { %>
-                Interface: <%=intf%>
-              <% } %>
             </h3>
           </td>
           <td>&nbsp;</td>
@@ -166,6 +170,7 @@ function doCommand(){
 
 
     <input type="hidden" id="command" name="command" value="ping" />
+    <input type="hidden" id="solaris" name="solaris" value="<%=solarisStyle%>" />
 
     <tr>
       <td align="left">
@@ -175,23 +180,18 @@ function doCommand(){
 	    <td><select id="address" name="address">
 	<%
     String ipAddress = null;              
-    if( intf != null ){
-   	    ipAddress = intf;
-    }else{
-        Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
-        for( int i=0; i < intfs.length; i++ ) { 
-          	if(intfs[i]!=null){
-			    ipAddress = intfs[i].getIpAddress();
-				if(ipAddress.equals("0.0.0.0") || !intfs[i].isManaged())
-					continue;
-	      		else
+    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
+    for( int i=0; i < intfs.length; i++ ) { 
+      	if(intfs[i]!=null){
+		   ipAddress = intfs[i].getIpAddress();
+		   if(ipAddress.equals("0.0.0.0") || !intfs[i].isManaged())
+				continue;
+   		   else
 	%>
 	 	<option value="<%=ipAddress%>"><%=ipAddress%></option>
     <%
- 			}                     	
- 		}
- 		    
-    }
+		}                     	
+ 	}
     %>
             </select>
         </td>  
