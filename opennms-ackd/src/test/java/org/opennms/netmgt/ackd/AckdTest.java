@@ -136,7 +136,6 @@ public class AckdTest {
     private JavaMailConfigurationDao m_jmConfigDao;
 
 
-    @Transactional
     @Before
     public void setUp() throws Exception {
         Properties props = new Properties();
@@ -147,6 +146,7 @@ public class AckdTest {
         m_populator.populateDatabase();
     }
     
+    @Transactional
     @Test
     public void testWiring() {
         Assert.assertNotNull(m_ackDao);
