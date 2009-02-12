@@ -8,24 +8,30 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PluginParameter {
-    @XmlAttribute
-    private String key = null;
-    @XmlAttribute
-    private String value = null;
+    @XmlAttribute(name="key")
+    private String m_key = null;
+
+    @XmlAttribute(name="value")
+    private String m_value = null;
 
     public PluginParameter() {
     }
     
+    public PluginParameter(String key, String value) {
+        m_key = key;
+        m_value = value;
+    }
+
     public PluginParameter(Entry<String, String> e) {
-        key = e.getKey();
-        value = e.getValue();
+        m_key = e.getKey();
+        m_value = e.getValue();
     }
 
     public String getKey() {
-        return key;
+        return m_key;
     }
     public String getValue() {
-        return value;
+        return m_value;
     }
 
 }
