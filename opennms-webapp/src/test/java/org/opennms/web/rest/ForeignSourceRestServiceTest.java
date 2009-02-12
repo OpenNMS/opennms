@@ -83,6 +83,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         assertTrue(xml.contains("<policies>"));
         assertTrue(xml.contains("<policy "));
         assertTrue(xml.contains("name=\"lower-case-node\""));
+        assertTrue(xml.contains("value=\"Lower-Case-Nodes\""));
         
         url = "/foreignSources/pending/test/policies/all-ipinterfaces";
         xml = sendRequest(GET, url, 200);

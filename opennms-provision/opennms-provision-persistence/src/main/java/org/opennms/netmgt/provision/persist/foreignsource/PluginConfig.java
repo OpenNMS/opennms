@@ -41,13 +41,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -73,8 +73,8 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     @XmlAttribute(name="class")
     private String m_pluginClass;
 
-    @XmlTransient
-    private Map<String,String> m_parameters = new LinkedHashMap<String,String>();
+    @XmlElement(name="parameter")
+    private List<PluginParameter> m_parameters = new ArrayList<PluginParameter>();
 
     /**
      * Creates an empty plugin configuration.
@@ -135,38 +135,36 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * Get a {@link List} of the plugin parameters.
      * @return the parameters
      */
-    @XmlElement(name="parameter")
     public List<PluginParameter> getParameterList() {
-        List<PluginParameter> p = new ArrayList<PluginParameter>();
-        for (Map.Entry<String,String> e : m_parameters.entrySet()) {
-            p.add(new PluginParameter(e));
-        }
-        return p;
+        return m_parameters;
     }
     
     /**
      * @param parameters the parameters to set
      */
     public void setParameterList(List<PluginParameter> list) {
-        Map<String,String> m = new LinkedHashMap<String,String>();
-        for (PluginParameter p : list) {
-            m.put(p.getKey(), p.getValue());
-        }
-        m_parameters = m;
+        m_parameters = list;
     }
     
     /**
      * @return the parameters
      */
     public Map<String,String> getParameters() {
-        return Collections.unmodifiableMap(m_parameters);
+        Map<String,String> parms = new LinkedHashMap<String,String>();
+        for (PluginParameter p : m_parameters) {
+            parms.put(p.getKey(), p.getValue());
+        }
+        return Collections.unmodifiableMap(parms);
     }
     
     /**
      * @param parameters the parameters to set
      */
     public void setParameters(Map<String, String> parameters) {
-        m_parameters = parameters;
+        m_parameters.clear();
+        for (Entry<String,String> set : parameters.entrySet()) {
+            m_parameters.add(new PluginParameter(set));
+        }
     }
 
     /**
@@ -174,7 +172,12 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @return the parameter value
      */
     public String getParameter(String key) {
-        return m_parameters.get(key);
+        for (PluginParameter p : m_parameters) {
+            if (p.getKey().equals(key)) {
+                return p.getValue();
+            }
+        }
+        return null;
     }
 
     /**
@@ -182,14 +185,21 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @param value the parameter value
      */
     public void addParameter(String key, String value) {
-        m_parameters.put(key, value);
+        for (int i = 0; i < m_parameters.size(); i++) {
+            if (m_parameters.get(i).getKey().equals(key)) {
+                m_parameters.set(i, new PluginParameter(key, value));
+                return;
+            }
+        }
+        m_parameters.add(new PluginParameter(key, value));
     }
 
     private String getParametersAsString() {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String,String> entry : m_parameters.entrySet()) {
-            sb.append(entry.getKey()).append('=').append(entry.getValue()).append('/');
+        for (PluginParameter p : m_parameters) {
+            sb.append(p.getKey()).append('=').append(p.getValue()).append('/');
         }
+        sb.deleteCharAt(sb.length());
         return sb.toString();
     }
 

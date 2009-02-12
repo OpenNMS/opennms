@@ -17,6 +17,8 @@
 		<detector name="SMB" class="org.opennms.netmgt.provision.detector.smb.SmbDetector" />
 		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
 		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
-		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector" />
+		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector">
+			<parameter name="banner" value="1.5" />
+		</detector>
 	</detectors>
 </foreign-source>
