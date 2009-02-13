@@ -53,36 +53,13 @@ import org.springframework.util.Assert;
  * @author brozow
  */
 public class DefaultTaskCoordinator implements InitializingBean {
-    
-    /*
-     * Refactor this code....
-     * 
-     * - Currently a map of 'afters' defines the set of tasks that are dependents of another...
-     * - When a task completes the set of tasks in its 'afters' set are the one's that need to 
-     *   be considered to be run
-     * - When a task is considered... it removes the just completed task from its 'befores' list
-     *   i.e. the set of tasks that must complete before it can run
-     * - If the set of before for a task becomes empty, then the task can be run
-     * 
-     * Refactoring Ideas:
-     * Create a TaskKeeper class
-     * - holds the 'dependents' of the task.. those tasks that are awaiting completion 
-     *   of the task held by the keeper
-     * - holds the set of tasks that must complete in order for the task to run
-     * 
-     * Put all dependencies management work on a single thread
-     * - in order to reduce the need for syncrhonization, all the dependency management work can be
-     *   handled by a single thread
-     *   
-     * The single thread can...
-     * - process the completion queue
-     * - update dependencies due to completing tasks
-     * - schedule tasks that must be run due to completing dependencies
-     * - schedule the adding of dependencies
-     *  
-     * 
+
+    /**
+     * A RunnableActor class is a thread that simple removes Future<Runnable> from a queue
+     * and executes them.  This
+     *
+     * @author brozow
      */
-    
     private class RunnableActor extends Thread {
         private final BlockingQueue<Future<Runnable>> m_queue;
         public RunnableActor(BlockingQueue<Future<Runnable>> queue) {
@@ -95,9 +72,6 @@ public class DefaultTaskCoordinator implements InitializingBean {
                 int count = 0;
                 while(true) {
                     Runnable r = m_queue.take().get();
-                    //System.out.printf("Processing completion %d with queue size %d\n", ++count, m_queue.size());
-                    //System.err.printf("Processing %s\n", r);
-                    //System.err.printf("Processing %s, queue is %s\n", r, m_queue);
                     if (r != null) {
                         r.run();
                     }
@@ -152,20 +126,25 @@ public class DefaultTaskCoordinator implements InitializingBean {
         
     }
     
-    public SyncTask createTask(Runnable r) {
-        return new SyncTask(this, r);
+    public SyncTask createTask(ContainerTask parent, Runnable r) {
+        return new SyncTask(this, parent, r);
     }
     
-    public Task createTask(Runnable r, String schedulingHint) {
-        return new SyncTask(this, r, schedulingHint);
+    public SyncTask createTask(ContainerTask parent, Runnable r, String schedulingHint) {
+        return new SyncTask(this, parent, r, schedulingHint);
     }
+    
+    public <T> AsyncTask<T> createTask(ContainerTask parent, Async<T> async, Callback<T> cb) {
+        return new AsyncTask<T>(this, parent, async, cb);
+    }
+    
 
-    public BatchTask createBatch() {
-        return new BatchTask(this);
+    public BatchTask createBatch(ContainerTask parent) {
+        return new BatchTask(this, parent);
     }
     
-    public SequenceTask createSequence() {
-        return new SequenceTask(this);
+    public SequenceTask createSequence(ContainerTask parent) {
+        return new SequenceTask(this, parent);
     }
     
     public void setLoopDelay(long millis) {
@@ -240,7 +219,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         //System.err.printf("Task %s afters = %s\n", completed, dependents);
         for(Task dependent : dependents) {
             //System.err.printf("Checking the prereqs for %s\n", dependent);
-            dependent.doRemovePrerequisite(completed);
+            dependent.doCompletePrerequisite(completed);
             if (dependent.isReady()) {
                 System.err.printf("\tTask %s %s ready.\n", dependent, dependent.isReady() ? "is" : "is not");
             }
@@ -259,6 +238,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * done to keep the Task data structures thread safe.
      */
     private Runnable dependencyAdder(final Task prereq, final Task dependent) {
+        Assert.notNull(prereq, "prereq must not be null");
+        Assert.notNull(dependent, "dependent must not be null");
         return new Runnable() {
             public void run() {
                 prereq.doAddDependent(dependent);

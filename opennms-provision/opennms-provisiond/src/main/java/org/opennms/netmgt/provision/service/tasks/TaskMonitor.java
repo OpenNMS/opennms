@@ -1,13 +1,14 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,24 +29,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision;
-
-import org.apache.mina.core.future.IoFuture;
+package org.opennms.netmgt.provision.service.tasks;
 
 /**
- * @author thedesloge
+ * TaskMonitor
  *
+ * @author brozow
  */
-public interface DetectFuture extends IoFuture {
+public interface TaskMonitor {
     
-    public AsyncServiceDetector getServiceDetector();
+    public void prerequisiteAdded(Task monitored, Task prerequsite);
     
-    public boolean isServiceDetected();
+    public void prerequisiteCompleted(Task monitored, Task prerequisite);
     
-    public Throwable getException();
+    public void scheduled(Task task);
     
-    public void setServiceDetected(boolean serviceDetected);
+    public void submitted(Task task);
     
-    public void setException(Throwable throwable);
+    public void started(Task task);
     
+    public void completed(Task task);
+    
+    public TaskMonitor getChildTaskMonitor(Task task, Task child);
+    
+    /**
+     * This is called if an exception occurs while calling a monitor method
+     */
+    public void monitorException(Throwable t);
+
 }

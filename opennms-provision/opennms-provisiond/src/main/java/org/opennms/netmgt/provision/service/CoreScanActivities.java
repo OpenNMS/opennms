@@ -50,8 +50,8 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
-import org.opennms.netmgt.provision.service.tasks.Task;
+import org.opennms.netmgt.provision.service.tasks.Async;
+import org.opennms.netmgt.provision.service.tasks.Callback;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -72,9 +72,6 @@ public class CoreScanActivities {
     
     @Autowired
     private SnmpAgentConfigFactory m_agentConfigFactory;
-    
-    @Autowired
-    private DefaultTaskCoordinator m_taskCoordinator;
     
     /*
      * load the node from the database (or maybe the requistion)
@@ -269,90 +266,103 @@ public class CoreScanActivities {
         
         Collection<ServiceDetector> detectors = m_provisionService.getDetectorsForForeignSource(foreignSource);
         
-        System.err.println(String.format("detectServices for %d : %s: found %d detectors", nodeId, ipAddress, detectors.size()));
+        System.err.println(String.format("detectServices for %d : %s: found %d detectors", nodeId, ipAddress.getHostAddress(), detectors.size()));
         for(ServiceDetector detector : detectors) {
-            currentPhase.add(createServiceDetectorTask(detector, nodeId, ipAddress));
+            addServiceDetectorTask(currentPhase, detector, nodeId, ipAddress);
         }
         
     }
 
-    private Task createServiceDetectorTask(ServiceDetector detector, Integer nodeId, InetAddress ipAddress) {
+    private void addServiceDetectorTask(Phase currentPhase, ServiceDetector detector, Integer nodeId, InetAddress ipAddress) {
         if (detector instanceof SyncServiceDetector) {
-            return createSyncServiceDetectorTask((SyncServiceDetector)detector, nodeId, ipAddress);
+            addSyncServiceDetectorTask(currentPhase, nodeId, ipAddress, (SyncServiceDetector)detector);
         } else {
-            return createAsyncServiceDetectorTask((AsyncServiceDetector)detector, nodeId, ipAddress);
+            addAsyncServiceDetectorTask(currentPhase, nodeId, ipAddress, (AsyncServiceDetector)detector);
         }
     }
 
-    private Task createSyncServiceDetectorTask(final SyncServiceDetector detector, final Integer nodeId, final InetAddress ipAddress) {
-        Runnable r = new Runnable() {
+    private void addAsyncServiceDetectorTask(Phase currentPhase, Integer nodeId, InetAddress ipAddress, AsyncServiceDetector detector) {
+        currentPhase.add(runDetector(ipAddress, detector), persistService(nodeId, ipAddress, detector));
+    }
+    
+    private void addSyncServiceDetectorTask(Phase currentPhase, final Integer nodeId, final InetAddress ipAddress, final SyncServiceDetector detector) {
+        currentPhase.add(runDetector(ipAddress, detector, persistService(nodeId, ipAddress, detector)));
+    }
+        
+    private Callback<Boolean> persistService(final Integer nodeId, final InetAddress ipAddress, final ServiceDetector detector) {
+        return new Callback<Boolean>() {
+            public void complete(Boolean serviceDetected) {
+                info("Attempted to detect service %s on address %s: %s", detector.getServiceName(), ipAddress.getHostAddress(), serviceDetected);
+                if (serviceDetected) {
+                    m_provisionService.addMonitoredService(nodeId, ipAddress.getHostAddress(), detector.getServiceName());
+                }
+            }
+            public void handleException(Throwable t) {
+                info(t, "Exception occurred trying to detect service %s on address %s", detector.getServiceName(), ipAddress.getHostAddress());
+            }
+        };
+    }
+    
+    private Async<Boolean> runDetector(InetAddress ipAddress, AsyncServiceDetector detector) {
+        return new AsyncDetectorRunner(ipAddress, detector);
+    }
+    
+    private Runnable runDetector(final InetAddress ipAddress, final SyncServiceDetector detector, final Callback<Boolean> cb) {
+        return new Runnable() {
             public void run() {
                 try {
-                    info("Attemping to detect service %s on address %s", detector.getServiceName(), ipAddress);
-                    boolean serviceDetected = detector.isServiceDetected(ipAddress, new NullDetectorMonitor());
-                    info("Attempted to detect service %s on address %s: %s", detector.getServiceName(), ipAddress, serviceDetected);
-                    if (serviceDetected) {
-                        m_provisionService.addMonitoredService(nodeId, ipAddress.getHostAddress(), detector.getServiceName());
-                    }
-                } catch(Throwable t) {
-                    error(t, "Unhandle exception/error while detecto service %s on address %s", detector.getServiceName(), ipAddress);
+                    info("Attemping to detect service %s on address %s", detector.getServiceName(), ipAddress.getHostAddress());
+                    cb.complete(detector.isServiceDetected(ipAddress, new NullDetectorMonitor()));
+                } catch (Throwable t) {
+                    cb.handleException(t);
                 }
             }
+            @Override
+            public String toString() {
+                return String.format("Run detector %s on address %s", detector.getServiceName(), ipAddress.getHostAddress());
+            }
+
         };
-        
-        return m_taskCoordinator.createTask(r, "scan");
     }
-    
-    private abstract class AsyncServiceDetectorTask extends Task implements IoFutureListener<DetectFuture> {
+        
+    private class AsyncDetectorRunner implements Async<Boolean> {
         
         private final AsyncServiceDetector m_detector;
-        private final InetAddress m_address;
-
-        public AsyncServiceDetectorTask(DefaultTaskCoordinator coordinator, AsyncServiceDetector detector, InetAddress address) {
-            super(coordinator);
+        private final InetAddress m_ipAddress;
+        
+        public AsyncDetectorRunner(InetAddress address, AsyncServiceDetector detector) {
             m_detector = detector;
-            m_address = address;
+            m_ipAddress = address;
         }
 
+        public void submit(Callback<Boolean> cb) {
+            try {
+                info("Attemping to detect service %s on address %s", m_detector.getServiceName(), m_ipAddress.getHostAddress());
+                DetectFuture future = m_detector.isServiceDetected(m_ipAddress, new NullDetectorMonitor());
+                future.addListener(listener(cb));
+            } catch (Throwable e) {
+                cb.handleException(e);
+            }
+        }
+        
         @Override
-        protected void doSubmit() {
-            try {
-                info("Attemping to detect service %s on address %s", m_detector.getServiceName(), m_address);
-                DetectFuture future = m_detector.isServiceDetected(m_address, new NullDetectorMonitor());
-                future.addListener(this);
-            } catch (Exception e) {
-                error(e, "Unexpected exception detecting service %s for interface %s", m_detector.getServiceName(), m_address);
-                markTaskAsCompleted();
-            }
+        public String toString() {
+            return String.format("Run detector %s on address %s", m_detector.getServiceName(), m_ipAddress.getHostAddress());
         }
 
-        public void operationComplete(DetectFuture future) {
-            try {
-                boolean serviceDetected = future.isServiceDetected();
-                info("Attempted to detect service %s on address %s: %s", m_detector.getServiceName(), m_address, serviceDetected);
-                if (serviceDetected) {
-                    serviceDetected();
+        private IoFutureListener<DetectFuture> listener(final Callback<Boolean> cb) {
+            return new IoFutureListener<DetectFuture>() {
+                public void operationComplete(DetectFuture future) {
+                    if (future.getException() != null) {
+                        cb.handleException(future.getException());
+                    } else {
+                        cb.complete(future.isServiceDetected());
+                    }
                 }
-            } finally {
-                markTaskAsCompleted();
-            }
+            };
         }
-
-        protected abstract void serviceDetected();
         
     }
-
-    private Task createAsyncServiceDetectorTask(final AsyncServiceDetector detector, final Integer nodeId, final InetAddress ipAddress) {
-        return new AsyncServiceDetectorTask(m_taskCoordinator, detector, ipAddress) {
-
-            @Override
-            protected void serviceDetected() {
-                m_provisionService.addMonitoredService(nodeId, ipAddress.getHostAddress(), detector.getServiceName());
-            }
-            
-        };
-    }
-    
     
     private void error(Throwable t, String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
@@ -364,6 +374,12 @@ public class CoreScanActivities {
         if (log.isDebugEnabled()) {
             log.debug(String.format(format, args));
         };
+    }
+    private void info(Throwable t, String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args), t);
+        }
     }
     private void info(String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
