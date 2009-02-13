@@ -68,7 +68,8 @@ public class OnmsMap implements Serializable {
 
     public static final String ACCESS_MODE_ADMIN = "RW";
     public static final String ACCESS_MODE_USER = "RO";
-
+    public static final String ACCESS_MODE_GROUP = "RWRO";
+    
     @XmlTransient
     @Id
     @Column(name="mapId")
@@ -144,14 +145,39 @@ public class OnmsMap implements Serializable {
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
         this.accessMode = ACCESS_MODE_USER;
+        this.width = 800;
+        this.height = 600;
     }
 
-    public OnmsMap(String name, String background, String owner,
+    public OnmsMap(String name, String owner, int width, int height) {
+        this.name = name;
+        this.owner = owner;
+        this.userLastModifies = owner;
+        this.createTime = new Date();
+        this.lastModifiedTime = new Date();
+        this.accessMode = ACCESS_MODE_USER;
+        this.width = width;
+        this.height = height;
+    }
+
+    public OnmsMap(String name, String owner, String accessMode, int width, int height) {
+        this.name = name;
+        this.owner = owner;
+        this.userLastModifies = owner;
+        this.createTime = new Date();
+        this.lastModifiedTime = new Date();
+        setAccessMode(accessMode);
+        this.width = width;
+        this.height = height;
+    }
+
+    public OnmsMap(String name, String background, String owner, String group,
                String accessMode, String userLastModifies, float scale,
                int offsetX, int offsetY, String type, int width, int height) {
         this.name = name;
         this.background = background;
         this.owner = owner;
+        this.mapGroup = group;
         setAccessMode(accessMode);
         this.userLastModifies = userLastModifies;
         this.scale = scale;
@@ -216,7 +242,7 @@ public class OnmsMap implements Serializable {
     }
 
     public void setAccessMode(String accessMode) {
-        if(accessMode.equals(ACCESS_MODE_USER) || accessMode.equals(ACCESS_MODE_ADMIN))
+        if(accessMode.equals(ACCESS_MODE_GROUP) || accessMode.equals(ACCESS_MODE_ADMIN))
             this.accessMode = accessMode;
         else
             this.accessMode = ACCESS_MODE_USER;
