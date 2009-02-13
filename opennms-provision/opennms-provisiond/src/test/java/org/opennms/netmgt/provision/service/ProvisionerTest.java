@@ -84,7 +84,6 @@ import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.Provisioner.NodeScan;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,6 +273,8 @@ public class ProvisionerTest {
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
         
+        m_pausibleExecutor.pause();
+
         importFromResource("classpath:/tec_dump.xml");
 
         //Verify distpoller count
@@ -340,8 +341,8 @@ public class ProvisionerTest {
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
         
-        //Verify ifservices count
-        assertEquals(1, getMonitoredServiceDao().countAll());
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals(2, getMonitoredServiceDao().countAll());
         
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());

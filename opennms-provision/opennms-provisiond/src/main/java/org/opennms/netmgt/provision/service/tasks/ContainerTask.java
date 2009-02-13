@@ -37,8 +37,8 @@ public class ContainerTask extends Task {
      * @author brozow
      */
     private final class TaskTrigger extends Task {
-        public TaskTrigger(DefaultTaskCoordinator coordinator) {
-            super(coordinator);
+        public TaskTrigger(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+            super(coordinator, parent);
         }
 
 
@@ -51,12 +51,12 @@ public class ContainerTask extends Task {
         public String toString() { return "Trigger For "+ContainerTask.this; }
     }
 
-    protected Task m_triggerTask;
-    protected List<Task> m_children = new ArrayList<Task>();
+    protected final Task m_triggerTask;
+    protected final List<Task> m_children = new ArrayList<Task>();
     
-    public ContainerTask(DefaultTaskCoordinator coordinator) {
-        super(coordinator);
-        m_triggerTask = new TaskTrigger(coordinator);
+    public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+        super(coordinator, parent);
+        m_triggerTask = new TaskTrigger(coordinator, this);
 
     }
 
@@ -105,17 +105,41 @@ public class ContainerTask extends Task {
 //        }
 //    }
     
+    
+    
     @Override
     protected void completeSubmit() {
         getCoordinator().markTaskAsCompleted(this);
     }
 
-    public void add(Runnable runnable) {
-        add(getCoordinator().createTask(runnable));
+    public SyncTask add(Runnable runnable) {
+        SyncTask task = createTask(runnable);
+        add(task);
+        return task;
     }
 
-    public void add(Runnable runnable, String schedulingHint) {
-        add(getCoordinator().createTask(runnable, schedulingHint));
+    public SyncTask add(Runnable runnable, String schedulingHint) {
+        SyncTask task = createTask(runnable, schedulingHint);
+        add(task);
+        return task;
+    }
+    
+    public <T> AsyncTask<T> add(Async<T> async, Callback<T> cb) {
+        AsyncTask<T> task = createTask(async, cb);
+        add(task);
+        return task;
+    }
+
+    private SyncTask createTask(Runnable runnable) {
+        return getCoordinator().createTask(this, runnable);
+    }
+
+    private SyncTask createTask(Runnable runnable, String schedulingHint) {
+        return getCoordinator().createTask(this, runnable, schedulingHint);
+    }
+    
+    private <T> AsyncTask<T> createTask(Async<T> async, Callback<T> cb) {
+        return getCoordinator().createTask(this, async, cb);
     }
 
     protected void addChildDependencies(Task child) {
