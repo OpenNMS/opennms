@@ -97,16 +97,16 @@ public class DBManager extends Manager {
 			log.debug("Instantiating DBManager (using Vault)");
 	}
 	
-	public DBManager(java.util.Map params)
+	public DBManager(java.util.Map<String,String> params)
 	throws MapsException {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		if (log.isDebugEnabled())
 			log.debug("Instantiating DBManager with params: "+params);		
-		String url = (String) params.get("url");
-		String driver = (String)params.get("driver");
-		String user =(String) params.get("user");
-		String password = (String)params.get("password");
+		String url = params.get("url");
+		String driver = params.get("driver");
+		String user =params.get("user");
+		String password = params.get("password");
 		m_factory=new SimpleDbConnectionFactory();
 		try {
 			m_factory.init(url, driver, user, password);
@@ -1389,11 +1389,11 @@ public class DBManager extends Manager {
 		}
 	}
 
-	public List<VElementInfo> getOutagedElements() throws MapsException {
+	public List<VElementInfo> getAlarmedElements() throws MapsException {
         Connection conn = createConnection();
 		try {
-			final String sqlQuery = "select distinct outages.nodeid, eventuei,eventseverity from outages left join events on events.eventid = outages.svclosteventid where ifregainedservice is null order by nodeid";
-
+//			final String sqlQuery = "select distinct outages.nodeid, eventuei,eventseverity from outages left join events on events.eventid = outages.svclosteventid where ifregainedservice is null order by nodeid";
+		    final String sqlQuery = "select nodeid, eventuei,severity from alarms where nodeid is not null and severity > 3 order by nodeid, lasteventtime desc";
 			PreparedStatement statement = conn
 					.prepareStatement(sqlQuery);
 			ResultSet rs = statement.executeQuery();

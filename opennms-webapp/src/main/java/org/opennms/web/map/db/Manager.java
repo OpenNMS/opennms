@@ -162,7 +162,7 @@ public abstract class Manager {
 	
 	public abstract VElementInfo[] getElementInfoLike(String like) throws MapsException;
 
-	public abstract List<VElementInfo> getOutagedElements() throws MapsException;
+	public abstract List<VElementInfo> getAlarmedElements() throws MapsException;
 
 	public abstract Vector<Integer> getDeletedNodes() throws MapsException;
 

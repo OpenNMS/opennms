@@ -86,7 +86,7 @@ import org.opennms.web.map.view.VMapInfo;
  */ 
 public class ManagerDefaultImpl implements Manager {
     
-	private class OutageInfo {
+	private class AlarmInfo {
 		int nodeid;
 		int status;
 		float severity;
@@ -108,7 +108,7 @@ public class ManagerDefaultImpl implements Manager {
 		public void setStatus(int status) {
 			this.status = status;
 		}
-		OutageInfo(int nodeid, int status, float severity) {
+		AlarmInfo(int nodeid, int status, float severity) {
 			super();
 			this.nodeid = nodeid;
 			this.status = status;
@@ -437,7 +437,7 @@ public class ManagerDefaultImpl implements Manager {
     private VElement localRefreshElement(VElement mapElement) throws MapsException {
     	Vector<Integer> deletedNodeids= dbManager.getDeletedNodes();
     	
-    	java.util.Map<Integer,OutageInfo> outagedNodes=getOutagedNodes();
+    	java.util.Map<Integer,AlarmInfo> outagedNodes=getAlarmedNodes();
     	VElement[] velems = {mapElement};
     	java.util.Map<Integer,Double> avails=dbManager.getAvails(velems);
     	Set<Integer> nodesBySource = new HashSet<Integer>();
@@ -456,7 +456,7 @@ public class ManagerDefaultImpl implements Manager {
    	private VElement[] localRefreshElements(VElement[] mapElements) throws MapsException {
     		List<VElement> elems = new ArrayList<VElement>();
         	Vector<Integer> deletedNodeids= dbManager.getDeletedNodes();
-        	java.util.Map<Integer,OutageInfo> outagedNodes=getOutagedNodes();
+        	java.util.Map<Integer,AlarmInfo> outagedNodes=getAlarmedNodes();
         	java.util.Map<Integer,Double> avails=dbManager.getAvails(mapElements);
         	Set<Integer> nodesBySource = new HashSet<Integer>();
         	if(dataSource!=null)
@@ -1094,7 +1094,7 @@ public class ManagerDefaultImpl implements Manager {
 		return EventUtil.getSeverityLabel(severity);
 	}	
 	
-    private VElement refresh(VElement mapElement, Set<Integer> nodesBySource, Vector<Integer> deletedNodeids, java.util.Map<Integer,OutageInfo> outagedNodes,java.util.Map<Integer,Double> avails) throws MapsException {
+    private VElement refresh(VElement mapElement, Set<Integer> nodesBySource, Vector<Integer> deletedNodeids, java.util.Map<Integer,AlarmInfo> outagedNodes,java.util.Map<Integer,Double> avails) throws MapsException {
 		VElement ve = (VElement) mapElement.clone();
 		if (log.isDebugEnabled())
 			log.debug("refresh: parsing VElement ID " + ve.getId()
@@ -1141,7 +1141,7 @@ public class ManagerDefaultImpl implements Manager {
 						} 
 					}
 				} else {
-					OutageInfo oi = outagedNodes.get(new Integer(ve.getId()));
+					AlarmInfo oi = outagedNodes.get(new Integer(ve.getId()));
 					if (oi != null) {
 						elementStatus = oi.getStatus();
 						elementSeverity= oi.getSeverity();
@@ -1206,7 +1206,7 @@ public class ManagerDefaultImpl implements Manager {
 								} 
 							}	
 						} else {
-							OutageInfo oi = outagedNodes.get(nextNodeId);
+							AlarmInfo oi = outagedNodes.get(nextNodeId);
 							if (oi != null) {
 								elementStatus = oi.getStatus();
 								float tempSeverity= oi.getSeverity();
@@ -1259,43 +1259,43 @@ public class ManagerDefaultImpl implements Manager {
 	}
 
 
-    private java.util.Map<Integer,OutageInfo> getOutagedNodes() throws MapsException{
+    private java.util.Map<Integer,AlarmInfo> getAlarmedNodes() throws MapsException{
         
-    	java.util.Map<Integer,OutageInfo> outagedNodes = new HashMap<Integer,OutageInfo>();
-        log.debug("Getting outaged elems.");
-        Iterator<VElementInfo> ite = dbManager.getOutagedElements().iterator();
-        log.debug("Outaged elems obtained.");
+    	java.util.Map<Integer,AlarmInfo> alarmedNodes = new HashMap<Integer,AlarmInfo>();
+        log.debug("Getting alarmed elems.");
+        Iterator<VElementInfo> ite = dbManager.getAlarmedElements().iterator();
+        log.debug("Alarmed elems obtained.");
 		while (ite.hasNext()) {
-			VElementInfo outagelem = ite.next();
-			int outageStatus = mapsPropertiesFactory.getStatus(outagelem.getUei());
-			int outageSeverity = mapsPropertiesFactory.getSeverity(getSeverityLabel(outagelem.getSeverity()));
+			VElementInfo veleminfo = ite.next();
+			int alarmStatus = mapsPropertiesFactory.getStatus(veleminfo.getUei());
+			int alarmSeverity = mapsPropertiesFactory.getSeverity(getSeverityLabel(veleminfo.getSeverity()));
 
 			if (log.isInfoEnabled())
-				log.info("parsing outaged node with nodeid: " + outagelem.getId() + " severity: " + outagelem.getSeverity() + " severity label: " +getSeverityLabel(outagelem.getSeverity()));
+				log.info("parsing alarmed node with nodeid: " + veleminfo.getId() + " severity: " + veleminfo.getSeverity() + " severity label: " +getSeverityLabel(veleminfo.getSeverity()));
 
 			if (log.isInfoEnabled())
-				log.info("parsing outaged node with nodeid: " + outagelem.getId() + " status: " + outagelem.getUei() + " severity label: " +getSeverityLabel(outagelem.getSeverity()));
+				log.info("parsing alarmed node with nodeid: " + veleminfo.getId() + " status: " + veleminfo.getUei() + " severity label: " +getSeverityLabel(veleminfo.getSeverity()));
 
 			if (log.isDebugEnabled()) 
-    			log.debug("local outaged node status/severity " + outageStatus + "/" + outageSeverity);
+    			log.debug("local alarmed node status/severity " + alarmStatus + "/" + alarmSeverity);
 
-			OutageInfo oi = outagedNodes.get(new Integer(outagelem.getId())); 
+			AlarmInfo alarminfo = alarmedNodes.get(new Integer(veleminfo.getId())); 
 
-			if (oi != null) {
-				if (oi.getStatus() > outageStatus) {
-					oi.setStatus(outageStatus);
-				}
-				oi.setSeverity((oi.getSeverity()+outageSeverity)/2);
+			if (alarminfo != null) {
+				if (alarminfo.getStatus() > alarmStatus) {
+					alarminfo.setStatus(alarmStatus);
+					alarminfo.setSeverity(alarmSeverity);
+				}	
 			} else {
-				int curStatus = outageStatus;
-				float curSeverity = outageSeverity;
-				oi = new OutageInfo(outagelem.getId(),curStatus,curSeverity);
+				int curStatus = alarmStatus;
+				float curSeverity = alarmSeverity;
+				alarminfo = new AlarmInfo(veleminfo.getId(),curStatus,curSeverity);
 			}
-			outagedNodes.put(new Integer(outagelem.getId()),oi);
+			alarmedNodes.put(new Integer(veleminfo.getId()),alarminfo);
     		if (log.isDebugEnabled()) 
-    			log.debug("global outaged node status/severity " + outageStatus + "/" + outageSeverity);
+    			log.debug("global element node status/severity " + alarmStatus + "/" + alarmSeverity);
 		}
-        return outagedNodes;
+        return alarmedNodes;
     }    
     
     /**
