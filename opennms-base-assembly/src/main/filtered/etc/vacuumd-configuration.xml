@@ -171,7 +171,7 @@
             FROM alarms a
  LEFT OUTER JOIN service s
               ON s.serviceid = a.serviceid
-             AND ( a.alarmType = 1 OR a.alarmType = 3 )
+           WHERE ( a.alarmType = 1 OR a.alarmType = 3 )
              AND severity &gt; 3
              AND severity &lt; 7
              AND alarmacktime IS NULL
