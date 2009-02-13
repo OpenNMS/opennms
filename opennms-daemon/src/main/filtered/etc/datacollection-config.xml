@@ -944,6 +944,23 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.14" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsCurrConn" type="gauge" />
       </group>
 
+      <group name="cisco-cids-health-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.1"  instance="0" alias="cidsHlthPktLoss" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.2"  instance="0" alias="cidsHlthPktDenyRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.3"  instance="0" alias="cidsHlthAlarmsGend" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.4"  instance="0" alias="cidsHlthFragmentsIn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.5"  instance="0" alias="cidsHlthDatagramsIn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.6"  instance="0" alias="cidsHlthTcpEmbryo" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.7"  instance="0" alias="cidsHlthTCPEstab" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.8"  instance="0" alias="cidsHlthTcpClosing" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.9"  instance="0" alias="cidsHlthTcpStreams" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.10" instance="0" alias="cidsHlthActiveNodes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.11" instance="0" alias="cidsHlthTcpDualIpPt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.12" instance="0" alias="cidsHlthUdpDualIpPt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.13" instance="0" alias="cidsHlthIpDualIp" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.14" instance="0" alias="cidsHlthMemCritical" type="Gauge32" />
+      </group>
+
       <group name="ipunity-as-call-scalars" ifType="ignore" >
          <mibObj oid=".1.3.6.1.4.1.5134.2.1.2.1" instance="0" alias="ipuCallsWithNoApp" type="counter" />
       </group>
@@ -2477,6 +2494,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.645</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2484,6 +2502,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.646</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2491,6 +2510,15 @@
         <sysoid>.1.3.6.1.4.1.9.1.647</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4240">
+        <sysoid>.1.3.6.1.4.1.9.1.648</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2498,6 +2526,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.649</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2505,6 +2534,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.650</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2512,6 +2542,15 @@
         <sysoid>.1.3.6.1.4.1.9.1.651</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4255">
+        <sysoid>.1.3.6.1.4.1.9.1.652</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2519,6 +2558,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.653</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2526,6 +2566,23 @@
         <sysoid>.1.3.6.1.4.1.9.1.654</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-20">
+        <sysoid>.1.3.6.1.4.1.9.1.655</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-10">
+        <sysoid>.1.3.6.1.4.1.9.1.662</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2533,6 +2590,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.741</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2540,6 +2598,23 @@
         <sysoid>.1.3.6.1.4.1.9.1.742</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4260">
+        <sysoid>.1.3.6.1.4.1.9.1.743</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS virtual sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.806</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2547,6 +2622,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.807</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2554,6 +2630,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.808</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2561,6 +2638,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.809</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2568,6 +2646,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.810</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2575,6 +2654,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.811</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2582,6 +2662,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.812</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2589,6 +2670,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.813</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2596,6 +2678,7 @@
         <sysoid>.1.3.6.1.4.1.9.1.814</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
@@ -2603,6 +2686,39 @@
         <sysoid>.1.3.6.1.4.1.9.1.815</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-20 virtual sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.816</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-10 virtual sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.817</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4270 Sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.830</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4270 Virtual Sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.831</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
         </collect>
       </systemDef>
 
