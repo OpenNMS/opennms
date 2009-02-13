@@ -78,9 +78,9 @@ public class SnmpDetector extends AbstractDetector {
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
-    private static final int DEFAULT_PORT = 21;
-    private static final int DEFAULT_TIMEOUT = 3000;
-    private static final int DEFAULT_RETRIES = 3;
+    private static final int DEFAULT_PORT = -1;
+    private static final int DEFAULT_TIMEOUT = -1;
+    private static final int DEFAULT_RETRIES = -1;
     
     private String m_oid;
     private String m_forceVersion;
@@ -108,9 +108,17 @@ public class SnmpDetector extends AbstractDetector {
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address); //SnmpPeerFactory.getInstance().getAgentConfig(address);
             String expectedValue = null;
             
-            agentConfig.setPort(getPort());
-            agentConfig.setTimeout(getTimeout());
-            agentConfig.setRetries(getRetries());
+            if (getPort() > 0) {
+                agentConfig.setPort(getPort());
+            }
+            
+            if (getTimeout() > 0) {
+                agentConfig.setTimeout(getTimeout());
+            }
+            
+            if (getRetries() > -1) {
+                agentConfig.setRetries(getRetries());
+            }
             
             if (getForceVersion() != null) {
                 String version = getForceVersion();

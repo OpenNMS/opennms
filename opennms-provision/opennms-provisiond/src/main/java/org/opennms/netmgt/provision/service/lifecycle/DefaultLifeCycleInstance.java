@@ -70,7 +70,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
             DefaultTaskCoordinator coordinator, String lifeCycleName,
             String[] phaseNames, Object[] providers) {
 
-        super(coordinator);
+        super(coordinator, containingPhase);
         m_containingPhase = containingPhase;
         m_repository = repository;
         m_coordinator = coordinator;
@@ -79,7 +79,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         
         m_phases = new Phase[phaseNames.length];
         for(int i = 0; i < phaseNames.length; i++) {
-            m_phases[i] = new Phase(this, phaseNames[i], m_providers);
+            m_phases[i] = new Phase(this, this, phaseNames[i], m_providers);
             add(m_phases[i]);
         }
         

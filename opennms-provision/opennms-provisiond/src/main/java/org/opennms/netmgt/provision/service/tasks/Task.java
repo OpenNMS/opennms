@@ -64,16 +64,26 @@ public abstract class Task {
     private final Set<Task> m_dependents = new HashSet<Task>();
     private final Set<Task> m_prerequisites = new HashSet<Task>();
     
-    public Task(DefaultTaskCoordinator coordinator) {
+    private final TaskMonitor m_monitor;
+    
+    public Task(DefaultTaskCoordinator coordinator, ContainerTask parent) {
         m_coordinator = coordinator;
+        m_monitor = parent != null 
+            ? parent.getMonitor().getChildTaskMonitor(parent, this) 
+            : new DefaultTaskMonitor(this);
+        
     }
-
+    
     public DefaultTaskCoordinator getCoordinator() {
         return m_coordinator;
     }
     
+    public TaskMonitor getMonitor() {
+        return m_monitor;
+    }
+    
     /**
-     * These are final and package protected because they should ONLY be accessed by the TAskCoordinator
+     * These are final and package protected because they should ONLY be accessed by the TaskCoordinator
      * This is for thread safety and efficiency.  use 'addDependency' to update these.
      */
     final Set<Task> getDependents() {
@@ -97,11 +107,53 @@ public abstract class Task {
     final void doAddPrerequisite(Task prereq) {
         if (!prereq.isFinished()) {
             m_prerequisites.add(prereq);
+            notifyPrerequisteAdded(prereq);
+        }
+    }
+
+    private void notifyPrerequisteAdded(Task prereq) {
+        try {
+            m_monitor.prerequisiteAdded(this, prereq);
+        } catch (Throwable t) {
+            m_monitor.monitorException(t);
         }
     }
     
-    final void doRemovePrerequisite(Task prereq) {
+    private void notifyPrerequisteCompleted(Task prereq) {
+        try {
+            m_monitor.prerequisiteCompleted(this, prereq);
+        } catch (Throwable t) {
+            m_monitor.monitorException(t);
+        }
+    }
+    
+    private void notifyScheduled() {
+        try {
+            m_monitor.scheduled(this);
+        } catch (Throwable t) {
+            m_monitor.monitorException(t);
+        }
+    }
+
+    private void notifySubmitted() {
+        try {
+            m_monitor.submitted(this);
+        } catch (Throwable t) {
+            m_monitor.monitorException(t);
+        }
+    }
+    
+    private void notifyCompleted() {
+        try {
+            m_monitor.completed(this);
+        } catch (Throwable t) {
+            m_monitor.monitorException(t);
+        }
+    }
+        
+    final void doCompletePrerequisite(Task prereq) {
         m_prerequisites.remove(prereq);
+        notifyPrerequisteCompleted(prereq);
     }
     
     final void clearDependents() {
@@ -111,6 +163,7 @@ public abstract class Task {
  
     final void scheduled() {
         setState(State.NEW, State.SCHEDULED);
+        notifyScheduled();
     }
     
     private final void setState(State oldState, State newState) {
@@ -141,6 +194,7 @@ public abstract class Task {
 
     final void submitted() {
         setState(State.SCHEDULED, State.SUBMITTED);
+        notifySubmitted();
     }
 
     /**
@@ -152,6 +206,7 @@ public abstract class Task {
     
     final void completed() {
         m_state.compareAndSet(State.SUBMITTED, State.COMPLETED);
+        notifyCompleted();
     }
     
     /**
@@ -192,8 +247,16 @@ public abstract class Task {
      * This is called to add the task to the queue of tasks that can be considered to be runnable
      */
     public void schedule() {
+        preSchedule();
         m_scheduleCalled.set(true);
         getCoordinator().schedule(this);
+        postSchedule();
+    }
+        
+    protected void preSchedule() {
+    }
+
+    protected void postSchedule() {
     }
 
     /**

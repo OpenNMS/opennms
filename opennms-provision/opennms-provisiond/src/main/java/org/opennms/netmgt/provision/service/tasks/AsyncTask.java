@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -31,29 +31,50 @@
  */
 package org.opennms.netmgt.provision.service.tasks;
 
-import java.util.concurrent.atomic.AtomicReference;
+import org.springframework.util.Assert;
 
-public class SequenceTask extends ContainerTask {
+public class AsyncTask<T> extends Task {
     
-    private AtomicReference<Task> m_lastChild = new AtomicReference<Task>(null);
+    private final Async<T> m_async;
+    private final Callback<T> m_callback;
 
-    public SequenceTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async) {
+        this(coordinator, parent, async, null);
+    }
+    
+    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async, Callback<T> callback) {
         super(coordinator, parent);
-        m_lastChild.set(getTriggerTask());
+        Assert.notNull(async, "async parameter must not be null");
+        m_async = async;
+        m_callback = callback;
     }
     
     @Override
-    protected void addChildDependencies(Task child) {
-        super.addChildDependencies(child);
-        Task last = m_lastChild.getAndSet(child);
-        child.addPrerequisite(last);
-    }
-    
     public String toString() {
-        return "sequenceTask";
+        return String.valueOf(m_async);
+    }
+
+    @Override
+    protected void doSubmit() {
+        m_async.submit(callback());
+    }
+    
+    private Callback<T> callback() {
+        return new Callback<T>() {
+            public void complete(T t) {
+                if (m_callback != null) {
+                    m_callback.complete(t);
+                }
+                markTaskAsCompleted();
+            }
+            public void handleException(Throwable t) {
+                if (m_callback != null) {
+                    m_callback.handleException(t);
+                }
+                markTaskAsCompleted();
+            }
+        };
     }
     
     
-
-
 }

@@ -62,6 +62,14 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
     public boolean isServiceDetected() {
         return Boolean.TRUE.equals(getValue());
     }
+    
+    public Throwable getException() {
+        Object val = getValue();
+        if (val instanceof Throwable) {
+            return (Throwable)val;
+        }
+        return null;
+    }
 
     public void setServiceDetected(boolean serviceDetected) {
         setValue(serviceDetected);

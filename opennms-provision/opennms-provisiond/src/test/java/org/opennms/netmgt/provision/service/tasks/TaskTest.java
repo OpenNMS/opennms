@@ -114,7 +114,7 @@ public class TaskTest {
     }
 
     private Task createTask(final Runnable runnable) {
-        return m_coordinator.createTask(runnable);
+        return m_coordinator.createTask(null, runnable);
     }
     
     @Test
@@ -153,7 +153,7 @@ public class TaskTest {
         
         AtomicInteger counter = new AtomicInteger(0);
         
-        ContainerTask batch = new BatchTask(m_coordinator);
+        ContainerTask batch = new BatchTask(m_coordinator, null);
 
         batch.add(incr(counter));
         batch.add(incr(counter));
@@ -172,14 +172,7 @@ public class TaskTest {
         
         final List<String> sequence = new Vector<String>();
         
-        SequenceTask seq = new SequenceTask(m_coordinator) {
-          public void run() {
-              System.out.println("Sequence Finished");
-          }
-          public String toString() {
-              return "testSequenceTask Seq TAsk";
-          }
-        };
+        SequenceTask seq = createSequence();
 
         seq.add(appender(sequence, "task1"));
         seq.add(appender(sequence, "task2"));
@@ -199,10 +192,10 @@ public class TaskTest {
         
         List<String> sequence = new Vector<String>();
         
-        Task task1 = m_coordinator.createTask(appender(sequence, "task1"));
-        Task task2 = m_coordinator.createTask(appender(sequence, "task2"));
+        Task task1 = createTask(appender(sequence, "task1"));
+        Task task2 = createTask(appender(sequence, "task2"));
 
-        SequenceTask seq = new SequenceTask(m_coordinator);
+        SequenceTask seq = createSequence();
 
         seq.add(appender(sequence, "subtask1"));
         seq.add(appender(sequence, "subtask2"));
@@ -297,7 +290,7 @@ public class TaskTest {
         
         AtomicLong result = new AtomicLong(0);
         
-        SequenceTask task = new SequenceTask(m_coordinator);
+        SequenceTask task = createSequence();
         
         for(long i = 1; i <= count; i++) {
             task.add(addr(result, i));
@@ -310,6 +303,10 @@ public class TaskTest {
         assertEquals(count*(count+1)/2, result.get());
         
     }
+
+    private SequenceTask createSequence() {
+        return m_coordinator.createSequence(null);
+    }
     
     @Test
     public void testLargeSequenceInProgress() throws Exception {
@@ -320,7 +317,7 @@ public class TaskTest {
         
         AtomicLong result = new AtomicLong(0);
         
-        SequenceTask task = new SequenceTask(m_coordinator);
+        SequenceTask task = createSequence();
         
         task.add(scheduler(task, result, 1, count, loops-1));
         
@@ -357,7 +354,7 @@ public class TaskTest {
         
         AtomicLong result = new AtomicLong(0);
         
-        BatchTask task = new BatchTask(m_coordinator);
+        BatchTask task = new BatchTask(m_coordinator, null);
         
         for(long i = 1; i <= count; i++) {
             task.add(addr(result, i));
@@ -380,7 +377,7 @@ public class TaskTest {
         
         AtomicLong result = new AtomicLong(0);
         
-        BatchTask task = new BatchTask(m_coordinator);
+        BatchTask task = new BatchTask(m_coordinator, null);
         
         task.add(scheduler(task, result, 1, count, loops-1));
         

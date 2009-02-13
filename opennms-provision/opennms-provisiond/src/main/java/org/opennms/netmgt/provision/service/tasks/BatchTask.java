@@ -34,8 +34,8 @@ package org.opennms.netmgt.provision.service.tasks;
 
 public class BatchTask extends ContainerTask {
     
-    public BatchTask(DefaultTaskCoordinator coordinator) {
-        super(coordinator);
+    public BatchTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+        super(coordinator, parent);
     }
     
     public String toString() {

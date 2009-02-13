@@ -41,17 +41,17 @@ public class SyncTask extends Task {
     public static final String DEFAULT_EXECUTOR = "default";
     public static final String ADMIN_EXECUTOR = "admin";
     
-    private String m_preferredExecutor = DEFAULT_EXECUTOR;
-    
     private final Runnable m_action;
 
-    public SyncTask(DefaultTaskCoordinator coordinator, Runnable action) {
-        this(coordinator, action, DEFAULT_EXECUTOR);
+    private String m_preferredExecutor = DEFAULT_EXECUTOR;
+    
+    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Runnable action) {
+        this(coordinator, parent, action, DEFAULT_EXECUTOR);
     }
 
 
-    public SyncTask(DefaultTaskCoordinator coordinator, Runnable action, String preferredExecutor) {
-        super(coordinator);
+    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Runnable action, String preferredExecutor) {
+        super(coordinator, parent);
         m_action = action;
         m_preferredExecutor = preferredExecutor;
     }
