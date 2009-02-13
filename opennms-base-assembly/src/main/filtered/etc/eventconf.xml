@@ -1900,6 +1900,7 @@
   <event-file>events/BlackBerryServer.events.xml</event-file>
   <event-file>events/Brocade.events.xml</event-file>
   <event-file>events/CA.ArcServe.events.xml</event-file>
+  <event-file>events/Cisco.CIDS.events.xml</event-file>
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.5300dchan.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
