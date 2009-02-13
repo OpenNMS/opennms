@@ -30,6 +30,78 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(map.getCreateTime(), map2.getCreateTime());
     }
 
+    public void testSaveOnmsMap2() {
+        // Create a new map and save it.
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "admin",969,726);
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+
+        // Now pull it back up and make sure it saved.
+        Object [] args = { map.getId() };
+        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
+
+        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        assertNotSame(map, map2);
+        assertEquals(map.getName(), map2.getName());
+        assertEquals(map.getOwner(), map2.getOwner());
+        assertEquals(map.getAccessMode().trim(), map2.getAccessMode().trim());
+        assertEquals(map.getUserLastModifies(), map2.getUserLastModifies());
+        assertEquals(map.getLastModifiedTime(), map2.getLastModifiedTime());
+        assertEquals(map.getCreateTime(), map2.getCreateTime());
+        assertEquals(map.getWidth(), map2.getWidth());
+        assertEquals(map.getHeight(), map2.getHeight());
+
+    }
+
+    public void testSaveOnmsMap3() {
+        // Create a new map and save it.
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+
+        // Now pull it back up and make sure it saved.
+        Object [] args = { map.getId() };
+        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
+
+        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        assertNotSame(map, map2);
+        assertEquals(map.getName(), map2.getName());
+        assertEquals(map.getOwner(), map2.getOwner().trim());
+        assertEquals(map.getAccessMode(), map2.getAccessMode().trim());
+        assertEquals(map.getUserLastModifies(), map2.getUserLastModifies());
+        assertEquals(map.getLastModifiedTime(), map2.getLastModifiedTime());
+        assertEquals(map.getCreateTime(), map2.getCreateTime());
+        assertEquals(map.getWidth(), map2.getWidth());
+        assertEquals(map.getHeight(), map2.getHeight());
+    }
+
+    public void testSaveOnmsMap4() {
+        // Create a new map and save it.
+        float scale = new Float(1.0);
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "11aabb","admin","users",OnmsMap.ACCESS_MODE_GROUP,"admin", scale,0,0,OnmsMap.USER_GENERATED_MAP,800,600);
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+
+        // Now pull it back up and make sure it saved.
+        Object [] args = { map.getId() };
+        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
+
+        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        assertNotSame(map, map2);
+        assertEquals(map.getName(), map2.getName());
+        assertEquals(map.getOwner(), map2.getOwner());
+        assertEquals(map.getAccessMode(), map2.getAccessMode().trim());
+        assertEquals(map.getUserLastModifies(), map2.getUserLastModifies());
+        assertEquals(map.getLastModifiedTime(), map2.getLastModifiedTime());
+        assertEquals(map.getCreateTime(), map2.getCreateTime());
+        assertEquals(map.getWidth(), map2.getWidth());
+        assertEquals(map.getHeight(), map2.getHeight());
+    }
+
+
     public void testFindById() {
         OnmsMap map = getOnmsMapDao().findMapById(1);
         assertEquals("DB_Pop_Test_Map", map.getName());
