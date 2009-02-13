@@ -20,7 +20,7 @@ function nodePageGridInit(){
         width:'auto',
         header:false,
         height:474,
-        renderTo:'grid-panel',
+        renderTo:'interfaces-panel',
 		bbar: ipInterfacePagingBar,
 		loadMask:true,
 		stripeRows:true,
@@ -91,7 +91,7 @@ function nodePageGridInit(){
     });
 	
 	var panel = new Ext.TabPanel({
-		applyTo:'grid-panel',
+		applyTo:'interfaces-panel',
 		activeTab:0,
 		width:'auto',
 		autoHeight:true,
