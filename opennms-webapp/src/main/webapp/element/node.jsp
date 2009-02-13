@@ -212,10 +212,18 @@
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css'></link>" />
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
   <jsp:param name="script" value="<script type='text/javascript' src='extJS/adapter/ext/ext-base.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/nodePageIpInterfaceGrid.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all-debug.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/PageableGrid.js'></script>"/>
+  <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/SearchFilterGrid.js'></script>"/>
+  <jsp:param name="script" value="<script type='text/javascript' src='js/nodePageIpInterfaceGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/nodePageEventView.js'></script>" />
 </jsp:include>
+
+<script type='text/javascript'>
+	Ext.onReady(function(){
+		initPageView('interfaces-panel');
+	})
+</script>
 
 <h2>Node: ${model.label}</h2>
 <div id="linkbar">
@@ -297,7 +305,7 @@
 
 <div class="TwoColLeft">
   <!-- node grid -->
-  <div id="grid-panel"></div>
+  <div id="interfaces-panel"></div>
   
   <!-- general info box -->
   <h3>General (Status: ${model.status})</h3>
