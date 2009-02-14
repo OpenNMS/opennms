@@ -316,7 +316,7 @@ Section "-Files"
 SectionEnd
 
 Section "System Tray Icon" SecSystray
-  WriteRegStr HKLM "Software\Microsoft\Windows\CUrrentVersion\Run" "OpenNMSRemotePoller" '"$INSTDIR\bin\opennmsremotepollerw.exe" //MS//OpenNMSRemotePoller'
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "OpenNMSRemotePoller" '"$INSTDIR\bin\opennmsremotepollerw.exe" //MS//OpenNMSRemotePoller'
   StrCpy $WantSystray "TRUE"
 SectionEnd
 
@@ -997,7 +997,7 @@ FunctionEnd
 #----------------------
 # Function that removes the systray monitor from Windows startup
 Function un.RemoveSystrayMonitorStartup
-  DeleteRegValue HKLM "Software\Microsoft\Windows\CUrrentVersion\Run" "OpenNMSRemotePoller"
+  DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "OpenNMSRemotePoller"
 FunctionEnd
 
 
