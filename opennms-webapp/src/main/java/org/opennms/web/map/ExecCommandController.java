@@ -63,6 +63,10 @@ public class ExecCommandController implements Controller {
 	Category log;
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            throw new IllegalArgumentException("Command execution disabled for security reasons");
+        }
+
+	private ModelAndView insecureHandleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
