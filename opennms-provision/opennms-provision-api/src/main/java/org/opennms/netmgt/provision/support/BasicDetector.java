@@ -41,7 +41,6 @@ import java.net.NoRouteToHostException;
 
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
@@ -62,6 +61,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     abstract protected void onInit();
     
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
+        String ipAddr = address.getHostAddress();
         int port = getPort();
         int retries = getRetries();
         int timeout = getTimeout();
@@ -75,7 +75,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 
                 client.connect(address, port, timeout);
                 
-                detectorMonitor.attempt(this, attempts, "Attempting to connect to address: %s attempt #%s",address.getHostAddress(),attempts);
+                detectorMonitor.attempt(this, attempts, "Attempting to connect to address: %s port %d attempt #%s",ipAddr,port,attempts);
                 
                 if (attemptConversation(client)) {
                     return true;
@@ -85,23 +85,23 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 // Connection refused!! Continue to retry.
                 System.out.println("put before");
                 cE.printStackTrace();
-                detectorMonitor.info(this, cE, "Attempting to connect to address: %s attempt #%s",address.getHostAddress(),attempts);
+                detectorMonitor.info(this, cE, "%s: Excpetion attempting to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr,port, attempts);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 e.printStackTrace();
-                detectorMonitor.info(this, e, "%s: No route to address %s was available", getServiceName(), address.getHostAddress());
+                detectorMonitor.info(this, e, "%s: No route to address %s was available", getServiceName(), ipAddr);
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // Expected exception
                 e.printStackTrace();
-                detectorMonitor.info(this, e, "%s: Did not connect to to address within timeout: %d attempt: %d", getServiceName(), timeout, attempts);
+                detectorMonitor.info(this, e, "%s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
                 e.printStackTrace();
-                detectorMonitor.info(this, e, "%s: An unexpected I/O exception occured contacting address %s",getServiceName(), address.getHostAddress());
+                detectorMonitor.info(this, e, "%s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
                 t.printStackTrace();
-                detectorMonitor.failure(this, "%s: Failed to detect %s on address %s", getServiceName(), getServiceName(), address.getHostAddress());
-                detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s", getServiceName(), address.getHostAddress());
+                detectorMonitor.failure(this, "%s: Failed to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
+                detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s port %d", getServiceName(), ipAddr, port);
             } finally {
                 client.close();
             }
