@@ -183,7 +183,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 count++;
                 try {
 
-                    if (line.length != 39) {
+                    if (line.length != 44) {
                         throw new NoSuchElementException();
                     }
 
@@ -231,7 +231,12 @@ public class ImportAssetsServlet extends HttpServlet {
                     asset.setNotifyCategory(Util.decode(line[35]));
                     asset.setPollerCategory(Util.decode(line[36]));
                     asset.setThresholdCategory(Util.decode(line[37]));
-                    asset.setComments(Util.decode(line[38]));
+                    asset.setUsername(Util.decode(line[38]));
+                    asset.setPassword(Util.decode(line[39]));
+                    asset.setEnable(Util.decode(line[40]));
+                    asset.setConnection(Util.decode(line[41]));
+                    asset.setAutoenable(Util.decode(line[42]));
+                    asset.setComments(Util.decode(line[43]));
                     
                     list.add(asset);
 

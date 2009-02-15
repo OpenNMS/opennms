@@ -50,7 +50,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.style.ToStringCreator;
 
-
 /** 
  * Represents the asset information for a node.
  * 
@@ -64,6 +63,14 @@ public class OnmsAssetRecord implements Serializable {
 
     private static final long serialVersionUID = 509128305684814487L;
     
+    public static final String AUTOENABLED = "A";
+
+    public static final String SSH_CONNECTION = "SSH";
+
+    public static final String TELNET_CONNECTION = "Telnet";
+
+    public static final String RSH_CONNECTION = "RSH";
+
     private Integer m_id;
     
     /** identifier field */
@@ -143,6 +150,21 @@ public class OnmsAssetRecord implements Serializable {
 
     /** identifier field */
     private String m_vendorAssetNumber;
+
+    /** identifier field */
+    private String m_username;
+
+    /** identifier field */
+    private String m_password;
+
+    /** identifier field */
+    private String m_enable;
+
+    /** identifier field */
+    private String m_connection;
+
+    /** identifier field */
+    private String m_autoenable;
 
     /** identifier field */
     private String m_lastModifiedBy = "";
@@ -761,6 +783,51 @@ public class OnmsAssetRecord implements Serializable {
             .append("thresholdcategory", getThresholdCategory())
             .append("comment", getComment())
             .toString();
+    }
+
+    @Column(name="username", length=32)
+    public String getUsername() {
+        return m_username;
+    }
+
+    public void setUsername(String username) {
+        m_username = username;
+    }
+
+    @Column(name="password", length=32)
+    public String getPassword() {
+        return m_password;
+    }
+
+    public void setPassword(String password) {
+        m_password = password;
+    }
+
+    @Column(name="enable", length=32)
+    public String getEnable() {
+        return m_enable;
+    }
+
+    public void setEnable(String enable) {
+        m_enable = enable;
+    }
+
+    @Column(name="connection", length=32)
+    public String getConnection() {
+        return m_connection;
+    }
+
+    public void setConnection(String connection) {
+        m_connection = connection;
+    }
+
+    @Column(name="autoenable", length=1)
+    public String getAutoenable() {
+        return m_autoenable;
+    }
+
+    public void setAutoenable(String autoenable) {
+        m_autoenable = autoenable;
     }
 
 }
