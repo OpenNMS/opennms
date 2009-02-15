@@ -95,13 +95,13 @@
                 <li> AssetNumber
                 <li> OperatingSystem
                 <li> Rack
-		<li> Slot
+				<li> Slot
+                <li> Port
               </ol>
 	</div>
 
 	<div style="width: 33%; position: relative; float: left">
-              <ol start="14">
-                <li> Port
+              <ol start="15">
                 <li> Region
                 <li> Division
                 <li> Department
@@ -114,13 +114,13 @@
                 <li> Floor
                 <li> Room
                 <li> VendorPhone
+                <li> VendorFax
+                <li> DateInstalled
               </ol>
 	</div>
 
 	<div style="width: 33%; position: relative; float: left">
-              <ol start="27">
-                <li> VendorFax
-                <li> DateInstalled
+              <ol start="29">
                 <li> Lease
                 <li> LeaseExpires
                 <li> SupportPhone
@@ -131,6 +131,11 @@
 		<li> Notification Category
 		<li> Poller Category
 		<li> Threshold Category
+                <li> Username
+                <li> Password
+                <li> Enable
+                <li> Connection
+                <li> Auto Enable
                 <li> Comments
               </ol>
 	</div>

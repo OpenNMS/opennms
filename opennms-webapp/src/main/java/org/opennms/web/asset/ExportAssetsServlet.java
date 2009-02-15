@@ -121,6 +121,11 @@ public class ExportAssetsServlet extends HttpServlet {
                 "Notification Category",
                 "Poller Category",
                 "Threshold Category",
+                "Username",
+                "Password",
+                "Enable",
+                "Connection",
+                "Auto Enable",
                 "Comments"
         };
         
@@ -177,6 +182,11 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getNotifyCategory());
             entries.add(asset.getPollerCategory());
             entries.add(asset.getThresholdCategory());
+            entries.add(asset.getUsername());
+            entries.add(asset.getPassword());
+            entries.add(asset.getEnable());
+            entries.add(asset.getConnection());
+            entries.add(asset.getAutoenable());
             entries.add(asset.getComments());
             
             out.writeNext(entries.toArray(new String[0]));
