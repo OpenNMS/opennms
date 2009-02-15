@@ -217,10 +217,19 @@ public class DefaultProvisionService implements ProvisionService {
             m_serviceTypeDao.save(svcType);
         }
         
-        // this adds the service to the interface as a side effect
-        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+        OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
+        if (svc != null) {
+            m_monitoredServiceDao.saveOrUpdate(svc);
+        } else {
         
-        m_ipInterfaceDao.save(iface);
+            // this adds the service to the interface as a side effect
+            svc = new OnmsMonitoredService(iface, svcType);
+            svc.setStatus("A");
+            m_ipInterfaceDao.saveOrUpdate(iface);
+            AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+            svc.visit(visitor);
+        }
+
         
         return svc;
     }
@@ -234,10 +243,19 @@ public class DefaultProvisionService implements ProvisionService {
             m_serviceTypeDao.save(svcType);
         }
         
-        // this adds the service to the interface as a side effect
-        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+        OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
+        if (svc != null) {
+            m_monitoredServiceDao.saveOrUpdate(svc);
+        } else {
         
-        m_ipInterfaceDao.save(iface);
+            // this adds the service to the interface as a side effect
+            svc = new OnmsMonitoredService(iface, svcType);
+            svc.setStatus("A");
+            m_ipInterfaceDao.saveOrUpdate(iface);
+            AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
+            svc.visit(visitor);
+        }
+
         
         return svc;
     }
