@@ -1069,6 +1069,13 @@ CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attrib
 --# room             : The room where this asset resides.
 --# vendorPhone      : A contact number for the vendor.
 --# vendorFax        : A fax number for the vendor.
+--# vendorAssetNumber: The vendor asset number.
+--# username		 : A Username to access the node
+--# password		 : The password to access the node
+--# enable			 : The privilege password to access the node
+--# autoenable		 : If username has privileged access
+--#                    - 'A' autoenable true
+--# connection		 : Connection protocol used to access the node (telnet, ssh, rsh, ...)
 --# userCreated      : The username who created this record.
 --# userLastModified : The last user who modified this record.
 --# lastModifiedDate : The last time this record was modified.
@@ -1109,6 +1116,11 @@ create table assets (
         vendorPhone     varchar(64),
         vendorFax       varchar(64),
         vendorAssetNumber varchar(64),
+        username		varchar(32),
+        password		varchar(32),
+        enable			varchar(32),
+        autoenable		char(1),
+        connection		varchar(32),
         userLastModified char(20) not null,
         lastModifiedDate timestamp with time zone not null,
         dateInstalled   varchar(64),

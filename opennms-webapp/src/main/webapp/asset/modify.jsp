@@ -252,6 +252,32 @@
             <td><input type="text" name="supportphone" value="<%=asset.getSupportPhone()%>" size="20" maxlength="64"/></td>
           </tr>
           <tr>
+            <td colspan="6"><h3>Authentication</h3></td>
+          </tr>
+          <tr>
+            <td>Username</td>
+            <td><input type="text" name="username" value="<%=asset.getUsername()%>" size="20" maxlength="32"/></td>
+            <td>Password</td>
+            <td><input type="text" name="password" value="<%=asset.getPassword()%>" size="20" maxlength="32"/></td>
+            <td>Enable Password</td>
+            <td><input type="text" name="enable" value="<%=asset.getEnable()%>" size="20" maxlength="32"/></td>
+          </tr>
+          <tr>
+            <td>Connection</td>
+            <td><input type="text" name="connection" value="<%=asset.getConnection()%>" size="20" maxlength="32"/></td>
+            <td>AutoEnable</td>
+            <td>
+              <select name="autoenable" size="1">
+              	<option></option>
+              <% for( int i=0; i < Asset.AUTOENABLES.length; i++ ) { %>
+                <option <%=(Asset.AUTOENABLES[i].equals(asset.getAutoenable()))?"selected":""%>><%=Asset.AUTOENABLES[i]%></option> 
+              <% } %>
+              </select>
+             </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
             <td colspan="6"><h3>Comments</h3></td>
           </tr>
           <tr>

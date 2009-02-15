@@ -139,6 +139,11 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setPollerCategory(getRequestParameter(request, "pollercategory"));
         asset.setThresholdCategory(getRequestParameter(request, "thresholdcategory"));
         asset.setComments(getRequestParameter(request, "comments"));
+        asset.setUsername(getRequestParameter(request, "username"));
+        asset.setPassword(getRequestParameter(request, "password"));
+        asset.setEnable(getRequestParameter(request, "enable"));
+        asset.setConnection(getRequestParameter(request, "connection"));
+        asset.setAutoenable(getRequestParameter(request, "autoenable"));
 
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());

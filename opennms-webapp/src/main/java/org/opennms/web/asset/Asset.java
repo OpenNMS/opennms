@@ -55,6 +55,9 @@ public class Asset extends Object {
 
     public static final String[] CATEGORIES = new String[] { UNSPECIFIED_CATEGORY, INFRASTRUCTURE_CATEGORY, SERVER_CATEGORY, DESKTOP_CATEGORY, LAPTOP_CATEGORY, PRINTER_CATEGORY, TELEPHONY_CATEGORY, OTHER_CATEGORY };
 
+    public static final String AUTOENABLE = "A";
+    
+    public static final String[] AUTOENABLES = new String[] { AUTOENABLE };
     protected int nodeId;
 
     protected Date lastModifiedDate;
@@ -134,7 +137,17 @@ public class Asset extends Object {
     protected String thresholdCategory = "";
 
     protected String comments = "";
+    
+    protected String username ="";
+    
+    protected String password ="";
 
+    protected String enable ="";
+
+    protected String connection ="";
+
+    protected String autoenable ="";
+    
     public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
     }
@@ -606,5 +619,65 @@ public class Asset extends Object {
     public String getComments() {
         return (this.comments);
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        if (username != null) {
+            this.username = username;
+        } else {
+            this.username = "";
+        }        
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        if (password != null) {
+            this.password = password;
+        } else {
+            this.password = "";
+        }        
+    }
+
+    public String getEnable() {
+        return enable;
+    }
+
+    public void setEnable(String enable) {
+        if (enable != null) {
+            this.enable = enable;
+        } else {
+            this.enable = "";
+        }        
+    }
+
+    public String getConnection() {
+        return connection;
+    }
+
+    public void setConnection(String connection) {
+        if (connection != null) {
+            this.connection = connection;
+        } else {
+            this.connection = "";
+        }        
+   }
+
+    public String getAutoenable() {
+        return autoenable;
+    }
+
+    public void setAutoenable(String autoenable) {
+        if (autoenable != null) {
+            this.autoenable = autoenable;
+        } else {
+            this.autoenable = "";
+        }        
+      }
 
 }

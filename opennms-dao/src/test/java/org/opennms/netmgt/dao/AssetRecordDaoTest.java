@@ -61,5 +61,52 @@ public class AssetRecordDaoTest extends AbstractTransactionalDaoTestCase {
         assertEquals(7, getAssetRecordDao().countAll());
 
     }
+
+    public void testAddUserName() {
+        OnmsNode onmsNode = new OnmsNode(getDistPollerDao().load("localhost"));
+        onmsNode.setLabel("myNode");
+        getNodeDao().save(onmsNode);
+        OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
+        assetRecord.setAssetNumber("imported-id: 7");
+        assetRecord.setUsername("antonio");
+        assetRecord.setPassword("password");
+        assetRecord.setEnable("cisco");
+        assetRecord.setConnection(OnmsAssetRecord.TELNET_CONNECTION);
+        getAssetRecordDao().update(assetRecord);
+        getAssetRecordDao().flush();
+
+        //Test findAll method
+        int id = assetRecord.getId();
+        OnmsAssetRecord assetRecordFromDb = getAssetRecordDao().get(id);
+        assertEquals(assetRecord.getUsername(), assetRecordFromDb.getUsername());
+        assertEquals(assetRecord.getPassword(), assetRecordFromDb.getPassword());
+        assertEquals(assetRecord.getEnable(), assetRecordFromDb.getEnable());
+        assertEquals(assetRecord.getConnection(), assetRecordFromDb.getConnection());
+
+    }
     
+    public void testAddAutoenable() {
+        OnmsNode onmsNode = new OnmsNode(getDistPollerDao().load("localhost"));
+        onmsNode.setLabel("myNode");
+        getNodeDao().save(onmsNode);
+        OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
+        assetRecord.setAssetNumber("imported-id: 7");
+        assetRecord.setUsername("antonio");
+        assetRecord.setPassword("password");
+        assetRecord.setAutoenable(OnmsAssetRecord.AUTOENABLED);
+        assetRecord.setConnection(OnmsAssetRecord.TELNET_CONNECTION);
+        getAssetRecordDao().update(assetRecord);
+        getAssetRecordDao().flush();
+
+        //Test findAll method
+        int id = assetRecord.getId();
+        OnmsAssetRecord assetRecordFromDb = getAssetRecordDao().get(id);
+        assertEquals(assetRecord.getUsername(), assetRecordFromDb.getUsername());
+        assertEquals(assetRecord.getPassword(), assetRecordFromDb.getPassword());
+        assertEquals(assetRecord.getAutoenable(), assetRecordFromDb.getAutoenable());
+        assertEquals(assetRecord.getConnection(), assetRecordFromDb.getConnection());
+
+    }
+    
+
 }

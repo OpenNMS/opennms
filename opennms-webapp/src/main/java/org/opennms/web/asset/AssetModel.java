@@ -111,7 +111,7 @@ public class AssetModel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             stmt.setInt(1, asset.nodeId);
             stmt.setString(2, asset.category);
             stmt.setString(3, asset.manufacturer);
@@ -152,6 +152,11 @@ public class AssetModel extends Object {
             stmt.setString(38, asset.pollerCategory);
             stmt.setString(39, asset.thresholdCategory);
             stmt.setString(40, asset.comments);
+            stmt.setString(41, asset.username);
+            stmt.setString(42, asset.password);
+            stmt.setString(43, asset.enable);
+            stmt.setString(44, asset.connection);
+            stmt.setString(45, asset.autoenable);
 
             stmt.execute();
             stmt.close();
@@ -166,7 +171,7 @@ public class AssetModel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=? WHERE nodeid=?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=? WHERE nodeid=?");
             stmt.setString(1, asset.category);
             stmt.setString(2, asset.manufacturer);
             stmt.setString(3, asset.vendor);
@@ -206,7 +211,12 @@ public class AssetModel extends Object {
             stmt.setString(37, asset.pollerCategory);
             stmt.setString(38, asset.thresholdCategory);
             stmt.setString(39, asset.comments);
-            stmt.setInt(40, asset.nodeId);
+            stmt.setString(40, asset.username);
+            stmt.setString(41, asset.password);
+            stmt.setString(42, asset.enable);
+            stmt.setString(43, asset.connection);
+            stmt.setString(44, asset.autoenable);
+            stmt.setInt(45, asset.nodeId);
 
             stmt.execute();
             stmt.close();
@@ -313,6 +323,11 @@ public class AssetModel extends Object {
             asset.setPollerCategory(rs.getString("pollerCategory"));
             asset.setThresholdCategory(rs.getString("thresholdCategory"));
             asset.setComments(rs.getString("comment"));
+            asset.setUsername(rs.getString("username"));
+            asset.setPassword(rs.getString("password"));
+            asset.setEnable(rs.getString("enable"));
+            asset.setConnection(rs.getString("connection"));
+            asset.setAutoenable(rs.getString("autoenable"));
 
             // Convert from java.sql.Timestamp to java.util.Date, since it looks more pretty or something
             asset.lastModifiedDate = new Date(rs.getTimestamp("lastModifiedDate").getTime());
@@ -382,5 +397,11 @@ public class AssetModel extends Object {
         new String[] { "Vendor Asset Number", "vendorAssetNumber" }, 
         new String[] { "Vendor Fax", "vendorFax" }, 
         new String[] { "Vendor Phone", "vendorPhone" }, 
-        new String[] { "ZIP Code", "zip" } };
+        new String[] { "ZIP Code", "zip" },
+        new String[] { "Username", "username" },
+        new String[] { "Password", "password" },
+        new String[] { "Enable Password", "enable" },
+        new String[] { "Connection type", "connection" },
+        new String[] { "Auto Enable", "autoenable" }        
+    };
 }
