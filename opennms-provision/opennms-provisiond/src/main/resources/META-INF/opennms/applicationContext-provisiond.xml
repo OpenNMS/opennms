@@ -61,7 +61,7 @@
   	<property name="executors">
   		<map>
   			<entry key="scan" value-ref="scanExecutor" />
-  			<entry key="scan" value-ref="writeExecutor" />
+  			<entry key="write" value-ref="writeExecutor" />
   		</map>
   	</property>
   </bean>
