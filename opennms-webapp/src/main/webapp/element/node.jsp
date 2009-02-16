@@ -204,11 +204,14 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="nostyles" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
+  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='css/styles.css' media='screen' />" />
+  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='css/print.css' media='print' />" />
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css'></link>" />
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
   <jsp:param name="script" value="<script type='text/javascript' src='extJS/adapter/ext/ext-base.js'></script>" />
@@ -227,25 +230,25 @@
 
 <h2>Node: ${model.label}</h2>
 <div id="linkbar">
-  <ul>
+  <ul class="o-menu">
     <c:url var="eventLink" value="event/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="o-menuitem">
       <a href="${eventLink}">View Events</a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="o-menuitem">
       <a href="${alarmLink}">View Alarms</a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="o-menuitem">
       <a href="${assetLink}">Asset Info</a>
     </li>
 
@@ -253,13 +256,13 @@
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
-      <li>
+      <li class="o-menuitem">
         <a href="${siteLink}">Site Status</a>
       </li>
     </c:if>
 
     <c:forEach items="${model.links}" var="link">
-      <li>
+      <li class="o-menuitem">
         <a href="${link.url}">${link.text}</a>
       </li>
     </c:forEach>
@@ -270,7 +273,7 @@
         <c:param name="parentResource" value="${model.id}"/>
         <c:param name="reports" value="all"/>
       </c:url>
-      <li>
+      <li class="o-menuitem">
         <a href="${resourceGraphsUrl}">Resource Graphs</a>
       </li>
     </c:if>
@@ -279,14 +282,14 @@
       <c:url var="rescanLink" value="element/rescan.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="o-menuitem">
         <a href="${rescanLink}">Rescan</a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="o-menuitem">
         <a href="${adminLink}">Admin</a>
       </li>
 
@@ -295,7 +298,7 @@
           <c:param name="node" value="${model.id}"/>
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
-        <li>
+        <li class="o-menuitem">
           <a href="${updateSnmpLink}">Update SNMP</a>
         </li>
       </c:if>
@@ -308,14 +311,14 @@
   <div id="interfaces-panel"></div>
   
   <!-- general info box -->
-  <h3>General (Status: ${model.status})</h3>
+  <h3 class="o-box-title">General (Status: ${model.status})</h3>
   <div class="boxWrapper">
     <ul class="plain">
       <c:if test="${model.showIpRoute}">
         <c:url var="ipRouteLink" value="element/routeipnode.jsp">
           <c:param name="node" value="${model.id}"/>
         </c:url>
-        <li>
+        <li class="o-boxed-menuitem">
           <a href="${ipRouteLink}">View Node Ip Route Info</a>
         </li>
       </c:if>
@@ -324,7 +327,7 @@
         <c:url var="bridgeLink" value="element/bridgenode.jsp">
           <c:param name="node" value="${model.id}"/>
         </c:url>
-        <li>
+        <li class="o-boxed-menuitem">
           <a href="${bridgeLink}">View Node Bridge/STP Info</a>
         </li>
       </c:if>
@@ -332,7 +335,7 @@
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="o-boxed-menuitem">
         <a href="${detailLink}">View Node Link Detailed Info</a>
       </li>
     </ul>	     
@@ -343,7 +346,7 @@
 
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <h3>Asset Information</h3>
+    <h3 class="o-box-title">Asset Information</h3>
     <table>
       <tr>
         <th>Description</th>
@@ -359,48 +362,48 @@
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.nodeSysId}">
-    <h3>SNMP Attributes</h3>
-    <table>
-      <tr>
-        <th>Name</th>
-        <td>${model.node.nodeSysName}</td>
+    <h3 class="o-box-title">SNMP Attributes</h3>
+    <table class="o-box-table">
+      <tr class="o-box-table-row">
+        <th class="o-box-table-heading">Name</th>
+        <td class="o-box-table-data">${model.node.nodeSysName}</td>
       </tr>
-      <tr>
-        <th>Object&nbsp;ID</th>
-        <td>${model.node.nodeSysId}</td>
+      <tr class="o-box-table-row">
+        <th class="o-box-table-heading">Object&nbsp;ID</th>
+        <td class="o-box-table-data">${model.node.nodeSysId}</td>
       </tr>
-      <tr>
-        <th>Location</th>
-        <td>${model.node.nodeSysLocn}</td>
+      <tr class="o-box-table-row">
+        <th class="o-box-table-heading">Location</th>
+        <td class="o-box-table-data">${model.node.nodeSysLocn}</td>
       </tr>
-      <tr>
-        <th>Contact</th>
-        <td>${model.node.nodeSysContact}</td>
+      <tr class="o-box-table-row">
+        <th class="o-box-table-heading">Contact</th>
+        <td class="o-box-table-data">${model.node.nodeSysContact}</td>
       </tr>
-      <tr>
-        <th valign="top">Description</th>
-        <td valign="top">${model.node.nodeSysDescr}</td>
+      <tr class="o-box-table-row">
+        <th class="o-box-table-heading" valign="top">Description</th>
+        <td class="o-box-table-data" valign="top">${model.node.nodeSysDescr}</td>
       </tr>
     </table>
   </c:if>
 
   <!-- Interface box -->
-  <h3>Interfaces</h3>
-  <table>
-    <tr>
-      <th>Interface</th>
-      <th>Index</th>
-      <th>Description</th>
+  <h3 class="o-box-title">Interfaces</h3>
+  <table class="o-box-table">
+    <tr class="o-box-table-row">
+      <th class="o-box-table-heading">Interface</th>
+      <th class="o-box-table-heading">Index</th>
+      <th class="o-box-table-heading">Description</th>
       <c:if test="${model.hasIfAliases}">
-        <th>IfAlias</th>
+        <th class="o-box-table-heading">IfAlias</th>
       </c:if>
     </tr>
     <c:forEach items="${model.intfs}" var="intf">
       <c:url var="interfaceLink" value="element/interface.jsp">
         <c:param name="ipinterfaceid" value="${intf.id}"/>
       </c:url>
-      <tr>
-        <td>
+      <tr class="o-box-table-row">
+        <td class="o-box-table-data">
           <c:choose>
             <c:when test="${intf.ipAddress == '0.0.0.0'}">
               <c:choose>
@@ -423,7 +426,7 @@
             </c:otherwise>
           </c:choose>
         </td>
-        <td>
+        <td class="o-box-table-data">
           <c:choose>
             <c:when test="${intf.ifIndex > 0}">
               ${intf.ifIndex}
@@ -433,7 +436,7 @@
             </c:otherwise>
           </c:choose>
         </td>
-        <td>
+        <td class="o-box-table-data">
           <c:choose>
             <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
               ${intf.snmpIfDescription}
@@ -447,7 +450,7 @@
           </c:choose>
         </td>
         <c:if test="${model.hasIfAliases}">
-          <td>
+          <td class="o-box-table-data">
             <c:if test="${intf.snmpIfAlias != null && intf.snmpIfAlias != ''}">
               ${intf.snmpIfAlias}
             </c:if>
@@ -460,26 +463,26 @@
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
     <h3>VLAN Information</h3>
-    <table>
+    <table class="o-box-table">
       <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Status</th>
-          <th>Last Poll Time</th>
+        <tr class="o-box-table-row">
+          <th class="o-box-table-heading">ID</th>
+          <th class="o-box-table-heading">Name</th>
+          <th class="o-box-table-heading">Type</th>
+          <th class="o-box-table-heading">Status</th>
+          <th class="o-box-table-heading">Status</th>
+          <th class="o-box-table-heading">Last Poll Time</th>
         </tr>
       </thead>
   
       <c:forEach items="${model.vlans}" var="vlan">
-        <tr>
-          <td>${vlan.vlanId}</td>
-          <td>${vlan.vlanName}</td>
-          <td>${vlan.vlanTypeString}</td>
-          <td>${vlan.vlanStatusString}</td>
-          <td>${vlan.statusString}</td>
-          <td>${vlan.lastPollTime}</td>
+        <tr class="o-box-table-row">
+          <td class="o-box-table-data">${vlan.vlanId}</td>
+          <td class="o-box-table-data">${vlan.vlanName}</td>
+          <td class="o-box-table-data">${vlan.vlanTypeString}</td>
+          <td class="o-box-table-data">${vlan.vlanStatusString}</td>
+          <td class="o-box-table-data">${vlan.statusString}</td>
+          <td class="o-box-table-data">${vlan.lastPollTime}</td>
         </tr>
       </c:forEach>
     </table>
