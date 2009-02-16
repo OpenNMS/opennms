@@ -63,9 +63,17 @@
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+  <c:choose>
+    <c:when test="${empty nobase}">
+        <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+    </c:when>
+  </c:choose>
+  <c:choose>
+    <c:when test="${empty nostyles}">
+        <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+    </c:when>
+  </c:choose>
 <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
