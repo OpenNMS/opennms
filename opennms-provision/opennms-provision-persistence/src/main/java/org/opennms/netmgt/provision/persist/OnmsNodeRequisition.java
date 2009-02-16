@@ -139,7 +139,6 @@ public class OnmsNodeRequisition {
             InterfaceBuilder ifBldr = bldr.addInterface(ipAddr);
             ifBldr.setIsManaged(ifaceReq.getStatus() == 3 ? "U" : "M");
             ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary());
-            ifBldr.setIpStatus(ifaceReq.getStatus() == 3 ? 3 : 1);
             
         }
 

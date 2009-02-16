@@ -232,6 +232,11 @@ public class CoreScanActivities {
                 System.out.println("Processing row with ipAddr "+row.getIpAddress());
                 if (!row.getIpAddress().startsWith("127.0.0")) {
                     final OnmsIpInterface iface = row.createInterfaceFromRow();
+                    
+                    iface.setIsManaged("M");
+                    
+                    
+                    
                     Runnable r = new Runnable() {
                         public void run() {
                             System.out.println("Saving OnmsIpInterface "+iface);

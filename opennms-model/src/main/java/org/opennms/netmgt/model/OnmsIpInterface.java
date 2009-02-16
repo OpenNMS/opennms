@@ -271,12 +271,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Column(name="ipStatus")
+    @Deprecated
     public Integer getIpStatus() {
+        if (m_snmpInterface != null) {
+            return m_snmpInterface.getIfOperStatus();
+        }
         return m_ipStatus;
     }
-
-    public void setIpStatus(Integer ipstatus) {
-        m_ipStatus = ipstatus;
+    
+    @Deprecated
+    public void setIpStatus(Integer status) {
+        // we don't do anything here as this is a deprecated field
     }
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -405,18 +410,19 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             setIsManaged(scannedIface.getIsManaged());
         }
     
-        if (hasNewValue(scannedIface.getIsSnmpPrimary(), getIsSnmpPrimary())) {
+        if (hasNewCollectionTypeValue(scannedIface.getIsSnmpPrimary(), getIsSnmpPrimary())) {
             setIsSnmpPrimary(scannedIface.getIsSnmpPrimary());
-        }
-    
-        if (hasNewValue(scannedIface.getIpStatus(), getIpStatus())) {
-            setIpStatus(scannedIface.getIpStatus());
         }
     
         if (hasNewValue(scannedIface.getIpHostName(), getIpHostName())) {
             setIpHostName(scannedIface.getIpHostName());
         }
     }
+    
+    protected static boolean hasNewCollectionTypeValue(CollectionType newVal, CollectionType existingVal) {
+        return newVal != null && !newVal.equals(existingVal) && newVal != CollectionType.NO_COLLECT;
+    }
+
 
     public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder) {
     

@@ -89,7 +89,6 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
-        m_currentInterface.setIpStatus(status == 3 ? Integer.valueOf(3) : Integer.valueOf(1));
         
         if ("P".equals(snmpPrimary)) {
         }
