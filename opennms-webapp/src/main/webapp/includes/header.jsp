@@ -64,12 +64,13 @@
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
   <c:choose>
-    <c:when test="${empty nobase}">
+    <c:when test="${param.nobase != 'true' }">
         <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
     </c:when>
   </c:choose>
+  <!--  ${nostyles} -->
   <c:choose>
-    <c:when test="${empty nostyles}">
+    <c:when test="${param.nostyles != 'true' }">
         <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
     </c:when>
