@@ -64,7 +64,8 @@ table {
 .x-grid3-hd-row td{
 	color:#ffffff;
 	border-left:0px;
-	font-weight: bold;	
+	font-weight: bold;
+	background: transparent;
 }
 
 .x-grid3-row-over{
@@ -75,7 +76,7 @@ table {
 
 .x-grid3-header {
 	height:24px;
-	background-color:#444444;
+	background:#444444;
 }
 
 .x-panel {
