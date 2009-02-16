@@ -61,7 +61,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		}
 	],
 	
-	paginBarButtons:[],
+	pagingBarButtons:[],
 	
 	
 	initComponent:function(){
@@ -98,7 +98,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 			        emptyMsg: "No topics to display",
 			        
 			        items:[
-			            '-', this.paginBarButtons]
+			            '-', this.pagingBarButtons]
 			
 			}),
 			
@@ -113,6 +113,10 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		OpenNMS.ux.PageableGrid.superclass.initComponent.apply(this, arguments);
 		
+	},
+	
+	addPagingBarButton:function(item) {
+		this.getBottomToolbar().addButton(item);
 	},
 	
 	load:function(url, params){
