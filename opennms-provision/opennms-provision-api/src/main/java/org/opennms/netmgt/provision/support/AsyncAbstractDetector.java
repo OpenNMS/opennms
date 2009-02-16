@@ -41,26 +41,29 @@ import org.opennms.netmgt.provision.DetectorMonitor;
  *
  */
 public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
+    
+    private static final int DEFAULT_RETRIES = 1;
+    private static final int DEFAULT_TIMEOUT = 2000;
+    
     private int m_port;
     private int m_retries;
     private int m_timeout;
     private String m_serviceName;
     
     
-    @Deprecated
-    protected AsyncAbstractDetector() {
-        
+    protected AsyncAbstractDetector(String serviceName, int port) {
+        this(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
     
-    protected AsyncAbstractDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        m_port = defaultPort;
-        m_timeout = defaultTimeout;
-        m_retries = defaultRetries;
+    protected AsyncAbstractDetector(String serviceName, int port, int timeout, int retries) {
+        m_port = port;
+        m_timeout = timeout;
+        m_retries = retries;
     }
 
     public void init() {
-        if (m_timeout <= 0) {
-            throw new IllegalStateException(String.format("Timeout of %d is invalid.  Must be > 0", m_timeout));
+        if (m_serviceName == null || m_timeout <= 0) {
+            throw new IllegalStateException(String.format("ServiceName is null or timeout of %d is invalid.  Timeout must be > 0", m_timeout));
         }
         
         onInit();

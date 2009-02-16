@@ -53,7 +53,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class SnmpDetector extends AbstractDetector {
     
-    public static class SnmpExchange implements Exchange{
+    private static final String DEFAULT_SERVICE_NAME = "SNMP";
+
+    public static class SnmpExchange implements Exchange {
 
         public boolean matchResponseByString(String input) {
             // TODO Auto-generated method stub
@@ -78,23 +80,28 @@ public class SnmpDetector extends AbstractDetector {
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
-    private static final int DEFAULT_PORT = -1;
-    private static final int DEFAULT_TIMEOUT = -1;
-    private static final int DEFAULT_RETRIES = -1;
+    private static final int DEFAULT_PORT = 161;
+    private static final int DEFAULT_TIMEOUT = 2000;
+    private static final int DEFAULT_RETRIES = 1;
     
-    private String m_oid;
+    private String m_oid = DEFAULT_OID;
     private String m_forceVersion;
     private String m_vbvalue;
     
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
-    @SuppressWarnings("deprecation")
     public SnmpDetector() {
-        setServiceName("SNMP");
-        setPort(DEFAULT_PORT);
-        setTimeout(DEFAULT_TIMEOUT);
-        setRetries(DEFAULT_RETRIES);
-        setOid(DEFAULT_OID);
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public SnmpDetector(String serviceName, int port) {
+        super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
 
     @Override
@@ -104,8 +111,7 @@ public class SnmpDetector extends AbstractDetector {
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
         try {
 
-            String oid = getOid(); //ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address); //SnmpPeerFactory.getInstance().getAgentConfig(address);
+            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             String expectedValue = null;
             
             if (getPort() > 0) {
@@ -122,21 +128,21 @@ public class SnmpDetector extends AbstractDetector {
             
             if (getForceVersion() != null) {
                 String version = getForceVersion();
-                if (version.equalsIgnoreCase("snmpv1"))
-                    agentConfig.setVersion(SnmpAgentConfig.VERSION1);
-                else if (version.equalsIgnoreCase("snmpv2") || version.equalsIgnoreCase("snmpv2c"))
-                    agentConfig.setVersion(SnmpAgentConfig.VERSION2C);
                 
-                //TODO: make sure JoeSnmpStrategy correctly handles this.
-                else if (version.equalsIgnoreCase("snmpv3"))
+                if (version.equalsIgnoreCase("snmpv1")) {
+                    agentConfig.setVersion(SnmpAgentConfig.VERSION1);
+                } else if (version.equalsIgnoreCase("snmpv2") || version.equalsIgnoreCase("snmpv2c")) {
+                    agentConfig.setVersion(SnmpAgentConfig.VERSION2C);
+                } else if (version.equalsIgnoreCase("snmpv3")) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION3);
+                }
             }
             
             if (getVbvalue() != null) {
                 expectedValue = getVbvalue();
             }
             
-            String retrievedValue = getValue(agentConfig, oid);
+            String retrievedValue = getValue(agentConfig, getOid());
             
             if (retrievedValue != null && expectedValue != null) {
                 return (Pattern.compile(expectedValue).matcher(retrievedValue).find());

@@ -44,13 +44,27 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
     
+    private static final String DEFAULT_SERVICE_NAME = "SSH";
+    private static final int DEFAULT_PORT = 22;
     private String m_banner = null;
     private String m_match = null;
     private String m_clientBanner = Ssh.DEFAULT_CLIENT_BANNER;
     
+    /**
+     * Default constructor
+     */
     public SshDetector() {
-        super(22, 3000, 0);
-        setServiceName("SSH");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public SshDetector(String serviceName, int port) {
+        super(serviceName, port);
     }
 
     @Override

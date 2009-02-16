@@ -44,19 +44,30 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class JdbcDetector extends BasicDetector<JDBCRequest, JDBCResponse>{
     
+    private static final String DEFAULT_SERVICE_NAME = "JDBC";
+
     private static int DEFAULT_PORT = 3306;
-    private static int DEFAULT_TIMEOUT = 1000;
-    private static int DEFAULT_RETRIES = 0;
-    
     
     private String m_dbDriver = DBTools.DEFAULT_JDBC_DRIVER;
     private String m_user = DBTools.DEFAULT_DATABASE_USER;
     private String m_password = DBTools.DEFAULT_DATABASE_PASSWORD;
     private String m_url = DBTools.DEFAULT_URL;
     
+    /**
+     * Default constructor
+     */
     protected JdbcDetector() {
-        super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
-        setServiceName("JDBC");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    protected JdbcDetector(String serviceName, int port) {
+        super(serviceName, port);
     }
 
     @Override

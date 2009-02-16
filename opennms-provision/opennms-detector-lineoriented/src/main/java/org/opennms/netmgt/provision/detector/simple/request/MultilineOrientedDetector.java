@@ -42,13 +42,17 @@ import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator
  */
 public abstract class MultilineOrientedDetector extends BasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
+    protected MultilineOrientedDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+    
     /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * @param port
+     * @param timeout
+     * @param retries
      */
-    protected MultilineOrientedDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        super(defaultPort, defaultTimeout, defaultRetries);
+    protected MultilineOrientedDetector(String serviceName, int port, int timeout, int retries) {
+        super(serviceName, port, timeout, retries);
     }
     
     protected LineOrientedRequest request(String command) {

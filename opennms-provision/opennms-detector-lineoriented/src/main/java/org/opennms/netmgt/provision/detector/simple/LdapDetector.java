@@ -48,6 +48,7 @@ import com.novell.ldap.LDAPConnection;
 @Scope("prototype")
 public class LdapDetector extends LineOrientedDetector {
     
+    private static final String DEFAULT_SERVICE_NAME = "LDAP";
     /**
      * <P>
      * The default ports on which the host is checked to see if it supports
@@ -57,15 +58,21 @@ public class LdapDetector extends LineOrientedDetector {
     private static final int DEFAULT_PORT = LDAPConnection.DEFAULT_PORT;
 
     /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * Default constructor
      */
     protected LdapDetector() {
-        super(DEFAULT_PORT, 5000, 0);
-        setServiceName("LDAP");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    protected LdapDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
     
     @Override
     protected void onInit() {

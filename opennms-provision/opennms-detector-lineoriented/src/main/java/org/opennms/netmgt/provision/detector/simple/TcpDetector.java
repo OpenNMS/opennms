@@ -41,10 +41,26 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class TcpDetector extends AsyncLineOrientedDetector {
 
+    private static final String DEFAULT_SERVICE_NAME = "TCP";
+    private static final int DEFAULT_PORT = 23;
+
+    /**
+     * Default constructor
+     */
     public TcpDetector() {
-        super(23, 5000, 1);
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
     
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public TcpDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+
     public void onInit() {
         expectBanner(find("\\w"));
     }

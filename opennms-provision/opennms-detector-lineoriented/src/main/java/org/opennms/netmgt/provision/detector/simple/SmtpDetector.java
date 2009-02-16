@@ -41,18 +41,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class SmtpDetector extends AsyncMultilineDetector{
+public class SmtpDetector extends AsyncMultilineDetector {
     
+    private static final String DEFAULT_SERVICE_NAME = "SMTP";
+    private static final int DEFAULT_PORT = 25;
+
     /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * Default constructor
      */
     public SmtpDetector() {
-        super(25, 1000, 2);
-        setServiceName("SMTP");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
-
+    
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public SmtpDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+    
     public void onInit() {
         setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory( Charset.forName("UTF-8"), "-")));
         

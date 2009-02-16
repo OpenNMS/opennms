@@ -55,37 +55,27 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     
-    /**
-     * </P>
-     * The default port on which the host is checked to see if it supports DNS.
-     * </P>
-     */
+    private static final String DEFAULT_SERVICE_NAME = "DNS";
+
     private final static int DEFAULT_PORT = 53;
-
-    /**
-     * Default number of retries for DNS requests
-     */
-    private final static int DEFAULT_RETRY = 3;
-
-    /**
-     * Default timeout (in milliseconds) for DNS requests.
-     */
-    private final static int DEFAULT_TIMEOUT = 3000; // in milliseconds
-
-    /**
-     * Default DNS lookup
-     */
     private final static String DEFAULT_LOOKUP = "localhost";
-    
     private String m_lookup = DEFAULT_LOOKUP;
+
     /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * Default constructor
      */
     public DnsDetector() {
-        super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
-        
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    }
+    
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public DnsDetector(String serviceName, int port) {
+        super(serviceName, port);
     }
     
     public void onInit() {

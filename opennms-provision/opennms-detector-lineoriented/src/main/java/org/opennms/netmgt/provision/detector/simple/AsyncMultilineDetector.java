@@ -41,13 +41,17 @@ import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseVali
  */
 public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
+    public AsyncMultilineDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+
      /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * @param port
+     * @param timeout
+     * @param retries
      */
-    public AsyncMultilineDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        super(defaultPort, defaultTimeout, defaultRetries);
+    public AsyncMultilineDetector(String serviceName, int port, int timeout, int retries) {
+        super(serviceName, port, timeout, retries);
     }
 
     @Override

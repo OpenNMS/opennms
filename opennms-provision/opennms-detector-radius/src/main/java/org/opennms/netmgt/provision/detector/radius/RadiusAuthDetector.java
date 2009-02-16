@@ -51,6 +51,8 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket>{
     
+    private static final String DEFAULT_SERVICE_NAME = "RadiusAuth";
+
     /**
      * Default radius authentication port
      */
@@ -95,8 +97,21 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
     private String m_user = DEFAULT_USER;
     private String m_password = DEFAULT_PASSWORD;
     
+    /**
+     * Default constructor
+     */
     protected RadiusAuthDetector() {
-        super(1812, 5000, 0);
+        super(DEFAULT_SERVICE_NAME, DEFAULT_AUTH_PORT);
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    protected RadiusAuthDetector(String serviceName, int port) {
+        super(serviceName, port);
     }
 
     @Override
