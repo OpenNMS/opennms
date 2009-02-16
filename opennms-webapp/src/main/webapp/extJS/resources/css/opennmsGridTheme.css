@@ -73,10 +73,9 @@ table {
 
 /*Custom Style end*/
 
-.x-grid3-header{
+.x-grid3-header {
 	height:24px;
 	background-color:#444444;
-	background:#444444;	
 }
 
 .x-panel {
@@ -86,7 +85,8 @@ table {
 .x-panel-header {
     color:#333;
 	border:1px solid #d0d0d0;
-    background-image:url(../images/onmsTheme/panel/Picture-4.gif);
+    background-image:url(../images/onmsTheme/panel/headingbg.png);
+    background-position: center center;
 }
 .x-panel-header-text{
 	color:#ffffff;	
@@ -280,7 +280,9 @@ table {
 }
 
 ul.x-tab-strip-top{
-	background:#dbdbdb url(../images/onmsTheme/panel/Picture-4.gif) repeat-x left top;
+	background-color: #d0d0d0;
+	background-image: url(../images/onmsTheme/panel/headingbg.png);
+	background-position: center center;
 	border-color:#d0d0d0;
     padding-top: 2px;
 }
