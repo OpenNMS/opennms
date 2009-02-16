@@ -42,12 +42,28 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class CitrixDetector extends AsyncLineOrientedDetector {
-//MultilineOrientedDetector
+    
+    
+    private static final String DEFAULT_SERVICE_NAME = "CITRIX";
+    private static final int DEFAULT_PORT = 1494;
+
+    /**
+     * Default constructor
+     */
     public CitrixDetector() {
-        super(1494, 500, 2);
-        setServiceName("CITRIX");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public CitrixDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+    
     @Override
     protected void onInit() {
         expectBanner(startsWith("ICA"));       

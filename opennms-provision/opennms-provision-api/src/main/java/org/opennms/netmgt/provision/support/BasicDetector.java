@@ -54,10 +54,14 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     
     private ClientConversation<Request, Response> m_conversation = new ClientConversation<Request, Response>();
     
-    protected BasicDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        super(defaultPort, defaultTimeout, defaultRetries);
+    protected BasicDetector(String serviceName, int port, int timeout, int retries) {
+        super(serviceName, port, timeout, retries);
     }
     
+    protected BasicDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+
     abstract protected void onInit();
     
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {

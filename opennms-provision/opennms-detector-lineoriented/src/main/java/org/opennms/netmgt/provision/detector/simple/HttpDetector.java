@@ -42,24 +42,42 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpStatusResponse> {
     
+    private static final String DEFAULT_SERVICE_NAME = "HTTP";
+    private static final int DEFAULT_PORT = 80;
     private static String DEFAULT_URL="/";
     private static int DEFAULT_MAX_RET_CODE = 399;
+    
     private String m_url;
     private int m_maxRetCode;
     private boolean m_checkRetCode = false;
-    
+
+    /**
+     * Default constructor
+     */
     public HttpDetector() {
-        super(80, 3000, 0);
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+        contructDefaults();
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public HttpDetector(String serviceName, int port) {
+        super(serviceName, port);
+        contructDefaults();
+    }
+    
+    private void contructDefaults() {
         setProtocolCodecFilter(new ProtocolCodecFilter(new HttpProtocolCodecFactory()));
-        setServiceName("HTTP");
         setUrl(DEFAULT_URL);
         setMaxRetCode(DEFAULT_MAX_RET_CODE);
     }
     
-    
-    
     protected void onInit() {
-        send(request(httpCommand("GET")), contains("HTTP", getUrl(), isCheckRetCode(), getMaxRetCode()));
+        send(request(httpCommand("GET")), contains(DEFAULT_SERVICE_NAME, getUrl(), isCheckRetCode(), getMaxRetCode()));
     }
     
     /**

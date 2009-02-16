@@ -43,9 +43,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class Jsr160Detector extends JMXDetector{
 
+    private static final String DEFAULT_SERVICE_NAME = "JSR160";
+
     private static int DEFAULT_PORT = 9003;
-    private static int DEFAULT_TIMEOUT = 1000;
-    private static int DEFAULT_RETRIES = 0;
     
     private String m_factory = "STANDARD";
     private String m_friendlyName = "jsr160";
@@ -55,10 +55,21 @@ public class Jsr160Detector extends JMXDetector{
     private String m_username = "opennms";
     private String m_password = "OPENNMS";
     
+    /**
+     * Default constructor
+     */
     protected Jsr160Detector() {
-        super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
-        setServiceName("JSR160");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    }
 
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    protected Jsr160Detector(String serviceName, int port) {
+        super(serviceName, port);
     }
 
     @Override
