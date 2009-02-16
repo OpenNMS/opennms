@@ -101,7 +101,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
-        m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
+        //m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         
         if ("P".equals(snmpPrimary)) {
         	try {

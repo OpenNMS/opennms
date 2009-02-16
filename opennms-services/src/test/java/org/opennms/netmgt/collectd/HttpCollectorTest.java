@@ -145,7 +145,7 @@ public class HttpCollectorTest {
         if (m_nodeDao.findByLabel("testnode").size() == 0) {
             NetworkBuilder builder = new NetworkBuilder(m_distPoller);
             builder.addNode("testnode");
-            builder.addInterface(InetAddress.getByName(m_testHostName).getHostAddress()).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+            builder.addInterface(InetAddress.getByName(m_testHostName).getHostAddress()).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(getServiceType("ICMP"));
             builder.addService(getServiceType("HTTP"));
             if (m_nodeDao == null) {

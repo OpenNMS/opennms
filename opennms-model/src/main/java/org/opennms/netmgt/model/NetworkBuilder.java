@@ -144,11 +144,6 @@ public class NetworkBuilder {
 			return m_iface;
 		}
 
-		public InterfaceBuilder setIpStatus(int ipStatus) {
-			m_iface.setIpStatus(new Integer(ipStatus));
-			return this;
-		}
-
 		public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
 		    OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
 		    m_iface.setSnmpInterface(snmpIf);
