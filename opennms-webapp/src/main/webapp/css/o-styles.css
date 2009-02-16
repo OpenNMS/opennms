@@ -1,0 +1,31 @@
+h3.o-box, h3.o-box-title {
+	background-image: url(../images/headingbg.png);
+	background-repeat: repeat-x;
+	background-position: center center;
+	background-color: #366903;
+	color: #FFF;
+	border:1px solid #999;
+	border-bottom: 0;
+	margin-bottom: 0;
+	margin-top: 7px;
+	font-size: 70%;
+	padding: 6px;
+} 
+
+th.o-box, th.o-box-table-heading {
+    font-weight: bold;
+    padding:4px 5px;
+    text-align:left;
+}
+
+td.o-box,td.o-box-table-data {
+    padding:4px 5px;
+}
+
+table.o-box,table.o-box-table {
+    border-collapse:collapse;
+    margin-bottom:10px;
+    margin-top:0;
+    width:100%;
+}
+
