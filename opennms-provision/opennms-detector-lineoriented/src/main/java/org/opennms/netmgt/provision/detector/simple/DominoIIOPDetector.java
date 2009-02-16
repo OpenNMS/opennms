@@ -53,26 +53,25 @@ public class DominoIIOPDetector extends LineOrientedDetector {
      */
     private static final int DEFAULT_PORT = 63148;
 
-    /**
-     * Default number of retries for TCP requests
-     */
-    private static final int DEFAULT_RETRIES = 0;
-
-    /**
-     * Default timeout (in milliseconds) for TCP requests
-     */
-    private static final int DEFAULT_TIMEOUT = 1000; // in milliseconds
-
-    /**
-     * The protocol supported by the detector
-     */
-    private static final String PROTOCOL_NAME = "DominoIIOP";
+    private static final String DEFAULT_SERVICE_NAME = "DominoIIOP";
     
     private int m_iorPort = DEFAULT_IORPORT;
     
+    /**
+     * Default constructor
+     */
     public DominoIIOPDetector() {
-        super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
-        setServiceName(PROTOCOL_NAME);
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public DominoIIOPDetector(String serviceName, int port) {
+        super(serviceName, port);
     }
 
     @Override

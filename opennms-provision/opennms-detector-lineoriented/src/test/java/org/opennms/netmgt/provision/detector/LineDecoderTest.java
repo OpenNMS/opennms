@@ -96,7 +96,7 @@ public class LineDecoderTest {
     public static class TestDetector extends AsyncLineOrientedDetector{
 
         public TestDetector() {
-            super(110, 5000, 1);
+            super("POP3", 110, 5000, 1);
            
         }
 

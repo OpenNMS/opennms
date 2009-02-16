@@ -74,14 +74,18 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     private boolean useSSLFilter = false;
     
+    public AsyncBasicDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
+    
     /**
-     * 
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * @param serviceName
+     * @param port
+     * @param timeout
+     * @param retries
      */
-    public AsyncBasicDetector(int defaultPort, int defaultTimeout, int defaultRetries){
-        super(defaultPort, defaultTimeout, defaultRetries);
+    public AsyncBasicDetector(String serviceName, int port, int timeout, int retries){
+        super(serviceName, port, timeout, retries);
     }
     
     abstract protected void onInit();

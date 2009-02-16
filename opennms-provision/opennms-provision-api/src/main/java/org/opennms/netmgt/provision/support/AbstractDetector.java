@@ -7,6 +7,8 @@ import org.opennms.netmgt.provision.SyncServiceDetector;
 
 public abstract class AbstractDetector implements SyncServiceDetector {
     
+    private static final int DEFAULT_TIMEOUT = 2000;
+    private static final int DEFAULT_RETRIES = 1;
     private int m_port;
     private int m_retries;
     private int m_timeout;
@@ -18,17 +20,22 @@ public abstract class AbstractDetector implements SyncServiceDetector {
         
     }
     
-    protected AbstractDetector(int defaultPort, int defaultTimeout, int defaultRetries) {
-        m_port = defaultPort;
-        m_timeout = defaultTimeout;
-        m_retries = defaultRetries;
+    protected AbstractDetector(String serviceName, int port, int timeout, int retries) {
+        m_serviceName = serviceName;
+        m_port = port;
+        m_timeout = timeout;
+        m_retries = retries;
+    }
+
+    public AbstractDetector(String serviceName, int port) {
+        this(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
+        m_port = port;
     }
 
     public void init() {
-        if (m_timeout <= 0) {
-            throw new IllegalStateException(String.format("Timeout of %d is invalid.  Must be > 0", m_timeout));
+        if (m_serviceName == null || m_timeout <= 0) {
+            throw new IllegalStateException(String.format("ServiceName and/or timeout of %d is invalid.  ServiceName can't be null and timeout must be > 0", m_timeout));
         }
-        
         onInit();
     }
     

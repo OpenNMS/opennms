@@ -37,16 +37,24 @@ import org.springframework.stereotype.Component;
 public class HttpsDetector extends HttpDetector {
     
     
+    private static final String DEFAULT_SERVICE_NAME = "HTTPS";
+    private static final int DEFAULT_PORT = 443;
+
     public HttpsDetector() {
-        setServiceName("Https");
-        setPort(443);
-        setTimeout(500);
-        setRetries(1);
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
         setUseSSLFilter(true);
-        setServiceName("HTTP");
         setUrl("/");
         setMaxRetCode(500);
     }
     
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public HttpsDetector(String serviceName, int port) {
+        super(serviceName, port);
+    }
     
 }

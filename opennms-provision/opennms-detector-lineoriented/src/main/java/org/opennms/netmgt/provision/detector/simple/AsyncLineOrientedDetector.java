@@ -45,15 +45,19 @@ import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
  */
 public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineOrientedRequest, LineOrientedResponse> {
 
-    /**
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
-     */
-    public AsyncLineOrientedDetector(int defaultPort, int defaultTimeout,
-            int defaultRetries) {
-        super(defaultPort, defaultTimeout, defaultRetries);
+    public AsyncLineOrientedDetector(String serviceName, int port) {
+        super(serviceName, port);
         setProtocolCodecFilter( new ProtocolCodecFilter ( new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
+    }
+
+    /**
+     * @param port
+     * @param timeout
+     * @param retries
+     */
+    public AsyncLineOrientedDetector(String serviceName, int port, int timeout, int retries) {
+        super(serviceName, port, timeout, retries);
+        setProtocolCodecFilter( new ProtocolCodecFilter (new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
     }
 
     @Override

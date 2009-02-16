@@ -47,17 +47,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
-    private final static int DEFAULT_PORT = 5666;
-    
-    /**
-     * Default number of retries for TCP requests
-     */
-    private final static int DEFAULT_RETRY = 0;
+    private static final String DEFAULT_SERVICE_NAME = "NRPE";
 
-    /**
-     * Default timeout (in milliseconds) for TCP requests
-     */
-    private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
+    private final static int DEFAULT_PORT = 5666;
     
     /**
      * Default whether to use SSL
@@ -66,10 +58,22 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
     private boolean m_useSsl = DEFAULT_USE_SSL;
     private int m_padding = 2;
-    
+
+    /**
+     * Default constructor
+     */
     public NrpeDetector() {
-        super(DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
-        setServiceName("NRPE");
+        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    }
+
+    /**
+     * Constructor for creating a non-default service based on this protocol
+     * 
+     * @param serviceName
+     * @param port
+     */
+    public NrpeDetector(String serviceName, int port) {
+        super(serviceName, port);
     }
 
     @Override
