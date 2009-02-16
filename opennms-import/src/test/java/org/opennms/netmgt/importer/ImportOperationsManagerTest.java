@@ -201,7 +201,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
                 NetworkBuilder builder = new NetworkBuilder(distPoller);
                 builder.addNode("node7").setForeignSource("imported:").setForeignId("7");
                 builder.getCurrentNode().getAssetRecord().setDisplayCategory("cat7");
-                builder.addInterface("192.168.7.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+                builder.addInterface("192.168.7.1").setIsManaged("M").setIsSnmpPrimary("P");
                 builder.addService(icmp);
                 builder.addService(snmp);
                 getNodeDao().save(builder.getCurrentNode());

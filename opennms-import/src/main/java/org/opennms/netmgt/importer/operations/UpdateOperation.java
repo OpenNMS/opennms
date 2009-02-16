@@ -183,9 +183,6 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             	updateSnmpInterface(imported, iface);
             }
             
-           if (!nullSafeEquals(iface.getIpStatus(), imported.getIpStatus()))
-               iface.setIpStatus(imported.getIpStatus());
-           
            if (!nullSafeEquals(iface.getIpHostName(), imported.getIpHostName()))
         	   iface.setIpHostName(imported.getIpHostName());
            
