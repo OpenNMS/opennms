@@ -38,9 +38,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<ipAddress>10.10.10.10</ipAddress>"));
         url += "/10.10.10.10";
-        sendPut(url, "ipStatus=0");
+        sendPut(url, "isManaged=U");
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<ipStatus>0</ipStatus>"));
+        assertTrue(xml.contains("<isManaged>U</isManaged>"));
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
     }
