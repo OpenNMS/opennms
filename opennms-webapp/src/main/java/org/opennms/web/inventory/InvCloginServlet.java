@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Category;
+
 import org.opennms.web.inventory.InventoryLayer;
 
 public class InvCloginServlet extends HttpServlet {
@@ -23,7 +26,7 @@ public class InvCloginServlet extends HttpServlet {
         
         HttpSession userSession = request.getSession(false);
 
-        System.out.println("InvCloginServlet");
+        log().debug("InvCloginServlet invoked");
         
         if (userSession != null) {
             String userId = request.getParameter("userID");
@@ -41,9 +44,12 @@ public class InvCloginServlet extends HttpServlet {
         }
     }
         
-        private void redirect(HttpServletRequest request,
-                HttpServletResponse response) throws IOException {
-            String redirectURL = request.getHeader("Referer");
-            response.sendRedirect(redirectURL);
-        }
+    private void redirect(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        String redirectURL = request.getHeader("Referer");
+        response.sendRedirect(redirectURL);
+    }
+    private static Category log() {
+        return Logger.getLogger("Rancid");
+    }
 }
