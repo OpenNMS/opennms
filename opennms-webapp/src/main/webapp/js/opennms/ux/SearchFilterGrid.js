@@ -11,12 +11,24 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	width: 400,
 	
 	initComponent:function(){
-	
+		var searchButton = new Ext.Button({
+			text:'search',
+			listeners:{
+				'click':{
+					fn:this.searchCritBtnClickHandler,
+					scope:this,
+				}
+			}
+		})
+		
 		if (this.grid !== undefined && this.grid.title !== undefined) {
 			this.title = this.grid.title;
+			this.grid.addPagingBarButtons([searchButton]);
+		}else{
+			this.grid = new OpenNMS.ux.PageableGrid({
+				pagingBarButtons:[searchButton]
+			})
 		}
-		
-
 
 	
 		var button1 = new Ext.Button({
@@ -59,6 +71,10 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 		OpenNMS.ux.SearchFilterGrid.superclass.initComponent.apply(this, arguments);
 	
    },
+   
+   searchCritBtnClickHandler:function(event){
+   		this.getLayout().setActiveItem(1);
+   }
 	
 })
 
