@@ -4,7 +4,7 @@ var physicalInterfaceGrid;
 
 function initPageView(elementId){
 	
-	ipInterfaceGrid = new OpenNMS.ux.PageableGrid({
+	ipInterfaceGrid = new OpenNMS.ux.SearchFilterGrid({
 		id:'nodeInterfaceGrid',
 		title:'IP Interfaces',
 	});
@@ -13,13 +13,11 @@ function initPageView(elementId){
 	physicalInterfaceGrid = new OpenNMS.ux.PageableGrid({
 		id:'nodePhysicalInterfaceGrid',
 		title:'Physical Interfaces',
-		pagingBarButtons: [{id:'searchButton', text:'Search'}],
 	});
 	
 	filterableGrid = new OpenNMS.ux.SearchFilterGrid({
 		id:'searchFilterPhysGrid',
 		grid:physicalInterfaceGrid,
-		searchButton:'searchButton'
 	});
 	
 	interfacesPanel = new Ext.TabPanel({
