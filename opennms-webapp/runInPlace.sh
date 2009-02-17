@@ -9,7 +9,8 @@ function warInPlace() {
 }
 
 function runInPlace() {
-    ../build.sh jetty:run
+    local PORT=$1
+    ../build.sh -Dweb.port=$PORT jetty:run
 }
 
 function removeGwtModuleFiles() {
@@ -58,6 +59,7 @@ function usage() {
     err "\t-c : remove WEB-INF/lib, WEB-INF/classes and META_INF dirs"
     err "\t-g : remove gwt generated files"
     err "\t-n : no-run: this is useful if you want to only build in place"
+    err "\t-p portnum : the port to run the webapp at"
     exit 1
 }
 
@@ -66,8 +68,9 @@ RUN_INPLACE=true
 REMOVE_GWT_FILES=false
 REMOVE_CODE=false
 CLEAN=false
+WEB_PORT=8080
 
-while getopts bcChgn OPT; do
+while getopts bcChgnp: OPT; do
     case $OPT in
 	b)  WAR_INPLACE=true
 	    ;;
@@ -78,6 +81,8 @@ while getopts bcChgn OPT; do
 	g)  REMOVE_GWT_FILES=true
 	    ;;
 	n)  RUN_INPLACE=false
+	    ;;
+	p)  WEB_PORT=$OPTARG
 	    ;;
 	*)  usage
 	    ;;
@@ -110,7 +115,7 @@ if $REMOVE_CODE; then
 fi
 
 if $RUN_INPLACE; then
-    runInPlace
+    runInPlace $WEB_PORT
 fi
 
 
