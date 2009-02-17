@@ -56,6 +56,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     }
     
     protected AsyncAbstractDetector(String serviceName, int port, int timeout, int retries) {
+        m_serviceName = serviceName;
         m_port = port;
         m_timeout = timeout;
         m_retries = retries;
