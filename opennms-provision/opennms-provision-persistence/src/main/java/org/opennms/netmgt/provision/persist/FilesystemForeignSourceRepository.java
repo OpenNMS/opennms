@@ -52,6 +52,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     public ForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException {
+        if (foreignSourceName == null) {
+            throw new ForeignSourceRepositoryException("can't get a foreign source with a null name!");
+        }
         File inputFile = encodeFileName(m_foreignSourcePath, foreignSourceName);
         if (inputFile != null && inputFile.exists()) {
             return get(inputFile);
@@ -63,6 +66,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     public void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        if (foreignSource == null) {
+            throw new ForeignSourceRepositoryException("can't save a null foreign source!");
+        }
         File outputFile = getOutputFileForForeignSource(foreignSource);
         try {
             m_marshaller.marshal(foreignSource, outputFile);
@@ -94,6 +100,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
     
     public Requisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException {
+        if (foreignSourceName == null) {
+            throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
+        }
         File inputFile = encodeFileName(m_requisitionPath, foreignSourceName);
         if (inputFile != null && inputFile.exists()) {
             return getRequisition(inputFile);
@@ -102,10 +111,16 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+        if (foreignSource == null) {
+            throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
+        }
         return getRequisition(foreignSource.getName());
     }
 
     public void save(Requisition requisition) throws ForeignSourceRepositoryException {
+        if (requisition == null) {
+            throw new ForeignSourceRepositoryException("can't save a null requisition!");
+        }
         File outputFile = getOutputFileForRequisition(requisition);
         try {
             m_marshaller.marshal(requisition, outputFile);
