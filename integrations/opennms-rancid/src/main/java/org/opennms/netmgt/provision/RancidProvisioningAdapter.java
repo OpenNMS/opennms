@@ -54,6 +54,8 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Category;
 
 /**
  * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
@@ -76,6 +78,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
     public void addNode(int nodeId) throws ProvisioningAdapterException {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
         OnmsNode node = null;
         try {
             node = m_nodeDao.get(nodeId);
@@ -99,6 +102,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
      */
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
 //            DnsRecord record = new DnsRecord(node);
@@ -112,6 +116,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
      */
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
 //            DnsRecord record = new DnsRecord(node);
@@ -123,15 +128,18 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
 
     @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
     public void handleInterfaceAddedEvent(Event e) {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED handleInterfaceAddedEvent");
         throw new UnsupportedOperationException("method not yet implemented.");
     }
     
     private void sendAndThrow(int nodeId, Exception e) {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow");
         m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }
 
     private EventBuilder buildEvent(String uei, int nodeId) {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED EventBuilder");
         EventBuilder builder = new EventBuilder(uei, "Provisioner", new Date());
         builder.setNodeid(nodeId);
         return builder;
@@ -158,6 +166,10 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
 
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
+    }
+    
+    private Category log() {
+        return Logger.getLogger("Rancid");
     }
 
 //    class DnsRecord {

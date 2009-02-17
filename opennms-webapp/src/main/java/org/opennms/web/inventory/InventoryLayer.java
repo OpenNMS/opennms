@@ -30,9 +30,13 @@
 package org.opennms.web.inventory;
 
 import org.opennms.rancid.*;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RWSConfigFactory;
 import org.opennms.netmgt.config.rancid.BaseUrl;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Category;
+
 import java.util.*;
 
 
@@ -49,7 +53,7 @@ public class InventoryLayer {
     static public void init(){
         
         try {
-            System.out.println("Setting Up RWS client");
+            log().debug("Setting Up RWS client");
             RWSClientApi.init();
 
             RWSConfigFactory.init();
@@ -57,8 +61,7 @@ public class InventoryLayer {
             rwsCfgFactory = RWSConfigFactory.getInstance();
             burl = rwsCfgFactory.getUrls();
             _URL = burl[0].getServer_url();
-            System.out.println("RWS Url " + _URL);
-            
+            log().debug("RWS Url " + _URL);            
         }
         catch (Exception e) {
             
@@ -169,7 +172,7 @@ public class InventoryLayer {
         
          try {
             
-         
+            log().debug("getRancidNode " + rancidName);
             
             Map<String, Object> nodeModel = new TreeMap<String, Object>();
             
@@ -215,7 +218,6 @@ public class InventoryLayer {
             //CLOGIN
             if (userRole.compareTo("admin") == 0){
                 RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(_URL,rancidName);
-                //System.out.println("rn5 " + rn5.getUser() + rn5.getPassword()+rn5.getConnectionMethodString());
                 nodeModel.put("cloginuser", rn5.getUser());
                 nodeModel.put("cloginpassword", rn5.getPassword());
                 nodeModel.put("cloginconnmethod", rn5.getConnectionMethodString());
@@ -236,6 +238,9 @@ public class InventoryLayer {
    static public Map<String, Object> getRancidNodeList(String rancidName, String groupname) throws RancidApiException{
        
        try {
+           
+           log().debug("getRancidNodeList " + rancidName + " " + groupname);
+
            
            Map<String, Object> nodeModel = new TreeMap<String, Object>();
            
@@ -278,6 +283,9 @@ public class InventoryLayer {
 static public Map<String, Object> getRancidNodeList(String rancidName) throws RancidApiException{
        
        try {
+           
+           log().debug("getRancidNodeList " + rancidName);
+
            
            Map<String, Object> nodeModel = new TreeMap<String, Object>();
            
@@ -334,8 +342,11 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
    static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
        
        try {
+           
+           log().debug("updateCloginInfo " + device);
+
+           
            RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(_URL, device);
-           //RancidNodeAuthentication rna = new RancidNodeAuthentication();
            rna.setUser(user);
            rna.setPassword(password);
            rna.setConnectionMethod(method);
@@ -357,6 +368,9 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
    static public Map<String, Object> getInventoryNode(String rancidName, String group, String version) throws RancidApiException{
        
        try {
+           
+           log().debug("getInventoryNode " + rancidName);
+
     
            RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, group, rancidName);
        
@@ -370,7 +384,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            nodeModel.put("groupname", group);
            nodeModel.put("version", version);
            nodeModel.put("status", in.getParent().getState());
-           nodeModel.put("expirationdate", in.getExpirationDate());
+           nodeModel.put("creationdate", in.getCreationDate());
            nodeModel.put("configurationurl", in.getConfigurationUrl());
            nodeModel.put("url", _URL);
            
@@ -379,5 +393,8 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
        catch (RancidApiException e) {
            throw e;
        }
+   }
+   private static Category log() {
+       return Logger.getLogger("Rancid");
    }
 }
