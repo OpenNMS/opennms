@@ -363,48 +363,48 @@
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.nodeSysId}">
-    <h3 class="o-box-title">SNMP Attributes</h3>
-    <table class="o-box-table">
-      <tr class="o-box-table-row">
-        <th class="o-box-table-heading">Name</th>
-        <td class="o-box-table-data">${model.node.nodeSysName}</td>
+    <h3 class="o-box">SNMP Attributes</h3>
+    <table class="o-box">
+      <tr class="o-box">
+        <th class="o-box">Name</th>
+        <td class="o-box">${model.node.nodeSysName}</td>
       </tr>
-      <tr class="o-box-table-row">
-        <th class="o-box-table-heading">Object&nbsp;ID</th>
-        <td class="o-box-table-data">${model.node.nodeSysId}</td>
+      <tr class="o-box">
+        <th class="o-box">Object&nbsp;ID</th>
+        <td class="o-box">${model.node.nodeSysId}</td>
       </tr>
-      <tr class="o-box-table-row">
-        <th class="o-box-table-heading">Location</th>
-        <td class="o-box-table-data">${model.node.nodeSysLocn}</td>
+      <tr class="o-box">
+        <th class="o-box">Location</th>
+        <td class="o-box">${model.node.nodeSysLocn}</td>
       </tr>
-      <tr class="o-box-table-row">
-        <th class="o-box-table-heading">Contact</th>
-        <td class="o-box-table-data">${model.node.nodeSysContact}</td>
+      <tr class="o-box">
+        <th class="o-box">Contact</th>
+        <td class="o-box">${model.node.nodeSysContact}</td>
       </tr>
-      <tr class="o-box-table-row">
-        <th class="o-box-table-heading" valign="top">Description</th>
-        <td class="o-box-table-data" valign="top">${model.node.nodeSysDescr}</td>
+      <tr class="o-box">
+        <th class="o-box" valign="top">Description</th>
+        <td class="o-box" valign="top">${model.node.nodeSysDescr}</td>
       </tr>
     </table>
   </c:if>
 
   <!-- Interface box -->
-  <h3 class="o-box-title">Interfaces</h3>
-  <table class="o-box-table">
-    <tr class="o-box-table-row">
-      <th class="o-box-table-heading">Interface</th>
-      <th class="o-box-table-heading">Index</th>
-      <th class="o-box-table-heading">Description</th>
+  <h3 class="o-box">Interfaces</h3>
+  <table class="o-box">
+    <tr class="o-box">
+      <th class="o-box">Interface</th>
+      <th class="o-box">Index</th>
+      <th class="o-box">Description</th>
       <c:if test="${model.hasIfAliases}">
-        <th class="o-box-table-heading">IfAlias</th>
+        <th class="o-box">IfAlias</th>
       </c:if>
     </tr>
     <c:forEach items="${model.intfs}" var="intf">
       <c:url var="interfaceLink" value="element/interface.jsp">
         <c:param name="ipinterfaceid" value="${intf.id}"/>
       </c:url>
-      <tr class="o-box-table-row">
-        <td class="o-box-table-data">
+      <tr class="o-box">
+        <td class="o-box">
           <c:choose>
             <c:when test="${intf.ipAddress == '0.0.0.0'}">
               <c:choose>
@@ -427,7 +427,7 @@
             </c:otherwise>
           </c:choose>
         </td>
-        <td class="o-box-table-data">
+        <td class="o-box">
           <c:choose>
             <c:when test="${intf.ifIndex > 0}">
               ${intf.ifIndex}
@@ -437,7 +437,7 @@
             </c:otherwise>
           </c:choose>
         </td>
-        <td class="o-box-table-data">
+        <td class="o-box">
           <c:choose>
             <c:when test="${intf.snmpIfDescription != null && intf.snmpIfDescription != ''}">
               ${intf.snmpIfDescription}
@@ -451,7 +451,7 @@
           </c:choose>
         </td>
         <c:if test="${model.hasIfAliases}">
-          <td class="o-box-table-data">
+          <td class="o-box">
             <c:if test="${intf.snmpIfAlias != null && intf.snmpIfAlias != ''}">
               ${intf.snmpIfAlias}
             </c:if>
@@ -464,26 +464,26 @@
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
     <h3>VLAN Information</h3>
-    <table class="o-box-table">
+    <table class="o-box">
       <thead>
-        <tr class="o-box-table-row">
-          <th class="o-box-table-heading">ID</th>
-          <th class="o-box-table-heading">Name</th>
-          <th class="o-box-table-heading">Type</th>
-          <th class="o-box-table-heading">Status</th>
-          <th class="o-box-table-heading">Status</th>
-          <th class="o-box-table-heading">Last Poll Time</th>
+        <tr class="o-box">
+          <th class="o-box">ID</th>
+          <th class="o-box">Name</th>
+          <th class="o-box">Type</th>
+          <th class="o-box">Status</th>
+          <th class="o-box">Status</th>
+          <th class="o-box">Last Poll Time</th>
         </tr>
       </thead>
   
       <c:forEach items="${model.vlans}" var="vlan">
-        <tr class="o-box-table-row">
-          <td class="o-box-table-data">${vlan.vlanId}</td>
-          <td class="o-box-table-data">${vlan.vlanName}</td>
-          <td class="o-box-table-data">${vlan.vlanTypeString}</td>
-          <td class="o-box-table-data">${vlan.vlanStatusString}</td>
-          <td class="o-box-table-data">${vlan.statusString}</td>
-          <td class="o-box-table-data">${vlan.lastPollTime}</td>
+        <tr class="o-box">
+          <td class="o-box">${vlan.vlanId}</td>
+          <td class="o-box">${vlan.vlanName}</td>
+          <td class="o-box">${vlan.vlanTypeString}</td>
+          <td class="o-box">${vlan.vlanStatusString}</td>
+          <td class="o-box">${vlan.statusString}</td>
+          <td class="o-box">${vlan.lastPollTime}</td>
         </tr>
       </c:forEach>
     </table>
