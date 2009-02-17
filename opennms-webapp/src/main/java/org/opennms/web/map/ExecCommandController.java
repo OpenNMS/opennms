@@ -49,12 +49,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.WebSecurityUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
  * @author mmigliore
+ * @author antonio
  * 
  * this class provides to create pages for executing ping and traceroute commands
  * 
@@ -63,17 +65,57 @@ public class ExecCommandController implements Controller {
 	Category log;
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-            throw new IllegalArgumentException("Command execution disabled for security reasons");
+   		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+		log = ThreadCategory.getInstance(this.getClass());
+
+        int timeOut = 1;
+        int numberOfRequest = 10;
+        int packetSize = 56;
+        String hopAddress = null;
+        
+        String command = request.getParameter("command");
+        if (command == null) throw new  IllegalArgumentException("Command is required");
+        
+        String commandToExec = command;
+
+        String address = request.getParameter("address");
+        if (address == null) throw new  IllegalArgumentException("Address is required");
+
+        String numericoutput = request.getParameter("numericOutput");
+        if (numericoutput != null && numericoutput.equals("true")) {
+            commandToExec = commandToExec + " -n ";
         }
 
-	private ModelAndView insecureHandleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
-		
-		String command = request.getParameter("command");
-		String address = request.getParameter("address");
-	    log.info("Executing "+command+ " "+ address+".");
+        if (command.equals("ping")) {
+	        String timeout = request.getParameter("timeOut");
+	        if (timeout != null)
+	            timeOut = WebSecurityUtils.safeParseInt(timeout);
+	        String numberofrequest = request.getParameter("numberOfRequest");
+	        if (numberofrequest != null )
+	            numberOfRequest = WebSecurityUtils.safeParseInt(numberofrequest);
+            String packetsize = request.getParameter("packetSize");
+            if (packetsize != null)
+                packetSize = WebSecurityUtils.safeParseInt(packetsize);
+		    // these are optionals
+            String solaris = request.getParameter("solaris");
+            if (solaris != null && solaris.equals("true")) {
+                commandToExec=commandToExec+" -I "+timeOut+" "+ address +" "+packetSize+" "+numberOfRequest ;
+            } else {
+                commandToExec=commandToExec+" -c "+numberOfRequest+" -i "+timeOut+" -s "+packetSize + " "+ address; 
+            }
+            
+		} else if(command.equals("traceroute")) {
+		    hopAddress = request.getParameter("hopAddress");
+		    if (hopAddress != null) {
+		        commandToExec = commandToExec + " -g " + hopAddress + " " + address;
+		    } else {
+                commandToExec = commandToExec + " " + address;		        
+		    }
+		} else {
+		    throw new IllegalStateException("Command "+ command+" not supported.");   
+		}
+        
+	    log.info("Executing "+commandToExec);
         response.setBufferSize(0);
         response.setContentType("text/html");
         response.setHeader("pragma","no-Chache");
@@ -83,7 +125,7 @@ public class ExecCommandController implements Controller {
         os.write("<html>"); 
 
         try {
-			final Command p = new Command(command, address);
+			final Command p = new Command(commandToExec);
 			String comm = (command.startsWith("ping"))?"Ping":null;
 			if(comm==null){
 				comm = (command.startsWith("traceroute"))?"Trace Route":"";
@@ -141,10 +183,10 @@ public class ExecCommandController implements Controller {
 	    private BufferedReader out;
 	    private Process p;
 	    
-	    public Command(String command, String addr) throws IOException, IllegalStateException
+	    public Command(String command) throws IOException, IllegalStateException
 	    {
 	    	if(command.startsWith("traceroute") || command.startsWith("ping")){
-	    		 p = Runtime.getRuntime().exec(command +" "+ addr);
+	    		 p = Runtime.getRuntime().exec(command);
 	 	        out = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	    	}else{
 	    		throw new IllegalStateException("Command "+ command+" not supported.");

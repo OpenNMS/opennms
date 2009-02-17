@@ -77,23 +77,25 @@ function checkIpAddress(ip){
 
 
 function doCommand(){
-     var command = document.getElementById("command").value;
-     var address = document.getElementById("address").value;
-          
-     if(document.getElementById("numericOutput").checked){
-          	command=command+ " -n ";
-     }
-     if(document.getElementById("hopAddress").value!=""){
-	     if(!checkIpAddress(document.getElementById("hopAddress").value)){
-			alert("Invalid Hop IP address");
-			document.getElementById("hopAddress").focus();
-			return;
-		}
-	     command=command+" -g "+document.getElementById("hopAddress").value;
-     }
-     
-     window.close();
-     window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+command+'&address='+address, 'TraceRoute', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
+    var url ='<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+document.getElementById("command").value;
+    var address = document.getElementById("address").value;
+    
+    url = url+'&address='+address;
+
+    if(document.getElementById("numericOutput").checked){
+ 	     url = url+'&numericOutput=true';
+    }
+    if(document.getElementById("hopAddress").value!=""){
+     if(!checkIpAddress(document.getElementById("hopAddress").value)){
+		alert("Invalid Hop IP address");
+		document.getElementById("hopAddress").focus();
+		return;
+	}
+     url=url+"&hopAddress="+document.getElementById("hopAddress").value;
+    }
+    
+    window.close();
+    window.open(url, 'TraceRoute', 'toolbar,width='+self.screen.width-150+' ,height=300, left=0, top=0, scrollbars=1') ;
 }
 </script>
 
