@@ -137,8 +137,8 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Ra
 		<th>${model.devicename}</th>
 	</tr>
 	<tr>
-	    <th>Expiration Date</th>
-	    <th>${model.expirationdate}</th>
+	    <th>Creation Date</th>
+	    <th>${model.creationdate}</th>
 	</tr>
    </table>
 
