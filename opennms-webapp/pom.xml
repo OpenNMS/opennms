@@ -13,6 +13,7 @@
     <gwtVersion>1.4.60</gwtVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
+    <web.port>8080</web.port>
   </properties>
   <build>
     <plugins>
@@ -212,7 +213,7 @@
         <artifactId>tomcat-maven-plugin</artifactId>
         <configuration>
           <path>/${pom.artifactId}</path>
-          <port>${tomcat.port}</port>
+          <port>${web.port}</port>
         </configuration>
       </plugin>
       <!-- plugin to use to run webapp in an embedded jetty -->
@@ -223,7 +224,7 @@
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>8080</port>
+              <port>${web.port}</port>
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
