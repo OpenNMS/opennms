@@ -77,9 +77,10 @@ table {
     font-family: "Lucida Grande",Verdana,sans-serif;
 }
 
-.x-grid3-hd-over {
-    	
+td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-asc, td.sort-desc {
+    color: #000000;
 }
+
 
 .x-grid3 table{
 	/*table-layout:auto;*/
