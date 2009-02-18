@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean name="pda-la" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="provisiondMapAdaptor" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+  <bean name="pda" class="org.opennms.netmgt.provision.MqpProvisioningAdapter">
+    <property name="eventListener" ref="pda-la"/>
+    <property name="eventForwarder" ref="eventForwarder" />
+    <property name="onmsMapDao" ref="onmsMapDao" />
+    <property name="onmsMapElementDao" ref="onmsMapElementDao" />
+  </bean>
+  
+</beans>
