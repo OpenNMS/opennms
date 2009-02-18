@@ -3,13 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-  <bean name="pda-la" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="provisiondRancidAdaptor" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-  </bean>
-
   <bean name="pda" class="org.opennms.netmgt.provision.RancidProvisioningAdapter">
-    <property name="eventListener" ref="pda-la"/>
     <property name="eventForwarder" ref="eventForwarder" />
     <property name="nodeDao" ref="nodeDao" />
   </bean>

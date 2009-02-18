@@ -37,6 +37,7 @@
 package org.opennms.netmgt.provision.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.provision.ProvisioningAdapter;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -77,8 +79,12 @@ public class Provisioner implements SpringServiceDaemon {
     private volatile Resource m_importResource;
     private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
+    
+    private PluginRegistry m_pluginRegistry;
 
     private volatile TimeTrackingMonitor m_stats;
+
+    private Collection<ProvisioningAdapter> m_adapters;
     
 	
     public void setProvisionService(ProvisionService provisionService) {
@@ -93,7 +99,15 @@ public class Provisioner implements SpringServiceDaemon {
 	    m_scheduledExecutor = scheduledExecutor;
 	}
 
-	public void setLifeCycleRepository(LifeCycleRepository lifeCycleRepository) {
+	public PluginRegistry getPluginRegistry() {
+        return m_pluginRegistry;
+    }
+
+    public void setPluginRegistry(PluginRegistry pluginRegistry) {
+        m_pluginRegistry = pluginRegistry;
+    }
+
+    public void setLifeCycleRepository(LifeCycleRepository lifeCycleRepository) {
 	    m_lifeCycleRepository = lifeCycleRepository;
 	}
 
@@ -109,6 +123,9 @@ public class Provisioner implements SpringServiceDaemon {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
         Assert.notNull(m_lifeCycleRepository, "lifeCycleRepository property must be set");
+        Assert.notNull(m_pluginRegistry, "pluginRegistry must be set");
+        
+        m_adapters =  m_pluginRegistry.getAllPlugins(ProvisioningAdapter.class);
     }
     
     protected void scheduleRescanForExistingNodes() {        
@@ -296,6 +313,11 @@ public class Provisioner implements SpringServiceDaemon {
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }
+        
+        for (ProvisioningAdapter adapter : m_adapters) {
+            adapter.addNode((int) e.getNodeid());
+        }
+        
     }
 
     /**
