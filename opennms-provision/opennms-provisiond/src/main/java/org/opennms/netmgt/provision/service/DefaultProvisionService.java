@@ -446,7 +446,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     public List<NodeScanSchedule> getScheduleForNodes() {
         Assert.notNull(m_nodeDao, "Node DAO is null and is not supposed to be");
-        List<OnmsNode> nodes = m_nodeDao.findAll();
+        List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         
         List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
         
