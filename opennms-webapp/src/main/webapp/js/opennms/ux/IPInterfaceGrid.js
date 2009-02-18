@@ -1,31 +1,8 @@
 Ext.namespace("OpenNMS.ux")
 OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
-	store: new Ext.data.Store({
-				baseParams:{limit:this.limit},
-				proxy:new Ext.data.HttpProxy({
-					method:"GET",
-					extraParams:{
-						limit:this.limit
-					}
-				}),
-				reader:new Ext.data.XmlReader({
-					record:'ipinterface',
-					totalRecords:"@totalCount"
-				}, this.record)
-			}),
-			
 	title:'IP Interfaces',
-	baseUrl:"rest/nodes/",
+	urlTemplate:"rest/nodes/{nodeId}/ipinterfaces",
 	xmlNodeToRecord:'ipInterface',
-	record:[
-				{name:"interfaceId", mapping:"interfaceId"},
-				{name:"ipAddress", mapping:"ipAddress"},
-				{name:'hostName', mapping:'ipHostName'},
-				{name:'ifIndex', mapping:'ifIndex'},
-				{name:"isManaged", mapping:"isManaged"},
-				{name:'capsdPoll', mapping:'ipLastCapsdPoll'},
-				{name:"snmpInterface", mapping:"snmpInterface"}
-			],
 	columns:[
 		{
 			header :'Interface Id',
@@ -71,11 +48,29 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 			align:'left'
 		}
 	],
+	recordTag:'ipInterface',
+	recordMap:[
+			    {name:"interfaceId", mapping:"interfaceId"},
+			    {name:"ipAddress", mapping:"ipAddress"},
+			    {name:'hostName', mapping:'ipHostName'},
+			    {name:'ifIndex', mapping:'ifIndex'},
+			    {name:"isManaged", mapping:"isManaged"},
+			    {name:'capsdPoll', mapping:'ipLastCapsdPoll'},
+			    {name:"snmpInterface", mapping:"snmpInterface"}
+	],
 	
 
 	initComponent:function(){
+	
+		if (!this.nodeId) {
+			throw "nodeId must be set in the config for IPInterfaceGrid";
+		}
+
 		OpenNMS.ux.IPInterfaceGrid.superclass.initComponent.apply(this, arguments);
-	}
+		
+	},
+	
+
 
 });
 
