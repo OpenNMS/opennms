@@ -10,6 +10,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
     emptyMsg: "No topics to display",
     viewConfig : {
 	  autoFill: true,
+	  forceFit: true,
 	},
 	pagingBarButtons:[],
 	
