@@ -65,9 +65,9 @@
     protected NotificationModel model = new NotificationModel();
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-<h3><a href="notification/index.jsp">Notification</a></h3>
+<h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
-	<ul class="plain">
+	<ul class="plain o-box">
 		<% if( nodeIdString == null ) { %>
 			<li><strong>You</strong>: <%
 				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());

@@ -148,8 +148,9 @@
      test fails.) Moving the <h2> tags outside the if statement makes it
      happy again --%>
 <%= "<div id=\"content\">" %>
+<div class="onms">
 <h2>
-<c:if test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">	
+<c:if test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">
    <a href="index.jsp">Home</a>
    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
      <c:if test="${breadcrumb != ''}">
@@ -158,3 +159,4 @@
    </c:forEach>
 </c:if>
 </h2>
+</div>

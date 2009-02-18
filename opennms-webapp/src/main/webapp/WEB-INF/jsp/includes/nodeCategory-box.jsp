@@ -47,14 +47,14 @@
 
 <div id="category-box">
 
-<h3>
+<h3 class="o-box">
   Surveillance Category Memberships
   <c:if test="${isAdmin == 'true'}">
     (<a href="<c:url value='admin/categories.htm?edit&node=${param.node}'/>">Edit</a>)
   </c:if>
 </h3>
 
-<table>
+<table class="o-box">
   <c:if test="${empty categories}">
     <tr>
       <td>This node is not a member of any categories</td>

@@ -1,3 +1,7 @@
+div.onms h2 {
+	font-size: 80%
+}
+
 h3.o-box {
 	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
@@ -12,14 +16,21 @@ h3.o-box {
 	padding: 6px;
 } 
 
-th.o-box {
+table.o-box th {
     font-weight: bold;
     padding:4px 5px;
     text-align:left;
 }
 
-td.o-box {
-    padding:4px 5px;
+table.o-box td.bright {
+    padding-left: 20px;
+}
+
+table.o-box td {
+    padding-top:4px;
+    padding-bottom:4px;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 table.o-box {
