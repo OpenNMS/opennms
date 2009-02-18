@@ -37,7 +37,6 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -164,7 +163,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_netMask = snmpipadentnetmask;
     }
 
-    @Column(name = "snmpPhysAddr", length = 12)
+    @Column(name = "snmpPhysAddr", length = 16)
     public String getPhysAddr() {
         return m_physAddr;
     }
@@ -303,8 +302,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @Transient
     public CollectionType getCollectionType() {
         CollectionType maxCollType = CollectionType.NO_COLLECT;
-        for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
-            OnmsIpInterface ipIface = it.next();
+        for (OnmsIpInterface ipIface : getIpInterfaces()) {
             if (ipIface.getIsSnmpPrimary() != null) {
                 maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
             }
