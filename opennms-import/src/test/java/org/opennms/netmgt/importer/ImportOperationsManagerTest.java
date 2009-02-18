@@ -41,6 +41,7 @@
 package org.opennms.netmgt.importer;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -114,7 +115,16 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), "127.0.0.1/1691");
 
-        SnmpPeerFactory.init();
+        SnmpPeerFactory spf = new SnmpPeerFactory(new StringReader("<?xml version=\"1.0\"?>\n" + 
+        		"<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n" + 
+        		"             read-community=\"public\" \n" + 
+        		"             version=\"v1\" \n" + 
+        		"             max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">\n" + 
+        		"\n" + 
+        		"</snmp-config>\n" + 
+        		"\n" + 
+        		""));
+        SnmpPeerFactory.setInstance(spf);
 
         super.onSetUpInTransactionIfEnabled();
     }
