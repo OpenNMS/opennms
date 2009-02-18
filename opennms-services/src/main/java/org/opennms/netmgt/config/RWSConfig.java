@@ -36,20 +36,7 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
-import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.config.rancid.BaseUrl;
+import org.opennms.netmgt.config.rws.BaseUrl;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>

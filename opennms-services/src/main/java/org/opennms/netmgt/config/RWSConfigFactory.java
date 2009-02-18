@@ -44,8 +44,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -121,7 +119,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
         OpennmsServerConfigFactory.init();
         OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
@@ -154,7 +152,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
             logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
             FileWriter fileWriter = new FileWriter(cfgFile);
             fileWriter.write(xml);
@@ -186,7 +184,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
 
     public synchronized void update() throws IOException, MarshalException, ValidationException {
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());

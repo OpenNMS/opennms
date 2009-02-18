@@ -30,10 +30,10 @@
 package org.opennms.web.inventory;
 
 import org.opennms.rancid.*;
-import org.opennms.core.utils.ThreadCategory;
+//import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RWSConfigFactory;
-import org.opennms.netmgt.config.rancid.BaseUrl;
+import org.opennms.netmgt.config.rws.BaseUrl;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Category;
 
@@ -182,13 +182,13 @@ public class InventoryLayer {
             RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(_URL);
             
             List<String> grouplist = groups.getResource();
-            Iterator iter1 = grouplist.iterator();
+            Iterator<String> iter1 = grouplist.iterator();
             
           
             String groupname;
             boolean first = true;
             while (iter1.hasNext()){
-                groupname = (String)iter1.next();
+                groupname = iter1.next();
                 try {
                     RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL ,groupname, rancidName);
                     String vs = rn.getHeadRevision();
@@ -259,12 +259,12 @@ public class InventoryLayer {
            
            List<String> versionListStr= versionList.getResource();
            
-           Iterator iter1 = versionListStr.iterator();
+           Iterator<String> iter1 = versionListStr.iterator();
            
            String vs;
            
            while (iter1.hasNext()) {
-               vs = (String)iter1.next();
+               vs = iter1.next();
                InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
                InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getExpirationDate(), groupname, in.getConfigurationUrl());
                ranlist.add(inwr);
@@ -294,12 +294,12 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
            
            List<String> grouplist = groups.getResource();
-           Iterator iter2 = grouplist.iterator();
+           Iterator<String> iter2 = grouplist.iterator();
            
            boolean first = true;
            String groupname;
            while (iter2.hasNext()) {
-               groupname = (String)iter2.next();
+               groupname = iter2.next();
            
                RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, groupname, rancidName);
     
@@ -317,12 +317,12 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
                
                List<String> versionListStr= versionList.getResource();
                
-               Iterator iter1 = versionListStr.iterator();
+               Iterator<String> iter1 = versionListStr.iterator();
                
                String vs;
                
                while (iter1.hasNext()) {
-                   vs = (String)iter1.next();
+                   vs = iter1.next();
                    InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
                    InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getExpirationDate(), groupname, in.getConfigurationUrl());
                    ranlist.add(inwr);

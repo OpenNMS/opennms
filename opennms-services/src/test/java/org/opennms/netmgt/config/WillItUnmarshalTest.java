@@ -92,7 +92,7 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
-import org.opennms.netmgt.config.rancid.RancidConfiguration;
+import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.server.LocalServer;
@@ -540,7 +540,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testRancidConfiguration() throws Exception {
-        unmarshal("rancid-configuration.xml", RancidConfiguration.class);
+        unmarshal("rws-configuration.xml", RwsConfiguration.class);
     }
     @Test
     public void testXmpConfig() throws Exception {

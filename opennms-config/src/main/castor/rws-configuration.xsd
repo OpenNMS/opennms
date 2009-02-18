@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://xmlns.opennms.org/xsd/config/rancid"
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/rws"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:this="http://xmlns.opennms.org/xsd/config/rancid"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/rws"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
-    <documentation>XML Schema for the rancid-configuration.xml configuration file. Version: $Id$</documentation>
+    <documentation>XML Schema for the rws-configuration.xml configuration file. Version: $Id$</documentation>
   </annotation>
    
-	<element name="rancid-configuration">
+	<element name="rws-configuration">
 	    <annotation>
-	        <documentation>Top-level element for the rancid-configuration.xml configuration file.</documentation>
+	        <documentation>Top-level element for the rws-configuration.xml configuration file.</documentation>
 	    </annotation>
 	
 		<complexType>
