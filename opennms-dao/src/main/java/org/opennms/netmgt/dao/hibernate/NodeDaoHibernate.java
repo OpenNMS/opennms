@@ -182,5 +182,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public List<OnmsNode> findAll() {
         return find("from OnmsNode order by label");
     }
+    
+    public List<OnmsNode> findAllProvisionedNodes() {
+        return find("from OnmsNode where foreignSource is not null");
+    }
+
 
 }
