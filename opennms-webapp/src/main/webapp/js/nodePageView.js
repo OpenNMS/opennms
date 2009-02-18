@@ -8,18 +8,20 @@ function initPageView(elementId, nodeId){
 	ipInterfaceGrid = new OpenNMS.ux.IPInterfaceGrid({
 		id:'nodeInterfaceGrid',
 		title:'IP Interfaces',
+		nodeId: nodeId,
 	});
 
 	
-	physicalInterfaceGrid = new OpenNMS.ux.IPInterfaceGrid({
+	physicalInterfaceGrid = new OpenNMS.ux.SNMPInterfaceGrid({
 		id:'nodePhysicalInterfaceGrid',
 		title:'Physical Interfaces',
+		nodeId: nodeId,
 	});
 	
-	filterableGrid = new OpenNMS.ux.SearchFilterGrid({
-		id:'searchFilterPhysGrid',
-		grid:physicalInterfaceGrid,
-	});
+//	filterableGrid = new OpenNMS.ux.SearchFilterGrid({
+//		id:'searchFilterPhysGrid',
+//		grid:physicalInterfaceGrid,
+//	});
 	
 	interfacesPanel = new Ext.TabPanel({
 		renderTo:elementId,
@@ -27,13 +29,13 @@ function initPageView(elementId, nodeId){
 		width:'auto',
 		autoHeight:true,
 		bodyBorder:false,
+		//deferredRender: false,
 		border:false,
 		items:[
 			ipInterfaceGrid,
-			filterableGrid
+			physicalInterfaceGrid,
 		],
 
 	});
-	
-	ipInterfaceGrid.load("rest/nodes/"+nodeId+"/ipinterfaces", {offset:0, limit:20});
+
 };
