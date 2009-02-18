@@ -453,7 +453,7 @@ public final class ConfigFileConstants {
     /**
      * The Rancid configuration file
      */
-    public static final int RANCID_CONFIG_FILE_NAME;   
+    public static final int RWS_CONFIG_FILE_NAME;   
 
     /**
      * The WMI collection configuration file
@@ -581,7 +581,7 @@ public final class ConfigFileConstants {
         
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
         
-        RANCID_CONFIG_FILE_NAME = 70;
+        RWS_CONFIG_FILE_NAME = 70;
 
         XMP_COLLECTION_CONFIG_FILE_NAME = 71;
         
@@ -682,7 +682,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[WMI_CONFIG_FILE_NAME] = "wmi-config.xml";
         FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
-        FILE_ID_TO_NAME[RANCID_CONFIG_FILE_NAME] = "rancid-configuration.xml";
+        FILE_ID_TO_NAME[RWS_CONFIG_FILE_NAME] = "rws-configuration.xml";
         FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
         FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
