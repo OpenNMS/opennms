@@ -68,7 +68,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.config.rancid.RancidConfiguration;
+import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -82,7 +82,7 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
-import org.opennms.netmgt.config.rancid.BaseUrl;
+import org.opennms.netmgt.config.rws.BaseUrl;
 
 /**
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
@@ -110,10 +110,10 @@ abstract public class RWSConfigManager implements RWSConfig {
 //    /**
 //     * The config class loaded from the config file
 //     */
-    private RancidConfiguration m_config;
+    private RwsConfiguration m_config;
 
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (RancidConfiguration) Unmarshaller.unmarshal(RancidConfiguration.class, reader);
+        m_config = (RwsConfiguration) Unmarshaller.unmarshal(RwsConfiguration.class, reader);
         // call the init methids that populate local object
     }
 
@@ -135,7 +135,7 @@ abstract public class RWSConfigManager implements RWSConfig {
     /**
      * Return the poller configuration object.
      */
-    public synchronized RancidConfiguration getConfiguration() {
+    public synchronized RwsConfiguration getConfiguration() {
         return m_config;
     }
 
