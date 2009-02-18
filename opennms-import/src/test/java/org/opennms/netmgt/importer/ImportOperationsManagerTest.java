@@ -144,38 +144,6 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         return mi; 
     }
         
-    
-//    private final class CountingInvocationHandler implements InvocationHandler {
-//        HashMap counts = new HashMap();
-//        
-//        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//            int currentCount = 0;
-//            if (counts.get(method.getName()) != null)
-//                currentCount = ((Integer)counts.get(method.getName())).intValue();
-//            counts.put(method.getName(), new Integer(currentCount+1));
-//            
-//            return null;
-//        }
-//        
-//        public int getCount(String methodName) {
-//            if (counts.get(methodName) == null) return 0;
-//            return ((Integer)counts.get(methodName)).intValue();
-//        }
-//    }
-
-//    public void testGetAssetNumber() {
-//        assertEquals("imported:"+"1", ImportOperationsManager.getAssetNumber("1"));
-//        
-//    }
-//
-//    public void testGetForeignId() {
-//        assertEquals("1", ImportOperationsManager.getForeignId("imported:"+"1"));
-//    }
-    
-//    class TestOperationFactory implements OperationFactory {
-//    }
-//    
-    
     public void testGetOperations() {
         Map<String, Integer> assetNumberMap = getAssetNumberMap("imported:");
         ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumberMap, getModelImporter());
@@ -218,7 +186,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
             	assertEquals("node7", node.getLabel());
             	assertEquals("cat7", node.getAssetRecord().getDisplayCategory());
             	assertEquals(1, node.getIpInterfaces().size());
-            	OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
+            	OnmsIpInterface iface = node.getIpInterfaces().iterator().next();
             	assertEquals("192.168.7.1", iface.getIpAddress());
             	assertEquals("M", iface.getIsManaged());
             	assertEquals(2, iface.getMonitoredServices().size());
@@ -307,11 +275,6 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
             
         });
         
-//        assertEquals(2, opsMgr.getDeleteCount());
-//        assertEquals(2, opsMgr.getUpdateCount());
-//        assertEquals(2, opsMgr.getInsertCount());
-//        assertEquals(6, opsMgr.getOperationCount());
-        
         opsMgr.persistOperations(m_transTemplate, getNodeDao());
         
     }
@@ -328,13 +291,6 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     }
 
     protected Map<String, Integer> getAssetNumberMap(String foreignSource) {
-//        Map assetNumberMap = new HashMap();
-//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"1", new Long(1));
-//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"2", new Long(2));
-//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"3", new Long(3));
-//        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"4", new Long(4));
-//        return assetNumberMap;
-        
         return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
     }
 
