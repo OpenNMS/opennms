@@ -7,61 +7,73 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	columns:[
 	     	{
 	    		header:"ID",
-	    		name:"theId",
+	    		dataIndex:"theId",
 	    		width:50,
 	    		sortable:false,
-	    		align:"left"
-	    	},{
-	    		header :'ifAdminStatus',
-	    		name :'ifAdminStatus',
-	    		width :100,
-	    		sortable :true,
-	    		align :'left'
-	    	},{
-	    		header:"ifDescr",
-	    		name:"ifDescr",
-	    		width:100,
-	    		sortable:false,
-	    		align:"left"
-	    	},{
-	    		header:"ifIndex",
-	    		name:"ifIndex",
+	    		align:"left",
 	    		hidden:true,
+	    	},{
+	    		header:"SNMP ifIndex",
+	    		dataIndex:"ifIndex",
+	    		sortable: true,
 	    		width:100,
 	    		align:"left"
 	    	},{
-	    		header:"ifName",
-	    		name:"ifName",
-	    		hidden:true,
+	    		header:"SNMP ifDescr",
+	    		dataIndex:"ifDescr",
+	    		width:100,
+	    		sortable:true,
+	    		align:"left"
+	    	},{
+	    		header:"SNMP ifName",
+	    		dataIndex:"ifName",
+	    		sortable: true,
 	    		width:100,
 	    		align:"left"	
 	    	},{
-	    		header:"ifOperStatus",
-	    		name:"ifOperStatus",
+	    		header:"SNMP ifAlias",
+	    		dataIndex:"ifAlias",
+	    		sortable: true,
+	    		width:100,
+	    		align:"left"	
+	    	},{
+	    		header:"SNMP ifSpeed",
+	    		dataIndex:"ifSpeed",
+	    		sortable: true,
+	    		width:100,
+	    		align:"left"
+	    	},{
+	    		header :'SNMP ifAdminStatus',
+	    		dataIndex :'ifAdminStatus',
+	    		width :100,
+	    		sortable :true,
+	    		align :'left',
+	    		hidden:true
+	    	},{
+	    		header:"SNMP ifOperStatus",
+	    		dataIndex:"ifOperStatus",
+	    		sortable: true,
 	    		hidden:true,
 	    		width:100,
 	    		align:"left"
 	    	},{
-	    		header:"ifSpeed",
-	    		name:"ifSpeed",
+	    		header:"SNMP ifType",
+	    		dataIndex:"ifType",
+	    		sortable: true,
 	    		hidden:true,
 	    		width:100,
 	    		align:"left"
 	    	},{
-	    		header:"ifType",
-	    		name:"ifType",
+	    		header:"IP Address",
+	    		dataIndex:"ipAddress",
+	    		sortable: true,
 	    		hidden:true,
 	    		width:100,
 	    		align:"left"
 	    	},{
-	    		header:"ipAddress",
-	    		name:"ipAddress",
-	    		hidden:true,
-	    		width:100,
-	    		align:"left"
-	    	},{
-	    		header:"physAddr",
-	    		name:"physAddr",
+	    		header:"SNMP ifPhysAddr",
+	    		dataIndex:"physAddr",
+	    		sortable: true,
 	    		hidden:true,
 	    		width:100,
 	    		align:"left"
@@ -74,6 +86,7 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 					{name:"ifDescr", mapping:"ifDescr"},
 					{name:"ifIndex", mapping:"ifIndex"},
 					{name:"ifName", mapping:"ifName"},
+					{name:"ifAlias", mapping:"ifAlias"},
 					{name:"ifOperStatus", mapping:"ifOperStatus"},
 					{name:"ifSpeed", mapping:"ifSpeed"},
 					{name:"ifType", mapping:"ifType"},

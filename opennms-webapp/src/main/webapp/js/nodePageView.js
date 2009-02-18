@@ -28,6 +28,7 @@ function initPageView(elementId, nodeId){
 		activeTab:0,
 		width:'auto',
 		autoHeight:true,
+		minHeight:400,
 		bodyBorder:false,
 		//deferredRender: false,
 		border:false,
