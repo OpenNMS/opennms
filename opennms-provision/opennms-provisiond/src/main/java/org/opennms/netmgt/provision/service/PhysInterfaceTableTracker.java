@@ -81,7 +81,8 @@ public class PhysInterfaceTableTracker extends TableTracker {
         IF_OPER_STATUS,
         IF_LAST_CHANGE,
         IF_NAME,
-        IF_ALIAS
+        IF_ALIAS,
+        IF_HIGH_SPEED
     };
     
     class PhysicalInterfaceRow extends SnmpRowResult {
@@ -104,6 +105,16 @@ public class PhysInterfaceTableTracker extends TableTracker {
         private Long getIfSpeed() {
             SnmpValue value = getValue(IF_SPEED);
             return value == null ? null : value.toLong();
+        }
+        
+        private Long getIfHighSpeed() {
+            SnmpValue value = getValue(IF_HIGH_SPEED);
+            return value == null ? null : value.toLong()*1000000L;
+        }
+        
+        private Long getSpeed() {
+            Long highSpeed = getIfHighSpeed();
+            return highSpeed != null ? highSpeed : getIfSpeed(); 
         }
 
         private Integer getIfOperStatus() {
@@ -138,7 +149,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
             snmpIface.setIfDescr(getIfDescr());
             snmpIface.setIfName(getIfName());
             snmpIface.setIfOperStatus(getIfOperStatus());
-            snmpIface.setIfSpeed(getIfSpeed());
+            snmpIface.setIfSpeed(getSpeed());
             snmpIface.setIfType(getIfType());
             return snmpIface;
         }
