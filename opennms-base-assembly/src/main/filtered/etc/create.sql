@@ -369,7 +369,7 @@ create table snmpInterface (
 	nodeID			integer not null,
 	ipAddr			varchar(16) not null,
 	snmpIpAdEntNetMask	varchar(16),
-	snmpPhysAddr		char(12),
+	snmpPhysAddr		varchar(16),
 	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
 	snmpIfType		integer,
