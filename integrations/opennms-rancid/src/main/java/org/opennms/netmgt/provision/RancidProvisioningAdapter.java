@@ -35,27 +35,19 @@
  */
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.rancid.RancidApiException;
-import org.opennms.rancid.RancidNode;
-import org.opennms.rancid.RancidNodeAuthentication;
-import org.opennms.rancid.RWSClientApi;
-import org.opennms.rancid.RWSResourceList;
-
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.Category;
+import org.opennms.rancid.RWSClientApi;
+import org.opennms.rancid.RancidNode;
 
 /**
  * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
@@ -63,14 +55,12 @@ import org.apache.log4j.Category;
  * @author <a href="mailto:guglielmoincisa@gmail.com">Guglielmo Incisa</a>
  *
  */
-@EventListener(name="Provisiond:RancidProvisioningAdaptor")
 public class RancidProvisioningAdapter implements ProvisioningAdapter {
     
     /*
      * A read-only DAO will be set by the Provisioning Daemon.
      */
     private NodeDao m_nodeDao;
-    private StoppableEventListener m_eventListener;
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
 
@@ -152,14 +142,6 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
         m_nodeDao = dao;
     }
     
-    public void setEventListener(StoppableEventListener eventListener) {
-        m_eventListener = eventListener;
-    }
-
-    public StoppableEventListener getEventListener() {
-        return m_eventListener;
-    }
-
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
