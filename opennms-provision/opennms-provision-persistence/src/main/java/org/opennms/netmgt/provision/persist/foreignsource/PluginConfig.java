@@ -200,7 +200,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
             sb.append(p.getKey()).append('=').append(p.getValue()).append('/');
         }
         if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length());
+            sb.deleteCharAt(sb.length() - 1);
         }
         return sb.toString();
     }
