@@ -46,7 +46,7 @@ public class InventoryLayer {
     
     private  static String _URL = "errore";
      
-    private static BaseUrl[] burl;
+    private static BaseUrl burl;
     
     private static RWSConfig rwsCfgFactory;
     
@@ -59,8 +59,8 @@ public class InventoryLayer {
             RWSConfigFactory.init();
             
             rwsCfgFactory = RWSConfigFactory.getInstance();
-            burl = rwsCfgFactory.getUrls();
-            _URL = burl[0].getServer_url();
+            burl = rwsCfgFactory.getBaseUrl();
+            _URL = burl.getServer_url();
             log().debug("RWS Url " + _URL);            
         }
         catch (Exception e) {

@@ -36,51 +36,16 @@
 //
 package org.opennms.netmgt.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
-import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.ExcludeRange;
-import org.opennms.netmgt.config.poller.IncludeRange;
-import org.opennms.netmgt.config.poller.Monitor;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
-import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
-import org.opennms.netmgt.dao.CastorDataAccessFailureException;
-import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.ServiceSelector;
-
-import org.opennms.netmgt.poller.DistributionContext;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.opennms.netmgt.config.rws.StandbyUrl;
 
 import org.opennms.netmgt.config.rws.BaseUrl;
 
@@ -90,12 +55,19 @@ import org.opennms.netmgt.config.rws.BaseUrl;
  */
 abstract public class RWSConfigManager implements RWSConfig {
     
-    public synchronized BaseUrl[] getUrls() {
+    public synchronized BaseUrl getBaseUrl() {
         
-        BaseUrl[] url = m_config.getBaseUrl();
+        BaseUrl url = m_config.getBaseUrl();
         return url;
     }
  
+    public synchronized StandbyUrl[] getStanbyUrls() {
+        
+        StandbyUrl[] urls = m_config.getStandbyUrl();
+        return urls;
+    }
+ 
+
     public RWSConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
     }
