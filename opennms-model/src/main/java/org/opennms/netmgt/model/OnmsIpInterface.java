@@ -102,14 +102,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
         private static int getIndex(char code) {
             for (int i = 0; i < s_order.length; i++) {
-                if (s_order[i] == code) return i;
+                if (s_order[i] == code) {
+                    return i;
+                }
             }
             throw new IllegalArgumentException("illegal collType code '"+code+"'");
         }
 
         public boolean equals(CollectionType o) {
-            if (o == null)
+            if (o == null) {
                 return false;
+            }
             return m_collType == o.m_collType;
         }
 
@@ -149,15 +152,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         }
 
         public static CollectionType get(String code) {
-            if (code == null)
+            if (code == null) {
                 return NO_COLLECT;
+            }
             code = code.trim();
-            if (code.length() < 1)
+            if (code.length() < 1) {
                 return NO_COLLECT;
-            else if (code.length() > 1)
+            } else if (code.length() > 1) {
                 throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
-            else
+            } else {
                 return get(code.charAt(0));
+            }
         }
 
         public static CollectionType PRIMARY = new CollectionType('P');
@@ -177,8 +182,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     private String m_ipHostName;
 
     private String m_isManaged;
-
-    private Integer m_ipStatus;
 
     private CollectionType m_isSnmpPrimary = CollectionType.NO_COLLECT;
 
@@ -270,20 +273,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_isManaged = ismanaged;
     }
 
-    @Column(name="ipStatus")
-    @Deprecated
-    public Integer getIpStatus() {
-        if (m_snmpInterface != null) {
-            return m_snmpInterface.getIfOperStatus();
-        }
-        return m_ipStatus;
-    }
-    
-    @Deprecated
-    public void setIpStatus(Integer status) {
-        // we don't do anything here as this is a deprecated field
-    }
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ipLastCapsdPoll")
     public Date getIpLastCapsdPoll() {
@@ -352,7 +341,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         .append("ifindex", getIfIndex())
         .append("iphostname", getIpHostName())
         .append("ismanaged", getIsManaged())
-        .append("ipstatus", getIpStatus())
         .append("iplastcapsdpoll", getIpLastCapsdPoll())
         .append("issnmpprimary", getIsSnmpPrimary())
         .toString();
@@ -371,7 +359,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @Transient
     public InetAddress getInetAddress() {
         String ipAddr = getIpAddress();
-        if (ipAddr == null) return null;
+        if (ipAddr == null) {
+            return null;
+        }
 
         InetAddress addr = null;
         try {
