@@ -1,8 +1,7 @@
 Ext.namespace("OpenNMS.ux")
 OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	header:false,
-	offSet:0,
-	limit:20,
+	pageSize:20,
     height:474,
 	width:'100%',
     displayInfo: true,
@@ -11,10 +10,32 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	pagingBarButtons:[],
 	
 	initComponent:function(){
-		alert('this.store = '+this.store);
+	
+		var tpl = new Ext.XTemplate(this.urlTemplate);
+		
+		this.url = tpl.apply(this);
+	
+		this.store = new Ext.data.Store({
+			proxy:new Ext.data.HttpProxy({
+				method:"GET",
+				url: this.url,
+			}),
+			paramNames:{
+			"start" : "offset",
+			"limit" : "limit",
+			"sort" : "orderby",
+			"dir" : "dir"
+		},
+		reader:new Ext.data.XmlReader({
+			record:this.recordTag,
+			totalRecords:"@totalCount"
+		}, this.recordMap)
+		});
+	
+
 		Ext.apply(this,{
 			bbar: new Ext.PagingToolbar({
-			        pageSize: this.limit,
+			        pageSize: this.pageSize,
 			        store: this.store,
 			        displayInfo: this.displayInfo,
 			        displayMag: this.displayMsg,
@@ -34,19 +55,12 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 	},
 	
-	addPagingBarButtons:function(items) {
-		this.pagingBarButtons = items;
+	initialLoad:function() {
+		this.store.load({params:{start:0, limit:this.pageSize}});
 	},
 	
-	load:function(url, params){
-		this.store.proxy.conn.url = url;
-		
-		if(!params){
-			this.store.load({params:{start:0, limit:this.limit}});
-		}else{
-			this.store.load({params:params});
-		}
-		
+	addPagingBarButtons:function(items) {
+		this.pagingBarButtons = items;
 	},
 	
 	onRender:function(){
@@ -55,6 +69,8 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(this.pagingBarButtons.length > 0){
 			this.getBottomToolbar().addButton(this.pagingBarButtons);
 		}
+		
+		this.initialLoad();
 	}
 })
 
