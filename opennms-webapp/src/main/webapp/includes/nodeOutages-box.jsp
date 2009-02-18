@@ -74,8 +74,8 @@
     Outage[] outages = this.model.getOutagesForNode(nodeId, yesterday);
 %>
 
-<h3>Recent Outages</h3>
-<table>
+<h3 class="o-box">Recent Outages</h3>
+<table class="o-box">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>
