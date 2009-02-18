@@ -24,8 +24,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.provision.persist.requisition.ForeignSourceCollection;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
@@ -84,9 +84,7 @@ public class PersistenceSerializationTest {
 
         fsw = new ForeignSourceCollection(fsr.getForeignSources());
         c = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
-
         m = c.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
