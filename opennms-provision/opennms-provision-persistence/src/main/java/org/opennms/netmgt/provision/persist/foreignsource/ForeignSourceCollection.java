@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.persist.requisition;
+package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 
 @XmlRootElement(name="foreign-sources")
 public class ForeignSourceCollection extends LinkedList<ForeignSource> {
