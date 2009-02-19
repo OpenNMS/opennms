@@ -1,4 +1,4 @@
-Ext.namespace("OpenNMS.ux")
+Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	header:false,
 	pageSize:20,
@@ -10,9 +10,8 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
     emptyMsg: "No topics to display",
     viewConfig : {
 	  autoFill: true,
-	  forceFit: true,
+	  forceFit: true
 	},
-	pagingBarButtons:[],
 	
 	initComponent:function(){
 	
@@ -23,18 +22,15 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		this.store = new Ext.data.Store({
 			proxy:new Ext.data.HttpProxy({
 				method:"GET",
-				url: this.url,
+				url: this.url
 			}),
 			paramNames:{
 			"start" : "offset",
 			"limit" : "limit",
 			"sort" : "orderby",
 			"dir" : "dir"
-		},
-		reader:new Ext.data.XmlReader({
-			record:this.recordTag,
-			totalRecords:"@totalCount"
-		}, this.recordMap)
+			},
+			reader:new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
 		});
 	
 
@@ -71,12 +67,12 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	onRender:function(){
 		OpenNMS.ux.PageableGrid.superclass.onRender.apply(this, arguments);
 		
-		if(this.pagingBarButtons.length > 0){
+		if(this.pagingBarButtons && this.pagingBarButtons.length > 0){
 			this.getBottomToolbar().addButton(this.pagingBarButtons);
 		}
 		
 		this.initialLoad();
 	}
-})
+});
 
 Ext.reg('opennmspageablegrid', OpenNMS.ux.PageableGrid);
