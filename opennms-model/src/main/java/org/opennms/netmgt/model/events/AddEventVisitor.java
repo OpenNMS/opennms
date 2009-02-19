@@ -46,7 +46,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 
 public final class AddEventVisitor extends AbstractEntityVisitor {
-    private static final String m_eventSource = "ModelImporter";
+    private static final String m_eventSource = "Provisiond";
 	private final EventForwarder m_eventForwarder;
 
 	public AddEventVisitor(EventForwarder eventForwarder) {

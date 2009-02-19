@@ -46,20 +46,21 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public final class DeleteEventVisitor extends AbstractEntityVisitor {
     private final EventForwarder m_eventForwarder;
+    private static final String m_eventSource = "Provisiond";
 
 	public DeleteEventVisitor(EventForwarder eventForwarder) {
 	    m_eventForwarder = eventForwarder;
 	}
 
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
-	    m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
+	    m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent(m_eventSource, monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
 	}
 
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
-	    m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId(), iface.getIpAddress()));
+	    m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent(m_eventSource, iface.getNode().getId(), iface.getIpAddress()));
 	}
 
 	public void visitNodeComplete(OnmsNode node) {
-	    m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("ModelImporter", node.getId(), node.getLabel(), node.getLabel()));
+	    m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabel()));
 	}
 }
