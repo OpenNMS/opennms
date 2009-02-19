@@ -315,6 +315,7 @@ public class Provisioner implements SpringServiceDaemon {
         }
         
         for (ProvisioningAdapter adapter : m_adapters) {
+            log().info("handleNodeAddedEvent: Calling adapter:"+adapter.getClass()+" for node: "+e.getNodeid());
             adapter.addNode((int) e.getNodeid());
         }
         

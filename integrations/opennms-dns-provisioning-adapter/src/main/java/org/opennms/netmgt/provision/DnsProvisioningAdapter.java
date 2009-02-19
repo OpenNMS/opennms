@@ -38,11 +38,14 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.util.Date;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -63,6 +66,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         OnmsNode node = null;
         try {
@@ -77,6 +81,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
@@ -90,6 +95,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
@@ -147,20 +153,28 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
     static class DynamicDnsAdapter {
         
         static boolean add(DnsRecord record) {
+            log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
         }
         
         static boolean update(DnsRecord record) {
+            log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
         }
         
         static boolean delete(DnsRecord record) {
+            log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
         }
 
         static public DnsRecord getRecord(DnsRecord record) {
+            log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
         }
+    }
+    
+    private static Category log() {
+        return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
     }
 
 }
