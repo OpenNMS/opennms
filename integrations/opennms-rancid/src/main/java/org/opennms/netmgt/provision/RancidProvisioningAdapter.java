@@ -83,8 +83,6 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
             r_node.setDeviceType(node.getType());
             RWSClientApi.createRWSRancidNode("http://www.rionero.com/rws-current",r_node);
         
-//            DnsRecord record = new DnsRecord(node);
-//            DynamicDnsAdapter.add(record);
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
@@ -98,8 +96,6 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
-//            DnsRecord record = new DnsRecord(node);
-//            DynamicDnsAdapter.update(record);
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
@@ -157,42 +153,5 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
     private Category log() {
         return Logger.getLogger("Rancid");
     }
-
-//    class DnsRecord {
-//        private InetAddress m_ip;
-//        private String m_hostname;
-//        
-//        DnsRecord(OnmsNode node) {
-//            m_ip = node.getCriticalInterface().getInetAddress();
-//            m_hostname = node.getLabel();
-//        }
-//
-//        public InetAddress getIp() {
-//            return m_ip;
-//        }
-//
-//        public String getHostname() {
-//            return m_hostname;
-//        }
-//    }
-//    
-//    static class DynamicDnsAdapter {
-//        
-//        static boolean add(DnsRecord record) {
-//            throw new UnsupportedOperationException("method not yet implemented.");
-//        }
-//        
-//        static boolean update(DnsRecord record) {
-//            throw new UnsupportedOperationException("method not yet implemented.");
-//        }
-//        
-//        static boolean delete(DnsRecord record) {
-//            throw new UnsupportedOperationException("method not yet implemented.");
-//        }
-//
-//        static public DnsRecord getRecord(DnsRecord record) {
-//            throw new UnsupportedOperationException("method not yet implemented.");
-//        }
-//    }
 
 }
