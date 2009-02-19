@@ -11,7 +11,7 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    		width:50,
 	    		sortable:false,
 	    		align:"left",
-	    		hidden:true,
+	    		hidden:true
 	    	},{
 	    		header:"Index",
 	    		dataIndex:"ifIndex",
@@ -103,9 +103,7 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 		
 		OpenNMS.ux.SNMPInterfaceGrid.superclass.initComponent.apply(this, arguments);
 		
-	},
-	
-	
+	}
 
 });
 

@@ -1,4 +1,4 @@
-Ext.namespace("OpenNMS.ux")
+Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	title:'IP Interfaces',
 	urlTemplate:"rest/nodes/{nodeId}/ipinterfaces",
@@ -22,7 +22,7 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 			dataIndex:'hostName',
 			sortable :true,
 			width:200,
-			align:'left',
+			align:'left'
 		},{
 			header:'IfIndex',
 			dataIndex:'ifIndex',
@@ -35,7 +35,7 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 			dataIndex :'isManaged',
 			width :75,
 			sortable :true,
-			align :'left',
+			align :'left'
 		},{
 			header:'Last Capsd Poll',
 			dataIndex:'capsdPoll',
@@ -70,8 +70,7 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 
 		OpenNMS.ux.IPInterfaceGrid.superclass.initComponent.apply(this, arguments);
 		
-	},
-	
+	}
 
 
 });

@@ -1,6 +1,6 @@
 Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.SearchFilterLayout = Ext.extend(Ext.layout.FitLayout, {
-    // private
+    /* private */
     renderHidden : true,
 
     /**
@@ -18,7 +18,7 @@ OpenNMS.ux.SearchFilterLayout = Ext.extend(Ext.layout.FitLayout, {
             this.layout();
             item.getEl().fadeIn();
         }
-    },
+    }
 
 });
 Ext.Container.LAYOUTS['searchfilter'] = OpenNMS.ux.SearchFilterLayout;

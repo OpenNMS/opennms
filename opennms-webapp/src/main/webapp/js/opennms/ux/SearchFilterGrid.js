@@ -72,8 +72,9 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	  	      });
 
 	    
-	
+	    alert("PageableGrid line 76");
 		OpenNMS.ux.SearchFilterGrid.superclass.initComponent.apply(this, arguments);
+	    alert("PageableGrid line 78");
 	
    },
    
@@ -81,6 +82,6 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
    		this.getLayout().setActiveItem(1);
    }
 	
-})
+});
 
 Ext.reg('o-searchfiltergrid', OpenNMS.ux.SearchFilterGrid);
