@@ -43,7 +43,7 @@ import org.opennms.netmgt.dao.OnmsMapElementDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.StoppableEventListener;
+//import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -64,7 +64,7 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
     private OnmsNode m_onmsNode;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
-    private StoppableEventListener m_eventListener;
+//    private StoppableEventListener m_eventListener;
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
 
@@ -136,14 +136,14 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
         return builder;
     }
     
-    public void setEventListener(StoppableEventListener eventListener) {
+/*    public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
     }
 
     public StoppableEventListener getEventListener() {
         return m_eventListener;
     }
-
+*/
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
