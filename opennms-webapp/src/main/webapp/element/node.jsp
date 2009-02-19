@@ -215,7 +215,7 @@
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css'></link>" />
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='css/o-styles.css' media='screen' />" />
   <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='extJS/adapter/ext/ext-base.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='extJS/source/adapter/ext/ext-base.js'></script>" />
   <jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all-debug.js'></script>" />
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/PageableGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/IPInterfaceGrid.js'></script>"/>
@@ -344,7 +344,7 @@
   </div>
 
   <!-- Availability box -->
-  <%-- <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" /> --%>
+  <%--<jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />--%>
 
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
