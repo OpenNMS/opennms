@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidNode;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
@@ -67,6 +68,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
         OnmsNode node = null;
@@ -91,6 +93,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
@@ -105,6 +108,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
