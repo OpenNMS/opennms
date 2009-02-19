@@ -40,6 +40,8 @@ import java.util.Date;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.RWSConfig;
+import org.opennms.netmgt.config.RancidAdapterConfig;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -48,6 +50,7 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidNode;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -56,13 +59,15 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:guglielmoincisa@gmail.com">Guglielmo Incisa</a>
  *
  */
-public class RancidProvisioningAdapter implements ProvisioningAdapter {
+public class RancidProvisioningAdapter implements ProvisioningAdapter, InitializingBean {
     
     /*
      * A read-only DAO will be set by the Provisioning Daemon.
      */
     private NodeDao m_nodeDao;
     private EventForwarder m_eventForwarder;
+    private RWSConfig m_rwsConfig;
+    private RancidAdapterConfig m_rancidAdapterConfig;
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
 
     /* (non-Javadoc)
@@ -77,11 +82,11 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
 //            RancidNode rn = new RancidNode("demo", "gugli_DIC2_1759");
 //            rn.setDeviceType(RancidNode.DEVICE_TYPE_BAYNET);
 //            rn.setComment("Dic2 1759");
-//            RWSClientApi.createRWSRancidNode("http://www.rionero.com/rws-current",rn);
-
+//            RWSClientApi.createRWSRancidNode("httUCIOLCD>LCLL
             RancidNode r_node = new RancidNode("demo", node.getLabel());
-            r_node.setDeviceType(node.getType());
-            RWSClientApi.createRWSRancidNode("http://www.rionero.com/rws-current",r_node);
+            // Questa non potra' mai funzionare
+            r_node.setDeviceType(m_rancidAdapterConfig.getGroup());
+            RWSClientApi.createRWSRancidNode(m_rwsConfig.getBaseUrl().getServer_url(),r_node);
         
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
@@ -152,6 +157,28 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter {
     
     private Category log() {
         return Logger.getLogger("Rancid");
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        // TODO Auto-generated method stub
+        // Put here your initialization if needed
+        
+    }
+
+    public RWSConfig getRwsConfig() {
+        return m_rwsConfig;
+    }
+
+    public void setRwsConfig(RWSConfig rwsConfig) {
+        m_rwsConfig = rwsConfig;
+    }
+
+    public RancidAdapterConfig getRancidAdapterConfig() {
+        return m_rancidAdapterConfig;
+    }
+
+    public void setRancidAdapterConfig(RancidAdapterConfig rancidAdapterConfig) {
+        m_rancidAdapterConfig = rancidAdapterConfig;
     }
 
 }
