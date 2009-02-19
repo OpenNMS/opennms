@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-  <bean name="pda" class="org.opennms.netmgt.provision.MqpProvisioningAdapter">
+  <bean name="mapAdapter" class="org.opennms.netmgt.provision.MqpProvisioningAdapter">
     <property name="eventForwarder" ref="eventForwarder" />
     <property name="onmsMapDao" ref="onmsMapDao" />
     <property name="onmsMapElementDao" ref="onmsMapElementDao" />
