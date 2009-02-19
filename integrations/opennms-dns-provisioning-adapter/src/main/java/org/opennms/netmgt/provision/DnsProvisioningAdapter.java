@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -56,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class DnsProvisioningAdapter implements ProvisioningAdapter {
+public class DnsProvisioningAdapter implements ProvisioningAdapter, InitializingBean {
     
     /*
      * A read-only DAO will be set by the Provisioning Daemon.
@@ -65,6 +66,11 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
 
+    public void afterPropertiesSet() throws Exception {
+        //to initialization here
+    }
+
+    
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
@@ -148,6 +154,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
                 Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
                 for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                     m_ip = onmsIpInterface.getInetAddress();
+                    break;
                 }
             } else {
                 m_ip = primaryInterface.getInetAddress();
