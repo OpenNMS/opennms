@@ -18,7 +18,12 @@ function initPageView(elementId, nodeId){
 		nodeId: nodeId,
 	});
 	
-//	filterableGrid = new OpenNMS.ux.SearchFilterGrid({
+//	ipFilterGrid = new OpenNMS.ux.SearchFilterGrid({
+//		id:'searchFilterIPGrid',
+//		grid:ipInterfaceGrid,
+//	});
+//	
+//	physIfFilterGrid = new OpenNMS.ux.SearchFilterGrid({
 //		id:'searchFilterPhysGrid',
 //		grid:physicalInterfaceGrid,
 //	});
@@ -33,6 +38,8 @@ function initPageView(elementId, nodeId){
 		//deferredRender: false,
 		border:false,
 		items:[
+//			ipFilterGrid,
+//			physIfFilterGrid,
 			ipInterfaceGrid,
 			physicalInterfaceGrid,
 		],
