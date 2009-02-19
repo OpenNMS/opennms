@@ -37,11 +37,13 @@ package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -74,7 +76,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.add(record);
         } catch (Exception e) {
-            log().error("updateNode: Error handling node added event.", e);
+            log().error("addNode: Error handling node added event.", e);
             sendAndThrow(nodeId, e);
         }
     }
@@ -140,7 +142,16 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
         private String m_hostname;
         
         DnsRecord(OnmsNode node) {
-            m_ip = node.getCriticalInterface().getInetAddress();
+            OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+            
+            if (primaryInterface == null) {
+                Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
+                for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
+                    m_ip = onmsIpInterface.getInetAddress();
+                }
+            } else {
+                m_ip = primaryInterface.getInetAddress();
+            }
             m_hostname = node.getLabel();
         }
 
