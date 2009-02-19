@@ -74,6 +74,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.add(record);
         } catch (Exception e) {
+            log().error("updateNode: Error handling node added event.", e);
             sendAndThrow(nodeId, e);
         }
     }
@@ -88,7 +89,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter {
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.update(record);
         } catch (Exception e) {
-            log().error("deleteNode: Error handling node added event.", e);
+            log().error("updateNode: Error handling node added event.", e);
             sendAndThrow(nodeId, e);
         }
     }
