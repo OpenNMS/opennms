@@ -106,9 +106,7 @@
     <module>opennms-config</module>
     <module>opennms-provision</module>
     <module>opennms-services</module>
-<!--
     <module>opennms-remote-poller</module>
--->
     <module>integrations</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
