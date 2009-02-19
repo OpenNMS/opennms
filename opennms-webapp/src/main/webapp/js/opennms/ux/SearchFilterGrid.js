@@ -4,13 +4,18 @@
 Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	
-	layout: 'searchfilter',
 	autoEl: 'div',
+	deferredRender: false,
 	
 	height: 300,
 	width: 400,
 	
 	initComponent:function(){
+	
+		this.setLayout(new OpenNMS.ux.SearchFilterLayout({
+			deferredRender: this.deferredRender
+		}));
+	
 		var searchButton = new Ext.Button({
 			text:'search',
 			listeners:{
