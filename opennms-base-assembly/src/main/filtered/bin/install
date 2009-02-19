@@ -1,6 +1,6 @@
 #!/bin/sh -
 
-OPENNMS_HOME="@install.dir"
+OPENNMS_HOME="@install.dir@"
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
