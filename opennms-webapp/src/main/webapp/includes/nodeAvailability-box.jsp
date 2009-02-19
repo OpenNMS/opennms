@@ -124,8 +124,8 @@
 
 <div id="availability-box">
 
-<h3>Availability</h3>
-<table>
+<h3 class="o-box">Availability</h3>
+<table class="o-box">
   <tr class="CellStatus">
 
 <%
@@ -139,7 +139,7 @@
 %>
 
     <td class="<%= availClass %> nobright">Availability (last 24 hours)</td>
-    <td colspan="2" class="<%= availClass %>"><%= availValue %></td>
+    <td colspan="2" class="<%= availClass %> bright"><%= availValue %></td>
 
   </tr>
 
@@ -170,7 +170,7 @@
 	      %>
               <td class="<%= availClass %> nobright" rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
               <td class="<%= availClass %> nobright">Overall</td>
-              <td class="<%= availClass %>"><%= availValue %></td>
+              <td class="<%= availClass %> bright"><%= availValue %></td>
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>
@@ -189,7 +189,7 @@
                        
                 <tr class="CellStatus">
                   <td class="<%= availClass %> nobright"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-                  <td class="<%= availClass %>"><%= availValue %></td>
+                  <td class="<%= availClass %> bright"><%= availValue %></td>
                 </tr>
             <% } %>
           <% } else { %>
