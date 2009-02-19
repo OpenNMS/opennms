@@ -9,41 +9,41 @@
     <documentation>XML Schema for the rws-configuration.xml configuration file. Version: $Id$</documentation>
   </annotation>
    
-	<element name="rws-configuration">
-	    <annotation>
-	        <documentation>Top-level element for the rws-configuration.xml configuration file.</documentation>
-	    </annotation>
-	
-		<complexType>
-	    	<sequence>
-	        	<element minOccurs="1" maxOccurs="1" ref="this:base-url"/>
-	        	<element minOccurs="0" maxOccurs="unbounded" ref="this:standby-url"/>
-	 		</sequence>
-	   </complexType>
-	 </element>
-	
-	<element name="base-url">
-	    <annotation>
-	        <documentation>Base Url(s) for Rancid Server.</documentation>
-	    </annotation>
-		<complexType>
-	        <attribute name="server_url" type="string" use="required"/>
-	        <attribute name="timeout" type="long" default="3000"/> 
-	        <attribute name="username" type="string"/>
-	        <attribute name="password" type="string"/>
-		</complexType>
-	 </element>
-
-	<element name="standby-url">
-	    <annotation>
-	        <documentation>Stand By Url(s) for Rancid Servers.</documentation>
-	    </annotation>
-		<complexType>
-	        <attribute name="server_url" type="string" use="required"/>
-	        <attribute name="timeout" type="long" default="3000"/> 
-	        <attribute name="username" type="string"/>
-	        <attribute name="password" type="string"/>
-		</complexType>
-	 </element>
-	  
+  <element name="rws-configuration">
+    <annotation>
+      <documentation>Top-level element for the rws-configuration.xml configuration file.</documentation>
+    </annotation>
+    
+    <complexType>
+      <sequence>
+	<element minOccurs="1" maxOccurs="1" ref="this:base-url"/>
+	<element minOccurs="0" maxOccurs="unbounded" ref="this:standby-url"/>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="base-url">
+    <annotation>
+      <documentation>Base Url(s) for Rancid Server.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="server_url" type="string" use="required"/>
+      <attribute name="timeout" type="long" default="3000"/> 
+      <attribute name="username" type="string"/>
+      <attribute name="password" type="string"/>
+    </complexType>
+  </element>
+  
+  <element name="standby-url">
+    <annotation>
+      <documentation>Stand By Url(s) for Rancid Servers.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="server_url" type="string" use="required"/>
+      <attribute name="timeout" type="long" default="3000"/> 
+      <attribute name="username" type="string"/>
+      <attribute name="password" type="string"/>
+    </complexType>
+  </element>
+  
 </schema>
