@@ -245,8 +245,6 @@
     <property name="configResource" ref="statsdConfigResourceLocation" />
   </bean>
   
-  <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.FactoryBasedSnmpConfigDao" />
-  
   <bean id="javamailConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/javamail-configuration.xml" />
   </bean>
