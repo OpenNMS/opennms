@@ -40,13 +40,9 @@ import java.util.Date;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.dao.OnmsMapElementDao;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-//import org.opennms.netmgt.model.events.StoppableEventListener;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.xml.event.Event;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -55,22 +51,17 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
  */
-@EventListener(name="Provisiond:MapProvisioningAdaptor")
 public class MapProvisioningAdapter implements ProvisioningAdapter {
     
-    /*
-     * A read-only DAO will be set by the Provisioning Daemon.
-     */
-    private OnmsNode m_onmsNode;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
-//    private StoppableEventListener m_eventListener;
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         try {
         } catch (Exception e) {
@@ -81,6 +72,7 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         try {
         } catch (Exception e) {
@@ -91,6 +83,7 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
      */
+    @Transactional
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
         try {
         } catch (Exception e) {
@@ -114,17 +107,6 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
         m_onmsMapElementDao = onmsMapElementDao;
     }
 
-    @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
-    public void handleNodeAddedEvent(Event e) {
-        throw new UnsupportedOperationException("method not yet implemented.");
-    }
-
-    @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
-    public void handleNodeDeletedEvent(Event e) {
-        throw new UnsupportedOperationException("method not yet implemented.");
-    }
-
-
     private void sendAndThrow(int nodeId, Exception e) {
         m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
@@ -136,14 +118,6 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
         return builder;
     }
     
-/*    public void setEventListener(StoppableEventListener eventListener) {
-        m_eventListener = eventListener;
-    }
-
-    public StoppableEventListener getEventListener() {
-        return m_eventListener;
-    }
-*/
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
@@ -151,14 +125,5 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
-
-    public OnmsNode getOnmsNode() {
-        return m_onmsNode;
-    }
-
-    public void setOnmsNode(OnmsNode onmsNode) {
-        m_onmsNode = onmsNode;
-    }
-
        
 }
