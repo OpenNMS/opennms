@@ -6,6 +6,16 @@
   <bean name="pda" class="org.opennms.netmgt.provision.RancidProvisioningAdapter">
     <property name="eventForwarder" ref="eventForwarder" />
     <property name="nodeDao" ref="nodeDao" />
+    <property name="rwsConfig" ref="rwsConfig"/>
+    <property name="rancidAdapterConfig" ref="rancidAdapterConfig"/>
   </bean>
+
+      <bean id="rancidAdapterConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.init</value></property>
+    </bean>
+  
+    <bean id="rancidAdapterConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rancidAdapterConfig-init">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.getInstance</value></property>
+     </bean>
   
 </beans>
