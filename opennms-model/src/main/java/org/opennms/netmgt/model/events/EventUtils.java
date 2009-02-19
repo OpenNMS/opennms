@@ -33,6 +33,7 @@ package org.opennms.netmgt.model.events;
 
 import static org.opennms.netmgt.EventConstants.INTERFACE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_ADDED_EVENT_UEI;
+import static org.opennms.netmgt.EventConstants.NODE_UPDATED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
@@ -294,6 +295,14 @@ public abstract class EventUtils {
             log.debug(String.format(format, args));
         }
     }
-    
 
+
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, String labelSource) {
+        debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
+        EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
+        return bldr.getEvent();
+    }
 }

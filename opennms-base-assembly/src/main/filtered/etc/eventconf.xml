@@ -795,6 +795,18 @@
     <severity>Warning</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/nodes/nodeUpdated</uei>
+    <event-label>OpenNMS-defined node event: nodeUpdated</event-label>
+    <descr>
+      &lt;p&gt;A currently provisioned node (%parm[nodelabel]%) was updated by
+      OpenNMS.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      A provisioned node (%parm[nodelabel]%) was updated by OpenNMS.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
     <uei>uei.opennms.org/nodes/nodeCategoryMembershipChanged</uei>
     <event-label>OpenNMS-defined node event: nodeCategoryMembershipChanged</event-label>
     <descr>

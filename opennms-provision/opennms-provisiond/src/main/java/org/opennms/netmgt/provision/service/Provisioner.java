@@ -84,6 +84,7 @@ public class Provisioner implements SpringServiceDaemon {
 
     private volatile TimeTrackingMonitor m_stats;
 
+    //TODO: maybe we need a thread pool the size of m_adapters
     private Collection<ProvisioningAdapter> m_adapters;
     
 	
@@ -320,6 +321,16 @@ public class Provisioner implements SpringServiceDaemon {
         }
         
     }
+    
+    @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
+    public void handleNodeUpdated(Event e) {
+        
+        //TODO Handle scheduling
+        for (ProvisioningAdapter adapter : m_adapters) {
+            log().info("handleNodeUpdatedEvent: Calling adapter:"+adapter.getClass()+" for node: "+e.getNodeid());
+            adapter.updateNode((int) e.getNodeid());
+        }
+    }
 
     /**
      * @param e
@@ -327,6 +338,12 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(Event e) {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
+        
+        for (ProvisioningAdapter adapter : m_adapters) {
+            log().info("handleNodeDeletedEvent: Calling adapter:"+adapter.getClass()+" for node: "+e.getNodeid());
+            adapter.deleteNode((int) e.getNodeid());
+        }
+
     }
 
     private String getEventUrl(Event event) {

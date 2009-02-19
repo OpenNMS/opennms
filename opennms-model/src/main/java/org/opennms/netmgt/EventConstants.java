@@ -230,6 +230,11 @@ public class EventConstants {
      */
     public final static String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
     
+    /**
+     * The node updated event UEI (added for the ProvisioningAdapter integration)
+     */
+    public final static String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
+    
 	/**
 	 * The node category membership changed UEI
 	 */

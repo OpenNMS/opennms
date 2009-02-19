@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
@@ -134,15 +135,16 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     @Transactional
-    public void updateNode(OnmsNode scannedNode, boolean x, boolean xx) {
+    public void updateNode(OnmsNode node, boolean x, boolean xx) {
         
-        OnmsNode dbNode = m_nodeDao.getHierarchy(scannedNode.getId());
+        OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
-        dbNode.mergeNode(scannedNode, m_eventForwarder);
+        dbNode.mergeNode(node, m_eventForwarder);
     
         m_nodeDao.update(dbNode);
-        
+        EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder);
         //TODO: update the node in the scheduledList of Nodes
+        node.visit(eventAccumlator);
         
     }
 
