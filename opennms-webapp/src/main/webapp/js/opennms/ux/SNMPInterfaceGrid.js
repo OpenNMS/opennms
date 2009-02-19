@@ -13,11 +13,11 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    		align:"left",
 	    		hidden:true,
 	    	},{
-	    		header:"SNMP ifIndex",
+	    		header:"Index",
 	    		dataIndex:"ifIndex",
 	    		sortable: true,
-	    		width:100,
-	    		align:"left"
+	    		width:30,
+	    		align:"right"
 	    	},{
 	    		header:"SNMP ifDescr",
 	    		dataIndex:"ifDescr",
@@ -28,20 +28,20 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    		header:"SNMP ifName",
 	    		dataIndex:"ifName",
 	    		sortable: true,
-	    		width:100,
+	    		width:90,
 	    		align:"left"	
 	    	},{
 	    		header:"SNMP ifAlias",
 	    		dataIndex:"ifAlias",
 	    		sortable: true,
-	    		width:100,
+	    		width:90,
 	    		align:"left"	
 	    	},{
 	    		header:"SNMP ifSpeed",
 	    		dataIndex:"ifSpeed",
 	    		sortable: true,
 	    		width:100,
-	    		align:"left"
+	    		align:"right"
 	    	},{
 	    		header :'SNMP ifAdminStatus',
 	    		dataIndex :'ifAdminStatus',
