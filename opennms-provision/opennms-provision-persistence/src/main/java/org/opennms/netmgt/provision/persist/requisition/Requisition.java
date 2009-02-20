@@ -152,7 +152,7 @@ public class Requisition implements Comparable<Requisition> {
     }
 
     public OnmsNodeRequisition getNodeRequistion(String foreignId) {
-        if (m_nodeReqs.size() == 0 && m_nodes.size() > 0) {
+        if (m_nodeReqs.size() == 0 && m_nodes != null && m_nodes.size() > 0) {
             updateNodeCache();
         }
         return m_nodeReqs.get(foreignId);
