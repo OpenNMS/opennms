@@ -31,11 +31,25 @@
 //
 package org.opennms.web;
 
+import java.beans.PropertyDescriptor;
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.Assert;
 
 public class BeanUtils {
 
+    public static Collection<String> getProperties(Object bean) {
+        Collection<String> props = new LinkedList<String>();
+
+        BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);
+        for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
+            props.add(pd.getName());
+        }
+        return props;
+    }
+    
     @SuppressWarnings("unchecked")
     public static <T> T getPathValue(Object bean, String path, Class<T> expectedClass) {
         BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);
@@ -45,8 +59,9 @@ public class BeanUtils {
             Assert.notNull(propType, "propType in BeanUtils is null path: " + path); //for debug purposes
             return null;
         }
-        if (!expectedClass.isAssignableFrom(propType))
+        if (!expectedClass.isAssignableFrom(propType)) {
             throw new IllegalArgumentException("Could not retrieve property of type "+propType+" as type "+expectedClass);
+        }
         return (T) wrapper.getPropertyValue(path);
     }
 
