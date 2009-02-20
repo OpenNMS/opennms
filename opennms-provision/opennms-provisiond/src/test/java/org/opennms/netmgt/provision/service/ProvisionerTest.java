@@ -349,7 +349,14 @@ public class ProvisionerTest {
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
+        
+        
+        // Node Delete
+        importFromResource("classpath:/nonodes.xml");
 
+        //Verify node count
+        assertEquals(0, getNodeDao().countAll());
+        
         
     }
 
@@ -446,6 +453,9 @@ public class ProvisionerTest {
         assertEquals(10, getNodeDao().countAll());
         importFromResource("classpath:/tec_dump.xml.smalltest.delete");
         assertEquals(9, getNodeDao().countAll());
+    
+        importFromResource("classpath:/tec_dump.xml.smalltest.nonodes");
+        assertEquals(0, getNodeDao().countAll());
     }
 
     /**
