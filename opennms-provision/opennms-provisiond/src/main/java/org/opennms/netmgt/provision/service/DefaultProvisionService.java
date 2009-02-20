@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -562,6 +563,15 @@ public class DefaultProvisionService implements ProvisionService {
         }
 
         return detectors;
+    }
+    
+    
+    public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
+        m_nodeDao.deleteObsoleteInterfaces(nodeId, scanStamp);
+    }
+
+    public void updateNodeScanStamp(Integer nodeId, Date scanStamp) {
+        m_nodeDao.updateNodeScanStamp(nodeId, scanStamp);
     }
 
     private void error(String format, Object... args) {

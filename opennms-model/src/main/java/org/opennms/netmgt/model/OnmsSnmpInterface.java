@@ -36,6 +36,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,6 +50,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -103,6 +106,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     /** identifier field */
     private String m_ifAlias;
+    
+    private Date m_lastCapsdPoll;
+    
 
     private OnmsNode m_node;
 
@@ -243,6 +249,16 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     public void setIfAlias(String snmpifalias) {
         m_ifAlias = snmpifalias;
     }
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="snmpLastCapsdPoll")
+    public Date getLastCapsdPoll() {
+        return m_lastCapsdPoll;
+    }
+    
+    public void setLastCapsdPoll(Date lastCapsdPoll) {
+        m_lastCapsdPoll = lastCapsdPoll;
+    }
 
     @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -268,6 +284,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .append("snmpifadminstatus", getIfAdminStatus())
             .append("snmpifoperstatus", getIfOperStatus())
             .append("snmpifalias", getIfAlias())
+            .append("lastCapsdPoll", getLastCapsdPoll())
             .toString();
     }
 

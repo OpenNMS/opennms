@@ -34,7 +34,6 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,7 +47,6 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.util.Assert;
 
 public abstract class AbstractDaoHibernate<T, K extends Serializable> extends HibernateDaoSupport implements OnmsDao<T, K> {
 
@@ -148,8 +146,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 
         };
         Object result = getHibernateTemplate().execute(callback);
-        logger.debug(String.format("findUnique(%s, %s, %s) = %s", type, queryString, Arrays.toString(args), result));
-        Assert.isTrue(result == null || type.isInstance(result), "Expected "+result+" to an instance of "+type+" but is "+(result == null ? null : result.getClass()));
+//        logger.debug(String.format("findUnique(%s, %s, %s) = %s", type, queryString, Arrays.toString(args), result));
+//        Assert.isTrue(result == null || type.isInstance(result), "Expected "+result+" to an instance of "+type+" but is "+(result == null ? null : result.getClass()));
         return result == null ? null : type.cast(result);
     }
 

@@ -42,6 +42,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -184,8 +185,21 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     }
     
     public List<OnmsNode> findAllProvisionedNodes() {
-        return find("from OnmsNode where foreignSource is not null");
+        return find("from OnmsNode n where n.foreignSource is not null");
     }
+
+    public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
+        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface iface where iface.node.id = ? and (iface.lastCapsdPoll is null or iface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+    }
+
+    public void updateNodeScanStamp(Integer nodeId, Date scanStamp) {
+        OnmsNode n = get(nodeId);
+        n.setLastCapsdPoll(scanStamp);
+        update(n);
+    }
+    
+    
 
 
 }

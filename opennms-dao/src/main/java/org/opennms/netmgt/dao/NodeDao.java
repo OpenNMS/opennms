@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -72,4 +73,8 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract int getNodeCountForForeignSource(String groupName);
     
     public abstract List<OnmsNode> findAllProvisionedNodes();
+
+    public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
+
+    public abstract void updateNodeScanStamp(Integer nodeId, Date scanStamp);
 }
