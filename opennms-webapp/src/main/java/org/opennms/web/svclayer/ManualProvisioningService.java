@@ -57,6 +57,8 @@ public interface ManualProvisioningService {
     
     ModelImport addCategoryToNode(String groupName, String pathToNode, String categoryName);
     
+    ModelImport addAssetFieldToNode(String groupName, String pathToNode, String fieldName, String fieldValue);
+    
     ModelImport addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
     
     ModelImport addServiceToInterface(String groupName, String pathToInterface, String serviceName);
@@ -74,6 +76,8 @@ public interface ManualProvisioningService {
     Map<String, Integer> getGroupDbNodeCounts();
 
     Collection<String> getNodeCategoryNames();
+
+    Collection<String> getAssetFieldNames();
 
     Collection<String> getServiceTypeNames();
 
