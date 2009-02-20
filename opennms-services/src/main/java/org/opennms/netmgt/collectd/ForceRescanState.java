@@ -68,7 +68,7 @@ public class ForceRescanState {
         
         newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
         
-        newEvent.setSource("SNMPServiceMonitor");
+        newEvent.setSource("SnmpCollector");
         
         newEvent.setInterface(m_agent.getHostAddress());
         
