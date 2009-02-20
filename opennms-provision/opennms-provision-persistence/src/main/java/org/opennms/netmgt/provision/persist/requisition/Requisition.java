@@ -138,7 +138,7 @@ public class Requisition implements Comparable<Requisition> {
     }
     
     public void visit(RequisitionVisitor visitor) {
-        if (m_nodeReqs.size() == 0 && m_nodes.size() > 0) {
+        if (m_nodeReqs.size() == 0 && m_nodes != null && m_nodes.size() > 0) {
             updateNodeCache();
         }
 
