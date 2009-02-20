@@ -117,6 +117,8 @@ public class EditProvisioningGroupController extends SimpleFormController {
             return doAddService(request, response, treeCmd, errors);
         } else if ("addCategory".equalsIgnoreCase(action)) {
             return doAddCategory(request, response, treeCmd, errors);
+        } else if ("addAssetField".equalsIgnoreCase(action)) {
+            return doAddAssetField(request, response, treeCmd, errors);
         } else if ("save".equalsIgnoreCase(action)) {
             return doSave(request, response, treeCmd, errors);
         } else if ("edit".equalsIgnoreCase(action)) {
@@ -180,6 +182,15 @@ public class EditProvisioningGroupController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    private ModelAndView doAddAssetField(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        ModelImport formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
+        treeCmd.setFormData(formData);
+        
+        treeCmd.setCurrentNode(treeCmd.getFormPath()+".asset[0]");
+        
+        return showForm(request, response, errors);
+    }
+    
     private ModelAndView doEdit(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         
         treeCmd.setCurrentNode(treeCmd.getFormPath());
@@ -247,6 +258,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
         formCommand.setFormData(formData);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -255,6 +267,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
         map.put("snmpPrimaryChoices", choices);
         
         map.put("categories", m_provisioningService.getNodeCategoryNames());
+        map.put("assetFields", m_provisioningService.getAssetFieldNames());
         map.put("services",  m_provisioningService.getServiceTypeNames());
         
         

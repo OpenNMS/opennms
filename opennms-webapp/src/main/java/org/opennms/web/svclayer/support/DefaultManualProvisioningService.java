@@ -46,6 +46,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.modelimport.Asset;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -113,6 +115,20 @@ public class DefaultManualProvisioningService implements
         
         return m_provisioningDao.get(groupName);
     }
+    
+    public ModelImport addAssetFieldToNode(String groupName, String pathToNode, String assetName, String assetValue) {
+        ModelImport group = m_provisioningDao.get(groupName);
+        Node node = BeanUtils.getPathValue(group, pathToNode, Node.class);
+
+        Asset asset = new Asset();
+        asset.setName(assetName);
+        asset.setValue(assetValue);
+        node.addAsset(asset);
+
+        m_provisioningDao.save(groupName, group);
+
+        return m_provisioningDao.get(groupName);
+    }
 
     public ModelImport addInterfaceToNode(String groupName, String pathToNode,
             String ipAddr) {
@@ -122,8 +138,9 @@ public class DefaultManualProvisioningService implements
         Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
         
         String snmpPrimary = "P";
-        if (node.getInterfaceCount() > 0)
+        if (node.getInterfaceCount() > 0) {
             snmpPrimary = "S";
+        }
 
         Interface iface = createInterface(ipAddr, snmpPrimary);
         node.addInterface(0, iface);
@@ -248,8 +265,9 @@ public class DefaultManualProvisioningService implements
 
         private String computeKey(String property) {
             int keyPrefix = property.indexOf(PropertyAccessor.PROPERTY_KEY_PREFIX_CHAR);
-            if (keyPrefix < 0)
+            if (keyPrefix < 0) {
                 return "";
+            }
             
             int keySuffix = property.indexOf(PropertyAccessor.PROPERTY_KEY_SUFFIX_CHAR);
             return property.substring(keyPrefix+1, keySuffix);
@@ -355,13 +373,17 @@ public class DefaultManualProvisioningService implements
         }
         return names;
     }
-
+    
     public Collection<String> getServiceTypeNames() {
         Collection<String> names = new LinkedList<String>();
         for(OnmsServiceType svcType : m_serviceTypeDao.findAll()) {
             names.add(svcType.getName());
         }
         return names;
+    }
+
+    public Collection<String> getAssetFieldNames() {
+        return BeanUtils.getProperties(new OnmsAssetRecord());
     }
 
 
