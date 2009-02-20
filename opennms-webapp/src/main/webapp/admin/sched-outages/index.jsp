@@ -198,9 +198,10 @@
 		} //end for outages
 	%>
 </table>
-<form action="admin/sched-outages/editoutage.jsp" method="POST">
-<input type="text" value="New Name" size="40" name="newName" /> <input
-	type="hidden" name="addNew" value="true" /> <input type="submit"
-	name="newOutage" value="Add new outage" /></form>
+<form action="admin/sched-outages/editoutage.jsp" method="POST" >
+  <input type="text" value="New Name" size="40" name="newName" /> 
+  <input type="hidden" name="addNew" value="true" /> 
+  <input type="submit" name="newOutage" value="Add new outage" />
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="true" />
