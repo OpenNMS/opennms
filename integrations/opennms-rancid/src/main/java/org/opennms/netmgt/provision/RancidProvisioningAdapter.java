@@ -69,6 +69,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     private RWSConfig m_rwsConfig;
     private RancidAdapterConfig m_rancidAdapterConfig;
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
+    private static final String ADAPTER_NAME="RANCID Provisioning Adapter";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
@@ -179,6 +180,10 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
 
     public void setRancidAdapterConfig(RancidAdapterConfig rancidAdapterConfig) {
         m_rancidAdapterConfig = rancidAdapterConfig;
+    }
+
+    public String getName() {
+        return ADAPTER_NAME;
     }
 
 }
