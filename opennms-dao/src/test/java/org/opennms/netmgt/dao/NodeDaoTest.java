@@ -286,11 +286,11 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
 	}
 
 	private void assertInterfaceEquals(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
-		String[] properties = { "ipAddress", "ifIndex",  "ipHostName", "ipStatus", "node.id" };
+		String[] properties = { "ipAddress", "ifIndex",  "ipHostName", "isManaged", "node.id" };
     	assertPropertiesEqual(properties, expected, actual);
     	assertServicesEquals(expected.getMonitoredServices(), actual.getMonitoredServices());
 	}
-
+	
 	@SuppressWarnings("unchecked")
     private void assertServicesEquals(Set expectedSet, Set actualSet) throws Exception {
     	assertSetsEqual(expectedSet, actualSet, "serviceId" , new AssertEquals() {
