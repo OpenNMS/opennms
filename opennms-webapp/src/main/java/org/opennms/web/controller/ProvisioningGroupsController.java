@@ -124,6 +124,7 @@ public class ProvisioningGroupsController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refData = new HashMap<String, Object>();

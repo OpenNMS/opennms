@@ -35,6 +35,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.net.URL;
 import java.util.Set;
 
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -60,8 +61,10 @@ public interface ForeignSourceRepository {
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException;
     public Requisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException;
     public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
+    public URL getRequisitionURL(String foreignSource);
     public void save(Requisition requisition) throws ForeignSourceRepositoryException;
     public void delete(Requisition requisition) throws ForeignSourceRepositoryException;
     
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException;
+    
 }

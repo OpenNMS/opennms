@@ -12,5 +12,5 @@ public class ForeignSourceRepositoryException extends DataAccessException {
     public ForeignSourceRepositoryException(String message, Throwable throwable) {
         super(message, throwable);
     }
-
+    
 }
