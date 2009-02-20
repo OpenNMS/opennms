@@ -31,39 +31,50 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
+import org.opennms.netmgt.provision.service.lifecycle.Phase;
 
 public class NodeScan implements Runnable {
     private String m_foreignSource;
     private String m_foreignId;
+    private ProvisionService m_provisionService;
     private LifeCycleRepository m_lifeCycleRepository;
     private List<Object> m_providers;
+    
+    private OnmsNode m_node;
 
-    public NodeScan(String foreignSource, String foreignId, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+    public NodeScan(String foreignSource, String foreignId, ProvisionService provisionService, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
+        m_provisionService = provisionService;
         m_lifeCycleRepository = lifeCycleRepository;
         m_providers = providers;
     }
     
-    private void doNodeScan() throws InterruptedException, ExecutionException {
-        LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_providers.toArray());
-        doNodeScan.setAttribute("nodeScan", this);
-        doNodeScan.setAttribute("foreignSource", m_foreignSource);
-        doNodeScan.setAttribute("foreignId", m_foreignId);
-        
-        doNodeScan.trigger();
-        
-        doNodeScan.waitFor();
+    public String getForeignSource() {
+        return m_foreignSource;
     }
     
+    public String getForeignId() {
+        return m_foreignId;
+    }
+    
+    public OnmsNode getNode() {
+        return m_node;
+    }
+
+
     public void run() {
         try {
             doNodeScan();
@@ -77,12 +88,138 @@ public class NodeScan implements Runnable {
         }
     }
     
-
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
         ScheduledFuture<?> future = executor.scheduleWithFixedDelay(this, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
         System.err.println(String.format("SCHEDULE: Created schedule for node %d : %s", schedule.getNodeId(), future));
         return future;
     }
 
+    private void doNodeScan() throws InterruptedException, ExecutionException {
+        LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_providers.toArray());
+        doNodeScan.setAttribute("nodeScan", this);
+        
+        doNodeScan.trigger();
+        
+        doNodeScan.waitFor();
+    }
+
+    public void doLoadNode(Phase loadNode) {
+        m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
+    }
+
+    public void doAgentScan(Phase detectAgents, InetAddress agentAddress, String agentType) {
+        detectAgents.createNestedLifeCycle("agentScan")
+            .setAttribute("agentScan", createAgentScan(agentAddress, agentType))
+            .setAttribute("agentType", agentType)
+            .setAttribute("node", getNode())
+            .setAttribute("foreignSource", getForeignSource())
+            .setAttribute("foreignId", getForeignId())
+            .setAttribute("primaryAddress", agentAddress)
+            .trigger();
+    }
+
+    private AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
+        return new AgentScan(m_node, agentAddress, agentType);
+    }
     
+    
+    /**
+     * AgentScan
+     *
+     * @author brozow
+     */
+    public class AgentScan {
+
+        private OnmsNode m_node;
+        private InetAddress m_agentAddress;
+        private String m_agentType;
+        private Integer m_nodeId;
+        private Date m_scanStamp;
+        
+        public AgentScan(OnmsNode node, InetAddress agentAddress, String agentType) {
+            m_node = node;
+            m_agentAddress = agentAddress;
+            m_agentType = agentType;
+        }
+        
+        public OnmsNode getNode() {
+            return m_node;
+        }
+        
+        public String getForeignSource() {
+            return m_node.getForeignSource();
+        }
+        
+        public String getForeignId() {
+            return m_node.getForeignId();
+        }
+        
+        public InetAddress getAgentAddress() {
+            return m_agentAddress;
+        }
+        
+        public String getAgentType() {
+            return m_agentType;
+        }
+
+        public void doPersistNodeInfo() {
+            m_nodeId = m_provisionService.updateNodeAttributes(getNode()).getId();
+        }
+
+        public Integer getNodeId() {
+            return m_nodeId;
+        }
+
+        public void doUpdateIPInterface(Phase currentPhase, OnmsIpInterface iface) {
+            System.out.println("Saving OnmsIpInterface "+iface);
+            m_provisionService.updateIpInterfaceAttributes(getNodeId(), iface);
+        }
+
+        public void triggerIPInterfaceScan(Phase currentPhase, InetAddress ipAddress) {
+            currentPhase.createNestedLifeCycle("ipInterfaceScan")
+                .setAttribute("ipInterfaceScan", createIpInterfaceScan(m_nodeId, ipAddress))
+                .setAttribute("foreignSource", getForeignSource())
+                .setAttribute("nodeId", getNodeId())
+                .setAttribute("ipAddress", ipAddress)
+                .trigger();
+        }
+
+        private IpInterfaceScan createIpInterfaceScan(Integer nodeId, InetAddress ipAddress) {
+            return new IpInterfaceScan(nodeId, ipAddress);
+        }
+
+        public void setScanStamp(Date scanStamp) {
+            m_scanStamp = scanStamp;
+        }
+
+        public Date getScanStamp() {
+            return m_scanStamp;
+        }
+
+    }
+    
+    public class IpInterfaceScan {
+        
+        private InetAddress m_address;
+        private Integer m_nodeId;
+
+        public IpInterfaceScan(Integer nodeId, InetAddress address) {
+            m_nodeId = nodeId;
+            m_address = address;
+        }
+
+        public String getForeignSource() {
+            return m_foreignSource;
+        }
+
+        public Integer getNodeId() {
+            return m_nodeId;
+        }
+        
+        public InetAddress getAddress() {
+            return m_address;
+        }
+        
+    }
+
 }
