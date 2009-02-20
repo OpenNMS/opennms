@@ -57,6 +57,8 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
     private OnmsMapElementDao m_onmsMapElementDao;
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
+    private static final String ADAPTER_NAME="MAP Provisioning Adapter";
+
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
@@ -124,6 +126,10 @@ public class MapProvisioningAdapter implements ProvisioningAdapter {
 
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
+    }
+
+    public String getName() {
+        return ADAPTER_NAME;
     }
        
 }
