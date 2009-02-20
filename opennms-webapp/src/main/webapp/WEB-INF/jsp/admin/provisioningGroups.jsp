@@ -10,10 +10,8 @@
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Provisioning Groups" /> 
 	<jsp:param name="headTitle" value="Provisioning Groups" />
-	<jsp:param name="breadcrumb"
-               value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb"
-	           value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
 </jsp:include>
 
 <h3>Provisioning Groups</h3>
@@ -44,7 +42,7 @@
   <input name="groupName" type="hidden"/>
 </form>
 
-<table>
+<table style="width: auto">
 
 <tr>
   <th>Delete</th>

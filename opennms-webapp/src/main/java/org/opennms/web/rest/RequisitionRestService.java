@@ -50,6 +50,10 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -69,6 +73,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,6 +92,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Autowired
     @Qualifier("deployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
+    
+    @Autowired
+    private EventProxy m_eventProxy;
     
     @Context
     UriInfo m_uriInfo;
@@ -428,8 +436,20 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     public Response deployRequisition(@PathParam("foreignSource") String foreignSource) {
         log().debug("deploying requisition for foreign source " + foreignSource);
+
         Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
         m_deployedForeignSourceRepository.save(req);
+
+        String url = m_deployedForeignSourceRepository.getRequisitionURL(foreignSource).toString();
+        EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
+        bldr.addParam(EventConstants.PARM_URL, url);
+        
+        try {
+            m_eventProxy.send(bldr.getEvent());
+        } catch (EventProxyException e) {
+            throw new DataAccessResourceFailureException("Unable to send event to import group "+foreignSource, e);
+        }
+        
         return Response.ok(req).build();
     }
     

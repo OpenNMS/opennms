@@ -1,6 +1,8 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -186,6 +188,14 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         createPath(reqPath);
         File outputFile = encodeFileName(m_requisitionPath, requisition.getForeignSource());
         return outputFile;
+    }
+
+    public URL getRequisitionURL(String foreignSource) throws ForeignSourceRepositoryException {
+        try {
+            return getOutputFileForRequisition(getRequisition(foreignSource)).toURL();
+        } catch (MalformedURLException e) {
+            throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
+        }
     }
 
 }
