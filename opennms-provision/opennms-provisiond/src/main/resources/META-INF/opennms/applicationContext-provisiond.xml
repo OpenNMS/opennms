@@ -99,7 +99,6 @@
                     <list>
                       <value>loadNode</value>
                       <value>detectAgents</value>
-                      <value>deleteObsoleteResources</value>
                     </list>
                 </constructor-arg>
             </bean>
@@ -111,6 +110,7 @@
                       <value>persistNodeInfo</value>
                       <value>detectPhysicalInterfaces</value>
                       <value>detectIpInterfaces</value>
+                      <value>deleteObsoleteResources</value>
                     </list>
                 </constructor-arg>
             </bean>

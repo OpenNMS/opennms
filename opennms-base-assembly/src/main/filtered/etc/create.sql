@@ -378,6 +378,7 @@ create table snmpInterface (
 	snmpIfAdminStatus	integer,
 	snmpIfOperStatus	integer,
 	snmpIfAlias		varchar(256),
+    snmpLastCapsdPoll timestamp with time zone,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
@@ -435,7 +436,7 @@ create table ipInterface (
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
-	ipLastCapsdPoll timestamp with time zone,
+    ipLastCapsdPoll timestamp with time zone,
 	isSnmpPrimary   char(1),
 	snmpInterfaceId	integer,
 

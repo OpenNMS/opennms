@@ -30,6 +30,7 @@
 package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -204,6 +205,10 @@ public interface ProvisionService {
     public abstract Requisition loadRequisition(Resource resource);
 
     public abstract Collection<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
+
+    public abstract void updateNodeScanStamp(Integer nodeId, Date scanStamp);
+
+    public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
 
 }

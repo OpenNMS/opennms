@@ -35,8 +35,15 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -44,14 +51,85 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
-public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+})
+@JUnitTemporaryDatabase()
+public class NodeDaoTest  {
+    
+    @Autowired
+    DistPollerDao m_distPollerDao;
+    
+    @Autowired
+    NodeDao m_nodeDao;
+    
+    @Autowired
+    JdbcTemplate m_jdbcTemplate;
+    
+    @Autowired
+    DatabasePopulator m_populator;
+    
+    @Autowired
+    TransactionTemplate m_transTemplate;
+    
+    @Before
+    public void setUp() {
+        m_populator.populateDatabase();
+    }
+    
+    public OnmsNode getNode1() {
+        return m_populator.getNode1();
+    }
+    
+    public JdbcTemplate getJdbcTemplate() {
+        return m_jdbcTemplate;
+    }
+    
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+    
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+    
+    @Test
+    @Transactional
     public void testSave() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
@@ -61,6 +139,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         getNodeDao().flush();
     }
 
+    @Test
+    @Transactional
     public void testSaveWithPathElement() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
@@ -72,6 +152,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         getNodeDao().flush();
     }
 
+    @Test
+    @Transactional
     public void testSaveWithNullPathElement() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
@@ -87,6 +169,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         getNodeDao().flush();
     }
 
+    @Test
+    @Transactional
     public void testCreate() throws InterruptedException {
         OnmsDistPoller distPoller = getDistPoller();
         
@@ -119,6 +203,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         
     }
     
+    @Test
+    @Transactional
     public void testQuery() throws Exception {
         
         OnmsNode n = getNodeDao().get(1);
@@ -126,6 +212,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         
     }
     
+    @Test
+    @Transactional
     public void testDeleteOnOrphanIpInterface() {
         
         int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
@@ -144,6 +232,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
 
     }
     
+    @Test
+    @Transactional
     public void testDeleteNode() {
         int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
 
@@ -156,30 +246,31 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         assertEquals(preCount-1, postCount);
     }
     
+    @Test
+    @Transactional
     public void testQueryWithHierarchy() throws Exception {
         
         OnmsNode n = getNodeDao().getHierarchy(1);
         validateNode(n);
     }
     
+    
+    @Transactional
+    public OnmsNode getNodeHierarchy(final int nodeId) {
+        return (OnmsNode)m_transTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus status) {
+                return getNodeDao().getHierarchy(nodeId);
+            }
+            
+        });
+    }
+    
     /** Test for bug 1594 */
+    @Test
     public void testQueryWithHierarchyCloseTransaction() throws Exception {
-        /*
-         * Close the current transaction and start a new one so that we get
-         * fresh data from the DB.
-         */
-        setComplete();
-        endTransaction();
-        
-        startNewTransaction();
-        
-        OnmsNode n = getNodeDao().getHierarchy(1);
-        
-        /*
-         * Close the current transaction and session -- the data should have
-         * all been fetched from the DB already
-         */
-        endTransaction();
+
+        OnmsNode n = getNodeHierarchy(1);
         
         validateNode(n);
 
@@ -198,6 +289,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         }
     }
     
+    @Test
+    @Transactional
     public void testGetForeignIdToNodeIdMap() {
         Map<String, Integer> arMap = getNodeDao().getForeignIdToNodeIdMap("imported:");
         assertTrue("Expected to find foriegnId 1", arMap.containsKey("1"));
@@ -205,6 +298,91 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
         assertNotNull("Exepected foreignId to be mapped to a node", node1);
         assertEquals("Expected foreignId to be mapped to 'node1'", "node1", node1.getLabel());
 
+    }
+    
+    @Test
+    @Transactional
+    public void testUpdateNodeScanStamp() {
+        
+        Date timestamp = new Date(27);
+        
+        getNodeDao().updateNodeScanStamp(1, timestamp);
+        
+        OnmsNode n = getNodeDao().get(1);
+        
+        assertEquals(timestamp, n.getLastCapsdPoll());
+        
+        
+    }
+    
+    
+    
+    @Test
+    public void testDeleteObsoleteInterfaces() {
+        
+        final Date timestampe = new Date(1234);
+
+        m_transTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus status) {
+                simulateScan(timestampe);
+                return null;
+            }
+            
+        });
+
+        m_transTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus status) {
+                deleteObsoleteInterfaces(timestampe);
+                return null;
+            }
+            
+        });
+
+        m_transTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus status) {
+                validateScan();
+                return null;
+            }
+            
+        });
+        
+        
+    }
+
+    private void validateScan() {
+        OnmsNode after = getNodeDao().get(1);
+        
+        assertEquals(1, after.getIpInterfaces().size());
+        assertEquals(1, after.getSnmpInterfaces().size());
+    }
+
+    private void simulateScan(Date timestampe) {
+        OnmsNode n = getNodeDao().get(1);
+        
+        assertEquals(3, n.getIpInterfaces().size());
+        assertEquals(3, n.getSnmpInterfaces().size());
+
+        OnmsIpInterface iface = n.getIpInterfaceByIpAddress("192.168.1.1");
+        assertNotNull(iface);
+        iface.setIpLastCapsdPoll(timestampe);
+        
+        OnmsSnmpInterface snmpIface = n.getSnmpInterfaceWithIfIndex(1);
+        assertNotNull(snmpIface);
+        snmpIface.setLastCapsdPoll(timestampe);
+        
+        getNodeDao().saveOrUpdate(n);
+        
+        getNodeDao().flush();
+
+        
+
+    }
+
+    private void deleteObsoleteInterfaces(Date timestampe) {
+        getNodeDao().deleteObsoleteInterfaces(1, timestampe);
     }
     
     private void validateNode(OnmsNode n) throws Exception {
@@ -216,6 +394,7 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
 			assertNotNull(iface);
 			assertNotNull(iface.getIpAddress());
 		}
+        
         assertNodeEquals(getNode1(), n);
     }
     
@@ -319,6 +498,8 @@ public class NodeDaoTest extends AbstractTransactionalDaoTestCase {
 		assertEquals("Unexpected value for property "+name+" on object "+expected, expectedValue, actualValue);
 	}
 
+    @Test
+    @Transactional
 	public void testQuery2() {
         OnmsNode n = getNodeDao().get(6);
         assertNotNull(n);
