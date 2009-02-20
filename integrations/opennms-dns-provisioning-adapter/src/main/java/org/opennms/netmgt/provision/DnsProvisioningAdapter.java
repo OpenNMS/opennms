@@ -65,6 +65,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
     private NodeDao m_nodeDao;
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
+    private static final String ADAPTER_NAME="DNS Provisioning Adapter";
 
     public void afterPropertiesSet() throws Exception {
         //to initialization here
@@ -196,6 +197,11 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
     
     private static Category log() {
         return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
+    }
+
+
+    public String getName() {
+        return ADAPTER_NAME;
     }
 
 }

@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.ProvisioningAdapter;
+import org.opennms.netmgt.provision.ProvisioningAdapterException;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -314,12 +315,17 @@ public class Provisioner implements SpringServiceDaemon {
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }
-        
+
         for (ProvisioningAdapter adapter : m_adapters) {
             log().info("handleNodeAddedEvent: Calling adapter:"+adapter.getClass()+" for node: "+e.getNodeid());
-            adapter.addNode((int) e.getNodeid());
+            try {
+                adapter.addNode((int) e.getNodeid());
+            } catch (ProvisioningAdapterException pae) {
+                log().error("handleNodeAddedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+            } catch (Throwable t) {
+                log().error("handleNodeAddedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+            }
         }
-        
     }
     
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
@@ -327,21 +333,30 @@ public class Provisioner implements SpringServiceDaemon {
         
         //TODO Handle scheduling
         for (ProvisioningAdapter adapter : m_adapters) {
-            log().info("handleNodeUpdatedEvent: Calling adapter:"+adapter.getClass()+" for node: "+e.getNodeid());
-            adapter.updateNode((int) e.getNodeid());
+            log().info("handleNodeUpdatedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
+            try {
+                adapter.updateNode((int) e.getNodeid());
+            } catch (ProvisioningAdapterException pae) {
+                log().error("handleNodeUpdatedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+            } catch (Throwable t) {
+                log().error("handleNodeUpdatedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+            }
         }
     }
 
-    /**
-     * @param e
-     */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(Event e) {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         
         for (ProvisioningAdapter adapter : m_adapters) {
-            log().info("handleNodeDeletedEvent: Calling adapter:"+adapter.getClass()+" for node: "+e.getNodeid());
-            adapter.deleteNode((int) e.getNodeid());
+            log().info("handleNodeDeletedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
+            try {
+                adapter.deleteNode((int) e.getNodeid());
+            } catch (ProvisioningAdapterException pae) {
+                log().error("handleNodeDeletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+            } catch (Throwable t) {
+                log().error("handleNodeDeletedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+            }
         }
 
     }
