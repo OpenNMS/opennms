@@ -30,15 +30,8 @@
 
 <c:forEach var="group" items="${groups}">
   <br />
-  <h3 style="vertical-align: middle">
-    <span style="font-size: large"><c:out value="${group.foreignSource}" /></span>
-    | last import request:
-    <c:choose>
-      <c:when test="${empty group.lastImport}">never</c:when>
-      <c:otherwise>${group.lastImport}</c:otherwise>
-    </c:choose>
-    |
-    <span style="font-size: large">
+  <h3 style="vertical-align: middle; margin: 0px; padding: 0px 20px 4px 20px">
+    <span style="font-size: large; text-align: right">
       <input type="button" value="Import" onclick="javascript:doAction('${group.foreignSource}', 'import')" />
       <c:choose>
         <c:when test="${dbNodeCounts[group.foreignSource] > 0}">
@@ -49,8 +42,9 @@
         </c:otherwise>
       </c:choose>
     </span>
+    <span style="font-size: larger; padding-left: 20px;"><c:out value="${group.foreignSource}" /></span>
   </h3>
-
+  
   <table class="top" border="0">
   	<tr>
   	  <td>
@@ -66,7 +60,12 @@
   	      <c:choose>
   	        <c:when test="${empty group.dateStamp}">never</c:when>
   	        <c:otherwise>${group.dateStamp}</c:otherwise>
-  	      </c:choose>
+  	      </c:choose><br />
+          last import requested:
+          <c:choose>
+            <c:when test="${empty group.lastImport}">never</c:when>
+            <c:otherwise>${group.lastImport}</c:otherwise>
+          </c:choose>
   	  	</span>
   	  </td>
   	</tr>
