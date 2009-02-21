@@ -48,6 +48,12 @@
     <property name="successView" value="redirect:/admin/provisioningGroups.htm" />
   </bean>
   
+  <bean name="/admin/editForeignSource.htm" class="org.opennms.web.controller.EditForeignSourceController">
+    <property name="bindOnNewForm" value="true" />
+    <property name="commandName" value="foreignSourceEditForm" />
+    <property name="successView" value="redirect:/admin/provisioningGroups.htm" />
+  </bean>
+  
   <bean name="/admin/applications.htm"
   		class="org.opennms.web.controller.ApplicationController">
   	<property name="adminApplicationService" ref="adminApplicationService"/>
