@@ -20,10 +20,8 @@
 
   <input type="hidden" id="groupName" name="groupName" value="${nodeEditForm.groupName}"/> 
  
- <div align="right">
-   <tree:actionButton label="Add Node" action="addNode"/> 
-   <tree:actionButton label="Done" action="done" />
- </div>
+ <tree:actionButton label="Done" action="done" />
+ <tree:actionButton label="Add Node" action="addNode"/> 
 
  <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
     <!-- Form for editing node fields -->
