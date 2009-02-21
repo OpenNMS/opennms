@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -66,7 +67,10 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     
     @XmlAttribute(name="name")
     private String m_name;
-    
+
+    @XmlAttribute(name="date-stamp")
+    protected XMLGregorianCalendar m_dateStamp;
+
     @XmlElement(name="scan-interval")
     @XmlJavaTypeAdapter(StringIntervalAdapter.class)
     private Duration m_scanInterval = Duration.standardDays(1);
