@@ -12,32 +12,10 @@
 	<jsp:param name="headTitle" value="Provisioning Groups" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Groups</a>" />
+	<jsp:param name="script" value="<script type='text/javascript' src='js/provisioningGroups.js'></script>" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
-	function takeAction(group, action) {
-	    document.takeAction.groupName.value = group;
-	    document.takeAction.action.value = action;
-		document.takeAction.submit();
-	}
-	
-   function editRequisition(group) {
-	    document.editRequisition.groupName.value = group;
-		document.editRequisition.submit();
-	}
-	
-   function editForeignSource(foreignSourceName) {
-	    document.editForeignSource.foreignSourceName.value = foreignSourceName;
-		document.editForeignSource.submit();
-	}
-	
-	function deleteNodes(group) {
-	   alert("Are you sure you want to delete all the nodes in the provisioning group?  This CANNOT be undone.");
-	}
-	
-</script>
-
-<c:url var="editRequisitionUrl"   value="admin/editProvisioningGroup.htm" />
+<c:url var="editRequisitionUrl" value="admin/editProvisioningGroup.htm" />
 <form action="${editRequisitionUrl}" name="editRequisition" method="post">
   <input name="groupName" type="hidden"/>
 </form>
@@ -59,6 +37,18 @@
       <c:when test="${empty group.lastImport}">never</c:when>
       <c:otherwise>${group.lastImport}</c:otherwise>
     </c:choose>
+    |
+    <span style="font-size: large">
+      <input type="button" value="Import" onclick="javascript:doAction('${group.foreignSource}', 'import')" />
+      <c:choose>
+        <c:when test="${dbNodeCounts[group.foreignSource] > 0}">
+          <input type="button" value="Delete Nodes" onclick="javascript:confirmAction('${group.foreignSource}', 'deleteNodes', 'Are you sure you want to delete all the nodes from group ${group.foreignSource}. This CANNOT be undone.')" />
+        </c:when>
+        <c:otherwise>
+          <input type="button" value="Delete Group" onclick="javascript:doAction('${group.foreignSource}', 'deleteGroup')" />
+        </c:otherwise>
+      </c:choose>
+    </span>
   </h3>
 
   <table class="top" border="0">
@@ -94,22 +84,6 @@
   	        <c:when test="${empty group.dateStamp}">never</c:when>
   	        <c:otherwise>${group.dateStamp}</c:otherwise>
   	      </c:choose>
-  	  </td>
-  	</tr>
-  	<tr>
-  	  <td>
-  	    Actions:
-  	  </td>
-  	  <td>
-        <a href="javascript:takeAction('${group.foreignSource}', 'import')"><img src="images/arrow-boxed-16x16.gif" alt="Import" title="Import" /> Import</a> <br />
-        <c:choose>
-          <c:when test="${dbNodeCounts[group.foreignSource] > 0}">
-            <a href="javascript:takeAction('${group.foreignSource}', 'deleteNodes')" onclick="return confirm('Are you sure you want to delete all the nodes from group ${group.foreignSource}. This CANNOT be undone.')"><img src="images/trash.gif" alt="Delete Nodes" title="Delete Nodes" /> Delete Nodes from '${group.foreignSource}'</a>
-          </c:when>
-          <c:otherwise>
-            <a href="javascript:takeAction('${group.foreignSource}', 'deleteGroup')"><img src="images/trash.gif" alt="Delete Group" title="Delete Group" /> Delete Group '${group.foreignSource}'</a>
-          </c:otherwise>
-        </c:choose>
   	  </td>
   	</tr>
   </table>
