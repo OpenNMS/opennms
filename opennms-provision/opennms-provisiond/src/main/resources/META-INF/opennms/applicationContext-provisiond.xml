@@ -141,6 +141,7 @@
 
   <bean id="adapterManager" class="org.opennms.netmgt.provision.service.ProvisioningAdapterManager" >
     <property name="pluginRegistry" ref="pluginRegistry" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
     
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
