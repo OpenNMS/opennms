@@ -314,6 +314,18 @@ span.filter {
 	padding: 3px 4px;
 }
 
+table.top {
+	width: auto;
+	border: none;
+	background-color: transparent;
+	vertical-align: top;
+}
+table.top td {
+	border: none;
+	background-color: transparent;
+	vertical-align: top;
+}
+
 table.normal {
 	width: auto;
 }
