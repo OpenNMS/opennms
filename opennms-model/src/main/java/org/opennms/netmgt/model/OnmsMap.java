@@ -171,24 +171,20 @@ public class OnmsMap implements Serializable {
         this.height = height;
     }
 
-    public OnmsMap(String name, String background, String owner, String group,
-               String accessMode, String userLastModifies, float scale,
-               int offsetX, int offsetY, String type, int width, int height) {
+    public OnmsMap(String name, String mapGroup, String background,
+            String owner, String accessMode, String type, int width,
+            int height) {
         this.name = name;
+        this.mapGroup = mapGroup;
         this.background = background;
         this.owner = owner;
-        this.mapGroup = group;
+        this.userLastModifies = owner;
+        this.createTime = new Date();
+        this.lastModifiedTime = new Date();
         setAccessMode(accessMode);
-        this.userLastModifies = userLastModifies;
-        this.scale = scale;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
         this.type = type;
         this.width = width;
         this.height = height;
-        this.createTime = new Date();
-        this.lastModifiedTime = new Date();
-
     }
 
     public int getId() {

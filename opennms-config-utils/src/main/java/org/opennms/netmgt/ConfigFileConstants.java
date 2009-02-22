@@ -353,6 +353,11 @@ public final class ConfigFileConstants {
     
     public static final int HTTP_COLLECTION_CONFIG_FILE_NAME;
 
+    /**
+     * The config file for maps Adapter
+     */
+    public static final int MAPS_ADAPTER_CONFIG_FILE_NAME;
+
     //
     // End other config files
     //
@@ -593,9 +598,11 @@ public final class ConfigFileConstants {
         
         AMI_CONFIG_FILE_NAME = 75;
         
+        MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[76];
+        FILE_ID_TO_NAME = new String[77];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -672,7 +679,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
         FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
-	FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
+        FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
         FILE_ID_TO_NAME[MONITORING_LOCATIONS_FILE_NAME] = "monitoring-locations.xml";
@@ -688,6 +695,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
+        FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
     }
 
     /**

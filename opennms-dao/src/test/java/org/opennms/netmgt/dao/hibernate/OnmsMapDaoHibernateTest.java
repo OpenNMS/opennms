@@ -32,7 +32,7 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
 
     public void testSaveOnmsMap2() {
         // Create a new map and save it.
-        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "admin",969,726);
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap2", "admin",969,726);
         getOnmsMapDao().save(map);
         getOnmsMapDao().flush();
         getOnmsMapDao().clear();
@@ -56,7 +56,7 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
 
     public void testSaveOnmsMap3() {
         // Create a new map and save it.
-        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap3", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
         getOnmsMapDao().save(map);
         getOnmsMapDao().flush();
         getOnmsMapDao().clear();
@@ -79,8 +79,7 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
 
     public void testSaveOnmsMap4() {
         // Create a new map and save it.
-        float scale = new Float(1.0);
-        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "11aabb","admin","users",OnmsMap.ACCESS_MODE_GROUP,"admin", scale,0,0,OnmsMap.USER_GENERATED_MAP,800,600);
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap4", "users","11aabb","admin",OnmsMap.ACCESS_MODE_GROUP, OnmsMap.USER_GENERATED_MAP,800,600);
         getOnmsMapDao().save(map);
         getOnmsMapDao().flush();
         getOnmsMapDao().clear();
@@ -121,6 +120,24 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
+    public void testFindMapsByNameAndTypeOk() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.USER_GENERATED_MAP);
+
+        assertEquals(1, maps.size());
+        OnmsMap map = maps.iterator().next();
+        assertEquals("DB_Pop_Test_Map", map.getName());
+        assertEquals("fake_background.jpg", map.getBackground());
+        assertEquals(OnmsMap.ACCESS_MODE_ADMIN, map.getAccessMode());
+        assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
+    }
+
+    public void testFindMapsByNameAndTypeKo() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+
+        assertEquals(0, maps.size());
+    }
+
+
     public void testFindMapsLike() {
         Collection<OnmsMap> maps = getOnmsMapDao().findMapsLike("Pop_Test");
 
@@ -132,10 +149,28 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
+    public void testIsNew() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsLike("Pop_Test");
+
+        assertEquals(1, maps.size());
+        OnmsMap map = maps.iterator().next();
+        assertEquals(false, map.isNew());
+    }
+
+    public void testIsNew2() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.USER_GENERATED_MAP);
+
+        assertEquals(1, maps.size());
+        OnmsMap map = maps.iterator().next();
+        assertEquals(false, map.isNew());
+    }
+
     public void testDeleteOnmsMap() {
         OnmsMap map = getOnmsMapDao().findMapById(1);
         getOnmsMapDao().delete(map);
 
         assertNull(getOnmsMapDao().findMapById(1));
     }
+    
+    
 }
