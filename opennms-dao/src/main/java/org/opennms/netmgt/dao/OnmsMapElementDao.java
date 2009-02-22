@@ -41,5 +41,6 @@ public interface OnmsMapElementDao extends OnmsDao<OnmsMapElement, Integer> {
     public abstract Collection<OnmsMapElement> findMapElementsByMapId(int id);
     public abstract void deleteElementsByMapId(int mapId);
     public abstract void deleteElementsByType(String type);
+    public abstract void deleteElementsByIdandType(int id, String type);
 
 }

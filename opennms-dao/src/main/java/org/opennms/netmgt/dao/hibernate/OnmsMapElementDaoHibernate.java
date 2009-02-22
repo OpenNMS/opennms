@@ -79,4 +79,12 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
             delete(elem);
         }
     }
+
+    public void deleteElementsByIdandType(int id, String type) {
+        Object[] values = {id, type};
+        for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.elementId = ? and element.type = ?", values)) {
+            delete(elem);
+        }
+        
+    }
 }
