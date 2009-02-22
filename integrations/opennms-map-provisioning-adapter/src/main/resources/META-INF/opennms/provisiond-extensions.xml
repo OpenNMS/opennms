@@ -3,10 +3,20 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-  <bean name="mapAdapter" class="org.opennms.netmgt.provision.MqpProvisioningAdapter">
-    <property name="eventForwarder" ref="eventForwarder" />
-    <property name="onmsMapDao" ref="onmsMapDao" />
-    <property name="onmsMapElementDao" ref="onmsMapElementDao" />
-  </bean>
+	  <bean name="mapAdapter" class="org.opennms.netmgt.provision.MapProvisioningAdapter">
+	    <property name="eventForwarder" ref="eventForwarder" />
+	    <property name="onmsNodeDao" ref="nodeDao" />
+	    <property name="onmsMapDao" ref="onmsMapDao" />
+	    <property name="onmsMapElementDao" ref="onmsMapElementDao" />
+	    <property name="mapsAdapterConfig" ref="mapsAdapterConfig" />	    
+	  </bean>
+  
+      <bean id="mapsAdapterConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.MapsAdapterConfigFactory.init</value></property>
+    </bean>
+  
+    <bean id="mapsAdapterConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="mapsAdapterConfig-init">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.MapsAdapterConfigFactory.getInstance</value></property>
+     </bean>
   
 </beans>
