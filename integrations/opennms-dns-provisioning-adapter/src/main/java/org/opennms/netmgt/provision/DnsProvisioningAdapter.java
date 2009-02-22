@@ -52,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 /**
- * A Dynamic DNS provisioning adapter for integration with OpenNMS Provisoning daemon API.
+ * A Dynamic DNS provisioning adapter for integration with OpenNMS Provisioning daemon API.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
@@ -68,7 +68,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
 
     public void afterPropertiesSet() throws Exception {
-        //to initialization here
+        //do initialization here
     }
 
     
