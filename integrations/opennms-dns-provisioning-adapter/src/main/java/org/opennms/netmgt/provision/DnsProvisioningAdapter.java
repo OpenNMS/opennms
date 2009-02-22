@@ -118,6 +118,10 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
         }
     }
 
+    public void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
+        throw new ProvisioningAdapterException("configChanged event not yet implemented.");
+    }
+
     private void sendAndThrow(int nodeId, Exception e) {
         m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);

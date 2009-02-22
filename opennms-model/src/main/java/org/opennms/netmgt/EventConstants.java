@@ -963,6 +963,10 @@ public class EventConstants {
      */
     public static final String EVENT_ACKNOWLEDGED_UEI = "uei.opennms.org/ackd/acknowledgment";
 
+    /**
+     * UEI used for indicating a change management event
+     */
+    public static final String NODE_CONFIG_CHANGE_UEI = "uei.opennms.org/internal/translator/entityConfigChanged";
 
 
     /**

@@ -64,11 +64,11 @@
     <event-translation-spec uei="uei.opennms.org/external/hyperic/alert">
       <mappings>
         <mapping>
-          <assignment name="uei" type="field">
+          <assignment name="uei" type="field" >
             <value type="constant" result="uei.opennms.org/internal/translator/hypericAlert" />
           </assignment>
-          <assignment name="nodeid" type="field">
-            <value type="sql" result="SELECT n.nodeid FROM node n WHERE n.foreignid = ? AND n.foreignsource = ?">
+          <assignment name="nodeid" type="field" >
+            <value type="sql" result="SELECT n.nodeid FROM node n WHERE n.foreignid = ? AND n.foreignsource = ?" >
               <value type="parameter" name="platform.id" matches=".*" result="${0}" />
               <value type="constant" result="HQ" />
             </value>
@@ -77,4 +77,38 @@
       </mappings>
     </event-translation-spec>
   </translation>
+  
+  <!-- Translations for configuration management -->
+  <event-translation-spec uei="uei.opennms.org/vendor/Cisco/traps/ciscoConfigManEvent" >
+    <mappings>
+      <mapping>
+        <assignment name="uei" type="field" >
+          <value type="constant" result="uei.opennms.org/internal/translator/entityConfigChanged" />
+        </assignment>
+        <assignment name="configSource" type="parameter" >
+          <!-- ccmHistoryEventConfigSource -->
+          <value type="parameter" name="~^\.1\.3\.6\.1\.4\.1\.9\.9\.43\.1\.1\.6\.1\.4\.*" matches=".*" result="${0}" />
+        </assignment>
+        <assignment name="configUser" type="parameter" >
+          <value type="constant" result="Unknown" />
+        </assignment>
+      </mapping>
+    </mappings>
+  </event-translation-spec>
+  <event-translation-spec uei="uei.opennms.org/vendor/Juniper/traps/jnxCmCfgChange" >
+    <mappings>
+      <mapping>
+        <assignment name="uei" type="field" >
+          <value type="constant" result="uei.opennms.org/internal/translator/entityConfigChanged" />
+        </assignment>
+        <assignment name="configSource" type="parameter" >
+          <value type="parameter" name="~^\.1\.3\.6\.1\.4\.1\.2636\.3\.18\.1\.7\.1\.4" matches=".*" result="${0}" />
+        </assignment>
+        <assignment name="configUser" type="parameter" >
+          <value type="parameter" name="~^\.1\.3\.6\.1\.4\.1\.2636\.3\.18\.1\.7\.1\.5" matches=".*" result="${0}" />
+        </assignment>
+      </mapping>
+    </mappings>
+  </event-translation-spec>
+
 </event-translator-configuration>

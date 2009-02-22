@@ -63,5 +63,7 @@ public interface ProvisioningAdapter {
     void deleteNode(int nodeId) throws ProvisioningAdapterException;
 
     String getName();
+
+    void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException;
     
 }
