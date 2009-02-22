@@ -46,5 +46,20 @@
     <severity>Minor</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="1" auto-clean="false" />
   </event>
+  
+  <event>
+    <uei>uei.opennms.org/internal/translator/entityConfigChanged</uei>
+    <event-label>OpenNMS defined event: A trap based event was received indicating a configuration change on a device and has been translated to this generic event</event-label>
+    <descr>
+      This is a translated entity configuration change event.&lt;p&gt;
 
+      &lt;p&gt;Source: %parm[configSource]% &lt;/p&gt;
+      &lt;p&gt;User: %parm[configUser]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;%parm[configUser]%" changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a&gt;&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+  </event>
 </events>

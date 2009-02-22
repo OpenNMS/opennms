@@ -199,6 +199,10 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
         }
     }
 
+    public void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
+        throw new ProvisioningAdapterException("configChanged event not yet implemented.");
+    }
+
     protected void removeEmptySubmaps() {
         Map<String,List<Csubmap>> submaps = m_mapsAdapterConfig.getsubMaps();
         Iterator<String> ite = submaps.keySet().iterator();

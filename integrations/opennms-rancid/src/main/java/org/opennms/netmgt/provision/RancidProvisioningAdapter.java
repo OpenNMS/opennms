@@ -125,6 +125,10 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         throw new UnsupportedOperationException("method not yet implemented.");
     }
     
+    public void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
+        throw new ProvisioningAdapterException("configChanged event not yet implemented.");
+    }
+    
     private void sendAndThrow(int nodeId, Exception e) {
         log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow");
         m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());

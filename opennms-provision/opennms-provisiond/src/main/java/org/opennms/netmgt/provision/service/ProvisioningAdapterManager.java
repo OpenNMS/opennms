@@ -62,6 +62,8 @@ public class ProvisioningAdapterManager implements InitializingBean {
 
     private PluginRegistry m_pluginRegistry;
     private Collection<ProvisioningAdapter> m_adapters;
+    
+    //may use this at some point
     private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
     
@@ -118,6 +120,24 @@ public class ProvisioningAdapterManager implements InitializingBean {
                 log().error("handleNodeDeletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
             } catch (Throwable t) {
                 log().error("handleNodeDeletedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+            }
+        }
+    }
+    
+    @EventHandler(uei = EventConstants.NODE_CONFIG_CHANGE_UEI)
+    public void handleNodeChangedEvent(Event e) {
+        for (ProvisioningAdapter adapter : m_adapters) {
+            log().info("handleNodeChangedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
+            try {
+                if (e.getNodeid() != 0) {
+                    adapter.nodeConfigChanged((int) e.getNodeid());
+                } else {
+                    log().warn("handleNodeChangedEvent: received configChanged event without nodeId: "+e);
+                }
+            } catch (ProvisioningAdapterException pae) {
+                log().error("handleNodeChangedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+            } catch (Throwable t) {
+                log().error("handleNodeChangedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
             }
         }
     }
