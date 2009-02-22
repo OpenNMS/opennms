@@ -61,9 +61,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class RancidProvisioningAdapter implements ProvisioningAdapter, InitializingBean {
     
-    /*
-     * A read-only DAO will be set by the Provisioning Daemon.
-     */
     private NodeDao m_nodeDao;
     private EventForwarder m_eventForwarder;
     private RWSConfig m_rwsConfig;
