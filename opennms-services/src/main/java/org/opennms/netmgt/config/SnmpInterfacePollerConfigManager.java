@@ -89,6 +89,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * The config class loaded from the config file
      */
     private SnmpInterfacePollerConfiguration m_config;
+ 
     /**
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
@@ -101,10 +102,11 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     private Map<Package, List<String>> m_pkgIpMap;
 
     /**
-     * A boolean flag to indicate If a filter rule agaist the local OpenNMS
+     * A boolean flag to indicate If a filter rule against the local OpenNMS
      * server has to be used.
      */
     private static boolean m_verifyServer;
+
     /**
      * The name of the local OpenNMS server
      */
