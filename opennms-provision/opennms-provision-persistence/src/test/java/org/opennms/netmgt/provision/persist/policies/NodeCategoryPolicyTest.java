@@ -58,8 +58,8 @@ public class NodeCategoryPolicyTest {
     @Transactional
     public void testMatchingLabel() {
         NodeCategoryPolicy p = new NodeCategoryPolicy();
-        p.setParameter("label", "~^node1$");
-        p.setParameter("category", "PolicyTest");
+        p.setForeignId("1");
+        p.setCategory("PolicyTest");
 
         List<OnmsNode> matchedNodes = matchPolicy(p, "1");
         assertTrue(matchedNodes.get(0).getCategories().contains(new OnmsCategory("PolicyTest")));
@@ -69,8 +69,8 @@ public class NodeCategoryPolicyTest {
     @Transactional
     public void testMatchingNothing() {
         NodeCategoryPolicy p = new NodeCategoryPolicy();
-        p.setParameter("label", "~^wankerdoodle$");
-        p.setParameter("category", "PolicyTest");
+        p.setLabel("~^wankerdoodle$");
+        p.setCategory("PolicyTest");
 
         List<OnmsNode> matchedNodes = matchPolicy(p, null);
         assertEquals(0, matchedNodes.size());

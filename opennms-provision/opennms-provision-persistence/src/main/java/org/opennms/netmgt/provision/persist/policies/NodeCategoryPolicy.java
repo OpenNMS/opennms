@@ -5,79 +5,89 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 
 public class NodeCategoryPolicy extends BasePolicy<OnmsNode> {
+    private String m_category;
+    private String m_type;
+    private String m_sysObjectId;
+    private String m_sysName;
+    private String m_sysDescription;
+    private String m_sysLocation;
+    private String m_sysContact;
+    private String m_label;
+    private String m_labelSource;
+    private String m_netBiosName;
+    private String m_netBiosDomain;
+    private String m_operatingSystem;
+    private String m_foreignId;
+    private String m_foreignSource;
+    
     public OnmsNode apply(OnmsNode node) {
-        String category = getParameter("category");
+        String category = m_category;
         if (category == null) {
             return node;
         }
         
-        if (getParameter("type") != null) {
-            if (!match(node.getType(), getParameter("type"))) {
+        if (m_type != null) {
+            if (!match(node.getType(), m_type)) {
                 return null;
             }
         }
-        if (getParameter("sysobjectid") != null) {
-            if (!match(node.getSysObjectId(), getParameter("sysobjectid"))) {
+        if (m_sysObjectId != null) {
+            if (!match(node.getSysObjectId(), m_sysObjectId)) {
                 return null;
             }
         }
-        if (getParameter("sysname") != null) {
-            if (!match(node.getSysName(), getParameter("sysname"))) {
+        if (m_sysName != null) {
+            if (!match(node.getSysName(), m_sysName)) {
                 return null;
             }
         }
-        if (getParameter("sysdescription") != null) {
-            if (!match(node.getSysDescription(), getParameter("sysdescription"))) {
+        if (m_sysDescription != null) {
+            if (!match(node.getSysDescription(), m_sysDescription)) {
                 return null;
             }
         }
-        if (getParameter("syslocation") != null) {
-            if (!match(node.getSysLocation(), getParameter("syslocation"))) {
+        if (m_sysLocation != null) {
+            if (!match(node.getSysLocation(), m_sysLocation)) {
                 return null;
             }
         }
-        if (getParameter("syscontact") != null) {
-            if (!match(node.getSysContact(), getParameter("syscontact"))) {
+        if (m_sysContact != null) {
+            if (!match(node.getSysContact(), m_sysContact)) {
                 return null;
             }
         }
-        if (getParameter("label") != null) {
-            if (!match(node.getLabel(), getParameter("label"))) {
+        if (m_label != null) {
+            if (!match(node.getLabel(), m_label)) {
                 return null;
             }
         }
-        if (getParameter("labelsource") != null) {
-            if (!match(node.getLabelSource(), getParameter("labelsource"))) {
+        if (m_labelSource != null) {
+            if (!match(node.getLabelSource(), m_labelSource)) {
                 return null;
             }
         }
-        if (getParameter("netbiosname") != null) {
-            if (!match(node.getNetBiosName(), getParameter("netbiosname"))) {
+        if (m_netBiosName != null) {
+            if (!match(node.getNetBiosName(), m_netBiosName)) {
                 return null;
             }
         }
-        if (getParameter("netbiosdomain") != null) {
-            if (!match(node.getNetBiosDomain(), getParameter("netbiosdomain"))) {
+        if (m_netBiosDomain != null) {
+            if (!match(node.getNetBiosDomain(), m_netBiosDomain)) {
                 return null;
             }
         }
-        if (getParameter("operatingsystem") != null) {
-            if (!match(node.getOperatingSystem(), getParameter("operatingsystem"))) {
+        if (m_operatingSystem != null) {
+            if (!match(node.getOperatingSystem(), m_operatingSystem)) {
                 return null;
             }
         }
-        if (getParameter("foreignid") != null) {
-            if (!match(node.getForeignId(), getParameter("foreignid"))) {
+        if (m_foreignId != null) {
+            if (!match(node.getForeignId(), m_foreignId)) {
                 return null;
             }
         }
-        if (getParameter("foreignsource") != null) {
-            if (!match(node.getForeignSource(), getParameter("foreignsource"))) {
-                return null;
-            }
-        }
-        if (getParameter("foreignsource") != null) {
-            if (!match(node.getForeignSource(), getParameter("foreignsource"))) {
+        if (m_foreignSource != null) {
+            if (!match(node.getForeignSource(), m_foreignSource)) {
                 return null;
             }
         }
@@ -85,5 +95,117 @@ public class NodeCategoryPolicy extends BasePolicy<OnmsNode> {
         node.addCategory(new OnmsCategory(category));
 
         return node;
+    }
+
+    public String getCategory() {
+        return m_category;
+    }
+
+    public void setCategory(String category) {
+        m_category = category;
+    }
+
+    public String getType() {
+        return m_type;
+    }
+
+    public void setType(String type) {
+        m_type = type;
+    }
+
+    public String getSysObjectId() {
+        return m_sysObjectId;
+    }
+
+    public void setSysObjectId(String sysObjectId) {
+        m_sysObjectId = sysObjectId;
+    }
+
+    public String getSysName() {
+        return m_sysName;
+    }
+
+    public void setSysName(String sysName) {
+        m_sysName = sysName;
+    }
+
+    public String getSysDescription() {
+        return m_sysDescription;
+    }
+
+    public void setSysDescription(String sysDescription) {
+        m_sysDescription = sysDescription;
+    }
+
+    public String getSysLocation() {
+        return m_sysLocation;
+    }
+
+    public void setSysLocation(String sysLocation) {
+        m_sysLocation = sysLocation;
+    }
+
+    public String getSysContact() {
+        return m_sysContact;
+    }
+
+    public void setSysContact(String sysContact) {
+        m_sysContact = sysContact;
+    }
+
+    public String getLabel() {
+        return m_label;
+    }
+
+    public void setLabel(String label) {
+        m_label = label;
+    }
+
+    public String getLabelSource() {
+        return m_labelSource;
+    }
+
+    public void setLabelSource(String labelSource) {
+        m_labelSource = labelSource;
+    }
+
+    public String getNetBiosName() {
+        return m_netBiosName;
+    }
+
+    public void setNetBiosName(String netBiosName) {
+        m_netBiosName = netBiosName;
+    }
+
+    public String getNetBiosDomain() {
+        return m_netBiosDomain;
+    }
+
+    public void setNetBiosDomain(String netBiosDomain) {
+        m_netBiosDomain = netBiosDomain;
+    }
+
+    public String getOperatingSystem() {
+        return m_operatingSystem;
+    }
+
+    public void setOperatingSystem(String operatingSystem) {
+        m_operatingSystem = operatingSystem;
+    }
+
+    public String getForeignId() {
+        return m_foreignId;
+    }
+
+    public void setForeignId(String foreignId) {
+        m_foreignId = foreignId;
+    }
+
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
     }
 }
