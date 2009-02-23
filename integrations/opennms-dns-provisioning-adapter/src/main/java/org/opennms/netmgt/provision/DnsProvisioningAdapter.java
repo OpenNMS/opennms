@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,7 +124,8 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
     }
 
     private void sendAndThrow(int nodeId, Exception e) {
-        m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());
+        Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
+        m_eventForwarder.sendNow(event);
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }
 
