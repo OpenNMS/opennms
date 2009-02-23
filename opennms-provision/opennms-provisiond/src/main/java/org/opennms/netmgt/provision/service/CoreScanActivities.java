@@ -230,14 +230,17 @@ public class CoreScanActivities {
             @Override
             public void processIPInterfaceRow(IPInterfaceRow row) {
                 System.out.println("Processing row with ipAddr "+row.getIpAddress());
-                provisionedIps.remove(row.getIpAddress());
                 if (!row.getIpAddress().startsWith("127.0.0")) {
-                    final OnmsIpInterface iface = row.createInterfaceFromRow();
+                    // mark any provisioned interface as scanned
+                    provisionedIps.remove(row.getIpAddress());
+                    
+                    // save the interface
+                    OnmsIpInterface iface = row.createInterfaceFromRow();
                     iface.setIpLastCapsdPoll(agentScan.getScanStamp());
                     iface.setIsManaged("M");
                     
+                    // schedule an interface scan for the interface
                     Runnable r = ipUpdater(currentPhase, agentScan, iface);
-                    
                     currentPhase.add(r, "write");
                     
                 }
