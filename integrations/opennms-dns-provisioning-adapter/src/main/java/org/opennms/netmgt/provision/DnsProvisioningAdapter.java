@@ -35,21 +35,22 @@
  */
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 
 /**
@@ -67,15 +68,21 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
     private EventForwarder m_eventForwarder;
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
+    
+    private volatile static ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
     public void afterPropertiesSet() throws Exception {
-        //do initialization here
+        //load current nodes into the map
+        Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
+        List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
+        
+        m_nodeDnsRecordMap = new ConcurrentHashMap<Integer, DnsRecord>(nodes.size());
+        
+        for (OnmsNode onmsNode : nodes) {
+            m_nodeDnsRecordMap.put(onmsNode.getId(), new DnsRecord(onmsNode));
+        }
     }
 
-    
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
-     */
     @Transactional
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         OnmsNode node = null;
@@ -83,36 +90,35 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
             node = m_nodeDao.get(nodeId);
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.add(record);
+            
+            m_nodeDnsRecordMap.put(Integer.valueOf(nodeId), record);
         } catch (Exception e) {
             log().error("addNode: Error handling node added event.", e);
             sendAndThrow(nodeId, e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
-     */
     @Transactional
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
             DnsRecord record = new DnsRecord(node);
             DynamicDnsAdapter.update(record);
+            
+            m_nodeDnsRecordMap.replace(Integer.valueOf(nodeId), record);
         } catch (Exception e) {
             log().error("updateNode: Error handling node added event.", e);
             sendAndThrow(nodeId, e);
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
-     */
     @Transactional
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
         try {
-            OnmsNode node = m_nodeDao.get(nodeId);
-            DnsRecord record = new DnsRecord(node);
+            DnsRecord record = m_nodeDnsRecordMap.get(Integer.valueOf(nodeId));
             DynamicDnsAdapter.delete(record);
+            
+            m_nodeDnsRecordMap.remove(Integer.valueOf(nodeId));
         } catch (Exception e) {
             log().error("deleteNode: Error handling node deleted event.", e);
             sendAndThrow(nodeId, e);
@@ -150,46 +156,18 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
         return m_eventForwarder;
     }
 
-    class DnsRecord {
-        private InetAddress m_ip;
-        private String m_hostname;
-        
-        DnsRecord(OnmsNode node) {
-            OnmsIpInterface primaryInterface = node.getPrimaryInterface();
-            
-            if (primaryInterface == null) {
-                Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
-                for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
-                    m_ip = onmsIpInterface.getInetAddress();
-                    break;
-                }
-            } else {
-                m_ip = primaryInterface.getInetAddress();
-            }
-            m_hostname = node.getLabel();
-        }
-
-        public InetAddress getIp() {
-            return m_ip;
-        }
-
-        public String getHostname() {
-            return m_hostname;
-        }
-    }
-    
     static class DynamicDnsAdapter {
-        
+
         static boolean add(DnsRecord record) {
             log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
         }
-        
+
         static boolean update(DnsRecord record) {
             log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
         }
-        
+
         static boolean delete(DnsRecord record) {
             log().error("DNS Adapter not Implemented.");
             throw new UnsupportedOperationException("method not yet implemented.");
