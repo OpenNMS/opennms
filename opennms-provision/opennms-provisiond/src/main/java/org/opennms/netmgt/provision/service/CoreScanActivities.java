@@ -220,6 +220,8 @@ public class CoreScanActivities {
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
 
+        // mark all provisioned interfaces as 'in need of scanning' so we can mark them
+        // as scanned during ipAddrTable processing
         final Set<String> provisionedIps = new HashSet<String>();
         for(OnmsIpInterface provisioned : agentScan.getNode().getIpInterfaces()) {
             provisionedIps.add(provisioned.getIpAddress());
