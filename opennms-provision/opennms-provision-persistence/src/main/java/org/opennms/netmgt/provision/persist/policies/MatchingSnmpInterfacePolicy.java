@@ -17,6 +17,10 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> {
     private String m_ifAlias;
     
     public OnmsSnmpInterface apply(OnmsSnmpInterface iface) {
+        if (iface == null) {
+            return null;
+        }
+        
         if (m_ifDescr != null) {
             if (!match(iface.getIfDescr(), m_ifDescr)) {
                 return null;
