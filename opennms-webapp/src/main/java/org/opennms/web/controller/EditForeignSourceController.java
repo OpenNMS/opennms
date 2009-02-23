@@ -37,19 +37,29 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.web.svclayer.support.PropertyPath;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+@Controller
 public class EditForeignSourceController extends SimpleFormController {
+
+    private ForeignSourceRepository m_foreignSourceRepository;
+
+    public void setForeignSourceRepository(ForeignSourceRepository repo) {
+        m_foreignSourceRepository = repo;
+    }
 
     public static class TreeCommand {
         private String m_formPath;
         private String m_action;
-        private Object m_formData;
+        private ForeignSource m_formData;
         private String m_currentNode;
         private String m_foreignSourceName = "hardcoded";
         
@@ -65,10 +75,10 @@ public class EditForeignSourceController extends SimpleFormController {
         public void setForeignSourceName(String foreignSourceName) {
             m_foreignSourceName = foreignSourceName;
         }
-        public Object getFormData() {
+        public ForeignSource getFormData() {
             return m_formData;
         }
-        public void setFormData(Object importData) {
+        public void setFormData(ForeignSource importData) {
             m_formData = importData;
         }
         public String getFormPath() {
@@ -77,24 +87,29 @@ public class EditForeignSourceController extends SimpleFormController {
         public void setFormPath(String target) {
             m_formPath = target;
         }
-        public String getCurrentNode() {
+        public String getcurrentNode() {
             return m_currentNode;
         }
-        public void setCurrentNode(String node) {
+        public void setcurrentNode(String node) {
             m_currentNode = node;
         }
         public String getDataPath() {
-            //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well. 
             return m_formPath.substring("foreignSourceEditForm.formData.".length());
         }
         public void setDataPath(String path) {
-            //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well.
             m_formPath = "foreignSourceEditForm.formData."+path;
         }
+        
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("foreign source", m_foreignSourceName)
+                .append("form path", m_formPath)
+                .append("action", m_action)
+                .append("form data", m_formData)
+                .append("current node", m_currentNode)
+                .toString();
+        }
     }
-
-    @Autowired
-    private ForeignSourceRepository m_foreignSourceRepository;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -104,9 +119,22 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
+        System.err.println("tree command = " + treeCmd);
         String action = treeCmd.getAction();
         if (action == null) {
             return doShow(request, response, treeCmd, errors);
+        } else if ("addDetector".equalsIgnoreCase(action)) {
+            return doAddDetector(request, response, treeCmd, errors);
+        } else if ("addPolicy".equalsIgnoreCase(action)) {
+            return doAddPolicy(request, response, treeCmd, errors);
+        } else if ("save".equalsIgnoreCase(action)) {
+            return doSave(request, response, treeCmd, errors);
+        } else if ("edit".equalsIgnoreCase(action)) {
+            return doEdit(request, response, treeCmd, errors);
+        } else if ("cancel".equalsIgnoreCase(action)) {
+            return doCancel(request, response, treeCmd, errors);
+        } else if ("delete".equalsIgnoreCase(action)) {
+            return doDelete(request, response, treeCmd, errors);
             /*
         } else if ("addNode".equalsIgnoreCase(action)) {
             return doAddNode(request, response, treeCmd, errors);
@@ -118,14 +146,6 @@ public class EditForeignSourceController extends SimpleFormController {
             return doAddCategory(request, response, treeCmd, errors);
         } else if ("addAssetField".equalsIgnoreCase(action)) {
             return doAddAssetField(request, response, treeCmd, errors);
-        } else if ("save".equalsIgnoreCase(action)) {
-            return doSave(request, response, treeCmd, errors);
-        } else if ("edit".equalsIgnoreCase(action)) {
-            return doEdit(request, response, treeCmd, errors);
-        } else if ("cancel".equalsIgnoreCase(action)) {
-            return doCancel(request, response, treeCmd, errors);
-        } else if ("delete".equalsIgnoreCase(action)) {
-            return doDelete(request, response, treeCmd, errors);
         } else if ("import".equalsIgnoreCase(action)) {
             return doImport(request, response, treeCmd, errors);
             */
@@ -145,6 +165,70 @@ public class EditForeignSourceController extends SimpleFormController {
     private ModelAndView doShow(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         return showForm(request, response, errors);
     }
+
+    private ModelAndView doAddDetector(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName());
+        PluginConfig pc = new PluginConfig();
+        pc.setName("New Detector");
+        fs.addDetector(pc);
+        treeCmd.setFormData(fs);
+        treeCmd.setcurrentNode("formData.detector[0]");
+        return showForm(request, response, errors);
+    }
+
+    private ModelAndView doAddPolicy(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName());
+        PluginConfig pc = new PluginConfig();
+        pc.setName("New Policy");
+        fs.addPolicy(pc);
+        treeCmd.setFormData(fs);
+        treeCmd.setcurrentNode("formData.policy[0]");
+        m_foreignSourceRepository.save(fs);
+        return showForm(request, response, errors);
+    }
+
+    private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        ForeignSource fs = treeCmd.getFormData();
+        m_foreignSourceRepository.save(fs);
+        treeCmd.setcurrentNode("");
+        return showForm(request, response, errors);
+    }
+
+    private ModelAndView doEdit(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        treeCmd.setcurrentNode(treeCmd.getFormPath());
+        return showForm(request, response, errors);
+    }
+
+    private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        ForeignSource fs = m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName());
+        treeCmd.setFormData(fs);
+        treeCmd.setcurrentNode("");
+        return showForm(request, response, errors);
+    }
+
+    private ModelAndView doDelete(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        ForeignSource fs = treeCmd.getFormData();
+        PropertyPath pp = new PropertyPath(treeCmd.getDataPath());
+        System.err.println("property path = " + pp);
+
+        /*
+        Object objToDelete = pp.getValue(fs);
+        
+        String entry = treeCmd.getcurrentNode();
+        if (treeCmd.getcurrentNode().equals("")) {
+            m_foreignSourceRepository.delete(m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName()));
+        } else if (treeCmd.getcurrentNode().startsWith("detector")) {
+            int index = Integer.parseInt(treeCmd.)
+        } else if (treeCmd.getcurrentNode().startsWith("policy")) {
+            
+        }
+        ModelImport formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
+        treeCmd.setFormData(formData);
+         */
+
+        return showForm(request, response, errors);
+    }
+
 
     /*
     private ModelAndView doImport(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
@@ -182,21 +266,6 @@ public class EditForeignSourceController extends SimpleFormController {
         return showForm(request, response, errors);
     }
     
-    private ModelAndView doEdit(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
-        treeCmd.setCurrentNode(treeCmd.getFormPath());
-        
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
-        ModelImport formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), (ModelImport)treeCmd.getFormData());
-        treeCmd.setFormData(formData);
-        treeCmd.setCurrentNode("");
-        return showForm(request, response, errors);
-    }
-
     private ModelAndView doAddService(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
 
         ModelImport formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
@@ -249,7 +318,7 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-        
+
         /*
         map.put("categories", m_provisioningService.getNodeCategoryNames());
         map.put("assetFields", m_provisioningService.getAssetFieldNames());

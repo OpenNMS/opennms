@@ -35,12 +35,12 @@
 
   <!-- Home Page -->
   <bean name="/frontPage.htm" class="org.opennms.web.controller.FrontPageController"/>
-  
+
   <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
     <property name="commandName" value="groupAction" />
   </bean>
-  
+
   <bean name="/admin/editProvisioningGroup.htm" class="org.opennms.web.controller.EditProvisioningGroupController">
     <property name="provisioningService" ref="manualProvisioningService" />
     <property name="bindOnNewForm" value="true" />
@@ -50,6 +50,7 @@
   
   <bean name="/admin/editForeignSource.htm" class="org.opennms.web.controller.EditForeignSourceController">
     <property name="bindOnNewForm" value="true" />
+    <property name="foreignSourceRepository" ref="deployedForeignSourceRepository" />
     <property name="commandName" value="foreignSourceEditForm" />
     <property name="successView" value="redirect:/admin/provisioningGroups.htm" />
   </bean>
