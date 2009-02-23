@@ -16,12 +16,12 @@
 </jsp:include>
 
 <c:url var="editRequisitionUrl" value="admin/editProvisioningGroup.htm" />
-<form action="${editRequisitionUrl}" name="editRequisition" method="post">
+<form action="${editRequisitionUrl}" name="editRequisitionForm" method="post">
   <input name="groupName" type="hidden"/>
 </form>
 
 <c:url var="editForeignSourceUrl" value="admin/editForeignSource.htm" />
-<form action="${editForeignSourceUrl}" name="editForeignSource" method="post">
+<form action="${editForeignSourceUrl}" name="editForeignSourceForm" method="post">
   <input name="foreignSourceName" type="hidden"/>
 </form>
 

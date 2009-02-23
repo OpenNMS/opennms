@@ -19,13 +19,13 @@ function doAction(group, action) {
 }
 
 function editRequisition(group) {
-	document.editRequisition.groupName.value = group;
-	document.editRequisition.submit();
+	document.editRequisitionForm.groupName.value = group;
+	document.editRequisitionForm.submit();
 	return true;
 }
 
 function editForeignSource(foreignSourceName) {
-	document.editForeignSource.foreignSourceName.value = foreignSourceName;
-	document.editForeignSource.submit();
+	document.editForeignSourceForm.foreignSourceName.value = foreignSourceName;
+	document.editForeignSourceForm.submit();
 	return true;
 }
