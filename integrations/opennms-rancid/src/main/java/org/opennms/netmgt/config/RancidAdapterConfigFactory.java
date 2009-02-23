@@ -7,6 +7,8 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.rancid.RancidNode;
+import org.opennms.rancid.RancidNodeAuthentication;
 
 public class RancidAdapterConfigFactory implements RancidAdapterConfig {
 
@@ -78,11 +80,16 @@ public class RancidAdapterConfigFactory implements RancidAdapterConfig {
     }
 
     public String getGroup() {
-        // TODO Auto-generated method stub
-        return "cisco";
+        // TODO Create Configuration file to set group using packages
+        return "laboratorio";
     }
 
     public RancidAdapterConfigFactory() {
+    }
+
+    public String getDefaultConnectionType() {
+        // TODO Auto-generated method stub
+        return "telnet";
     }
     
 }
