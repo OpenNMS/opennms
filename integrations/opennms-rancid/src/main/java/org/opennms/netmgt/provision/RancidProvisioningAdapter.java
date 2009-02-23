@@ -36,6 +36,9 @@
 package org.opennms.netmgt.provision;
 
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -47,13 +50,12 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 /**
  * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
@@ -68,72 +70,131 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     private EventForwarder m_eventForwarder;
     private RWSConfig m_rwsConfig;
     private RancidAdapterConfig m_rancidAdapterConfig;
+    
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
     private static final String ADAPTER_NAME="RANCID Provisioning Adapter";
     private static final String RANCID_COMMENT="node provisioned by opennms";
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
-     */
+    private volatile static ConcurrentMap<Integer, RancidNodeContainer> m_onmsNodeRancidNodeMap;
+
+    public void afterPropertiesSet() throws Exception {
+        RWSClientApi.init();
+        
+        Assert.notNull(m_nodeDao, "Rancid Provisioning Adapter requires nodeDao property to be set.");
+        
+        List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
+        m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNodeContainer>(nodes.size());
+        
+        for (OnmsNode onmsNode : nodes) {
+            RancidNode rNode = getSuitableRancidNode(onmsNode);
+            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(onmsNode);
+            
+            m_onmsNodeRancidNodeMap.put(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
+        }
+        
+    }
+    
+    private class RancidNodeContainer {
+        private RancidNode m_node;
+        private RancidNodeAuthentication m_auth;
+        
+        public RancidNodeContainer(RancidNode node, RancidNodeAuthentication auth) {
+            setNode(node);
+            setAuth(auth);
+        }
+
+        public void setNode(RancidNode node) {
+            m_node = node;
+        }
+
+        public RancidNode getNode() {
+            return m_node;
+        }
+
+        public void setAuth(RancidNodeAuthentication auth) {
+            m_auth = auth;
+        }
+
+        public RancidNodeAuthentication getAuth() {
+            return m_auth;
+        }
+    }
+
     @Transactional
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
         try {
             String url = m_rwsConfig.getBaseUrl().getServer_url();
             OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
+            Assert.notNull(node, "Rancid Provisioning Adapter addNode method failed to return node for given nodeId:"+nodeId);
+            
+            RancidNode rNode = getSuitableRancidNode(node);
+            RWSClientApi.createRWSRancidNode(url, rNode);
 
-            RWSClientApi.createRWSRancidNode(url,getSuitableRancidNode(node));
-
-            RWSClientApi.createOrUpdateRWSAuthNode(url, getSuitableRancidNodeAuthentication(node));
+            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
+            RWSClientApi.createOrUpdateRWSAuthNode(url, rAuth);
+            
+            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), new RancidNodeContainer(rNode, rAuth));
+            
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
-     */
     @Transactional
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
             String url = m_rwsConfig.getBaseUrl().getServer_url();
             OnmsNode node = m_nodeDao.get(nodeId);
-            RancidNode r_node = RWSClientApi.getRWSRancidNode(url, m_rancidAdapterConfig.getGroup(), node.getLabel());
-            if (r_node.getDeviceName() != null ) {
-                RWSClientApi.updateRWSRancidNode(url, getSuitableRancidNode(node));
+            
+            //FIXME: Gugliemo, I made this change... we're keeping a reference to the RancidNode object,
+            //no need to look it up now via the API unless you think we still need to do this.
+            //RancidNode r_node = RWSClientApi.getRWSRancidNode(url, m_rancidAdapterConfig.getGroup(), node.getLabel());
+            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
+
+            //FIXME: something looks weird with this if statement
+            if (rNode.getDeviceName() != null ) {
+                rNode = getSuitableRancidNode(node);
+                RWSClientApi.updateRWSRancidNode(url, rNode);
             } else {
-                RWSClientApi.createRWSRancidNode(url,getSuitableRancidNode(node));                
+                rNode = getSuitableRancidNode(node);
+                RWSClientApi.createRWSRancidNode(url, rNode);                
             }
-            RWSClientApi.createOrUpdateRWSAuthNode(url, getSuitableRancidNodeAuthentication(node));            
+            
+            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
+            RWSClientApi.createOrUpdateRWSAuthNode(url, rAuth);
+            
+            m_onmsNodeRancidNodeMap.replace(node.getId(), new RancidNodeContainer(rNode, rAuth));
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
-     */
     @Transactional
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
+
         log().debug("RANCID PROVISIONING ADAPTER CALLED deleteNode");
+        
+        /*
+         * The work to maintain the hashmap boils down to needing to do deletes, so
+         * here we go.
+         */
         try {
             String url = m_rwsConfig.getBaseUrl().getServer_url();
-            OnmsNode node = m_nodeDao.get(nodeId);
+
+            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
+            RWSClientApi.deleteRWSRancidNode(url, rNode);
             
-            RWSClientApi.deleteRWSRancidNode(url, getSuitableRancidNode(node));
-            RWSClientApi.deleteRWSAuthNode(url, getSuitableRancidNodeAuthentication(node));
+            RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
+            RWSClientApi.deleteRWSAuthNode(url, rAuth);
+            
+            m_onmsNodeRancidNodeMap.remove(Integer.valueOf(nodeId));
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
     }
 
-    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
-    public void handleInterfaceAddedEvent(Event e) {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED handleInterfaceAddedEvent");
-        throw new UnsupportedOperationException("method not yet implemented.");
-    }
-    
     public void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
         throw new ProvisioningAdapterException("configChanged event not yet implemented.");
     }
@@ -170,12 +231,6 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         return ThreadCategory.getInstance(RancidProvisioningAdapter.class);
     }
 
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-        // Put here your initialization if needed
-        RWSClientApi.init();
-    }
-
     public RWSConfig getRwsConfig() {
         return m_rwsConfig;
     }
@@ -197,11 +252,20 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     }
 
     private RancidNode getSuitableRancidNode(OnmsNode node) {
-      RancidNode r_node = new RancidNode(m_rancidAdapterConfig.getGroup(), node.getLabel());
-      r_node.setDeviceType(RancidNode.DEVICE_TYPE_CISCO_IOS);
-      r_node.setStateUp(false);
-      r_node.setComment(RANCID_COMMENT);
-      return r_node;
+        
+
+        //FIXME: Guglielmo, the group should be the foreign source of the node
+        String group = node.getForeignSource();
+//        RancidNode r_node = new RancidNode(m_rancidAdapterConfig.getGroup(), node.getLabel());
+        RancidNode r_node = new RancidNode(group, node.getLabel());
+
+        //FIXME: Guglielmo, the device type is going to have to be mapped by SysObjectId...
+        //that should probably be in the RancidNode class
+        
+        r_node.setDeviceType(RancidNode.DEVICE_TYPE_CISCO_IOS);
+        r_node.setStateUp(false);
+        r_node.setComment(RANCID_COMMENT);
+        return r_node;
 
     }
     
