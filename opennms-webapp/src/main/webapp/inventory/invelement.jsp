@@ -51,10 +51,6 @@
 
 
 <%!
-    private int m_telnetServiceId;
-    private int m_httpServiceId;
-    private int m_dellServiceId;
-    private int m_snmpServiceId;
     private ResourceService m_resourceService;
 	private AssetModel m_model = new AssetModel();
 

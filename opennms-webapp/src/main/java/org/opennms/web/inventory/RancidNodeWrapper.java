@@ -10,18 +10,18 @@ public class RancidNodeWrapper {
     private String comment;
     private String headRevision;
     private int totalRevisions;
-    private Date expirationDate;
+    private Date creationDate;
     private String rootConfigurationUrl;
     
     RancidNodeWrapper(String _deviceName, String _group, String _deviceType, String _comment, String _headRevision,
                       int _totalRevision, Date _expirationDate, String _rootConfigurationUrl) {
          deviceName=_deviceName;
          group=_group;
-         deviceType=deviceType;
+         deviceType=_deviceType;
          comment=_comment;
          headRevision=_headRevision;
          totalRevisions=_totalRevision;
-         expirationDate=_expirationDate;
+         creationDate=_expirationDate;
          rootConfigurationUrl=_rootConfigurationUrl;
     }
             
@@ -43,8 +43,8 @@ public class RancidNodeWrapper {
     public int getTotalRevisions(){
         return totalRevisions;
     }
-    public Date getExpirationDate(){
-        return expirationDate;
+    public Date getCreationDate(){
+        return creationDate;
     }
     public String getRootConfigurationUrl(){
         return rootConfigurationUrl;
