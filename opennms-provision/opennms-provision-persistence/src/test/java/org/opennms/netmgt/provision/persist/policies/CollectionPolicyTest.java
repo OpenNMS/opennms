@@ -56,7 +56,7 @@ public class CollectionPolicyTest {
     @Transactional
     public void testMatchingIfDescr() {
         MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
-        p.setParameter("ifdescr", "~^ATM.*");
+        p.setIfDescr("~^ATM.*");
 
         matchPolicy(p, "192.168.1.1");
     }
@@ -65,7 +65,7 @@ public class CollectionPolicyTest {
     @Transactional
     public void testMatchingIfName() {
         MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
-        p.setParameter("ifname", "eth0");
+        p.setIfName("eth0");
 
         matchPolicy(p, "192.168.1.2");
     }
@@ -74,7 +74,7 @@ public class CollectionPolicyTest {
     @Transactional
     public void testMatchingIfType() {
         MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
-        p.setParameter("iftype", "6");
+        p.setIfType("6");
 
         matchPolicy(p, "192.168.1.2");
     }
