@@ -5,4 +5,6 @@ public interface RancidAdapterConfig {
 
     public String getGroup();
     
+    public String getDefaultConnectionType();
+    
 }
