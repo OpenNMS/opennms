@@ -89,7 +89,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
             RancidNode rNode = getSuitableRancidNode(onmsNode);
             RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(onmsNode);
             
-            m_onmsNodeRancidNodeMap.put(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
+            m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
         }
         
     }

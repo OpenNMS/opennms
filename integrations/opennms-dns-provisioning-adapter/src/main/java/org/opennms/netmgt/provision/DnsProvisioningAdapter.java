@@ -79,7 +79,7 @@ public class DnsProvisioningAdapter implements ProvisioningAdapter, Initializing
         m_nodeDnsRecordMap = new ConcurrentHashMap<Integer, DnsRecord>(nodes.size());
         
         for (OnmsNode onmsNode : nodes) {
-            m_nodeDnsRecordMap.put(onmsNode.getId(), new DnsRecord(onmsNode));
+            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode));
         }
     }
 
