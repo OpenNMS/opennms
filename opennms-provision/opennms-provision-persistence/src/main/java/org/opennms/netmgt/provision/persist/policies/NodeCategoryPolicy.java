@@ -21,6 +21,10 @@ public class NodeCategoryPolicy extends BasePolicy<OnmsNode> {
     private String m_foreignSource;
     
     public OnmsNode apply(OnmsNode node) {
+        if (node == null) {
+            return null;
+        }
+        
         String category = m_category;
         if (category == null) {
             return node;
