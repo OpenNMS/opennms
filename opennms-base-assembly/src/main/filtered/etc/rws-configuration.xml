@@ -1,3 +1,5 @@
 <rws-configuration>
-    <base-url server_url="http://www.rionero.com:9080"/>
+    <base-url server_url="http://milis12s"/>
+    <!-- base-url server_url="http://www.rionero.com:9080"/ -->
+    <!-- base-url server_url="http://www.rionero.com:9080"/-->
 </rws-configuration>
