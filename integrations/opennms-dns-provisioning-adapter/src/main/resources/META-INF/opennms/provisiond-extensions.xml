@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-  <bean name="pda" class="org.opennms.netmgt.provision.DnsProvisioningAdapter">
+  <bean name="dpa" class="org.opennms.netmgt.provision.DnsProvisioningAdapter">
     <property name="eventForwarder" ref="eventForwarder" />
     <property name="nodeDao" ref="nodeDao" />
   </bean>
