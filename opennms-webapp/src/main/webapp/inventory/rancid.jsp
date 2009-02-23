@@ -36,13 +36,7 @@
 	session="true"
 	import="org.opennms.web.element.*,
 		java.util.*,
-		java.net.*,
-        java.sql.SQLException,
-        org.opennms.core.utils.IPSorter,
-        org.opennms.web.acegisecurity.Authentication,
         org.opennms.web.svclayer.ResourceService,
-        org.opennms.web.asset.Asset,
-        org.opennms.web.asset.AssetModel,
         org.opennms.web.inventory.InventoryLayer,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils,
@@ -52,12 +46,7 @@
 
 
 <%!
-//    private int m_telnetServiceId;
-//    private int m_httpServiceId;
-//    private int m_dellServiceId;
-//    private int m_snmpServiceId;
     private ResourceService m_resourceService;
-//	private AssetModel m_model = new AssetModel();
 
     public void init() throws ServletException {
 
@@ -182,7 +171,7 @@ function cancelUser()
   <tr>
   <td width="10%"><label id="enpass1Label" for="enpassword">Enable password:</label></td>
   <td width="100%"><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></td>
-</tr
+</tr>
  <tr>
   <td width="10%"><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></td>
   <td>
@@ -193,6 +182,7 @@ function cancelUser()
 	  </select>
 	  </td>
 </tr>
+<tr>
   <td width="10%"><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></td>
   <td>
 	  <select name="autoE" size="1">

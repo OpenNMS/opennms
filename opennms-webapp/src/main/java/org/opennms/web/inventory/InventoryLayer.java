@@ -195,7 +195,7 @@ public class InventoryLayer {
                     InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
 
                     RancidNodeWrapper rnw = new RancidNodeWrapper(rn.getDeviceName(), groupname, rn.getDeviceType(), rn.getComment(), rn.getHeadRevision(),
-                      rn.getTotalRevisions(), in.getExpirationDate(), rn.getRootConfigurationUrl());
+                      rn.getTotalRevisions(), in.getCreationDate(), rn.getRootConfigurationUrl());
                     if (first) {
                         nodeModel.put("devicename", rn.getDeviceName());
                         nodeModel.put("status", rn.getState());
@@ -266,7 +266,7 @@ public class InventoryLayer {
            while (iter1.hasNext()) {
                vs = iter1.next();
                InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
-               InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getExpirationDate(), groupname, in.getConfigurationUrl());
+               InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getCreationDate(), groupname, in.getConfigurationUrl());
                ranlist.add(inwr);
            }
            
@@ -324,7 +324,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
                while (iter1.hasNext()) {
                    vs = iter1.next();
                    InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
-                   InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getExpirationDate(), groupname, in.getConfigurationUrl());
+                   InventoryWrapper inwr = new InventoryWrapper(in.getVersionId(), in.getCreationDate(), groupname, in.getConfigurationUrl());
                    ranlist.add(inwr);
                }
            }
