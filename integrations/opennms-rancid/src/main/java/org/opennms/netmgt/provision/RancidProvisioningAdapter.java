@@ -38,11 +38,12 @@ package org.opennms.netmgt.provision;
 import java.util.Date;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RancidAdapterConfig;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidNode;
+import org.opennms.rancid.RancidNodeAuthentication;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
  * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
  * 
  * @author <a href="mailto:guglielmoincisa@gmail.com">Guglielmo Incisa</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
  */
 public class RancidProvisioningAdapter implements ProvisioningAdapter, InitializingBean {
@@ -67,6 +70,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     private RancidAdapterConfig m_rancidAdapterConfig;
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
     private static final String ADAPTER_NAME="RANCID Provisioning Adapter";
+    private static final String RANCID_COMMENT="node provisioned by opennms";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
@@ -74,18 +78,13 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     @Transactional
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
-        OnmsNode node = null;
         try {
-            node = m_nodeDao.get(nodeId);
-//            RancidNode rn = new RancidNode("demo", "gugli_DIC2_1759");
-//            rn.setDeviceType(RancidNode.DEVICE_TYPE_BAYNET);
-//            rn.setComment("Dic2 1759");
-//            RWSClientApi.createRWSRancidNode("httUCIOLCD>LCLL
-            RancidNode r_node = new RancidNode("demo", node.getLabel());
-            // Questa non potra' mai funzionare
-            r_node.setDeviceType(m_rancidAdapterConfig.getGroup());
-            RWSClientApi.createRWSRancidNode(m_rwsConfig.getBaseUrl().getServer_url(),r_node);
-        
+            String url = m_rwsConfig.getBaseUrl().getServer_url();
+            OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
+
+            RWSClientApi.createRWSRancidNode(url,getSuitableRancidNode(node));
+
+            RWSClientApi.createOrUpdateRWSAuthNode(url, getSuitableRancidNodeAuthentication(node));
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
@@ -98,7 +97,15 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
+            String url = m_rwsConfig.getBaseUrl().getServer_url();
             OnmsNode node = m_nodeDao.get(nodeId);
+            RancidNode r_node = RWSClientApi.getRWSRancidNode(url, m_rancidAdapterConfig.getGroup(), node.getLabel());
+            if (r_node.getDeviceName() != null ) {
+                RWSClientApi.updateRWSRancidNode(url, getSuitableRancidNode(node));
+            } else {
+                RWSClientApi.createRWSRancidNode(url,getSuitableRancidNode(node));                
+            }
+            RWSClientApi.createOrUpdateRWSAuthNode(url, getSuitableRancidNodeAuthentication(node));            
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
@@ -109,11 +116,13 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
      */
     @Transactional
     public void deleteNode(int nodeId) throws ProvisioningAdapterException {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
+        log().debug("RANCID PROVISIONING ADAPTER CALLED deleteNode");
         try {
+            String url = m_rwsConfig.getBaseUrl().getServer_url();
             OnmsNode node = m_nodeDao.get(nodeId);
-//            DnsRecord record = new DnsRecord(node);
-//            DynamicDnsAdapter.delete(record);
+            
+            RWSClientApi.deleteRWSRancidNode(url, getSuitableRancidNode(node));
+            RWSClientApi.deleteRWSAuthNode(url, getSuitableRancidNodeAuthentication(node));
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
@@ -157,14 +166,14 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         return m_eventForwarder;
     }
     
-    private Category log() {
-        return Logger.getLogger("Rancid");
+    private static Category log() {
+        return ThreadCategory.getInstance(RancidProvisioningAdapter.class);
     }
 
     public void afterPropertiesSet() throws Exception {
         // TODO Auto-generated method stub
         // Put here your initialization if needed
-        
+        RWSClientApi.init();
     }
 
     public RWSConfig getRwsConfig() {
@@ -187,4 +196,43 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         return ADAPTER_NAME;
     }
 
+    private RancidNode getSuitableRancidNode(OnmsNode node) {
+      RancidNode r_node = new RancidNode(m_rancidAdapterConfig.getGroup(), node.getLabel());
+      r_node.setDeviceType(RancidNode.DEVICE_TYPE_CISCO_IOS);
+      r_node.setStateUp(false);
+      r_node.setComment(RANCID_COMMENT);
+      return r_node;
+
+    }
+    
+    private RancidNodeAuthentication getSuitableRancidNodeAuthentication(OnmsNode node) {
+        // RancidAutentication
+        RancidNodeAuthentication r_auth_node = new RancidNodeAuthentication();
+        r_auth_node.setDeviceName(node.getLabel());
+        OnmsAssetRecord asset_node = node.getAssetRecord();
+
+        if (asset_node.getUsername() != null) {
+            r_auth_node.setUser(asset_node.getUsername());
+        }
+        
+        if (asset_node.getPassword() != null) {
+            r_auth_node.setPassword(asset_node.getPassword());
+        }
+
+        if (asset_node.getEnable() != null) {
+            r_auth_node.setEnablePass(asset_node.getEnable());
+        }
+        
+        if (asset_node.getAutoenable() != null) {
+            r_auth_node.setAutoEnable(asset_node.getAutoenable().equals(OnmsAssetRecord.AUTOENABLED));
+        }
+        
+        if (asset_node.getConnection() != null) {
+            r_auth_node.setConnectionMethod(asset_node.getUsername());
+        } else {
+            r_auth_node.setConnectionMethod(m_rancidAdapterConfig.getDefaultConnectionType());
+        }
+        
+        return r_auth_node;
+    }
 }
