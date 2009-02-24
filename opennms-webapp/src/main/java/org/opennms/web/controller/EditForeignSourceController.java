@@ -38,24 +38,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.joda.time.Duration;
+import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.web.svclayer.support.PropertyPath;
+import org.opennms.web.svclayer.support.ForeignSourceService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 @Controller
 public class EditForeignSourceController extends SimpleFormController {
 
-    private ForeignSourceRepository m_foreignSourceRepository;
+    private ForeignSourceService m_foreignSourceService;
 
-    public void setForeignSourceRepository(ForeignSourceRepository repo) {
-        m_foreignSourceRepository = repo;
+    public void setForeignSourceService(ForeignSourceService fss) {
+        m_foreignSourceService = fss;
     }
-
+    
     public static class TreeCommand {
         private String m_formPath;
         private String m_action;
@@ -90,7 +91,7 @@ public class EditForeignSourceController extends SimpleFormController {
         public String getcurrentNode() {
             return m_currentNode;
         }
-        public void setcurrentNode(String node) {
+        public void setCurrentNode(String node) {
             m_currentNode = node;
         }
         public String getDataPath() {
@@ -109,6 +110,11 @@ public class EditForeignSourceController extends SimpleFormController {
                 .append("current node", m_currentNode)
                 .toString();
         }
+    }
+
+    @Override
+    protected void initBinder(HttpServletRequest req, ServletRequestDataBinder binder) throws Exception {
+        binder.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
     }
 
     @Override
@@ -167,65 +173,42 @@ public class EditForeignSourceController extends SimpleFormController {
     }
 
     private ModelAndView doAddDetector(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ForeignSource fs = m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName());
-        PluginConfig pc = new PluginConfig();
-        pc.setName("New Detector");
-        fs.addDetector(pc);
+        ForeignSource fs = m_foreignSourceService.addDetectorToForeignSource(treeCmd.getForeignSourceName(), "New Detector");
         treeCmd.setFormData(fs);
-        treeCmd.setcurrentNode("formData.detector[0]");
+        treeCmd.setCurrentNode(treeCmd.getFormPath()+".detectors["+ (fs.getDetectors().size()-1) +"]");
         return showForm(request, response, errors);
     }
 
     private ModelAndView doAddPolicy(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ForeignSource fs = m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName());
-        PluginConfig pc = new PluginConfig();
-        pc.setName("New Policy");
-        fs.addPolicy(pc);
+        ForeignSource fs = m_foreignSourceService.addPolicyToForeignSource(treeCmd.getForeignSourceName(), "New Policy");
         treeCmd.setFormData(fs);
-        treeCmd.setcurrentNode("formData.policy[0]");
-        m_foreignSourceRepository.save(fs);
+        treeCmd.setCurrentNode(treeCmd.getFormPath()+".policies["+ (fs.getPolicies().size()-1) +"]");
         return showForm(request, response, errors);
     }
 
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ForeignSource fs = treeCmd.getFormData();
-        m_foreignSourceRepository.save(fs);
-        treeCmd.setcurrentNode("");
+        ForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
+        treeCmd.setFormData(fs);
+        treeCmd.setCurrentNode("");
         return showForm(request, response, errors);
     }
 
     private ModelAndView doEdit(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        treeCmd.setcurrentNode(treeCmd.getFormPath());
+        treeCmd.setCurrentNode(treeCmd.getFormPath());
         return showForm(request, response, errors);
     }
 
     private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ForeignSource fs = m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName());
+        ForeignSource fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
         treeCmd.setFormData(fs);
-        treeCmd.setcurrentNode("");
+        treeCmd.setCurrentNode("");
         return showForm(request, response, errors);
     }
 
     private ModelAndView doDelete(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ForeignSource fs = treeCmd.getFormData();
-        PropertyPath pp = new PropertyPath(treeCmd.getDataPath());
-        System.err.println("property path = " + pp);
-
-        /*
-        Object objToDelete = pp.getValue(fs);
         
-        String entry = treeCmd.getcurrentNode();
-        if (treeCmd.getcurrentNode().equals("")) {
-            m_foreignSourceRepository.delete(m_foreignSourceRepository.getForeignSource(treeCmd.getForeignSourceName()));
-        } else if (treeCmd.getcurrentNode().startsWith("detector")) {
-            int index = Integer.parseInt(treeCmd.)
-        } else if (treeCmd.getcurrentNode().startsWith("policy")) {
-            
-        }
-        ModelImport formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
-        treeCmd.setFormData(formData);
-         */
-
+        ForeignSource fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
+        treeCmd.setFormData(fs);
         return showForm(request, response, errors);
     }
 
@@ -300,18 +283,15 @@ public class EditForeignSourceController extends SimpleFormController {
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        System.err.println("creating new form backing object");
         TreeCommand formCommand = new TreeCommand();
-        initializeTreeCommand(request, formCommand);
-        return formCommand;
-    }
-
-    private void initializeTreeCommand(HttpServletRequest request, TreeCommand formCommand) throws Exception {
         String foreignSourceName = request.getParameter("foreignSourceName");
         if (foreignSourceName == null) {
             throw new IllegalArgumentException("foreignSourceName required");
         }
-        ForeignSource fs = m_foreignSourceRepository.getForeignSource(foreignSourceName);
+        ForeignSource fs = m_foreignSourceService.getForeignSource(foreignSourceName);
         formCommand.setFormData(fs);
+        return formCommand;
     }
 
     @SuppressWarnings("unchecked")
@@ -319,11 +299,8 @@ public class EditForeignSourceController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
 
-        /*
-        map.put("categories", m_provisioningService.getNodeCategoryNames());
-        map.put("assetFields", m_provisioningService.getAssetFieldNames());
-        map.put("services",  m_provisioningService.getServiceTypeNames());
-        */
+        map.put("detectorTypes", m_foreignSourceService.getDetectorTypes());
+        map.put("policyTypes", m_foreignSourceService.getPolicyTypes());
         
         return map;
     }

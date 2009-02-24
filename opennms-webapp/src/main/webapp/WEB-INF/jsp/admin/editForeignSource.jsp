@@ -19,92 +19,35 @@
 <tree:form commandName="foreignSourceEditForm"> 
 
 	<input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${foreignSourceEditForm.foreignSourceName}"/> 
+	<tree:actionButton label="Done" action="done" />
 
+	<br />
+	<br />
+	
 	<tree:field label="Scan Interval" property="scanInterval" />
-    <tree:action label="[Add Detector]" action="addDetector" />
-    <tree:action label="[Add Policy]" action="addPolicy" />
 
-	<c:if test="${!empty foreignSourceEditForm.formData.detectors}">
-	  <h4>Detectors</h4>
-	</c:if>
+	<h4>
+		Detectors <tree:actionButton label="Add Detector" action="addDetector" />
+	</h4>
+
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="detectors" var="detector" varStatus="detectorIter">
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
-			<tree:field label="class" property="pluginClass" />
+			<tree:select label="class" property="pluginClass" items="${detectorTypes}" />
 		</tree:nodeForm>
+
 	</tree:tree>
 	
-	<c:if test="${!empty foreignSourceEditForm.formData.policies}">
-	  <h4>Policies</h4>
-	</c:if>
+	<h4>
+		Policies <tree:actionButton label="Add Policy" action="addPolicy" />
+	</h4>
+
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="policies" var="policy" varStatus="policyIter">
-		<tree:form>
+		<tree:nodeForm>
 			<tree:field label="name" property="name" />
-			<tree:field label="class" property="pluginClass" />
-		</tree:form>
+			<tree:select label="class" property="pluginClass" items="${policyTypes}" />
+		</tree:nodeForm>
 	</tree:tree>
 	  
-<%-- 
- <node:actionButton label="Done" action="done" />
- <node:actionButton label="Add Node" action="addNode"/> 
-
- <tree:tree root="${nodeEditForm.formData}" childProperty="node" var="node" varStatus="nodeIter">
-    <!-- Form for editing node fields -->
-    <node:form>
-      <node:field label="Node" property="nodeLabel" />
-      <node:field label="ForeignId" property="foreignId" />
-      <node:field label="Site" property="building" />
-      <node:action label="[Add Interface]" action="addInterface" />
-      <node:action label="[Add Node Category]" action="addCategory" />
-      <node:action label="[Add Node Asset]" action="addAssetField" />
-    </node:form> 
-    
-    <!--  Tree of interface under the node -->
-    <tree:tree root="${node}" childProperty="interface" var="ipInterface" varStatus="ipIter">
-    
-      <!-- Form for editing an interface -->
-      <node:form>
-        <node:field label="IP Interface" property="ipAddr" />
-        <node:field label="Description" property="descr" />
-        
-        <node:select label="Snmp Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
-        <node:action label="Add Service" action="addService" />
-      </node:form>
-
-      <!-- Tree of services under the interface -->
-      <tree:tree root="${ipInterface}" childProperty="monitoredService" var="svc" varStatus="svcIter">
-      
-        <!--  Form for editing a service -->
-        <node:form>  
-            <node:select label="Service" property="serviceName" items="${services}" />
-        </node:form>
-      </tree:tree>
-
-    </tree:tree>
-    
-    <!--  Tree of categories for a node -->
-    <tree:tree root="${node}" childProperty="category" var="category" varStatus="catIter">
-    
-      <!--  Form for editing a category -->
-      <node:form>
-        <node:select label="Node Category" property="name" items="${categories}"/>
-      </node:form>
-      
-    </tree:tree>
-    
-    <!--  Tree of assets for a node -->
-    <tree:tree root="${node}" childProperty="asset" var="asset" varStatus="assetIter">
-    
-      <!--  Form for editing a category -->
-      <node:form>
-      	<node:select label="asset" property="name" items="${assetFields}"/>
-        <node:field label="" property="value" />
-      </node:form>
-      
-    </tree:tree>
-    
- </tree:tree>
---%>
-
 </tree:form> 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
