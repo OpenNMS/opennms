@@ -24,8 +24,10 @@
 	<br />
 	<br />
 	
-	<tree:field label="Scan Interval" property="scanInterval" />
-
+	<tree:nodeForm>
+    	<tree:field label="Scan Interval" property="scanInterval" />
+    </tree:nodeForm>
+    
 	<h4>
 		Detectors <tree:actionButton label="Add Detector" action="addDetector" />
 	</h4>
