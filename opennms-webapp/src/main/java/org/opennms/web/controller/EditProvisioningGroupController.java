@@ -232,7 +232,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
         treeCmd.setFormData(m_provisioningService.addNewNodeToGroup(treeCmd.getGroupName(), "New Node"));
         
-        treeCmd.setCurrentNode("formData.node[0]");
+        treeCmd.setCurrentNode(treeCmd.getFormPath()+".node[0]");
 
         return showForm(request, response, errors);
     }
