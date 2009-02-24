@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<maps-provisioning-adapter-configuration element-dimension="25">
+<maps-adapter-configuration element-dimension="25">
   <package name="example1">
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
@@ -12,4 +12,4 @@
   </cmaps>
   
 <!-- -->
-</maps-provisioning-adapter-configuration>
+</maps-adapter-configuration>

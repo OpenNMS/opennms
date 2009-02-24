@@ -10,7 +10,9 @@
     <documentation>XML Schema for the rancid-configuration.xml configuration file. Version: $Id$</documentation>
   </annotation>
    
-	<element name="rancid-configuration">
+ <import namespace="http://xmlns.opennms.org/xsd/types"
+          schemaLocation="types.xsd"/>
+  <element name="rancid-configuration">
 	    <annotation>
 	        <documentation>Top-level element for the rancid-configuration.xml configuration file.</documentation>
 	    </annotation>
@@ -18,6 +20,8 @@
 		<complexType>
 	    	<sequence>
 	        	<element minOccurs="1" maxOccurs="unbounded" ref="this:package"/>
+	 	        <element minOccurs="0" maxOccurs="unbounded" ref="this:policies"/>
+	 	        <element minOccurs="0" maxOccurs="unbounded" ref="this:mapping"/>
 	 		</sequence>
 	 		
 		    <attribute name="threads" type="int" use="required">
@@ -40,116 +44,187 @@
 	        	</annotation>
 	      	</attribute>
 
+		    <attribute name="useCategories" type="boolean" use="optional" default="false">
+		        <annotation>
+	    	      <documentation>The time (in ms) to wait before a retry.</documentation>
+	        	</annotation>
+	      	</attribute>
+
+			<attribute name="default-type" type="string" use="optional" default="cisco">
+        		<annotation>
+          			<documentation>The Default Rancid type, it is used when no device type
+          			for provisioned node is found.
+          			</documentation>
+        		</annotation>
+      		</attribute>
+			
 	   </complexType>
 	 </element>      
       
-	<element name="package">
-		<annotation>
-			<documentation>
-				Package encapsulating addresses to performs the Discovery
-				of Links among them.
-			</documentation>
-		</annotation>
+   <element name="policies">
+    <annotation>
+      <documentation>Configuration of Policy
+      functionality</documentation>
+    </annotation>
 
-		<complexType>
-			<sequence>
-				<element maxOccurs="1" minOccurs="1"
-					ref="this:filter">
-					<annotation>
-						<documentation>
-							A rule which adresses belonging to this
-							package must pass. This package is applied
-							only to addresses that pass this filter.
-						</documentation>
-					</annotation>
-				</element>
+    <complexType>
+      <sequence>
+        <annotation>
+          <documentation>Management policy for Rancid</documentation>
+        </annotation>
 
-				<element maxOccurs="unbounded" minOccurs="0"
-					name="specific" type="string">
-					<annotation>
-						<documentation>
-							Adresses in this package
-						</documentation>
-					</annotation>
-				</element>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:policy-manage"/>
+      </sequence>
+    </complexType>
+  </element>
 
-				<element maxOccurs="unbounded" minOccurs="0"
-					ref="this:include-range">
-					<annotation>
-						<documentation>
-							Range of adresses in this package.
-						</documentation>
-					</annotation>
-				</element>
+  <element name="policy-manage">
+    <annotation>
+      <documentation>This represents a policy to manage a provisioned node
+      if matched a node will be added updated or deleted using
+      the element attribute definitions .</documentation>
+    </annotation>
 
-				<element maxOccurs="unbounded" minOccurs="0"
-					ref="this:exclude-range">
-					<annotation>
-						<documentation>
-							Range of adresses to be excluded from this
-							package.
-						</documentation>
-					</annotation>
-				</element>
+    <complexType>
 
-				<element maxOccurs="unbounded" minOccurs="0"
-					name="include-url" type="string">
-					<annotation>
-						<documentation>
-							A file URL holding specific addresses to be
-							polled. Each line in the URL file can be one
-							of: &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
-							or &lt;IP&gt; or #&lt;comments&gt;. Lines
-							starting with a '#' are ignored and so are
-							characters after a '&lt;space&gt;#' in a
-							line.
-						</documentation>
-					</annotation>
-				</element>
+      <sequence>
+        <annotation>
+          <documentation>General Scheduling Property 
+          you set the date and time for which do scheduling</documentation>
+        </annotation>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:schedule"/>
+      </sequence>
 
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The name of the policy
+          </documentation>
+        </annotation>
+      </attribute>
 
-			</sequence>
+      <attribute name="package" type="string" use="required">
+        <annotation>
+          <documentation>The package used to get elements
+          </documentation>
+        </annotation>
+      </attribute>
+ 
+      <attribute name="rancid-group" type="string" use="required">
+        <annotation>
+          <documentation>The RancidGroup to use for provisioning
+          </documentation>
+        </annotation>
+      </attribute>
 
-			<attribute name="name" type="string" use="required">
-				<annotation>
-					<documentation>
-						Name or identifier for this package.
-					</documentation>
-				</annotation>
-			</attribute>
+      <attribute name="delay" type="long" use="optional" default="0">
+        <annotation>
+          <documentation>The time in msec to wait before setting
+          the download flag to up in router.db
+          </documentation>
+        </annotation>
+      </attribute>
 
-  			<attribute name="delay" type="long" default="0">
-				<annotation>
-					<documentation>
-						The delay interval in msec to wait before attemping to write
-						to rancid. 
-					</documentation>
-				</annotation>
-			</attribute>			
+    </complexType>
 
-		</complexType>
-		
-	</element>
+  </element>
+   
 
-	<element name="filter">
-		<annotation>
-			<documentation>
-				A rule which addresses belonging to this package must
-				pass. This package is applied only to addresses that
-				pass this filter
-			</documentation>
-		</annotation>
+  <element name="celement">
+    <annotation>
+      <documentation>A Rule for adding elements to the map automatically</documentation>
+    </annotation>
+    <complexType>
+    	
+     <attribute name="icon" type="string" default="unspecified">
+        <annotation>
+          <documentation>The icon of the element to add
+          </documentation>
+        </annotation>
+      </attribute>
 
-		<complexType>
-			<simpleContent>
-				<extension base="string" />
-			</simpleContent>
-		</complexType>
-	</element>
+    	
+    </complexType>
+  </element>
+  
+  <element name="package">
+    <annotation>
+      <documentation>Package encapsulating addresses, services to be polled
+      for these addresses, etc..</documentation>
+    </annotation>
 
-	<element name="include-range">
-		<complexType>
-	<attribute name="begin" type="string" use="required">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:filter">
+          <annotation>
+            <documentation>A rule which addresses belonging to this package
+            must pass. This package is applied only to addresses that pass
+            this filter.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="specific"
+                 type="string">
+          <annotation>
+            <documentation>Addresses in this package</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:include-range">
+          <annotation>
+            <documentation>Range of addresses in this package.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-range">
+          <annotation>
+            <documentation>Range of addresses to be excluded from this
+            package.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="include-url"
+                 type="string">
+          <annotation>
+            <documentation>A file URL holding specific addresses to be polled.
+            Each line in the URL file can be one of:
+            &lt;IP&gt;&lt;space&gt;#&lt;comments&gt; or &lt;IP&gt; or
+            #&lt;comments&gt;. Lines starting with a '#' are ignored and so
+            are characters after a '&lt;space&gt;#' in a line.</documentation>
+          </annotation>
+        </element>
+
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name or identifier for this package.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="filter">
+    <annotation>
+      <documentation>A rule which addresses belonging to this package must
+      pass. This package is applied only to addresses that pass this
+      filter</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string"/>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="include-range">
+    <annotation>
+      <documentation>Range of addresses to be included in this
+      package.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
         <annotation>
           <documentation>Starting address of the range.</documentation>
         </annotation>
@@ -160,14 +235,17 @@
           <documentation>Ending address of the range.</documentation>
         </annotation>
       </attribute>
-		
-		</complexType>
-	</element>
+    </complexType>
+  </element>
 
-	<!--- the range of addresses to be excluded from the polling -->
-	<element name="exclude-range">
-		<complexType>
-	<attribute name="begin" type="string" use="required">
+  <element name="exclude-range">
+    <annotation>
+      <documentation>Range of addresses to be excluded from this
+      package.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
         <annotation>
           <documentation>Starting address of the range.</documentation>
         </annotation>
@@ -178,7 +256,54 @@
           <documentation>Ending address of the range.</documentation>
         </annotation>
       </attribute>
-		</complexType>
-	</element>
+    </complexType>
+  </element>
+
+  <element name="mapping">
+    <annotation>
+      <documentation>A map from sysoids masks and rancid device type.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="sysoid-mask" type="string" use="required">
+        <annotation>
+          <documentation>sysoid to match.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="type" type="string" use="required">
+        <annotation>
+          <documentation>The rancid device type 
+          for the specified sysoid mask.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+      
+  <element name="schedule">
+    <annotation>
+      <documentation>a scheduled up/down</documentation>
+    </annotation>
+
+    <complexType>
+      <complexContent>
+        <extension base="typ:basicSchedule">
+             <attribute name="status" use="required">
+		        <annotation>
+		          <documentation>The set policy to use
+		          </documentation>
+		        </annotation>
+		        <simpleType>
+		          <restriction base="string">
+		            <pattern value="(up|down)"/>
+		          </restriction>
+		        </simpleType>        
+		      </attribute>
+		        
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+      
 
 </schema>

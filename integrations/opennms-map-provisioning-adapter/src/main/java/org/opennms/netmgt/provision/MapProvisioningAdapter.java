@@ -116,6 +116,9 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
             OnmsNode node = m_onmsNodeDao.get(nodeId);
             m_mapsAdapterConfig.rebuildPackageIpListMap();
             Map<String, Celement> celements = m_mapsAdapterConfig.getElementByAddress((getSuitableIpForMap(node)));
+            if (celements.isEmpty()) {
+                log().info("Element is not managed in the adapter: nodeid="+nodeId);
+            } else {
             Iterator<String> ite = celements.keySet().iterator();
             while (ite.hasNext()) {
                 String mapName = ite.next();
@@ -135,9 +138,10 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
                     m_onmsMapDao.update(onmsMap);
                     m_onmsMapDao.flush();
                 }
-           }
+            }
             m_onmsMapElementDao.clear();
             m_onmsMapDao.clear();
+            }
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
