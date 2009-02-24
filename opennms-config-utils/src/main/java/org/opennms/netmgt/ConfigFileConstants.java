@@ -456,9 +456,16 @@ public final class ConfigFileConstants {
     public static final int XMP_CONFIG_FILE_NAME;
     
     /**
-     * The Rancid configuration file
+     * The RWS (RestFul Web Service) configuration file
+     * used to access Rancid
      */
     public static final int RWS_CONFIG_FILE_NAME;   
+
+    /**
+     * The Rancid Provisioning Adatper configuration file
+     */
+    public static final int RANCID_CONFIG_FILE_NAME;   
+
 
     /**
      * The WMI collection configuration file
@@ -600,9 +607,11 @@ public final class ConfigFileConstants {
         
         MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
         
+        RANCID_CONFIG_FILE_NAME = 77;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[77];
+        FILE_ID_TO_NAME = new String[78];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -690,6 +699,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
         FILE_ID_TO_NAME[RWS_CONFIG_FILE_NAME] = "rws-configuration.xml";
+        FILE_ID_TO_NAME[RANCID_CONFIG_FILE_NAME] = "rancid-configuration.xml";
         FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
         FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
