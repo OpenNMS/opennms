@@ -216,4 +216,7 @@
     <property name="resourceDao" ref="resourceDao"/>
   </bean>
   
+    <!-- Inventory Rancid page
+   <bean id="inventory" class="org.opennms.web.inventory.InventoryLayer" init-method="init"/>
+   -->
 </beans>
