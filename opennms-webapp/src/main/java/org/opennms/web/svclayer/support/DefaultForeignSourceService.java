@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.Policy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -16,14 +17,9 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DefaultForeignSourceService implements ForeignSourceService {
-    @Autowired(required=false)
-    private Set<Policy> m_policies;
     
-    @Autowired(required=false)
-    private Set<ServiceDetector> m_detectors;
-    
-//    @Autowired
-//    private PluginRegistry m_pluginRegistry;
+    @Autowired
+    private ExtensionManager m_extensionManager;
     
     private ForeignSourceRepository m_activeForeignSourceRepository;
     private ForeignSourceRepository m_pendingForeignSourceRepository;
@@ -119,21 +115,21 @@ public class DefaultForeignSourceService implements ForeignSourceService {
 
     public Map<String, String> getDetectorTypes() {
         Map<String,String> detectors = new TreeMap<String,String>();
-        if (m_detectors != null) {
-            for (ServiceDetector d : m_detectors) {
-                detectors.put(d.getServiceName(), d.getClass().getName());
+
+        for (ServiceDetector d : m_extensionManager.findExtensions(ServiceDetector.class)) {
+            String serviceName = d.getServiceName();
+            if (serviceName == null) {
+                serviceName = d.getClass().getSimpleName();
             }
+            detectors.put(d.getClass().getName(), serviceName);
         }
+        
         return detectors;
     }
     public Map<String, String> getPolicyTypes() {
         Map<String,String> policies = new TreeMap<String,String>();
-        if (m_policies != null) {
-            for (Policy d : m_policies) {
-                String className = d.getClass().getName();
-                String displayName = className.substring(className.lastIndexOf(".")).toLowerCase();
-                policies.put(displayName, className);
-            }
+        for (Policy d : m_extensionManager.findExtensions(Policy.class)) {
+            policies.put(d.getClass().getName(), d.getClass().getSimpleName());
         }
         return policies;
     }

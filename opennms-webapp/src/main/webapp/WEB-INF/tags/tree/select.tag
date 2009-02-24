@@ -24,10 +24,20 @@
   </c:when>
   <c:otherwise>
     <c:set var="maxLen" value="0" />
+    <c:set var="isMap" value="<%= jspContext.getAttribute("items") instanceof java.util.Map %>" />
+ 
     <c:forEach var="item" items="${items}">
-       <c:set var="currLen" value="${fn:length(item)}"/>
-       <c:set var="maxLen" value="${maxLen < currLen ? currLen : maxLen}"/>
+      <c:choose>
+        <c:when test="${isMap}">
+          <c:set var="currLen" value="${fn:length(item.value)}"/>
+         </c:when>
+        <c:otherwise>
+          <c:set var="currLen" value="${fn:length(item)}"/>
+        </c:otherwise>
+      </c:choose>
+      <c:set var="maxLen" value="${maxLen < currLen ? currLen : maxLen}"/>
     </c:forEach>
+    
     <form:input cssStyle="border:0; background: lightgrey" size="${maxLen > 0 ? maxLen : 10}" path="${property}" readonly="true" /> 
   </c:otherwise>
 </c:choose>
