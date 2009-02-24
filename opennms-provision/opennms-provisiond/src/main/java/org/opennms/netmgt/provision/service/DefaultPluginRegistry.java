@@ -31,26 +31,76 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.security.Policy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import org.opennms.netmgt.dao.ExtensionManager;
+import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SnmpInterfacePolicy;
+import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.service.NodeScan.IpInterfaceScan;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 /**
  * DefaultPluginRegistry
  *
  * @author brozow
  */
-public class DefaultPluginRegistry implements PluginRegistry {
+public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
+    
+    
+    @Autowired(required=false)
+    Set<SyncServiceDetector> m_syncDetectors;
+    
+    @Autowired(required=false)
+    Set<AsyncServiceDetector> m_asyncDetectors;
+    
+    @Autowired(required=false)
+    Set<NodePolicy> m_nodePolicies;
+    
+    @Autowired(required=false)
+    Set<IpInterfacePolicy> m_ipInterfacePolicies;
+    
+    @Autowired(required=false)
+    Set<SnmpInterfacePolicy> m_snmpInterfacePolicies;
+    
+    @Autowired
+    ExtensionManager m_extensionManager;
     
     @Autowired
     private ApplicationContext m_applicationContext;
+    
+    //@PostConstruct
+    public void afterPropertiesSet() {
+        Assert.notNull(m_extensionManager, "ExtensionManager must not be null");
+        addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
+        addAllExtensions(m_syncDetectors, SyncServiceDetector.class, ServiceDetector.class);
+        addAllExtensions(m_nodePolicies, NodePolicy.class, Policy.class);
+        addAllExtensions(m_ipInterfacePolicies, IpInterfacePolicy.class, Policy.class);
+        addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, Policy.class);
+    }
+    
+    private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
+        if (extensions == null) {
+            return;
+        }
+        for(T extension : extensions) {
+            m_extensionManager.registerExtension(extension, extensionPoints);
+        }
+    }
     
     public <T> Collection<T> getAllPlugins(Class<T> pluginClass) {
         return beansOfType(pluginClass).values();
