@@ -819,6 +819,11 @@
     <servlet-name>invClogin</servlet-name>
     <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
   </servlet>
+  
+    <servlet>
+    <servlet-name>rancidStatus</servlet-name>
+    <servlet-class>org.opennms.web.inventory.RancidStatusServlet</servlet-class>
+  </servlet>
 
   <servlet>
   	<servlet-name>scheduleEditor</servlet-name>
@@ -1190,6 +1195,10 @@
     <url-pattern>/inventory/invClogin</url-pattern>
   </servlet-mapping>
  
+    <servlet-mapping>
+    <servlet-name>rancidStatus</servlet-name>
+    <url-pattern>/inventory/rancidStatus</url-pattern>
+  </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>gwtDispatcher</servlet-name>

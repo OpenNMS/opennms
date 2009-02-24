@@ -72,7 +72,7 @@
 	int nodeId = node_db.getNodeId();
 
 	String elementID = node_db.getLabel();
-	
+
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
 
 	try {	
@@ -84,7 +84,6 @@
     nodeModel.put("id", elementID);
     nodeModel.put("status_general", getStatusStringWithDefault(node_db));
     pageContext.setAttribute("model", nodeModel);
-    
 %>
 
 <%
@@ -103,15 +102,15 @@ String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a
 <h2>Node: ${model.id} </h2>
 
 <div class="TwoColLeft">
-	<!-- general info box -->
-	<h3>General (Status: ${model.status_general})</h3>
-  	<table>
-  		<tr>
-	  		<th>Node</th>
+    <!-- general info box -->
+    <h3>General (Status: ${model.status_general})</h3>
+    <table>
+		<tr>
+			<th>Node</th>
 	  		<th><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></th>
 	  	</tr>
 	</table>
-
+  
 	<h3>Rancid info</h3>
 	<table>
 		<tr>
@@ -126,36 +125,99 @@ String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a
 			<th>Comment</th>
 			<th>${model.comment}</th>
 		</tr>
+	
+		<form id="newUserForm2" method="post" name="newUserForm2">	
 		<tr>
 			<th>Status</th>
-			<th>${model.status}</th>
+			<th>${model.status}
+				<input id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
+			</th>
 		</tr>
-	</table>
+		<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.group}"> 
+		<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+		</form>
+	</table> 
 
-</div>
-
-<div class="TwoColRight">
-<!-- general info box -->
-	<h3>Associated Elements</h3>
+	<h3>Clogin info</h3>
+	<form id="newUserForm" method="post" name="newUserForm">
+		<table>
+			<tr>
+			    <th><label id="userIDLabel" for="userID">User:</label></th>
+			    <th><input id="userID" type="text" name="userID" value="${model.cloginuser}"></th>
+			 </tr>
+		
+			 <tr>
+			 	<th><label id="pass1Label" for="password">Password:</label></th>
+			 	<th><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></th>
+			 </tr>
+			 <tr>
+			 	<th><label id="enpass1Label" for="enpassword">Enable password:</label></th>
+			 	<th><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></th>
+			 </tr>
+			 <tr>
+				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
+				 <th>
+					  <select name="loginM" size="1">
+					  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
+					  <option value="ssh">ssh</option>
+					  <option value="telnet">telnet</option>
+					  </select>
+				 </th>
+			 </tr>
+			 <tr>
+			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
+			 	<th>
+				  <select name="autoE" size="1">
+				  <option value="${model.cloginautoenable}">${model.cloginautoenable}</option>
+				  <option value="1">1</option>
+				  <option value="0">0</option>
+				  </select>
+				</th>
+			 </tr>
+		
+			 <tr>
+			 	<th></th>
+			 	<th><input id="doCancel" type="button" value="Cancel" onClick="cancelUser()">
+			 		<input id="doOK" type="submit" value="OK" onClick="validateFormInput()">
+			 	</th>
+			 </tr>
 	
-	<table>
-	<tr>
-		<th>Group</th>
-		<th>CVS Root repository</th>
-		<th>Total revisions</th>
-		<th>Head version</th>
-		<th>Last Update</th>
-	</tr>
-	<c:forEach items="${model.grouptable}" var="groupelm" begin ="0" end="9">
-		<tr>
-			<th>${groupelm.group}</th>
-			<th><a href="${groupelm.rootConfigurationUrl}">${model.id}</th>
-			<th>${groupelm.totalRevisions} <a href="inventory/rancidList.jsp?node=<%=nodeId%>&groupname=${groupelm.group}">(list)</a></th>
-			<th><a href="inventory/invnode.jsp?node=<%=nodeId%>&groupname=${groupelm.group}&version=${groupelm.headRevision}">${groupelm.headRevision}</th>
-			<th>${groupelm.creationDate}</th>
-		</tr>
-	</c:forEach>
-		<th colspan="5" ><a href="inventory/rancidList.jsp?node=<%=nodeId%>&groupname=*">entire group list...</a></th>
-	</table>
+			 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.group}"> 
+			 <INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+		 </table>
+	 </form>
 </div>
+
 <jsp:include page="/includes/footer.jsp" flush="false" />
+
+<script language="JavaScript">
+function validateFormInput() 
+{
+	  
+  if (document.newUserForm.userID.value == "") {
+	  alert("The user field cannot be empty");
+	  return;
+  }
+  if (document.newUserForm.pass.value == "") {
+	  alert("The password field cannot be empty");
+	  return;
+  }
+  if (document.newUserForm.loginM.value == "") {
+	  alert("The login method field cannot be empty");
+	  return;
+  }
+  document.newUserForm.action="inventory/invClogin";
+  document.newUserForm.submit();
+}    
+function cancelUser()
+{
+    document.newUserForm.action="admin/rancid/rancidAdmin.jsp?node=<%=nodeId%>";
+    document.newUserForm.submit();
+}
+function validateFormInputStatus() {
+	  document.newUserForm2.action="inventory/rancidStatus";
+	  document.newUserForm2.submit();
+}
+
+</script>
+
