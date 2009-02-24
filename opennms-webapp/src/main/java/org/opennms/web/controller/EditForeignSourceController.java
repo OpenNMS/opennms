@@ -82,13 +82,16 @@ public class EditForeignSourceController extends SimpleFormController {
         public void setFormData(ForeignSource importData) {
             m_formData = importData;
         }
+        public String getDefaultFormPath() {
+            return "foreignSourceEditForm.formData";
+        }
         public String getFormPath() {
             return m_formPath;
         }
         public void setFormPath(String target) {
             m_formPath = target;
         }
-        public String getcurrentNode() {
+        public String getCurrentNode() {
             return m_currentNode;
         }
         public void setCurrentNode(String node) {
@@ -189,7 +192,7 @@ public class EditForeignSourceController extends SimpleFormController {
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         ForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
         treeCmd.setFormData(fs);
-        treeCmd.setCurrentNode("");
+        treeCmd.setCurrentNode(treeCmd.getDefaultFormPath());
         return showForm(request, response, errors);
     }
 
@@ -201,7 +204,7 @@ public class EditForeignSourceController extends SimpleFormController {
     private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         ForeignSource fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
         treeCmd.setFormData(fs);
-        treeCmd.setCurrentNode("");
+        treeCmd.setCurrentNode(treeCmd.getDefaultFormPath());
         return showForm(request, response, errors);
     }
 
@@ -209,6 +212,7 @@ public class EditForeignSourceController extends SimpleFormController {
         
         ForeignSource fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
+        treeCmd.setCurrentNode(treeCmd.getDefaultFormPath());
         return showForm(request, response, errors);
     }
 
@@ -291,6 +295,7 @@ public class EditForeignSourceController extends SimpleFormController {
         }
         ForeignSource fs = m_foreignSourceService.getForeignSource(foreignSourceName);
         formCommand.setFormData(fs);
+        formCommand.setCurrentNode(formCommand.getDefaultFormPath());
         return formCommand;
     }
 
