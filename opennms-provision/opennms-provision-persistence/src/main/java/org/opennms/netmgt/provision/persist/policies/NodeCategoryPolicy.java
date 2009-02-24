@@ -3,8 +3,9 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
 
-public class NodeCategoryPolicy extends BasePolicy<OnmsNode> {
+public class NodeCategoryPolicy extends BasePolicy implements NodePolicy {
     private String m_category;
     private String m_type;
     private String m_sysObjectId;
