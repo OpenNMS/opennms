@@ -163,6 +163,9 @@ public class NodeScan implements Runnable {
         }
 
         public void doPersistNodeInfo() {
+            if (m_node == null) {
+                return;
+            }
             m_nodeId = m_provisionService.updateNodeAttributes(getNode()).getId();
         }
 
@@ -194,6 +197,10 @@ public class NodeScan implements Runnable {
 
         public Date getScanStamp() {
             return m_scanStamp;
+        }
+
+        public void setNode(OnmsNode node) {
+            m_node = node;
         }
 
     }

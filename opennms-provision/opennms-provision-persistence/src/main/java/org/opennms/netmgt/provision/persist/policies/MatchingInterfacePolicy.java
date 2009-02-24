@@ -2,8 +2,9 @@ package org.opennms.netmgt.provision.persist.policies;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
+import org.opennms.netmgt.provision.IpInterfacePolicy;
 
-public class MatchingInterfacePolicy extends BasePolicy<OnmsIpInterface> {
+public class MatchingInterfacePolicy extends BasePolicy implements IpInterfacePolicy {
     private String m_ipAddress;
     private String m_hostName;
 

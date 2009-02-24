@@ -1,14 +1,12 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
@@ -27,19 +25,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  */
-
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.service;
 
 /**
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * SubNodePolicy
  *
+ * @author brozow
  */
-public interface Policy {
-    
+public class SubNodePolicy extends NodePolicyImpl {
+
 }

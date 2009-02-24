@@ -2,8 +2,9 @@ package org.opennms.netmgt.provision.persist.policies;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
+import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 
-public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> {
+public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInterfacePolicy {
     private String m_ifDescr;
     private String m_ifName;
     private String m_ifType;
