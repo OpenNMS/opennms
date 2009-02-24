@@ -56,7 +56,7 @@ import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
 import org.opennms.netmgt.config.map.adapter.Csubmap;
 import org.opennms.netmgt.config.map.adapter.Package;
-import org.opennms.netmgt.config.map.adapter.MapsProvisioningAdapterConfiguration;
+import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.map.adapter.ExcludeRange;
 import org.opennms.netmgt.config.map.adapter.IncludeRange;
 
@@ -88,7 +88,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     /**
      * The config class loaded from the config file
      */
-     private MapsProvisioningAdapterConfiguration m_config;
+     private MapsAdapterConfiguration m_config;
 
     /**
      * A boolean flag to indicate If a filter rule against the local OpenNMS
@@ -130,7 +130,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     
 
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (MapsProvisioningAdapterConfiguration) Unmarshaller.unmarshal(MapsProvisioningAdapterConfiguration.class, reader);
+        m_config = (MapsAdapterConfiguration) Unmarshaller.unmarshal(MapsAdapterConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
         createSubMapMapMap();
@@ -477,7 +477,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     /**
      * Return the poller configuration object.
      */
-    public synchronized MapsProvisioningAdapterConfiguration getConfiguration() {
+    public synchronized MapsAdapterConfiguration getConfiguration() {
         return m_config;
     }
 
