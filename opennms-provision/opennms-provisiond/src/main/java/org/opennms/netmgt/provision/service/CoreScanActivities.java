@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -42,10 +43,14 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.service.NodeScan.AgentScan;
 import org.opennms.netmgt.provision.service.NodeScan.IpInterfaceScan;
@@ -178,6 +183,17 @@ public class CoreScanActivities {
         walker.waitFor();
         
         systemGroup.updateSnmpDataForNode(agentScan.getNode());
+        
+        List<NodePolicy> nodePolicies = m_provisionService.getNodePoliciesForForeignSource(agentScan.getForeignSource());
+        
+        OnmsNode node = agentScan.getNode();
+        for(NodePolicy policy : nodePolicies) {
+            if (node != null) {
+                node = policy.apply(node);
+            }
+        }
+        
+        agentScan.setNode(node);
     }
 
     @Activity( lifecycle = "agentScan", phase = "persistNodeInfo", schedulingHint="write")
@@ -194,17 +210,31 @@ public class CoreScanActivities {
             @Override
             public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
                 System.out.println("Processing row for ifIndex "+row.getIfIndex());
-                final OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
+                OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
                 snmpIface.setLastCapsdPoll(agentScan.getScanStamp());
-                Runnable r = new Runnable() {
-                    public void run() {
-                        System.out.println("Saving OnmsSnmpInterface "+snmpIface);
-                        m_provisionService.updateSnmpInterfaceAttributes(
-                                              agentScan.getNodeId(),
-                                              snmpIface);
+                
+                List<SnmpInterfacePolicy> policies = m_provisionService.getSnmpInterfacePoliciesForForeignSource(agentScan.getForeignSource());
+                for(SnmpInterfacePolicy policy : policies) {
+                    if (snmpIface != null) {
+                        snmpIface = policy.apply(snmpIface);
                     }
-                };
-                currentPhase.add(r, "write");
+                }
+                
+                if (snmpIface != null) {
+                    final OnmsSnmpInterface snmpIfaceResult = snmpIface;
+
+                    // add call to the snmp interface collection enable policies
+
+                    Runnable r = new Runnable() {
+                        public void run() {
+                            System.out.println("Saving OnmsSnmpInterface "+snmpIfaceResult);
+                            m_provisionService.updateSnmpInterfaceAttributes(
+                                                                             agentScan.getNodeId(),
+                                                                             snmpIfaceResult);
+                        }
+                    };
+                    currentPhase.add(r, "write");
+                }
             }
         };
         
@@ -233,17 +263,28 @@ public class CoreScanActivities {
             public void processIPInterfaceRow(IPInterfaceRow row) {
                 System.out.println("Processing row with ipAddr "+row.getIpAddress());
                 if (!row.getIpAddress().startsWith("127.0.0")) {
+                    
                     // mark any provisioned interface as scanned
                     provisionedIps.remove(row.getIpAddress());
                     
                     // save the interface
                     OnmsIpInterface iface = row.createInterfaceFromRow();
                     iface.setIpLastCapsdPoll(agentScan.getScanStamp());
+                    
+                    // add call to the ip interface is managed policies
                     iface.setIsManaged("M");
                     
-                    // schedule an interface scan for the interface
-                    Runnable r = ipUpdater(currentPhase, agentScan, iface);
-                    currentPhase.add(r, "write");
+                    List<IpInterfacePolicy> policies = m_provisionService.getIpInterfacePoliciesForForeignSource(agentScan.getForeignSource());
+                    
+                    for(IpInterfacePolicy policy : policies) {
+                        if (iface != null) {
+                            iface = policy.apply(iface);
+                        }
+                    }
+                    
+                    if (iface != null) {
+                        currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
+                    }
                     
                 }
             }

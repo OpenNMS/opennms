@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +64,10 @@ import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
+import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -541,13 +545,13 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
-    public Collection<ServiceDetector> getDetectorsForForeignSource(String foreignSourceName) {
+    public List<ServiceDetector> getDetectorsForForeignSource(String foreignSourceName) {
         ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
         
         List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
         if (detectorConfigs == null) {
-            return m_pluginRegistry.getAllPlugins(ServiceDetector.class);
+            return new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
         }
         
         List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
@@ -564,8 +568,43 @@ public class DefaultProvisionService implements ProvisionService {
 
         return detectors;
     }
+
+    public List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName) {
+        return getPluginsForForeignSource(NodePolicy.class, foreignSourceName);
+    }
     
+    public List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName) {
+        return getPluginsForForeignSource(IpInterfacePolicy.class, foreignSourceName);
+    }
     
+    public List<SnmpInterfacePolicy> getSnmpInterfacePoliciesForForeignSource(String foreignSourceName) {
+        return getPluginsForForeignSource(SnmpInterfacePolicy.class, foreignSourceName);
+    }
+
+    
+    public <T> List<T> getPluginsForForeignSource(Class<T> pluginClass, String foreignSourceName) {
+        ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
+        assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
+        
+        List<PluginConfig> configs = foreignSource.getPolicies();
+        if (configs == null) {
+            return Collections.emptyList(); 
+        }
+        
+        List<T> plugins = new ArrayList<T>(configs.size());
+        for(PluginConfig config : configs) {
+            T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
+            if (plugin == null) {
+                error("Configured plugin does not exist: %s", config);
+            } else {
+                plugins.add(plugin);
+            }
+        }
+
+        return plugins;
+        
+    }
+
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
         m_nodeDao.deleteObsoleteInterfaces(nodeId, scanStamp);
     }
