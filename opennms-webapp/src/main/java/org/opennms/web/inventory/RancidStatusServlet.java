@@ -19,27 +19,23 @@ import org.apache.log4j.Category;
 
 import org.opennms.web.inventory.InventoryLayer;
 
-public class InvCloginServlet extends HttpServlet {
+public class RancidStatusServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
         HttpSession userSession = request.getSession(false);
 
-        log().debug("InvCloginServlet invoked");
+        log().debug("RancidStatusServlet invoked");
         
         if (userSession != null) {
-            String userId = request.getParameter("userID");
-            String password = request.getParameter("pass");
-            String loginM = request.getParameter("loginM");
+            String status = request.getParameter("status");
             String device = request.getParameter("deviceName");
             String group = request.getParameter("groupName");
-            String autoenable = request.getParameter("autoE");
-            String enablepass = request.getParameter("enpass");
             
-            log().debug("InvCloginServlet setting user and password "+ device +" "+ userId +" "+password + " enablep "+ enablepass);
+            log().debug("RancidStatusServlet setting state "+ status);
 
-            int ret = InventoryLayer.updateCloginInfo(device, userId, password, loginM, autoenable, enablepass);
+            int ret = InventoryLayer.updateStatus(device, group, status);
             redirect(request, response);
         }
     }

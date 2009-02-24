@@ -120,19 +120,18 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Ra
 
 <table>
 <tr>
-	<th>Device Name</th>
 	<th>Group</th>
-	<th>Version</th>
-	<th>Date</th>
 	<th>UrlViewVC</th>
+	<th>Version</th>
+	<th>Revision Update</th>
 </tr>
 <c:forEach items="${model.grouptable}" var="groupelm">
 	<tr>
-		<th>${model.id}</th>
 		<th>${groupelm.group}</th>
+		<th><a href="${groupelm.urlViewVC}">${model.id}</th>
 		<th><a href="inventory/invnode.jsp?node=<%=nodeId%>&groupname=${groupelm.group}&version=${groupelm.version}">${groupelm.version}</a></th>
 		<th>${groupelm.date}</th>
-		<th><a href="${groupelm.urlViewVC}">${groupelm.urlViewVC}</th>
+
 	</tr>
 </c:forEach>
 </table>

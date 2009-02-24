@@ -30,12 +30,19 @@
 package org.opennms.web.inventory;
 
 import org.opennms.rancid.*;
+//<<<<<<< .mine
+import org.opennms.web.acegisecurity.Authentication;
 //import org.opennms.core.utils.ThreadCategory;
+//=======
+////import org.opennms.core.utils.ThreadCategory;
+//>>>>>>> .r12300
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RWSConfigFactory;
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Category;
+import javax.servlet.http.HttpServletRequest;
+
 
 import java.util.*;
 
@@ -56,9 +63,11 @@ public class InventoryLayer {
             log().debug("Setting Up RWS client");
             RWSClientApi.init();
 
+            //nel config
             RWSConfigFactory.init();
-            
             rwsCfgFactory = RWSConfigFactory.getInstance();
+            
+            
             burl = rwsCfgFactory.getBaseUrl();
             _URL = burl.getServer_url();
             log().debug("RWS Url " + _URL);            
@@ -168,11 +177,14 @@ public class InventoryLayer {
     
     
    // NEW CODE
-   static public Map<String, Object> getRancidNode(String rancidName, String userRole) throws RancidApiException{
+   static public Map<String, Object> getRancidNode(String rancidName, HttpServletRequest request) throws RancidApiException{
         
          try {
             
             log().debug("getRancidNode " + rancidName);
+            
+
+
             
             Map<String, Object> nodeModel = new TreeMap<String, Object>();
             
@@ -216,8 +228,10 @@ public class InventoryLayer {
             nodeModel.put("url", _URL);
             
             //CLOGIN
-            if (userRole.compareTo("admin") == 0){
+            if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+
                 RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(_URL,rancidName);
+                nodeModel.put("isadmin", "true");
                 nodeModel.put("cloginuser", rn5.getUser());
                 nodeModel.put("cloginpassword", rn5.getPassword());
                 nodeModel.put("cloginconnmethod", rn5.getConnectionMethodString());
@@ -339,7 +353,33 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            throw e;
        }
    }
-   static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
+    //*******************************************************************************
+    // Update status configuration
+    //*******************************************************************************
+    static  public int updateStatus(String device, String group, String status){
+        try {
+            ConnectionProperties cp = new ConnectionProperties(_URL, "/rws", 60);
+            log().debug("updateStatus :" + device + " " + group + " " + status);
+    
+            RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(cp, group, device);
+            if (status.compareTo("down") == 0){
+                rn.setStateUp(false);
+            }else if (status.compareTo("up") == 0){
+                rn.setStateUp(true);
+            } else {
+                log().debug("updateStatus unkown action");
+                return -1;
+            }
+            RWSClientApi.updateRWSRancidNode(cp, rn);
+            return 0;
+        }
+        catch (RancidApiException e) {
+            return -1;
+        }
+    }
+    
+    //*******************************************************************************
+    static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
        
        try {
            
@@ -385,6 +425,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            nodeModel.put("version", version);
            nodeModel.put("status", in.getParent().getState());
            nodeModel.put("creationdate", in.getCreationDate());
+           log().debug("getInventoryNode date" + in.getCreationDate());
            nodeModel.put("configurationurl", in.getConfigurationUrl());
            nodeModel.put("url", _URL);
            
