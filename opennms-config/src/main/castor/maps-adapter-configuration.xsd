@@ -11,7 +11,7 @@
     file. Version: $Id: map-provisioning-adapter-configuration.xsd 10826 2008-10-07 01:12:17Z antonio $</documentation>
   </annotation>
 
-  <element name="maps-provisioning-adapter-configuration">
+  <element name="maps-adapter-configuration">
     <annotation>
       <documentation>Top-level element for the mapsadapter-configuration.xml
       configuration file.</documentation>
