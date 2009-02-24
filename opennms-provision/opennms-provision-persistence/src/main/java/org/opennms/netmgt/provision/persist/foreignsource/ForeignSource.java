@@ -158,6 +158,11 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return null;
     }
 
+    /* an unfortunate naming convention because of the way PropertyPath works */
+    public void removeDetectors(PluginConfig detector) {
+        m_detectors.remove(detector);
+    }
+
     public PluginConfig getPolicy(String policy) {
         for (PluginConfig pc : m_policies) {
             if (pc.getName().equals(policy)) {
@@ -167,6 +172,11 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return null;
     }
 
+    /* an unfortunate naming convention because of the way PropertyPath works */
+    public void removePolicies(PluginConfig policy) {
+        m_policies.remove(policy);
+    }
+    
     public boolean isDefault() {
         return m_default;
     }
