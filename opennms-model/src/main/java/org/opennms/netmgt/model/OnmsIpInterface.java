@@ -273,6 +273,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_isManaged = ismanaged;
     }
 
+    @Transient
+    public boolean isManaged() {
+        return "M".equals(getIsManaged());
+    }
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ipLastCapsdPoll")
     public Date getIpLastCapsdPoll() {
@@ -406,6 +411,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
         if (hasNewValue(scannedIface.getIpHostName(), getIpHostName())) {
             setIpHostName(scannedIface.getIpHostName());
+        }
+        
+        if (hasNewValue(scannedIface.getIpLastCapsdPoll(), getIpLastCapsdPoll())) {
+            setIpLastCapsdPoll(scannedIface.getIpLastCapsdPoll());
         }
     }
     
