@@ -328,6 +328,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
     </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
