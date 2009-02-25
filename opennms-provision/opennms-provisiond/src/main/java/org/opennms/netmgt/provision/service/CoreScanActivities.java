@@ -193,7 +193,11 @@ public class CoreScanActivities {
             }
         }
         
-        agentScan.setNode(node);
+        if (node == null) {
+            agentScan.abort();
+        } else {
+            agentScan.setNode(node);
+        }
     }
 
     @Activity( lifecycle = "agentScan", phase = "persistNodeInfo", schedulingHint="write")
@@ -203,6 +207,7 @@ public class CoreScanActivities {
 
     @Activity( lifecycle = "agentScan", phase = "detectPhysicalInterfaces" )
     public void detectPhysicalInterfaces(final Phase currentPhase, final AgentScan agentScan) throws InterruptedException {
+        if (agentScan.isAborted()) { return; }
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
         
@@ -247,6 +252,7 @@ public class CoreScanActivities {
 
     @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
     public void detectIpInterfaces(final Phase currentPhase, final AgentScan agentScan) throws InterruptedException {
+        if (agentScan.isAborted()) { return; }
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
 
@@ -311,6 +317,7 @@ public class CoreScanActivities {
     
     @Activity( lifecycle = "agentScan", phase = "deleteObsoleteResources", schedulingHint="write")
     public void deleteObsoleteResources(Phase currentPhase, AgentScan agentScan) {
+        if (agentScan.isAborted()) { return; }
 
         m_provisionService.updateNodeScanStamp(agentScan.getNodeId(), agentScan.getScanStamp());
         
@@ -425,6 +432,20 @@ public class CoreScanActivities {
         
     }
     
+    private Runnable ipUpdater(final Phase currentPhase,
+            final AgentScan agentScan, final OnmsIpInterface iface) {
+        Runnable r = new Runnable() {
+            public void run() {
+                agentScan.doUpdateIPInterface(currentPhase, iface);
+                if (iface.isManaged()) {
+                    agentScan.triggerIPInterfaceScan(currentPhase, iface.getInetAddress());
+                }
+            }
+        };
+        return r;
+    }
+
+    
     private void error(Throwable t, String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
         log.error(String.format(format, args), t);
@@ -453,18 +474,4 @@ public class CoreScanActivities {
         log.error(String.format(format, args));
     }
 
-    private Runnable ipUpdater(final Phase currentPhase,
-            final AgentScan agentScan, final OnmsIpInterface iface) {
-        Runnable r = new Runnable() {
-            public void run() {
-                agentScan.doUpdateIPInterface(currentPhase, iface);
-                if (iface.isManaged()) {
-                    agentScan.triggerIPInterfaceScan(currentPhase, iface.getInetAddress());
-                }
-            }
-        };
-        return r;
-    }
-
-    
 }
