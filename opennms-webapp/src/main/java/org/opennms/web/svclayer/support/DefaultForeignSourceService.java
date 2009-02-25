@@ -2,10 +2,11 @@ package org.opennms.web.svclayer.support;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.netmgt.dao.ExtensionManager;
@@ -24,6 +25,9 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     private ForeignSourceRepository m_activeForeignSourceRepository;
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
+    private static Map<String,String> m_detectors;
+    private static Map<String,String> m_policies;
+    
     public void setActiveForeignSourceRepository(ForeignSourceRepository repo) {
         m_activeForeignSourceRepository = repo;
     }
@@ -114,23 +118,37 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     }
 
     public Map<String, String> getDetectorTypes() {
-        Map<String,String> detectors = new TreeMap<String,String>();
-
-        for (ServiceDetector d : m_extensionManager.findExtensions(ServiceDetector.class)) {
-            String serviceName = d.getServiceName();
-            if (serviceName == null) {
-                serviceName = d.getClass().getSimpleName();
+        if (m_detectors == null) {
+            Map<String,String> detectors = new TreeMap<String,String>();
+            for (ServiceDetector d : m_extensionManager.findExtensions(ServiceDetector.class)) {
+                String serviceName = d.getServiceName();
+                if (serviceName == null) {
+                    serviceName = d.getClass().getSimpleName();
+                }
+                detectors.put(serviceName, d.getClass().getName());
             }
-            detectors.put(d.getClass().getName(), serviceName);
+
+            m_detectors = new LinkedHashMap<String,String>();
+            for (Entry<String,String> e : detectors.entrySet()) {
+                m_detectors.put(e.getValue(), e.getKey());
+            }
         }
-        
-        return detectors;
+
+        return m_detectors;
     }
     public Map<String, String> getPolicyTypes() {
-        Map<String,String> policies = new TreeMap<String,String>();
-        for (Policy d : m_extensionManager.findExtensions(Policy.class)) {
-            policies.put(d.getClass().getName(), d.getClass().getSimpleName());
+        if (m_policies == null) {
+            Map<String,String> policies = new TreeMap<String,String>();
+            for (Policy p : m_extensionManager.findExtensions(Policy.class)) {
+                policies.put(p.getClass().getSimpleName(), p.getClass().getName());
+            }
+
+            m_policies = new LinkedHashMap<String,String>();
+            for (Entry<String,String> e : policies.entrySet()) {
+                m_policies.put(e.getValue(), e.getKey());
+            }
         }
-        return policies;
+
+        return m_policies;
     }
 }

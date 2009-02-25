@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -128,7 +128,6 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
-        System.err.println("tree command = " + treeCmd);
         String action = treeCmd.getAction();
         if (action == null) {
             return doShow(request, response, treeCmd, errors);
@@ -144,20 +143,6 @@ public class EditForeignSourceController extends SimpleFormController {
             return doCancel(request, response, treeCmd, errors);
         } else if ("delete".equalsIgnoreCase(action)) {
             return doDelete(request, response, treeCmd, errors);
-            /*
-        } else if ("addNode".equalsIgnoreCase(action)) {
-            return doAddNode(request, response, treeCmd, errors);
-        } else if ("addInterface".equalsIgnoreCase(action)) {
-            return doAddInterface(request, response, treeCmd, errors);
-        } else if ("addService".equalsIgnoreCase(action)) {
-            return doAddService(request, response, treeCmd, errors);
-        } else if ("addCategory".equalsIgnoreCase(action)) {
-            return doAddCategory(request, response, treeCmd, errors);
-        } else if ("addAssetField".equalsIgnoreCase(action)) {
-            return doAddAssetField(request, response, treeCmd, errors);
-        } else if ("import".equalsIgnoreCase(action)) {
-            return doImport(request, response, treeCmd, errors);
-            */
         } else if ("done".equalsIgnoreCase(action)) {
             return done(request, response, treeCmd, errors);
         } else {
@@ -192,7 +177,7 @@ public class EditForeignSourceController extends SimpleFormController {
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         ForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
         treeCmd.setFormData(fs);
-        treeCmd.setCurrentNode(treeCmd.getDefaultFormPath());
+        treeCmd.setCurrentNode("");
         return showForm(request, response, errors);
     }
 
@@ -204,7 +189,7 @@ public class EditForeignSourceController extends SimpleFormController {
     private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         ForeignSource fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
         treeCmd.setFormData(fs);
-        treeCmd.setCurrentNode(treeCmd.getDefaultFormPath());
+        treeCmd.setCurrentNode("");
         return showForm(request, response, errors);
     }
 
@@ -212,82 +197,11 @@ public class EditForeignSourceController extends SimpleFormController {
         
         ForeignSource fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
-        treeCmd.setCurrentNode(treeCmd.getDefaultFormPath());
         return showForm(request, response, errors);
     }
-
-
-    /*
-    private ModelAndView doImport(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
-        m_provisioningService.importProvisioningGroup(treeCmd.getGroupName());
-        return super.showForm(request, response, errors);
-        
-    }
-
-    private ModelAndView doDelete(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
-        ModelImport formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
-        treeCmd.setFormData(formData);
-        
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doAddCategory(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
-        ModelImport formData = m_provisioningService.addCategoryToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "New Category");
-        treeCmd.setFormData(formData);
-        
-        treeCmd.setCurrentNode(treeCmd.getFormPath()+".category[0]");
-        
-        
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doAddAssetField(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ModelImport formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
-        treeCmd.setFormData(formData);
-        
-        treeCmd.setCurrentNode(treeCmd.getFormPath()+".asset[0]");
-        
-        return showForm(request, response, errors);
-    }
-    
-    private ModelAndView doAddService(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
-        ModelImport formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
-        treeCmd.setFormData(formData);
-        
-        treeCmd.setCurrentNode(treeCmd.getFormPath()+".monitoredService[0]");
-        
-        
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doAddInterface(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
-        ModelImport formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "1.1.1.1");
-        treeCmd.setFormData(formData);
-        
-        treeCmd.setCurrentNode(treeCmd.getFormPath()+".interface[0]");
-        
-        
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doAddNode(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
-        treeCmd.setFormData(m_provisioningService.addNewNodeToGroup(treeCmd.getGroupName(), "New Node"));
-        
-        treeCmd.setCurrentNode("formData.node[0]");
-
-        return showForm(request, response, errors);
-    }
-    */
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        System.err.println("creating new form backing object");
         TreeCommand formCommand = new TreeCommand();
         String foreignSourceName = request.getParameter("foreignSourceName");
         if (foreignSourceName == null) {
@@ -295,17 +209,28 @@ public class EditForeignSourceController extends SimpleFormController {
         }
         ForeignSource fs = m_foreignSourceService.getForeignSource(foreignSourceName);
         formCommand.setFormData(fs);
-        formCommand.setCurrentNode(formCommand.getDefaultFormPath());
         return formCommand;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+        final Map<String, Object> map = new HashMap<String, Object>();
+        int width = 20;
 
-        map.put("detectorTypes", m_foreignSourceService.getDetectorTypes());
-        map.put("policyTypes", m_foreignSourceService.getPolicyTypes());
+        final Map<String,String> detectorTypes = m_foreignSourceService.getDetectorTypes();
+        map.put("detectorTypes", detectorTypes);
+        for (String key : detectorTypes.keySet()) {
+            width = Math.max(width, key.length());
+        }
+
+        final Map<String, String> policyTypes = m_foreignSourceService.getPolicyTypes();
+        map.put("policyTypes", policyTypes);
+        for (String key : policyTypes.keySet()) {
+            width = Math.max(width, key.length());
+        }
+
+        map.put("fieldWidth", width);
         
         return map;
     }

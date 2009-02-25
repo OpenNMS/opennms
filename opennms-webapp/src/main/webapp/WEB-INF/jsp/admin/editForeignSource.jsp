@@ -35,7 +35,7 @@
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="detectors" var="detector" varStatus="detectorIter">
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
-			<tree:select label="class" property="pluginClass" items="${detectorTypes}" />
+			<tree:select label="class" property="pluginClass" fieldSize="${fieldWidth}" items="${detectorTypes}" />
 		</tree:nodeForm>
 
 	</tree:tree>
@@ -47,7 +47,7 @@
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="policies" var="policy" varStatus="policyIter">
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
-			<tree:select label="class" property="pluginClass" items="${policyTypes}" />
+			<tree:select label="class" property="pluginClass" fieldSize="${fieldWidth}" items="${policyTypes}" />
 		</tree:nodeForm>
 	</tree:tree>
 	  
