@@ -41,7 +41,7 @@
 
 		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
 			<tree:nodeForm>
-				<tree:field label="key" property="key" />
+				<tree:select label="key" property="key" items="${classParameters[detector.pluginClass]}" />
 				<tree:field label="value" property="value" />
 			</tree:nodeForm>
 		</tree:tree>
@@ -60,10 +60,8 @@
 		
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
 			<tree:nodeForm>
-		<%--
-				<tree:field label="key" property="key" />
+				<tree:select label="key" property="key" items="${classParameters[detector.pluginClass]}" />
 				<tree:field label="value" property="value" />
-			--%>
 			</tree:nodeForm>
 
 		</tree:tree>
