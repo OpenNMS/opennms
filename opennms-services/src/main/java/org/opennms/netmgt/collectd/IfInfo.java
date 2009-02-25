@@ -44,7 +44,6 @@ import java.io.File;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 
 /**
@@ -57,8 +56,8 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  */
 public final class IfInfo extends SnmpCollectionResource {
 
-    private CollectionType m_collType;
     private SNMPCollectorEntry m_entry;
+    private boolean m_collectionEnabled;
     private int m_nodeId;
     private int m_ifIndex;
     private int m_ifType;
@@ -68,7 +67,7 @@ public final class IfInfo extends SnmpCollectionResource {
     public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {
         super(def);
         m_nodeId = snmpIfData.getNodeId();
-        m_collType = snmpIfData.getCollectionType();
+        m_collectionEnabled = snmpIfData.isCollectionEnabled();
         m_ifIndex = snmpIfData.getIfIndex();
         m_ifType = snmpIfData.getIfType();
         m_label = snmpIfData.getLabelForRRD();
@@ -99,8 +98,8 @@ public final class IfInfo extends SnmpCollectionResource {
         return m_ifAlias;
     }
 
-    public CollectionType getCollType() {
-        return m_collType;
+    public boolean isCollectionEnabled() {
+        return m_collectionEnabled;
     }
 
     public void setEntry(SNMPCollectorEntry ifEntry) {
@@ -166,11 +165,13 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     boolean isScheduledForCollection() {
-        log().debug(this+".isSnmpPrimary = "+getCollType());
-        log().debug("minCollType = "+getCollection().getMinimumCollectionType());
+        log().debug(this+".collectionEnabled = "+isCollectionEnabled());
+        log().debug("selectCollectionOnly = "+getCollection().isSelectCollectionOnly());
 
-        boolean isScheduled = !getCollType().isLessThan(getCollection().getMinimumCollectionType());
-        log().debug(getCollType()+" >= "+getCollection().getMinimumCollectionType()+" = "+isScheduled);
+        boolean isScheduled = isCollectionEnabled() || !getCollection().isSelectCollectionOnly();
+        
+        log().debug("isScheduled = "+isScheduled);
+
         return isScheduled;
 
     }

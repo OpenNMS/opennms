@@ -68,4 +68,8 @@ public class SnmpInterfaceBuilder {
         return this;
     }
 
+    public SnmpInterfaceBuilder setCollectionEnabled(boolean collect) {
+        m_snmpIf.setCollectionEnabled(collect);
+        return this;
+    }
 }

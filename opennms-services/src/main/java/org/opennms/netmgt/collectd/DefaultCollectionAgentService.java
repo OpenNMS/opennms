@@ -51,7 +51,7 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
@@ -131,7 +131,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
         return getIpInterface().getNode().getSysObjectId();
     }
 
-    public CollectionType getCollectionType() {
+    public PrimaryType getCollectionType() {
         return getIpInterface().getIsSnmpPrimary();
     }
 

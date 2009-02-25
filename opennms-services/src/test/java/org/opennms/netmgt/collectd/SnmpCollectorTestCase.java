@@ -52,7 +52,7 @@ import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -126,7 +126,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_easyMockUtils = new EasyMockUtils();
         m_ifaceDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
 
-        createAgent(1, CollectionType.PRIMARY);
+        createAgent(1, PrimaryType.PRIMARY);
         
     }
 
@@ -272,7 +272,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         return m_config.getAttrList();
     }
 
-    protected void createAgent(int ifIndex, CollectionType ifCollType) {
+    protected void createAgent(int ifIndex, PrimaryType ifCollType) {
         m_node = new OnmsNode();
         m_node.setSysObjectId(".1.2.3.4.5.6.7");
         

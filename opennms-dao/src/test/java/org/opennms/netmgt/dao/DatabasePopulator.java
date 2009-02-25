@@ -136,15 +136,28 @@ public class DatabasePopulator {
         builder.addCategory(ops);
         builder.addCategory(catRouter); 
         builder.setBuilding("HQ");
-        builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface("192.168.1.1", 1).setIfOperStatus(1).setIfSpeed(10000000).setIfDescr("ATM0").setIfType(37);
+        builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface("192.168.1.1", 1)
+            .setCollectionEnabled(true)
+            .setIfOperStatus(1)
+            .setIfSpeed(10000000)
+            .setIfDescr("ATM0")
+            .setIfType(37);
         //getNodeDao().save(builder.getCurrentNode());
         //getNodeDao().flush();
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").addSnmpInterface("192.168.1.2", 2).setIfOperStatus(1).setIfSpeed(10000000).setIfName("eth0").setIfType(6);
+        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").addSnmpInterface("192.168.1.2", 2)
+            .setCollectionEnabled(true)
+            .setIfOperStatus(1)
+            .setIfSpeed(10000000)
+            .setIfName("eth0")
+            .setIfType(6);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface("192.168.1.3", 3).setIfOperStatus(1).setIfSpeed(10000000);
+        builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface("192.168.1.3", 3)
+            .setCollectionEnabled(false)
+            .setIfOperStatus(1)
+            .setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
