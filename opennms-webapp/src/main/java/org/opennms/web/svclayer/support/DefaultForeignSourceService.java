@@ -3,7 +3,6 @@ package org.opennms.web.svclayer.support;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -111,7 +110,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     }
     public ForeignSource deleteDetector(String foreignSource, String name) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
-        List<PluginConfig> detectors = fs.getDetectors();
+        Set<PluginConfig> detectors = fs.getDetectors();
         for (Iterator<PluginConfig> i = detectors.iterator(); i.hasNext(); ) {
             PluginConfig pc = i.next();
             if (pc.getName().equals(name)) {
@@ -132,7 +131,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     }
     public ForeignSource deletePolicy(String foreignSource, String name) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
-        List<PluginConfig> policies = fs.getPolicies();
+        Set<PluginConfig> policies = fs.getPolicies();
         for (Iterator<PluginConfig> i = policies.iterator(); i.hasNext(); ) {
             PluginConfig pc = i.next();
             if (pc.getName().equals(name)) {

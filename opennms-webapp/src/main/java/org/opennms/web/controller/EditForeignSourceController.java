@@ -31,17 +31,27 @@
 //
 package org.opennms.web.controller;
 
+import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Category;
 import org.joda.time.Duration;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.web.svclayer.support.ForeignSourceService;
+import org.opennms.web.svclayer.support.PropertyPath;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -52,7 +62,8 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class EditForeignSourceController extends SimpleFormController {
 
     private ForeignSourceService m_foreignSourceService;
-
+    private static final Map<String,Set<String>> m_pluginParameters = new HashMap<String,Set<String>>();
+    
     public void setForeignSourceService(ForeignSourceService fss) {
         m_foreignSourceService = fss;
     }
@@ -180,6 +191,10 @@ public class EditForeignSourceController extends SimpleFormController {
     private ModelAndView doAddParameter(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         ForeignSource fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
+        PropertyPath path = new PropertyPath(treeCmd.getDataPath());
+        PluginConfig obj = (PluginConfig)path.getValue(fs);
+        int numParameters = (obj.getParameters().size() - 1);
+        treeCmd.setCurrentNode(treeCmd.getFormPath()+".parameters[" + numParameters + "]");
         return showForm(request, response, errors);
     }
     
@@ -227,21 +242,48 @@ public class EditForeignSourceController extends SimpleFormController {
         final Map<String, Object> map = new HashMap<String, Object>();
         int width = 20;
 
+        final Map<String,Set<String>> classParameters = new TreeMap<String,Set<String>>();
+
         final Map<String,String> detectorTypes = m_foreignSourceService.getDetectorTypes();
         map.put("detectorTypes", detectorTypes);
         for (String key : detectorTypes.keySet()) {
+            classParameters.put(key, getParametersForClass(key));
             width = Math.max(width, key.length());
         }
 
         final Map<String, String> policyTypes = m_foreignSourceService.getPolicyTypes();
         map.put("policyTypes", policyTypes);
         for (String key : policyTypes.keySet()) {
+            classParameters.put(key, getParametersForClass(key));
             width = Math.max(width, key.length());
         }
 
+        map.put("classParameters", classParameters);
         map.put("fieldWidth", width);
         
         return map;
+    }
+    
+    private Set<String> getParametersForClass(String clazz) {
+        if (m_pluginParameters.containsKey(clazz)) {
+            return m_pluginParameters.get(clazz);
+        }
+        Set<String> parameters = new TreeSet<String>();
+        try {
+            BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(clazz));
+            for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
+                parameters.add(pd.getName());
+            }
+            m_pluginParameters.put(clazz, parameters);
+            return parameters;
+        } catch (ClassNotFoundException e) {
+            log().warn("unable to wrap class " + clazz, e);
+        }
+        return null;
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(EditForeignSourceController.class);
     }
     
 }
