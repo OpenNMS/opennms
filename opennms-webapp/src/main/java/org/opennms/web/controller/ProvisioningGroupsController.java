@@ -37,11 +37,17 @@ package org.opennms.web.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.modelimport.ModelImport;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.web.svclayer.ManualProvisioningService;
+import org.opennms.web.svclayer.support.ForeignSourceService;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -49,9 +55,14 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class ProvisioningGroupsController extends SimpleFormController {
 
     private ManualProvisioningService m_provisioningService;
+    private ForeignSourceService m_foreignSourceService;
 
     public void setProvisioningService(ManualProvisioningService provisioningService) {
         m_provisioningService = provisioningService;
+    }
+    
+    public void setForeignSourceService(ForeignSourceService fss) {
+        m_foreignSourceService = fss;
     }
     
     public static class GroupAction {
@@ -106,6 +117,7 @@ public class ProvisioningGroupsController extends SimpleFormController {
 
     private ModelAndView doDeleteGroup(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
         m_provisioningService.deleteProvisioningGroup(command.getGroupName());
+        m_foreignSourceService.deleteForeignSource(command.getGroupName());
         return showForm(request, response, errors);
     }
 
@@ -128,9 +140,24 @@ public class ProvisioningGroupsController extends SimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refData = new HashMap<String, Object>();
-        refData.put("groups", m_provisioningService.getAllGroups());
+
+        Set<String>               names          = new TreeSet<String>();
+        Map<String,ModelImport>   groups         = new TreeMap<String,ModelImport>();
+        Map<String,ForeignSource> foreignSources = new TreeMap<String,ForeignSource>();
+
+        for (ModelImport mi : m_provisioningService.getAllGroups()) {
+            names.add(mi.getForeignSource());
+            groups.put(mi.getForeignSource(), mi);
+        }
+        for (ForeignSource fs : m_foreignSourceService.getAllForeignSources()) {
+            names.add(fs.getName());
+            foreignSources.put(fs.getName(), fs);
+        }
+
+        refData.put("foreignSourceNames", names);
+        refData.put("groups", groups);
+        refData.put("foreignSources", foreignSources);
         refData.put("dbNodeCounts", m_provisioningService.getGroupDbNodeCounts());
-        
         
         return refData;
     }

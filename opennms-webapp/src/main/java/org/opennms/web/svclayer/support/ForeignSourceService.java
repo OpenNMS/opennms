@@ -1,6 +1,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -9,6 +10,8 @@ public interface ForeignSourceService {
 
     void setActiveForeignSourceRepository(ForeignSourceRepository repo);
     void setPendingForeignSourceRepository(ForeignSourceRepository repo);
+
+    Set<ForeignSource> getAllForeignSources();
 
     ForeignSource getForeignSource(String name);
     ForeignSource saveForeignSource(String name, ForeignSource fs);
