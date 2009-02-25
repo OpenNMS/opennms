@@ -28,7 +28,8 @@
     </annotation>
     <complexType>
       <attribute name="server_url" type="string" use="required"/>
-      <attribute name="timeout" type="long" default="3000"/> 
+      <attribute name="timeout" type="int" default="3"/> 
+      <attribute name="directory" type="string" default="/rws"/>
       <attribute name="username" type="string"/>
       <attribute name="password" type="string"/>
     </complexType>
@@ -40,7 +41,8 @@
     </annotation>
     <complexType>
       <attribute name="server_url" type="string" use="required"/>
-      <attribute name="timeout" type="long" default="3000"/> 
+      <attribute name="timeout" type="int" default="3"/> 
+      <attribute name="directory" type="string" default="/rws"/>
       <attribute name="username" type="string"/>
       <attribute name="password" type="string"/>
     </complexType>
