@@ -143,8 +143,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             switch (code) {
             case 'P': return PRIMARY;
             case 'S': return SECONDARY;
-            case 'C': return COLLECT;
-            case 'N': return NO_COLLECT;
+            case 'N': return NOT_ELIGIBLE;
             default:
                 throw new IllegalArgumentException("Cannot create collType from code "+code);
             }
@@ -152,11 +151,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
         public static PrimaryType get(String code) {
             if (code == null) {
-                return NO_COLLECT;
+                return NOT_ELIGIBLE;
             }
             code = code.trim();
             if (code.length() < 1) {
-                return NO_COLLECT;
+                return NOT_ELIGIBLE;
             } else if (code.length() > 1) {
                 throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
             } else {
@@ -166,8 +165,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
         public static PrimaryType PRIMARY = new PrimaryType('P');
         public static PrimaryType SECONDARY = new PrimaryType('S');
-        public static PrimaryType COLLECT = new PrimaryType('C');
-        public static PrimaryType NO_COLLECT = new PrimaryType('N');
+        public static PrimaryType NOT_ELIGIBLE = new PrimaryType('N');
 
 
     }
@@ -182,7 +180,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private String m_isManaged;
 
-    private PrimaryType m_isSnmpPrimary = PrimaryType.NO_COLLECT;
+    private PrimaryType m_isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
 
     private Date m_ipLastCapsdPoll;
 
@@ -418,7 +416,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
     
     protected static boolean hasNewCollectionTypeValue(PrimaryType newVal, PrimaryType existingVal) {
-        return newVal != null && !newVal.equals(existingVal) && newVal != PrimaryType.NO_COLLECT;
+        return newVal != null && !newVal.equals(existingVal) && newVal != PrimaryType.NOT_ELIGIBLE;
     }
 
 

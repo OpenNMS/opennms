@@ -187,6 +187,8 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
                 snmpIf.setNetMask(mask.getHostAddress());
             }
 
+            snmpIf.setCollectionEnabled(true);
+            
             ipIf.setSnmpInterface(snmpIf);
 
         }
