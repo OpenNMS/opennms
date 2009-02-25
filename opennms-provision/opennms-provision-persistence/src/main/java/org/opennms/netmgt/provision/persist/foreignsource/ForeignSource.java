@@ -129,12 +129,14 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     /**
      * @return the date stamp
      */
+    @XmlTransient
     public XMLGregorianCalendar getDateStamp() {
         return m_dateStamp;
     }
     /**
      * @return the date stamp as a {@link java.util.Date}
      */
+    @XmlTransient
     public Date getDateStampAsDate() {
         return m_dateStamp.toGregorianCalendar().getTime();
     }
