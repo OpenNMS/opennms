@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
@@ -35,6 +36,10 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         m_pendingForeignSourceRepository = repo;
     }
     
+    public Set<ForeignSource> getAllForeignSources() {
+        return m_activeForeignSourceRepository.getForeignSources();
+    }
+
     public ForeignSource getForeignSource(String name) {
         return m_pendingForeignSourceRepository.getForeignSource(name);
     }

@@ -37,6 +37,7 @@ package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -125,6 +126,27 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     public void setScanInterval(Duration scanInterval) {
         m_scanInterval = scanInterval;
     }
+    /**
+     * @return the date stamp
+     */
+    public XMLGregorianCalendar getDateStamp() {
+        return m_dateStamp;
+    }
+    /**
+     * @return the date stamp as a {@link java.util.Date}
+     */
+    public Date getDateStampAsDate() {
+        return m_dateStamp.toGregorianCalendar().getTime();
+    }
+    /**
+     * @param value the date stamp
+     */
+    public void setDateStamp(XMLGregorianCalendar value) {
+        m_dateStamp = value;
+    }
+    /**
+     * Update the date stamp to the current date and time
+     */
     public void updateDateStamp() {
         try {
             m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
