@@ -50,6 +50,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
@@ -70,6 +71,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     private EventForwarder m_eventForwarder;
     private RWSConfig m_rwsConfig;
     private RancidAdapterConfig m_rancidAdapterConfig;
+    private ConnectionProperties m_cp;
     
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
     private static final String ADAPTER_NAME="RANCID Provisioning Adapter";
@@ -78,8 +80,11 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     private volatile static ConcurrentMap<Integer, RancidNodeContainer> m_onmsNodeRancidNodeMap;
 
     public void afterPropertiesSet() throws Exception {
+        //FIXME this should be done by spring
         RWSClientApi.init();
-        
+        m_cp = new ConnectionProperties(m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
+        log().debug("Connections used :" +m_rwsConfig.getBaseUrl().getServer_url()+m_rwsConfig.getBaseUrl().getDirectory());
+        log().debug("timeout: "+m_rwsConfig.getBaseUrl().getTimeout());
         Assert.notNull(m_nodeDao, "Rancid Provisioning Adapter requires nodeDao property to be set.");
         
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
@@ -124,15 +129,14 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     public void addNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
         try {
-            String url = m_rwsConfig.getBaseUrl().getServer_url();
             OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
             Assert.notNull(node, "Rancid Provisioning Adapter addNode method failed to return node for given nodeId:"+nodeId);
             
             RancidNode rNode = getSuitableRancidNode(node);
-            RWSClientApi.createRWSRancidNode(url, rNode);
+            RWSClientApi.createRWSRancidNode(m_cp, rNode);
 
             RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
-            RWSClientApi.createOrUpdateRWSAuthNode(url, rAuth);
+            RWSClientApi.createOrUpdateRWSAuthNode(m_cp, rAuth);
             
             m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), new RancidNodeContainer(rNode, rAuth));
             
@@ -145,25 +149,13 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     public void updateNode(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
-            String url = m_rwsConfig.getBaseUrl().getServer_url();
             OnmsNode node = m_nodeDao.get(nodeId);
             
-            //FIXME: Gugliemo, I made this change... we're keeping a reference to the RancidNode object,
-            //no need to look it up now via the API unless you think we still need to do this.
-            //RancidNode r_node = RWSClientApi.getRWSRancidNode(url, m_rancidAdapterConfig.getGroup(), node.getLabel());
-            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
-
-            //FIXME: something looks weird with this if statement
-            if (rNode.getDeviceName() != null ) {
-                rNode = getSuitableRancidNode(node);
-                RWSClientApi.updateRWSRancidNode(url, rNode);
-            } else {
-                rNode = getSuitableRancidNode(node);
-                RWSClientApi.createRWSRancidNode(url, rNode);                
-            }
+            RancidNode rNode = getSuitableRancidNode(node);
+            RWSClientApi.createOrUpdateRWSRancidNode(m_cp, rNode);
             
             RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
-            RWSClientApi.createOrUpdateRWSAuthNode(url, rAuth);
+            RWSClientApi.createOrUpdateRWSAuthNode(m_cp, getSuitableRancidNodeAuthentication(node));
             
             m_onmsNodeRancidNodeMap.replace(node.getId(), new RancidNodeContainer(rNode, rAuth));
         } catch (Exception e) {
@@ -181,13 +173,12 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
          * here we go.
          */
         try {
-            String url = m_rwsConfig.getBaseUrl().getServer_url();
 
             RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
-            RWSClientApi.deleteRWSRancidNode(url, rNode);
+            RWSClientApi.deleteRWSRancidNode(m_cp, rNode);
             
             RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
-            RWSClientApi.deleteRWSAuthNode(url, rAuth);
+            RWSClientApi.deleteRWSAuthNode(m_cp, rAuth);
             
             m_onmsNodeRancidNodeMap.remove(Integer.valueOf(nodeId));
         } catch (Exception e) {
@@ -255,13 +246,17 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         
 
         //FIXME: Guglielmo, the group should be the foreign source of the node
-        String group = node.getForeignSource();
+        // Antonio: I'm working on the configuration file and the group
+        // is written in the configuration file
+        // in principle you can provide rancid node to more then a group
+ //       String group = node.getForeignSource();
 //        RancidNode r_node = new RancidNode(m_rancidAdapterConfig.getGroup(), node.getLabel());
+        String group = m_rancidAdapterConfig.getGroup();
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
         //FIXME: Guglielmo, the device type is going to have to be mapped by SysObjectId...
         //that should probably be in the RancidNode class
-        
+        // It is in the Configuration file for Rancid ADapter
         r_node.setDeviceType(RancidNode.DEVICE_TYPE_CISCO_IOS);
         r_node.setStateUp(false);
         r_node.setComment(RANCID_COMMENT);
