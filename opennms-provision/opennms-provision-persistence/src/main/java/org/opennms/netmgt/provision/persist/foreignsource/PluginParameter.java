@@ -33,5 +33,11 @@ public class PluginParameter {
     public String getValue() {
         return m_value;
     }
+    public void setKey(String key) {
+        m_key = key;
+    }
+    public void setValue(String value) {
+        m_value = value;
+    }
 
 }

@@ -96,7 +96,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     public PluginConfig(PluginConfig pluginConfig) {
         setName(pluginConfig.getName());
         setPluginClass(pluginConfig.getPluginClass());
-        setParameters(pluginConfig.getParameters());
+        setParameterMap(pluginConfig.getParameterMap());
     }
 
     /**
@@ -135,21 +135,21 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * Get a {@link List} of the plugin parameters.
      * @return the parameters
      */
-    public List<PluginParameter> getParameterList() {
+    public List<PluginParameter> getParameters() {
         return m_parameters;
     }
     
     /**
      * @param parameters the parameters to set
      */
-    public void setParameterList(List<PluginParameter> list) {
+    public void setParameters(List<PluginParameter> list) {
         m_parameters = list;
     }
     
     /**
      * @return the parameters
      */
-    public Map<String,String> getParameters() {
+    public Map<String,String> getParameterMap() {
         Map<String,String> parms = new LinkedHashMap<String,String>();
         for (PluginParameter p : m_parameters) {
             parms.put(p.getKey(), p.getValue());
@@ -160,7 +160,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     /**
      * @param parameters the parameters to set
      */
-    public void setParameters(Map<String, String> parameters) {
+    public void setParameterMap(Map<String, String> parameters) {
         m_parameters.clear();
         for (Entry<String,String> set : parameters.entrySet()) {
             m_parameters.add(new PluginParameter(set));
@@ -192,6 +192,10 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
             }
         }
         m_parameters.add(new PluginParameter(key, value));
+    }
+
+    public void removeParameters(PluginParameter p) {
+        m_parameters.remove(p);
     }
 
     private String getParametersAsString() {

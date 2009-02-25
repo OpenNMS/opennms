@@ -317,6 +317,4 @@ public class DefaultManualProvisioningService implements
         return BeanUtils.getProperties(new OnmsAssetRecord());
     }
 
-
-
 }
