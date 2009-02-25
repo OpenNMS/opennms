@@ -458,7 +458,9 @@ public class CoreScanActivities {
         Runnable r = new Runnable() {
             public void run() {
                 agentScan.doUpdateIPInterface(currentPhase, iface);
-                agentScan.triggerIPInterfaceScan(currentPhase, iface.getInetAddress());
+                if (iface.isManaged()) {
+                    agentScan.triggerIPInterfaceScan(currentPhase, iface.getInetAddress());
+                }
             }
         };
         return r;
