@@ -178,10 +178,8 @@ public class EditForeignSourceController extends SimpleFormController {
     }
 
     private ModelAndView doAddParameter(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        System.err.println(String.format("current node = %s, data path = %s", treeCmd.getCurrentNode(), treeCmd.getDataPath()));
         ForeignSource fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
-//        treeCmd.setCurrentNode(treeCmd.getCurrentNode()+".parameter")
         return showForm(request, response, errors);
     }
     

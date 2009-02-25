@@ -42,6 +42,7 @@
 
   <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
     <property name="provisioningService" ref="manualProvisioningService" />
+    <property name="foreignSourceService" ref="defaultForeignSourceService" />
     <property name="commandName" value="groupAction" />
   </bean>
 
