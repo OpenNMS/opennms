@@ -31,7 +31,6 @@
  */
 package org.opennms.netmgt.provision.service;
 
-import java.security.Policy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,11 +40,11 @@ import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.netmgt.provision.Policy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.provision.service.NodeScan.IpInterfaceScan;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.BeanFactoryUtils;
