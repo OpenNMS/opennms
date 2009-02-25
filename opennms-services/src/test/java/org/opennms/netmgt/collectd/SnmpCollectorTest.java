@@ -60,7 +60,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -358,7 +358,7 @@ public class SnmpCollectorTest extends AbstractCollectorTest {
         snmpIface2.setIfType(144);
         OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
         iface.setId(27);
-        iface.setIsSnmpPrimary(CollectionType.PRIMARY);
+        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
         iface.setSnmpInterface(snmpIface2);
         
         snmpIface2.addIpInterface(iface);

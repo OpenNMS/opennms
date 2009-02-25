@@ -43,7 +43,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -88,7 +88,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
-        m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
+        m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary));
         
         if ("P".equals(snmpPrimary)) {
         }

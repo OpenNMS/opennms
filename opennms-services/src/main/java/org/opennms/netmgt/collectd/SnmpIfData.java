@@ -36,7 +36,6 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 /**
  * 
@@ -45,7 +44,7 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 public class SnmpIfData {
 
     private int m_nodeId;
-    private CollectionType m_collectionType;
+    private boolean m_collectionEnabled;
     private int m_ifIndex;
     private int m_ifType;
     private String m_rrdLabel;
@@ -53,7 +52,7 @@ public class SnmpIfData {
 
     public SnmpIfData(OnmsSnmpInterface snmpIface) {
         m_nodeId = nullSafeUnbox(snmpIface.getNode().getId(), -1);
-        m_collectionType = snmpIface.getCollectionType();
+        m_collectionEnabled = snmpIface.isCollectionEnabled();
         m_ifIndex = nullSafeUnbox(snmpIface.getIfIndex(), -1);
         m_ifType = nullSafeUnbox(snmpIface.getIfType(), -1);
         m_rrdLabel = snmpIface.computeLabelForRRD();
@@ -68,8 +67,8 @@ public class SnmpIfData {
         return m_nodeId;
     }
 
-    public CollectionType getCollectionType() {
-        return m_collectionType;
+    public boolean isCollectionEnabled() {
+        return m_collectionEnabled;
     }
 
     public int getIfIndex() {

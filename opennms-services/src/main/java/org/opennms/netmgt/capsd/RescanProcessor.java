@@ -1856,34 +1856,30 @@ public final class RescanProcessor implements Runnable {
                  */
                 InetAddress[] aaddrs = snmpc.getIfAddressAndMask(ifIndex);
 
-                // Address array should NEVER be null but just in case..
+
                 if (aaddrs == null) {
-                    log().warn("updateSnmpInfo: unable to retrieve address and "
-                            + "netmask for nodeId/ifIndex: "
-                            + node.getNodeId() + "/" + ifIndex);
+                    // disable collection on interface with no ip address by default
+                    currSnmpIfEntry.setCollect("N");
+                } else {
 
-                    aaddrs = new InetAddress[2];
+                    // IP address
+                    currSnmpIfEntry.setIfAddress(aaddrs[0]);
+                    
+                    // mark the interface is collection enable
+                    currSnmpIfEntry.setCollect("C");
 
-                    // Set interface address to current interface
-                    aaddrs[0] = ifaddr;
-
-                    // Set netmask to NULL
-                    aaddrs[1] = null;
-                }
-
-                // IP address
-                currSnmpIfEntry.setIfAddress(aaddrs[0]);
-
-                // netmask
-                if (aaddrs[1] != null) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("updateSnmpInfo: interface "
-                                  + aaddrs[0].getHostAddress()
-                                  + " has netmask: "
-                                  + aaddrs[1].getHostAddress());
+                    // netmask
+                    if (aaddrs[1] != null) {
+                        if (log().isDebugEnabled()) {
+                            log().debug("updateSnmpInfo: interface "
+                                        + aaddrs[0].getHostAddress()
+                                        + " has netmask: "
+                                        + aaddrs[1].getHostAddress());
+                        }
+                        currSnmpIfEntry.setNetmask(aaddrs[1]);
                     }
-                    currSnmpIfEntry.setNetmask(aaddrs[1]);
-                }
+                    
+                } 
 
                 // type
                 Integer sint = ifte.getIfType();
@@ -1953,6 +1949,7 @@ public final class RescanProcessor implements Runnable {
             dbSnmpIfEntry.updateAdminStatus(currSnmpIfEntry.getAdminStatus());
             dbSnmpIfEntry.updateOperationalStatus(currSnmpIfEntry.getOperationalStatus());
             dbSnmpIfEntry.updateAlias(currSnmpIfEntry.getAlias());
+            dbSnmpIfEntry.updateCollect(currSnmpIfEntry.getCollect());
 
             /*
              * If this is a new interface or if any of the following

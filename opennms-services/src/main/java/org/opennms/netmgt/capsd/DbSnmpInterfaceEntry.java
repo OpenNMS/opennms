@@ -77,7 +77,7 @@ public final class DbSnmpInterfaceEntry {
     private static final String SQL_LOAD_REC = "SELECT ipAddr, "
         + "snmpIpAdEntNetMask, snmpPhysAddr, snmpIfDescr, snmpIfType, "
         + "snmpIfName, snmpIfSpeed, snmpIfAdminStatus, snmpIfOperStatus, "
-        + "snmpIfAlias FROM snmpInterface WHERE nodeID = ? AND snmpIfIndex = ?";
+        + "snmpIfAlias, snmpCollect FROM snmpInterface WHERE nodeID = ? AND snmpIfIndex = ?";
 
     /**
      * True if this recored was loaded from the database. False if it's new.
@@ -116,6 +116,8 @@ public final class DbSnmpInterfaceEntry {
     private int m_ifAdminStatus;
 
     private int m_ifOperStatus;
+    
+    private String m_collect;
 
     /**
      * The bit map used to determine which elements have changed since the
@@ -143,6 +145,8 @@ public final class DbSnmpInterfaceEntry {
     private static final int CHANGED_IFOPERSTATUS = 1 << 8;
     
     private static final int CHANGED_IFALIAS = 1 << 9;
+    
+    private static final int CHANGED_COLLECT = 1 << 10;
 
     /**
      * Inserts the new interface into the ipInterface table of the OpenNMS
@@ -217,7 +221,12 @@ public final class DbSnmpInterfaceEntry {
             values.append(",?");
             names.append(",snmpIfAlias");
         }
-       
+
+        if ((m_changed & CHANGED_COLLECT) == CHANGED_COLLECT) {
+            values.append(",?");
+            names.append(",snmpCollect");
+        }
+
         names.append(") VALUES (").append(values).append(')');
         log.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = "
                   + names.toString());
@@ -270,6 +279,10 @@ public final class DbSnmpInterfaceEntry {
         
         if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
             stmt.setString(ndx++, m_ifAlias);
+        }
+
+        if ((m_changed & CHANGED_COLLECT) == CHANGED_COLLECT) {
+            stmt.setString(ndx++, m_collect);
         }
 
         // Run the insert
@@ -351,6 +364,11 @@ public final class DbSnmpInterfaceEntry {
 
         if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
             sqlText.append(comma).append("snmpIfAlias = ?");
+            comma = ',';
+        }
+
+        if ((m_changed & CHANGED_COLLECT) == CHANGED_COLLECT) {
+            sqlText.append(comma).append("snmpCollect = ?");
             comma = ',';
         }
 
@@ -443,6 +461,14 @@ public final class DbSnmpInterfaceEntry {
                 stmt.setNull(ndx++, Types.VARCHAR);
             } else {
                 stmt.setString(ndx++, m_ifAlias);
+            }
+        }
+
+        if ((m_changed & CHANGED_COLLECT) == CHANGED_COLLECT) {
+            if (m_collect == null) {
+                stmt.setNull(ndx++, Types.VARCHAR);
+            } else {
+                stmt.setString(ndx++, m_collect);
             }
         }
 
@@ -571,6 +597,12 @@ public final class DbSnmpInterfaceEntry {
             m_ifAlias = null;
         }
         
+        // get the collect flag
+        m_collect = rset.getString(ndx++);
+        if (rset.wasNull()) {
+            m_collect = null;
+        }
+        
         rset.close();
         stmt.close();
 
@@ -598,20 +630,7 @@ public final class DbSnmpInterfaceEntry {
      * 
      */
     private DbSnmpInterfaceEntry(int nid, int ifIndex) {
-        m_fromDb = true;
-        m_nodeId = nid;
-        m_ipAddr = null;
-        m_ifIndex = ifIndex;
-        m_netmask = null;
-        m_physAddr = null;
-        m_ifDescription = null;
-        m_ifType = -1;
-        m_ifName = null;
-        m_ifSpeed = -1L;
-        m_ifAdminStatus = -1;
-        m_ifOperStatus = -1;
-        m_ifAlias = null;
-        m_changed = 0;
+        this(nid, ifIndex, true);
     }
 
     /**
@@ -639,6 +658,7 @@ public final class DbSnmpInterfaceEntry {
         m_ifAdminStatus = -1;
         m_ifOperStatus = -1;
         m_ifAlias = null;
+        m_collect = null;
         m_changed = 0;
     }
 
@@ -931,6 +951,28 @@ public final class DbSnmpInterfaceEntry {
         }
     }
 
+    String getCollect() {
+        return m_collect;
+    }
+
+    void setCollect(String collect) {
+        m_collect = collect;
+        m_changed |= CHANGED_COLLECT;
+    }
+
+    boolean hasCollectChanged() {
+        return ((m_changed & CHANGED_COLLECT) == CHANGED_COLLECT);
+    }
+
+    boolean updateCollect(String newCollect) {
+        if (newCollect == null || newCollect.equals(m_collect)) {
+            return false;
+        } else {
+            setCollect(newCollect);
+            return true;
+        }
+    }
+
     
     /**
      * Updates the interface information in the configured database. If the
@@ -1069,7 +1111,8 @@ public final class DbSnmpInterfaceEntry {
         buf.append("ifSpeed         = ").append(m_ifSpeed).append(sep);
         buf.append("ifAdminStatus   = ").append(m_ifAdminStatus).append(sep);
         buf.append("ifOperStatus    = ").append(m_ifOperStatus).append(sep);
-        buf.append("ifAlias          = ").append(m_ifAlias).append(sep);
+        buf.append("ifAlias         = ").append(m_ifAlias).append(sep);
+        buf.append("collect         = ").append(m_collect).append(sep);
         return buf.toString();
     }
 

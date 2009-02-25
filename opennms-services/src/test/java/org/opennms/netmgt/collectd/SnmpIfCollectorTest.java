@@ -42,7 +42,7 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
 
 
@@ -75,7 +75,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testZeroVars() throws Exception {
-            createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
+            createSnmpInterface(1, 24, "lo", PrimaryType.PRIMARY);
 
             SnmpIfCollector collector = createSnmpIfCollector();
             waitForSignal();
@@ -102,7 +102,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         assertFalse(getAttributeList().isEmpty());
 
-        createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
+        createSnmpInterface(1, 24, "lo", PrimaryType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
@@ -124,7 +124,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         assertFalse(getAttributeList().isEmpty());
         
-        createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
+        createSnmpInterface(1, 24, "lo", PrimaryType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
@@ -139,7 +139,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         assertFalse(getAttributeList().isEmpty());
 
-        createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
+        createSnmpInterface(1, 24, "lo", PrimaryType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
@@ -156,7 +156,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         return collector;
     }
 
-    private OnmsEntity createSnmpInterface(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
+    private OnmsEntity createSnmpInterface(int ifIndex, int ifType, String ifName, PrimaryType ifCollType) {
         OnmsSnmpInterface m_snmpIface = new OnmsSnmpInterface();
     	m_snmpIface.setIfIndex(new Integer(ifIndex));
     	m_snmpIface.setIfType(new Integer(ifType));
@@ -172,9 +172,9 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         assertFalse(getAttributeList().isEmpty());
 
-        createSnmpInterface(1, 24, "lo0", CollectionType.PRIMARY);
-        createSnmpInterface(2, 55, "gif0", CollectionType.SECONDARY);
-        createSnmpInterface(3, 57, "stf0", CollectionType.COLLECT);
+        createSnmpInterface(1, 24, "lo0", PrimaryType.PRIMARY);
+        createSnmpInterface(2, 55, "gif0", PrimaryType.SECONDARY);
+        createSnmpInterface(3, 57, "stf0", PrimaryType.COLLECT);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();

@@ -68,7 +68,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -596,7 +596,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     @Transient
 	public OnmsIpInterface getPrimaryInterface() {
 		for(OnmsIpInterface iface : getIpInterfaces()) {
-			if (iface.getIsSnmpPrimary() == CollectionType.PRIMARY) {
+			if (iface.getIsSnmpPrimary() == PrimaryType.PRIMARY) {
 				return iface;
 			}
 		}

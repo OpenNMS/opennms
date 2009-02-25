@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -100,7 +100,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
-        m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
+        m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary));
         //m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         
         if ("P".equals(snmpPrimary)) {
@@ -222,7 +222,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
             snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
         }
         
-        if (ipIf.getIsSnmpPrimary() == CollectionType.PRIMARY) {
+        if (ipIf.getIsSnmpPrimary() == PrimaryType.PRIMARY) {
             // make sure the snmpIf has the ipAddr of the primary interface
             snmpIf.setIpAddress(ipAddr);
         }

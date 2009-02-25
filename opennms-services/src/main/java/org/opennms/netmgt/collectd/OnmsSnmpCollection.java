@@ -35,6 +35,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,14 +43,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 /**
  * Represents SNMP collection data for a single collection period.
@@ -317,15 +316,12 @@ public class OnmsSnmpCollection {
         return resources;
     }
 
-    CollectionType getMinimumCollectionType() {
-        if (getStorageFlag().equals(SnmpCollector.SNMP_STORAGE_PRIMARY)) {
-            return CollectionType.PRIMARY;
-        }
-        if (getStorageFlag().equals(SnmpCollector.SNMP_STORAGE_SELECT)) {
-            return CollectionType.COLLECT;
+    boolean isSelectCollectionOnly() {
+        if (getStorageFlag().equals(SnmpCollector.SNMP_STORAGE_PRIMARY) || getStorageFlag().equals(SnmpCollector.SNMP_STORAGE_SELECT)) {
+            return true;
         }
 
-        return CollectionType.NO_COLLECT;
+        return false;
     }
 
     public List<SnmpAttributeType> loadAliasAttributeTypes(CollectionAgent agent) {

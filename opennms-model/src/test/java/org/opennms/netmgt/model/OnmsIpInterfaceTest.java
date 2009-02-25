@@ -33,28 +33,28 @@ package org.opennms.netmgt.model;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 
 public class OnmsIpInterfaceTest extends TestCase {
 
 	public void testCollectionTypeGetNull () {
-		CollectionType collectionType = CollectionType.get(null);
+		PrimaryType collectionType = PrimaryType.get(null);
 		
-		assertSame("The expected value is N for a null", CollectionType.NO_COLLECT, collectionType);
+		assertSame("The expected value is N for a null", PrimaryType.NO_COLLECT, collectionType);
 		
 	}
 
 	public void testCollectionTypeGetSpaces () {
-		CollectionType collectionType = CollectionType.get("   ");
+		PrimaryType collectionType = PrimaryType.get("   ");
 		
-		assertSame("The expected valus is N for all spaces", CollectionType.NO_COLLECT, collectionType);
+		assertSame("The expected valus is N for all spaces", PrimaryType.NO_COLLECT, collectionType);
 	}
 	
 	public void testCollectionTypeGetTwoChars () {
 		
 		try {
 			@SuppressWarnings("unused")
-			CollectionType collectionType = CollectionType.get(" MN  ");
+			PrimaryType collectionType = PrimaryType.get(" MN  ");
 			fail("Expected to catch an exception here");
 		} catch (IllegalArgumentException e) {
 		}
@@ -64,15 +64,15 @@ public class OnmsIpInterfaceTest extends TestCase {
 		
 		try {
 			@SuppressWarnings("unused")
-			CollectionType collectionType = CollectionType.get("Z");
+			PrimaryType collectionType = PrimaryType.get("Z");
 			fail("Expected to catch an exception here");
 		} catch (IllegalArgumentException e) {
 		}
 	}
 	
 	public void testCollectionTypeComparison () {
-		CollectionType left = new CollectionType('N');
-		CollectionType right = null;
+		PrimaryType left = new PrimaryType('N');
+		PrimaryType right = null;
 		try {
 			left.isLessThan(right);
 			fail("Expected to catch an exception here");
