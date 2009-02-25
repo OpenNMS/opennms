@@ -435,6 +435,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             setPhysAddr(scannedSnmpIface.getPhysAddr());
         }
         
+        if (hasNewValue(scannedSnmpIface.getLastCapsdPoll(), getLastCapsdPoll())) {
+            setLastCapsdPoll(scannedSnmpIface.getLastCapsdPoll());
+        }
+        
     }
 
 
