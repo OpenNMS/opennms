@@ -7,6 +7,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+	<bean class="org.opennms.netmgt.dao.support.DefaultExtensionManager" />
     <bean class="org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy" />
     <bean class="org.opennms.netmgt.provision.service.NodePolicyImpl" />
     <bean class="org.opennms.netmgt.provision.service.SubNodePolicy" />
