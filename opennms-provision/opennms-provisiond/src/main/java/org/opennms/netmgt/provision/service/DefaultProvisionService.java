@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.joda.time.DateTime;
@@ -549,7 +550,7 @@ public class DefaultProvisionService implements ProvisionService {
         ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
         
-        List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
+        Set<PluginConfig> detectorConfigs = foreignSource.getDetectors();
         if (detectorConfigs == null) {
             return new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
         }
@@ -586,7 +587,7 @@ public class DefaultProvisionService implements ProvisionService {
         ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
         
-        List<PluginConfig> configs = foreignSource.getPolicies();
+        Set<PluginConfig> configs = foreignSource.getPolicies();
         if (configs == null) {
             return Collections.emptyList(); 
         }

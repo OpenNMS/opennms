@@ -33,7 +33,7 @@
 package org.opennms.web.rest;
 
 import java.text.ParseException;
-import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -301,7 +301,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Transactional
     public Response deleteDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
-        List<PluginConfig> detectors = fs.getDetectors();
+        Set<PluginConfig> detectors = fs.getDetectors();
         PluginConfig removed = removeEntry(detectors, detector);
         if (removed != null) {
             fs.setDetectors(detectors);
@@ -316,7 +316,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Transactional
     public Response deletePolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
-        List<PluginConfig> policies = fs.getPolicies();
+        Set<PluginConfig> policies = fs.getPolicies();
         PluginConfig removed = removeEntry(policies, policy);
         if (removed != null) {
             fs.setPolicies(policies);
@@ -326,7 +326,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.notModified().build();
     }
 
-    private PluginConfig removeEntry(List<PluginConfig> plugins, String name) {
+    private PluginConfig removeEntry(Set<PluginConfig> plugins, String name) {
         PluginConfig removed = null;
         java.util.Iterator<PluginConfig> i = plugins.iterator();
         while (i.hasNext()) {

@@ -36,11 +36,12 @@
 package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -74,7 +75,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     private String m_pluginClass;
 
     @XmlElement(name="parameter")
-    private List<PluginParameter> m_parameters = new ArrayList<PluginParameter>();
+    private Set<PluginParameter> m_parameters = new LinkedHashSet<PluginParameter>();
 
     /**
      * Creates an empty plugin configuration.
@@ -135,14 +136,14 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * Get a {@link List} of the plugin parameters.
      * @return the parameters
      */
-    public List<PluginParameter> getParameters() {
+    public Set<PluginParameter> getParameters() {
         return m_parameters;
     }
     
     /**
      * @param parameters the parameters to set
      */
-    public void setParameters(List<PluginParameter> list) {
+    public void setParameters(Set<PluginParameter> list) {
         m_parameters = list;
     }
     
@@ -185,12 +186,6 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @param value the parameter value
      */
     public void addParameter(String key, String value) {
-        for (int i = 0; i < m_parameters.size(); i++) {
-            if (m_parameters.get(i).getKey().equals(key)) {
-                m_parameters.set(i, new PluginParameter(key, value));
-                return;
-            }
-        }
         m_parameters.add(new PluginParameter(key, value));
     }
 

@@ -8,6 +8,7 @@
 
 package org.opennms.netmgt.provision.persist.requisition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -37,7 +38,9 @@ import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="model-import")
-public class Requisition implements Comparable<Requisition> {
+public class Requisition implements Serializable, Comparable<Requisition> {
+    private static final long serialVersionUID = 1L;
+
     @XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     

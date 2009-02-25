@@ -36,10 +36,10 @@
 package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -83,11 +83,11 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
 
     @XmlElementWrapper(name="detectors")
     @XmlElement(name="detector")
-    private List<PluginConfig> m_detectors = new ArrayList<PluginConfig>();
+    private Set<PluginConfig> m_detectors = new LinkedHashSet<PluginConfig>();
     
     @XmlElementWrapper(name="policies")
     @XmlElement(name="policy")
-    private List<PluginConfig> m_policies = new ArrayList<PluginConfig>();
+    private Set<PluginConfig> m_policies = new LinkedHashSet<PluginConfig>();
 
     private boolean m_default;
 
@@ -160,22 +160,22 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      * @return the detectors
      */
     @XmlTransient
-    public List<PluginConfig> getDetectors() {
+    public Set<PluginConfig> getDetectors() {
         return m_detectors;
     }
     /**
      * @param detectors the detectors to set
      */
-    public void setDetectors(List<PluginConfig> detectors) {
+    public void setDetectors(Set<PluginConfig> detectors) {
         m_detectors = detectors;
     }
     
     @XmlTransient
-    public List<PluginConfig> getPolicies() {
+    public Set<PluginConfig> getPolicies() {
         return m_policies;
     }
     
-    public void setPolicies(List<PluginConfig> policies) {
+    public void setPolicies(Set<PluginConfig> policies) {
         m_policies = policies;
     }
     

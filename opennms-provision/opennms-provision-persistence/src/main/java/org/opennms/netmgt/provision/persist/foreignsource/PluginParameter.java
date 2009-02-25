@@ -1,13 +1,21 @@
 package org.opennms.netmgt.provision.persist.foreignsource;
 
+import java.io.Serializable;
 import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PluginParameter {
+public class PluginParameter implements Serializable, Comparable<PluginParameter> {
+    private static final long serialVersionUID = 1L;
+
     @XmlAttribute(name="key")
     private String m_key = null;
 
@@ -39,5 +47,39 @@ public class PluginParameter {
     public void setValue(String value) {
         m_value = value;
     }
+
+    public int compareTo(PluginParameter obj) {
+        return new CompareToBuilder()
+            .append(getKey(), obj.getKey())
+            .toComparison();
+    }
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("key", getKey())
+            .append("value", getValue())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PluginParameter) {
+            PluginParameter other = (PluginParameter) obj;
+            return new EqualsBuilder()
+                .append(getKey(), other.getKey())
+                .append(getValue(), other.getValue())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(701, 1873)
+            .append(getKey())
+            .append(getValue())
+            .toHashCode();
+      }
 
 }
