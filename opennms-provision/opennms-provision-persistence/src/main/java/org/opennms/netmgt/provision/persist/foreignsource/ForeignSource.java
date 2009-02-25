@@ -37,6 +37,7 @@ package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -45,13 +46,17 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Category;
 import org.joda.time.Duration;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 
 /**
@@ -86,9 +91,11 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     private boolean m_default;
 
     public ForeignSource() {
+        updateDateStamp();
     }
     
     public ForeignSource(String name) {
+        updateDateStamp();
         setName(name);
     }
     
@@ -117,6 +124,13 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      */
     public void setScanInterval(Duration scanInterval) {
         m_scanInterval = scanInterval;
+    }
+    public void updateDateStamp() {
+        try {
+            m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        } catch (DatatypeConfigurationException e) {
+            log().warn("unable to update datestamp", e);
+        }
     }
     /**
      * @return the detectors
@@ -185,7 +199,11 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     public void setDefault(boolean isDefault) {
         m_default = isDefault;
     }
-    
+
+    private Category log() {
+        return ThreadCategory.getInstance(ForeignSource.class);
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)

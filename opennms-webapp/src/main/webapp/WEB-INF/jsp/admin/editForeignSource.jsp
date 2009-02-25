@@ -36,8 +36,15 @@
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${fieldWidth}" items="${detectorTypes}" />
+			<tree:action label="[Add Parameter]"  action="addParameter" />
 		</tree:nodeForm>
 
+		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
+			<tree:nodeForm>
+				<tree:field label="key" property="key" />
+				<tree:field label="value" property="value" />
+			</tree:nodeForm>
+		</tree:tree>
 	</tree:tree>
 	
 	<h4>
@@ -48,7 +55,18 @@
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${fieldWidth}" items="${policyTypes}" />
+			<tree:action label="[Add Parameter]"  action="addParameter" />
 		</tree:nodeForm>
+		
+		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
+			<tree:nodeForm>
+		<%--
+				<tree:field label="key" property="key" />
+				<tree:field label="value" property="value" />
+			--%>
+			</tree:nodeForm>
+
+		</tree:tree>
 	</tree:tree>
 	  
 </tree:form> 

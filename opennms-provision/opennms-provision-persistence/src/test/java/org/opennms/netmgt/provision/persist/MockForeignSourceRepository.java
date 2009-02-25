@@ -74,6 +74,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     public void save(ForeignSource foreignSource) {
         Assert.notNull(foreignSource);
         Assert.notNull(foreignSource.getName());
+        foreignSource.updateDateStamp();
         m_foreignSources.put(foreignSource.getName(), foreignSource);
     }
 
@@ -99,6 +100,7 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     public void save(Requisition requisition) {
         Assert.notNull(requisition);
         Assert.notNull(requisition.getForeignSource());
+        requisition.updateDateStamp();
         m_requisitions.put(requisition.getForeignSource(), requisition);
     }
 

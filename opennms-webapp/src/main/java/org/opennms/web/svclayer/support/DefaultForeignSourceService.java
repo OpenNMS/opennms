@@ -38,15 +38,37 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     public ForeignSource getForeignSource(String name) {
         return m_pendingForeignSourceRepository.getForeignSource(name);
     }
+    public ForeignSource deployForeignSource(String name) {
+        m_activeForeignSourceRepository.save(m_pendingForeignSourceRepository.getForeignSource(name));
+        return m_activeForeignSourceRepository.getForeignSource(name);
+    }
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
         m_pendingForeignSourceRepository.save(fs);
-        m_activeForeignSourceRepository.save(fs);
         return fs;
     }
     public ForeignSource deleteForeignSource(String name) {
         m_pendingForeignSourceRepository.delete(m_pendingForeignSourceRepository.getForeignSource(name));
         m_activeForeignSourceRepository.delete(m_activeForeignSourceRepository.getForeignSource(name));
         return m_activeForeignSourceRepository.getForeignSource(name);
+    }
+
+    public ForeignSource addParameter(String foreignSourceName, String pathToAdd) {
+        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSourceName);
+        PropertyPath path = new PropertyPath(pathToAdd);
+        Object obj = path.getValue(fs);
+        
+        try {
+            MethodUtils.invokeMethod(obj, "addParameter", new Object[] { "key", "value" });
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Unable to call addParameter on object of type " + obj.getClass(), e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("unable to access property "+pathToAdd, e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException("an execption occurred adding a parameter to "+pathToAdd, e);
+        }
+
+        m_pendingForeignSourceRepository.save(fs);
+        return fs;
     }
 
     public ForeignSource deletePath(String foreignSourceName, String pathToDelete) {

@@ -111,7 +111,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
             return null;
         }
         
-        Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameters());
+        Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
 
         
         BeanWrapper wrapper = new BeanWrapperImpl(pluginInstance);
