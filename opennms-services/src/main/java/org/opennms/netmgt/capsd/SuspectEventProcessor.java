@@ -885,38 +885,33 @@ final class SuspectEventProcessor implements Runnable {
             if (snmpc.hasIpAddrTable()) {
                 aaddrs = snmpc.getIfAddressAndMask(xifIndex);
             }
-            if (aaddrs == null) {
-                /*
-                 * Must be non-IP interface, set ifAddress to
-                 * '0.0.0.0' and mask to null
-                 */
-                aaddrs = new InetAddress[2];
-                try {
-                    aaddrs[0] = InetAddress.getByName("0.0.0.0");
-                } catch (UnknownHostException e) {
-                    continue;
-                }
-                aaddrs[1] = null;
-            }
 
             // At some point back in the day this was done with ifType
             // Skip loopback interfaces
-            if (aaddrs[0].getHostAddress().startsWith("127.")) {
+            if (aaddrs != null && aaddrs[0].getHostAddress().startsWith("127.")) {
                 continue;
             }
 
             final DbSnmpInterfaceEntry snmpEntry =
                 DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
-            // IP address
-            snmpEntry.setIfAddress(aaddrs[0]);
-            if (aaddrs[0].equals(ifaddr)) {
-                addedSnmpInterfaceEntry = true;
-            }
+            if (aaddrs == null) {
+                // No IP associeated with the interface
+                snmpEntry.setCollect("N");
 
-            // netmask
-            if (aaddrs[1] != null) {
-                snmpEntry.setNetmask(aaddrs[1]);
+            } else {
+                // IP address
+                snmpEntry.setIfAddress(aaddrs[0]);
+                if (aaddrs[0].equals(ifaddr)) {
+                    addedSnmpInterfaceEntry = true;
+                }
+
+                // netmask
+                if (aaddrs[1] != null) {
+                    snmpEntry.setNetmask(aaddrs[1]);
+                }
+                
+                snmpEntry.setCollect("C");
             }
 
             // description

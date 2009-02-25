@@ -59,14 +59,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "snmpInterface")
 @Entity
 @Table(name = "snmpInterface")
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
-
+    
     /**
      * 
      */
@@ -108,7 +107,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     private String m_ifAlias;
     
     private Date m_lastCapsdPoll;
-    
+
+    private String m_collect = "N";
 
     private OnmsNode m_node;
 
@@ -259,6 +259,24 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     public void setLastCapsdPoll(Date lastCapsdPoll) {
         m_lastCapsdPoll = lastCapsdPoll;
     }
+    
+    @Column(name="snmpCollect")
+    public String getCollect() {
+        return m_collect;
+    }
+    
+    public void setCollect(String collect) {
+        m_collect = collect;
+    }
+    
+    @Transient
+    public boolean isCollectionEnabled() {
+        return "C".equals(m_collect);
+    }
+    
+    public void setCollectionEnabled(boolean shouldCollect) {
+        m_collect = shouldCollect ? "C" : "N";
+    }
 
     @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -315,17 +333,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     // }
     // return ifsForSnmpIface;
     // }
-
-    @Transient
-    public CollectionType getCollectionType() {
-        CollectionType maxCollType = CollectionType.NO_COLLECT;
-        for (OnmsIpInterface ipIface : getIpInterfaces()) {
-            if (ipIface.getIsSnmpPrimary() != null) {
-                maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
-            }
-        }
-        return maxCollType;
-    }
 
     public Category log() {
         return ThreadCategory.getInstance(getClass());

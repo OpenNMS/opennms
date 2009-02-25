@@ -71,19 +71,18 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="ipInterface")
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
-
-
+    
     @Embeddable
-    public static class CollectionType implements Comparable<CollectionType>, Serializable {
+    public static class PrimaryType implements Comparable<PrimaryType>, Serializable {
         private static final long serialVersionUID = -647348487361201657L;
-        private static final char[] s_order = { 'N', 'C', 'S', 'P' };
+        private static final char[] s_order = { 'N', 'S', 'P' };
         char m_collType = 'N';
 
         @SuppressWarnings("unused")
-        private CollectionType() {
+        private PrimaryType() {
         }
 
-        public CollectionType(char collType) {
+        public PrimaryType(char collType) {
             m_collType = collType;
         }
 
@@ -96,7 +95,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             m_collType = collType;
         }
 
-        public int compareTo(CollectionType collType) {
+        public int compareTo(PrimaryType collType) {
             return getIndex(m_collType) - getIndex(collType.m_collType);
         }
 
@@ -109,7 +108,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             throw new IllegalArgumentException("illegal collType code '"+code+"'");
         }
 
-        public boolean equals(CollectionType o) {
+        public boolean equals(PrimaryType o) {
             if (o == null) {
                 return false;
             }
@@ -124,23 +123,23 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             return String.valueOf(m_collType);
         }
 
-        public boolean isLessThan(CollectionType collType) {
+        public boolean isLessThan(PrimaryType collType) {
             return compareTo(collType) < 0;
         }
 
-        public boolean isGreaterThan(CollectionType collType) {
+        public boolean isGreaterThan(PrimaryType collType) {
             return compareTo(collType) > 0;
         }
 
-        public CollectionType max(CollectionType collType) {
+        public PrimaryType max(PrimaryType collType) {
             return this.isLessThan(collType) ? collType : this;
         }
 
-        public CollectionType min(CollectionType collType) {
+        public PrimaryType min(PrimaryType collType) {
             return this.isLessThan(collType) ? this : collType;
         }
 
-        public static CollectionType get(char code) {
+        public static PrimaryType get(char code) {
             switch (code) {
             case 'P': return PRIMARY;
             case 'S': return SECONDARY;
@@ -151,7 +150,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             }
         }
 
-        public static CollectionType get(String code) {
+        public static PrimaryType get(String code) {
             if (code == null) {
                 return NO_COLLECT;
             }
@@ -165,10 +164,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             }
         }
 
-        public static CollectionType PRIMARY = new CollectionType('P');
-        public static CollectionType SECONDARY = new CollectionType('S');
-        public static CollectionType COLLECT = new CollectionType('C');
-        public static CollectionType NO_COLLECT = new CollectionType('N');
+        public static PrimaryType PRIMARY = new PrimaryType('P');
+        public static PrimaryType SECONDARY = new PrimaryType('S');
+        public static PrimaryType COLLECT = new PrimaryType('C');
+        public static PrimaryType NO_COLLECT = new PrimaryType('N');
 
 
     }
@@ -183,7 +182,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private String m_isManaged;
 
-    private CollectionType m_isSnmpPrimary = CollectionType.NO_COLLECT;
+    private PrimaryType m_isSnmpPrimary = PrimaryType.NO_COLLECT;
 
     private Date m_ipLastCapsdPoll;
 
@@ -289,11 +288,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Column(name="isSnmpPrimary", length=1)
-    public CollectionType getIsSnmpPrimary() {
+    public PrimaryType getIsSnmpPrimary() {
         return m_isSnmpPrimary;
     }
 
-    public void setIsSnmpPrimary(CollectionType issnmpprimary) {
+    public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
         m_isSnmpPrimary = issnmpprimary;
     }
 
@@ -418,8 +417,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         }
     }
     
-    protected static boolean hasNewCollectionTypeValue(CollectionType newVal, CollectionType existingVal) {
-        return newVal != null && !newVal.equals(existingVal) && newVal != CollectionType.NO_COLLECT;
+    protected static boolean hasNewCollectionTypeValue(PrimaryType newVal, PrimaryType existingVal) {
+        return newVal != null && !newVal.equals(existingVal) && newVal != PrimaryType.NO_COLLECT;
     }
 
 

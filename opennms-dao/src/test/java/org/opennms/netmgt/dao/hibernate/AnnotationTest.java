@@ -148,7 +148,7 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 				assertNotNull("ifindex should not be null", entity.getIfIndex());
 				assertNotNull("node should not be null", entity.getNode());
 				assertNotNull("node label should not be null", entity.getNode().getLabel());
-				assertNotNull("collection type should not be null", entity.getCollectionType());
+				assertNotNull("collect should not by null", entity.getCollect());
 				assertNotNull("ip interfaces list should not be null", entity.getIpInterfaces());
 				assertTrue("ip interfaces list size should be greater than 0", entity.getIpInterfaces().size() > 0);
 			}
