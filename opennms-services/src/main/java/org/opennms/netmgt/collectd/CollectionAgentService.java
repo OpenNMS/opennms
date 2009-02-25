@@ -55,7 +55,7 @@ public interface CollectionAgentService {
 
     public abstract String getSysObjectId();
 
-    public abstract PrimaryType getCollectionType();
+    public abstract PrimaryType getIsSnmpPrimary();
     
     public abstract SnmpAgentConfig getAgentConfig();
 

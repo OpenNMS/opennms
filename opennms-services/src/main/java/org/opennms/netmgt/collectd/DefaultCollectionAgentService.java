@@ -131,7 +131,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
         return getIpInterface().getNode().getSysObjectId();
     }
 
-    public PrimaryType getCollectionType() {
+    public PrimaryType getIsSnmpPrimary() {
         return getIpInterface().getIsSnmpPrimary();
     }
 
