@@ -135,6 +135,8 @@ public class EditForeignSourceController extends SimpleFormController {
             return doAddDetector(request, response, treeCmd, errors);
         } else if ("addPolicy".equalsIgnoreCase(action)) {
             return doAddPolicy(request, response, treeCmd, errors);
+        } else if ("addParameter".equalsIgnoreCase(action)) {
+            return doAddParameter(request, response, treeCmd, errors);
         } else if ("save".equalsIgnoreCase(action)) {
             return doSave(request, response, treeCmd, errors);
         } else if ("edit".equalsIgnoreCase(action)) {
@@ -153,6 +155,7 @@ public class EditForeignSourceController extends SimpleFormController {
     }
 
     private ModelAndView done(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        m_foreignSourceService.deployForeignSource(treeCmd.getForeignSourceName());
         return new ModelAndView(getSuccessView());
     }
 
@@ -174,6 +177,14 @@ public class EditForeignSourceController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    private ModelAndView doAddParameter(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+        System.err.println(String.format("current node = %s, data path = %s", treeCmd.getCurrentNode(), treeCmd.getDataPath()));
+        ForeignSource fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
+        treeCmd.setFormData(fs);
+//        treeCmd.setCurrentNode(treeCmd.getCurrentNode()+".parameter")
+        return showForm(request, response, errors);
+    }
+    
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         ForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
         treeCmd.setFormData(fs);

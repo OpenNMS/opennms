@@ -12,9 +12,11 @@ public interface ForeignSourceService {
 
     ForeignSource getForeignSource(String name);
     ForeignSource saveForeignSource(String name, ForeignSource fs);
+    ForeignSource deployForeignSource(String name);
     ForeignSource deleteForeignSource(String name);
 
     ForeignSource deletePath(String foreignSourceName, String dataPath);
+    ForeignSource addParameter(String foreignSourceName, String dataPath);
 
     ForeignSource addDetectorToForeignSource(String foreignSource, String name);
     ForeignSource deleteDetector(String foreignSource, String name);

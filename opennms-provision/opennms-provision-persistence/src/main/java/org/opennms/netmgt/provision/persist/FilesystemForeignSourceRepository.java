@@ -73,6 +73,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
         File outputFile = getOutputFileForForeignSource(foreignSource);
         try {
+            foreignSource.updateDateStamp();
             m_marshaller.marshal(foreignSource, outputFile);
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -125,6 +126,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
         File outputFile = getOutputFileForRequisition(requisition);
         try {
+            requisition.updateDateStamp();
             m_marshaller.marshal(requisition, outputFile);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
