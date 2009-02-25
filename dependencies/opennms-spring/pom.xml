@@ -134,6 +134,10 @@
     <!-- Spring Dependencies -->
 
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
     </dependency>
