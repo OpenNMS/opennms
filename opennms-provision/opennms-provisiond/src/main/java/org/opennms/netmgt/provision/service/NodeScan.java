@@ -135,6 +135,7 @@ public class NodeScan implements Runnable {
         private String m_agentType;
         private Integer m_nodeId;
         private Date m_scanStamp;
+        private boolean m_aborted = false;
         
         public AgentScan(OnmsNode node, InetAddress agentAddress, String agentType) {
             m_node = node;
@@ -163,7 +164,7 @@ public class NodeScan implements Runnable {
         }
 
         public void doPersistNodeInfo() {
-            if (m_node == null) {
+            if (isAborted()) {
                 return;
             }
             m_nodeId = m_provisionService.updateNodeAttributes(getNode()).getId();
@@ -202,6 +203,15 @@ public class NodeScan implements Runnable {
         public void setNode(OnmsNode node) {
             m_node = node;
         }
+
+        public boolean isAborted() {
+            return m_aborted;
+        }
+
+        public void abort() {
+            m_aborted = true;
+        }
+            
 
     }
     
