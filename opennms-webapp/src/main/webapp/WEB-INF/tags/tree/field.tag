@@ -7,11 +7,8 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
 
-<!-- field.tag -->
 <form:label path="${property}">${label}</form:label>
 <c:set var="nestedPathSansDot" value="${fn:substring(nestedPath, 0, fn:length(nestedPath)-1)}" scope="page" />
-<!-- <c:out value="nestedPathSansDot = ${nestedPathSansDot}" /> -->
-<!-- <c:out value="treeFormModel.currentNode = ${treeFormModel.currentNode}" /> -->
 <c:choose>
   <c:when test="${nestedPathSansDot == treeFormModel.currentNode}">
     <form:input path="${property}" /> 

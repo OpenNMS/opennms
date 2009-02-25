@@ -3,7 +3,11 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("prototype")
 public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInterfacePolicy {
     private String m_ifDescr;
     private String m_ifName;
