@@ -222,12 +222,14 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
             snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
         }
         
+        snmpIf.setCollectionEnabled(true);
+
         if (ipIf.getIsSnmpPrimary() == PrimaryType.PRIMARY) {
             // make sure the snmpIf has the ipAddr of the primary interface
             snmpIf.setIpAddress(ipAddr);
         }
-    	
-    	ipIf.setSnmpInterface(snmpIf);
+        
+        ipIf.setSnmpInterface(snmpIf);
 
     	//FIXME: Improve OpenNMS to provide these values
     	// ifOperStatus

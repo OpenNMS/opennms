@@ -91,11 +91,13 @@ public class IPInterfaceTableTracker extends TableTracker {
             
             OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(ipAddr, ifIndex, null);
             snmpIface.setNetMask(netMask);
+            snmpIface.setCollectionEnabled(true);
             
             OnmsIpInterface iface = new OnmsIpInterface(ipAddr, null);
             iface.setSnmpInterface(snmpIface);
             
             iface.setIfIndex(ifIndex);
+            
 
             return iface;
         }

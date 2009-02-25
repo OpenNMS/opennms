@@ -69,7 +69,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     private int m_nodeId = -1;
     private InetAddress m_inetAddress = null;
     private int m_ifIndex = -1;
-    private PrimaryType m_collType = null;
+    private PrimaryType m_isSnmpPrimary = null;
     private String m_sysObjId = null;
     
     private CollectionAgentService m_agentService;
@@ -146,11 +146,11 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         return m_sysObjId;
     }
 
-    private PrimaryType getCollectionType() {
-        if (m_collType == null) {
-            m_collType = m_agentService.getCollectionType();
+    private PrimaryType getIsSnmpPrimary() {
+        if (m_isSnmpPrimary == null) {
+            m_isSnmpPrimary = m_agentService.getIsSnmpPrimary();
         }
-        return m_collType;
+        return m_isSnmpPrimary;
         
     }
 
@@ -161,7 +161,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
                         "initialize: initialization completed: nodeid = " + getNodeId()
                         + ", address = " + getHostAddress()
                         + ", primaryIfIndex = " + getIfIndex()
-                        + ", isSnmpPrimary = " + getCollectionType()
+                        + ", isSnmpPrimary = " + getIsSnmpPrimary()
                         + ", sysoid = " + getSysObjectId()
             );
         }
@@ -182,14 +182,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
                         "initialize: db retrieval info: nodeid = " + getNodeId()
                         + ", address = " + getHostAddress()
                         + ", primaryIfIndex = " + getIfIndex()
-                        + ", isSnmpPrimary = " + getCollectionType()
+                        + ", isSnmpPrimary = " + getIsSnmpPrimary()
                         + ", sysoid = " + getSysObjectId()
             );
         }
     }
 
     private void validateIsSnmpPrimary() {
-        if (!PrimaryType.PRIMARY.equals(getCollectionType())) {
+        if (!PrimaryType.PRIMARY.equals(getIsSnmpPrimary())) {
             throw new RuntimeException("Interface "
                                        + getHostAddress()
                                        + " is not the primary SNMP interface for nodeid "
