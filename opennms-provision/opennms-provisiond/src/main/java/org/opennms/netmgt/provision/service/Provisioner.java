@@ -298,9 +298,20 @@ public class Provisioner implements SpringServiceDaemon {
 
     }
     
+    @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
+    public void handleForceRescan(Event e) {
+        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
+        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
+        if (scheduleForNode != null) {
+            addToScheduleQueue(scheduleForNode);
+        }
+
+    }
+    
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
         // scan now since a reimport has occurred
+        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
