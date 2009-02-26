@@ -195,7 +195,7 @@ public interface ProvisionService {
      */
     public abstract List<NodeScanSchedule> getScheduleForNodes();
     
-    public abstract NodeScanSchedule getScheduleForNode(int nodeId);
+    public abstract NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
     
     public abstract void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository);
 
