@@ -276,7 +276,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     
     @Transient
     public boolean isCollectionEnabled() {
-        return "C".equals(m_collect);
+        return "C".equals(m_collect) || "UC".equals(m_collect);
     }
     
     public void setCollectionEnabled(boolean shouldCollect) {
