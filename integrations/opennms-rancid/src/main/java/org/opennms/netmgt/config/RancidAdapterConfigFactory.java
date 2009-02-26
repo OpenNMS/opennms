@@ -79,10 +79,10 @@ public class RancidAdapterConfigFactory implements RancidAdapterConfig {
         return m_singleton;
     }
 
-    public String getGroup() {
+ //   public String getGroup() {
         // TODO Create Configuration file to set group using packages
-        return "laboratorio";
-    }
+ //       return "laboratorio";
+ //   }
 
     public RancidAdapterConfigFactory() {
     }

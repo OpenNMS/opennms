@@ -20,7 +20,7 @@
 		<complexType>
 	    	<sequence>
 	        	<element minOccurs="1" maxOccurs="unbounded" ref="this:package"/>
-	 	        <element minOccurs="0" maxOccurs="unbounded" ref="this:policies"/>
+	 	        <element minOccurs="0" maxOccurs="1" ref="this:policies"/>
 	 	        <element minOccurs="0" maxOccurs="unbounded" ref="this:mapping"/>
 	 		</sequence>
 	 		
@@ -46,7 +46,8 @@
 
 		    <attribute name="useCategories" type="boolean" use="optional" default="false">
 		        <annotation>
-	    	      <documentation>The time (in ms) to wait before a retry.</documentation>
+	    	      <documentation>If you want to use opennms categories
+	    	      to match rancid device type.</documentation>
 	        	</annotation>
 	      	</attribute>
 
@@ -104,22 +105,18 @@
 
       <attribute name="package" type="string" use="required">
         <annotation>
-          <documentation>The package used to get elements
+          <documentation>The package used to get elements to which this policy applies
           </documentation>
         </annotation>
       </attribute>
  
-      <attribute name="rancid-group" type="string" use="required">
-        <annotation>
-          <documentation>The RancidGroup to use for provisioning
-          </documentation>
-        </annotation>
-      </attribute>
-
       <attribute name="delay" type="long" use="optional" default="0">
         <annotation>
-          <documentation>The time in msec to wait before setting
-          the download flag to up in router.db
+          <documentation>The time in msec to wait before trying
+          to set the download flag to up in router.db.
+          If schedule is there then it is verified if you are able
+           to write to router.db in rancid.
+           Otherwise you wait until schedule let you write on rancid.
           </documentation>
         </annotation>
       </attribute>
@@ -128,24 +125,6 @@
 
   </element>
    
-
-  <element name="celement">
-    <annotation>
-      <documentation>A Rule for adding elements to the map automatically</documentation>
-    </annotation>
-    <complexType>
-    	
-     <attribute name="icon" type="string" default="unspecified">
-        <annotation>
-          <documentation>The icon of the element to add
-          </documentation>
-        </annotation>
-      </attribute>
-
-    	
-    </complexType>
-  </element>
-  
   <element name="package">
     <annotation>
       <documentation>Package encapsulating addresses, services to be polled
@@ -287,20 +266,7 @@
 
     <complexType>
       <complexContent>
-        <extension base="typ:basicSchedule">
-             <attribute name="status" use="required">
-		        <annotation>
-		          <documentation>The set policy to use
-		          </documentation>
-		        </annotation>
-		        <simpleType>
-		          <restriction base="string">
-		            <pattern value="(up|down)"/>
-		          </restriction>
-		        </simpleType>        
-		      </attribute>
-		        
-        </extension>
+        <extension base="typ:basicSchedule"/>
       </complexContent>
     </complexType>
   </element>
