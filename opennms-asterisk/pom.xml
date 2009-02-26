@@ -36,6 +36,8 @@
     <dependency>
       <groupId>org.asteriskjava</groupId>
       <artifactId>asterisk-java</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -48,5 +50,29 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>reucon-public-repository</id>
+      <name>Reucon Public Repository</name>
+      <url>http://maven.reucon.com/public/</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <id>reucon-public-snapshot-repository</id>
+      <name>Reucon Public Snapshot Repository</name>
+      <url>http://maven.reucon.com/public-snapshot/</url>
+    </repository>
+  </repositories>
 </project>
 
