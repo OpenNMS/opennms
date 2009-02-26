@@ -462,7 +462,7 @@ public final class ConfigFileConstants {
     public static final int RWS_CONFIG_FILE_NAME;   
 
     /**
-     * The Rancid Provisioning Adatper configuration file
+     * The Rancid Provisioning Adapter configuration file
      */
     public static final int RANCID_CONFIG_FILE_NAME;   
 
