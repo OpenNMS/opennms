@@ -593,46 +593,6 @@ public final class RescanProcessor implements Runnable {
         }
         
         updateSnmpInfoForNonIpInterface(dbc, node, ifIndex, snmpc, ifAddr);
-
-        updateIpInfoForNonIpInterface(dbc, now, node, ifIndex, snmpc, ifAddr);
-    }
-
-    /**
-     * IpInterface table updates for non-IP interface.
-     */
-    private void updateIpInfoForNonIpInterface(Connection dbc, Date now,
-            DbNodeEntry node, int ifIndex, IfSnmpCollector snmpc,
-            InetAddress ifAddr) throws SQLException {
-        // Attempt to load IP Interface entry from the database
-        DbIpInterfaceEntry dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifAddr, ifIndex);
-        if (dbIpIfEntry == null) {
-            // Create a new entry
-            if (log().isDebugEnabled()) {
-                log().debug("updateNonIpInterface: non-IP interface with ifIndex "
-                          + ifIndex
-                          + " not in database, creating new interface object.");
-            }
-            dbIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifAddr);
-        }
-
-        // Update any IpInterface table fields which have changed
-        dbIpIfEntry.setLastPoll(now);
-        
-        /*
-         * XXX If m_useIfIndexAsKey is set in the DbIpInterfaceEntry,
-         * no entries (or at least not the right entry) will be updated
-         * because the WHERE clause for the UPDATE will be referring to
-         * the *new* ifIndex.
-         */
-        dbIpIfEntry.setIfIndex(ifIndex);
-        dbIpIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
-        int status = snmpc.getAdminStatus(ifIndex);
-        if (status != -1) {
-            dbIpIfEntry.setStatus(status);
-        }
-
-        // Update the database
-        dbIpIfEntry.store(dbc);
     }
 
     /**
