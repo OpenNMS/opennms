@@ -38,33 +38,23 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collectd.Filter;
-import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
@@ -338,31 +328,18 @@ public class SnmpCollectorTest extends AbstractCollectorTest {
     }
 
     private OnmsIpInterface createInterface() {
-        OnmsNode node = new OnmsNode();
-        node.setId(new Integer(1));
-        node.setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
-        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("127.0.0.1", 1, node);
-        snmpIface.setIfName("lo0");
-        snmpIface.setPhysAddr("00:11:22:33:44");
-        OnmsSnmpInterface snmpIfaceA = new OnmsSnmpInterface("127.0.0.1", 2, node);
-        snmpIfaceA.setIfName("gif0");
-        snmpIfaceA.setPhysAddr("00:11:22:33:45");
-        snmpIfaceA.setIfType(55);
-        OnmsSnmpInterface snmpIfaceB = new OnmsSnmpInterface("127.0.0.1", 3, node);
-        snmpIfaceB.setIfName("stf0");
-        snmpIfaceB.setPhysAddr("00:11:22:33:46");
-        snmpIfaceB.setIfType(57);
-        OnmsSnmpInterface snmpIface2 = new OnmsSnmpInterface("127.0.0.1", 6, node);
-        snmpIface2.setIfName("fw0");
-        snmpIface2.setPhysAddr("44:33:22:11:00");
-        snmpIface2.setIfType(144);
-        OnmsIpInterface iface = new OnmsIpInterface("127.0.0.1", node);
-        iface.setId(27);
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        iface.setSnmpInterface(snmpIface2);
         
-        snmpIface2.addIpInterface(iface);
-        return iface;
+        NetworkBuilder bldr = new NetworkBuilder();
+        bldr.addNode("TestNode").setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
+
+        bldr.addSnmpInterface("127.0.0.1", 1).setIfName("lo0").setPhysAddr("00:11:22:33:44");
+        bldr.addSnmpInterface("127.0.0.1", 2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
+        bldr.addSnmpInterface("127.0.0.1", 3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
+
+        InterfaceBuilder ifBldr = bldr.addInterface("127.0.0.1").setId(27).setIsSnmpPrimary("P");
+        ifBldr.addSnmpInterface("127.0.0.1", 6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
+
+        return ifBldr.getInterface();
     }
 
     private void initializeAgent(String testData) throws InterruptedException {
