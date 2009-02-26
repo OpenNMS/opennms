@@ -88,6 +88,12 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
     }
     
     @Test
+    public void testDetectorFailNoHost() throws UnknownHostException {
+        m_detector.init();
+        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("1.1.1.1"), new NullDetectorMonitor()));
+    }
+    
+    @Test
     public void testDetectorFailWrongIORPort() throws UnknownHostException {
 //        m_detector.setIorPort(1000);
 //        m_detector.setPort(80);

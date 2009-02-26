@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * @author thedesloge
@@ -48,16 +49,16 @@ public class DominoIIOPClient extends LineOrientedClient {
     private int m_iorPort = 1000;
     
     public void connect(InetAddress host, int port, int timeout) throws IOException, Exception {        
-        if(!preconnect(host, getIorPort())) {
+        if(!preconnect(host, getIorPort(), timeout)) {
             throw new Exception("Failed to preconnect");
         }
         
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(host, port), timeout);
-        socket.setSoTimeout(timeout);
-        setInput(new BufferedReader(new InputStreamReader(socket.getInputStream())));
-        setOutput(socket.getOutputStream());
-        m_socket = socket;
+//        Socket socket = new Socket();
+//        socket.connect(new InetSocketAddress(host, port), timeout);
+//        socket.setSoTimeout(timeout);
+//        setInput(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+//        setOutput(socket.getOutputStream());
+//        m_socket = socket;
         
     }
 
@@ -65,11 +66,12 @@ public class DominoIIOPClient extends LineOrientedClient {
      * @param timeout 
      * @param port 
      * @param host 
+     * @param timeout 
      * @return
      * @throws IOException 
      */
-    private boolean preconnect(InetAddress host, int port) throws IOException {
-        return retrieveIORText(host.getHostAddress(), port);
+    private boolean preconnect(InetAddress host, int port, int timeout) throws IOException {
+        return retrieveIORText(host.getHostAddress(), port, timeout);
     }
 
     /**
@@ -77,10 +79,13 @@ public class DominoIIOPClient extends LineOrientedClient {
      * @param port
      * @return
      */
-    private boolean retrieveIORText(String hostAddress, int port) throws IOException {
+    private boolean retrieveIORText(String hostAddress, int port, int timeout) throws IOException {
         String IOR = "";
         URL u = new URL("http://" + hostAddress + ":" + port + "/diiop_ior.txt");
-        InputStream is = u.openStream();
+        URLConnection conn = u.openConnection();
+        conn.setConnectTimeout(timeout);
+        conn.setReadTimeout(timeout);
+        InputStream is = conn.getInputStream();
         BufferedReader dis = new BufferedReader(new java.io.InputStreamReader(is));
         boolean done = false;
         while (!done) {
