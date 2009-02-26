@@ -702,8 +702,6 @@ final class SuspectEventProcessor implements Runnable {
         addSubIpInterfaces(dbc, node, collector, now, nodeId, cFactory, pollerCfgFactory,
                            snmpc);
         
-        // Now add any non-IP interfaces
-        addSubNonIpInterfaces(dbc, collector, now, nodeId, snmpc);
     }
 
 
@@ -808,49 +806,6 @@ final class SuspectEventProcessor implements Runnable {
             addSupportedProtocols(node, xifaddr,
                                   extraTargets.get(xifaddr),
                                   xaddrUnmanaged, xifIndex, xipPkg);
-        }
-    }
-
-    private void addSubNonIpInterfaces(Connection dbc, IfCollector collector,
-            Date now, int nodeId, IfSnmpCollector snmpc) throws SQLException {
-        if (!snmpc.hasIpAddrTable()) {
-            return;
-        }
-
-        if (!collector.hasNonIpInterfaces()) {
-            return;
-        }
-
-        for(Integer ifindex : collector.getNonIpInterfaces()) {
-
-            DbIpInterfaceEntry xipIfEntry = null;
-            try {
-                xipIfEntry =
-                    DbIpInterfaceEntry.create(nodeId,
-                                              InetAddress.getByName("0.0.0.0"));
-            } catch (UnknownHostException e) {
-                continue;
-            }
-            xipIfEntry.setLastPoll(now);
-            xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
-
-            /*
-             * XXX I'm not sure if it is always safe to call setIfIndex
-             * here.  We should only do it if an snmpInterface entry
-             * was previously created for this ifIndex.  It was likely done
-             * by addSnmpInterfaces, but I have't checked to make sure that
-             * all cases are covered. - dj@opennms.org 
-             */
-            xipIfEntry.setIfIndex(ifindex.intValue());
-
-            int status = snmpc.getAdminStatus(ifindex.intValue());
-            if (status != -1) {
-                xipIfEntry.setStatus(status);
-            }
-
-            xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-
-            xipIfEntry.store(dbc);
         }
     }
     
