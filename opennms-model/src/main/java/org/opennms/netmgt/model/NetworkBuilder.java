@@ -113,6 +113,11 @@ public class NetworkBuilder {
             return this;
         }
         
+        public NodeBuilder setSysObjectId(String sysObjectId) {
+            m_node.setSysObjectId(sysObjectId);
+            return this;
+        }
+        
         
     }
     
