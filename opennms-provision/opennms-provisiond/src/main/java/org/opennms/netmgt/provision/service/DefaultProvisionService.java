@@ -447,9 +447,9 @@ public class DefaultProvisionService implements ProvisionService {
         m_nodeDao.update(node);
     }
     
-    public NodeScanSchedule getScheduleForNode(int nodeId) {
+    public NodeScanSchedule getScheduleForNode(int nodeId, boolean force) {
         OnmsNode node = m_nodeDao.get(nodeId);
-        return createScheduleForNode(node);
+        return createScheduleForNode(node, force);
     }
     
     public List<NodeScanSchedule> getScheduleForNodes() {
@@ -459,7 +459,7 @@ public class DefaultProvisionService implements ProvisionService {
         List<NodeScanSchedule> scheduledNodes = new ArrayList<NodeScanSchedule>();
         
         for(OnmsNode node : nodes) {
-            NodeScanSchedule nodeScanSchedule = createScheduleForNode(node);
+            NodeScanSchedule nodeScanSchedule = createScheduleForNode(node, false);
             if (nodeScanSchedule != null) {
                 scheduledNodes.add(nodeScanSchedule);
             }
@@ -468,7 +468,7 @@ public class DefaultProvisionService implements ProvisionService {
         return scheduledNodes;
     }
     
-    private NodeScanSchedule createScheduleForNode(OnmsNode node) {
+    private NodeScanSchedule createScheduleForNode(OnmsNode node, boolean force) {
         Assert.notNull(node, "Node may not be null");
 
         ForeignSource fs = null;
@@ -480,7 +480,7 @@ public class DefaultProvisionService implements ProvisionService {
 
         Duration scanInterval = fs.getScanInterval();
         Duration initialDelay = Duration.ZERO;
-        if (node.getLastCapsdPoll() != null) {
+        if (node.getLastCapsdPoll() != null && !force) {
             DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
             DateTime now = new DateTime();
             if (nextPoll.isAfter(now)) {
