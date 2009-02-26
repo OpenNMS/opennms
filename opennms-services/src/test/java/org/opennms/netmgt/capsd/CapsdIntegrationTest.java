@@ -136,7 +136,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
         
         m_capsd.stop();
         
-        assertEquals("after scanning should be 5 interfaces", 5, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
+        assertEquals("after scanning should be 2 interfaces", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
     }
     
  
