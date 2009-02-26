@@ -19,7 +19,6 @@
 	
 		<complexType>
 	    	<sequence>
-	        	<element minOccurs="1" maxOccurs="unbounded" ref="this:package"/>
 	 	        <element minOccurs="0" maxOccurs="1" ref="this:policies"/>
 	 	        <element minOccurs="0" maxOccurs="unbounded" ref="this:mapping"/>
 	 		</sequence>
@@ -75,6 +74,7 @@
         </annotation>
 
         <element maxOccurs="unbounded" minOccurs="1" ref="this:policy-manage"/>
+        
       </sequence>
     </complexType>
   </element>
@@ -93,6 +93,7 @@
           <documentation>General Scheduling Property 
           you set the date and time for which do scheduling</documentation>
         </annotation>
+        <element minOccurs="1" maxOccurs="1" ref="this:package"/>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:schedule"/>
       </sequence>
 
@@ -103,13 +104,6 @@
         </annotation>
       </attribute>
 
-      <attribute name="package" type="string" use="required">
-        <annotation>
-          <documentation>The package used to get elements to which this policy applies
-          </documentation>
-        </annotation>
-      </attribute>
- 
       <attribute name="delay" type="long" use="optional" default="0">
         <annotation>
           <documentation>The time in msec to wait before trying
@@ -261,7 +255,8 @@
       
   <element name="schedule">
     <annotation>
-      <documentation>a scheduled up/down</documentation>
+      <documentation>This is a time when you can schedule set up/down
+      to rancid</documentation>
     </annotation>
 
     <complexType>

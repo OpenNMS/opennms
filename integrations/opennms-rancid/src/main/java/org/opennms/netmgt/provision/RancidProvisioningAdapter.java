@@ -80,11 +80,9 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     private volatile static ConcurrentMap<Integer, RancidNodeContainer> m_onmsNodeRancidNodeMap;
 
     public void afterPropertiesSet() throws Exception {
-        //FIXME this should be done by spring
+
         RWSClientApi.init();
-        m_cp = new ConnectionProperties(m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
-        log().debug("Connections used :" +m_rwsConfig.getBaseUrl().getServer_url()+m_rwsConfig.getBaseUrl().getDirectory());
-        log().debug("timeout: "+m_rwsConfig.getBaseUrl().getTimeout());
+        m_cp = getRWSConnection();
         Assert.notNull(m_nodeDao, "Rancid Provisioning Adapter requires nodeDao property to be set.");
         
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
@@ -99,6 +97,12 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         
     }
     
+    private ConnectionProperties getRWSConnection() {
+        log().debug("Connections used :" +m_rwsConfig.getBaseUrl().getServer_url()+m_rwsConfig.getBaseUrl().getDirectory());
+        log().debug("timeout: "+m_rwsConfig.getBaseUrl().getTimeout());        
+        return new ConnectionProperties(m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
+    }
+
     private class RancidNodeContainer {
         private RancidNode m_node;
         private RancidNodeAuthentication m_auth;
@@ -257,7 +261,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         //FIXME: Guglielmo, the device type is going to have to be mapped by SysObjectId...
         //that should probably be in the RancidNode class
         // It is in the Configuration file for Rancid ADapter
-        r_node.setDeviceType(RancidNode.DEVICE_TYPE_CISCO_IOS);
+        r_node.setDeviceType(m_rancidAdapterConfig.getType(node.getSysObjectId()));
         r_node.setStateUp(false);
         r_node.setComment(RANCID_COMMENT);
         return r_node;
@@ -287,9 +291,9 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         }
         
         if (asset_node.getConnection() != null) {
-            r_auth_node.setConnectionMethod(asset_node.getUsername());
+            r_auth_node.setConnectionMethod(asset_node.getConnection());
         } else {
-            r_auth_node.setConnectionMethod(m_rancidAdapterConfig.getDefaultConnectionType());
+            r_auth_node.setConnectionMethod("telnet");
         }
         
         return r_auth_node;
