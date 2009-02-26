@@ -88,7 +88,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("151.197.0.38"), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("208.67.222.222"), new NullDetectorMonitor()));
 
     }
     
@@ -98,7 +98,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("151.197.0.38"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("208.67.222.222"), new NullDetectorMonitor()));
 
     }
     
