@@ -270,12 +270,25 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
     
     @Transient
+    public boolean isCollectionUserSpecified(){
+        return m_collect.startsWith("U");
+    }
+    
+    @Transient
     public boolean isCollectionEnabled() {
         return "C".equals(m_collect);
     }
     
     public void setCollectionEnabled(boolean shouldCollect) {
-        m_collect = shouldCollect ? "C" : "N";
+        setCollectionEnabled(shouldCollect, false);
+    }
+    
+    public void setCollectionEnabled(boolean shouldCollect, boolean userSpecified){
+       if(userSpecified){
+           m_collect = shouldCollect ? "UC":"UN";
+       }else if(!m_collect.startsWith("U")){
+           m_collect = shouldCollect ? "C" : "N";
+       }
     }
 
     @XmlIDREF
@@ -446,11 +459,12 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             setLastCapsdPoll(scannedSnmpIface.getLastCapsdPoll());
         }
         
-        if ("C".equals(scannedSnmpIface.getCollect()) || "C".equals(getCollect())) {
-            setCollect("C");
-        } else {
-            setCollect("N");
+        if(scannedSnmpIface.isCollectionUserSpecified()){
+            setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), true);
+        }else if(!isCollectionUserSpecified()){
+            setCollectionEnabled(scannedSnmpIface.isCollectionEnabled() || isCollectionEnabled());
         }
+        
     }
 
 }
