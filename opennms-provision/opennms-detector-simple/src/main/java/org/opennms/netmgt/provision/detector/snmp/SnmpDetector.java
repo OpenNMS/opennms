@@ -80,9 +80,10 @@ public class SnmpDetector extends AbstractDetector {
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
-    private static final int DEFAULT_PORT = 161;
-    private static final int DEFAULT_TIMEOUT = 2000;
-    private static final int DEFAULT_RETRIES = 1;
+    //These are -1 so by default we use the AgentConfig 
+    private static final int DEFAULT_PORT = -1;
+    private static final int DEFAULT_TIMEOUT = -1;
+    private static final int DEFAULT_RETRIES = -1;
     
     private String m_oid = DEFAULT_OID;
     private String m_forceVersion;
