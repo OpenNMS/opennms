@@ -50,10 +50,13 @@ import org.opennms.netmgt.config.rws.StandbyUrl;
 import org.opennms.netmgt.config.rws.BaseUrl;
 
 /**
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 abstract public class RWSConfigManager implements RWSConfig {
+    
+    private int cursor = 0;
     
     public synchronized BaseUrl getBaseUrl() {
         
@@ -63,10 +66,29 @@ abstract public class RWSConfigManager implements RWSConfig {
  
     public synchronized StandbyUrl[] getStanbyUrls() {
         
-        StandbyUrl[] urls = m_config.getStandbyUrl();
-        return urls;
+        return m_config.getStandbyUrl();
+
     }
- 
+
+    /**
+     * 
+     */
+    public synchronized StandbyUrl getNextStandbyUrl() {
+        StandbyUrl standbyUrl = null;
+        if (hasStandbyUrl()) {
+            if (cursor == m_config.getStandbyUrlCount())   
+                cursor = 0;
+            standbyUrl = m_config.getStandbyUrl(cursor++);
+        }
+        
+        return standbyUrl;
+    }
+    
+     public synchronized boolean hasStandbyUrl() {
+
+         return (m_config.getStandbyUrlCount() > 0);
+        
+    }
 
     public RWSConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
@@ -111,8 +133,6 @@ abstract public class RWSConfigManager implements RWSConfig {
         return m_config;
     }
 
-    
- 
     private Category log() {
         return ThreadCategory.getInstance(this.getClass());
     }

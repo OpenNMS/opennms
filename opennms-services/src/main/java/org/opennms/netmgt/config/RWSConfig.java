@@ -50,6 +50,11 @@ public interface RWSConfig {
     public BaseUrl getBaseUrl();
     
     public StandbyUrl[] getStanbyUrls();
+    
+    public StandbyUrl getNextStandbyUrl();
+    
+    public boolean hasStandbyUrl();
+
     //public void update() throws IOException, MarshalException, ValidationException;
     
     //public void save() throws MarshalException, IOException, ValidationException;

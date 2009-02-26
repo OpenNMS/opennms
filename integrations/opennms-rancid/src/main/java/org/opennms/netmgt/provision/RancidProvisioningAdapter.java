@@ -249,9 +249,9 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         // Antonio: I'm working on the configuration file and the group
         // is written in the configuration file
         // in principle you can provide rancid node to more then a group
- //       String group = node.getForeignSource();
+        String group = node.getForeignSource();
 //        RancidNode r_node = new RancidNode(m_rancidAdapterConfig.getGroup(), node.getLabel());
-        String group = m_rancidAdapterConfig.getGroup();
+//        String group = m_rancidAdapterConfig.getGroup();
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
         //FIXME: Guglielmo, the device type is going to have to be mapped by SysObjectId...
