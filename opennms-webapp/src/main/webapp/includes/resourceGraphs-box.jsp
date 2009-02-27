@@ -67,13 +67,6 @@
 <script type="text/javascript" src="js/opennms/ux/ComboFilterBox.js" ></script>
 <script type="text/javascript" src="js/opennms/ux/NodePageableComboBox.js" ></script>
 <script type="text/javascript">
-  Ext.onReady(function(){
-	  var combo = new OpenNMS.ux.NodePageableComboBox({
-		text:'hello',
-		renderTo:'node-combo',
-		onSelect:chooseResourceBoxChange
-	  })
-  });
 
   function resetChooseResourceBoxSelected() {
     document.chooseResourceBoxNodeList.parentResource[0].selected = true;
@@ -114,7 +107,7 @@
   }
 
   function chooseResourceBoxChange(record){
-	window.location = "graph/chooseresource.htm?parentResourceType=node&reports=all&relativetime=lastday&parentResource=" + record.data.id;
+	window.location = "graph/chooseresource.htm?reports=all&parentResourceType=node&parentResource=" + record.data.id;
   }
 </script>
 
@@ -127,6 +120,15 @@
     </c:when>
   
     <c:otherwise>
+    	<script type="text/javascript">
+    		Ext.onReady(function(){
+    		  var combo = new OpenNMS.ux.NodePageableComboBox({
+    			text:'hello',
+    			renderTo:'node-combo',
+    			onSelect:chooseResourceBoxChange
+    		  })
+    	  	});
+    	</script>
     	<div id="node-combo"></div>
       <%-- <form method="get" name="chooseResourceBoxForm" action="graph/chooseresource.htm" >
         <input type="hidden" name="parentResourceType" value="node" />
