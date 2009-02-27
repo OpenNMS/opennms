@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?castor class-name="org.opennms.netmgt.snmpinterfacepoller.SnmpInterfacePollerConfiguration"?>
-<snmp-interface-poller-configuration threads="30" service="SNMP" suppressAdminDownEvent="false"> 
+<snmp-interface-poller-configuration threads="30" service="SNMP"> 
   <node-outage>
     <critical-service name="ICMP" />
     <critical-service name="SNMP" />
