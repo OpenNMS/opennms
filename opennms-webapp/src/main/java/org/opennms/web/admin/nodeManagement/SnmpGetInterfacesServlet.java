@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 27: Updated to be aware of the snmpInterface snmpCollect column
 // 2007 Jun 25: Add serialVersionUID and use Java 5 generics. - dj@opennms.org
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
 //              Code based on original manage/unmanage code.
@@ -44,6 +45,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -66,7 +68,21 @@ import org.opennms.web.WebSecurityUtils;
 public class SnmpGetInterfacesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname, snmpinterface.snmpifalias FROM ipinterface, snmpinterface WHERE ipinterface.nodeid=snmpinterface.nodeid AND ipinterface.ifindex=snmpinterface.snmpifindex AND ipinterface.ipaddr=snmpinterface.ipaddr AND ipinterface.nodeid=?;";
+    private static final String INTERFACE_QUERY = "SELECT " +
+        "ipinterface.nodeid, " +
+        "ipinterface.ipaddr, " +
+        "ipinterface.ifindex, " +
+        "ipinterface.iphostname, " +
+        "ipinterface.issnmpprimary, " +
+        "snmpinterface.snmpifdescr, " +
+        "snmpinterface.snmpiftype, " +
+        "snmpinterface.snmpifname, " +
+        "snmpinterface.snmpifalias, " +
+        "snmpinterface.snmpcollect, " +
+        "snmpinterface.id " +
+        "FROM ipinterface LEFT JOIN snmpinterface " +
+        "ON ipinterface.snmpinterfaceid=snmpinterface.id " +
+        "WHERE ipinterface.nodeid=?";
 
     public void init() throws ServletException {
         try {
@@ -124,6 +140,8 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
                     newInterface.setIfType(interfaceSet.getInt(7));
                     newInterface.setIfName(interfaceSet.getString(8));
                     newInterface.setIfAlias(interfaceSet.getString(9));
+                    newInterface.setCollectFlag(interfaceSet.getString(10));
+                    newInterface.setSnmpInterfaceId(interfaceSet.getInt(11));
                 }
             }
             interfaceSelect.close();
@@ -136,6 +154,7 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
             }
         }
 
+        Collections.sort(nodeInterfaces);
         return nodeInterfaces;
 
     }
