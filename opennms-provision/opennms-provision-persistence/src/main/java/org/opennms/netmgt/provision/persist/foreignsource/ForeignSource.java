@@ -265,7 +265,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
+        return new HashCodeBuilder(443, 1061)
             .append(getName())
             .append(getScanInterval())
             .append(getDetectors().toArray(OF_PLUGIN_CONFIGS))
