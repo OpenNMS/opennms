@@ -70,7 +70,7 @@
 
 <!-- includes/servicesdown-box.jsp -->
 <c:url var="headingLink" value="outage/current.jsp"/>
-<h3><a href="${headingLink}">Nodes with Outages</a></h3>
+<h3 class="o-box"><a href="${headingLink}">Nodes with Outages</a></h3>
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${empty summaries}">
@@ -80,7 +80,7 @@
     </c:when>
 
     <c:otherwise>
-      <ul class="plain">
+      <ul class="o-box plain">
         <c:forEach var="summary" items="${summaries}">
           <c:url var="nodeLink" value="element/node.jsp">
             <c:param name="node" value="${summary.nodeId}"/>

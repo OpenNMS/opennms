@@ -204,20 +204,12 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="nostyles" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
-  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='css/styles.css' media='screen' />" />
-  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='css/print.css' media='print' />" />
-  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css'></link>" />
-  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='css/o-styles.css' media='screen' />" />
-  <jsp:param name="link" value="<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css'></link>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='extJS/source/core/Ext.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='extJS/source/adapter/ext-base.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='extJS/ext-all-debug.js'></script>" />
+  <jsp:param name="enableExtJS" value="true"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/PageableGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/IPInterfaceGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/SNMPInterfaceGrid.js'></script>"/>

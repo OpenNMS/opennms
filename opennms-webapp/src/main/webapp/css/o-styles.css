@@ -22,7 +22,7 @@ table.o-box th {
     text-align:left;
 }
 
-table.o-box td.bright {
+table.o-box td.bright, table.o-box tr.CellStatus td {
     padding-left: 20px;
 }
 
