@@ -165,7 +165,7 @@ public class OnmsRestService {
 		    		criteria.add(Restrictions.le(key, thisValue));
 					break;
 		   		case CONTAINS:
-		   		    criteria.add(Restrictions.like(key, stringValue, MatchMode.ANYWHERE));
+		   		    criteria.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
 		   		    
 				}
 			}
