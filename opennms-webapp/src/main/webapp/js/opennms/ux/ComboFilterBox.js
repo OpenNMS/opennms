@@ -11,10 +11,11 @@ OpenNMS.ux.ComboFilterBox = Ext.extend(Ext.form.ComboBox,{
     width: "100%",
     pageSize:10,
     hideTrigger:false,
-    itemSelector: 'div.search-item',
+    itemSelector: 'div.o-dropdown',
+    fieldClass:"o-dropdown",
    
     resultTpl:new Ext.XTemplate(
-        '<tpl for="."><div class="search-item">',
+        '<tpl for="."><div class="o-dropdown">',
             '{name}',
         '</div></tpl>'
     ),

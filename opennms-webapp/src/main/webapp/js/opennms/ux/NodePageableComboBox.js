@@ -10,7 +10,7 @@ OpenNMS.ux.NodePageableComboBox=Ext.extend(OpenNMS.ux.ComboFilterBox,{
 	hideTrigger:false,
 	queryParam:"label",
 	minHeight:300,
-	emptyText:">--- Choose A Node ---<"
+	emptyText:"-- Choose A Node --"
 	
 });
 
