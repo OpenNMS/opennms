@@ -36,11 +36,16 @@ package org.opennms.netmgt.snmpinterfacepoller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 //import org.apache.log4j.Level;
 
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -49,7 +54,6 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterfaceConfig;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface;
 import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -74,7 +78,37 @@ public class SnmpPoller extends AbstractServiceDaemon {
     private DataSource m_dataSource;
     
     private PollableNetwork m_network;
+    
+    private static Map<Integer, Map<Integer, AlarmStatus>> m_nodeAlarmStatusMap;
 
+    public final class AlarmStatus {
+
+        boolean _hasAdminStatusDownAlarm = false;
+        boolean _hasOperStatusDownAlarm = false;
+        
+        public AlarmStatus() {
+            super();
+        }
+        
+        public boolean hasAdminStatusDownAlarm() {
+            return _hasAdminStatusDownAlarm;
+        }
+
+        public void setHasAdminStatusDownAlarm(boolean adminStatusDownAlarm) {
+            _hasAdminStatusDownAlarm = adminStatusDownAlarm;
+        }
+
+        public boolean hasOperStatusDownAlarm() {
+            return _hasOperStatusDownAlarm;
+        }
+
+        public void setHasOperStatusDownAlarm(boolean operStatusDownAlarm) {
+            _hasOperStatusDownAlarm = operStatusDownAlarm;
+        }
+        
+        
+    }
+    
     public PollableNetwork getNetwork() {
         return m_network;
     }
@@ -184,10 +218,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         
         // reset the alarm table
         //
+        
         try {
-            log().debug("start: Deleting snmppoll alarms from alarm table");
+            log().debug("start: select snmppoll alarms from alarm table");
 
-            deleteExistingSnmpPollAlarms();
+            selectExistingSnmpPollAlarms();
         } catch (Exception sqlE) {
             log().error("start: Failed to delete existing snmppoll alarms", sqlE);
         }
@@ -224,10 +259,34 @@ public class SnmpPoller extends AbstractServiceDaemon {
         getNetwork().delete(getNetwork().getIp(nodeid));
     }
     
-    protected void deleteExistingSnmpPollAlarms() {
-        String sql = "delete from alarms where eventuei like 'uei.opennms.org/nodes/snmp/interface%'";
-        Updater updater = new Updater(m_dataSource, sql);
-        updater.execute();
+    protected void selectExistingSnmpPollAlarms() {
+        m_nodeAlarmStatusMap = new HashMap<Integer, Map<Integer,AlarmStatus>>();
+        String sql = "select nodeid, ifindex, eventuei from alarms where eventuei like 'uei.opennms.org/nodes/snmp/interface%'";
+        Querier querier = new Querier(m_dataSource, sql) {
+
+            public void processRow(ResultSet rs) throws SQLException {
+                   setAlarmStatus(rs.getInt("nodeid"), rs.getInt("ifindex"), rs.getString("eventuei"));
+            }
+       
+        };
+       querier.execute();  
+    }
+
+    protected void setAlarmStatus(int nodeid, int ifindex, String uei) {
+        Map<Integer,AlarmStatus> alarmStatusMap = new HashMap<Integer, AlarmStatus>();
+        AlarmStatus alarmStatus = new AlarmStatus();
+        if (m_nodeAlarmStatusMap.containsKey(nodeid)) {
+            alarmStatusMap = m_nodeAlarmStatusMap.get(nodeid);
+            if (alarmStatusMap.containsKey(ifindex))
+                alarmStatus = alarmStatusMap.get(ifindex);
+        }
+        
+        if (uei.equals(EventConstants.SNMP_INTERFACE_OPER_DOWN_EVENT_UEI))
+            alarmStatus.setHasOperStatusDownAlarm(true);
+        if (uei.equals(EventConstants.SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI))
+            alarmStatus.setHasAdminStatusDownAlarm(true);        
+        alarmStatusMap.put(ifindex,alarmStatus);
+        m_nodeAlarmStatusMap.put(nodeid, alarmStatusMap);
     }
 
     protected void scheduleNewSnmpInterface(String ipaddr) {
@@ -287,22 +346,31 @@ public class SnmpPoller extends AbstractServiceDaemon {
 
     private void scheduleSnmpCollection(PollableSnmpInterface node, String criteria, long interval) {
         criteria = criteria + " and nodeid = " + node.getParent().getNodeid();
-        node.setSnmpinterfaces(getQueryManager().getSnmpInterfaces(criteria));
-        PollableSnmpInterfaceConfig nodeconfig = new PollableSnmpInterfaceConfig(getScheduler(),interval);
+        List<OnmsSnmpInterface> snmpinterfacelist = getQueryManager().getSnmpInterfaces(criteria);
+        if (snmpinterfacelist !=  null && snmpinterfacelist.size() > 0) {
+            node.setSnmpinterfaces(snmpinterfacelist);
+            if (m_nodeAlarmStatusMap.containsKey(node.getParent().getNodeid()))
+                node.setAlarmStatus(m_nodeAlarmStatusMap.get(node.getParent().getNodeid()));
+            else 
+                node.setAlarmStatus(new HashMap<Integer,AlarmStatus>());
+            
+            PollableSnmpInterfaceConfig nodeconfig = new PollableSnmpInterfaceConfig(getScheduler(),interval);
 
-        node.setSnmppollableconfig(nodeconfig);
+            node.setSnmppollableconfig(nodeconfig);
 
-        synchronized(node) {
-            if (node.getSchedule() == null) {
-                log().debug("Scheduling node: " + node.getParent().getIpaddress());
-                Schedule schedule = new Schedule(node, nodeconfig, getScheduler());
-                node.setSchedule(schedule);
+            synchronized(node) {
+                if (node.getSchedule() == null) {
+                    log().debug("Scheduling node: " + node.getParent().getIpaddress());
+                    Schedule schedule = new Schedule(node, nodeconfig, getScheduler());
+                    node.setSchedule(schedule);
+                }
             }
-        }
         
-        node.schedule();
+            node.schedule();
+        } else {
+            log().info("no interface found for node/criteria:" + node.getParent().getNodeid() + "/" + criteria);
+        }
     }
-    
     private void createScheduler() {
 
         // Create a scheduler

@@ -49,7 +49,7 @@
 
       <attribute default="true" name="suppressAdminDownEvent" use="optional">
         <annotation>
-          <documentation>Flag which indicates to suppress Admin Status Down event at startUp (the first time the Runnuble is Run)</documentation>
+          <documentation>Flag which indicates to suppress Admin Status events at all</documentation>
         </annotation>
 
         <simpleType>
