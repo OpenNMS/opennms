@@ -40,3 +40,9 @@ table.o-box {
     width:100%;
 }
 
+div.o-dropdown{
+	font-size:70%;
+	font-family: "Lucida Grande", Verdaana, sans-serif;
+	color:#000000;	
+}
+
