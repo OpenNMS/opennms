@@ -73,12 +73,12 @@
 	}
 
 	HttpSession userSession = request.getSession(false);
-	List interfaces = null;
+	List<SnmpManagedInterface> interfaces = null;
 
 	interfaceIndex = 0;
 
 	if (userSession != null) {
-		interfaces = (List)userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
+		interfaces = (List<SnmpManagedInterface>)userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
 	}
 %>
 
@@ -104,18 +104,34 @@
 		document.chooseSnmpNodes.submit();
 	}
 
-	function checkAll() {
+	function collectAll() {
 		for (var c = 0; c < document.chooseSnmpNodes.elements.length; c++) {
-			if (document.chooseSnmpNodes.elements[c].type == "checkbox") {
-				document.chooseSnmpNodes.elements[c].checked = true;
+			var elementType = document.chooseSnmpNodes.elements[c].type;
+			if (elementType == "select" || elementType == "select-one") {
+				document.chooseSnmpNodes.elements[c].options[0].selected = true;
+				document.chooseSnmpNodes.elements[c].options[1].selected = false;
+				document.chooseSnmpNodes.elements[c].options[2].selected = false;
 			}
 		}
 	}
 
-	function uncheckAll() {
+	function collectNone() {
 		for (var c = 0; c < document.chooseSnmpNodes.elements.length; c++) {
-			if (document.chooseSnmpNodes.elements[c].type == "checkbox") {
-				document.chooseSnmpNodes.elements[c].checked = false;
+			var elementType = document.chooseSnmpNodes.elements[c].type;
+			if (elementType == "select" || elementType == "select-one") {
+				document.chooseSnmpNodes.elements[c].options[0].selected = false;
+				document.chooseSnmpNodes.elements[c].options[1].selected = true;
+				document.chooseSnmpNodes.elements[c].options[2].selected = false;
+			}
+		}
+	}
+	function collectDefault() {
+		for (var c = 0; c < document.chooseSnmpNodes.elements.length; c++) {
+			var elementType = document.chooseSnmpNodes.elements[c].type;
+			if (elementType == "select" || elementType == "select-one") {
+				document.chooseSnmpNodes.elements[c].options[0].selected = false;
+				document.chooseSnmpNodes.elements[c].options[1].selected = false;
+				document.chooseSnmpNodes.elements[c].options[2].selected = true;
 			}
 		}
 	}
@@ -161,7 +177,11 @@
 			<td class="standardheader" width="10%" align="center">ifName</td>
 			<td class="standardheader" width="10%" align="center">ifAlias</td>
 			<td class="standardheader" width="10%" align="center">SNMP Status</td>
-			<td class="standardheader" width="5%" align="center">Collect?</td>
+			<td class="standardheader" width="5%" align="center">Collect?
+				<a href="#" onClick="javascript:collectAll(); return false;">[All]</a>
+				<a href="#" onClick="javascript:collectNone(); return false;">[None]</a>
+				<a href="#" onClick="javascript:collectDefault(); return false;">[Default]</a>
+			</td>
 		</tr>
 		<%=buildTableRows(interfaces, nodeId, interfaces.size())%>
 	</table>
@@ -170,8 +190,6 @@
 	<br/>
 	<input type="button" value="Update Collection" onClick="applyChanges()" />
 	<input type="button" value="Cancel" onClick="cancel()" /> 
-	<input type="button" value="Select All" onClick="checkAll()" />
-	<input type="button" value="Unselect All" onClick="uncheckAll()" />
 	<input type="reset" />
 </form>
 
@@ -191,42 +209,51 @@
 %>
 
 <%!
-	public String buildTableRows(List interfaces, int intnodeid, int stop) throws java.sql.SQLException {
-		StringBuffer row = new StringBuffer();
 
-		for (int i = 0; i < stop; i++) {
-			SnmpManagedInterface curInterface = (SnmpManagedInterface)interfaces.get(i);
-			int curnodeid = curInterface.getNodeid();
-			String collstatus = null;
-			String chkstatus = null;
-			if (curnodeid == intnodeid) {
-				String statustest = curInterface.getStatus();
-				if (statustest == null) {
-					statustest = "N";
-				}
-			String key = intnodeid + "+" + curInterface.getIfIndex();
-			if (statustest.equals("P")) {
-				collstatus = "Primary";
-				chkstatus = "checked";
+public String buildTableRows(List<SnmpManagedInterface> interfaces, int intnodeid, int stop) throws java.sql.SQLException {
+	StringBuffer row = new StringBuffer();
+	String collStatus = "Not Collected";
+
+	for (SnmpManagedInterface curInterface : interfaces) {
+		String statusTest = curInterface.getStatus();
+		if (statusTest == null) {
+			statusTest = "N";
+		}
+
+		String collFlag = curInterface.getCollectFlag();
+		if (collFlag == null) {
+			collFlag = "N";
+		}
+
+		String collDefaultString = "Default (Don't Collect)";
+		Map<String,String> collOptions = new LinkedHashMap<String,String>();
+		collOptions.put("UC", "Collect");
+		collOptions.put("UN", "Don't Collect");
+
+		if (statusTest.equals("P")) {
+			collStatus = "Primary";
+			collOptions.put("C", "Default (Collect)");
+		}
+		else if (statusTest.equals("S")) {
+			collStatus = "Secondary";
+			collOptions.put("N", "Default (Don't Collect)");
+		}
+		else {
+			collStatus = "Not Eligible";
+			collOptions.put("N", "Default (Don't Collect)");
+		}
+
+		if (curInterface.getNodeid() == intnodeid) {
+			String ipHostname = curInterface.getIpHostname();
+			if (ipHostname == null) {
+				ipHostname = "";
 			}
-			else if (statustest.equals("S")) {
-				collstatus = "Secondary";
-				chkstatus = "checked";
-			}
-			else if (statustest.equals("C")) {
-				collstatus = "Collected";
-				chkstatus = "checked";
-			}
-			else {
-				collstatus = "Not Collected";
-				chkstatus = "unchecked";
-			}
+
 			row.append("<tr>\n");
 
 			row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
-			int ifIndex = curInterface.getIfIndex();
-			if ( ifIndex > 0 ) {
-				row.append(ifIndex);
+			if ( curInterface.getIfIndex() > 0 ) {
+				row.append(curInterface.getIfIndex());
 			} else {
 				row.append("&nbsp");
 			}
@@ -237,7 +264,7 @@
 			row.append("</td>\n");
 
 			row.append("<td class=\"standard\" width=\"20%\" align=\"left\">");
-		  	row.append(curInterface.getIpHostname());
+		  	row.append(ipHostname);
 			row.append("</td>\n");
 
 			row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
@@ -257,11 +284,20 @@
 			row.append("</td>\n");
 
 			row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
-			row.append(collstatus);
+			row.append(collStatus);
 			row.append("</td>\n");
 
 			row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
-			row.append("<input type=\"checkbox\" name=\"collTypeCheck\" value=\"").append(key).append("\" ").append(chkstatus).append(" >");
+			row.append("<select name=\"collect-").append(curInterface.getIfIndex()).append("\">");
+			for (Map.Entry<String,String> option : collOptions.entrySet()) {
+				row.append("<option value=\"").append(option.getKey()).append("\"");
+				if (collFlag.equals(option.getKey())) {
+					row.append(" selected");
+				}
+				row.append(">").append(option.getValue()).append("</option>");
+			}
+			row.append("</select>");
+
 			row.append("</td>\n");
 
 			row.append("</tr>\n");

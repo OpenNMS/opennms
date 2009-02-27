@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 27: Updated to be aware of the snmpInterface snmpCollect column
 // 2007 Jun 25: Use Java 5 generics and for loops and remove unused variable.
 //              - dj@opennms.org
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
@@ -43,7 +44,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -69,11 +69,8 @@ import org.opennms.web.WebSecurityUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SnmpManageNodesServlet extends HttpServlet {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1604691299928314549L;
-    private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET issnmpprimary = ? WHERE nodeid = ? AND ifindex = ?";
+    private static final String UPDATE_INTERFACE = "UPDATE snmpInterface SET snmpCollect = ? WHERE id = ?";
 
     public void init() throws ServletException {
         try {
@@ -93,9 +90,6 @@ public class SnmpManageNodesServlet extends HttpServlet {
         HttpSession userSession = request.getSession(false);
         List<SnmpManagedInterface> allInterfaces = getManagedInterfacesFromSession(userSession);
 
-        // the list of all interfaces marked as managed
-        List<String> interfaceList = getList(request.getParameterValues("collTypeCheck"));
-
         // the node being modified
         String nodeIdString = request.getParameter("node");
         int currNodeId = WebSecurityUtils.safeParseInt(nodeIdString);
@@ -103,8 +97,9 @@ public class SnmpManageNodesServlet extends HttpServlet {
         String primeInt = null;
 
         for (SnmpManagedInterface testInterface : allInterfaces) {
-            if (testInterface.getNodeid() == currNodeId && "P".equals(testInterface.getStatus()))
+            if (testInterface.getNodeid() == currNodeId && "P".equals(testInterface.getStatus())) {
                 primeInt = testInterface.getAddress();
+            }
         }
 
         try {
@@ -114,23 +109,11 @@ public class SnmpManageNodesServlet extends HttpServlet {
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_INTERFACE);
 
                 for (SnmpManagedInterface curInterface : allInterfaces) {
-                    String intKey = curInterface.getNodeid() + "+" + curInterface.getIfIndex();
-
-                    // determine what is managed and unmanged
-                    if (interfaceList.contains(intKey) && (curInterface.getStatus() == null || curInterface.getStatus().equals("N"))) {
-                        stmt.setString(1, "C");
-                        stmt.setInt(2, curInterface.getNodeid());
-                        stmt.setInt(3, curInterface.getIfIndex());
-                        this.log("DEBUG: executing SNMP Collection Type update to C for nodeid: " + curInterface.getNodeid() + " ifIndex: " + curInterface.getIfIndex());
-                        stmt.executeUpdate();
-                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && ("C".equals(curInterface.getStatus()) || "S".equals(curInterface.getStatus()))) {
-                        stmt.setString(1, "N");
-                        stmt.setInt(2, curInterface.getNodeid());
-                        stmt.setInt(3, curInterface.getIfIndex());
-                        this.log("DEBUG: executing SNMP Collection Type update to N for nodeid: " + curInterface.getNodeid() + " ifIndex: " + curInterface.getIfIndex());
-                        stmt.executeUpdate();
-                    }
-
+                    String option = request.getParameter("collect-" + curInterface.getIfIndex());
+                    System.err.println(String.format("option = %s", option));
+                    stmt.setString(1, option);
+                    stmt.setInt(2, curInterface.getSnmpInterfaceId());
+                    stmt.execute();
                 }
 
                 connection.commit();
@@ -143,8 +126,9 @@ public class SnmpManageNodesServlet extends HttpServlet {
         }
 
         // send the event to restart SNMP Collection
-        if (primeInt != null)
+        if (primeInt != null) {
             sendSNMPRestartEvent(currNodeId, primeInt);
+        }
 
         // forward the request for proper display
         // TODO This will redirect to the node page, but the URL will be admin/changeCollectStatus. Needs fixed.
@@ -161,8 +145,6 @@ public class SnmpManageNodesServlet extends HttpServlet {
         }
     }
 
-    /**
-     */
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
         Event snmpRestart = new Event();
         snmpRestart.setUei("uei.opennms.org/nodes/reinitializePrimarySnmpInterface");
@@ -174,28 +156,12 @@ public class SnmpManageNodesServlet extends HttpServlet {
         sendEvent(snmpRestart);
     }
 
-    /**
-     */
     private void sendEvent(Event event) throws ServletException {
         try {
             Util.createEventProxy().send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
-    }
-
-    /**
-     */
-    private List<String> getList(String array[]) {
-        List<String> newList = new ArrayList<String>();
-
-        if (array != null) {
-            for (int i = 0; i < array.length; i++) {
-                newList.add(array[i]);
-            }
-        }
-
-        return newList;
     }
 
 }
