@@ -29,75 +29,75 @@ public class NodeCategoryPolicy extends BasePolicy implements NodePolicy {
         if (node == null) {
             return null;
         }
-        
+
         String category = m_category;
         if (category == null) {
             return node;
         }
-        
+
         if (m_type != null) {
             if (!match(node.getType(), m_type)) {
-                return null;
+                return node;
             }
         }
         if (m_sysObjectId != null) {
             if (!match(node.getSysObjectId(), m_sysObjectId)) {
-                return null;
+                return node;
             }
         }
         if (m_sysName != null) {
             if (!match(node.getSysName(), m_sysName)) {
-                return null;
+                return node;
             }
         }
         if (m_sysDescription != null) {
             if (!match(node.getSysDescription(), m_sysDescription)) {
-                return null;
+                return node;
             }
         }
         if (m_sysLocation != null) {
             if (!match(node.getSysLocation(), m_sysLocation)) {
-                return null;
+                return node;
             }
         }
         if (m_sysContact != null) {
             if (!match(node.getSysContact(), m_sysContact)) {
-                return null;
+                return node;
             }
         }
         if (m_label != null) {
             if (!match(node.getLabel(), m_label)) {
-                return null;
+                return node;
             }
         }
         if (m_labelSource != null) {
             if (!match(node.getLabelSource(), m_labelSource)) {
-                return null;
+                return node;
             }
         }
         if (m_netBiosName != null) {
             if (!match(node.getNetBiosName(), m_netBiosName)) {
-                return null;
+                return node;
             }
         }
         if (m_netBiosDomain != null) {
             if (!match(node.getNetBiosDomain(), m_netBiosDomain)) {
-                return null;
+                return node;
             }
         }
         if (m_operatingSystem != null) {
             if (!match(node.getOperatingSystem(), m_operatingSystem)) {
-                return null;
+                return node;
             }
         }
         if (m_foreignId != null) {
             if (!match(node.getForeignId(), m_foreignId)) {
-                return null;
+                return node;
             }
         }
         if (m_foreignSource != null) {
             if (!match(node.getForeignSource(), m_foreignSource)) {
-                return null;
+                return node;
             }
         }
 
