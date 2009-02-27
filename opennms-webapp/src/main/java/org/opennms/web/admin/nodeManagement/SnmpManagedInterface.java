@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 27: Updated to be aware of the snmpInterface id and snmpCollect flags
 // 2002 Sep 24: Added the ability to select SNMP interfaces for collection.
 //              Code based on original manage/unmanage code.
 //
@@ -37,181 +38,186 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * A servlet that stores interface information used in setting up SNMP Data
  * Collection
  * 
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-public class SnmpManagedInterface {
-    /**
-     * 
-     */
-    protected String address;
+public class SnmpManagedInterface implements Serializable, Comparable<SnmpManagedInterface> {
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * 
-     */
-    protected int nodeid;
+    protected int m_id;
+    protected String m_address;
+    protected int m_nodeId;
+    protected int m_ifIndex;
+    protected String m_ipHostname;
+    protected String m_snmpStatus;
+    protected String m_ifDescr;
+    protected int m_ifType;
+    protected String m_ifName;
+    protected String m_ifAlias;
+    protected String m_collectFlag;
 
-    /**
-     * 
-     */
-    protected int ifIndex;
-
-    /**
-     * 
-     */
-    protected String iphostname;
-
-    /**
-     * 
-     */
-    protected String snmpstatus;
-
-    /**
-     * 
-     */
-    protected String ifDescr;
-
-    /**
-     * 
-     */
-    protected int ifType;
-
-    /**
-     * 
-     */
-    protected String ifName;
-
-    /**
-     * 
-     */
-    protected String ifAlias;
-
-    /**
-     * 
-     */
+    public void setSnmpInterfaceId(int newId) {
+        m_id = newId;
+    }
+    public int getSnmpInterfaceId() {
+        return m_id;
+    }
     public void setAddress(String newAddress) {
-        address = newAddress;
+        m_address = newAddress;
     }
 
-    /**
-     */
     public String getAddress() {
-        return address;
+        return m_address;
     }
 
-    /**
-     * 
-     */
     public void setNodeid(int id) {
-        nodeid = id;
+        m_nodeId = id;
     }
 
-    /**
-     * 
-     */
     public int getNodeid() {
-        return nodeid;
+        return m_nodeId;
     }
 
-    /**
-     * 
-     */
     public void setIfIndex(int index) {
-        ifIndex = index;
+        m_ifIndex = index;
     }
 
-    /**
-     * 
-     */
     public int getIfIndex() {
-        return ifIndex;
+        return m_ifIndex;
     }
 
-    /**
-     * 
-     */
     public void setIpHostname(String newIpHostname) {
-        iphostname = newIpHostname;
+        m_ipHostname = newIpHostname;
     }
 
-    /**
-     * 
-     */
     public String getIpHostname() {
-        return iphostname;
+        return m_ipHostname;
     }
 
-    /**
-     * 
-     */
     public void setStatus(String newStatus) {
-        snmpstatus = newStatus;
+        m_snmpStatus = newStatus;
     }
 
-    /**
-     * 
-     */
     public String getStatus() {
-        return snmpstatus;
+        return m_snmpStatus;
     }
 
-    /**
-     * 
-     */
     public void setIfDescr(String newIfDescr) {
-        ifDescr = newIfDescr;
+        m_ifDescr = newIfDescr;
     }
 
-    /**
-     * 
-     */
     public String getIfDescr() {
-        return ifDescr;
+        return m_ifDescr;
     }
 
-    /**
-     * 
-     */
     public void setIfType(int newIfType) {
-        ifType = newIfType;
+        m_ifType = newIfType;
     }
 
-    /**
-     * 
-     */
     public int getIfType() {
-        return ifType;
+        return m_ifType;
     }
 
-    /**
-     * 
-     */
     public void setIfName(String newIfName) {
-        ifName = newIfName;
+        m_ifName = newIfName;
     }
 
-    /**
-     * 
-     */
     public String getIfName() {
-        return ifName;
+        return m_ifName;
     }
 
-    /**
-     * 
-     */
     public String getIfAlias() {
-        return ifAlias;
+        return m_ifAlias;
     }
 
-    /**
-     * 
-     */
     public void setIfAlias(String newIfAlias) {
-        ifAlias = newIfAlias;
+        m_ifAlias = newIfAlias;
     }
+
+    public String getCollectFlag() {
+        return m_collectFlag;
+    }
+    
+    public void setCollectFlag(String newCollectFlag) {
+        m_collectFlag = newCollectFlag;
+    }
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("id", getSnmpInterfaceId())
+            .append("ifIndex", getIfIndex())
+            .append("ipAddress", getAddress())
+            .append("ipHostname", getIpHostname())
+            .append("ifType", getIfType())
+            .append("ifDescr", getIfDescr())
+            .append("ifName", getIfName())
+            .append("ifAlias", getIfAlias())
+            .append("status", getStatus())
+            .append("collect", getCollectFlag())
+            .toString();
+    }
+
+    public int compareTo(SnmpManagedInterface obj) {
+        return new CompareToBuilder()
+            .append(getSnmpInterfaceId(), obj.getSnmpInterfaceId())
+            .append(getIfIndex(), obj.getIfIndex())
+            .append(getAddress(), obj.getAddress())
+            .append(getIpHostname(), obj.getIpHostname())
+            .append(getIfType(), obj.getIfType())
+            .append(getIfDescr(), obj.getIfDescr())
+            .append(getIfName(), obj.getIfName())
+            .append(getIfAlias(), obj.getIfAlias())
+            .append(getStatus(), obj.getStatus())
+            .append(getCollectFlag(), obj.getCollectFlag())
+            .toComparison();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SnmpManagedInterface) {
+            SnmpManagedInterface other = (SnmpManagedInterface) obj;
+            return new EqualsBuilder()
+                .append(getSnmpInterfaceId(), other.getSnmpInterfaceId())
+                .append(getIfIndex(), other.getIfIndex())
+                .append(getAddress(), other.getAddress())
+                .append(getIpHostname(), other.getIpHostname())
+                .append(getIfType(), other.getIfType())
+                .append(getIfDescr(), other.getIfDescr())
+                .append(getIfName(), other.getIfName())
+                .append(getIfAlias(), other.getIfAlias())
+                .append(getStatus(), other.getStatus())
+                .append(getCollectFlag(), other.getCollectFlag())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(617, 2677)
+            .append(getSnmpInterfaceId())
+            .append(getIfIndex())
+            .append(getAddress())
+            .append(getIpHostname())
+            .append(getIfType())
+            .append(getIfDescr())
+            .append(getIfName())
+            .append(getIfAlias())
+            .append(getStatus())
+            .append(getCollectFlag())
+            .toHashCode();
+      }
 }
