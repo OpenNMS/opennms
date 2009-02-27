@@ -73,12 +73,24 @@
     <c:when test="${param.nostyles != 'true' }">
         <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+        <c:choose>
+        	<c:when test="${param.enableExtJS == 'true'}">
+        		<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css' />
+  				<link rel='stylesheet' type='text/css' href='css/o-styles.css' media='screen' />
+  				<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css' />
+        	</c:when>
+        </c:choose>
     </c:when>
   </c:choose>
 <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
   <script type="text/javascript" src="js/global.js"></script>
+	<c:if test="${param.enableExtJS == 'true'}">
+  		<script type='text/javascript' src='extJS/source/core/Ext.js'></script>
+  		<script type='text/javascript' src='extJS/source/adapter/ext-base.js'></script>
+  		<script type='text/javascript' src='extJS/ext-all-debug.js'></script>
+	</c:if>
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>

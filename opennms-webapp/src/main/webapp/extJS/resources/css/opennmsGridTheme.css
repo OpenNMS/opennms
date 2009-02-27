@@ -108,6 +108,7 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-asc, td.sort-desc {
 .x-panel-body {
     border-style: solid;
     border-color: #d0d0d0;
+    
 }
 .x-panel-header {
     color:#333;
@@ -117,10 +118,6 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-asc, td.sort-desc {
 }
 .x-panel-header-text{
 	color:#ffffff;	
-}
-
-.x-panel-body {
-    border-color:#d0d0d0;
 }
 
 .x-panel-bbar .x-toolbar {
@@ -326,7 +323,8 @@ ul.x-tab-strip-top{
 	background-image: url(../images/onmsTheme/panel/headingbg.png);
 	background-position: center center;
 	border-color:#d0d0d0;
-    padding-top: 2px;
+    padding-top: 4px;
+    margin-top: 7px;
 }
 
 ul.x-tab-strip-bottom{

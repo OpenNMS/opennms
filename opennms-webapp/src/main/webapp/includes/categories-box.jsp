@@ -76,18 +76,18 @@
 		m_category_list.isDisconnected(earliestUpdate);
 %>
 <%	if (opennmsDisconnect) { %>
-	    <h3>OpenNMS Disconnect -- is the OpenNMS daemon running? - 
+	    <h3 class="o-box">OpenNMS Disconnect -- is the OpenNMS daemon running? - 
 		Last update:
 <%=		(earliestUpdate > 0 ?
 			 new Date(earliestUpdate).toString() :
 			 "one or more categories have never been updated.") %>
 	      </h3>
 <%	} else { %>
-	    <h3>Availability Over the Past 24 Hours</h3>
+	    <h3 class="o-box">Availability Over the Past 24 Hours</h3>
 <%	} %>
 
 
-<table>
+<table class="o-box">
 <%
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
