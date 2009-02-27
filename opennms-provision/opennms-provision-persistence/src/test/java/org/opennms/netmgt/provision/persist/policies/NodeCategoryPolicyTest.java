@@ -84,14 +84,14 @@ public class NodeCategoryPolicyTest {
         for (OnmsNode node : m_nodes) {
             System.err.println(node);
             o = p.apply(node);
-            if (o != null) {
+            if (o != null && o.getCategories().contains(new OnmsCategory(p.getCategory()))) {
                 matchedNodes.add(o);
             }
             if (node.getNodeId().equals(matchingId)) {
                 populatedNodes.add(node);
             }
         }
-        
+
         assertEquals(populatedNodes, matchedNodes);
         return matchedNodes;
     }
