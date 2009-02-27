@@ -60,7 +60,7 @@
 		
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
 			<tree:nodeForm>
-				<tree:select label="key" property="key" items="${classParameters[detector.pluginClass]}" />
+				<tree:select label="key" property="key" items="${classParameters[policy.pluginClass]}" />
 				<tree:field label="value" property="value" />
 			</tree:nodeForm>
 
