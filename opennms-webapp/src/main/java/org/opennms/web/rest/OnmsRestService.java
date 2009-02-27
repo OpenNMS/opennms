@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Category;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
@@ -16,7 +17,7 @@ import org.springframework.beans.BeanWrapperImpl;
 
 public class OnmsRestService {
 
-	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE}
+	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS}
 
 	public OnmsRestService() {
 		super();
@@ -122,6 +123,8 @@ public class OnmsRestService {
 				op=ComparisonOperation.LE;
 			}else if (comparatorLabel.equals("ne")) {
 				op=ComparisonOperation.NE;
+			} else if (comparatorLabel.equals("contains")) {
+			    op=ComparisonOperation.CONTAINS;
 			}
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
@@ -161,6 +164,9 @@ public class OnmsRestService {
 		   		case LE:
 		    		criteria.add(Restrictions.le(key, thisValue));
 					break;
+		   		case CONTAINS:
+		   		    criteria.add(Restrictions.like(key, stringValue, MatchMode.ANYWHERE));
+		   		    
 				}
 			}
 		}
