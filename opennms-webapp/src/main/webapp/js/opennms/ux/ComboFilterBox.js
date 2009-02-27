@@ -2,39 +2,33 @@ Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.ComboFilterBox = Ext.extend(Ext.form.ComboBox,{
 	recordTag:"node",
 	recordMap:[
-			    {name:"interfaceId", mapping:"interfaceId"},
-			    {name:"ipAddress", mapping:"ipAddress"},
-			    {name:'hostName', mapping:'ipHostName'},
-			    {name:'ifIndex', mapping:'ifIndex'},
-			    {name:"isManaged", mapping:"isManaged"},
-			    {name:'capsdPoll', mapping:'ipLastCapsdPoll'},
-			    {name:"snmpInterface", mapping:"snmpInterface"}
+			    {name:"name", mapping:"label"},
 	],
 	url:'rest/nodes',
     displayField:'title',
     typeAhead: false,
     loadingText: 'Searching...',
-    width: 570,
+    width: "100%",
     pageSize:10,
-    hideTrigger:true,
+    hideTrigger:false,
     itemSelector: 'div.search-item',
-    onSelect: function(record){ // override default onSelect to do redirect
-       alert('you clicked an item');
-    },
    
     resultTpl:new Ext.XTemplate(
         '<tpl for="."><div class="search-item">',
-            '<h3><span>{lastPost:date("M j, Y")}<br />by {author}</span>{title}</h3>',
-            '{excerpt}',
+            '{name}',
         '</div></tpl>'
     ),
 	
 	initComponent:function(){
 		var ds = new Ext.data.Store({
 	        proxy: new Ext.data.HttpProxy({
-	            url: this.url
+	            url: this.url,
+	            method:'GET'
 	        }),
-	        reader: new Ext.data.XMLReader({ record: this.recordTag, totalProperty: '@totalCount' }, this.recordMap)
+	        baseParams:{
+	        	comparator:"contains"
+	        },
+	        reader: new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
 	    });
 		
 		Ext.apply(this, {
@@ -43,7 +37,7 @@ OpenNMS.ux.ComboFilterBox = Ext.extend(Ext.form.ComboBox,{
 		})
 	    
 
-		OpenNMS.ux.ComboFilterBox.superclass.initComponent.apply(this, apply);
+		OpenNMS.ux.ComboFilterBox.superclass.initComponent.apply(this, arguments);
 	}
 	
 });
