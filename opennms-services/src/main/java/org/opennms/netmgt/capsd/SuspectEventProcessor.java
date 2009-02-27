@@ -871,7 +871,7 @@ final class SuspectEventProcessor implements Runnable {
 
             // description
             final String str = ifte.getIfDescr();
-            if (log().isDebugEnabled()) {
+            if (log().isDebugEnabled() && aaddrs != null) {
                 log().debug("SuspectEventProcessor: "
                         + aaddrs[0].getHostAddress() + " has ifDescription: "
                         + str);
@@ -884,14 +884,14 @@ final class SuspectEventProcessor implements Runnable {
             String physAddr = null;
             try {
                 physAddr = ifte.getPhysAddr();
-                if (log().isDebugEnabled()) {
+                if (log().isDebugEnabled() && aaddrs != null) {
                     log().debug("SuspectEventProcessor: "
                             + aaddrs[0].getHostAddress()
                             + " has physical address: -" + physAddr + "-");
                 }
             } catch (IllegalArgumentException iae) {
                 physAddr = null;
-                if (log().isDebugEnabled()) {
+                if (log().isDebugEnabled() && aaddrs != null) {
                     log().debug("ifPhysAddress." + ifte.getIfIndex() + " on node "
                                + nodeId + " / " + aaddrs[0].getHostAddress()
                                + " could not be converted to a hex string (not a PhysAddr / OCTET STRING?), setting to null.");
