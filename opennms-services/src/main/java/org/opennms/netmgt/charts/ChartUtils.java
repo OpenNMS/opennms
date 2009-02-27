@@ -53,6 +53,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ExtendedCategoryAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.CategoryItemLabelGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -244,6 +245,13 @@ public class ChartUtils {
                 chartConfig.getShowLegend(),
                 chartConfig.getShowToolTips(),
                 chartConfig.getShowUrls());
+        
+        // Create a bit more headroom for value labels than is allowed for by the default 0.05 upper margin
+        ValueAxis rangeAxis = barChart.getCategoryPlot().getRangeAxis();
+        if (rangeAxis.getUpperMargin() < 0.1) {
+            rangeAxis.setUpperMargin(0.1);
+        }
+        
         return barChart;
     }
 
