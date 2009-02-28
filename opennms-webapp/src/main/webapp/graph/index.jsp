@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 27: Add substring match capability to resource graphs and ksc reports. ayres@opennms.org
 // 2007 Aug 15: combined node and domain reports into resource reports
 // 2006 Mar 08: added standard and custom domain reports
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -46,11 +47,13 @@
 	session="true"
 	import="
         org.opennms.web.svclayer.ResourceService,
-		org.springframework.web.context.WebApplicationContext,
+        org.opennms.web.XssRequestWrapper,
+        org.springframework.web.context.WebApplicationContext,
       	org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%!
     public ResourceService m_resourceService;
@@ -62,7 +65,10 @@
 %>
 
 <%
+    HttpServletRequest req = new XssRequestWrapper(request);
+    String match = req.getParameter("match");
     pageContext.setAttribute("topLevelResources", m_resourceService.findTopLevelResources());
+    pageContext.setAttribute("match", match);
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -144,7 +150,16 @@
 
       <select style="width: 100%;" name="parentResourceId" size="10">
         <c:forEach var="resource" items="${topLevelResources}">
-          <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+	  <c:choose>
+	    <c:when test="${match == null || match == ''}">
+              <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+	    </c:when>
+	    <c:otherwise>
+	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+	        <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+	      </c:if>
+	    </c:otherwise>  
+	  </c:choose>
         </c:forEach>
       </select>
 
@@ -166,7 +181,16 @@
       <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
       <select style="width: 100%;" name="parentResourceId" size="10">
         <c:forEach var="resource" items="${topLevelResources}">
-          <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+	  <c:choose>
+            <c:when test="${match == null || match == ''}">
+              <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+	    </c:when>
+	    <c:otherwise>
+	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+	        <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+	      </c:if>
+	    </c:otherwise>  
+	  </c:choose>
         </c:forEach>
       </select>
 

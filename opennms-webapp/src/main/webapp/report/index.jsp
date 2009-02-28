@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 27: Add substring match capability to resource graphs and ksc reports. ayres@opennms.org
 // 2007 Apr 10: Add a link to statistics reports. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 04: Added Key SNMP Custom Performance Reports.
@@ -58,9 +59,19 @@
   <div class="TwoColLeft">
     <h3>Reports</h3>
     <div class="boxWrapper">
+      <form action="graph/index.jsp" method="GET">
+        <p align="right">Name contains
+        <input type="text" name="match" size="16" />
+        <input type="submit" value="Resource Graphs"/></p>
+      </form>
+      <form action="KSC/index.htm" method="GET">
+        <p align="right">Name contains
+        <input type="text" name="match" />
+        <input type="submit" value="KSC Reports"/></p>
+      </form>
       <ul class="plain">
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
-        <li><a href="KSC/index.htm">KSC Performance, Nodes, Domain</a></li>
+        <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
         <li><a href="availability/index.jsp">Availability</a></li>
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
       </ul>
@@ -71,15 +82,27 @@
   <div class="TwoColRight">
     <h3>Descriptions</h3>
     <div class="boxWrapper">
-      <p><b>Resource Graphs</b> provide an easy way to 
-          visualize the critical SNMP, response time, and other data collected
-          from managed nodes throughout your network.  
+      <p><b>Resource Graphs</b> provide an easy way to visualize the critical
+          SNMP, response time, and other data collected from managed nodes
+          throughout your network.
       </p>
-      <p><b>Key SNMP Customized (KSC) Performance Reports</b> and <b>Node Reports</b>
-          KSC reports allow the user to create and view SNMP performance data using prefabricated graph types.
-          The reports provide a great deal of flexibility in timespans and graphtypes. KSC report configurations may be saved allowing
-          the user to define key reports that may be referred to at future dates.  Node reports show SNMP data for all
-          SNMP interfaces on a node. Node reports may be loaded into the customizer and saved as a KSC report.
+      <p>You may narrow your selection of resources by entering a search
+          string in the "Name contains" field. This will invoke a case-insensitive
+          substring match on resource names.
+      </p>
+      <p><b>Key SNMP Customized (KSC) Performance Reports</b>, <b>Node Reports</b>
+          and <b>Domain Reports</b>. KSC reports allow the user to create and view
+          SNMP performance data using prefabricated graph types. The reports
+          provide a great deal of flexibility in timespans and graphtypes. KSC
+          report configurations may be saved allowing the user to define key reports
+          that may be referred to at future dates. Node reports show SNMP data for
+          all SNMP interfaces on a node. Domain reports show SNMP data for all SNMP
+          interfaces in a domain. Node reports and domain reports may be loaded into
+          the customizer and saved as a KSC report.
+      </p>
+      <p>You may narrow your selection of resources by entering a search string
+          in the "Name contains" field. This will invoke a case-insensitive substring
+          match on resource names.
       </p>
 
       <p><b>Availability Reports</b> provide graphical or numeric
