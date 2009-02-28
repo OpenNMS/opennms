@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Feb 27: Add substring match capability to resource graphs and ksc reports. ayres@opennms.org
 // 2009 Feb 03: Rename showReportList to kscReadOnly. - jeffg@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -40,10 +41,19 @@
 <%@page language="java"
   contentType="text/html"
   session="true"
+  import="
+  org.opennms.web.XssRequestWrapper
+  "
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+<%
+    HttpServletRequest req = new XssRequestWrapper(request);
+    String match = req.getParameter("match");
+    pageContext.setAttribute("match", match);
+%>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
@@ -175,7 +185,16 @@
       <form method="get" name="choose_report" action="KSC/formProcMain.htm">
                   <select style="width: 100%;" name="report" size="10">
                     <c:forEach var="report" items="${reports}">
-                      <option value="${report.key}">${report.value}</option>
+                      <c:choose>
+                        <c:when test="${match == null || match == ''}">
+                          <option value="${report.key}">${report.value}</option>
+                        </c:when>
+                        <c:otherwise>
+                          <c:if test="${fn:containsIgnoreCase(report.value,match)}">
+                            <option value="${report.key}">${report.value}</option>
+                          </c:if>
+                        </c:otherwise>  
+                      </c:choose>
                     </c:forEach>
                   </select>
 
@@ -206,7 +225,16 @@
         <input type="hidden" name="type" value="node">
               <select style="width: 100%;" name="report" size="10">
                 <c:forEach var="resource" items="${nodeResources}">
-                  <option value="${resource.name}">${resource.label}</option>
+                  <c:choose>
+                    <c:when test="${match == null || match == ''}">
+                      <option value="${resource.name}">${resource.label}</option>
+                    </c:when>
+                    <c:otherwise>
+                      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+                        <option value="${resource.name}">${resource.label}</option>
+                      </c:if>
+                    </c:otherwise>  
+                  </c:choose>
                 </c:forEach>
               </select>
 
@@ -228,7 +256,16 @@
 
                   <select style="width: 100%;" name="domain" size="10">
                     <c:forEach var="resource" items="${domainResources}">
-                      <option value="${resource.name}">${resource.label}</option>
+                      <c:choose>
+                        <c:when test="${match == null || match == ''}">
+                          <option value="${resource.name}">${resource.label}</option>
+                        </c:when>
+                        <c:otherwise>
+                          <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+                            <option value="${resource.name}">${resource.label}</option>
+                          </c:if>
+                        </c:otherwise>  
+                      </c:choose>
                     </c:forEach>
                   </select>
 
