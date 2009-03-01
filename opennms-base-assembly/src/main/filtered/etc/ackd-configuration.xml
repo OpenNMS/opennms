@@ -8,6 +8,6 @@
   alarmid-match-expression="~.*alarmid:([0-9]+).*" 
   clear-expression="~^(resolve|clear)$"
   escalate-expression="~^ack$" 
-  notifyid-match-expression="~.*noticeid:([0-9]+).*" 
+  notifyid-match-expression="~.*Notice #([0-9]+).*" 
   unack-expression="~^ack$" >                       
 </ackd-configuration>
