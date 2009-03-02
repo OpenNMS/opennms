@@ -16,6 +16,7 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    		header:"Index",
 	    		dataIndex:"ifIndex",
 	    		sortable: true,
+	    		searchable: true,
 	    		width:30,
 	    		align:"right"
 	    	},{
@@ -23,23 +24,28 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    		dataIndex:"ifDescr",
 	    		width:100,
 	    		sortable:true,
+	    		searchable:true,
+	    		defaultSearch: true,
 	    		align:"left"
 	    	},{
 	    		header:"SNMP ifName",
 	    		dataIndex:"ifName",
 	    		sortable: true,
+	    		searchable: true,
 	    		width:90,
 	    		align:"left"	
 	    	},{
 	    		header:"SNMP ifAlias",
 	    		dataIndex:"ifAlias",
 	    		sortable: true,
+	    		searchable: true,
 	    		width:90,
 	    		align:"left"	
 	    	},{
 	    		header:"SNMP ifSpeed",
 	    		dataIndex:"ifSpeed",
 	    		sortable: true,
+	    		searchable: true,
 	    		width:100,
 	    		align:"right"
 	    	},{
@@ -67,13 +73,15 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    		header:"IP Address",
 	    		dataIndex:"ipAddress",
 	    		sortable: true,
-	    		hidden:true,
+	    		searchable: true,
+	    		hidden:false,
 	    		width:100,
 	    		align:"left"
 	    	},{
 	    		header:"SNMP ifPhysAddr",
 	    		dataIndex:"physAddr",
 	    		sortable: true,
+	    		searchable: true,
 	    		hidden:true,
 	    		width:100,
 	    		align:"left"

@@ -2,7 +2,6 @@ Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	header:false,
 	pageSize:20,
-    height:474,
 	width:'100%',
     displayInfo: true,
     border:true,
@@ -30,6 +29,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 			"sort" : "orderby",
 			"dir" : "dir"
 			},
+			autoLoad:true,
 			reader:new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
 		});
 	
@@ -56,8 +56,9 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 	},
 	
-	initialLoad:function() {
-		this.store.load({params:{start:0, limit:this.pageSize}});
+	loadSearch:function(searchCriteria){
+		this.store.baseParams = searchCriteria;
+		this.store.reload();
 	},
 	
 	addPagingBarButtons:function(items) {
@@ -70,8 +71,6 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(this.pagingBarButtons && this.pagingBarButtons.length > 0){
 			this.getBottomToolbar().addButton(this.pagingBarButtons);
 		}
-		
-		this.initialLoad();
 	}
 });
 
