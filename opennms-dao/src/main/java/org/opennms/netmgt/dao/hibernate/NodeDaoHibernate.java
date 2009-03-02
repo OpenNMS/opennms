@@ -172,6 +172,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return foreignIdMap;
     }
 
+    public List<OnmsNode> findByForeignSource(String foreignSource) {
+        return find("from OnmsNode n where n.foreignSource = ?", foreignSource);
+    }
+
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
