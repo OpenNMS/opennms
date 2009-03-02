@@ -45,14 +45,14 @@ import java.util.Set;
 
 import org.opennms.core.utils.LazyList;
 import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
 
 public class NodeResourceType implements OnmsResourceType {
-    private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
-    private ResourceDao m_resourceDao;
+    protected static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
+    protected ResourceDao m_resourceDao;
 
     public NodeResourceType(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;

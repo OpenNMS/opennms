@@ -184,7 +184,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Map<String, OnmsResourceType> resourceTypes;
         resourceTypes = new LinkedHashMap<String, OnmsResourceType>();
         OnmsResourceType resourceType;
-        
+
         resourceType = new NodeSnmpResourceType(this);
         resourceTypes.put(resourceType.getName(), resourceType);
         
@@ -196,7 +196,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         
         resourceType = new DistributedStatusResourceType(this, m_locationMonitorDao);
         resourceTypes.put(resourceType.getName(), resourceType);
-        
+
         resourceTypes.putAll(getGenericIndexResourceTypes());
         
         m_nodeResourceType = new NodeResourceType(this);
@@ -333,6 +333,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     protected OnmsResource getTopLevelResource(String resourceType, String resource) {
         if ("node".equals(resourceType)) {
             return getNodeEntityResource(resource);
+        } else if ("nodeSource".equals(resourceType)) {
+            return getForeignSourceNodeEntityResource(resource);
         } else if ("domain".equals(resourceType)) {
             return getDomainEntityResource(resource);
         } else {
@@ -440,10 +442,20 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         }
 
         OnmsResource onmsResource = getResourceForNode(node);
-//        if (onmsResource == null) {
-//            throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource was found but has no child resources", null);
-//        }
-//        
+
+        return onmsResource;
+    }
+
+    protected OnmsResource getForeignSourceNodeEntityResource(String resource) {
+        String[] ident = resource.split(":");
+
+        OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
+        if (node == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, resource, "Top-level resource of resource type node could not be found: " + resource, null);
+        }
+
+        OnmsResource onmsResource = getResourceForNode(node);
+
         return onmsResource;
     }
 
