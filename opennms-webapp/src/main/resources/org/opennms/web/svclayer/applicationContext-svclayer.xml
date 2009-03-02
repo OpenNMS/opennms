@@ -2,12 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
 
-    <tx:annotation-driven />
-    
+  <tx:annotation-driven />
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:opennms.properties" />
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+  </bean>
 
   <!-- Surveillance View beans -->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >
@@ -122,7 +126,7 @@
   
   <!--  Manual Provisioning -->
   <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="file:${opennms.home}/etc" />
+    <property name="importFileDirectory" value="${opennms.webapp.importFile.dir}" />
   </bean>
   
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
