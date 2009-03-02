@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -51,12 +52,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
     @Before
     public void setUp() throws Exception {
         beforeServletStart();
-        
-        String userDir = System.getProperty("user.dir");
-        System.setProperty("opennms.home", userDir+"/src/test/opennms-home");
-        System.setProperty("rrd.base.dir", "/tmp");
-        System.setProperty("rrd.binary", "rrdtool");
-           
+
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
+
         MockDatabase db = new MockDatabase(true);
         DataSourceFactory.setInstance(db);
                 
