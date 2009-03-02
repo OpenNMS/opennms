@@ -13,7 +13,6 @@
   
   <context:property-placeholder location="file:${opennms.home}/etc/model-importer.properties" />
 
-
   <bean id="importResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg><value>${importer.importURL}</value></constructor-arg>
   </bean>

@@ -56,6 +56,7 @@ import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.dao.NonTransientDataAccessResourceException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.util.Assert;
@@ -70,6 +71,11 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
 
     public void setImportFileDirectory(File importFileDir) {
         m_importFileDir = importFileDir;
+        if (!m_importFileDir.exists()) {
+            if (!m_importFileDir.mkdirs()) {
+                throw new NonTransientDataAccessResourceException("import file directory (" + m_importFileDir.getPath() + ") does not exist");
+            }
+        }
     }
 
     public ModelImport get(String name) {
@@ -135,7 +141,9 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         } catch (ValidationException e) {
             throw new CastorDataAccessFailureException("Invalid data for group "+groupName, e);
         } finally {
-            if (w != null) IOUtils.closeQuietly(w);
+            if (w != null) {
+                IOUtils.closeQuietly(w);
+            }
         }
         
 
@@ -143,23 +151,23 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
 
     private File getImportFile(String groupName) {
         checkGroupName(groupName);
-        return new File(m_importFileDir, "imports-"+groupName+".xml");
+        return new File(m_importFileDir, groupName+".xml");
     }
     
     public FilenameFilter getImportFilenameFilter() {
         return new FilenameFilter() {
 
             public boolean accept(File dir, String name) {
-                return name.matches("imports-.*\\.xml");
+                return name.matches(".*\\.xml");
             }
             
         };
     }
     
     private String getGroupNameForImportFileName(String filename) {
-        Matcher matcher = Pattern.compile("imports-(.*)\\.xml").matcher(filename);
+        Matcher matcher = Pattern.compile("^(.*)\\.xml$").matcher(filename);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid import gorup file name "+filename+", doesn't match form imports-*.xml");
+            throw new IllegalArgumentException("Invalid import gorup file name "+filename+", doesn't match form *.xml");
         }
         
         return matcher.group(1);

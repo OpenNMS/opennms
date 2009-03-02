@@ -51,6 +51,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -62,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -115,6 +117,7 @@ public class Installer {
     String m_etc_dir = "";
     String m_tomcat_conf = null;
     String m_webappdir = null;
+    String m_import_dir = null;
     String m_install_servletdir = null;
     String m_library_search_path = null;
     String m_fix_constraint_name = null;
@@ -256,6 +259,7 @@ public class Installer {
 
         if (m_do_inserts) {
             m_installerDb.insertData();
+            handleConfigurationChanges();
         }
 
         if (m_update_unicode) {
@@ -295,6 +299,47 @@ public class Installer {
         m_out.println("Installer completed successfully!");
     }
 
+    private void handleConfigurationChanges() {
+        File etcDir = new File(m_opennms_home + File.separator + "etc");
+        File importDir = new File(m_import_dir);
+        File[] files = etcDir.listFiles(getImportFileFilter());
+
+        if (!importDir.exists()) {
+            m_out.print("- Creating imports directory (" + importDir.getAbsolutePath() + "... ");
+            if (!importDir.mkdirs()) {
+                m_out.println("FAILED");
+                System.exit(1);
+            }
+            m_out.println("OK");
+        }
+
+        m_out.print("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
+        if (files.length > 0) {
+            m_out.println("DONE");
+        }
+
+        for (File f : files) {
+            String newFileName = f.getName().replace("imports-", "");
+            File newFile = new File(importDir, newFileName);
+            m_out.print("  - moving " + f.getName() + " to " + importDir.getPath() + "... ");
+            if (f.renameTo(newFile)) {
+                m_out.println("OK");
+            } else {
+                m_out.println("FAILED");
+            }
+        }
+    }
+
+    private FilenameFilter getImportFileFilter() {
+        return new FilenameFilter() {
+
+            public boolean accept(File dir, String name) {
+                return name.matches("imports-.*\\.xml");
+            }
+            
+        };
+    }
+
     public void createConfiguredFile() throws IOException {
         File f = new File(m_opennms_home + File.separator + "etc" + File.separator + "configured");
         f.createNewFile();
@@ -322,7 +367,22 @@ public class Installer {
 
         m_opennms_home = fetchProperty("install.dir");
         m_etc_dir = fetchProperty("install.etc.dir");
+        
+        try {
+            Properties opennmsProperties = new Properties();
+            InputStream ois = new FileInputStream(m_etc_dir + File.separator + "opennms.properties");
+            opennmsProperties.load(ois);
+            // We only want to put() things that weren't already overridden in installer.properties
+            for (Entry<Object,Object> p : opennmsProperties.entrySet()) {
+                if (!m_properties.containsKey(p.getKey())) {
+                    m_properties.put(p.getKey(), p.getValue());
+                }
+            }
+        } catch(FileNotFoundException e) {
+            m_out.println("WARNING: unable to load " + m_etc_dir + File.separator + "opennms.properties");
+        }
         m_install_servletdir = fetchProperty("install.servlet.dir");
+        m_import_dir = fetchProperty("opennms.webapp.importFile.dir");
 
         String soext = fetchProperty("build.soext");
         String pg_iplike_dir = m_properties.getProperty("install.postgresql.dir");
@@ -375,7 +435,7 @@ public class Installer {
         options.addOption("c", "clean-database", false,
                           "clean existing database before creating");
         options.addOption("i", "insert-data", false,
-                          "insert default data into the database");
+                          "insert (or upgrade) default data including database and XML configuration");
         options.addOption("s", "stored-procedure", false,
                           "add the IPLIKE stored procedure if it's missing");
         options.addOption("U", "unicode", false,
@@ -715,7 +775,7 @@ public class Installer {
         w.print(b.toString());
         w.close();
 
-        m_out.println("done");
+        m_out.println("DONE");
     }
 
     public void removeFile(String destination, String description,
