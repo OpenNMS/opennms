@@ -211,6 +211,8 @@
   <jsp:param name="breadcrumb" value="Node" />
   <jsp:param name="enableExtJS" value="true"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/PageableGrid.js'></script>"/>
+  <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/SearchFilterLayout.js'></script>"/>
+  <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/SearchFilterGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/IPInterfaceGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/opennms/ux/SNMPInterfaceGrid.js'></script>"/>
   <jsp:param name="script" value="<script type='text/javascript' src='js/nodePageView.js'></script>" />

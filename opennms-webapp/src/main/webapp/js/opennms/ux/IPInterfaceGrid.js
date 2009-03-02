@@ -5,6 +5,7 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	xmlNodeToRecord:'ipInterface',
 	columns:[
 		{
+			id: 'interfaceId',
 			header :'ID',
 			dataIndex :'interfaceId',
 			width:100,
@@ -12,41 +13,52 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 			hidden:true,
 			align :'left'
 		},{
+			id: 'ipAddress',
 			header :'IP Address',
 			dataIndex :'ipAddress',
 			width :100,
 			sortable :true,
+			searchable: true,
+			defaultSearch: true,
 			align :'left'
 		},{
+			id: 'ipHostName',
 			header:'IP Host Name',
-			dataIndex:'hostName',
+			dataIndex:'ipHostName',
 			sortable :true,
+			searchable: true,
 			width:200,
 			align:'left'
 		},{
+			id: 'ifIndex',
 			header:'IfIndex',
 			dataIndex:'ifIndex',
 			width:75,
 			sortable: true,
+			searchable: true,
 			align:'left',
 			hidden:true
 		},{
+			id: 'isManaged',
 			header :'Managed',
 			dataIndex :'isManaged',
 			width :75,
 			sortable :true,
 			align :'left'
 		},{
-			header:'Last Capsd Poll',
-			dataIndex:'capsdPoll',
+			id: 'ipLastCapsdPoll',
+			header:'Last Node Scan',
+			dataIndex:'ipLastCapsdPoll',
 			width:150,
 			hidden:true,
 			align:'left'
 		},{
+			id:'node',
 			header:'Node',
 			dataIndex:'node',
 			width:20,
 			hidden:true,
+			searchable: false,
 			align:'left'
 		}
 	],
@@ -54,10 +66,10 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	recordMap:[
 			    {name:"interfaceId", mapping:"interfaceId"},
 			    {name:"ipAddress", mapping:"ipAddress"},
-			    {name:'hostName', mapping:'ipHostName'},
+			    {name:'ipHostName', mapping:'ipHostName'},
 			    {name:'ifIndex', mapping:'ifIndex'},
 			    {name:"isManaged", mapping:"isManaged"},
-			    {name:'capsdPoll', mapping:'ipLastCapsdPoll'},
+			    {name:'ipLastCapsdPoll', mapping:'ipLastCapsdPoll'},
 			    {name:"snmpInterface", mapping:"snmpInterface"}
 	],
 	
