@@ -247,4 +247,12 @@ public class ConfigurationTestUtils extends Assert {
         System.setProperty("importer.cacheDir", cacheDir.getAbsolutePath());
     }
 
+    public static void setRelativeImporterWebDirectory(String relativeImporterWebDirectory) {
+            File xmlDir = new File(getCurrentDirectory(), relativeImporterWebDirectory);
+            if (!xmlDir.exists()) {
+                xmlDir.mkdirs();
+            }
+            System.setProperty("opennms.webapp.importFile.dir", xmlDir.getAbsolutePath());
+    }
+
 }

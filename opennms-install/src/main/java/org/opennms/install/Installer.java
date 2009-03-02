@@ -370,7 +370,7 @@ public class Installer {
         
         try {
             Properties opennmsProperties = new Properties();
-            InputStream ois = new FileInputStream(m_etc_dir + File.separator + "opennms.properties");
+            InputStream ois = new FileInputStream(m_etc_dir + File.separator + "model-importer.properties");
             opennmsProperties.load(ois);
             // We only want to put() things that weren't already overridden in installer.properties
             for (Entry<Object,Object> p : opennmsProperties.entrySet()) {

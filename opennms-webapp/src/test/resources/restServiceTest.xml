@@ -6,5 +6,5 @@
   <bean name="mockEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager">
     <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>
-  
+
 </beans>
