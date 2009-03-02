@@ -7,9 +7,6 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	autoEl: 'div',
 	deferredRender: false,
 	
-	height: 300,
-	width: 400,
-	
 	initComponent:function(){
 	
 		this.setLayout(new OpenNMS.ux.SearchFilterLayout({
@@ -17,69 +14,112 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 		}));
 	
 		var searchButton = new Ext.Button({
-			text:'search',
-			listeners:{
-				'click':{
-					fn:this.searchCritBtnClickHandler,
-					scope:this,
-				}
-			}
+			text:'Search',
+			scope: this,
+			handler: this.showSearchPanel,
 		})
 		
 		if (this.grid !== undefined && this.grid.title !== undefined) {
 			this.title = this.grid.title;
 			this.grid.addPagingBarButtons([searchButton]);
+			
 		}else{
 			this.grid = new OpenNMS.ux.PageableGrid({
 				pagingBarButtons:[searchButton]
 			})
 		}
-
-	
-		var button1 = new Ext.Button({
-			region: 'center',
-			text: 'button1',
-			listeners:{
-				click:{
-			    	scope: this,
-			    	fn:function() {
-		  	   			this.getLayout().setActiveItem(0);
-	                },
-    		   },
-		    },
-		});
 		
-		var button2 = new Ext.Button({
-			region: 'south',
-			text: 'button2',
-			listeners:{
-				click:{
-					scope: this,
-					fn:function()  {
-						this.getLayout().setActiveItem(1);
-	          		},
-    			}
+		
+		
+		var comboData = [];
+		
+		var cols = this.grid.columns;
+		var defaultSearch;
+		var firstColumn;
+		
+		for(i = 0; i < cols.length; i++) {
+			var col = cols[i];
+			if (col.searchable) {
+				if (col.defaultSearch) {
+					initialValue = col.dataIndex;
+				}
+				if (!firstColumn) {
+					firstColumn = col.dataIndex;
+				}
+				comboData.push([ col.dataIndex, col.header ]);
 			}
+		}
+		
+		var intialValue = defaultSearch ? defaultSearch : firstColumn;
+		
+		var comboBox = new Ext.form.ComboBox({
+			fieldLabel:'Search Column',
+	   		store: comboData,
+	   		editable:false,
+	   		selectOnFocus:true,
+	   		allowBlank: false,
+	   		mode: 'local',
+	   		triggerAction:'all',
+	   		value: initialValue,
+	   		width:'100%'
 		});
 		
-
-	    Ext.apply(this, {
+		var searchTextField = new Ext.form.TextField({
+			fieldLabel:'Search Text'
+		});
+		
+		Ext.apply(this, {
 	    	activeItem: 0,
+	    	searchColumn: comboBox,
+	    	searchText: searchTextField,
 	    	items: [
 	    	   this.grid,
-	    	   new Ext.Panel({ cls: 'o-panel', layout: 'absolute', items: [ button1 ]}),
+	    	   {    
+	    		    xtype:'form',
+	    		   	cls: 'o-panel',
+	    		   	
+	    		   	items: [
+	    		   	        comboBox,
+	    		   	        searchTextField
+	    		   	 ],
+	    		   	
+	    		   	buttons:[
+	    		   	    {
+	    		   	    	text:'Cancel',
+	    		   	    	scope: this,
+	    		   	    	handler:this.cancel
+	    		   		},{
+	    		   			text:'Search',
+	    		   			scope: this,
+	    		   			handler: this.search
+	    		   		}
+	    		   	]    		   	
+	    		}
 	  	      ]
-	  	      });
+	  	    });
 
-	    
-	    alert("PageableGrid line 76");
 		OpenNMS.ux.SearchFilterGrid.superclass.initComponent.apply(this, arguments);
-	    alert("PageableGrid line 78");
-	
    },
    
-   searchCritBtnClickHandler:function(event){
+   showSearchPanel:function(event){
    		this.getLayout().setActiveItem(1);
+   },
+   
+   cancel:function(event){
+	   this.getLayout().setActiveItem(0);
+   },
+   
+   search:function(event){
+	   var dataIndex = this.searchColumn.getValue();
+	   var searchVal = this.searchText.getValue();
+	   var searchParams = {};
+	   searchParams[dataIndex] = searchVal;
+	   searchParams.comparator = "contains";
+	   
+	   this.getLayout().setActiveItem(0);
+	   this.grid.loadSearch(searchParams); 
+	   
+	   
    }
 	
 });
