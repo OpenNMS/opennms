@@ -51,6 +51,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection;
@@ -83,6 +85,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Autowired
     @Qualifier("deployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
+
+    @Autowired
+    private NodeDao m_nodeDao;
     
     @Context
     UriInfo m_uriInfo;
@@ -148,6 +153,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public ForeignSource getPendingForeignSource(@PathParam("foreignSource") String foreignSource) {
         return m_pendingForeignSourceRepository.getForeignSource(foreignSource);
+    }
+
+    @GET
+    @Path("deployed/{foreignSource}/nodes")
+    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    public OnmsNodeList getNodesForForeignSource(@PathParam("foreignSource") String foreignSource) {
+        return new OnmsNodeList(m_nodeDao.findByForeignSource(foreignSource));
     }
 
     /**
