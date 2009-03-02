@@ -24,7 +24,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/requisitionRestServiceTest.xml"
+        "classpath:/restServiceTest.xml"
 })
 
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
