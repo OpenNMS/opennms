@@ -50,6 +50,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidNode;
@@ -196,7 +197,8 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     
     private void sendAndThrow(int nodeId, Exception e) {
         log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow");
-        m_eventForwarder.sendNow(buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent());
+        Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
+        m_eventForwarder.sendNow(event);
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }
 
