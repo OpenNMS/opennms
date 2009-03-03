@@ -35,7 +35,8 @@
  */
 package org.opennms.netmgt.provision;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Properties;
@@ -113,13 +114,33 @@ public class DnsProvisioningAdapterTest {
     @Test
     @Transactional
     public void testAddNode() {
-        m_adapter.setNodeDao(m_nodeDao);
         List<OnmsNode> nodes = m_nodeDao.findAll();
         
         assertTrue(nodes.size() > 0);
         
         try {
             m_adapter.addNode(nodes.get(0).getId());
+        } catch (ProvisioningAdapterException pae) {
+            //do nothing for now, this is the current expectation since the adapter is not yet implemented
+        }
+    }
+    
+    @Test
+    @Transactional
+    public void testAddSameOperationTwice() {
+        
+        
+        SimpleQueuedProvisioningAdapter adapter = new TestAdapter();
+        
+        List<OnmsNode> nodes = m_nodeDao.findAll();
+        
+        assertTrue(nodes.size() > 0);
+        
+        try {
+            adapter.addNode(nodes.get(0).getId());
+            adapter.addNode(nodes.get(0).getId());
+            
+            org.junit.Assert.assertEquals(1, adapter.getOperQueue().size());
         } catch (ProvisioningAdapterException pae) {
             //do nothing for now, this is the current expectation since the adapter is not yet implemented
         }
@@ -146,4 +167,24 @@ public class DnsProvisioningAdapterTest {
         fail("Not yet implemented");
     }
 
+    class TestAdapter extends SimpleQueuedProvisioningAdapter {
+
+        @Override
+        public String getName() {
+            return "TestAdapter";
+        }
+
+        @Override
+        public boolean isNodeReady(int nodeId) {
+            return false;
+        }
+
+        @Override
+        public void processPendingOperationsForNode(List<AdapterOperation> ops)
+                throws ProvisioningAdapterException {
+            System.out.println(ops);
+            
+        }
+        
+    }
 }

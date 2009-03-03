@@ -51,19 +51,27 @@ public interface ProvisioningAdapter {
     void addNode(int nodeId) throws ProvisioningAdapterException;
     
     /**
-     * This method is called by the Provisioner when a node is updated. 
+     * This method is called by the Provisioner when a node is updated through provisioning. 
      * @throws ProvisioningAdapterException
      */
     void updateNode(int nodeId) throws ProvisioningAdapterException;
     
     /**
-     * This method is called by the Provisioner when a node is deleted. 
+     * This method is called by the Provisioner when a node is deleted through provisioning. 
      * @throws ProvisioningAdapterException
      */
     void deleteNode(int nodeId) throws ProvisioningAdapterException;
 
     String getName();
 
+    /**
+     * This method is called when a configuration change event has occurred from any source.  Typically,
+     * Traps sent from a device are converted to an event and that event is then identified for translation
+     * and translated into a generic configuration changed event.
+     * 
+     * @param nodeid
+     * @throws ProvisioningAdapterException
+     */
     void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException;
     
 }
