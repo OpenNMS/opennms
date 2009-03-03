@@ -8,6 +8,7 @@
   <tx:annotation-driven />
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
     <property name="locations">
       <list>
         <value>WEB-INF/configuration.properties</value>
