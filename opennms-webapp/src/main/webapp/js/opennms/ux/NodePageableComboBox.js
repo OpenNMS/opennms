@@ -6,11 +6,12 @@ OpenNMS.ux.NodePageableComboBox=Ext.extend(OpenNMS.ux.ComboFilterBox,{
 		{name:"name", mapping:"label"},
 		{name:"id", mapping:"nodeId"}
 	],
-	width:"100%",
 	hideTrigger:false,
 	queryParam:"label",
 	minHeight:300,
-	emptyText:"-- Choose A Node --"
+	triggerAction:"all",
+	emptyText:"-- Choose A Node --",
+	width:220
 	
 });
 
