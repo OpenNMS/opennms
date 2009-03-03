@@ -7,6 +7,15 @@
 
   <tx:annotation-driven />
 
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>WEB-INF/configuration.properties</value>
+        <value>file:${opennms.home}/etc/model-importer.properties</value>
+      </list>
+    </property>
+  </bean>
+
   <bean id="urlMapping"   class="org.gwtwidgets.server.spring.GWTHandler">
     <property name="mapping">
       <map>
