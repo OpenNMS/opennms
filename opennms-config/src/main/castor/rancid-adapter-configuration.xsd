@@ -23,21 +23,25 @@
 	 	        <element minOccurs="0" maxOccurs="unbounded" ref="this:mapping"/>
 	 		</sequence>
 	 		
-		    <attribute name="threads" type="int" use="required">
+	       	<attribute name="delay" type="long" use="required">
 		        <annotation>
-	    	      <documentation>The maximum number of threads used for
-	        		  rancid provisioning.</documentation>
-	        	</annotation>
-	      	</attribute>
-
-		    <attribute name="retry" type="int" use="required">
+		          <documentation>The time in msec to wait before trying
+		          to set the download flag to up in router.db.
+		          If schedule is there then it is verified if you are able
+		           to write to router.db in rancid.
+		           Otherwise you wait until schedule let you write on rancid.
+		          </documentation>
+		        </annotation>
+		    </attribute>
+	 		
+		    <attribute name="retries" type="int" use="required">
 		        <annotation>
 	    	      <documentation>The maximum number of retry before
 	    	      sending a failure.</documentation>
 	        	</annotation>
 	      	</attribute>
 
-		    <attribute name="interval" type="long" use="required">
+		    <attribute name="retry-delay" type="long" use="required">
 		        <annotation>
 	    	      <documentation>The time (in ms) to wait before a retry.</documentation>
 	        	</annotation>
@@ -104,7 +108,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="delay" type="long" use="optional" default="0">
+      <attribute name="delay" type="long" use="optional">
         <annotation>
           <documentation>The time in msec to wait before trying
           to set the download flag to up in router.db.
@@ -114,6 +118,34 @@
           </documentation>
         </annotation>
       </attribute>
+
+    <attribute name="retries" type="int" use="optional">
+        <annotation>
+   	      <documentation>The maximum number of retry before
+   	      sending a failure.</documentation>
+       	</annotation>
+     	</attribute>
+
+    <attribute name="retry-delay" type="long" use="optional">
+        <annotation>
+   	      <documentation>The time (in ms) to wait before a retry.</documentation>
+       	</annotation>
+     	</attribute>
+
+    <attribute name="useCategories" type="boolean" use="optional">
+        <annotation>
+   	      <documentation>If you want to use opennms categories
+   	      to match rancid device type.</documentation>
+       	</annotation>
+     	</attribute>
+
+	<attribute name="default-type" type="string" use="optional">
+      		<annotation>
+        			<documentation>The Default Rancid type, it is used when no device type
+        			for provisioned node is found.
+        			</documentation>
+    		</annotation>
+  		</attribute>
 
     </complexType>
 
