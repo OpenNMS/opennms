@@ -30,8 +30,7 @@ public class MockForeignSourceRepositoryTest {
     @Before
     public void setUp() {
         m_repository = new MockForeignSourceRepository();
-        ModelImport mi = new ModelImport();
-        m_defaultForeignSourceName = mi.getForeignSource();
+        m_defaultForeignSourceName = new ModelImport().getForeignSource();
     }
     
     private Requisition createRequisition() throws Exception {

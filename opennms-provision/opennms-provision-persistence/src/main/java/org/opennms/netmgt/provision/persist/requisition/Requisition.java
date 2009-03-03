@@ -51,7 +51,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     protected XMLGregorianCalendar m_dateStamp;
     
     @XmlAttribute(name="foreign-source")
-    protected String m_foreignSource;
+    protected String m_foreignSource = "imported:";
     
     @XmlAttribute(name="last-import")
     protected XMLGregorianCalendar m_lastImport;
