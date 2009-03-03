@@ -39,7 +39,9 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -376,18 +378,30 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     
     
 
-    public int getThreads(){
-        return getConfiguration().getThreads();
+    public long getDelay(String ipaddr) {
+        if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).hasDelay())   
+            return getPolicyManageWithoutTesting(ipaddr).getDelay();
+        return getConfiguration().getDelay();
     }
     
-    public int getRetry() {
-        return getConfiguration().getRetry();
+    public int getRetries(String ipaddr) {
+        if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasRetries())
+            return getPolicyManageWithoutTesting(ipaddr).getRetries();
+        return getConfiguration().getRetries();
     }
     
-    public long getInterval(){
-        return getConfiguration().getInterval();
+    public long getRetryDelay(String ipaddr) {
+        if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasRetryDelay())
+            return getPolicyManageWithoutTesting(ipaddr).getRetryDelay();
+        return getConfiguration().getRetryDelay();
     }
         
+    public boolean useCategories(String ipaddr) {
+        if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasUseCategories())
+            return getPolicyManageWithoutTesting(ipaddr).getUseCategories();
+        return getConfiguration().getUseCategories();
+    }
+
     public String getType(String sysoid){
         for (Mapping map: mappings()) {
             if (sysoid.startsWith(map.getSysoidMask()))
@@ -397,19 +411,43 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         return getConfiguration().getDefaultType();
     }
     
-    public boolean useCategories() {
-        return getConfiguration().getUseCategories();
+
+    public boolean isCurTimeInSchedule(String ipaddr){
+        if (hasSchedule(ipaddr)) {
+            Calendar cal = new GregorianCalendar();
+            for(Schedule schedule: getSchedules(ipaddr)) {
+                if (isTimeInSchedule(cal, schedule)) return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Return if time is part of specified outage.
+     * 
+     * @param cal
+     *            the calendar to lookup
+     * @param outage
+     *            the outage
+     * 
+     * @return true if time is in outage
+     */
+    private synchronized boolean isTimeInSchedule(Calendar cal, Schedule schedule) {
+        return BasicScheduleUtils.isTimeInSchedule(cal, schedule);
+
     }
 
-    public boolean hasPolicies() {
+
+    private boolean hasPolicies() {
         return (getConfiguration().getPolicies() != null);
     }
  
-    public boolean hasPolicyManage(String ipaddress) {
+    private boolean hasPolicyManage(String ipaddress) {
         return (getAllPackageMatches(ipaddress).size() > 0);
     }
 
-    public PolicyManage getPolicyManage(String ipaddr) {
+    private PolicyManage getPolicyManage(String ipaddr) {
        if (hasPolicyManage(ipaddr)) {
            return getPolicyManageWithoutTesting(ipaddr);
        }
@@ -428,11 +466,6 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         return null;
     }
 
-    public long getDelay(String ipaddr) {
-        if (hasPolicyManage(ipaddr))   
-            return getPolicyManageWithoutTesting(ipaddr).getDelay();
-        return 0;
-    }
 
     public boolean hasSchedule(String ipaddress) {
         if (hasPolicyManage(ipaddress))   

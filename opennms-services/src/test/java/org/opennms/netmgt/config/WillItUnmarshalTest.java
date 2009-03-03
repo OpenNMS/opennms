@@ -541,7 +541,7 @@ public class WillItUnmarshalTest {
         unmarshal("ackd-configuration.xml", AckdConfiguration.class);
     }
     @Test
-    public void testRancidConfiguration() throws Exception {
+    public void testRwsConfiguration() throws Exception {
         unmarshal("rws-configuration.xml", RwsConfiguration.class);
     }
     @Test
