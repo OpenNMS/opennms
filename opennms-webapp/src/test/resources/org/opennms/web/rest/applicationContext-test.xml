@@ -8,6 +8,7 @@
     <property name="locations">
       <list>
         <value>classpath:/org/opennms/web/rest/configuration.properties</value>
+        <value>file:${opennms.home}/etc/model-importer.properties</value>
       </list>
     </property>
   </bean>

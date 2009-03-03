@@ -13,6 +13,7 @@
     <property name="locations">
       <list>
         <value>WEB-INF/configuration.properties</value>
+        <value>file:${opennms.home}/etc/model-importer.properties</value>
       </list>
     </property>
   </bean>
