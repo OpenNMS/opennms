@@ -3,6 +3,7 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 /*
  * TODO
@@ -85,6 +86,17 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("<description>My Equipment</description>"));
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
+    }
+
+    @Test
+    public void testNodeComboQuery() throws Exception {
+        String url = "/nodes";
+        MockHttpServletRequest request = createRequest(GET, url);
+        request.addParameter("_dc", "1235761409572");
+        request.addParameter("start", "0");
+        request.addParameter("limit", "10");
+        request.addParameter("query", "hell");
+        sendRequest(request, 200);
     }
 
     private void createNode() throws Exception {
