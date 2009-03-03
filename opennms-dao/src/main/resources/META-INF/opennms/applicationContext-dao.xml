@@ -267,4 +267,12 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
+  <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  </bean>
+
+  <bean id="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpPeerFactory">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.getInstance</value></property>
+  </bean>
+  
 </beans>
