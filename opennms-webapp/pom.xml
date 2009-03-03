@@ -228,22 +228,12 @@
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
-<!--
           <systemProperties>
             <systemProperty>
-              <name>opennms.home</name>
-              <value>${opennms.home}</value>
-            </systemProperty>
-            <systemProperty>
-              <name>rrd.base.dir</name>
-              <value>${opennms.home}/share/rrd</value>
-            </systemProperty>
-            <systemProperty>
-              <name>rrd.binary</name>
-              <value>rrdtool</value>
+              <name>log4j.configuration</name>
+              <value>file:${basedir}/runInPlace-log4j.properties</value>
             </systemProperty>
           </systemProperties>
--->
         </configuration>
       </plugin>
 
