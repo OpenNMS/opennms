@@ -103,9 +103,10 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
 
     /**
      * Override this method to change the default schedule
+     * @param adapterOperationType 
      * @return
      */
-    AdapterOperationSchedule createScheduleForNode(int nodeId) {
+    AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
         return new AdapterOperationSchedule();
     }
     
@@ -128,7 +129,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(int)
      */
     public final void addNode(int nodeId) {
-        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, createScheduleForNode(nodeId));
+        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, 
+                                                   createScheduleForNode(nodeId, AdapterOperationType.ADD));
         if (!m_operQueue.contains(op)) {
             m_operQueue.offer(op);
             op.schedule(m_executorService);
@@ -140,7 +142,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(int)
      */
     public final void updateNode(int nodeId) {
-        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, createScheduleForNode(nodeId));
+        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, 
+                                                   createScheduleForNode(nodeId, AdapterOperationType.UPDATE));
         if (!m_operQueue.contains(op)) {
             m_operQueue.offer(op);
             op.schedule(m_executorService);
@@ -152,7 +155,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(int)
      */
     public final void deleteNode(int nodeId) {
-        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, createScheduleForNode(nodeId));
+        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, 
+                                                   createScheduleForNode(nodeId, AdapterOperationType.DELETE));
         if (!m_operQueue.contains(op)) {
             m_operQueue.offer(op);
             op.schedule(m_executorService);
@@ -164,7 +168,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#nodeConfigChanged(int)
      */
     public final void nodeConfigChanged(int nodeId) {
-        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, createScheduleForNode(nodeId));
+        AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, 
+                                                   createScheduleForNode(nodeId, AdapterOperationType.CONFIG_CHANGE));
         if (!m_operQueue.contains(op)) {
             m_operQueue.offer(op);
             op.schedule(m_executorService);
