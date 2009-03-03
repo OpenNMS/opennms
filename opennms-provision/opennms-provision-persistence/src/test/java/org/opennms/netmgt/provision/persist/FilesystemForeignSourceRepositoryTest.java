@@ -39,12 +39,9 @@ public class FilesystemForeignSourceRepositoryTest {
     @Autowired
     private ForeignSourceRepository m_foreignSourceRepository;
 
-    @Autowired
-    private ModelImport m_modelImport;
-    
     @Before
     public void setUp() {
-        m_defaultForeignSourceName = m_modelImport.getForeignSource();
+        m_defaultForeignSourceName = new ModelImport().getForeignSource();
     }
 
     private Requisition createRequisition() throws Exception {

@@ -4,12 +4,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
   </bean>
 
-  <bean id="modelImport" class="org.opennms.netmgt.config.modelimport.ModelImport" />
-  
   <bean id="foreignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
   	<property name="requisitionPath" value="${importer.cacheDir}/requisition" />
   	<property name="foreignSourcePath" value="${importer.cacheDir}/foreign-sources" />
