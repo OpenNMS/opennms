@@ -7,13 +7,9 @@
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
     ">
 
-  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-    <property name="locations">
-      <list>
-        <value>file:${opennms.home}/etc/model-importer.properties</value>
-      </list>
-    </property>
+    <property name="location" value="file:${opennms.home}/etc/model-importer.properties" />
   </bean>
   
   <bean name="extensionManager" class="org.opennms.netmgt.dao.support.DefaultExtensionManager" />
