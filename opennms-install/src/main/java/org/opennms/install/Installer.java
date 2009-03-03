@@ -313,20 +313,21 @@ public class Installer {
             m_out.println("OK");
         }
 
-        m_out.print("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
+        m_out.println("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
         if (files.length > 0) {
-            m_out.println("DONE");
-        }
-
-        for (File f : files) {
-            String newFileName = f.getName().replace("imports-", "");
-            File newFile = new File(importDir, newFileName);
-            m_out.print("  - moving " + f.getName() + " to " + importDir.getPath() + "... ");
-            if (f.renameTo(newFile)) {
-                m_out.println("OK");
-            } else {
-                m_out.println("FAILED");
+            m_out.println("FOUND");
+            for (File f : files) {
+                String newFileName = f.getName().replace("imports-", "");
+                File newFile = new File(importDir, newFileName);
+                m_out.print("  - moving " + f.getName() + " to " + importDir.getPath() + "... ");
+                if (f.renameTo(newFile)) {
+                    m_out.println("OK");
+                } else {
+                    m_out.println("FAILED");
+                }
             }
+        } else {
+            m_out.println("DONE");
         }
     }
 
