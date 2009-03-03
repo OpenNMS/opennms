@@ -37,8 +37,10 @@ package org.opennms.netmgt.provision;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -47,6 +49,7 @@ import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RancidAdapterConfig;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -66,7 +69,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
  */
-public class RancidProvisioningAdapter implements ProvisioningAdapter, InitializingBean {
+public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
     private NodeDao m_nodeDao;
     private EventForwarder m_eventForwarder;
@@ -80,10 +83,23 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
 
     private volatile static ConcurrentMap<Integer, RancidNodeContainer> m_onmsNodeRancidNodeMap;
 
+    @Override
+    AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType type) {
+        if (type.equals(AdapterOperationType.CONFIG_CHANGE)) {
+            String ipaddress = getSuitableIpForRancid(nodeId);
+            return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000,TimeUnit.MILLISECONDS);
+        }
+        return new AdapterOperationSchedule();
+    }
+
+ 
     public void afterPropertiesSet() throws Exception {
 
         RWSClientApi.init();
+        Assert.notNull(m_rwsConfig, "Rancid Provisioning Adapter requires RWSConfig property to be set.");
+        
         m_cp = getRWSConnection();
+        
         Assert.notNull(m_nodeDao, "Rancid Provisioning Adapter requires nodeDao property to be set.");
         
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
@@ -95,9 +111,8 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
             
             m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
         }
-        
     }
-    
+
     private ConnectionProperties getRWSConnection() {
         log().debug("Connections used :" +m_rwsConfig.getBaseUrl().getServer_url()+m_rwsConfig.getBaseUrl().getDirectory());
         log().debug("timeout: "+m_rwsConfig.getBaseUrl().getTimeout());        
@@ -131,13 +146,14 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     }
 
     @Transactional
-    public void addNode(int nodeId) throws ProvisioningAdapterException {
+    public void doAdd(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
         try {
             OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
             Assert.notNull(node, "Rancid Provisioning Adapter addNode method failed to return node for given nodeId:"+nodeId);
             
             RancidNode rNode = getSuitableRancidNode(node);
+            rNode.setStateUp(true);
             RWSClientApi.createRWSRancidNode(m_cp, rNode);
 
             RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
@@ -151,7 +167,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     }
 
     @Transactional
-    public void updateNode(int nodeId) throws ProvisioningAdapterException {
+    public void doUpdate(int nodeId) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
@@ -169,7 +185,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
     }
     
     @Transactional
-    public void deleteNode(int nodeId) throws ProvisioningAdapterException {
+    public void doDelete(int nodeId) throws ProvisioningAdapterException {
 
         log().debug("RANCID PROVISIONING ADAPTER CALLED deleteNode");
         
@@ -191,7 +207,7 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         }
     }
 
-    public void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
+    public void doNodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
         throw new ProvisioningAdapterException("configChanged event not yet implemented.");
     }
     
@@ -248,6 +264,19 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         return ADAPTER_NAME;
     }
 
+    private String getSuitableIpForRancid(int nodeid){
+        OnmsNode node = m_nodeDao.get(nodeid);
+        OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+        
+        if (primaryInterface == null) {
+            Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
+            for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
+                    return onmsIpInterface.getIpAddress();
+            }
+        }
+        return primaryInterface.getIpAddress();
+    }
+    
     private RancidNode getSuitableRancidNode(OnmsNode node) {
         
 
@@ -299,5 +328,27 @@ public class RancidProvisioningAdapter implements ProvisioningAdapter, Initializ
         }
         
         return r_auth_node;
+    }
+
+    @Override
+    public boolean isNodeReady(int nodeId) {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public void processPendingOperationsForNode(List<AdapterOperation> ops)
+            throws ProvisioningAdapterException {
+        for (AdapterOperation op : ops) {
+            if (op.getType() == AdapterOperationType.ADD) {
+                doAdd(op.getNodeId());
+            } else if (op.getType() == AdapterOperationType.UPDATE) {
+                doUpdate(op.getNodeId());
+            } else if (op.getType() == AdapterOperationType.DELETE) {
+                doDelete(op.getNodeId());
+            } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
+                doNodeConfigChanged(op.getNodeId());
+            }
+        }       
     }
 }

@@ -69,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
  */
-public class MapProvisioningAdapter implements ProvisioningAdapter, InitializingBean {
+public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
     private class XY {
         int x;
@@ -111,8 +111,9 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(org.opennms.netmgt.model.OnmsNode)
      */
     @Transactional
-    public void addNode(int nodeId) throws ProvisioningAdapterException {
+    private void doAdd(AdapterOperation op) throws ProvisioningAdapterException {
         log().debug("Map PROVISIONING ADAPTER CALLED addNode");        
+        int nodeId = op.getNodeId();
         try {
             OnmsNode node = m_onmsNodeDao.get(nodeId);
             m_mapsAdapterConfig.rebuildPackageIpListMap();
@@ -181,18 +182,19 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(org.opennms.netmgt.model.OnmsNode)
      */
     @Transactional
-    public void updateNode(int nodeId) throws ProvisioningAdapterException {
+    private void doUpdate(AdapterOperation op) throws ProvisioningAdapterException {
         log().debug("Map PROVISIONING ADAPTER CALLED updateNode");        
-        deleteNode(nodeId);
-        addNode(nodeId);
+        doDelete(op);
+        doAdd(op);
     }
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(org.opennms.netmgt.model.OnmsNode)
      */
     @Transactional
-    public void deleteNode(int nodeId) throws ProvisioningAdapterException {
+    private void doDelete(AdapterOperation op) throws ProvisioningAdapterException {
         log().debug("Map PROVISIONING ADAPTER CALLED deleteNode");        
+        int nodeId = op.getNodeId();
         try {
             m_onmsMapElementDao.deleteElementsByIdandType(nodeId, OnmsMapElement.NODE_TYPE);
             m_onmsMapElementDao.flush();
@@ -202,10 +204,6 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
         } catch (Exception e) {
             sendAndThrow(nodeId, e);
         }
-    }
-
-    public void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
-        throw new ProvisioningAdapterException("configChanged event not yet implemented.");
     }
 
     protected void removeEmptySubmaps() {
@@ -348,8 +346,6 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
         if (primaryInterface == null) {
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
-                
-                if (!onmsIpInterface.getIpAddress().equals("127.0.0.1") || !onmsIpInterface.getIpAddress().equals("0.0.0.0"))
                     return onmsIpInterface.getIpAddress();
             }
         }
@@ -418,6 +414,31 @@ public class MapProvisioningAdapter implements ProvisioningAdapter, Initializing
 
     public void setMapsAdapterConfig(MapsAdapterConfig mapsAdapterConfig) {
         m_mapsAdapterConfig = mapsAdapterConfig;
+    }
+
+
+    @Override
+    public boolean isNodeReady(int nodeId) {
+        return true;
+    }
+
+
+    @Override
+    public void processPendingOperationsForNode(List<AdapterOperation> ops)
+            throws ProvisioningAdapterException {
+            
+        for (AdapterOperation op : ops) {
+            if (op.getType() == AdapterOperationType.ADD) {
+                doAdd(op);
+            } else if (op.getType() == AdapterOperationType.UPDATE) {
+                doUpdate(op);
+            } else if (op.getType() == AdapterOperationType.DELETE) {
+                doDelete(op);
+            } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
+                //do nothing in this adapter
+            }
+        }
+       
     }
        
 }
