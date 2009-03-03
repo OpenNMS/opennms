@@ -313,7 +313,7 @@ public class Installer {
             m_out.println("OK");
         }
 
-        m_out.println("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
+        m_out.print("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
         if (files.length > 0) {
             m_out.println("FOUND");
             for (File f : files) {
