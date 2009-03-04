@@ -34,11 +34,11 @@ public class OnmsSnmpInterfaceList extends LinkedList<OnmsSnmpInterface> {
     }
     
     @XmlAttribute(name="totalCount")
-    public Integer getTotalCount() {
+    public int getTotalCount() {
         return m_totalCount;
     }
     
-    public void setTotalCount(Integer count) {
+    public void setTotalCount(int count) {
         m_totalCount = count;
     }
     
