@@ -9,5 +9,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
+    <module>remote-poller</module>
   </modules>
 </project>
