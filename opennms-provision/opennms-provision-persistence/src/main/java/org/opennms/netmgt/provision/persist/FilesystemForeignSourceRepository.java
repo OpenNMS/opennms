@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
@@ -74,8 +75,10 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         File outputFile = getOutputFileForForeignSource(foreignSource);
         try {
             foreignSource.updateDateStamp();
-            m_marshaller.marshal(foreignSource, outputFile);
-        } catch (JAXBException e) {
+            FileWriter fw = new FileWriter(outputFile);
+            m_marshaller.marshal(foreignSource, fw);
+            fw.close();
+        } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         }
     }
@@ -127,7 +130,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         File outputFile = getOutputFileForRequisition(requisition);
         try {
             requisition.updateDateStamp();
-            m_marshaller.marshal(requisition, outputFile);
+            FileWriter fw = new FileWriter(outputFile);
+            m_marshaller.marshal(requisition, fw);
+            fw.close();
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         }
