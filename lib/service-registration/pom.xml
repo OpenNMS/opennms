@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms</groupId>
+  <artifactId>service-registration</artifactId>
+  <version>0.4-SNAPSHOT</version>
+  <description>service registration and unregistration</description>
+  <name>Service Registration for Applications</name>
+  <scm>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/service-registration/trunk</developerConnection>
+    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-registration/trunk</url>
+  </scm>
+  <ciManagement>
+    <system>Hudson</system>
+    <url>http://internal.opennms.com:8081/</url>
+    <notifiers>
+      <notifier>
+        <type>htmlmail</type>
+        <address>ci@lists.opennms.com</address>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+  <developers>
+    <developer>
+      <id>rangerrick</id>
+      <name>Benjamin Reed</name>
+      <email>ranger@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Developer</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <file>service-registration.jar</file>
+          <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</url>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <releases />
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots />
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.apple</groupId>
+      <artifactId>dnssd</artifactId>
+      <version>108.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmdns</groupId>
+      <artifactId>jmdns</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+  <distributionManagement>
+    <repository>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/snapshots</url>
+    </snapshotRepository>
+    <site>
+      <id>opennms-site</id>
+      <name>OpenNMS Build Website</name>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites/${project.artifactId}/${project.version}/</url>
+    </site>
+  </distributionManagement>
+</project>
