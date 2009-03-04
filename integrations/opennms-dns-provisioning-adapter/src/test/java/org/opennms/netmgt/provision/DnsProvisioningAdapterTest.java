@@ -40,6 +40,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -127,20 +128,17 @@ public class DnsProvisioningAdapterTest {
     
     @Test
     @Transactional
-    public void testAddSameOperationTwice() {
-        
-        
+    public void testAddSameOperationTwice() throws InterruptedException {
         SimpleQueuedProvisioningAdapter adapter = new TestAdapter();
         
-        List<OnmsNode> nodes = m_nodeDao.findAll();
-        
-        assertTrue(nodes.size() > 0);
-        
         try {
-            adapter.addNode(nodes.get(0).getId());
-            adapter.addNode(nodes.get(0).getId());
-            
-            org.junit.Assert.assertEquals(1, adapter.getOperQueue().size());
+            adapter.addNode(1);
+            Thread.sleep(1000);
+            adapter.addNode(1);  //should get thrown away
+            adapter.updateNode(1);
+            org.junit.Assert.assertEquals(2, adapter.getOperationQueue().getOperationQueueForNode(1).size());
+            Thread.sleep(10000);
+            org.junit.Assert.assertEquals(0, adapter.getOperationQueue().getOperationQueueForNode(1).size());
         } catch (ProvisioningAdapterException pae) {
             //do nothing for now, this is the current expectation since the adapter is not yet implemented
         }
@@ -170,20 +168,24 @@ public class DnsProvisioningAdapterTest {
     class TestAdapter extends SimpleQueuedProvisioningAdapter {
 
         @Override
+        AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
+            return new AdapterOperationSchedule(3, 3, 1, TimeUnit.SECONDS);
+        };
+        
+        @Override
         public String getName() {
             return "TestAdapter";
         }
 
         @Override
         public boolean isNodeReady(int nodeId) {
-            return false;
+            return true;
         }
 
         @Override
-        public void processPendingOperationsForNode(List<AdapterOperation> ops)
+        public void processPendingOperationForNode(AdapterOperation op)
                 throws ProvisioningAdapterException {
-            System.out.println(ops);
-            
+            System.out.println(op);
         }
         
     }

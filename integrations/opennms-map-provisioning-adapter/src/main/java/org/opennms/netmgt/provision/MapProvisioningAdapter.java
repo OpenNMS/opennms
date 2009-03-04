@@ -424,10 +424,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
 
     @Override
-    public void processPendingOperationsForNode(List<AdapterOperation> ops)
+    public void processPendingOperationForNode(AdapterOperation op)
             throws ProvisioningAdapterException {
             
-        for (AdapterOperation op : ops) {
             if (op.getType() == AdapterOperationType.ADD) {
                 doAdd(op);
             } else if (op.getType() == AdapterOperationType.UPDATE) {
@@ -437,7 +436,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
                 //do nothing in this adapter
             }
-        }
        
     }
        
