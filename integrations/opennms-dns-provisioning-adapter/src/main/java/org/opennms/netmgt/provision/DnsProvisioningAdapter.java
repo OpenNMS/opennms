@@ -108,18 +108,16 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
 
     @Override
-    public void processPendingOperationsForNode(List<AdapterOperation> ops) throws ProvisioningAdapterException {
+    public void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException {
         
-        for (AdapterOperation op : ops) {
-            if (op.getType() == AdapterOperationType.ADD) {
-                doAdd(op);
-            } else if (op.getType() == AdapterOperationType.UPDATE) {
-                doUpdate(op);
-            } else if (op.getType() == AdapterOperationType.DELETE) {
-                doDelete(op);
-            } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-                //do nothing in this adapter
-            }
+        if (op.getType() == AdapterOperationType.ADD) {
+            doAdd(op);
+        } else if (op.getType() == AdapterOperationType.UPDATE) {
+            doUpdate(op);
+        } else if (op.getType() == AdapterOperationType.DELETE) {
+            doDelete(op);
+        } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
+            //do nothing in this adapter
         }
     }
 
