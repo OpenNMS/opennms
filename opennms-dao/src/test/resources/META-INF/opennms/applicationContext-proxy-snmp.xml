@@ -3,6 +3,6 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
         
-  <bean id="proxySnmpAgentConfig" class="org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory" />
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory" />
 
 </beans>
