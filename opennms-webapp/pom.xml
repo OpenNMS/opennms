@@ -75,8 +75,8 @@
               <outputFilename>app.jnlp</outputFilename>
               <jarResources>
                 <jarResource>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-remote-poller</artifactId>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>remote-poller</artifactId>
                   <version>${project.version}</version>
                   <classifier>jar-with-dependencies</classifier>
                   <mainClass>org.opennms.poller.remote.Main</mainClass>
@@ -88,8 +88,8 @@
               <outputFilename>headless.jnlp</outputFilename>
               <jarResources>
                 <jarResource>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-remote-poller</artifactId>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>remote-poller</artifactId>
                   <version>${project.version}</version>
                   <classifier>jar-with-dependencies</classifier>
                   <mainClass>org.opennms.poller.remote.Main</mainClass>
@@ -132,34 +132,6 @@
           </filesets>
         </configuration>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>dependency-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-remote-poller</artifactId>
-                  <version>${project.version}</version>
-                  <type>zip</type>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-              <excludes>**/*</excludes>
-              <includes>*.jar,*.jnlp</includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
