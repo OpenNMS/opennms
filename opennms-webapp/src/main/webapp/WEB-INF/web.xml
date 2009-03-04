@@ -820,7 +820,7 @@
     <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
   </servlet>
   
-    <servlet>
+  <servlet>
     <servlet-name>rancidStatus</servlet-name>
     <servlet-class>org.opennms.web.inventory.RancidStatusServlet</servlet-class>
   </servlet>
@@ -1195,7 +1195,7 @@
     <url-pattern>/inventory/invClogin</url-pattern>
   </servlet-mapping>
  
-    <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>rancidStatus</servlet-name>
     <url-pattern>/inventory/rancidStatus</url-pattern>
   </servlet-mapping>

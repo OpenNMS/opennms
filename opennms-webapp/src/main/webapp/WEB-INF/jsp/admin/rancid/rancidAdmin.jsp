@@ -33,69 +33,17 @@
 
 <%@page language="java"
 	contentType="text/html"
-	session="true"
-	import="org.opennms.web.element.*,
-		java.util.*,
-        org.opennms.web.svclayer.ResourceService,
-        org.opennms.web.inventory.InventoryLayer,
-        org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils,
-        org.opennms.web.element.ElementUtil"
-%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	session="true"%>
+<%@page language="java" contentType="text/html" session="true" %>
 
-
-<%!
-    private ResourceService m_resourceService;
-
-    public void init() throws ServletException {
-
-//	    WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-//		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
-		
-		InventoryLayer.init();
-    }
-
-	public static String getStatusStringWithDefault(Node node_db) {
-	    String status = ElementUtil.getNodeStatusString(node_db);
-	    if (status != null) {
-	        return status;
-	    } else {
-	        return "Unknown";
-	    }
-	}
-%>
-
-<%
-
-	Node node_db = ElementUtil.getNodeByParams(request);
-	int nodeId = node_db.getNodeId();
-
-	String elementID = node_db.getLabel();
-
-	Map<String, Object> nodeModel = new TreeMap<String, Object>();
-
-	try {	
-	    nodeModel = InventoryLayer.getRancidNodeAdmin(elementID,request);
-
-	} catch (Exception e) {
-		//throw new ServletException("Could node get Rancid Node ", e);
-	}
-    nodeModel.put("id", elementID);
-    nodeModel.put("status_general", getStatusStringWithDefault(node_db));
-    pageContext.setAttribute("model", nodeModel);
-%>
-
-<%
-String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Rancid" />
   <jsp:param name="headTitle" value="${model.id}" />
   <jsp:param name="headTitle" value="Rancid" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
+  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${model.db_id}'>Node</a>" />
   <jsp:param name="breadcrumb" value="Rancid" />
 </jsp:include>
 
@@ -107,7 +55,7 @@ String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a
     <table>
 		<tr>
 			<th>Node</th>
-	  		<th><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></th>
+	  		<th><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></th>
 	  	</tr>
 	</table>
   
@@ -133,7 +81,7 @@ String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a
 				<input id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
 			</th>
 		</tr>
-		<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.group}"> 
+		<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
 		<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 		</form>
 	</table> 
@@ -211,7 +159,7 @@ function validateFormInput()
 }    
 function cancelUser()
 {
-    document.newUserForm.action="admin/rancid/rancidAdmin.jsp?node=<%=nodeId%>";
+    document.newUserForm.action="admin/rancid/rancidAdmin.jsp?node=${model.db_id}";
     document.newUserForm.submit();
 }
 function validateFormInputStatus() {
