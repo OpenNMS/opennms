@@ -87,7 +87,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType type) {
         if (type.equals(AdapterOperationType.CONFIG_CHANGE)) {
             String ipaddress = getSuitableIpForRancid(nodeId);
-            return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000,TimeUnit.MILLISECONDS);
+            return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000, 1, TimeUnit.MILLISECONDS);
         }
         return new AdapterOperationSchedule();
     }
@@ -337,18 +337,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     @Override
-    public void processPendingOperationsForNode(List<AdapterOperation> ops)
-            throws ProvisioningAdapterException {
-        for (AdapterOperation op : ops) {
-            if (op.getType() == AdapterOperationType.ADD) {
-                doAdd(op.getNodeId());
-            } else if (op.getType() == AdapterOperationType.UPDATE) {
-                doUpdate(op.getNodeId());
-            } else if (op.getType() == AdapterOperationType.DELETE) {
-                doDelete(op.getNodeId());
-            } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-                doNodeConfigChanged(op.getNodeId());
-            }
-        }       
+    public void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException {
+        if (op.getType() == AdapterOperationType.ADD) {
+            doAdd(op.getNodeId());
+        } else if (op.getType() == AdapterOperationType.UPDATE) {
+            doUpdate(op.getNodeId());
+        } else if (op.getType() == AdapterOperationType.DELETE) {
+            doDelete(op.getNodeId());
+        } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
+            doNodeConfigChanged(op.getNodeId());
+        }
     }
 }
