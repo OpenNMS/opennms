@@ -13,6 +13,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
@@ -73,13 +74,15 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
         File outputFile = getOutputFileForForeignSource(foreignSource);
+        FileWriter writer = null;
         try {
             foreignSource.updateDateStamp();
-            FileWriter fw = new FileWriter(outputFile);
-            m_marshaller.marshal(foreignSource, fw);
-            fw.close();
+            writer = new FileWriter(outputFile);
+            m_marshaller.marshal(foreignSource, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
+        } finally {
+            IOUtils.closeQuietly(writer);
         }
     }
 
@@ -128,13 +131,15 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
         File outputFile = getOutputFileForRequisition(requisition);
+        FileWriter writer = null;
         try {
             requisition.updateDateStamp();
-            FileWriter fw = new FileWriter(outputFile);
-            m_marshaller.marshal(requisition, fw);
-            fw.close();
+            writer = new FileWriter(outputFile);
+            m_marshaller.marshal(requisition, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
+        } finally {
+            IOUtils.closeQuietly(writer);
         }
     }
 
