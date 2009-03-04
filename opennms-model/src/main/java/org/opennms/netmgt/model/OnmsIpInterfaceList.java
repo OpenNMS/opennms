@@ -39,7 +39,7 @@ public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
     }
     
     @XmlAttribute(name="totalCount")
-    public Integer getTotalCount() {
+    public int getTotalCount() {
         return m_totalCount;
     }
     
