@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.7.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>core</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS Core</name>
+  <build>
+    <!-- <finalName>${project.groupId}.${project.artifactId}-${project.version}</finalName> -->
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assemble/bin.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <modules>
+    <module>api</module>
+    <module>lib</module>
+    <module>runtime</module>
+    <module>web</module>
+    <module>doc</module>
+  </modules>
+</project>

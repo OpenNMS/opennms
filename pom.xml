@@ -86,7 +86,13 @@
     <url>http://opennms.svn.sourceforge.net/viewvc/opennms/opennms/trunk</url>
   </scm>
   <modules>
+    <!-- new structure -->
     <module>dependencies</module>
+    <module>core</module>
+    <module>features</module>
+
+    <!-- new structure -->
+    <module>assemblies</module>
     <module>opennms-test</module>
     <module>mock-snmp-agent</module>
     <module>opennms-util</module>
@@ -125,7 +131,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2-beta-3</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -605,6 +611,49 @@
   </properties>
 
   <profiles>
+
+    <profile>
+      <id>build.all</id>
+      <activation>
+        <property><name>build</name><value>all</value></property>
+      </activation>
+      <modules>
+        <module>lib</module>
+        <module>extensions</module>
+        <module>opennms-doc</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>build.lib</id>
+      <activation>
+        <property><name>build</name><value>lib</value></property>
+      </activation>
+      <modules>
+        <module>lib</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>build.extensions</id>
+      <activation>
+        <property><name>build</name><value>extensions</value></property>
+      </activation>
+      <modules>
+        <module>extensions</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>build.docs</id>
+      <activation>
+        <property><name>build</name><value>docs</value></property>
+      </activation>
+      <modules>
+        <module>opennms-doc</module>
+      </modules>
+    </profile>
+
     <profile>
       <id>buildDocs</id>
       <activation>
