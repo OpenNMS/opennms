@@ -13,7 +13,7 @@ public class RancidNodeWrapper {
     private Date creationDate;
     private String rootConfigurationUrl;
     
-    RancidNodeWrapper(String _deviceName, String _group, String _deviceType, String _comment, String _headRevision,
+    public RancidNodeWrapper(String _deviceName, String _group, String _deviceType, String _comment, String _headRevision,
                       int _totalRevision, Date _expirationDate, String _rootConfigurationUrl) {
          deviceName=_deviceName;
          group=_group;
