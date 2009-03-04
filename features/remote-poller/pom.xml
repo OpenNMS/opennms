@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>opennms</artifactId>
+    <artifactId>features</artifactId>
     <groupId>org.opennms</groupId>
     <version>1.7.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-remote-poller</artifactId>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>remote-poller</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Remote Poller</name>
-  <url>http://maven.apache.org</url>
   <build>
     <plugins>
       <plugin>
@@ -25,16 +25,16 @@
         </executions>
       </plugin>
       <plugin>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<executions>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
           <execution>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
           </execution>
-	</executions>
-	<configuration>
+        </executions>
+        <configuration>
           <archive>
             <manifest>
               <mainClass>org.opennms.poller.remote.Main</mainClass>
@@ -44,12 +44,12 @@
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
           <tarLongFileMode>gnu</tarLongFileMode>
-	</configuration>
+        </configuration>
       </plugin>
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>build-helper-maven-plugin</artifactId>
-	<executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
           <execution>
             <id>add-groovy-source</id>
             <phase>generate-sources</phase>
@@ -58,15 +58,15 @@
             </goals>
             <configuration>
               <sources>
-		<source>src/main/groovy</source>
+                <source>src/main/groovy</source>
               </sources>
             </configuration>
           </execution>
-	</executions>
+        </executions>
       </plugin>
       <plugin>
-	<artifactId>maven-eclipse-plugin</artifactId>
-	<configuration>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
           <additionalBuildcommands>
             <buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
           </additionalBuildcommands>
@@ -83,10 +83,10 @@
 eclipse.preferences.version=1
 groovy.compiler.output.path=target/classes
 ]]>
-	      </content>
+              </content>
             </file>
           </additionalConfig>
-	</configuration>
+        </configuration>
       </plugin>
     </plugins>
   </build>

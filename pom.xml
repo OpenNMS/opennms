@@ -112,7 +112,6 @@
     <module>opennms-config</module>
     <module>opennms-provision</module>
     <module>opennms-services</module>
-    <module>opennms-remote-poller</module>
     <module>integrations</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
@@ -131,7 +130,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-3</version>
+        <version>2.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -594,7 +593,7 @@
 
 
    <!-- code signing properties - used in opennms-webstart -->
-   <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in opennms-remote-poller/pom.xml -->
+   <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in features/remote-poller/pom.xml -->
    <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
    <webstart.keypass>opennms</webstart.keypass>
    <webstart.storepass>opennms</webstart.storepass>
