@@ -1,13 +1,8 @@
 package org.opennms.web.inventory;
 
 import java.io.IOException;
-import java.text.ChoiceFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,9 +28,9 @@ public class RancidStatusServlet extends HttpServlet {
             String device = request.getParameter("deviceName");
             String group = request.getParameter("groupName");
             
-            log().debug("RancidStatusServlet setting state "+ status);
+            log().debug("RancidStatusServlet setting state to "+ device + " " + group + " " + status);
 
-            int ret = InventoryLayer.updateStatus(device, group, status);
+            int ret = InventoryLayer.updateStatus(device, group);
             redirect(request, response);
         }
     }
