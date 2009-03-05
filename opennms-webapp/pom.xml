@@ -76,7 +76,7 @@
               <jarResources>
                 <jarResource>
                   <groupId>org.opennms.features</groupId>
-                  <artifactId>remote-poller</artifactId>
+                  <artifactId>org.opennms.features.remote-poller</artifactId>
                   <version>${project.version}</version>
                   <classifier>jar-with-dependencies</classifier>
                   <mainClass>org.opennms.poller.remote.Main</mainClass>

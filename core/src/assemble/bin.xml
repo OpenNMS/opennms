@@ -7,7 +7,6 @@
   <moduleSets>
     <moduleSet>
       <binaries>
-        <outputFileNameMapping>${artifact.groupId}.${artifact.artifactId}-${artifact.version}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
         <unpack>false</unpack>
       </binaries>
     </moduleSet>

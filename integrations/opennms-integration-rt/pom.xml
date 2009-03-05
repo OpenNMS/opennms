@@ -14,7 +14,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.ticketing</groupId>
-			<artifactId>api</artifactId>
+			<artifactId>org.opennms.features.ticketing.api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms</groupId>
