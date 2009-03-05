@@ -75,7 +75,6 @@
     <h3>Nodes</h3>
   </c:otherwise>
 </c:choose>
-
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${model.nodeCount == 0}">

@@ -82,6 +82,10 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 
 		OpenNMS.ux.IPInterfaceGrid.superclass.initComponent.apply(this, arguments);
 		
+	},
+	
+	onDoubleClick:function(event){
+		window.location = "element/interface.jsp?ipinterfaceid=" + this.getSelectionModel().getSelected().data.interfaceId;
 	}
 
 
