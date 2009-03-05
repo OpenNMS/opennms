@@ -109,11 +109,24 @@ printHelp() {
 # javaFind() functions.
 #
 javaCheck() {
+	if [ -z "$OPENJDK_MINIMUM_BUILD" ]; then
+		OPENJDK_MINIMUM_BUILD=14
+	fi
+
     ret="`$JP -version 2>&1 | grep '^java version' | sed 's/^java version \"//;s/\".*//'`"
     if echo "$ret" | egrep '^1\.[5-9]\.' > /dev/null; then
 	# Check for Sun Java
 	if $JP -version 2>&1 | egrep '^Java\(TM\)' > /dev/null; then
 	    return 0
+	fi
+	if $JP -version 2>&1 | egrep 'OpenJDK Core VM' >/dev/null; then
+		build="`$JP -version 2>&1 | egrep '^OpenJDK Core VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,'`"
+		if [ $build -ge $OPENJDK_MINIMUM_BUILD ]; then
+			return 0
+		else
+			tell "OpenNMS is only known to work with OpenJDK build $OPENJDK_MINIMUM_BUILD and later."
+			return 1
+		fi
 	fi
 	
 	tell "$JP is not a Sun JVM and only Sun JVMs are supported."
@@ -273,7 +286,7 @@ checkConfiguredJava() {
 
     if [ $? -ne 0 ]; then
 	warn "error: bad version or vendor for configured Java runtime environment"
-	warn "\"$JP -version\" does not report that is version 1.5+ and from Sun"
+	warn "\"$JP -version\" does not report that is version 1.5+ and a compatible JDK."
 	warn "$mantra"
 
 	return 1
