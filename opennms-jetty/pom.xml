@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.lib</groupId>
-      <artifactId>service-registration</artifactId>
+      <artifactId>org.opennms.lib.service-registration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>lib</artifactId>
     <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.lib</artifactId>
     <version>1.7.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.lib</groupId>
-  <artifactId>service-registration</artifactId>
+  <artifactId>org.opennms.lib.service-registration</artifactId>
   <version>0.4-SNAPSHOT</version>
   <description>service registration and unregistration</description>
   <name>Service Registration for Applications</name>

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ticketing</groupId>
-  <artifactId>api</artifactId>
+  <artifactId>org.opennms.features.ticketing.api</artifactId>
   <name>OpenNMS Ticketing API</name>
   <url>http://www.opennms.org/</url>
 </project>
