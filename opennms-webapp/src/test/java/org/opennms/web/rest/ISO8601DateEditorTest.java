@@ -47,7 +47,7 @@ public class ISO8601DateEditorTest extends TestCase {
 	
 	public void testGetAsText1() {
 		editor.setValue(new Date(1));
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		String formatted=editor.getAsText();
 		assertEquals("1970-01-01T00:00:00.001Z", formatted);
 	}
