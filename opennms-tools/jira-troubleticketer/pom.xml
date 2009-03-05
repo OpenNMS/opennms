@@ -71,7 +71,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>org.opennms.features.ticketing.api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

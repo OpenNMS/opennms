@@ -772,7 +772,7 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>jicmp-api</artifactId>
-        <version>1.0.9</version>
+        <version>1.0.10</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -794,12 +794,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ticketing</groupId>
-        <artifactId>api</artifactId>
+        <artifactId>org.opennms.features.ticketing.api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
-        <artifactId>service-registration</artifactId>
+        <artifactId>org.opennms.lib.service-registration</artifactId>
         <version>0.4-SNAPSHOT</version>
       </dependency>
       <dependency>
