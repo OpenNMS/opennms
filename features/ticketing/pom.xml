@@ -10,5 +10,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Ticketing</name>
   <modules>
+    <module>api</module>
   </modules>
 </project>
