@@ -63,7 +63,7 @@ public class DependencyCheckingContextListener implements ServletContextListener
 
     private void checkJvmName(ServletContext context) {
         final String systemProperty = "java.vm.name";
-        final String[] acceptableProperties = { "HotSpot(TM)", "BEA JRockit" };
+        final String[] acceptableProperties = { "HotSpot(TM)", "BEA JRockit", "OpenJDK Core VM" };
         
         String vmName = System.getProperty(systemProperty);
         if (vmName == null) {
@@ -76,7 +76,7 @@ public class DependencyCheckingContextListener implements ServletContextListener
                 ok = true;
             }
         }
-        
+
         if (ok) {
             log().info("System property '" + systemProperty + "' appears to contain a suitable JVM signature ('" + vmName + "') -- congratulations!  ;)");
         } else {
