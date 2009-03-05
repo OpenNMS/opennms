@@ -52,6 +52,10 @@ public class NodeScan implements Runnable {
     private LifeCycleRepository m_lifeCycleRepository;
     private List<Object> m_providers;
     
+    //NOTE TO SELF: This is referenced from the AgentScan inner class
+    private Integer m_nodeId;
+    private boolean m_aborted = false;
+    
     private OnmsNode m_node;
 
     public NodeScan(String foreignSource, String foreignId, ProvisionService provisionService, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
@@ -74,6 +78,13 @@ public class NodeScan implements Runnable {
         return m_node;
     }
 
+    public Integer getNodeId() {
+        return m_nodeId;
+    }
+    
+    public boolean isAborted() {
+        return m_aborted;
+    }
 
     public void run() {
         try {
@@ -133,9 +144,7 @@ public class NodeScan implements Runnable {
         private OnmsNode m_node;
         private InetAddress m_agentAddress;
         private String m_agentType;
-        private Integer m_nodeId;
         private Date m_scanStamp;
-        private boolean m_aborted = false;
         
         public AgentScan(OnmsNode node, InetAddress agentAddress, String agentType) {
             m_node = node;

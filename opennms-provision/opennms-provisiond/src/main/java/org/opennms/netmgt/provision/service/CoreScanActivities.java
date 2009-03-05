@@ -41,10 +41,13 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -75,7 +78,11 @@ import org.springframework.util.Assert;
 @ActivityProvider
 public class CoreScanActivities {
     
-    @Autowired ProvisionService m_provisionService;
+    @Autowired 
+    private ProvisionService m_provisionService;
+    
+    @Autowired
+    private EventForwarder m_eventForwarder;
     
     @Autowired
     private SnmpAgentConfigFactory m_agentConfigFactory;
@@ -163,6 +170,17 @@ public class CoreScanActivities {
             nodeScan.doAgentScan(currentPhase, primaryIface.getInetAddress(), "SNMP");
         }
         
+    }
+    
+    @Activity( lifecycle = "nodeScan", phase = "scanCompleted" )
+    public void scanCompleted(Phase currentPhase, NodeScan nodeScan) {
+        if (!nodeScan.isAborted()) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/provisiond/nodeScanCompleted", "Provisiond");
+            bldr.setNodeid(nodeScan.getNodeId());
+            bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, nodeScan.getForeignSource());
+            bldr.addParam(EventConstants.PARM_FOREIGN_ID, nodeScan.getForeignId());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
     }
 
     @Activity( lifecycle = "agentScan", phase = "collectNodeInfo" )
