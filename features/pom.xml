@@ -10,5 +10,6 @@
   <name>OpenNMS Features</name>
   <modules>
     <module>remote-poller</module>
+    <module>ticketing</module>
   </modules>
 </project>

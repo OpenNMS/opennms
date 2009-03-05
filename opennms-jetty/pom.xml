@@ -34,7 +34,7 @@
       <artifactId>jsp-2.1</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.lib</groupId>
       <artifactId>service-registration</artifactId>
     </dependency>
     <dependency>
