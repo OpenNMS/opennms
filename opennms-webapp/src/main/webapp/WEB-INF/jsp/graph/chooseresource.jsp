@@ -45,12 +45,14 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.Util"
+	import="org.opennms.web.Util,
+			org.opennms.web.element.*,
+			java.util.*"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<%@page import="org.opennms.web.svclayer.ResourceService"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -58,9 +60,29 @@
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>" />
   <jsp:param name="breadcrumb" value="Choose" />
+  <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 
+<c:set var="totalRecords" value="${fn:length(model.resourceTypes)}"/>
+<script language="Javascript" type="text/javascript"> 
+  var data = {total:"${totalRecords}", records:[
+	<c:forEach var="resourceType" items="${model.resourceTypes}">
+       <c:forEach var="resource" items="${resourceType.value}">
+            { id: "${resource.id}", value: "${resource.label}", type: "${resourceType.key.label}" },
+        </c:forEach>
+    </c:forEach>
+  		]};
+</script>
+	
+  <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
+  <script type="text/javascript" src="js/opennms/ux/DeleteBtnSelectionModel.js" ></script>
+  <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
+  <script type="text/javascript" src="js/ChooseResourceView.js" ></script>
   <script language="Javascript" type="text/javascript" >
+  	  Ext.onReady(function(){
+  		chooseResourceViewInit("resources-view", data, "${model.endUrl}");
+  	  });
+  	  
       function isSomethingSelected(node) {
          return recursiveIsSomethingSelected(node, 5);
       }
@@ -134,11 +156,11 @@
           }
       }
   </script>
-
+  <div class="onms">
   <h2>
     ${model.resource.resourceType.label}: <a href="<c:url value='${model.resource.link}'/>">${model.resource.label}</a>
   </h2> 
-
+  </div>
   <c:choose>
   <c:when test="${empty model.resourceTypes}">
       <p>
@@ -147,7 +169,8 @@
   </c:when>
   
   <c:otherwise>
-      <h3>
+  	<div id="resources-view"></div>
+      <%--<h3 class="o-box">
         Choose resources to query
       </h3>
 
@@ -160,7 +183,7 @@
   
         <c:set var="num" value="0"/>
         <c:forEach var="resourceType" items="${model.resourceTypes}">
-          <h3>${resourceType.key.label}</h3>
+          <h3 class="o-box">${resourceType.key.label}</h3>
 
           <c:choose>
             <c:when test="${fn:length(resourceType.value) < 10}">
@@ -192,7 +215,7 @@
       
       <script language="Javascript" type="text/javascript">
           selectIfOnlyOneResource("resourceId");
-      </script>
+      </script>--%>
       
   </c:otherwise>
   </c:choose>
