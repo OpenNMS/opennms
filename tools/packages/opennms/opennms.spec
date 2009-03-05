@@ -197,7 +197,7 @@ pushd opennms-tools
 popd
 
 pushd features/remote-poller
-    sh ../build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+    sh ../../build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
         -Dopennms.home=%{instprefix} package
 popd
 
