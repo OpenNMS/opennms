@@ -39,7 +39,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -47,12 +52,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.Category;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Appender;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -74,20 +74,12 @@ public class Main {
     boolean m_gui = false;
     CommandLine m_cl;
 
-    private Main(String[] args) {
+    private Main(String[] args) throws Exception {
         m_args = args;
         initializeLogging();
     }
     
-    private void initializeLogging() {
-        Logger logger = Logger.getRootLogger();
-        logger.setLevel(Level.WARN);
-
-        Layout layout = new PatternLayout("%d %-5p [%t] %c: %m%n");
-        FileAppender a = new FileAppender();
-        a.setName("default");
-        a.setAppend(true);
-        a.setBufferedIO(true);
+    private void initializeLogging() throws Exception {
         String logFile;
         if (System.getProperty("os.name").contains("Windows")) {
             logFile = System.getProperty("java.io.tmpdir") + File.separator + "opennms-remote-poller.log";
@@ -100,11 +92,10 @@ public class Main {
                 throw new IllegalStateException("Could not create parent directory for log file '" + logFile + "'");
             }
         }
-        a.setFile(logFile);
-        a.setLayout(layout);
-        a.activateOptions();
-        logger.removeAllAppenders();
-        logger.addAppender(a);
+        Handler fh = new FileHandler(logFile);
+        Logger.getLogger("").addHandler(fh);
+        Logger.getLogger("").setLevel(Level.WARNING);
+        ThreadCategory.getInstance().getRoot().removeAllAppenders();
     }
 
     private void run() {
@@ -118,7 +109,7 @@ public class Main {
             if (!m_gui) {
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
-                        log().fatal("No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        log().severe("No location name provided.  You must pass a location name the first time you start the remote poller!");
                         System.exit(27);
                     } else {
                         m_frontEnd.register(m_locationName);
@@ -128,14 +119,14 @@ public class Main {
             
         } catch(Exception e) {
             // a fatal exception occurred
-            log().fatal("Exception occurred during registration!", e);
+            log().log(Level.SEVERE, "Exception occurred during registration!", e);
             System.exit(27);
         }
         
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    private Logger log() {
+        return Logger.getLogger("");
     }
 
     private void parseArguments() throws ParseException {
@@ -157,7 +148,7 @@ public class Main {
         }
 
         if (m_cl.hasOption("d")) {
-            Logger.getRootLogger().setLevel(Level.DEBUG);
+            Logger.getLogger("").setLevel(Level.ALL);
         }
         
         if (m_cl.hasOption("l")) {
@@ -213,13 +204,13 @@ public class Main {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
 
-        log().debug("user.home.url = "+homeUrl);
+        log().fine("user.home.url = "+homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
-        log().debug("opennms.poller.server.url = "+m_url);
+        log().fine("opennms.poller.server.url = "+m_url);
         System.setProperty("opennms.poller.server.url", m_url);
 
-        log().debug("location name = " + m_locationName);
+        log().fine("location name = " + m_locationName);
         
         List<String> configs = new ArrayList<String>();
         configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml");
@@ -235,7 +226,7 @@ public class Main {
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
-            	log().debug("shouldExit: received property change event: "+e.getPropertyName()+";oldvalue:"+e.getOldValue()+";newvalue:"+e.getNewValue());
+            	log().fine("shouldExit: received property change event: "+e.getPropertyName()+";oldvalue:"+e.getOldValue()+";newvalue:"+e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
                 
@@ -251,7 +242,7 @@ public class Main {
                     return true;
                 }
                 
-            	log().debug("shouldExit: not exiting");
+            	log().fine("shouldExit: not exiting");
                 return false;
                 
             }
@@ -265,7 +256,7 @@ public class Main {
         });
     }
 		
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
         File killSwitch = null;
         
