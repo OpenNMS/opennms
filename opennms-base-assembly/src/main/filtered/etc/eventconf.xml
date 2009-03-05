@@ -1888,7 +1888,20 @@
      </logmsg>
      <severity>Normal</severity>
   </event>
-
+  <event>
+    <uei>uei.opennms.org/internal/provisiond/nodeScanCompleted</uei>
+    <event-label>OpenNMS-defined Provisiond Event</event-label>
+    <descr>
+      A message from the Provisiond NodeScan lifecycle that a NodeScan has completed:
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p&gt;
+      Typically the result of a request of an import request or a scheduled/user forced rescan.
+    </descr>
+    <logmsg dest='logndisplay' >
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p&gt;
+     </logmsg>
+     <severity>Normal</severity>
+  </event>
+  
   <event-file>events/ia.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
