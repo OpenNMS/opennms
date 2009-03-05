@@ -854,6 +854,8 @@ public class EventConstants {
      * Parm used to importer event
      */
     public static final String PARM_FOREIGN_SOURCE = "foreignSource";
+    public static final String PARM_FOREIGN_ID = "foreignId";
+
 
     
     /**
