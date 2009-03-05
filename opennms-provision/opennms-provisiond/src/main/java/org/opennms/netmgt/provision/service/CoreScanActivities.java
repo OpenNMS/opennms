@@ -68,6 +68,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.Assert;
 
 /**
@@ -82,6 +83,7 @@ public class CoreScanActivities {
     private ProvisionService m_provisionService;
     
     @Autowired
+    @Qualifier("standard")
     private EventForwarder m_eventForwarder;
     
     @Autowired
@@ -464,11 +466,13 @@ public class CoreScanActivities {
     }
 
     
+    @SuppressWarnings("unused")
     private void error(Throwable t, String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
         log.error(String.format(format, args), t);
     }
 
+    @SuppressWarnings("unused")
     private void debug(String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
@@ -487,6 +491,7 @@ public class CoreScanActivities {
             log.info(String.format(format, args));
         }
     }
+    @SuppressWarnings("unused")
     private void error(String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
         log.error(String.format(format, args));
