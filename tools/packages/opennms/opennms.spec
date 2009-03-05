@@ -188,7 +188,7 @@ EXTRA_TARGETS="$EXTRA_TARGETS docs"
 
 echo "=== RUNNING INSTALL ==="
 
-sh ./build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+sh ./build.sh -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
     -Dopennms.home=%{instprefix} install assembly:attached
 
 pushd opennms-tools
@@ -196,7 +196,7 @@ pushd opennms-tools
         -Dopennms.home=%{instprefix} install
 popd
 
-pushd opennms-remote-poller
+pushd features/remote-poller
     sh ../build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
         -Dopennms.home=%{instprefix} package
 popd
@@ -229,7 +229,7 @@ END
 
 ### install the remote poller jar
 
-install -c -m 644 opennms-remote-poller/target/opennms-remote-poller*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
+install -c -m 644 features/remote-poller/target/remote-poller*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
 
 %if %{with_docs}
 
