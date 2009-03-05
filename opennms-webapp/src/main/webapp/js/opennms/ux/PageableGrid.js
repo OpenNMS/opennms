@@ -13,25 +13,27 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	},
 	
 	initComponent:function(){
-	
+		this.on('rowdblclick', this.onDoubleClick, this);
 		var tpl = new Ext.XTemplate(this.urlTemplate);
 		
 		this.url = tpl.apply(this);
-	
-		this.store = new Ext.data.Store({
-			proxy:new Ext.data.HttpProxy({
-				method:"GET",
-				url: this.url
-			}),
-			paramNames:{
-			"start" : "offset",
-			"limit" : "limit",
-			"sort" : "orderby",
-			"dir" : "dir"
-			},
-			autoLoad:true,
-			reader:new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
-		});
+		
+		if(this.store == undefined){
+			this.store = new Ext.data.Store({
+				proxy:new Ext.data.HttpProxy({
+					method:"GET",
+					url: this.url
+				}),
+				paramNames:{
+				"start" : "offset",
+				"limit" : "limit",
+				"sort" : "orderby",
+				"dir" : "dir"
+				},
+				autoLoad:true,
+				reader:new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
+			});
+		}
 	
 
 		Ext.apply(this,{
@@ -71,6 +73,10 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 		if(this.pagingBarButtons && this.pagingBarButtons.length > 0){
 			this.getBottomToolbar().addButton(this.pagingBarButtons);
 		}
+	},
+	
+	onDoubleClick:function(event){
+		
 	}
 });
 

@@ -111,6 +111,11 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 		
 		OpenNMS.ux.SNMPInterfaceGrid.superclass.initComponent.apply(this, arguments);
 		
+	},
+
+	onDoubleClick:function(event){
+		//alert(this.getSelectionModel().getSelected().data.theId);
+		//window.location = "element/interface.jsp?ipinterfaceid=" + this.getSelectionModel().getSelected().data.theId;
 	}
 
 });
