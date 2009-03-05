@@ -780,19 +780,9 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>service-registration</artifactId>
-        <version>0.3</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-provisioning</artifactId>
         <version>1.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.api.integration</groupId>
-        <artifactId>opennms-ticketing</artifactId>
-        <version>1.0.2</version>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -801,6 +791,16 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-ackd</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ticketing</groupId>
+        <artifactId>api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib</groupId>
+        <artifactId>service-registration</artifactId>
+        <version>0.4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
