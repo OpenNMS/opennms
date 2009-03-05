@@ -229,7 +229,7 @@ END
 
 ### install the remote poller jar
 
-install -c -m 644 features/remote-poller/target/remote-poller*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
+install -c -m 644 features/remote-poller/target/*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
 
 %if %{with_docs}
 
