@@ -1,11 +1,11 @@
 package org.opennms.web.rest;
 
 import java.beans.PropertyEditorSupport;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
-import javax.xml.bind.DatatypeConverter;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * PropertyEditor suitable for use by BeanWrapperImpl, so that we can accept xsd:datetime formatted dates
@@ -16,13 +16,16 @@ import javax.xml.bind.DatatypeConverter;
  *
  */
 public class ISO8601DateEditor extends PropertyEditorSupport {
-
+    static final DateTimeFormatter m_formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+    
+    public ISO8601DateEditor() {
+        super();
+        
+    }
 	@Override
 	public String getAsText() {
 		Date date=(Date)super.getValue();
-		Calendar cal=new GregorianCalendar();
-		cal.setTime(date);
-		return DatatypeConverter.printDateTime(cal);
+		return m_formatter.print(date.getTime());
 	}
 
 	@Override
@@ -32,8 +35,7 @@ public class ISO8601DateEditor extends PropertyEditorSupport {
 			int epoch=Integer.parseInt(text);
 			date=new Date(epoch);
 		} catch (NumberFormatException e) {
-			//Doesn't parse as an int (epoch); try as a proper xsd:datetime
-			date=DatatypeConverter.parseDateTime(text).getTime();
+		    date = new Date(m_formatter.parseMillis(text));
 		}
 		super.setValue(date);
 	}
