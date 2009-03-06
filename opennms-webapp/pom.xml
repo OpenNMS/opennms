@@ -319,12 +319,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller</artifactId>
-    </dependency>
--->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
