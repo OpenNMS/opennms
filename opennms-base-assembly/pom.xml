@@ -57,6 +57,12 @@
 	             </artifactItem>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
+	               <artifactId>opennms-provision-persistence</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>xsds</classifier>
+	             </artifactItem>
+	             <artifactItem>
+	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-qosdaemon</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
