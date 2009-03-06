@@ -9,7 +9,21 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
-    <module>remote-poller</module>
     <module>ticketing</module>
   </modules>
+
+  <profiles>
+
+    <profile>
+      <id>build.features.remote-poller</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>remote-poller</module>
+      </modules>
+    </profile>
+
+  </profiles>
+
 </project>
