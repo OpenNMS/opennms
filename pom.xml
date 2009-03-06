@@ -778,6 +778,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.ticketing</groupId>
         <artifactId>org.opennms.features.ticketing.api</artifactId>
         <version>${project.version}</version>
