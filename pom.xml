@@ -654,19 +654,6 @@
     </profile>
 
     <profile>
-      <id>buildDocs</id>
-      <activation>
-        <os>
-          <family>!windows</family>
-        </os>
-      </activation>
-
-      <modules>
-        <module>opennms-doc</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>opt-local-rrdtool</id>
       
       <activation>
