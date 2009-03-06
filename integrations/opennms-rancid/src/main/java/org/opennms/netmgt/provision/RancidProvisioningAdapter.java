@@ -53,6 +53,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.RWSClientApi;
@@ -69,6 +71,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
  */
+@EventListener(name="RancidProvisioningAdapter:EventListener")
 public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
     private NodeDao m_nodeDao;
@@ -87,7 +90,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType type) {
         if (type.equals(AdapterOperationType.CONFIG_CHANGE)) {
             String ipaddress = getSuitableIpForRancid(nodeId);
-            return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000, 1, TimeUnit.MILLISECONDS);
+            return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000, m_rancidAdapterConfig.getRetries(ipaddress), TimeUnit.MILLISECONDS);
         }
         return new AdapterOperationSchedule();
     }
@@ -207,8 +210,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
-    public void doNodeConfigChanged(int nodeid) throws ProvisioningAdapterException {
-        throw new ProvisioningAdapterException("configChanged event not yet implemented.");
+    public void doNodeConfigChanged(int nodeId) throws ProvisioningAdapterException {
+        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
+        try {
+            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
+            RWSClientApi.updateRWSRancidNode(m_cp, rNode);
+        } catch (Exception e) {
+            sendAndThrow(nodeId, e);
+        }
     }
     
     private void sendAndThrow(int nodeId, Exception e) {
@@ -331,8 +340,16 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     @Override
-    public boolean isNodeReady(int nodeId) {
-        // TODO Auto-generated method stub
+    public boolean isNodeReady(AdapterOperation op) {
+        if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
+            Integer nodeid = op.getNodeId();
+            updateRancidNodeState(nodeid, true);
+            if ( m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(nodeid))) {
+              return true;
+            } else {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -347,5 +364,31 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             doNodeConfigChanged(op.getNodeId());
         }
+    }
+    
+    @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_FAILURE_UEI)
+    public void handleRancidDownLoadFailure(Event e) {
+        if (e.hasNodeid()) {
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            updateRancidNodeState(nodeId, true);
+            doNodeConfigChanged(nodeId);
+        }
+    }
+
+    @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI)
+    public void handleRancidDownLoadSuccess(Event e) {
+        if (e.hasNodeid()) {
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            updateRancidNodeState(nodeId, false);
+            doNodeConfigChanged(nodeId);
+        }
+    }
+
+    private void updateRancidNodeState(int nodeid, boolean up) {
+        RancidNodeContainer rcont = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeid));
+        RancidNode rnode = rcont.getNode();
+        rnode.setStateUp(up);
+        rcont.setNode(rnode);
+        m_onmsNodeRancidNodeMap.put(nodeid, rcont);
     }
 }

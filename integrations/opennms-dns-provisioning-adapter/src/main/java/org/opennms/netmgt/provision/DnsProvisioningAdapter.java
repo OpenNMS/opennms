@@ -103,7 +103,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
 
     @Override
-    public boolean isNodeReady(int nodeId) {
+    public boolean isNodeReady(AdapterOperation op) {
         return true;
     }
 

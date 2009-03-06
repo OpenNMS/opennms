@@ -178,7 +178,7 @@ public class DnsProvisioningAdapterTest {
         }
 
         @Override
-        public boolean isNodeReady(int nodeId) {
+        public boolean isNodeReady(AdapterOperation op) {
             return true;
         }
 
