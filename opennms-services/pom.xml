@@ -78,26 +78,24 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <!-- FIXME: This shouldn't be in here... should be using only
-         opennms-snmp-api -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-joesnmp</artifactId>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-javamail-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-api</artifactId>
+      <groupId>org.opennms.lib</groupId>
+      <artifactId>org.opennms.lib.joesnmp</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-test</artifactId>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
@@ -132,13 +130,13 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-joesnmp</artifactId>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-snmp4j</artifactId>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>

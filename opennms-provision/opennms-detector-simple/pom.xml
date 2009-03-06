@@ -23,12 +23,12 @@
   		<scope>test</scope>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-snmp-api</artifactId>
+  		<groupId>org.opennms.lib.snmp</groupId>
+  		<artifactId>org.opennms.lib.snmp.api</artifactId>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-snmp-test</artifactId>
+  		<groupId>org.opennms.lib.snmp</groupId>
+  		<artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
   		<version>${project.version}</version>
   		<type>test-jar</type>
   		<scope>test</scope>
