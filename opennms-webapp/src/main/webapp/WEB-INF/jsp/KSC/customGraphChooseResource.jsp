@@ -39,6 +39,7 @@
 <%@ page language="java" contentType="text/html" session="true" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
@@ -48,9 +49,22 @@
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Graph" />
+  <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
-
+<c:set var="totalRecords" value="${fn:length(resources)}"/>
+<script>
+	var data = {total:"${totalRecords}", records:[
+					<c:forEach var="resource" items="${resources}">
+					{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+					</c:forEach>
+		            ]
+			}
+</script>
+  <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
+  <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
+  <script type="text/javascript" src="js/CustomGraphResourceView.js" ></script>
   <script language="Javascript" type="text/javascript" >
+  
       function validateResource()
       {
           var isChecked = false
@@ -133,7 +147,7 @@
 
 <div class="TwoColLeft">
 
-  <h3>Choose the current resource</h3>
+  <h3 class="o-box">Choose the current resource</h3>
   <div class="boxWrapper">
     <c:choose>
       <c:when test="${empty parentResource}">
@@ -168,7 +182,7 @@
     </c:choose>
   </div>
 
-  <h3>View child resources</h3>
+  <h3 class="o-box">View child resources</h3>
   <div class="boxWrapper">
     <c:choose>
       <c:when test="${empty resources}">
@@ -178,7 +192,13 @@
       </c:when>
       
       <c:otherwise>
-        <form method="get" name="report" action="KSC/customGraphChooseResource.htm" >
+      	<script language="Javascript" type="text/javascript">
+	      	Ext.onReady(function(){
+	  	      customResourceViewInit("resource-grid", data, "blah");
+	  	 	});
+      	</script>
+      	<div id="resource-grid"></div>
+        <%-- <form method="get" name="report" action="KSC/customGraphChooseResource.htm" >
           <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>
           <select name="resourceId" size="10">
             <c:forEach var="resource" items="${resources}">
@@ -197,12 +217,12 @@
         <form method="get" name="reportSelect" action="KSC/customGraphEditDetails.htm" >
           <input type="hidden" name="resourceId" value="" />
           <input type="button" value="Choose child resource" onclick="submitFormSelect()" />
-        </form>
+        </form>--%>
       </c:otherwise>
     </c:choose>
   </div>
 
-  <h3>View the parent resource</h3>
+  <h3 class="o-box">View the parent resource</h3>
   <div class="boxWrapper">
     <c:choose>
       <c:when test="${empty parentResource}">
@@ -236,7 +256,7 @@
 </div>
 
 <div class="TwoColRight">
-  <h3>Descriptions</h3>
+  <h3 class="o-box">Descriptions</h3>
   <div class="boxWrapper">
     <p>
       The menu on the left lets you choose a specific resource that you want
