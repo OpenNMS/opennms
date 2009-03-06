@@ -101,7 +101,19 @@ groovy.compiler.output.path=target/classes
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
