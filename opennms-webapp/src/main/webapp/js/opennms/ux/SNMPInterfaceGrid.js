@@ -114,8 +114,12 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	},
 
 	onDoubleClick:function(event){
-		//alert(this.getSelectionModel().getSelected().data.theId);
-		//window.location = "element/interface.jsp?ipinterfaceid=" + this.getSelectionModel().getSelected().data.theId;
+		
+		if(this.getSelectionModel().getSelected().data.ipAddress != "0.0.0.0"){
+			window.location = "element/interface.jsp?node=" + this.nodeId + "&intf=" + this.getSelectionModel().getSelected().data.ipAddress;
+		}else{
+			alert("This Physical Interface has no Corresponding IP Interface");
+		}
 	}
 
 });
