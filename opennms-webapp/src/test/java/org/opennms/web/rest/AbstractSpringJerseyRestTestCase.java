@@ -51,7 +51,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private Filter filter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws Throwable {
         beforeServletStart();
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
@@ -77,16 +77,22 @@ public abstract class AbstractSpringJerseyRestTestCase {
         contextListener.contextInitialized(e);
         
         servletContext.setContextPath(contextPath);
-        servletConfig = new MockServletConfig(servletContext, "dispatcher");        
+        servletConfig = new MockServletConfig(servletContext, "dispatcher");    
         servletConfig.addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         servletConfig.addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest");
         
-        MockFilterConfig filterConfig = new MockFilterConfig(servletContext, "openSessionInViewFilter");
-        filter = new OpenSessionInViewFilter();        
-        filter.init(filterConfig);
-        
-        dispatcher = new SpringServlet();
-        dispatcher.init(servletConfig);
+        try {
+
+            MockFilterConfig filterConfig = new MockFilterConfig(servletContext, "openSessionInViewFilter");
+            filter = new OpenSessionInViewFilter();        
+            filter.init(filterConfig);
+
+            dispatcher = new SpringServlet();
+            dispatcher.init(servletConfig);
+
+        } catch (ServletException se) {
+            throw se.getRootCause();
+        }
         
         afterServletStart();
         System.err.println("------------------------------------------------------------------------------");
