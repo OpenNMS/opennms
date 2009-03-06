@@ -22,6 +22,50 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.sun.tools.jxc.maven2</groupId>
+        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <destdir>${project.build.directory}/xsds</destdir>
+          <srcdir>${basedir}/src/main/java</srcdir>
+          <verbose>false</verbose>
+          <includes>
+            <include>org/opennms/netmgt/provision/persist/foreignsource/*.java</include>
+          </includes>
+          <schemas>
+            <schema>
+              <namespace>http://xmlns.opennms.org/xsd/config/foreign-source</namespace>
+              <file>foreign-sources.xsd</file>
+            </schema>
+          </schemas>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/xsds.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <!--
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -117,4 +161,17 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>java-net-maven2-repo</id>
+      <url>http://download.java.net/maven/2</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
