@@ -74,6 +74,11 @@
   		<artifactId>opennms-detector-lineoriented</artifactId>
   		<version>${project.version}</version>
   	</dependency>
+   <dependency>
+      <groupId>org.samba.jcifs</groupId>
+      <artifactId>jcifs</artifactId>
+   </dependency>
+
   </dependencies>
   
 </project>
