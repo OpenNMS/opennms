@@ -13,4 +13,30 @@
     <module>service-registration</module>
     <module>snmp</module>
   </modules>
+
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+  </repositories>
+
 </project>
