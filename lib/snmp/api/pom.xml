@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>opennms-snmp</artifactId>
-    <groupId>org.opennms</groupId>
+    <groupId>org.opennms.lib</groupId>
+    <artifactId>org.opennms.lib.snmp</artifactId>
     <version>1.7.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-snmp-joesnmp</artifactId>
-  <name>OpenNMS JoeSNMP SNMP Implementation</name>
+  <groupId>org.opennms.lib.snmp</groupId>
+  <artifactId>org.opennms.lib.snmp.api</artifactId>
+  <name>OpenNMS SNMP API</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-api</artifactId>
+      <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-joesnmp</artifactId>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>

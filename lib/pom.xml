@@ -9,6 +9,8 @@
   <packaging>pom</packaging>
   <name>OpenNMS Libraries</name>
   <modules>
+    <module>joesnmp</module>
     <module>service-registration</module>
+    <module>snmp</module>
   </modules>
 </project>
