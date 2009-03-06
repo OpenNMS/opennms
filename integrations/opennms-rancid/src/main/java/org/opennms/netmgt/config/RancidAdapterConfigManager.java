@@ -403,11 +403,12 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     public String getType(String sysoid){
-        for (Mapping map: mappings()) {
-            if (sysoid.startsWith(map.getSysoidMask()))
-            return map.getType();
+        if (sysoid != null) {
+            for (Mapping map: mappings()) {
+                if (sysoid.startsWith(map.getSysoidMask()))
+                return map.getType();
+            }
         }
-        
         return getConfiguration().getDefaultType();
     }
     
