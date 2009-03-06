@@ -35,14 +35,14 @@
   <span style="font-size: large; text-align: right">
     <c:choose>
       <c:when test="${dbNodeCounts[group.foreignSource] > 0}">
-        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction('${groups[foreignSourceName].foreignSource}', 'deleteNodes', 'Are you sure you want to delete all the nodes from group ${group.foreignSource}. This CANNOT be undone.')" />
+        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction('${foreignSourceName}', 'deleteNodes', 'Are you sure you want to delete all the nodes from group ${group.foreignSource}. This CANNOT be undone.')" />
       </c:when>
       <c:otherwise>
-        <input type="button" value="Delete Group" onclick="javascript:doAction('${group.foreignSource}', 'deleteGroup')" />
+        <input type="button" value="Delete Group" onclick="javascript:doAction('${foreignSourceName}', 'deleteGroup')" />
       </c:otherwise>
     </c:choose>
     <c:if test="${!empty groups[foreignSourceName]}">
-      <input type="button" value="Import" onclick="javascript:doAction('${groups[foreignSourceName].foreignSource}', 'import')" />
+      <input type="button" value="Import" onclick="javascript:doAction('${foreignSourceName}', 'import')" />
     </c:if>
   </span>
   <br />
