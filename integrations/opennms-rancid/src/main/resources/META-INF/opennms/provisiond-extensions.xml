@@ -5,6 +5,7 @@
 
   <bean name="rancidAdapter" class="org.opennms.netmgt.provision.RancidProvisioningAdapter">
     <property name="eventForwarder" ref="eventForwarder" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     <property name="nodeDao" ref="nodeDao" />
     <property name="rwsConfig" ref="rwsConfig"/>
     <property name="rancidAdapterConfig" ref="rancidAdapterConfig"/>

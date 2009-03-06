@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -76,6 +77,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     
     private NodeDao m_nodeDao;
     private EventForwarder m_eventForwarder;
+    private volatile EventSubscriptionService m_eventSubscriptionService;
     private RWSConfig m_rwsConfig;
     private RancidAdapterConfig m_rancidAdapterConfig;
     private ConnectionProperties m_cp;
@@ -289,18 +291,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private RancidNode getSuitableRancidNode(OnmsNode node) {
         
 
-        //FIXME: Guglielmo, the group should be the foreign source of the node
-        // Antonio: I'm working on the configuration file and the group
-        // is written in the configuration file
-        // in principle you can provide rancid node to more then a group
+        //The group should be the foreign source of the node
+
         String group = node.getForeignSource();
-//        RancidNode r_node = new RancidNode(m_rancidAdapterConfig.getGroup(), node.getLabel());
-//        String group = m_rancidAdapterConfig.getGroup();
+        
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
-        //FIXME: Guglielmo, the device type is going to have to be mapped by SysObjectId...
-        //that should probably be in the RancidNode class
-        // It is in the Configuration file for Rancid ADapter
+        //FIXME: Check the node categories if useNodecategories is true
         r_node.setDeviceType(m_rancidAdapterConfig.getType(node.getSysObjectId()));
         r_node.setStateUp(false);
         r_node.setComment(RANCID_COMMENT);
@@ -390,5 +387,16 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         rnode.setStateUp(up);
         rcont.setNode(rnode);
         m_onmsNodeRancidNodeMap.put(nodeid, rcont);
+    }
+
+
+    public EventSubscriptionService getEventSubscriptionService() {
+        return m_eventSubscriptionService;
+    }
+
+
+    public void setEventSubscriptionService(
+            EventSubscriptionService eventSubscriptionService) {
+        m_eventSubscriptionService = eventSubscriptionService;
     }
 }
