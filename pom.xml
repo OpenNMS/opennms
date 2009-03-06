@@ -97,7 +97,6 @@
     <module>mock-snmp-agent</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
-    <module>opennms-joesnmp</module>
     <module>opennms-install</module>
     <module>opennms-model</module>
     <module>opennms-ackd</module>
@@ -108,7 +107,6 @@
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
-    <module>opennms-snmp</module>
     <module>opennms-config</module>
     <module>opennms-provision</module>
     <module>opennms-services</module>
@@ -786,8 +784,28 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
+        <artifactId>org.opennms.lib.joesnmp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.service-registration</artifactId>
         <version>0.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib.snmp</groupId>
+        <artifactId>org.opennms.lib.snmp.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib.snmp</groupId>
+        <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib.snmp</groupId>
+        <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1022,21 +1040,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-snmp-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-snmp-joesnmp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-snmp-snmp4j</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

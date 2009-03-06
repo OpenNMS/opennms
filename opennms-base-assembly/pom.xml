@@ -229,13 +229,13 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-joesnmp</artifactId>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-snmp-snmp4j</artifactId>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

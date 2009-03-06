@@ -14,8 +14,8 @@
   		<version>${project.version}</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-snmp-api</artifactId>
+  		<groupId>org.opennms.lib.snmp</groupId>
+  		<artifactId>org.opennms.lib.snmp.api</artifactId>
   		<version>${project.version}</version>
   	</dependency>
   	<dependency>
@@ -30,14 +30,14 @@
 		<scope>test</scope>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-snmp-test</artifactId>
+  		<groupId>org.opennms.lib.snmp</groupId>
+  		<artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
   		<version>${project.version}</version>
 		<scope>test</scope>
   	</dependency>
   	<dependency>
-  	 <groupId>org.opennms</groupId>
-  	 <artifactId>opennms-snmp-snmp4j</artifactId>
+  	 <groupId>org.opennms.lib.snmp</groupId>
+  	 <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
   	 <version>${project.version}</version>
   	 <scope>test</scope>
   	</dependency>
