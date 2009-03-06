@@ -56,14 +56,16 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 
 	var selectControls = new Ext.Panel({
 		region:"center",
-		layout:"anchor",
+		layout:"absolute",
 		bodyStyle:"background:transparent",
 		items:[
 			{
 				xtype:'label',
-				align:'center',
 				text:'Drag Resources on the left to the bin on the right to graph',
-				labelStyle: 'font-family:"Lucida Grande",Verdana,sans-serif; font-size:70%;'
+				style: 'font-family:"Lucida Grande",Verdana,sans-serif; font-size:70%; text-align:center;',
+				width:"80%",
+				x:"10%",
+				y:"40%"
 			}
 		]
 	})
@@ -112,7 +114,13 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 			 		text:"Total 0"
 			 	}
 			 ]
-		})
+		}),
+		listeners:{
+			'dblclick':{
+				scope:this,
+				fn:removeSelectedRecord
+			}
+		}
 	});
 
 	var gridPanel = new Ext.Panel({
