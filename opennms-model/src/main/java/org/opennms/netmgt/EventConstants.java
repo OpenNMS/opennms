@@ -575,6 +575,8 @@ public class EventConstants {
     public static final String IMPORT_FAILED_UEI = "uei.opennms.org/internal/importer/importFailed";
     public static final String PROVISIONING_ADAPTER_FAILED = "uei.opennms.org/provisioner/provisioningAdapterFailed";
 
+    public static final String PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nodeScanCompleted";
+    
     public static final String PARM_FAILURE_MESSAGE = "failureMessage";
 
     public static final String PARM_IMPORT_STATS = "importStats";
