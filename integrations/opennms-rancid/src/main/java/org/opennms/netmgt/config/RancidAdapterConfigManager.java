@@ -389,13 +389,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
             return getPolicyManageWithoutTesting(ipaddr).getRetries();
         return getConfiguration().getRetries();
     }
-    
-    public long getRetryDelay(String ipaddr) {
-        if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasRetryDelay())
-            return getPolicyManageWithoutTesting(ipaddr).getRetryDelay();
-        return getConfiguration().getRetryDelay();
-    }
-        
+            
     public boolean useCategories(String ipaddr) {
         if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasUseCategories())
             return getPolicyManageWithoutTesting(ipaddr).getUseCategories();

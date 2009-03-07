@@ -32,7 +32,7 @@ public interface RancidAdapterConfig {
      *          the ipaddress of the node
      * @return the delay time for retry
      */
-    public abstract long getRetryDelay(String ipaddress);
+//    public abstract long getRetryDelay(String ipaddress);
        
     /**
      * return if is to be used the opennms categories to get 
