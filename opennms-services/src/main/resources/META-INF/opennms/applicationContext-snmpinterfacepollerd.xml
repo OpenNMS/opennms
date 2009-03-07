@@ -35,5 +35,13 @@
       <property name="network" ref="pollableNetwork" />
       <property name="dataSource" ref="dataSource" />
     </bean>
+    <bean id="init-snmpinterfacepollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="snmpinterfacepollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpinterfacepollerConfig-factory">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory.getInstance</value></property>
+    </bean>
+	
     
 </beans>
