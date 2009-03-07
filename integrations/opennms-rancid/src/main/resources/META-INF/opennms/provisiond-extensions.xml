@@ -16,6 +16,7 @@
     <property name="nodeDao" ref="nodeDao" />
     <property name="rwsConfig" ref="rwsConfig"/>
     <property name="rancidAdapterConfig" ref="rancidAdapterConfig"/>
+  	<property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
   <bean id="rancidAdapterConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -26,7 +27,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.getInstance</value></property>
   </bean>
   
-  <!--  bean id="rancidProvisioningAdapterListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <!--bean id="rancidProvisioningAdapterListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
   	<property name="annotatedListener" ref="rancidProvisioningAdapter" />
   	<property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean-->
