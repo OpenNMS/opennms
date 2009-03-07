@@ -78,6 +78,7 @@ final class SnmpInterfacePollerEventProcessor implements EventListener {
         ueiList.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
         ueiList.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
         ueiList.add(EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI);
+        ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
         
         getEventManager().addEventListener(this, ueiList);
     }
@@ -148,7 +149,9 @@ final class SnmpInterfacePollerEventProcessor implements EventListener {
             nodeDeletedHandler(event);        
         } else if(event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
             primarychangeHandler(event);        
-        } else if(event.getUei().equals(EventConstants.DELETE_INTERFACE_EVENT_UEI) || event.getUei().equals(EventConstants.ADD_INTERFACE_EVENT_UEI)) {
+        } else if(event.getUei().equals(EventConstants.DELETE_INTERFACE_EVENT_UEI) || 
+                event.getUei().equals(EventConstants.ADD_INTERFACE_EVENT_UEI) ||
+                event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI) ) {
             refreshInterfaceHandler(event);        
         } // end single event process
 
