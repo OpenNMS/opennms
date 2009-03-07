@@ -62,7 +62,12 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="KSC Reports" />
+  <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
+
+<script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
+<script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
+<script type="text/javascript" src="js/KSCIndexView.js" ></script>
 
 <!-- A script for validating Node ID Selection Form before submittal -->
 <script language="Javascript" type="text/javascript" >
@@ -177,7 +182,7 @@
 
 <div class="TwoColLeft">
  
-  <h3>Customized Reports</h3>
+  <h3 class="o-box">Customized Reports</h3>
 
   <div class="boxWrapper">
   <p>Choose the custom report title to view or modify from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
@@ -218,31 +223,33 @@
       </form>
   </div>
 
-<h3>Node SNMP Interface Reports</h3>
+<h3 class="o-box">Node SNMP Interface Reports</h3>
 <div class="boxWrapper">
       <p>Select node for desired performance report</p>
-      <form method="get" name="choose_node" action="KSC/customView.htm">
-        <input type="hidden" name="type" value="node">
-              <select style="width: 100%;" name="report" size="10">
-                <c:forEach var="resource" items="${nodeResources}">
-                  <c:choose>
-                    <c:when test="${match == null || match == ''}">
-                      <option value="${resource.name}">${resource.label}</option>
-                    </c:when>
-                    <c:otherwise>
-                      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-                        <option value="${resource.name}">${resource.label}</option>
-                      </c:if>
-                    </c:otherwise>  
-                  </c:choose>
-                </c:forEach>
-              </select>
-
-              <input type="button" value="Submit" onclick="submitNodeForm()" alt="Initiates Generation of Node Report"/>
-      </form>
+      <c:set var="totalNodeResources" value="${fn:length(nodeResources)}"/>
+      <script language="Javascript" type="text/javascript">
+      	var nodeData = {total:"${totalNodeResources}", records:[
+												<c:forEach var="resource" items="${nodeResources}">
+												<c:choose>
+												  <c:when test="${match == null || match == ''}">
+												  {id:"${resource.name}", value:"${resource.label}", type:"node"},
+												  </c:when>
+												  <c:otherwise>
+												    <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+												    {id:"${resource.name}", value:"${resource.label}", type:"node"},
+												    </c:if>
+												  </c:otherwise>  
+												</c:choose>
+												</c:forEach>
+      	                                  	]};
+        Ext.onReady(function(){
+        		nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
+            });
+      </script>
+      <div id="snmp-reports"></div>
 </div>
 
-<h3>Domain SNMP Interface Reports</h3>
+<h3 class="o-box">Domain SNMP Interface Reports</h3>
 <div class="boxWrapper">
       <c:choose>
         <c:when test="${empty domainResources}">
@@ -251,22 +258,22 @@
 
         <c:otherwise>
           <p>Select domain for desired performance report</p>
+          <script>
+          		var domainData = {total:"100", records:[
+														
+          		                                		]}
+          </script>
+          <script language="Javascript" type="text/javascript">
+          	Ext.onReady(function(){
+
+            });
+          </script>
+          <div id="domain-reports"></div>
           <form method="get" name="choose_domain" action="KSC/customView.htm" >
             <input type="hidden" name="type" value="domain">
 
                   <select style="width: 100%;" name="domain" size="10">
-                    <c:forEach var="resource" items="${domainResources}">
-                      <c:choose>
-                        <c:when test="${match == null || match == ''}">
-                          <option value="${resource.name}">${resource.label}</option>
-                        </c:when>
-                        <c:otherwise>
-                          <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-                            <option value="${resource.name}">${resource.label}</option>
-                          </c:if>
-                        </c:otherwise>  
-                      </c:choose>
-                    </c:forEach>
+                    
                   </select>
 
                   <input type="button" value="Submit" onclick="submitDomainForm()" alt="Initiates Generation of Domain Report"/>
@@ -278,7 +285,7 @@
 </div>
 
 <div class="TwoColRight">
-  <h3>Descriptions</h3>
+  <h3 class="o-box">Descriptions</h3>
 
   <div class="boxWrapper">
     <p>
