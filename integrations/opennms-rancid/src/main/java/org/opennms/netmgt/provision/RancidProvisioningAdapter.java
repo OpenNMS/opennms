@@ -53,7 +53,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -76,8 +75,7 @@ import org.springframework.util.Assert;
 public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
     private NodeDao m_nodeDao;
-    private EventForwarder m_eventForwarder;
-    private volatile EventSubscriptionService m_eventSubscriptionService;
+    private volatile EventForwarder m_eventForwarder;
     private RWSConfig m_rwsConfig;
     private RancidAdapterConfig m_rancidAdapterConfig;
     private ConnectionProperties m_cp;
@@ -365,6 +363,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     
     @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_FAILURE_UEI)
     public void handleRancidDownLoadFailure(Event e) {
+        log().debug("get Event uei/id: " + e.getUei() + "/" + e.getDbid());
         if (e.hasNodeid()) {
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             updateRancidNodeState(nodeId, true);
@@ -374,6 +373,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI)
     public void handleRancidDownLoadSuccess(Event e) {
+        log().debug("get Event uei/id: " + e.getUei() + "/" + e.getDbid());
         if (e.hasNodeid()) {
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             updateRancidNodeState(nodeId, false);
@@ -389,14 +389,4 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         m_onmsNodeRancidNodeMap.put(nodeid, rcont);
     }
 
-
-    public EventSubscriptionService getEventSubscriptionService() {
-        return m_eventSubscriptionService;
-    }
-
-
-    public void setEventSubscriptionService(
-            EventSubscriptionService eventSubscriptionService) {
-        m_eventSubscriptionService = eventSubscriptionService;
-    }
 }
