@@ -80,9 +80,9 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         "snmpinterface.snmpifalias, " +
         "snmpinterface.snmpcollect, " +
         "snmpinterface.id " +
-        "FROM ipinterface LEFT JOIN snmpinterface " +
+        "FROM snmpinterface LEFT JOIN ipinterface " +
         "ON ipinterface.snmpinterfaceid=snmpinterface.id " +
-        "WHERE ipinterface.nodeid=?";
+        "WHERE snmpinterface.nodeid=?";
 
     public void init() throws ServletException {
         try {
