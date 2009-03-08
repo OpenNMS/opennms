@@ -50,7 +50,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
     @Test
     public void testGetForUnknownIp() throws Exception {
 
-        String url = "/snmpConfiguration/1.1.1.1";
+        String url = "/snmpConfig/1.1.1.1";
         // Testing GET Collection
         
         SnmpInfo config = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
@@ -62,7 +62,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
     @Test
     public void testSetNewValue() throws Exception {
         
-        String url = "/snmpConfiguration/1.1.1.1";
+        String url = "/snmpConfig/1.1.1.1";
         // Testing GET Collection
         
         SnmpInfo config = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
