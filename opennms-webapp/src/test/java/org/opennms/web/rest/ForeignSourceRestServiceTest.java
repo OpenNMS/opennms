@@ -62,7 +62,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
 
         String url = "/foreignSources/pending/test/detectors";
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<detectors>"));
+        assertTrue(xml.contains("<detectors "));
         assertTrue(xml.contains("<detector "));
         assertTrue(xml.contains("name=\"DHCP\""));
         
@@ -80,7 +80,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
 
         String url = "/foreignSources/pending/test/policies";
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<policies>"));
+        assertTrue(xml.contains("<policies "));
         assertTrue(xml.contains("<policy "));
         assertTrue(xml.contains("name=\"lower-case-node\""));
         assertTrue(xml.contains("value=\"Lower-Case-Nodes\""));
@@ -95,7 +95,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
 
     private void createForeignSource() throws Exception {
         String fs =
-            "<foreign-source name=\"test\">" +
+            "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"test\">" +
                 "<scan-interval>1d</scan-interval>" +
                 "<detectors>" + 
                     "<detector class=\"org.opennms.netmgt.provision.detector.dhcp.DhcpDetector\" name=\"DHCP\"/>" +
