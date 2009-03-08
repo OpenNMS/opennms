@@ -83,22 +83,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 /**
-<p>RESTful service to the OpenNMS Provisioning Groups.  Using this API, these "groups" of nodes 
-are apply called and treated as requisitions.</code></p>
+<p>RESTful service to the OpenNMS Provisioning Groups.  In this API, these "groups" of nodes 
+are aptly named and treated as requisitions.</p>
 <p>This current implementation supports CRUD operations for managing provisioning requisitions.  Requisitions
 are first POSTed into a bin called pending and no provisioning (import) operations are taken.  This is done
 so that a) the XML can be verified and b) so that the operations can happen at a later time.
 <ul>
-<li>GET/PUT/POST pending and deployed requisitions and the </li>
+<li>GET/PUT/POST pending and deployed requisitions</li>
 <li>GET pending and deployed count</li>
 </ul>
 </p>
-<p>This REST service provides a full service API to managing Provisioning Requisitions and their
-foreign sources.</p>
 <p>Example 1: Create a new requisition <i>Note: The foreign-source attribute typically has a 1 to 1 
 relationship to a provisioning group and to the name used in this requisition.  The relationship is 
 implied by name and it is best practice to use the same for all three.  If a foreign source definition
-exists with the same name, it will be used during the provisioning (import) operations inleiu of the
+exists with the same name, it will be used during the provisioning (import) operations in lieu of the
 default foreign source</i></p>
 <pre>
 curl -X POST \
@@ -119,7 +117,7 @@ curl -X POST \
      -u admin:admin \
      http://localhost:8980/opennms/rest/requisitions/pending
 </pre>
-<p>Example 2: Query SNMP community string.</p>
+<p>Example 2: Query all deployed requisitions</p>
 <pre>
 curl -X GET \
      -H "Content-Type: application/xml" \
