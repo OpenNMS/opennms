@@ -61,7 +61,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * nodelabel, nodeid, foreignsource, foreignsource+foreignid, ipaddress, etc.
  * add filters for current, resolved, all
  * 
-<p>REST service to the OpenNMS Outage data {@link OnmsOutage}</p>
+<p>REST service to the OpenNMS Outage {@link OnmsOutage} data.</p>
 <p>This service supports getting the list of outages or one specific outage by ID:</p>
 <p>Example 1: Query List of outages.</p>
 <pre>
@@ -89,7 +89,7 @@ public class OutageRestService extends OnmsRestService {
     @Path("{outageId}")
     @Transactional
     public OnmsOutage getOutage(@PathParam("outageId") String outageId) {
-    	OnmsOutage result= m_outageDao.get(new Integer(outageId));
+    	OnmsOutage result= m_outageDao.get(Integer.valueOf(outageId));
     	return result;
     }
     
