@@ -1,35 +1,38 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
-//
-
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * Created: January 22, 2009
+ *
+ * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.web.rest;
 
 import java.text.ParseException;
@@ -72,6 +75,65 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
+/**
+<p>RESTful service to the OpenNMS Provisioning Foreign Source definitions.  Foreign source
+definitions are used to control the scanning (service detection) and metric collection settings
+for physical interfaces (resources).</p>
+<p>This API supports CRUD operations for managing provisioning foreign source definitions.  Foreign
+source definitions are first POSTed into a bin called pending and <b>must</b> be deployed before
+they are used with they're correspondingly named requisition (provisioning group). 
+<ul>
+<li>GET/PUT/POST pending and deployed foreign sources</li>
+<li>GET pending and deployed count</li>
+</ul>
+</p>
+<p>This REST service provides a full service API to managing Provisioning Requisitions and their
+foreign sources.</p>
+<p>Example 1: Create a new foreign source<i>Note: The foreign-source attribute typically has a 1 to 1 
+relationship to a provisioning group (a.k.a. requisition).  The relationship is only 
+implied by name and it is best practice to use the same for all three.  If a requisition exists with 
+the same name as a foreign source, it will be used during the provisioning (import) operations in lieu
+of the default foreign source.</i></p>
+<pre>
+curl -X POST \
+     -H "Content-Type: application/xml" \
+     -d &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+         &lt;foreign-source date-stamp="2009-03-07T20:22:45.625-05:00" name="Cisco"
+           xmlns:ns2="http://xmlns.opennms.org/xsd/config/model-import" 
+           xmlns="http://xmlns.opennms.org/xsd/config/foreign-source"&gt;
+           &lt;scan-interval&gt;1d&lt;/scan-interval&gt;
+           &lt;detectors&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" name="DHCP"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" name="DNS"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.simple.FtpDetector" name="FTP"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="HTTP"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" name="HTTPS"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.simple.LdapDetector" name="LDAP"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.radius.RadiusDetector" name="Radius"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/&gt;
+             &lt;detector class="org.opennms.netmgt.provision.detector.ssh.SshDetector" name="SSH"/&gt;
+           &lt;/detectors&gt;
+           &lt;policies&gt;
+             &lt;policy class="org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy" name="policy1"&gt;
+               &lt;parameter value="~10\.*\.*\.*" key="ipAddress"/&gt;
+             &lt;/policy&gt;
+           &lt;/policies&gt;
+         &lt;/foreign-source&gt; \
+     -u admin:admin \
+     http://localhost:8980/opennms/rest/foreignSources/pending
+</pre>
+<p>Example 2: Query SNMP community string.</p>
+<pre>
+curl -X GET \
+     -H "Content-Type: application/xml" \
+     -u admin:admin \
+        http://localhost:8980/opennms/rest/foreignSources/deployed \
+        2>/dev/null \
+        |xmllint --format -</pre>
+ *
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ */
 @Component
 @PerRequest
 @Scope("prototype")
