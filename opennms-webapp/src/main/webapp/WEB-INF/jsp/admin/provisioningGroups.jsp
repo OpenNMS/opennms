@@ -34,8 +34,8 @@
   </h3>
   <span style="font-size: large; text-align: right">
     <c:choose>
-      <c:when test="${dbNodeCounts[group.foreignSource] > 0}">
-        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction('${foreignSourceName}', 'deleteNodes', 'Are you sure you want to delete all the nodes from group ${group.foreignSource}. This CANNOT be undone.')" />
+      <c:when test="${dbNodeCounts[foreignSourceName] > 0}">
+        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction('${foreignSourceName}', 'deleteNodes', 'Are you sure you want to delete all the nodes from group ${foreignSourceName}?  This CANNOT be undone.')" />
       </c:when>
       <c:otherwise>
         <input type="button" value="Delete Group" onclick="javascript:doAction('${foreignSourceName}', 'deleteGroup')" />
