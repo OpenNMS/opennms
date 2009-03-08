@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
@@ -22,22 +23,17 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     private String m_requisitionPath;
     private String m_foreignSourcePath;
     private final JAXBContext m_jaxbContext;
-    private Marshaller m_marshaller;
-    private Unmarshaller m_unMarshaller;
-
+    
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         try {
             m_jaxbContext = JAXBContext.newInstance(ForeignSource.class, Requisition.class);
-            m_marshaller = m_jaxbContext.createMarshaller();
-            m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m_unMarshaller = m_jaxbContext.createUnmarshaller();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to get schema", e);
         }
     }
-    
+
     public int getForeignSourceCount() throws ForeignSourceRepositoryException {
         return getForeignSources().size();
     }
@@ -69,7 +65,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    public void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public synchronized void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
@@ -78,7 +74,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         try {
             foreignSource.updateDateStamp();
             writer = new FileWriter(outputFile);
-            m_marshaller.marshal(foreignSource, writer);
+            getMarshaller().marshal(foreignSource, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
@@ -126,7 +122,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return getRequisition(foreignSource.getName());
     }
 
-    public void save(Requisition requisition) throws ForeignSourceRepositoryException {
+    public synchronized void save(Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
@@ -135,7 +131,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         try {
             requisition.updateDateStamp();
             writer = new FileWriter(outputFile);
-            m_marshaller.marshal(requisition, writer);
+            getMarshaller().marshal(requisition, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
@@ -159,17 +155,17 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_foreignSourcePath = path;
     }
     
-    private ForeignSource get(File file) throws ForeignSourceRepositoryException {
+    private synchronized ForeignSource get(File file) throws ForeignSourceRepositoryException {
         try {
-            return m_unMarshaller.unmarshal(new StreamSource(file), ForeignSource.class).getValue();
+            return getUnmarshaller().unmarshal(new StreamSource(file), ForeignSource.class).getValue();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + file.getPath(), e);
         }
     }
 
-    private Requisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
+    private synchronized Requisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
         try {
-            return m_unMarshaller.unmarshal(new StreamSource(inputFile), Requisition.class).getValue();
+            return getUnmarshaller().unmarshal(new StreamSource(inputFile), Requisition.class).getValue();
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
@@ -208,6 +204,16 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         } catch (MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         }
+    }
+
+    private synchronized Unmarshaller getUnmarshaller() throws JAXBException {
+        return m_jaxbContext.createUnmarshaller();
+    }
+
+    private synchronized Marshaller getMarshaller() throws JAXBException {
+        Marshaller marshaller = m_jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        return marshaller;
     }
 
 }
