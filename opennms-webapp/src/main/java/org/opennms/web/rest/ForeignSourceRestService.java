@@ -77,9 +77,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 
 /**
 <p>RESTful service to the OpenNMS Provisioning Foreign Source definitions.  Foreign source
-definitions are used to control the scanning (service detection) and metric collection settings
-for physical interfaces (resources).</p>
-<p>This API supports CRUD operations for managing provisioning foreign source definitions.  Foreign
+definitions are used to control the scanning (service detection) of services for SLA monitoring
+as well as the data collection settings for physical interfaces (resources).</p>
+<p>This API supports CRUD operations for managing the Provisioner's foreign source definitions. Foreign
 source definitions are first POSTed into a bin called pending and <b>must</b> be deployed before
 they are used with they're correspondingly named requisition (provisioning group). 
 <ul>
@@ -87,11 +87,9 @@ they are used with they're correspondingly named requisition (provisioning group
 <li>GET pending and deployed count</li>
 </ul>
 </p>
-<p>This REST service provides a full service API to managing Provisioning Requisitions and their
-foreign sources.</p>
 <p>Example 1: Create a new foreign source<i>Note: The foreign-source attribute typically has a 1 to 1 
 relationship to a provisioning group (a.k.a. requisition).  The relationship is only 
-implied by name and it is best practice to use the same for all three.  If a requisition exists with 
+implied by name and it is a best practice to use the same name for all three.  If a requisition exists with 
 the same name as a foreign source, it will be used during the provisioning (import) operations in lieu
 of the default foreign source.</i></p>
 <pre>
