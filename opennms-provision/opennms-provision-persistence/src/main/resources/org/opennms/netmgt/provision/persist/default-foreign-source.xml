@@ -2,7 +2,6 @@
 	<scan-interval>1d</scan-interval>
 	<detectors>
 		<detector name="Citrix" class="org.opennms.netmgt.provision.detector.simple.CitrixDetector" />
-		<detector name="DHCP" class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" />
 		<detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" />
 		<detector name="DominoIIOP" class="org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector" />
 		<detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector" />
@@ -18,5 +17,8 @@
 		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
 		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
 		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector" />
+        <!-- This detector is not yet implemented
+        <detector name="DHCP" class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" /> 
+        -->
 	</detectors>
 </foreign-source>
