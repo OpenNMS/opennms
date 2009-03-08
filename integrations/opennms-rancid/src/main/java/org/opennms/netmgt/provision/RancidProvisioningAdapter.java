@@ -118,9 +118,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
         for (OnmsNode onmsNode : nodes) {
             RancidNode rNode = getSuitableRancidNode(onmsNode);
-            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(onmsNode);
+            if (rNode != null) {
+                RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(onmsNode);
             
-            m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
+                m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
+            }
         }
     }
 
@@ -304,7 +306,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         //The group should be the foreign source of the node
 
         String group = node.getForeignSource();
-        
+
+        if (group == null) return null;
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
         //FIXME: Check the node categories if useNodecategories is true
