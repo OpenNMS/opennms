@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foreign-sources count="1">
+<foreign-sources xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" count="1">
     <foreign-source date-stamp="2009-02-25T12:45:38.800-05:00" name="cheese">
         <scan-interval>1d</scan-interval>
         <detectors>

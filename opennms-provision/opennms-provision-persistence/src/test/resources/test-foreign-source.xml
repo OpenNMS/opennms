@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<foreign-source name="test">
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="test">
     <scan-interval>2h</scan-interval>
     <detectors>
         <detector name="Citrix" class="org.opennms.netmgt.provision.detector.simple.CitrixDetector" />
