@@ -180,6 +180,14 @@ public class MockEventUtil {
         return event;
     }
     
+    public static Event createBgpBkTnEvent(String source, MockNode node, String ipAddr, int peerState) {
+        Event event = createEvent(source, "http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition", node.getNodeId(), null, null, null);
+        
+        event.setInterface("1.2.3.4");
+        addEventParm(event, ".1.3.6.1.2.1.15.3.1.7." + ipAddr, peerState);
+        return event;
+    }
+    
     public static void setEventTime(Event event, Date date) {
         event.setTime(EventConstants.formatToString(date));
     }
