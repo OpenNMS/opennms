@@ -188,10 +188,12 @@ public class DefaultProvisionService implements ProvisionService {
             m_ipInterfaceDao.save(dbIface);
             return dbIface;
         } else {
-            OnmsNode dbNode = m_nodeDao.get(nodeId);
+            OnmsNode dbNode = m_nodeDao.load(nodeId);
             assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
-            dbNode.addIpInterface(scannedIface);
-            m_nodeDao.update(dbNode);
+            // for performance reasons we don't add the ip interface to the node so we avoid loading all the interfaces
+            // setNode only sets the node in the interface
+            scannedIface.setNode(dbNode);
+            m_ipInterfaceDao.save(scannedIface);
             AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
             scannedIface.visit(visitor);
             return scannedIface;
@@ -208,10 +210,12 @@ public class DefaultProvisionService implements ProvisionService {
             return dbSnmpIface;
         } else {
             // add the interface to the node, if it wasn't found
-            OnmsNode dbNode = m_nodeDao.get(nodeId);
+            OnmsNode dbNode = m_nodeDao.load(nodeId);
             assertNotNull(dbNode, "no node found with nodeId %d", nodeId);
-            dbNode.addSnmpInterface(snmpInterface);
-            m_nodeDao.update(dbNode);
+            // for performance reasons we don't add the snmp interface to the node so we avoid loading all the interfaces
+            // setNode only sets the node in the interface
+            snmpInterface.setNode(dbNode);
+            m_snmpInterfaceDao.save(snmpInterface);
             return snmpInterface;
         }
     }
