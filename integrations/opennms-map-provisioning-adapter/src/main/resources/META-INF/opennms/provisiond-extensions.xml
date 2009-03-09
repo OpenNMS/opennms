@@ -9,6 +9,7 @@
 	    <property name="onmsMapDao" ref="onmsMapDao" />
 	    <property name="onmsMapElementDao" ref="onmsMapElementDao" />
 	    <property name="mapsAdapterConfig" ref="mapsAdapterConfig" />	    
+	    <property name="template" ref="transactionTemplate" />
 	  </bean>
   
       <bean id="mapsAdapterConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
