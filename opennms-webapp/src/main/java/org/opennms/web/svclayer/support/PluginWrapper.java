@@ -12,17 +12,19 @@ import org.springframework.beans.BeanWrapperImpl;
 
 public class PluginWrapper {
     private Map<String,Set<String>> m_choices = new TreeMap<String,Set<String>>();
+    private Set<String>  m_parameterNames = new TreeSet<String>();
     private final String m_className;
     
-    public PluginWrapper(Object clazz) {
-        m_className = clazz.getClass().getName();
-        BeanWrapper wrapper = new BeanWrapperImpl(clazz);
+    public PluginWrapper(String className) throws ClassNotFoundException {
+        m_className = className;
+        BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(m_className));
         for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
+            m_parameterNames.add(pd.getName());
             Set<String> choices = null;
-            if (pd.getPropertyType().getClass().isEnum()) {
+            if (pd.getPropertyType().isEnum()) {
                 choices = new TreeSet<String>();
-                for (Object o : pd.getPropertyType().getClass().getEnumConstants()) {
-                    choices.add((String)wrapper.convertIfNecessary(o, String.class));
+                for (Object o : pd.getPropertyType().getEnumConstants()) {
+                    choices.add(o.toString());
                 }
             }
             m_choices.put(pd.getName(), choices);
@@ -32,11 +34,12 @@ public class PluginWrapper {
     public String getClassName() {
         return m_className;
     }
-    public Set<String> getKeys() {
-        return m_choices.keySet();
+    
+    public Set<String> getParameterNames() {
+        return m_parameterNames;
     }
-    public Set<String> getChoices(String key) {
-        return m_choices.get(key);
+    
+    public Map<String, Set<String>> getChoices() {
+        return m_choices;
     }
-
 }
