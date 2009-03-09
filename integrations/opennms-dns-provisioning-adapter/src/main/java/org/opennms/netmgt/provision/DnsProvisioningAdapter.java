@@ -49,7 +49,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Resolver;
@@ -75,18 +78,23 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private Resolver m_resolver = null;
     private String m_signature;
     
+    private TransactionTemplate m_template;
+    
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
     
     private volatile static ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
-    
     public void afterPropertiesSet() throws Exception {
-        //load current nodes into the map
-        
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
-        createDnsRecordMap();
         
+        //load current nodes into the map
+        m_template.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus arg0) {
+                createDnsRecordMap();
+                return null;
+            }
+        });
 
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (dnsServer != null && dnsServer.trim().length() > 0) {
@@ -207,6 +215,14 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     private static Category log() {
         return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
+    }
+
+    public void setTemplate(TransactionTemplate template) {
+        m_template = template;
+    }
+
+    public TransactionTemplate getTemplate() {
+        return m_template;
     }
 
 }
