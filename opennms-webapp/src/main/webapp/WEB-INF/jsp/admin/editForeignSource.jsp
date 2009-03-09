@@ -61,7 +61,15 @@
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
 			<tree:nodeForm>
 				<tree:select label="key" property="key" items="${classParameters[policy.pluginClass]}" />
-				<tree:field label="value" property="value" />
+				
+				<c:choose>
+				  <c:when test="${empty pluginInfo[policy.pluginClass].choices[parameter.key]}">
+                    <tree:field label="value" property="value" />
+				  </c:when>
+				  <c:otherwise>
+                    <tree:select label="value" property="value" items="${pluginInfo[policy.pluginClass].choices[parameter.key]}"/>
+				  </c:otherwise>
+				</c:choose>
 			</tree:nodeForm>
 
 		</tree:tree>

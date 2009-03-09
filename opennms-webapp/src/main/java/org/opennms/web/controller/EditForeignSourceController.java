@@ -49,6 +49,7 @@ import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.web.svclayer.support.ForeignSourceService;
+import org.opennms.web.svclayer.support.PluginWrapper;
 import org.opennms.web.svclayer.support.PropertyPath;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -240,7 +241,7 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         final Map<String, Object> map = new HashMap<String, Object>();
-        int width = 20;
+        int width = 50;
 
         final Map<String,Set<String>> classParameters = new TreeMap<String,Set<String>>();
 
@@ -258,6 +259,13 @@ public class EditForeignSourceController extends SimpleFormController {
             width = Math.max(width, key.length());
         }
 
+        final Map<String, PluginWrapper> wrappers = new TreeMap<String, PluginWrapper>();
+        for (String key : policyTypes.keySet()) {
+            PluginWrapper wrapper = new PluginWrapper(key);
+            wrappers.put(key, wrapper);
+        }
+
+        map.put("pluginInfo", wrappers);
         map.put("classParameters", classParameters);
         map.put("fieldWidth", width);
         
