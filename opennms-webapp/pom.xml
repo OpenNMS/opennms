@@ -316,6 +316,10 @@
         <artifactId>rancid-api</artifactId>
     </dependency>
     <dependency>
+        <groupId>org.dnsjava</groupId>
+        <artifactId>dnsjava</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>
