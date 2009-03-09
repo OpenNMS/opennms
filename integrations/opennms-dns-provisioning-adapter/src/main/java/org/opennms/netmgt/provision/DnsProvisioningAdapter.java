@@ -80,16 +80,13 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private volatile static ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
+    
     public void afterPropertiesSet() throws Exception {
         //load current nodes into the map
+        
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
-        List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
+        createDnsRecordMap();
         
-        m_nodeDnsRecordMap = new ConcurrentHashMap<Integer, DnsRecord>(nodes.size());
-        
-        for (OnmsNode onmsNode : nodes) {
-            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode));
-        }
 
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (dnsServer != null && dnsServer.trim().length() > 0) {
@@ -106,6 +103,18 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
     }
     
+    @Transactional
+    private void createDnsRecordMap() {
+        List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
+        
+        m_nodeDnsRecordMap = new ConcurrentHashMap<Integer, DnsRecord>(nodes.size());
+        
+        for (OnmsNode onmsNode : nodes) {
+            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode));
+        }
+        
+    }
+
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
