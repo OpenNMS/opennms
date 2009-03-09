@@ -476,7 +476,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     @XmlTransient
     @OneToMany(mappedBy="node")
-    @LazyCollection(LazyCollectionOption.EXTRA)
     @org.hibernate.annotations.Cascade( {
          org.hibernate.annotations.CascadeType.ALL,
          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
