@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.dao;
 
+import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 
 import java.util.Collection;
@@ -38,9 +39,12 @@ import java.util.Collection;
 public interface OnmsMapElementDao extends OnmsDao<OnmsMapElement, Integer> {
     public abstract Collection<OnmsMapElement> findAll(Integer offset, Integer limit);
     public abstract OnmsMapElement findMapElementById(int id);
-    public abstract Collection<OnmsMapElement> findMapElementsByMapId(int id);
-    public abstract void deleteElementsByMapId(int mapId);
+    public abstract OnmsMapElement findMapElement(int elementId, String type, OnmsMap map);
+    public abstract Collection<OnmsMapElement> findMapElementsByMapId(OnmsMap map);
+    public abstract void deleteElementsByMapId(OnmsMap map);
     public abstract void deleteElementsByType(String type);
-    public abstract void deleteElementsByIdandType(int id, String type);
+    public abstract void deleteElementsByElementIdAndType(int elementId, String type);
+    public abstract Collection<OnmsMapElement> findElementsByElementIdAndType(int elementId, String type);
+    public abstract Collection<OnmsMapElement> findElementsByType(String type);
 
 }

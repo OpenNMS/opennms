@@ -44,4 +44,16 @@ public class OnmsMapDaoHibernate extends AbstractDaoHibernate<OnmsMap, Integer> 
         Object[] values = {mapName, mapType};
         return find("from OnmsMap as map where map.name = ? and map.type = ?", values);
     }
+
+    public Collection<OnmsMap> findMapsByType(String mapType) {
+        return find("from OnmsMap as map where map.type = ?", mapType);
+    }
+
+    public Collection<OnmsMap> findAutoMaps() {
+        return findMapsByType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+    }
+
+    public Collection<OnmsMap> findUserMaps() {
+        return findMapsByType(OnmsMap.USER_GENERATED_MAP);
+    }
 }

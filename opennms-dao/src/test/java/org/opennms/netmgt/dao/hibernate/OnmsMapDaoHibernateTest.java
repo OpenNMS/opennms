@@ -165,6 +165,21 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(false, map.isNew());
     }
 
+    public void testFindMapsByType() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByType("X");
+        assertEquals(0, maps.size());
+    }
+
+    public void testFindAutoMaps() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findAutoMaps();
+        assertEquals(0, maps.size());
+    }
+
+    public void testFindUserMaps() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findUserMaps();
+        assertEquals(1, maps.size());
+    }
+
     public void testDeleteOnmsMap() {
         OnmsMap map = getOnmsMapDao().findMapById(1);
         getOnmsMapDao().delete(map);
