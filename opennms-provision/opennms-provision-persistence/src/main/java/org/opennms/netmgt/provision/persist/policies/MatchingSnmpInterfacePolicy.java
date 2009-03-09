@@ -21,22 +21,32 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
     private final LinkedHashMap<String, String> m_criteria = new LinkedHashMap<String, String>();
     
     private Action m_action;
-    private Match m_match;
+    private Match m_match = Match.ANY_PARAMETER;
     
-    public Action getAction() {
-        return m_action;
+    public String getAction() {
+        return m_action.toString();
     }
     
-    public void setAction(Action action) {
-        m_action = action;
+    public void setAction(String action) {
+        if (action != null && action.toUpperCase().contains("ENABLE")) {
+            m_action = Action.ENABLE_COLLECTION;
+        } else if (action != null && action.toUpperCase().contains("DISABLE")) {
+            m_action = Action.DISABLE_COLLECTION;
+        } else {
+            m_action = Action.DO_NOT_PERSIST;
+        }
     }
     
-    public Match getMatch() {
-        return m_match;
+    public String getMatchBehavior() {
+        return m_match.toString();
     }
     
-    public void setMatch(Match match) {
-        m_match = match;
+    public void setMatchBehavior(String matchBehavior) {
+        if (matchBehavior != null && matchBehavior.toUpperCase().contains("ALL")) {
+            m_match = Match.ALL_PARAMETERS;
+        } else {
+            m_match = Match.ANY_PARAMETER;
+        }
     }
     
     public String getIfDescr() {
