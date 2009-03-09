@@ -111,10 +111,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         
         Assert.notNull(m_nodeDao, "Rancid Provisioning Adapter requires nodeDao property to be set.");
         
+        createMessageSelectorAndSubscribe();
+        buildRancidNodeMap();
+    }
+
+    @Transactional
+    private void buildRancidNodeMap() {
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNodeContainer>(nodes.size());
         
-        createMessageSelectorAndSubscribe();
 
         for (OnmsNode onmsNode : nodes) {
             RancidNode rNode = getSuitableRancidNode(onmsNode);
@@ -125,6 +130,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             }
         }
     }
+
 
     private ConnectionProperties getRWSConnection() {
         log().debug("Connections used : " +m_rwsConfig.getBaseUrl().getServer_url()+m_rwsConfig.getBaseUrl().getDirectory());

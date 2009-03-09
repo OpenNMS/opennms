@@ -276,6 +276,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         addSubMaps();
     }
 
+    @Transactional
     private void addSubMaps() {
         log().debug("addMaps: adding or updating automated submaps");
         Map<String,List<Csubmap>> mapnameSubmapMap = m_mapsAdapterConfig.getsubMaps();
@@ -307,6 +308,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     }
 
+    @Transactional
     private void addMaps() {
         log().debug("addMaps: adding or updating automated maps");
         Iterator<Cmap> ite_maps = m_mapsAdapterConfig.getAllMaps().iterator();
