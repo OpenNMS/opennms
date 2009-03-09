@@ -296,8 +296,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                 throw new IllegalArgumentException("the Operation Object passed is either null or of the wrong class");
             }
             
-            if (this.m_nodeId == ((AdapterOperation)operation).getNodeId() &&
-                this.m_type == ((AdapterOperation)operation).getType()) {
+            if (m_nodeId == ((AdapterOperation)operation).getNodeId() &&
+                m_type == ((AdapterOperation)operation).getType()) {
                 equals = true;
             }
             return equals;

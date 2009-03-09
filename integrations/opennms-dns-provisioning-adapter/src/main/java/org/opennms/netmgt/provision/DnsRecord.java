@@ -42,12 +42,9 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 class DnsRecord {
-    
-    //not going to import this class from com.sun.jndi.dns, yet
-    //private ResourceRecord m_rr; this calls embedded in UpdateMessage
-    private UpdateMessage m_message;
     private InetAddress m_ip;
     private String m_hostname;
+    private String m_zone;
     
     DnsRecord(OnmsNode node) {
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
@@ -61,11 +58,17 @@ class DnsRecord {
         } else {
             m_ip = primaryInterface.getInetAddress();
         }
-        m_hostname = node.getLabel();
+        m_hostname = node.getLabel() + ".";
+        m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
+
     }
 
     public InetAddress getIp() {
         return m_ip;
+    }
+
+    public String getZone() {
+        return m_zone;
     }
 
     public String getHostname() {
