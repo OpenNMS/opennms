@@ -69,9 +69,9 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private static final String INTERFACE_QUERY = "SELECT " +
-        "ipinterface.nodeid, " +
-        "ipinterface.ipaddr, " +
-        "ipinterface.ifindex, " +
+        "snmpinterface.nodeid, " +
+        "snmpinterface.ipaddr, " +
+        "snmpinterface.snmpifindex, " +
         "ipinterface.iphostname, " +
         "ipinterface.issnmpprimary, " +
         "snmpinterface.snmpifdescr, " +
