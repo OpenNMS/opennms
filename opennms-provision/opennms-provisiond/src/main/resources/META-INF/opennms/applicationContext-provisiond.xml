@@ -17,6 +17,10 @@
     <constructor-arg><value>${importer.importURL}</value></constructor-arg>
   </bean>
 
+  <bean id="importThreads" class="java.lang.Integer">
+    <constructor-arg><value>${importer.importThreads}</value></constructor-arg>
+  </bean>
+  
   <bean id="scanThreads" class="java.lang.Integer">
     <constructor-arg><value>${importer.scanThreads}</value></constructor-arg>
   </bean>
@@ -42,6 +46,10 @@
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
   
+  <bean id="importExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+    <property name="poolSize" ref="importThreads" />
+  </bean>
+  
   <bean id="scanExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
     <property name="poolSize" ref="scanThreads" />
   </bean>
@@ -59,6 +67,7 @@
   	<property name="defaultExecutor" value="scan" />
   	<property name="executors">
   		<map>
+  		    <entry key="import" value-ref="importExecutor" />
   			<entry key="scan" value-ref="scanExecutor" />
   			<entry key="write" value-ref="writeExecutor" />
   		</map>
