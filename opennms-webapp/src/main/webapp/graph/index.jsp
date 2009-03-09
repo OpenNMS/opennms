@@ -78,9 +78,15 @@
   <jsp:param name="location" value="performance" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="Resource Graphs" />
+  <jsp:param value="true" name="enableExtJS"/>
 </jsp:include>
 
+<script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
+<script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
+<script type="text/javascript" src="js/GraphResourceView.js" ></script>
+
 <script language="Javascript" type="text/javascript" >
+  
   function validateResource()
   {
       var isChecked = false
@@ -136,76 +142,72 @@
   }
 
 </script>
-
 <div class="TwoColLeft">
-  <div class="boxWrapper">
-    <h3>Standard Resource<br>Performance Reports</h3>
-
+  
+    <h3 class="o-box">Standard Resource<br>Performance Reports</h3>
+	<div class="boxWrapper">
     <p>
       Choose a resource for a standard performance report.
     </p>
+	<script language="Javascript" type="text/javascript">
+		var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
+									<c:forEach var="resource" items="${topLevelResources}">
+									<c:choose>
+									  <c:when test="${match == null || match == ''}">
+									  {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+									  </c:when>
+									  <c:otherwise>
+									    <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+									    	{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+									      <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
+									    </c:if>
+									  </c:otherwise>  
+									</c:choose>
+									  </c:forEach>
 
-    <form method="get" name="choose_resource" action="graph/chooseresource.htm">
-      <input type="hidden" name="reports" value="all" />
+			                                          		]}
 
-      <select style="width: 100%;" name="parentResourceId" size="10">
-        <c:forEach var="resource" items="${topLevelResources}">
-	  <c:choose>
-	    <c:when test="${match == null || match == ''}">
-              <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
-	    </c:when>
-	    <c:otherwise>
-	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-	        <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
-	      </c:if>
-	    </c:otherwise>  
-	  </c:choose>
-        </c:forEach>
-      </select>
-
-      <br/>
-      <br/>
-
-      <input type="button" value="Start" onclick="submitResourceForm()"/>
-    </form>
+		Ext.onReady(function(){
+			standardResourceViewInit("standard-resource", standardResourceData, "graph/chooseresource.htm?reports=all&parentResourceId={id}");
+	  	})
+	</script>
+	<div id="standard-resource"></div>
   </div>
-  <div class="boxWrapper">
+  
 
-    <h3>Custom Resource<br>Performance Reports</h3>
-
+    <h3 class="o-box">Custom Resource<br>Performance Reports</h3>
+	<div class="boxWrapper">
     <p>
       Choose a resource for a custom performance report.
     </p>
+	<script language="Javascript" type="text/javascript">
+		var customResources = {total:"${fn:length(topLevelResources)}", records:[
+                                            <c:forEach var="resource" items="${topLevelResources}">
+                                      	  <c:choose>
+                                                  <c:when test="${match == null || match == ''}">
+                                                    {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+                                      	    </c:when>
+                                      	    <c:otherwise>
+                                      	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+                                      	      {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+                                      	      </c:if>
+                                      	    </c:otherwise>  
+                                      	  </c:choose>
+                                              </c:forEach>
 
-    <form method="get" name="choose_resource_adhoc" action="graph/chooseresource.htm">
-      <input type="hidden" name="endUrl" value="graph/adhoc2.jsp"/>
-      <select style="width: 100%;" name="parentResourceId" size="10">
-        <c:forEach var="resource" items="${topLevelResources}">
-	  <c:choose>
-            <c:when test="${match == null || match == ''}">
-              <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
-	    </c:when>
-	    <c:otherwise>
-	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-	        <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
-	      </c:if>
-	    </c:otherwise>  
-	  </c:choose>
-        </c:forEach>
-      </select>
-
-      <br/>
-      <br/>
-
-      <input type="button" value="Start" onclick="submitResourceFormAdhoc()"/>
-    </form>
+			                                                                 		]}
+		Ext.onReady(function(){
+			customResourceViewInit("custom-resources", customResources, "graph/chooseresource.htm?reports=all&parentResourceId={id}");
+		})
+	</script>
+	<div id="custom-resources"></div>
   </div>
 </div>
 
 <div class="TwoColRight">
-  <div class="boxWrapper">
-    <h3 align=center>Network Performance Data</h3>
-
+  
+    <h3 class="o-box" align=center>Network Performance Data</h3>
+	<div class="boxWrapper">
     <p>
       The <strong>Standard Performance Reports</strong> provide a stock way to
       easily visualize the critical SNMP data collected from managed nodes
