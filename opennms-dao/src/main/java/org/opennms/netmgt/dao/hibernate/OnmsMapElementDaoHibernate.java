@@ -64,12 +64,12 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         return findUnique("from OnmsMapElement as element where element.id = ?", id);
     }
 
-    public Collection<OnmsMapElement> findMapElementsByMapId(int id) {
-        return find("from OnmsMapElement as element where element.mapId = ?", id);
+    public Collection<OnmsMapElement> findMapElementsByMapId(OnmsMap map) {
+        return find("from OnmsMapElement as element where element.map = ?", map);
     }
 
-    public void deleteElementsByMapId(int mapId) {
-        for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.mapId = ?", mapId)) {
+    public void deleteElementsByMapId(OnmsMap map) {
+        for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.map = ?", map)) {
             delete(elem);
         }
     }
@@ -80,11 +80,26 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         }
     }
 
-    public void deleteElementsByIdandType(int id, String type) {
+    public void deleteElementsByElementIdAndType(int id, String type) {
         Object[] values = {id, type};
         for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.elementId = ? and element.type = ?", values)) {
             delete(elem);
         }
         
+    }
+
+    public Collection<OnmsMapElement> findElementsByElementIdAndType(
+            int elementId, String type) {
+        Object[] values = {elementId, type};
+        return  find("from OnmsMapElement as element where element.elementId = ? and element.type = ?", values);
+    }
+
+    public Collection<OnmsMapElement> findElementsByType(String type) {
+        return find("from OnmsMapElement as element where element.type = ?", type);
+    }
+
+    public OnmsMapElement findMapElement(int elementId, String type, OnmsMap map) {
+        Object[] values = {elementId, type, map};
+        return  findUnique("from OnmsMapElement as element where element.elementId = ? and element.type = ? and element.map = ?", values);
     }
 }
