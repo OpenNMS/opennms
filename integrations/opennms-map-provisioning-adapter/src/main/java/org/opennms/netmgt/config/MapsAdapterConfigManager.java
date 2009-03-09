@@ -151,11 +151,12 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     private void createmapNameCmapMap() {
         m_mapNameCmapMap = new HashMap<String, Cmap>();
         if (hasCmaps()) {
-        Iterator<Cmap> ite = m_config.getCmaps().iterateCmap();
-        while (ite.hasNext()) {
-            Cmap cmap = ite.next();
-            m_mapNameCmapMap.put(cmap.getMapName(), cmap);
-        }
+            Iterator<Cmap> ite = m_config.getCmaps().iterateCmap();
+            while (ite.hasNext()) {
+                Cmap cmap = ite.next();
+                m_mapNameCmapMap.put(cmap.getMapName(), cmap);
+                log().debug("createmapNameCmapMap: Added map: " +cmap.getMapName());
+            }
         }
     }
 
@@ -182,6 +183,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                     }
                     containermaps.add(cmap.getMapName());
                     m_submapNameMapNameMap.put(subMapName, containermaps);
+                    log().debug("createSubMapMapMap: added container map: " + cmap.getMapName() + " to submap: " + subMapName);
                 }
             }
         }        
@@ -196,7 +198,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         while (ite.hasNext()) {
             // verify cmap exists!
             String mapName = ite.next();
-            if (cmapExist(mapName)) 
+            if (!cmapExist(mapName)) 
                 throw new ValidationException("Defined a submap without defining the map: mapName " + mapName);
             
         }
@@ -276,12 +278,9 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             //
             try {
                 List<String> ipList = getIpList(pkg);
-                if (log().isDebugEnabled())
-                    log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
+                log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
     
                 if (ipList.size() > 0) {
-                    if (log().isDebugEnabled())
-                        log().debug("createPackageIpMap: package " + pkg.getName() + ". IpList size is " + ipList.size());
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
@@ -300,8 +299,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             filterRules.append('\"');
             filterRules.append(")");
         }
-        if (log().isDebugEnabled())
-            log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
+        log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
         List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
         return ipList;
     }
