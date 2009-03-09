@@ -48,12 +48,14 @@ public class EventUtilTest extends OpenNMSTestCase {
     private MockService m_svc;
     private Event m_svcLostEvent;
     private Event m_nodeDownEvent;
+    private Event m_bgpBkTnEvent;
 
     protected void setUp() throws Exception {
         super.setUp();
         m_svc = m_network.getService(1, "192.168.1.1", "SMTP");
         m_svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", m_svc);
         m_nodeDownEvent = MockEventUtil.createNodeDownEvent("Text", m_network.getNode(1));
+        m_bgpBkTnEvent = MockEventUtil.createBgpBkTnEvent("Test", m_network.getNode(1), "128.64.32.16", 2);
     }
 
     protected void tearDown() throws Exception {
@@ -102,6 +104,36 @@ public class EventUtilTest extends OpenNMSTestCase {
         String newString = EventUtil.expandParms(testString, m_svcLostEvent);
         assertEquals("uei.opennms.org/nodes/nodeLostService::1:192.168.1.1:SMTP", newString);
 
+    }
+    
+    /**
+     * Test method for extracting parm names rather than parm values
+     */
+    public void testExpandParmNames() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:.1.3.6.1.2.1.15.3.1.7.128.64.32.16", newString);
+    }
+
+    /**
+     * Test method for split-and-extract functionality indexed from beginning of name
+     */
+    public void testSplitAndExtractParmNamePositive() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1.1]%.%parm[name-#1.3]%.%parm[name-#1.5]%.%parm[name-#1.7]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:1.6.2.15", newString);
+    }
+
+    /**
+     * Additional test method for split-and-extract functionality indexed from end of name
+     */
+    public void testSplitAndExtractParmNameNegative() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1.-4]%.%parm[name-#1.-3]%.%parm[name-#1.-2]%.%parm[name-#1.-1]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:128.64.32.16", newString);
     }
     
     public void testExpandTticketId() {
