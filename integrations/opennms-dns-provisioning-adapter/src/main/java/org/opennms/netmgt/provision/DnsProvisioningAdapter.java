@@ -51,6 +51,12 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.TSIG;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.Update;
 
 
 /**
@@ -66,6 +72,9 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
      */
     private NodeDao m_nodeDao;
     private EventForwarder m_eventForwarder;
+    private Resolver m_resolver = null;
+    private String m_signature;
+    
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
     
@@ -80,6 +89,20 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         
         for (OnmsNode onmsNode : nodes) {
             m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode));
+        }
+
+        String dnsServer = System.getProperty("importer.adapter.dns.server");
+        if (dnsServer != null && dnsServer.trim().length() > 0) {
+            m_resolver = new SimpleResolver(dnsServer);
+    
+            // Doesn't work for some reason, haven't figured out why yet
+            String key = System.getProperty("importer.adapter.dns.privatekey");
+            if (key != null && key.length() > 0) {
+                m_signature = key;
+                m_resolver.setTSIGKey(TSIG.fromString(m_signature));
+            }
+        } else {
+            log().warn("no DNS server configured, DnsProvisioningAdapter will not do anything!");
         }
     }
     
@@ -109,26 +132,36 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     @Override
     public void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException {
-        
-        if (op.getType() == AdapterOperationType.ADD) {
-            doAdd(op);
-        } else if (op.getType() == AdapterOperationType.UPDATE) {
+        if (m_resolver == null) {
+            return;
+        }
+        if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
             doUpdate(op);
         } else if (op.getType() == AdapterOperationType.DELETE) {
             doDelete(op);
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             //do nothing in this adapter
+        } else {
+            log().warn("unknown operation: " + op.getType());
         }
     }
 
     @Transactional
-    private void doAdd(AdapterOperation op) {
+    private void doUpdate(AdapterOperation op) {
         OnmsNode node = null;
         try {
             node = m_nodeDao.get(op.getNodeId());
             DnsRecord record = new DnsRecord(node);
-            DynamicDnsAdapter.add(record);
-            
+            DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
+
+            Update update = new Update(Name.fromString(record.getZone()));
+
+            if (oldRecord != null && oldRecord.getHostname() != record.getHostname()) {
+                update.delete(Name.fromString(oldRecord.getHostname()), Type.A);
+            }
+            update.replace(Name.fromString(record.getHostname()), Type.A, 3600, record.getIp().getHostAddress());
+            m_resolver.send(update);
+
             m_nodeDnsRecordMap.put(Integer.valueOf(op.getNodeId()), record);
         } catch (Exception e) {
             log().error("addNode: Error handling node added event.", e);
@@ -136,25 +169,14 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
     }
 
-    @Transactional
-    private void doUpdate(AdapterOperation op) {
-        try {
-            OnmsNode node = m_nodeDao.get(op.getNodeId());
-            DnsRecord record = new DnsRecord(node);
-            DynamicDnsAdapter.update(record);
-            
-            m_nodeDnsRecordMap.replace(Integer.valueOf(op.getNodeId()), record);
-        } catch (Exception e) {
-            log().error("updateNode: Error handling node added event.", e);
-            sendAndThrow(op.getNodeId(), e);
-        }
-    }
-
     private void doDelete(AdapterOperation op) {
         try {
             DnsRecord record = m_nodeDnsRecordMap.get(Integer.valueOf(op.getNodeId()));
-            DynamicDnsAdapter.delete(record);
-            
+
+            Update update = new Update(Name.fromString(record.getZone()));
+            update.delete(Name.fromString(record.getHostname()), Type.A);
+            m_resolver.send(update);
+
             m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
         } catch (Exception e) {
             log().error("deleteNode: Error handling node deleted event.", e);
@@ -174,29 +196,6 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return builder;
     }
 
-    static class DynamicDnsAdapter {
-
-        static boolean add(DnsRecord record) {
-            log().error("DNS Adapter not Implemented.");
-            throw new UnsupportedOperationException("method not yet implemented.");
-        }
-
-        static boolean update(DnsRecord record) {
-            log().error("DNS Adapter not Implemented.");
-            throw new UnsupportedOperationException("method not yet implemented.");
-        }
-
-        static boolean delete(DnsRecord record) {
-            log().error("DNS Adapter not Implemented.");
-            throw new UnsupportedOperationException("method not yet implemented.");
-        }
-
-        static public DnsRecord getRecord(DnsRecord record) {
-            log().error("DNS Adapter not Implemented.");
-            throw new UnsupportedOperationException("method not yet implemented.");
-        }
-    }
-    
     private static Category log() {
         return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
     }
