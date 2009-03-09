@@ -68,6 +68,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
@@ -83,7 +85,7 @@ import org.springframework.core.style.ToStringCreator;
  *     
 */
 @XmlRootElement(name = "node")
-@Entity
+@Entity()
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
 public class OnmsNode extends OnmsEntity implements Serializable,
@@ -474,6 +476,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     @XmlTransient
     @OneToMany(mappedBy="node")
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @org.hibernate.annotations.Cascade( {
          org.hibernate.annotations.CascadeType.ALL,
          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
