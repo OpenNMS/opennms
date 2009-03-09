@@ -381,7 +381,12 @@ public class SnmpCollector implements ServiceCollector {
             Collectd.instrumentation().beginCollectingServiceData(collectionSet.getCollectionAgent().getNodeId(), collectionSet.getCollectionAgent().getHostAddress(), serviceName());
             try {
                 collectionSet.collect();
-                if (collectionSet.rescanNeeded()) {
+                
+                /*
+                 * FIXME: Should we even be doing this? I say we get rid of this force rescan thingie
+                 */
+                if (System.getProperty("org.opennms.netmgt.collectd.SnmpCollector.forceRescan", "false").equalsIgnoreCase("true")
+                        && collectionSet.rescanNeeded()) {
                     /*
                      * TODO: the behavior of this object may have been re-factored away.
                      * Verify that this is correct and remove this unused object if it
