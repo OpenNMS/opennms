@@ -82,7 +82,7 @@ public class CoreImportActivities {
 
      */
 
-    @Activity( lifecycle = "import", phase = "validate" )
+    @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
     public Requisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
 
         System.out.println("Loading Spec File!");
@@ -97,7 +97,7 @@ public class CoreImportActivities {
     
     
     
-    @Activity( lifecycle = "import", phase = "audit" )
+    @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
     public ImportOperationsManager auditNodes(Requisition specFile) {
         
         System.out.println("Auditing Nodes");
@@ -119,7 +119,7 @@ public class CoreImportActivities {
         return opsMgr;
     }
     
-    @Activity( lifecycle = "import", phase = "scan" )
+    @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
     public void scanNodes(Phase currentPhase, ImportOperationsManager opsMgr) {
 
         
@@ -140,7 +140,7 @@ public class CoreImportActivities {
     }
     
     
-    @Activity( lifecycle = "nodeImport", phase = "scan" )
+    @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
     public void scanNode(ImportOperation operation) {
         
         System.out.println("Running scan phase of "+operation);
@@ -148,7 +148,7 @@ public class CoreImportActivities {
         System.out.println("Finished Running scan phase of "+operation);
     }
     
-    @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "write" )
+    @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
     public void persistNode(ImportOperation operation) {
 
         System.out.println("Running persist phase of "+operation);
@@ -157,7 +157,7 @@ public class CoreImportActivities {
 
     }
     
-    @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "write" )
+    @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
     public void relateNodes(final Phase currentPhase, final Requisition requisition) {
         
         System.out.println("Running relate phase");
