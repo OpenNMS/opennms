@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collection;
+
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
@@ -86,5 +88,82 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         assertEquals(OnmsMapElement.defaultNodeIcon, mapElement.getIconName());
         assertEquals(0, mapElement.getX());
         assertEquals(10, mapElement.getY());
+    }
+    
+    public void testFind() {
+        OnmsMap map = getOnmsMapDao().findMapById(1);
+        OnmsMapElement mapElement = getOnmsMapElementDao().findMapElement(1, OnmsMapElement.NODE_TYPE, map);
+        assertEquals(1, mapElement.getMapId());
+        assertEquals(1, mapElement.getElementId());
+        assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
+        assertEquals("Test Node", mapElement.getLabel());
+        assertEquals(OnmsMapElement.defaultNodeIcon, mapElement.getIconName());
+        assertEquals(0, mapElement.getX());
+        assertEquals(10, mapElement.getY());
+    }
+    
+    public void testFindMapElementsByMapId() {
+        OnmsMap map = getOnmsMapDao().findMapById(1);
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findMapElementsByMapId(map);
+        assertEquals(1,elems.size());
+        OnmsMapElement mapElement = elems.iterator().next();
+        assertEquals(1, mapElement.getMapId());
+        assertEquals(1, mapElement.getElementId());
+        assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
+        assertEquals("Test Node", mapElement.getLabel());
+        assertEquals(OnmsMapElement.defaultNodeIcon, mapElement.getIconName());
+        assertEquals(0, mapElement.getX());
+        assertEquals(10, mapElement.getY());
+    }
+    
+    public void testFindElementsByElementIdAndType1() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
+        assertEquals(1,elems.size());
+        OnmsMapElement mapElement = elems.iterator().next();
+        assertEquals(1, mapElement.getMapId());
+        assertEquals(1, mapElement.getElementId());
+        assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
+        assertEquals("Test Node", mapElement.getLabel());
+        assertEquals(OnmsMapElement.defaultNodeIcon, mapElement.getIconName());
+        assertEquals(0, mapElement.getX());
+        assertEquals(10, mapElement.getY());
+    }
+
+    public void testFindElementsByElementIdAndType2() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(2, OnmsMapElement.NODE_TYPE);
+        assertEquals(0,elems.size());
+    }
+
+    public void testFindElementsByElementIdAndType3() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(1, OnmsMapElement.MAP_TYPE);
+        assertEquals(0,elems.size());
+    }
+
+    public void testFindElementsByElementIdAndType4() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(2, OnmsMapElement.MAP_TYPE);
+        assertEquals(0,elems.size());
+    }
+
+    public void testFindElementsByType1() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByType(OnmsMapElement.NODE_TYPE);
+        assertEquals(1,elems.size());
+        OnmsMapElement mapElement = elems.iterator().next();
+        assertEquals(1, mapElement.getMapId());
+        assertEquals(1, mapElement.getElementId());
+        assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
+        assertEquals("Test Node", mapElement.getLabel());
+        assertEquals(OnmsMapElement.defaultNodeIcon, mapElement.getIconName());
+        assertEquals(0, mapElement.getX());
+        assertEquals(10, mapElement.getY());
+    }
+
+    public void testFindElementsByType2() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByType(OnmsMapElement.MAP_TYPE);
+        assertEquals(0,elems.size());
+    }
+
+    public void testDeleteElementsByElementIdAndType() {
+        getOnmsMapElementDao().deleteElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
+        assertNull(getOnmsMapElementDao().findMapElementById(58));
     }
 }

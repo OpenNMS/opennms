@@ -35,12 +35,15 @@
  */
 package org.opennms.netmgt.provision;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,6 +67,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.Assert;
 
 
 /**
@@ -114,7 +118,55 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
     private static final String ADAPTER_NAME="MAP Provisioning Adapter";
 
+    private volatile static ConcurrentMap<Integer, List<OnmsMapElement>> m_onmsNodeMapElementListMap;
 
+    public void afterPropertiesSet() throws Exception {
+        
+        Assert.notNull(m_onmsNodeDao, "Map Provisioning Adapter requires nodeDao property to be set.");
+        Assert.notNull(m_onmsMapDao, "Map Provisioning Adapter requires OnmsMapDao property to be set.");
+        Assert.notNull(m_onmsMapElementDao, "Map Provisioning Adapter requires OnmsMapElementDao property to be set.");
+        Assert.notNull(m_mapsAdapterConfig, "Map Provisioning Adapter requires MapasAdapterConfig property to be set.");
+        Assert.notNull(m_eventForwarder, "Map Provisioning Adapter requires EventForwarder property to be set.");
+
+        m_template.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus arg0) {
+                addMaps();
+                addSubMaps();
+                createOnmsNodeMapElementListMap();
+                return null;
+            }
+
+        });
+
+    }
+
+    private void createOnmsNodeMapElementListMap() {
+        List<OnmsNode> nodes = m_onmsNodeDao.findAllProvisionedNodes();
+        m_onmsNodeMapElementListMap = new ConcurrentHashMap<Integer, List<OnmsMapElement>>(nodes.size());
+        
+        Collection<OnmsMap> maps = m_onmsMapDao.findAutoMaps();
+        for (OnmsMap map: maps) {
+            for (OnmsMapElement elem: map.getMapElements()) {
+                if (elem.getType().equals(OnmsMapElement.NODE_TYPE)) {
+                    Integer nodeId = Integer.valueOf(elem.getElementId());
+                    updateNodeMapElementList(nodeId, elem);
+                }
+            }
+        }
+    }
+
+    private void updateNodeMapElementList(Integer nodeId,OnmsMapElement elem) {
+        List<OnmsMapElement> elems = new ArrayList<OnmsMapElement>();
+        if (m_onmsNodeMapElementListMap.containsKey(nodeId)) {
+            for (OnmsMapElement elemInList :m_onmsNodeMapElementListMap.get(nodeId)) {
+                if (elemInList.getElementId() != elem.getElementId())
+                    elems.add(elemInList);
+            }
+        }
+        elems.add(elem);
+        m_onmsNodeMapElementListMap.put(nodeId, elems);        
+    }
+    
     @Transactional
     private void doAdd(AdapterOperation op) {
         log().debug("Map PROVISIONING ADAPTER CALLED doAdd");        
@@ -141,7 +193,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                     try {
                         addOrUpdate();
                     } catch (Exception e) {
-                        log().error(e);
+                        log().error(e.getMessage());
                     }
                     return null;
                 }
@@ -153,6 +205,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     private void addOrUpdate() throws Exception {
         OnmsNode node = m_onmsNodeDao.get(m_nodeId);
+        if (node == null) throw new Exception("Error Adding element. Node does not exist: nodeid: " + m_nodeId);
         Map<String, Celement> celements = m_mapsAdapterConfig.getElementByAddress((getSuitableIpForMap(node)));
         if (celements.isEmpty()) {
             log().info("Element is not managed in the adapter: nodeid="+m_nodeId);
@@ -170,12 +223,21 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 }
                 XY xy=getXY(onmsMap);
                 log().debug("doAddOrUpdate: adding node: " + node.getLabel() + " to map: " + mapName);
-                OnmsMapElement mapElement = new OnmsMapElement(onmsMap,m_nodeId,OnmsMapElement.NODE_TYPE,node.getLabel(),celement.getIcon(),xy.getX(),xy.getY());
+                OnmsMapElement mapElement = m_onmsMapElementDao.findMapElement(m_nodeId, OnmsMapElement.NODE_TYPE,onmsMap);
+                if (mapElement == null) {
+                    mapElement = new OnmsMapElement(onmsMap,m_nodeId,OnmsMapElement.NODE_TYPE,node.getLabel(),celement.getIcon(),xy.getX(),xy.getY());
+                } else {
+                    mapElement.setIconName(celement.getIcon());
+                    mapElement.setLabel(node.getLabel());
+                    mapElement.setX(xy.getX());
+                    mapElement.setY(xy.getY());
+                }
                 m_onmsMapElementDao.saveOrUpdate(mapElement);
                 m_onmsMapElementDao.flush();
                 onmsMap.setLastModifiedTime(new Date());
                 m_onmsMapDao.update(onmsMap);
                 m_onmsMapDao.flush();
+                updateNodeMapElementList(Integer.valueOf(m_nodeId), mapElement);
             }
         }
         m_onmsMapElementDao.clear();
@@ -218,17 +280,23 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             m_template.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     try {
-                        m_onmsMapElementDao.deleteElementsByIdandType(m_nodeId, OnmsMapElement.NODE_TYPE);
+                        for (OnmsMapElement elem: m_onmsNodeMapElementListMap.remove(Integer.valueOf(m_nodeId))) {
+                            OnmsMap onmsMap = elem.getMap();
+                            onmsMap.setLastModifiedTime(new Date());
+                            m_onmsMapElementDao.delete(elem);
+                            m_onmsMapDao.update(onmsMap);
+                        }
+                        m_onmsMapDao.flush();
                         m_onmsMapElementDao.flush();
+                        m_onmsMapDao.clear();
                         m_onmsMapElementDao.clear();
                         removeEmptySubmaps();
                     } catch (Exception e) {
-                        log().error(e);
+                        log().error(e.getMessage());
                     }
                     return null;
                 }
             });
-            //TODO add update on map table lastmodifiedtime
         } catch (Exception e) {
             sendAndThrow(m_nodeId, e);
         }
@@ -297,18 +365,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        m_template.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus arg0) {
-                addMaps();
-                
-                addSubMaps();
-                return null;
-            }
-        });
-
     }
 
     @Transactional
