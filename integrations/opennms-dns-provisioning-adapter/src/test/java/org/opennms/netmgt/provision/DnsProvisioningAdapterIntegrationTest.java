@@ -83,7 +83,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class DnsProvisioningAdapterTest {
+public class DnsProvisioningAdapterIntegrationTest {
 
     @Autowired
     private NodeDao m_nodeDao;
