@@ -4,7 +4,7 @@ function initPageView(elementId, nodeId){
 	var ipInterfaceGrid;
 	var physicalInterfaceGrid;
 	var searchIpGrid;
-	
+
 	ipInterfaceGrid = new OpenNMS.ux.IPInterfaceGrid({
 		id:'nodeInterfaceGrid',
 		title:'IP Interfaces',
@@ -16,6 +16,14 @@ function initPageView(elementId, nodeId){
 	physicalInterfaceGrid = new OpenNMS.ux.SNMPInterfaceGrid({
 		id:'nodePhysicalInterfaceGrid',
 		title:'Physical Interfaces',
+		viewConfig:{
+			autoFill: true,
+	  		forceFit: true,
+	  		scrollOffset:5,
+  		 	getRowClass : function(record, rowIndex, p, store){
+	            return getStatusColor(record.data.ifAdminStatus, record.data.ifOperStatus);
+            }
+		},
 		nodeId: nodeId,
 		height:495
 	});
@@ -48,5 +56,18 @@ function initPageView(elementId, nodeId){
 			searchPhysicalIntergaceGrid
 		]
 	});
+	
+	function getStatusColor(ifAdminStatus, ifOperStatus){
+		var bgStyle;
+		if(ifAdminStatus != 1){
+			bgStyle = 'snmp-status-blue';
+		}else if(ifAdminStatus == 1 && ifOperStatus == 1){
+			bgStyle = 'snmp-status-green';
+		}else if(ifAdminStatus == 1 && ifOperStatus != 1){
+			bgStyle = 'snmp-status-red';
+		}
+		
+		return String.format('x-grid3-row {0}', bgStyle);
+	};
 
 };

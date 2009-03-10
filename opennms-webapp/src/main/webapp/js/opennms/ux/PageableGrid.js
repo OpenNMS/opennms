@@ -48,9 +48,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 			
 			loadMask:true,
 			stripeRows:true,
-			viewConfig:{
-				autoFill:true
-			}
+			viewConfig:this.viewConfig 
 			
 		});
 		
