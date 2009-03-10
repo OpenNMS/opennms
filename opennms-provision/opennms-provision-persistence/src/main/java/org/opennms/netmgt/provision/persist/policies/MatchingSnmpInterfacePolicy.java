@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInterfacePolicy {
     
     public static enum Action { ENABLE_COLLECTION, DISABLE_COLLECTION, DO_NOT_PERSIST };
-    public static enum Match { ANY_PARAMETER, ALL_PARAMETERS };
+    public static enum Match { ANY_PARAMETER, ALL_PARAMETERS, NO_PARAMETERS };
     
     private final LinkedHashMap<String, String> m_criteria = new LinkedHashMap<String, String>();
     
-    private Action m_action;
+    private Action m_action = Action.DO_NOT_PERSIST;
     private Match m_match = Match.ANY_PARAMETER;
     
     public String getAction() {
@@ -44,6 +44,8 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
     public void setMatchBehavior(String matchBehavior) {
         if (matchBehavior != null && matchBehavior.toUpperCase().contains("ALL")) {
             m_match = Match.ALL_PARAMETERS;
+        } else if (matchBehavior != null && matchBehavior.toUpperCase().contains("NO")) {
+            m_match = Match.NO_PARAMETERS;
         } else {
             m_match = Match.ANY_PARAMETER;
         }
@@ -169,6 +171,8 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
         switch (m_match) {
         case ALL_PARAMETERS: 
             return matchAll(iface);
+        case NO_PARAMETERS:
+            return matchNode(iface);
         case ANY_PARAMETER:
         default:
             return matchAny(iface);
@@ -207,10 +211,12 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
         }
         
         return false;
-        
-
     }
-
+    
+    private boolean matchNode(OnmsSnmpInterface iface) {
+        return !matchAny(iface);
+    }
+    
     private String getPropertyValueAsString(BeanWrapper bean, String propertyName) {
         return (String) bean.convertIfNecessary(bean.getPropertyValue(propertyName), String.class);
     }
