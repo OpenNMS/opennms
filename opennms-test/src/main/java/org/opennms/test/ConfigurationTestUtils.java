@@ -239,20 +239,20 @@ public class ConfigurationTestUtils extends Assert {
         System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
     }
 
-    public static void setRelativeImporterCacheDirectory(String relativeImporterCacheDirectory) {
-        File cacheDir = new File(getCurrentDirectory(), relativeImporterCacheDirectory);
+    public static void setRelativeImporterDirectory(String relativeImporterDirectory) {
+        File cacheDir = new File(getCurrentDirectory(), relativeImporterDirectory);
         if (!cacheDir.exists()) {
             cacheDir.mkdirs();
         }
-        System.setProperty("importer.cacheDir", cacheDir.getAbsolutePath());
+        System.setProperty("importer.requisition.dir", cacheDir.getAbsolutePath());
     }
 
-    public static void setRelativeImporterWebDirectory(String relativeImporterWebDirectory) {
-            File xmlDir = new File(getCurrentDirectory(), relativeImporterWebDirectory);
+    public static void setRelativeForeignSourceDirectory(String relativeForeignSourceDirectory) {
+            File xmlDir = new File(getCurrentDirectory(), relativeForeignSourceDirectory);
             if (!xmlDir.exists()) {
                 xmlDir.mkdirs();
             }
-            System.setProperty("opennms.webapp.importFile.dir", xmlDir.getAbsolutePath());
+            System.setProperty("importer.foreign-source.dir", xmlDir.getAbsolutePath());
     }
 
 }

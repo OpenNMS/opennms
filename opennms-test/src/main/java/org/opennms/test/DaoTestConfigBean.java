@@ -54,8 +54,8 @@ public class DaoTestConfigBean implements InitializingBean {
     private final String m_absoluteHomeDirectory = null; 
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
-    private final String m_relativeImporterCacheDirectory = "target/test/opennms-home/share/importer-store";
-    private final String m_relativeImporterWebDirectory = "target/test/opennms-home/etc/imports";
+    private final String m_relativeImporterDirectory = "target/test/opennms-home/etc/imports";
+    private final String m_relativeForeignSourceDirectory = "target/test/opennms-home/etc/foreign-sources";
 
     public DaoTestConfigBean() {
     }
@@ -73,8 +73,8 @@ public class DaoTestConfigBean implements InitializingBean {
         
         ConfigurationTestUtils.setRrdBinary(m_rrdBinary);
         ConfigurationTestUtils.setRelativeRrdBaseDirectory(m_relativeRrdBaseDirectory);
-        ConfigurationTestUtils.setRelativeImporterCacheDirectory(m_relativeImporterCacheDirectory);
-        ConfigurationTestUtils.setRelativeImporterWebDirectory(m_relativeImporterWebDirectory);
+        ConfigurationTestUtils.setRelativeImporterDirectory(m_relativeImporterDirectory);
+        ConfigurationTestUtils.setRelativeForeignSourceDirectory(m_relativeForeignSourceDirectory);
     }
 
     public String getRelativeHomeDirectory() {
