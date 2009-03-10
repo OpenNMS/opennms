@@ -36,7 +36,9 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -57,28 +59,31 @@ public class IfResourceType extends ResourceType {
         return m_ifMap;
     }
 
-    void addIfInfo(IfInfo ifInfo) {
+    private void addIfInfo(IfInfo ifInfo) {
         getIfMap().put(new Integer(ifInfo.getIndex()), ifInfo);
     }
 
-    void addKnownIfResources() {
+    private void addKnownIfResources() {
     	Set<IfInfo> ifInfos = getAgent().getSnmpInterfaceInfo(this);
         
         for(IfInfo ifInfo : ifInfos) {
             addIfInfo(ifInfo);
         }
     }
-
-    IfInfo getIfInfo(int ifIndex) {
-        return getIfMap().get(new Integer(ifIndex));
-    }
-
-    public Collection<IfInfo> getIfInfos() {
-        return getIfMap().values();
+    
+    @Override
+    public SnmpInstId[] getCollectionInstances() {
+        List<SnmpInstId> instances = new ArrayList<SnmpInstId>();
+        for (IfInfo ifInfo : m_ifMap.values()) {
+            if (ifInfo.isCollectionEnabled()) {
+                instances.add(new SnmpInstId(ifInfo.getIndex()));
+            }
+        }
+        return (SnmpInstId[]) instances.toArray(new SnmpInstId[instances.size()]);
     }
 
     public SnmpCollectionResource findResource(SnmpInstId inst) {
-        return getIfInfo(inst.toInt());
+        return getIfMap().get(inst.toInt());
     }
 
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {

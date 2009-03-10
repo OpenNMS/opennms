@@ -44,6 +44,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.snmp.Collectable;
+import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -82,11 +83,21 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     public static List<Collectable> getCollectionTrackers(Collection<SnmpAttributeType> objList) {
         ArrayList<Collectable> trackers = new ArrayList<Collectable>(objList.size());
         for (SnmpAttributeType attrType : objList) {
-            trackers.add(attrType.getMibObj().getCollectionTracker());
+            trackers.add(attrType.getCollectionTracker());
         }
         
         return trackers;
     }
+    
+    private CollectionTracker getCollectionTracker() {
+        SnmpInstId[] instances = m_resourceType.getCollectionInstances();
+        if (instances != null && Boolean.getBoolean("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances")) {
+            return getMibObj().getCollectionTracker(instances);
+        } else {
+            return getMibObj().getCollectionTracker();
+        }
+    }
+    
 
     public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         if (NumericAttributeType.supportsType(mibObj.getType())) {
