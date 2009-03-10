@@ -190,20 +190,22 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
+            Assert.notNull(node, "Rancid Provisioning Adapter update Node method failed to return node for given nodeId:"+nodeId);
             
             // if the node exists and has different label then first delete old data
+            if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
             RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();            
             RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
-            if (!rNode.getDeviceName().equals(node.getLabel())) {
-                RWSClientApi.deleteRWSRancidNode(m_cp, rNode);
-                RWSClientApi.deleteRWSAuthNode(m_cp, rAuth);
+                if (!rNode.getDeviceName().equals(node.getLabel())) {
+                    RWSClientApi.deleteRWSRancidNode(m_cp, rNode);
+                    RWSClientApi.deleteRWSAuthNode(m_cp, rAuth);
+                }
             }
-
             
-            rNode = getSuitableRancidNode(node);
+            RancidNode rNode = getSuitableRancidNode(node);
             RWSClientApi.createOrUpdateRWSRancidNode(m_cp, rNode);
             
-            rAuth = getSuitableRancidNodeAuthentication(node);
+            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
             RWSClientApi.createOrUpdateRWSAuthNode(m_cp, getSuitableRancidNodeAuthentication(node));
             
             m_onmsNodeRancidNodeMap.replace(node.getId(), new RancidNodeContainer(rNode, rAuth));
