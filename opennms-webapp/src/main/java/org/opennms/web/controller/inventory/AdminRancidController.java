@@ -26,7 +26,6 @@ public class AdminRancidController implements Controller {
 
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse arg1) throws Exception {
-       
             
         
 

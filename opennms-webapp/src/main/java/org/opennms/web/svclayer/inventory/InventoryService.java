@@ -101,7 +101,7 @@ public class InventoryService implements InitializingBean {
                 
             }
             catch (RancidApiException e){
-                log().debug("Exception in getRancidNode getRWSRancidNodeInventory ");
+                log().debug("No inventory information associated to " + rancidName);
             }
         }
         
@@ -128,7 +128,7 @@ public class InventoryService implements InitializingBean {
         return nodeModel;
     
 
-}
+    }
 
     private static Category log() {
         return Logger.getLogger("Rancid");
