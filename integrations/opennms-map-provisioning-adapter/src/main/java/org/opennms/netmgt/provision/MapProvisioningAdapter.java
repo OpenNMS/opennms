@@ -229,8 +229,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 } else {
                     mapElement.setIconName(celement.getIcon());
                     mapElement.setLabel(node.getLabel());
-                    mapElement.setX(xy.getX());
-                    mapElement.setY(xy.getY());
                 }
                 m_onmsMapElementDao.saveOrUpdate(mapElement);
                 m_onmsMapElementDao.flush();
