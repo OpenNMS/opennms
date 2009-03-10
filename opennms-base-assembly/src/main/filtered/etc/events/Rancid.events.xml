@@ -1,0 +1,16 @@
+<events>
+    <event>
+        <uei>uei.opennms.org/rancid/configuration/DownloadSuccess</uei>
+        <event-label>OpenNMS-defined Rancid success event.</event-label>
+        <descr>&lt;p&gt;Rancid download successfully completed.&lt;/p&gt; &lt;p&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Rancid download successfully completed.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/rancid/configuration/DownloadFailure</uei>
+        <event-label>OpenNMS-defined Rancid failure event.</event-label>
+        <descr>&lt;p&gt;Rancid download failed.&lt;/p&gt; &lt;p&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Rancid download failed.&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+</events>
