@@ -383,7 +383,7 @@ public class Installer {
             m_out.println("WARNING: unable to load " + m_etc_dir + File.separator + "opennms.properties");
         }
         m_install_servletdir = fetchProperty("install.servlet.dir");
-        m_import_dir = fetchProperty("opennms.webapp.importFile.dir");
+        m_import_dir = fetchProperty("importer.requisition.dir");
 
         String soext = fetchProperty("build.soext");
         String pg_iplike_dir = m_properties.getProperty("install.postgresql.dir");
