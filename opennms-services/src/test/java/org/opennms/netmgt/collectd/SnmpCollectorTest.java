@@ -124,6 +124,8 @@ public class SnmpCollectorTest extends AbstractCollectorTest {
 
     public void testCollect() throws Exception {
 //        initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
+        
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
         initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
 
         initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-config.xml");
