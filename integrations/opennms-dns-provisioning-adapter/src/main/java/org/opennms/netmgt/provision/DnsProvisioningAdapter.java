@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -97,7 +98,8 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         });
 
         String dnsServer = System.getProperty("importer.adapter.dns.server");
-        if (dnsServer != null && dnsServer.trim().length() > 0) {
+        if (!StringUtils.isBlank(dnsServer)) {
+            log().info("DNS property found: "+dnsServer);
             m_resolver = new SimpleResolver(dnsServer);
     
             // Doesn't work for some reason, haven't figured out why yet
@@ -111,7 +113,6 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
     }
     
-    @Transactional
     private void createDnsRecordMap() {
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         
@@ -152,6 +153,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         if (m_resolver == null) {
             return;
         }
+        log().info("processPendingOperationForNode: Handling Operation: "+op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
             doUpdate(op);
         } else if (op.getType() == AdapterOperationType.DELETE) {
