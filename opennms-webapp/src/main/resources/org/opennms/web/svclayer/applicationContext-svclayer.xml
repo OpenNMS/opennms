@@ -230,4 +230,37 @@
    	<property name="rwsConfig" ref="rwsConfig"/>
    	<property name="nodeDao" ref="nodeDao"/>
    </bean>
+
+      <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+                admin/rancid/rancidStatus.htm=adminRancidStatusController
+            </value>
+        </property>
+   </bean>
+
+   <bean id="adminRancidStatusController" class="org.opennms.web.controller.inventory.AdminRancidStatusController">
+       <property name="inventoryService" ref="inventoryService"/>
+       <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidStatusCommClass"/>
+       <property name="formView" value="admin/rancid/rancidAdmin"/>
+       <property name="successView" value="admin/rancid/rancidAdmin"/> 
+       <property name="rwsConfig" ref="rwsConfig"/>
+   </bean>   
+
+      <bean id="urlMapping2" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+                admin/rancid/rancidClogin.htm=adminRancidCloginController
+            </value>
+        </property>
+   </bean>
+
+   <bean id="adminRancidCloginController" class="org.opennms.web.controller.inventory.AdminRancidCloginController">
+       <property name="inventoryService" ref="inventoryService"/>
+       <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidCloginCommClass"/>
+       <property name="formView" value="admin/rancid/rancidAdmin"/>
+       <property name="successView" value="admin/rancid/rancidAdmin"/> 
+       <property name="rwsConfig" ref="rwsConfig"/>
+   </bean>  
+
 </beans>

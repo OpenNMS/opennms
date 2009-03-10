@@ -78,9 +78,10 @@
 		<tr>
 			<th>Status</th>
 			<th>${model.status}
-				<input id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
+				<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
 			</th>
 		</tr>
+		<INPUT TYPE="hidden" NAME="statusName" VALUE="${model.status}">
 		<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
 		<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 		</form>
@@ -130,7 +131,7 @@
 			 	</th>
 			 </tr>
 	
-			 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.group}"> 
+			 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
 			 <INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 		 </table>
 	 </form>
@@ -154,7 +155,7 @@ function validateFormInput()
 	  alert("The login method field cannot be empty");
 	  return;
   }
-  document.newUserForm.action="inventory/invClogin";
+  document.newUserForm.action="admin/rancid/rancidClogin.htm?node=${model.db_id}";
   document.newUserForm.submit();
 }    
 function cancelUser()
@@ -163,7 +164,7 @@ function cancelUser()
     document.newUserForm.submit();
 }
 function validateFormInputStatus() {
-	  document.newUserForm2.action="inventory/rancidStatus";
+	  document.newUserForm2.action="admin/rancid/rancidStatus.htm?node=${model.db_id}";
 	  document.newUserForm2.submit();
 }
 

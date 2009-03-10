@@ -432,56 +432,56 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
     //*******************************************************************************
     // Update status configuration
     //*******************************************************************************
-    static  public int updateStatus(String device, String group){
-        try {
-            ConnectionProperties cp = new ConnectionProperties(_URL, "/rws", 60);
-            log().debug("updateStatus :" + device + " " + group);
-    
-            RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(cp, group, device);
-            if (rn.isStateUp()){
-                log().debug("updateStatus :down");
-
-                rn.setStateUp(false);
-            }else {
-                log().debug("updateStatus :up");
-
-                rn.setStateUp(true);
-            }
-            RWSClientApi.updateRWSRancidNode(cp, rn);
-            return 0;
-        }
-        catch (RancidApiException e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-    
+//    static  public int updateStatus(String device, String group){
+//        try {
+//            ConnectionProperties cp = new ConnectionProperties(_URL, "/rws", 60);
+//            log().debug("updateStatus :" + device + " " + group);
+//    
+//            RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(cp, group, device);
+//            if (rn.isStateUp()){
+//                log().debug("updateStatus :down");
+//
+//                rn.setStateUp(false);
+//            }else {
+//                log().debug("updateStatus :up");
+//
+//                rn.setStateUp(true);
+//            }
+//            RWSClientApi.updateRWSRancidNode(cp, rn);
+//            return 0;
+//        }
+//        catch (RancidApiException e) {
+//            e.printStackTrace();
+//            return -1;
+//        }
+//    }
+//    
     //*******************************************************************************
-    static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
-       
-       try {
-           
-           log().debug("updateCloginInfo " + device);
-
-           
-           RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(_URL, device);
-           rna.setUser(user);
-           rna.setPassword(password);
-           rna.setConnectionMethod(method);
-           rna.setEnablePass(enablepass);
-           boolean autoe = false;
-           if (autoenable.compareTo("1")==0) {
-               autoe = true;
-           }
-           rna.setAutoEnable(autoe);
-           RWSClientApi.createOrUpdateRWSAuthNode(_URL,rna);
-           
-           return 0;
-       }
-       catch (RancidApiException e) {
-           return -1;
-       }
-   }
+//    static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
+//       
+//       try {
+//           
+//           log().debug("updateCloginInfo " + device);
+//
+//           
+//           RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(_URL, device);
+//           rna.setUser(user);
+//           rna.setPassword(password);
+//           rna.setConnectionMethod(method);
+//           rna.setEnablePass(enablepass);
+//           boolean autoe = false;
+//           if (autoenable.compareTo("1")==0) {
+//               autoe = true;
+//           }
+//           rna.setAutoEnable(autoe);
+//           RWSClientApi.createOrUpdateRWSAuthNode(_URL,rna);
+//           
+//           return 0;
+//       }
+//       catch (RancidApiException e) {
+//           return -1;
+//       }
+//   }
    
    static public Map<String, Object> getInventoryNode(String rancidName, String group, String version) throws RancidApiException{
        

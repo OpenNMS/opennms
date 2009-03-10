@@ -138,11 +138,11 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Ra
 	 <table>
 	    <tr>
 		<th>Software Configuration Url</th>
-		<th><a href = "${model.swconfigurationurl}" > ${model.swconfigurationurl} </a></th>
+		<th><a href = "${model.swconfigurationurl}" > ${model.devicename} </a></th>
 		</tr>
     <tr>
 	<th>CVS Configuration Url</th>
-	<th><a href = "${model.configurationurl}" > ${model.configurationurl} </a></th>
+	<th><a href = "${model.configurationurl}" > ${model.devicename} </a></th>
 	</tr>
 	</table>
 	
