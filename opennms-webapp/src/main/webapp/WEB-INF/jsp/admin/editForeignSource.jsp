@@ -35,7 +35,7 @@
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="detectors" var="detector" varStatus="detectorIter">
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
-			<tree:select label="class" property="pluginClass" fieldSize="${fieldWidth}" items="${detectorTypes}" />
+			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${detectorTypes}" />
 			<tree:action label="[Add Parameter]"  action="addParameter" />
 		</tree:nodeForm>
 
@@ -54,20 +54,22 @@
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="policies" var="policy" varStatus="policyIter">
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
-			<tree:select label="class" property="pluginClass" fieldSize="${fieldWidth}" items="${policyTypes}" />
+			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${policyTypes}" />
 			<tree:action label="[Add Parameter]"  action="addParameter" />
 		</tree:nodeForm>
 		
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
+			<c:set var="showDelete" value="${empty pluginInfo[policy.pluginClass].required[parameter.key]}" />
 			<tree:nodeForm>
+
 				<tree:select label="key" property="key" items="${classParameters[policy.pluginClass]}" />
-				
+
 				<c:choose>
-				  <c:when test="${empty pluginInfo[policy.pluginClass].choices[parameter.key]}">
+				  <c:when test="${empty pluginInfo[policy.pluginClass].required[parameter.key]}">
                     <tree:field label="value" property="value" />
 				  </c:when>
 				  <c:otherwise>
-                    <tree:select label="value" property="value" items="${pluginInfo[policy.pluginClass].choices[parameter.key]}"/>
+                    <tree:select label="value" property="value" items="${pluginInfo[policy.pluginClass].required[parameter.key]}"/>
 				  </c:otherwise>
 				</c:choose>
 			</tree:nodeForm>

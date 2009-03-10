@@ -1,6 +1,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,6 +10,8 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.Policy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -27,6 +30,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
 
     private static Map<String,String> m_detectors;
     private static Map<String,String> m_policies;
+    private static Map<String, PluginWrapper> m_wrappers;
     
     public void setActiveForeignSourceRepository(ForeignSourceRepository repo) {
         m_activeForeignSourceRepository = repo;
@@ -47,6 +51,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         return m_activeForeignSourceRepository.getForeignSource(name);
     }
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
+        normalizePluginConfigs(fs);
         m_pendingForeignSourceRepository.save(fs);
         return fs;
     }
@@ -177,4 +182,60 @@ public class DefaultForeignSourceService implements ForeignSourceService {
 
         return m_policies;
     }
+
+    public Map<String,PluginWrapper> getWrappers() {
+        if (m_wrappers == null) {
+            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size());
+            for (String key : m_policies.keySet()) {
+                try {
+                    PluginWrapper wrapper = new PluginWrapper(key);
+                    m_wrappers.put(key, wrapper);
+                } catch (Exception e) {
+                    log().warn("unable to wrap " + key, e);
+                }
+            }
+            for (String key : m_detectors.keySet()) {
+                try {
+                    PluginWrapper wrapper = new PluginWrapper(key);
+                    m_wrappers.put(key, wrapper);
+                } catch (Exception e) {
+                    log().warn("unable to wrap " + key, e);
+                }
+            }
+        }
+        return m_wrappers;
+    }
+
+    private void normalizePluginConfigs(ForeignSource fs) {
+        for (PluginConfig pc : fs.getDetectors()) {
+            normalizePluginConfig(pc);
+        }
+        for (PluginConfig pc : fs.getPolicies()) {
+            normalizePluginConfig(pc);
+        }
+    }
+
+    private void normalizePluginConfig(PluginConfig pc) {
+        if (m_wrappers.containsKey(pc.getPluginClass())) {
+            PluginWrapper w = m_wrappers.get(pc.getPluginClass());
+            if (w != null) {
+                Map<String,String> parameters = pc.getParameterMap();
+                Map<String,Set<String>> required = w.getRequired();
+                for (String key : required.keySet()) {
+                    String value = "";
+                    if (!parameters.containsKey(key)) {
+                        if (required.get(key).size() > 0) {
+                            value = required.get(key).iterator().next();
+                        }
+                        pc.addParameter(key, value);
+                    }
+                }
+            }
+        }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(DefaultForeignSourceService.class);
+    }
+
 }
