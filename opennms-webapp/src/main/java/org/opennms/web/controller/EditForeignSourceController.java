@@ -49,7 +49,6 @@ import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.web.svclayer.support.ForeignSourceService;
-import org.opennms.web.svclayer.support.PluginWrapper;
 import org.opennms.web.svclayer.support.PropertyPath;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -92,6 +91,8 @@ public class EditForeignSourceController extends SimpleFormController {
             return m_formData;
         }
         public void setFormData(ForeignSource importData) {
+//            System.err.println("setFormData:");
+//            System.err.println(importData);
             m_formData = importData;
         }
         public String getDefaultFormPath() {
@@ -241,7 +242,8 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         final Map<String, Object> map = new HashMap<String, Object>();
-        int width = 50;
+        int classFieldWidth = 20;
+        int valueFieldWidth = 20;
 
         final Map<String,Set<String>> classParameters = new TreeMap<String,Set<String>>();
 
@@ -249,29 +251,24 @@ public class EditForeignSourceController extends SimpleFormController {
         map.put("detectorTypes", detectorTypes);
         for (String key : detectorTypes.keySet()) {
             classParameters.put(key, getParametersForClass(key));
-            width = Math.max(width, key.length());
+            classFieldWidth = Math.max(classFieldWidth, key.length());
         }
 
         final Map<String, String> policyTypes = m_foreignSourceService.getPolicyTypes();
         map.put("policyTypes", policyTypes);
         for (String key : policyTypes.keySet()) {
             classParameters.put(key, getParametersForClass(key));
-            width = Math.max(width, key.length());
+            classFieldWidth = Math.max(classFieldWidth, key.length());
         }
 
-        final Map<String, PluginWrapper> wrappers = new TreeMap<String, PluginWrapper>();
-        for (String key : policyTypes.keySet()) {
-            PluginWrapper wrapper = new PluginWrapper(key);
-            wrappers.put(key, wrapper);
-        }
-
-        map.put("pluginInfo", wrappers);
+        map.put("pluginInfo", m_foreignSourceService.getWrappers());
         map.put("classParameters", classParameters);
-        map.put("fieldWidth", width);
+        map.put("classFieldWidth", classFieldWidth);
+        map.put("valueFieldWidth", valueFieldWidth);
         
         return map;
     }
-    
+
     private Set<String> getParametersForClass(String clazz) {
         if (m_pluginParameters.containsKey(clazz)) {
             return m_pluginParameters.get(clazz);
@@ -280,7 +277,9 @@ public class EditForeignSourceController extends SimpleFormController {
         try {
             BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(clazz));
             for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
-                parameters.add(pd.getName());
+                if (!pd.getName().equals("class")) {
+                    parameters.add(pd.getName());
+                }
             }
             m_pluginParameters.put(clazz, parameters);
             return parameters;

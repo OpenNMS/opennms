@@ -5,7 +5,6 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
-
 <c:set var="nestedPathSansDot" value="${fn:substring(nestedPath, 0, fn:length(nestedPath)-1)}" scope="page" />
 <c:choose>
   <c:when test="${nestedPathSansDot == treeFormModel.currentNode}">
@@ -17,8 +16,10 @@
     <input type="button" value="Cancel" onclick="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'cancel')"/>
   </c:when>
   <c:otherwise>
-  
-    <a href="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'delete')"><img src="images/trash.gif"/></a>
+
+	<c:if test="${empty showDelete || showDelete == true}">
+      <a href="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'delete')"><img src="images/trash.gif"/></a>
+    </c:if>
     
     <a href="javascript:submitTreeForm('${treeFormName}', '${nestedPathSansDot}', 'edit')"><img src="images/modify.gif"/></a>
     

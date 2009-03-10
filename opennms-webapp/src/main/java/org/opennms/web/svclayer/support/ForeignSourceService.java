@@ -29,5 +29,6 @@ public interface ForeignSourceService {
 
     Map<String,String> getDetectorTypes();
     Map<String,String> getPolicyTypes();
+    Map<String,PluginWrapper> getWrappers();
 
 }

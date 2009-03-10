@@ -41,5 +41,4 @@ package org.opennms.netmgt.provision;
  *
  */
 public interface Policy {
-    
 }
