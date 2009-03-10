@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<rancid-configuration delay="900000" retries="0">
+  
+<!-- Configuration example that uses policy-manage -->
+<policies>
+<policy-manage name="example1">
+  <package name="example1">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+  </package>
+  <schedule name="global" type="weekly">
+	<time day="sunday" begins="12:30:00" ends="12:45:00"/>
+	<time day="sunday" begins="13:30:00" ends="14:45:00"/>
+	<time day="monday" begins="13:30:00" ends="14:45:00"/>
+	<time day="tuesday" begins="13:00:00" ends="14:45:00"/>
+  </schedule>
+ </policy-manage>
+</policies>  
+  
+  <mapping sysoid-mask=".1.3.6.1.4.1.9.1" type="cisco"/>
+  <mapping sysoid-mask=".1.3.6.1.4.1.9.5" type="cat5"/>
+  <mapping sysoid-mask=".1.3.6.1.4.1.1916.2" type="Extreme"/>
+  <mapping sysoid-mask=".1.3.6.1.4.1.2636.1" type="juniper"/>
+  <mapping sysoid-mask=".1.3.6.1.4.1.4874.1" type="erx"/>
+  <mapping sysoid-mask=".1.3.6.1.4.1.11.2.3.7.11" type="hp"/>
+  
+  
+</rancid-configuration>
