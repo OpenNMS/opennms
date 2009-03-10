@@ -14,15 +14,15 @@ table {
 	/*These are the styles for the event Severity levels on the eventGrid*/
 
 .snmp-status-blue{
-	background-color: #0000ff;
+	background-color: #b5d5ff;
 }
 
 .snmp-status-green{
-	background-color: #00ff00;
+	background-color: #d7e1cd;
 }
 
 .snmp-status-red{
-	background-color: #ff0000;
+	background-color: #ffd7cd;
 }
 
 .event-severity-border {
