@@ -9,8 +9,8 @@
   </bean>
 
   <bean id="foreignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
-  	<property name="requisitionPath" value="${importer.cacheDir}/requisition" />
-  	<property name="foreignSourcePath" value="${importer.cacheDir}/foreign-sources" />
+  	<property name="requisitionPath" value="${importer.requisition.dir}" />
+  	<property name="foreignSourcePath" value="${importer.foreign-source.dir}" />
   </bean>
 
 </beans>

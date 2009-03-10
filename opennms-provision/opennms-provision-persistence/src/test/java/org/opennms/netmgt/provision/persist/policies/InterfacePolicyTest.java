@@ -54,24 +54,6 @@ public class InterfacePolicyTest {
     
     @Test
     @Transactional
-    public void testInclusivePolicy() {
-        OnmsIpInterface o = null;
-        InclusiveInterfacePolicy p = new InclusiveInterfacePolicy();
-
-        List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
-        
-        for (OnmsIpInterface iface : m_interfaces) {
-            o = p.apply(iface);
-            if (o != null) {
-                matchedInterfaces.add(o);
-            }
-        }
-        
-        assertEquals(m_interfaces, matchedInterfaces);
-    }
-
-    @Test
-    @Transactional
     public void testMatchingPolicy() {
         OnmsIpInterface o = null;
         
