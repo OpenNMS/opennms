@@ -704,14 +704,18 @@ public final class EventUtil {
             String eparmnum = null;
             String eparmsep = null;
             String eparmoffset = null;
+            String eparmrangesep = null;
+            String eparmrangelen = null;
             if (parmSpec.matches("^\\d+$")) {
                 eparmnum = parmSpec;
             } else {
-                Matcher m = Pattern.compile("^(\\d+)([^0-9+-]+)([+-]?\\d+)$").matcher(parmSpec);
+                Matcher m = Pattern.compile("^(\\d+)([^0-9+-]+)([+-]?\\d+)((:)([+-]?\\d+)?)?$").matcher(parmSpec);
                 if (m.matches()) {
                     eparmnum = m.group(1);
                     eparmsep = m.group(2);
                     eparmoffset = m.group(3);
+                    eparmrangesep = m.group(5);
+                    eparmrangelen = m.group(6);
                 }
             }
         	int parmNum = -1;
@@ -731,7 +735,9 @@ public final class EventUtil {
         		// If separator and offset specified, split and extract accordingly
         		if ((eparmsep != null) && (eparmoffset != null)) {
         		    int parmOffset = Integer.parseInt(eparmoffset);
-        		    retParmVal = splitAndExtract(eparmname, eparmsep, parmOffset);
+        		    boolean doRange = ":".equals(eparmrangesep);
+        		    int parmRangeLen = (eparmrangelen == null) ? 0 : Integer.parseInt(eparmrangelen);
+        		    retParmVal = splitAndExtract(eparmname, eparmsep, parmOffset, doRange, parmRangeLen);
         		} else {
         			retParmVal = eparmname;
         		}
@@ -742,7 +748,7 @@ public final class EventUtil {
         return retParmVal;
     }
     
-    private static String splitAndExtract(String src, String sep, int offset) {
+    private static String splitAndExtract(String src, String sep, int offset, boolean doRange, int rangeLen) {
         String sepLiteral = Pattern.quote(sep);
         
         // If the src string starts with the separator, lose the first separator
@@ -751,14 +757,37 @@ public final class EventUtil {
         }
         
         String components[] = src.split(sepLiteral);
+        int startIndex, endIndex;
         if ((Math.abs(offset) > components.length) || (offset == 0)) {
             return null;
         } else if (offset < 0) {
-            return components[components.length + offset];
+            startIndex = components.length + offset;
         } else {
             // offset is, by definition, > 0
-            return components[offset - 1];
+            startIndex = offset - 1;
         }
+        
+        endIndex = startIndex;
+        
+        if (! doRange) {
+            return components[startIndex];
+        } else if (rangeLen == 0) {
+            endIndex = components.length - 1;
+        } else if (rangeLen < 0) {
+            endIndex = startIndex + 1 + rangeLen;
+        } else {
+            // rangeLen is, by definition, > 0
+            endIndex = startIndex - 1 + rangeLen;
+        }
+        
+        StringBuffer retVal = new StringBuffer();
+        for (int i = startIndex; i <= endIndex; i++) {
+            retVal.append(components[i]);
+            if (i < endIndex) {
+                retVal.append(sep);
+            }
+        }
+        return retVal.toString();
     }
 
     /**
