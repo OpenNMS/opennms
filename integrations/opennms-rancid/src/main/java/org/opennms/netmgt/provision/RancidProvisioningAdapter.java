@@ -191,10 +191,19 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
             
-            RancidNode rNode = getSuitableRancidNode(node);
+            // if the node exists and has different label then first delete old data
+            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();            
+            RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
+            if (!rNode.getDeviceName().equals(node.getLabel())) {
+                RWSClientApi.deleteRWSRancidNode(m_cp, rNode);
+                RWSClientApi.deleteRWSAuthNode(m_cp, rAuth);
+            }
+
+            
+            rNode = getSuitableRancidNode(node);
             RWSClientApi.createOrUpdateRWSRancidNode(m_cp, rNode);
             
-            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
+            rAuth = getSuitableRancidNodeAuthentication(node);
             RWSClientApi.createOrUpdateRWSAuthNode(m_cp, getSuitableRancidNodeAuthentication(node));
             
             m_onmsNodeRancidNodeMap.replace(node.getId(), new RancidNodeContainer(rNode, rAuth));
