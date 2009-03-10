@@ -815,16 +815,11 @@
     <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
   </servlet>
 
-  <servlet>
+  <!-- servlet>
     <servlet-name>invClogin</servlet-name>
     <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
-  </servlet>
+  </servlet-->
   
-  <servlet>
-    <servlet-name>rancidStatus</servlet-name>
-    <servlet-class>org.opennms.web.inventory.RancidStatusServlet</servlet-class>
-  </servlet>
-
   <servlet>
   	<servlet-name>scheduleEditor</servlet-name>
   	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
@@ -1190,16 +1185,11 @@
     <url-pattern>/outage/list</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>invClogin</servlet-name>
     <url-pattern>/inventory/invClogin</url-pattern>
-  </servlet-mapping>
- 
-  <servlet-mapping>
-    <servlet-name>rancidStatus</servlet-name>
-    <url-pattern>/inventory/rancidStatus</url-pattern>
-  </servlet-mapping>
-  
+  </servlet-mapping-->
+   
   <servlet-mapping>
     <servlet-name>gwtDispatcher</servlet-name>
     <url-pattern>*.gwt</url-pattern>
@@ -1215,7 +1205,7 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
-
+  
   <!-- Although this will be matched by the above *.htm url-pattern,
        this servlet-mapping needs to be here because wildcard url-pattern
        elements don't seem to work as a welcome-page entry. -->
