@@ -48,6 +48,7 @@ import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.InstanceListTracker;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
@@ -333,12 +334,21 @@ public class MibObject implements Collectable {
     }
     
     public CollectionTracker getCollectionTracker() {
-    	if (INSTANCE_IFINDEX.equals(getInstance()) || getResourceType() != null) {
+        if (INSTANCE_IFINDEX.equals(getInstance()) || getResourceType() != null) {
             return (CollectionTracker) new ColumnTracker(SnmpObjId.get(getOid()));
-    	} else {
+        } else {
             return (CollectionTracker) new InstanceListTracker(SnmpObjId.get(getOid()), getInstance());
-    		
-    	}
+            
+        }
+    }
+
+    public CollectionTracker getCollectionTracker(SnmpInstId... instances) {
+        if (INSTANCE_IFINDEX.equals(getInstance()) || getResourceType() != null) {
+            return (CollectionTracker) new InstanceListTracker(SnmpObjId.get(getOid()), instances);
+        } else {
+            return (CollectionTracker) new InstanceListTracker(SnmpObjId.get(getOid()), getInstance());
+            
+        }
     }
 
     public static CollectionTracker[] getCollectionTrackers(List<MibObject> objList) {
@@ -347,6 +357,16 @@ public class MibObject implements Collectable {
         for (Iterator<MibObject> it = objList.iterator(); it.hasNext();) {
             MibObject mibObj = it.next();
             trackers[index++] = mibObj.getCollectionTracker();
+        }
+        return trackers;
+    }
+
+    public static CollectionTracker[] getCollectionTrackers(List<MibObject> objList, SnmpInstId... instances) {
+        CollectionTracker[] trackers = new CollectionTracker[objList.size()];
+        int index = 0;
+        for (Iterator<MibObject> it = objList.iterator(); it.hasNext();) {
+            MibObject mibObj = it.next();
+            trackers[index++] = mibObj.getCollectionTracker(instances);
         }
         return trackers;
     }
