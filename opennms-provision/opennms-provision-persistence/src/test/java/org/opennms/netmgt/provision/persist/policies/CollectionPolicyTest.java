@@ -55,16 +55,22 @@ public class CollectionPolicyTest {
     @Test
     @Transactional
     public void testMatchingIfDescr() {
-        MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
+        MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfDescr("~^ATM.*");
 
         matchPolicy(p, "192.168.1.1");
     }
 
+    private MatchingSnmpInterfacePolicy createPolicy() {
+        MatchingSnmpInterfacePolicy policy = new MatchingSnmpInterfacePolicy();
+        policy.setMatchBehavior("NO_PARAMETERS");
+        return policy;
+    }
+
     @Test
     @Transactional
     public void testMatchingIfName() {
-        MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
+        MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfName("eth0");
 
         matchPolicy(p, "192.168.1.2");
@@ -73,7 +79,7 @@ public class CollectionPolicyTest {
     @Test
     @Transactional
     public void testMatchingIfType() {
-        MatchingSnmpInterfacePolicy p = new MatchingSnmpInterfacePolicy();
+        MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfType("6");
 
         matchPolicy(p, "192.168.1.2");
