@@ -159,7 +159,6 @@
 									  <c:otherwise>
 									    <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
 									    	{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
-									      <option value="${resource.id}">${resource.resourceType.label}: ${resource.label}</option>
 									    </c:if>
 									  </c:otherwise>  
 									</c:choose>
