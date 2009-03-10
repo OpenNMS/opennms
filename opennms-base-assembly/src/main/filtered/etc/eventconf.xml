@@ -1928,6 +1928,7 @@
   <event-file>events/Cisco.CIDS.events.xml</event-file>
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.5300dchan.events.xml</event-file>
+  <event-file>events/Cisco.mcast.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
   <event-file>events/Cisco.airespace.xml</event-file>
   <event-file>events/Colubris.events.xml</event-file>
@@ -1971,6 +1972,7 @@
   <event-file>events/ISS.events.xml</event-file>
   <event-file>events/IPUnity-SES-MIB.events.xml</event-file>
   <event-file>events/IPV6.events.xml</event-file>
+  <event-file>events/Juniper.mcast.events.xml</event-file>
   <event-file>events/Juniper.events.xml</event-file>
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
@@ -1985,6 +1987,7 @@
   <event-file>events/Multicast.standard.events.xml</event-file>
   <event-file>events/MPLS.events.xml</event-file>
   <event-file>events/MRV.events.xml</event-file>
+  <event-file>events/MSDP.events.xml</event-file>
   <event-file>events/Mylex.events.xml</event-file>
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
