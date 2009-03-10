@@ -549,8 +549,16 @@ public class WillItUnmarshalTest {
         unmarshal("mapsadapter-configuration.xml", MapsAdapterConfiguration.class);
     }
     @Test
+    public void testExampleMapsAdapterConfiguration() throws Exception {
+        unmarshalExample("mapsadapter-configuration.xml", MapsAdapterConfiguration.class);
+    }
+    @Test
     public void testRancidAdapterConfiguration() throws Exception {
         unmarshal("rancid-configuration.xml", RancidConfiguration.class);
+    }
+    @Test
+    public void testExampleRancidAdapterConfiguration() throws Exception {
+        unmarshalExample("rancid-configuration.xml", RancidConfiguration.class);
     }
     @Test
     public void testXmpConfig() throws Exception {
