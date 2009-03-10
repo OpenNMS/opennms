@@ -136,6 +136,46 @@ public class EventUtilTest extends OpenNMSTestCase {
         assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:128.64.32.16", newString);
     }
     
+    /**
+     * Test method for split-and-extract-range functionality indexed from beginning of name
+     */
+    public void testSplitAndExtractParmNameRangePositive() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1.1:4]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:1.3.6.1", newString);
+    }
+    
+    /**
+     * Test method for split-and-extract-range functionality indexed from beginning of name and extending to end
+     */
+    public void testSplitAndExtractParmNameRangePositiveToEnd() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1.5:]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:2.1.15.3.1.7.128.64.32.16", newString);
+    }
+    
+    /**
+     * Test method for split-and-extract-range functionality indexed from end of name
+     */
+    public void testSplitAndExtractParmNameRangeNegative() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1.-4:2]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:128.64", newString);
+    }
+    
+    /**
+     * Test method for split-and-extract-range functionality indexed from end of name and extending to end
+     */
+    public void testSplitAndExtractParmNameRangeNegativeToEnd() {
+        String testString = "%uei%:%dpname%:%nodeid%:%parm[name-#1.-5:]%";
+        
+        String newString = EventUtil.expandParms(testString, m_bgpBkTnEvent);
+        assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:7.128.64.32.16", newString);
+    }
+    
     public void testExpandTticketId() {
         String testString = "%tticketid%";
         String newString = EventUtil.expandParms(testString, m_nodeDownEvent);
