@@ -136,7 +136,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
         Assert.notNull(event, "event argument must not be null");
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         Assert.notNull(event.getLogmsg().getDest(), "event logmsg does not have a destination");
-        Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");//TODO: figure out what happens when this exception is thrown
+        
+        //Events that are marked donotpersist have a dbid of 0
+        //Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");//TODO: figure out what happens when this exception is thrown
         
         if ("donotpersist".equals(event.getLogmsg().getDest())) {
             log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' marked as 'donotpersist'; not processing event.");
@@ -147,8 +149,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
             log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' has no alarm data'; not processing event.");
             return false;
         }
-        
-        
         return true;
     }
     
