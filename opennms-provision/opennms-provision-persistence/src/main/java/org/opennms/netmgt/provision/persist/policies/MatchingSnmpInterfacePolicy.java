@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.provision.Allow;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.springframework.beans.BeanWrapper;
@@ -22,7 +23,8 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
     
     private Action m_action = Action.DO_NOT_PERSIST;
     private Match m_match = Match.ANY_PARAMETER;
-    
+
+    @Allow({"ENABLE_COLLECTION", "DISABLE_COLLECTION", "DO_NOT_PERSIST"})
     public String getAction() {
         return m_action.toString();
     }
@@ -36,7 +38,8 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
             m_action = Action.DO_NOT_PERSIST;
         }
     }
-    
+
+    @Allow({"ANY_PARAMETER", "ALL_PARAMETERS", "NO_PARAMETERS"})
     public String getMatchBehavior() {
         return m_match.toString();
     }
