@@ -66,6 +66,7 @@
 </jsp:include>
 
 <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
+<script type="text/javascript" src="js/opennms/ux/ResourcesPageableGrid.js" ></script>
 <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
 <script type="text/javascript" src="js/KSCIndexView.js" ></script>
 
@@ -186,41 +187,28 @@
 
   <div class="boxWrapper">
   <p>Choose the custom report title to view or modify from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
-
-      <form method="get" name="choose_report" action="KSC/formProcMain.htm">
-                  <select style="width: 100%;" name="report" size="10">
-                    <c:forEach var="report" items="${reports}">
-                      <c:choose>
-                        <c:when test="${match == null || match == ''}">
-                          <option value="${report.key}">${report.value}</option>
-                        </c:when>
-                        <c:otherwise>
-                          <c:if test="${fn:containsIgnoreCase(report.value,match)}">
-                            <option value="${report.key}">${report.value}</option>
-                          </c:if>
-                        </c:otherwise>  
-                      </c:choose>
-                    </c:forEach>
-                  </select>
-
- <p>
-                  <c:choose>
-                    <c:when test="${kscReadOnly == false }">
-                      <input type="radio" name="report_action" value="View" checked /> View <br>
-                      <input type="radio" name="report_action" value="Customize" /> Customize <br/>
-                      <input type="radio" name="report_action" value="Create" /> Create New <br/>
-                      <input type="radio" name="report_action" value="CreateFrom" /> Create New From Existing <br/>
-                      <input type="radio" name="report_action" value="Delete" /> Delete <br/>
-                      <input type="button" value="Submit" onclick="submitReportForm()" alt="Initiates Action for Custom Report"/>
-                    </c:when>
-                    <c:otherwise>
-                      <input type="hidden" name="report_action" value="View">
-                      <input type="button" value="Submit" onclick="submitReadOnlyView()" alt="Initiates Action for Custom Report"/>
-                    </c:otherwise>
-                  </c:choose>
-
- </p>
-      </form>
+	<script language="Javascript" type="text/javascript">
+		var customData = {total:"${fn:length(reports)}", records:[
+											<c:forEach var="report" items="${reports}">
+											<c:choose>
+											  <c:when test="${match == null || match == ''}">
+											    {id:"${report.key}", value:"${report.value}", type:"custom"},
+											  </c:when>
+											  <c:otherwise>
+											    <c:if test="${fn:containsIgnoreCase(report.value,match)}">
+											      {id:"${report.key}", value:"${report.value}", type:"custom"},
+											    </c:if>
+											  </c:otherwise>  
+											</c:choose>
+											</c:forEach>
+				                             ]};
+		
+		Ext.onReady(function(){
+			customizedReportsInitView("custom-resources", customData, "KSC/formProcMain.htm?report_action={action}");
+		})
+	</script>
+	<div id="custom-resources"></div>
+      
   </div>
 
 <h3 class="o-box">Node SNMP Interface Reports</h3>
@@ -242,7 +230,7 @@
 												</c:choose>
 												</c:forEach>
       	                                  	]};
-        Ext.onReady(function(){
+        	Ext.onReady(function(){
         		nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
             });
       </script>
@@ -259,13 +247,15 @@
         <c:otherwise>
           <p>Select domain for desired performance report</p>
           <script>
-          		var domainData = {total:"100", records:[
-														
+          		var domainData = {total:"${fn:length(domainResources)}", records:[
+														<c:forEach var="resource" items="${domainResources}">
+															{id:"${resource.name}", value:"${resource.label}", type:"domain"}
+														</c:forEach>	
           		                                		]}
           </script>
           <script language="Javascript" type="text/javascript">
           	Ext.onReady(function(){
-
+          		//domainGridInitView("domain-reports", domainData, "KSC/customView.htm");
             });
           </script>
           <div id="domain-reports"></div>
@@ -273,7 +263,9 @@
             <input type="hidden" name="type" value="domain">
 
                   <select style="width: 100%;" name="domain" size="10">
-                    
+                    <c:forEach var="resource" items="${domainResources}">
+                      <option value="${resource.name}">${resource.label}</option>
+                    </c:forEach>
                   </select>
 
                   <input type="button" value="Submit" onclick="submitDomainForm()" alt="Initiates Generation of Domain Report"/>
