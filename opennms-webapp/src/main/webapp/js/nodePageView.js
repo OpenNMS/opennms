@@ -8,6 +8,14 @@ function initPageView(elementId, nodeId){
 	ipInterfaceGrid = new OpenNMS.ux.IPInterfaceGrid({
 		id:'nodeInterfaceGrid',
 		title:'IP Interfaces',
+		viewConfig:{
+			autoFill: true,
+			forceFit: true,
+			scrollOffset: 5,
+			getRowClass : function(record, rowIndex, p, store) {
+				return getIpStatusColor(record.data.isDown);
+			}
+		},
 		nodeId: nodeId,
 		height:495
 	});
@@ -21,7 +29,7 @@ function initPageView(elementId, nodeId){
 	  		forceFit: true,
 	  		scrollOffset:5,
   		 	getRowClass : function(record, rowIndex, p, store){
-	            return getStatusColor(record.data.ifAdminStatus, record.data.ifOperStatus);
+	            return getSnmpStatusColor(record.data.ifAdminStatus, record.data.ifOperStatus);
             }
 		},
 		nodeId: nodeId,
@@ -57,14 +65,23 @@ function initPageView(elementId, nodeId){
 		]
 	});
 	
-	function getStatusColor(ifAdminStatus, ifOperStatus){
+	function getIpStatusColor(isDown) {
+		var bgStyle = 'grid-status-green';
+		if (isDown == 'true') {
+			bgStyle = 'grid-status-red';
+		}
+		
+		return String.format('x-grid3-row {0}', bgStyle);
+	}
+
+	function getSnmpStatusColor(ifAdminStatus, ifOperStatus){
 		var bgStyle;
 		if(ifAdminStatus != 1){
-			bgStyle = 'snmp-status-blue';
+			bgStyle = 'grid-status-blue';
 		}else if(ifAdminStatus == 1 && ifOperStatus == 1){
-			bgStyle = 'snmp-status-green';
+			bgStyle = 'grid-status-green';
 		}else if(ifAdminStatus == 1 && ifOperStatus != 1){
-			bgStyle = 'snmp-status-red';
+			bgStyle = 'grid-status-red';
 		}
 		
 		return String.format('x-grid3-row {0}', bgStyle);
