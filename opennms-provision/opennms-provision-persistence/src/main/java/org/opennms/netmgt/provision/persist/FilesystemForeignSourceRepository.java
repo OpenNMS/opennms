@@ -7,10 +7,7 @@ import java.net.URL;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
@@ -18,20 +15,12 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
-
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
-    private final JAXBContext m_jaxbContext;
     
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
-        try {
-            m_jaxbContext = JAXBContext.newInstance(ForeignSource.class, Requisition.class);
-        } catch (JAXBException e) {
-            throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
-        } catch (Exception e) {
-            throw new ForeignSourceRepositoryException("unable to get schema", e);
-        }
+        super();
     }
 
     public int getForeignSourceCount() throws ForeignSourceRepositoryException {
@@ -207,13 +196,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     private synchronized Unmarshaller getUnmarshaller() throws JAXBException {
-        return m_jaxbContext.createUnmarshaller();
-    }
-
-    private synchronized Marshaller getMarshaller() throws JAXBException {
-        Marshaller marshaller = m_jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        return marshaller;
+        return getJaxbContext().createUnmarshaller();
     }
 
 }
