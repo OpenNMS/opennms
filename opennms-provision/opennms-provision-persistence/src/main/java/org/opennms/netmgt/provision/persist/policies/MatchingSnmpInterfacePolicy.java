@@ -1,30 +1,22 @@
 package org.opennms.netmgt.provision.persist.policies;
 
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.annotations.Allow;
 import org.opennms.netmgt.provision.annotations.Policy;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
 @Policy("Match SNMP Interface")
-public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInterfacePolicy {
+public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> implements SnmpInterfacePolicy {
     
     public static enum Action { ENABLE_COLLECTION, DISABLE_COLLECTION, DO_NOT_PERSIST };
-    public static enum Match { ANY_PARAMETER, ALL_PARAMETERS, NO_PARAMETERS };
-    
-    private final LinkedHashMap<String, String> m_criteria = new LinkedHashMap<String, String>();
     
     private Action m_action = Action.DO_NOT_PERSIST;
-    private Match m_match = Match.ANY_PARAMETER;
 
     @Allow({"ENABLE_COLLECTION", "DISABLE_COLLECTION", "DO_NOT_PERSIST"})
     public String getAction() {
@@ -40,110 +32,8 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
             m_action = Action.DO_NOT_PERSIST;
         }
     }
-
-    @Allow({"ANY_PARAMETER", "ALL_PARAMETERS", "NO_PARAMETERS"})
-    public String getMatchBehavior() {
-        return m_match.toString();
-    }
     
-    public void setMatchBehavior(String matchBehavior) {
-        if (matchBehavior != null && matchBehavior.toUpperCase().contains("ALL")) {
-            m_match = Match.ALL_PARAMETERS;
-        } else if (matchBehavior != null && matchBehavior.toUpperCase().contains("NO")) {
-            m_match = Match.NO_PARAMETERS;
-        } else {
-            m_match = Match.ANY_PARAMETER;
-        }
-    }
-    
-    public String getIfDescr() {
-        return m_criteria.get("ifDescr");
-    }
-
-    public void setIfDescr(String ifDescr) {
-        m_criteria.put("ifDescr", ifDescr);
-    }
-
-    public String getIfName() {
-        return m_criteria.get("ifName");
-    }
-
-    public void setIfName(String ifName) {
-        m_criteria.put("ifName", ifName);
-    }
-
-    public String getIfType() {
-        return m_criteria.get("ifType");
-    }
-
-    public void setIfType(String ifType) {
-        m_criteria.put("ifType", ifType);
-    }
-
-    public String getIpAddress() {
-        return m_criteria.get("ipAddress");
-    }
-
-    public void setIpAddress(String ipAddress) {
-        m_criteria.put("ipAddress", ipAddress);
-    }
-
-    public String getNetmask() {
-        return m_criteria.get("netmask");
-    }
-
-    public void setNetmask(String netmask) {
-        m_criteria.put("netmask", netmask);
-    }
-
-    public String getPhysAddr() {
-        return m_criteria.get("physAddr");
-    }
-
-    public void setPhysAddr(String physAddr) {
-        m_criteria.put("physAddr", physAddr);
-    }
-
-    public String getIfIndex() {
-        return m_criteria.get("ifIndex");
-    }
-
-    public void setIfIndex(String ifIndex) {
-        m_criteria.put("ifIndex", ifIndex);
-    }
-
-    public String getIfSpeed() {
-        return m_criteria.get("ifSpeed");
-    }
-
-    public void setIfSpeed(String ifSpeed) {
-        m_criteria.put("ifSpeed", ifSpeed);
-    }
-
-    public String getIfAdminStatus() {
-        return m_criteria.get("ifAdminStatus");
-    }
-
-    public void setIfAdminStatus(String ifAdminStatus) {
-        m_criteria.put("ifAdminStatus", ifAdminStatus);
-    }
-
-    public String getIfOperStatus() {
-        return m_criteria.get("ifOperStatus");
-    }
-
-    public void setIfOperStatus(String ifOperStatus) {
-        m_criteria.put("ifOperStatus", ifOperStatus);
-    }
-
-    public String getIfAlias() {
-        return m_criteria.get("ifAlias");
-    }
-
-    public void setIfAlias(String ifAlias) {
-        m_criteria.put("ifAlias", ifAlias);
-    }
-    
+    @Override
     public OnmsSnmpInterface act(OnmsSnmpInterface iface) {
         switch (m_action) {
         case DO_NOT_PERSIST: 
@@ -159,71 +49,92 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInter
         }
     }
     
-    public OnmsSnmpInterface apply(OnmsSnmpInterface iface) {
-        if (iface == null) {
-            return null;
-        }
-        
-        if (matches(iface)) {
-            return act(iface);
-        }
-        
-        return iface;
+    public String getIfDescr() {
+        return getCriteria("ifDescr");
     }
 
-    private boolean matches(OnmsSnmpInterface iface) {
-        
-        switch (m_match) {
-        case ALL_PARAMETERS: 
-            return matchAll(iface);
-        case NO_PARAMETERS:
-            return matchNode(iface);
-        case ANY_PARAMETER:
-        default:
-            return matchAny(iface);
-        }                
-
+    public void setIfDescr(String ifDescr) {
+        putCriteria("ifDescr", ifDescr);
     }
 
-    private boolean matchAll(OnmsSnmpInterface iface) {
-        BeanWrapper bean = new BeanWrapperImpl(iface);
-        
-        for(Entry<String, String> term : m_criteria.entrySet()) {
-            
-            String val = getPropertyValueAsString(bean, term.getKey());
-            String matchExpression = term.getValue();
-            
-            if (!match(val, matchExpression)) {
-                return false;
-            }
-        }
-        
-        return true;
-        
-
+    public String getIfName() {
+        return getCriteria("ifName");
     }
-    private boolean matchAny(OnmsSnmpInterface iface) {
-        BeanWrapper bean = new BeanWrapperImpl(iface);
-        
-        for(Entry<String, String> term : m_criteria.entrySet()) {
-            
-            String val = getPropertyValueAsString(bean, term.getKey());
-            String matchExpression = term.getValue();
-            
-            if (match(val, matchExpression)) {
-                return true;
-            }
-        }
-        
-        return false;
+
+    public void setIfName(String ifName) {
+        putCriteria("ifName", ifName);
+    }
+
+    public String getIfType() {
+        return getCriteria("ifType");
+    }
+
+    public void setIfType(String ifType) {
+        putCriteria("ifType", ifType);
+    }
+
+    public String getIpAddress() {
+        return getCriteria("ipAddress");
+    }
+
+    public void setIpAddress(String ipAddress) {
+        putCriteria("ipAddress", ipAddress);
+    }
+
+    public String getNetmask() {
+        return getCriteria("netmask");
+    }
+
+    public void setNetmask(String netmask) {
+        putCriteria("netmask", netmask);
+    }
+
+    public String getPhysAddr() {
+        return getCriteria("physAddr");
+    }
+
+    public void setPhysAddr(String physAddr) {
+        putCriteria("physAddr", physAddr);
+    }
+
+    public String getIfIndex() {
+        return getCriteria("ifIndex");
+    }
+
+    public void setIfIndex(String ifIndex) {
+        putCriteria("ifIndex", ifIndex);
+    }
+
+    public String getIfSpeed() {
+        return getCriteria("ifSpeed");
+    }
+
+    public void setIfSpeed(String ifSpeed) {
+        putCriteria("ifSpeed", ifSpeed);
+    }
+
+    public String getIfAdminStatus() {
+        return getCriteria("ifAdminStatus");
+    }
+
+    public void setIfAdminStatus(String ifAdminStatus) {
+        putCriteria("ifAdminStatus", ifAdminStatus);
+    }
+
+    public String getIfOperStatus() {
+        return getCriteria("ifOperStatus");
+    }
+
+    public void setIfOperStatus(String ifOperStatus) {
+        putCriteria("ifOperStatus", ifOperStatus);
+    }
+
+    public String getIfAlias() {
+        return getCriteria("ifAlias");
+    }
+
+    public void setIfAlias(String ifAlias) {
+        putCriteria("ifAlias", ifAlias);
     }
     
-    private boolean matchNode(OnmsSnmpInterface iface) {
-        return !matchAny(iface);
-    }
-    
-    private String getPropertyValueAsString(BeanWrapper bean, String propertyName) {
-        return (String) bean.convertIfNecessary(bean.getPropertyValue(propertyName), String.class);
-    }
-
 }
