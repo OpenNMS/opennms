@@ -44,6 +44,8 @@
     <c:if test="${!empty groups[foreignSourceName]}">
       <input type="button" value="Import" onclick="javascript:doAction('${foreignSourceName}', 'import')" />
     </c:if>
+    <input type="button" value="Edit Default Foreign Source" onclick="javascript:editForeignSource('default')" />
+    <input type="button" value="Reset Default Foreign Source" onclick="javascript:resetDefaultForeignSource()" />
   </span>
   <br />
  

@@ -114,6 +114,8 @@ public class ProvisioningGroupsController extends SimpleFormController {
             return doCloneRequisition(request, response, command, errors);
         } else if ("cloneForeignSource".equalsIgnoreCase(action)) {
             return doCloneForeignSource(request, response, command, errors);
+        } else if ("resetDefaultForeignSource".equalsIgnoreCase(action)) {
+            return doResetDefaultForeignSource(request, response, command, errors);
         } else {
             errors.reject("Unrecognized action: "+action);
             return super.onSubmit(request, response, command, errors);
@@ -156,6 +158,11 @@ public class ProvisioningGroupsController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    private ModelAndView doResetDefaultForeignSource(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
+        m_foreignSourceService.deleteForeignSource("default");
+        return showForm(request, response, errors);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
@@ -170,8 +177,10 @@ public class ProvisioningGroupsController extends SimpleFormController {
             groups.put(mi.getForeignSource(), mi);
         }
         for (ForeignSource fs : m_foreignSourceService.getAllForeignSources()) {
-            names.add(fs.getName());
-            foreignSources.put(fs.getName(), fs);
+            if (!fs.isDefault()) {
+                names.add(fs.getName());
+                foreignSources.put(fs.getName(), fs);
+            }
         }
 
         refData.put("foreignSourceNames", names);
