@@ -13,8 +13,8 @@ public class PluginWrapperTest {
         String policyClass = MatchingSnmpInterfacePolicy.class.getName();
         
         PluginWrapper wrapper = new PluginWrapper(policyClass);
-        assertTrue("required keys must contain matchBehavior", wrapper.getRequired().containsKey("matchBehavior"));
-        assertTrue("action must contain DISABLE_COLLECTION", wrapper.getRequired().get("action").contains("DISABLE_COLLECTION"));
+        assertTrue("required keys must contain matchBehavior", wrapper.getRequiredValues().containsKey("matchBehavior"));
+        assertTrue("action must contain DISABLE_COLLECTION", wrapper.getRequiredValues().get("action").contains("DISABLE_COLLECTION"));
     }
 
 }
