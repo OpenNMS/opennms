@@ -51,7 +51,6 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
@@ -149,15 +148,25 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
 
     @Override
-    public void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException {
+    public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         if (m_resolver == null) {
             return;
         }
         log().info("processPendingOperationForNode: Handling Operation: "+op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
-            doUpdate(op);
+            m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    doUpdate(op);
+                    return null;
+                }
+            });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            doDelete(op);
+            m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    doDelete(op);
+                    return null;
+                }
+            });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             //do nothing in this adapter
         } else {
@@ -165,7 +174,6 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
     }
 
-    @Transactional
     private void doUpdate(AdapterOperation op) {
         OnmsNode node = null;
         try {
