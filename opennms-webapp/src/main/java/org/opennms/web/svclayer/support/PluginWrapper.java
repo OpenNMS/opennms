@@ -2,6 +2,7 @@ package org.opennms.web.svclayer.support;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -43,10 +44,21 @@ public class PluginWrapper {
         return m_className;
     }
 
-    public Map<String,Set<String>> getRequired() {
+    public Map<String,Boolean> getRequired() {
+        Map<String,Boolean> ret = new HashMap<String,Boolean>();
+        for (String key : m_required.keySet()) {
+            ret.put(key, true);
+        }
+        for (String key : m_optional.keySet()) {
+            ret.put(key, false);
+        }
+        return ret;
+    }
+
+    public Map<String,Set<String>> getRequiredValues() {
         return m_required;
     }
-    public Map<String,Set<String>> getOptional() {
+    public Map<String,Set<String>> getOptionalValues() {
         return m_optional;
     }
 }
