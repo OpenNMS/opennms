@@ -13,7 +13,7 @@ function initPageView(elementId, nodeId){
 			forceFit: true,
 			scrollOffset: 5,
 			getRowClass : function(record, rowIndex, p, store) {
-				return getIpStatusColor(record.data.isDown);
+				return getIpStatusColor(record.data.isDown, record.data.isManaged);
 			}
 		},
 		nodeId: nodeId,
@@ -65,12 +65,15 @@ function initPageView(elementId, nodeId){
 		]
 	});
 	
-	function getIpStatusColor(isDown) {
-		var bgStyle = 'grid-status-green';
-		if (isDown == 'true') {
-			bgStyle = 'grid-status-red';
+	function getIpStatusColor(isDown, isManaged) {
+		var bgStyle = 'grid-status-blue';
+		if (isManaged) {
+			bgStyle = 'grid-status-green';
+			if (isDown == 'true') {
+				bgStyle = 'grid-status-red';
+			}
 		}
-		
+
 		return String.format('x-grid3-row {0}', bgStyle);
 	}
 
