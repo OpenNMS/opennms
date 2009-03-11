@@ -220,7 +220,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
             PluginWrapper w = m_wrappers.get(pc.getPluginClass());
             if (w != null) {
                 Map<String,String> parameters = pc.getParameterMap();
-                Map<String,Set<String>> required = w.getRequired();
+                Map<String,Set<String>> required = w.getRequiredValues();
                 for (String key : required.keySet()) {
                     String value = "";
                     if (!parameters.containsKey(key)) {

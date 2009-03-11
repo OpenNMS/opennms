@@ -59,20 +59,38 @@
 		</tree:nodeForm>
 		
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
-			<c:set var="showDelete" value="${empty pluginInfo[policy.pluginClass].required[parameter.key]}" />
-			<tree:nodeForm>
-
-				<tree:select label="key" property="key" items="${classParameters[policy.pluginClass]}" />
-
-				<c:choose>
-				  <c:when test="${empty pluginInfo[policy.pluginClass].required[parameter.key]}">
-                    <tree:field label="value" property="value" />
-				  </c:when>
-				  <c:otherwise>
-                    <tree:select label="value" property="value" items="${pluginInfo[policy.pluginClass].required[parameter.key]}"/>
-				  </c:otherwise>
-				</c:choose>
-			</tree:nodeForm>
+			
+			<c:choose>
+				<c:when test="${pluginInfo[policy.pluginClass].required[parameter.key]}">
+					<c:set var="showDelete" value="false" scope="session" />
+					<tree:nodeForm>
+						<tree:readOnlyField label="key" property="key" />
+						<c:choose>
+							<c:when test="${empty pluginInfo[policy.pluginClass].requiredValues[parameter.key]}">
+		                		<tree:field label="value" property="value" />
+							</c:when>
+							<c:otherwise>
+		                		<tree:select label="value" property="value" fieldSize="${valueFieldWidth}" items="${pluginInfo[policy.pluginClass].requiredValues[parameter.key]}" />
+							</c:otherwise>
+						</c:choose>
+					</tree:nodeForm>
+				</c:when>
+				<c:otherwise>
+					<c:set var="showDelete" value="true" scope="session" />
+					<tree:nodeForm>
+						<tree:select label="key" property="key" items="${classParameters[policy.pluginClass]}" />
+						<c:choose>
+							<c:when test="${empty pluginInfo[policy.pluginClass].requiredValues[parameter.key]}">
+		                		<tree:field label="value" property="value" />
+							</c:when>
+							<c:otherwise>
+		                		<tree:select label="value" property="value" fieldSize="${valueFieldWidth}" items="${pluginInfo[policy.pluginClass].requiredValues[parameter.key]}" />
+							</c:otherwise>
+						</c:choose>
+					</tree:nodeForm>
+				</c:otherwise>
+			</c:choose>
+			<c:set var="showDelete" value="true" scope="session" />
 
 		</tree:tree>
 	</tree:tree>
