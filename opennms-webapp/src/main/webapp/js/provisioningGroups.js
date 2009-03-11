@@ -57,3 +57,10 @@ function editForeignSource(foreignSourceName) {
 	document.editForeignSourceForm.submit();
 	return true;
 }
+
+function resetDefaultForeignSource() {
+	document.takeAction.groupName.value = "default";
+	document.takeAction.action.value = "resetDefaultForeignSource";
+	document.takeAction.submit();
+	return true;
+}

@@ -48,18 +48,26 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         return m_pendingForeignSourceRepository.getForeignSource(name);
     }
     public ForeignSource deployForeignSource(String name) {
-        m_activeForeignSourceRepository.save(m_pendingForeignSourceRepository.getForeignSource(name));
-        return m_activeForeignSourceRepository.getForeignSource(name);
+        if (name.equals("default")) {
+            m_activeForeignSourceRepository.putDefaultForeignSource(m_pendingForeignSourceRepository.getForeignSource("default"));
+            return m_activeForeignSourceRepository.getDefaultForeignSource();
+        } else {
+            m_activeForeignSourceRepository.save(m_pendingForeignSourceRepository.getForeignSource(name));
+            return m_activeForeignSourceRepository.getForeignSource(name);
+        }
     }
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
         normalizePluginConfigs(fs);
         m_pendingForeignSourceRepository.save(fs);
         return fs;
     }
-    public ForeignSource deleteForeignSource(String name) {
+    public void deleteForeignSource(String name) {
         m_pendingForeignSourceRepository.delete(m_pendingForeignSourceRepository.getForeignSource(name));
-        m_activeForeignSourceRepository.delete(m_activeForeignSourceRepository.getForeignSource(name));
-        return m_activeForeignSourceRepository.getForeignSource(name);
+        if (name.equals("default")) {
+            m_activeForeignSourceRepository.resetDefaultForeignSource();
+        } else {
+            m_activeForeignSourceRepository.delete(m_activeForeignSourceRepository.getForeignSource(name));
+        }
     }
     public ForeignSource cloneForeignSource(String name, String target) {
         ForeignSource fs = m_activeForeignSourceRepository.getForeignSource(name);
