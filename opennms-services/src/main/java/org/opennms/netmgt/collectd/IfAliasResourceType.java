@@ -78,6 +78,11 @@ public class IfAliasResourceType extends ResourceType {
         }
         return resource;
     }
+    
+    @Override
+    public SnmpInstId[] getCollectionInstances() {
+        return m_ifResourceType.getCollectionInstances();
+    }
 
     public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getAliasAttributeTypes(getAgent());
